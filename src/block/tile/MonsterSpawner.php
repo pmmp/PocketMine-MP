@@ -24,20 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\data\bedrock\LegacyEntityIdToStringIdMap;
-use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
-use pocketmine\entity\Location;
-use pocketmine\event\block\SpawnerAttemptSpawnEvent;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\player\Player;
-use pocketmine\world\particle\MobSpawnParticle;
-use function mt_rand;
 
 /**
  * @deprecated
@@ -147,71 +137,6 @@ class MonsterSpawner extends Spawnable{
 		$nbt->setFloat(self::TAG_ENTITY_SCALE, $this->displayEntityScale);
 	}
 
-	public function onUpdate() : bool{
-		if($this->closed || $this->entityTypeId === self::DEFAULT_ENTITY_TYPE_ID){
-			return false;
-		}
-		if($this->spawnDelay > 0){
-			$this->spawnDelay--;
-			return true;
-		}
-		$position = $this->getPosition();
-		$world = $position->getWorld();
-		if($world->getNearestEntity($position, $this->requiredPlayerRange, Player::class) === null){
-			return true;
-		}
-		$count = 0;
-		$spawnRange = SpawnerSpawnRangeRegistry::getInstance()->getSpawnRange($this->entityTypeId) ?? AxisAlignedBB::one()->expand($this->spawnRange * 2 + 1, 8, $this->spawnRange * 2 + 1);
-		$spawnRange->offset($position->x, $position->y, $position->z);
-		foreach($world->getNearbyEntities(
-			$spawnRange,
-		) as $entity){
-			if($entity::getNetworkTypeId() === $this->entityTypeId){
-				$count++;
-				if($count >= $this->maxNearbyEntities){
-					return true;
-				}
-			}
-		}
-		$entityTypeId = $this->entityTypeId;
-		if(SpawnerAttemptSpawnEvent::hasHandlers()){
-			$ev = new SpawnerAttemptSpawnEvent($this->getBlock(), $entityTypeId);
-			$ev->call();
-			if($ev->isCancelled()){
-				return true;
-			}
-			$entityTypeId = $ev->getEntityType();
-		}
-		// TODO: spawn condition check (light level etc.)
-		for($i = 0; $i < $this->spawnPerAttempt; $i++){
-			$spawnLocation = $position->add(mt_rand(-$this->spawnRange, $this->spawnRange), 0, mt_rand(-$this->spawnRange, $this->spawnRange));
-			$spawnLocation = Location::fromObject($spawnLocation, $world);
-			$nbt = CompoundTag::create()
-				->setString(EntityFactory::TAG_IDENTIFIER, $entityTypeId)
-				->setTag(Entity::TAG_POS, new ListTag([
-					new DoubleTag($spawnLocation->x),
-					new DoubleTag($spawnLocation->y),
-					new DoubleTag($spawnLocation->z)
-				]))
-				->setTag(Entity::TAG_ROTATION, new ListTag([
-					new FloatTag($spawnLocation->yaw),
-					new FloatTag($spawnLocation->pitch)
-				]));
-			// TODO: spawnData, spawnPotentials
-			$entity = EntityFactory::getInstance()->createFromData($world, $nbt);
-			if($entity !== null){
-				$entity->spawnToAll();
-				$world->addParticle($spawnLocation, new MobSpawnParticle((int) $entity->getSize()->getWidth(), (int) $entity->getSize()->getHeight()));
-				$count++;
-				if($count >= $this->maxNearbyEntities){
-					break;
-				}
-			}
-		}
-		$this->spawnDelay = mt_rand($this->minSpawnDelay, $this->maxSpawnDelay);
-		return true;
-	}
-
 	public function getEntityTypeId() : string{
 		return $this->entityTypeId;
 	}
@@ -266,5 +191,13 @@ class MonsterSpawner extends Spawnable{
 
 	public function setSpawnPerAttempt(int $spawnPerAttempt) : void{
 		$this->spawnPerAttempt = $spawnPerAttempt;
+	}
+
+	public  function getMaxNearbyEntities() : int{
+		return $this->maxNearbyEntities;
+	}
+
+	public  function setMaxNearbyEntities(int $maxNearbyEntities) : void{
+		$this->maxNearbyEntities = $maxNearbyEntities;
 	}
 }

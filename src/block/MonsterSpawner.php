@@ -24,12 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\MonsterSpawner as TileSpawner;
+use pocketmine\block\tile\SpawnerSpawnRangeRegistry;
 use pocketmine\block\utils\SupportType;
+use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
+use pocketmine\event\block\SpawnerAttemptSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\item\SpawnEgg;
 use pocketmine\item\SpawnEggEntityRegistry;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\player\Player;
+use pocketmine\world\particle\MobSpawnParticle;
 use function mt_rand;
 
 class MonsterSpawner extends Transparent{
@@ -43,10 +54,8 @@ class MonsterSpawner extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$world = $this->position->getWorld();
-		$spawner = $world->getTile($this->position);
-		if($spawner instanceof TileSpawner && $spawner->onUpdate()){
-			$world->scheduleDelayedBlockUpdate($this->position, 1);
+		if($this->onUpdate()){
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 		}
 	}
 
@@ -69,5 +78,73 @@ class MonsterSpawner extends Transparent{
 			}
 		}
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+	}
+
+	public function onUpdate() : bool{
+		$world = $this->position->getWorld();
+		$spawnerTile = $world->getTile($this->position);
+
+		if(!$spawnerTile instanceof TileSpawner || $spawnerTile->closed || $spawnerTile->getEntityTypeId() === TileSpawner::DEFAULT_ENTITY_TYPE_ID){
+			return false;
+		}
+		$spawnDelay = $spawnerTile->getSpawnDelay();
+		if($spawnDelay > 0){
+			$spawnerTile->setSpawnDelay($spawnDelay - 1);
+			return true;
+		}
+		$position = $spawnerTile->getPosition();
+		$world = $position->getWorld();
+		if($world->getNearestEntity($position, $spawnerTile->getRequiredPlayerRange(), Player::class) === null){
+			return true;
+		}
+		$entityTypeId = $spawnerTile->getEntityTypeId();
+		$spawnRange = $spawnerTile->getSpawnRange();
+		$count = 0;
+		$spawnRangeBB = SpawnerSpawnRangeRegistry::getInstance()->getSpawnRange($entityTypeId) ?? AxisAlignedBB::one()->expand($spawnRange * 2 + 1, 8, $spawnRange * 2 + 1);
+		$spawnRangeBB->offset($position->x, $position->y, $position->z);
+		foreach($world->getNearbyEntities($spawnRangeBB) as $entity){
+			if($entity::getNetworkTypeId() === $entityTypeId){
+				$count++;
+				if($count >= $spawnerTile->getMaxNearbyEntities()){
+					return true;
+				}
+			}
+		}
+		if(SpawnerAttemptSpawnEvent::hasHandlers()){
+			$ev = new SpawnerAttemptSpawnEvent($spawnerTile->getBlock(), $entityTypeId);
+			$ev->call();
+			if($ev->isCancelled()){
+				return true;
+			}
+			$entityTypeId = $ev->getEntityType();
+		}
+		// TODO: spawn condition check (light level etc.)
+		for($i = 0; $i < $spawnerTile->getSpawnPerAttempt(); $i++){
+			$spawnLocation = $position->add(mt_rand(-$spawnRange, $spawnRange), 0, mt_rand(-$spawnRange, $spawnRange));
+			$spawnLocation = Location::fromObject($spawnLocation, $world);
+			$nbt = CompoundTag::create()
+				->setString(EntityFactory::TAG_IDENTIFIER, $entityTypeId)
+				->setTag(Entity::TAG_POS, new ListTag([
+					new DoubleTag($spawnLocation->x),
+					new DoubleTag($spawnLocation->y),
+					new DoubleTag($spawnLocation->z)
+				]))
+				->setTag(Entity::TAG_ROTATION, new ListTag([
+					new FloatTag($spawnLocation->yaw),
+					new FloatTag($spawnLocation->pitch)
+				]));
+			// TODO: spawnData, spawnPotentials
+			$entity = EntityFactory::getInstance()->createFromData($world, $nbt);
+			if($entity !== null){
+				$entity->spawnToAll();
+				$world->addParticle($spawnLocation, new MobSpawnParticle((int) $entity->getSize()->getWidth(), (int) $entity->getSize()->getHeight()));
+				$count++;
+				if($count >= $spawnerTile->getMaxNearbyEntities()){
+					break;
+				}
+			}
+		}
+		$spawnerTile->setSpawnDelay(mt_rand($spawnerTile->getMinSpawnDelay(), $spawnerTile->getMaxSpawnDelay()));
+		return true;
 	}
 }
