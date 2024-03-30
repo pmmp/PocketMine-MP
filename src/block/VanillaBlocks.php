@@ -977,11 +977,10 @@ final class VanillaBlocks{
 		self::register("crimson_nylium", new Nylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", $nyliumBreakInfo));
 		self::register("warped_nylium", new Nylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", $nyliumBreakInfo));
 
-		$fungusBreakInfo = new Info(BreakInfo::instant());
-		self::register("crimson_fungus", new Fungus(new BID(Ids::CRIMSON_FUNGUS), "Crimson Fungus", $fungusBreakInfo));
-		self::register("warped_fungus", new Fungus(new BID(Ids::WARPED_FUNGUS), "Warped Fungus", $fungusBreakInfo));
+		self::register("crimson_fungus", new Fungus(new BID(Ids::CRIMSON_FUNGUS), "Crimson Fungus", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("warped_fungus", new Fungus(new BID(Ids::WARPED_FUNGUS), "Warped Fungus", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 
-		self::register("nether_sprouts", new NetherSprouts(new BID(Ids::NETHER_SPROUTS), "Nether Sprouts", $fungusBreakInfo));
+		self::register("nether_sprouts", new NetherSprouts(new BID(Ids::NETHER_SPROUTS), "Nether Sprouts", new Info(BreakInfo::instant())));
 
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));

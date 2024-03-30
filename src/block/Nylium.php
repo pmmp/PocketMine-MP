@@ -95,17 +95,17 @@ class Nylium extends Opaque{
 			];
 		}
 
-		$random = new Random();
-
 		$count = 8;
 		$radius = 2;
 
+		$world = $this->position->getWorld();
+
 		$arrC = count($arr) - 1;
 		for($c = 0; $c < $count; ++$c){
-			$x = $random->nextRange($this->position->x - $radius, $this->position->x + $radius);
-			$z = $random->nextRange($this->position->z - $radius, $this->position->z + $radius);
-			if($this->position->getWorld()->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $this->position->getWorld()->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
-				$this->position->getWorld()->setBlockAt($x, $this->position->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
+			$x = mt_rand($this->position->x - $radius, $this->position->x + $radius);
+			$z = mt_rand($this->position->z - $radius, $this->position->z + $radius);
+			if($world->getBlockAt($x, $this->position->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $world->getBlockAt($x, $this->position->y, $z) instanceof Nylium){
+				$world->setBlockAt($x, $this->position->y + 1, $z, $arr[mt_rand(0, $arrC)]);
 			}
 		}
 	}
