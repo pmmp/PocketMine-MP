@@ -102,7 +102,10 @@ class BlockTest extends TestCase{
 		$newTable = [];
 
 		$idNameLookup = [];
-		foreach(Utils::stringifyKeys((new \ReflectionClass(BlockTypeIds::class))->getConstants()) as $name => $id){
+		//if we ever split up block registration into multiple registries (e.g. separating chemistry blocks),
+		//we'll need to ensure those additional registries are also included here
+		foreach(Utils::stringifyKeys(VanillaBlocks::getAll()) as $name => $blockType){
+			$id = $blockType->getTypeId();
 			if(isset($idNameLookup[$id])){
 				throw new AssumptionFailedError("TypeID $name collides with " . $idNameLookup[$id]);
 			}
