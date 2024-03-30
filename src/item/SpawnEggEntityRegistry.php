@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 
@@ -36,9 +37,9 @@ final class SpawnEggEntityRegistry{
 	private array $entityMap = [];
 
 	private function __construct(){
-		$this->register('minecraft:squid', VanillaItems::SQUID_SPAWN_EGG());
-		$this->register('minecraft:villager', VanillaItems::VILLAGER_SPAWN_EGG());
-		$this->register('minecraft:zombie', VanillaItems::ZOMBIE_SPAWN_EGG());
+		$this->register(EntityIds::SQUID, VanillaItems::SQUID_SPAWN_EGG());
+		$this->register(EntityIds::VILLAGER, VanillaItems::VILLAGER_SPAWN_EGG());
+		$this->register(EntityIds::ZOMBIE, VanillaItems::ZOMBIE_SPAWN_EGG());
 	}
 
 	public function register(string $entitySaveId, SpawnEgg $spawnEgg) : void{
