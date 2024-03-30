@@ -520,7 +520,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function setFlightSpeed(float $flightSpeed) : void{
-		if($this->flightSpeed !== $flightSpeed && $flightSpeed >= 0){
+		if($flightSpeed >= 0 && $this->flightSpeed !== $flightSpeed){
 			$this->flightSpeed = $flightSpeed;
 			$this->getNetworkSession()->syncAbilities($this);
 		}
