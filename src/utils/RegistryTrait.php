@@ -33,7 +33,7 @@ use function preg_match;
  * These faux constants are exposed in static class methods, which are handled using __callStatic().
  *
  * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
- * Alternatively, just put \@generate-registry-docblock in the docblock and run tools/generate-registry-annotations.php
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run build/generate-registry-annotations.php
  */
 trait RegistryTrait{
 	/**
@@ -114,6 +114,13 @@ trait RegistryTrait{
 		if(count($arguments) > 0){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
+
+		//fast path
+		if(self::$members !== null && isset(self::$members[$name])){
+			return self::preprocessMember(self::$members[$name]);
+		}
+
+		//fallback
 		try{
 			return self::_registryFromString($name);
 		}catch(\InvalidArgumentException $e){

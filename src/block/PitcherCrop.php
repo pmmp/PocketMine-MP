@@ -30,6 +30,7 @@ use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -100,5 +101,9 @@ final class PitcherCrop extends Flowable{
 		if(CropGrowthHelper::canGrow($this)){
 			$this->grow(null);
 		}
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::PITCHER_POD();
 	}
 }

@@ -152,7 +152,7 @@ class Farmland extends Transparent{
 			$ev = new EntityTrampleFarmlandEvent($entity, $this);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 			}
 		}
 		return null;

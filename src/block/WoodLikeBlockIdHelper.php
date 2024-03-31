@@ -171,7 +171,7 @@ final class WoodLikeBlockIdHelper{
 		};
 	}
 
-	public static function getTrapdoorIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getTrapdoorIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_TRAPDOOR,
 			WoodType::SPRUCE => Ids::SPRUCE_TRAPDOOR,
@@ -186,7 +186,7 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	public static function getButtonIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getButtonIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_BUTTON,
 			WoodType::SPRUCE => Ids::SPRUCE_BUTTON,
@@ -201,7 +201,7 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	public static function getPressurePlateIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getPressurePlateIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_PRESSURE_PLATE,
 			WoodType::SPRUCE => Ids::SPRUCE_PRESSURE_PLATE,
@@ -216,7 +216,7 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	public static function getDoorIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getDoorIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_DOOR,
 			WoodType::SPRUCE => Ids::SPRUCE_DOOR,
@@ -231,7 +231,7 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	public static function getFenceGateIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getFenceGateIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_FENCE_GATE,
 			WoodType::SPRUCE => Ids::SPRUCE_FENCE_GATE,
@@ -246,7 +246,7 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	public static function getStairsIdentifier(WoodType $treeType) : BlockIdentifier{
+	public static function getStairsIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_STAIRS,
 			WoodType::SPRUCE => Ids::SPRUCE_STAIRS,

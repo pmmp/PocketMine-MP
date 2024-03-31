@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Runnable;
-use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
-use function assert;
+use function array_key_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -82,9 +81,7 @@ abstract class AsyncTask extends Runnable{
 		$this->onRun();
 
 		$this->finished = true;
-		$worker = NativeThread::getCurrentThread();
-		assert($worker instanceof AsyncWorker);
-		$worker->getNotifier()->wakeupSleeper();
+		AsyncWorker::getNotifier()->wakeupSleeper();
 	}
 
 	/**
@@ -230,7 +227,7 @@ abstract class AsyncTask extends Runnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(!isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id]) || !array_key_exists($key, self::$threadLocalStorage[$id])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
