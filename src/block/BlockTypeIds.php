@@ -545,6 +545,8 @@ final class BlockTypeIds{
 	public const STONE_STAIRS = 10504;
 	public const STONECUTTER = 10505;
 
+	public const STRUCTURE_VOID = 10507;
+
 	public const SUGARCANE = 10518;
 	public const SUNFLOWER = 10519;
 	public const SWEET_BERRY_BUSH = 10520;

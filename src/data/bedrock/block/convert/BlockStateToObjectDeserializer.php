@@ -45,6 +45,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\StructureVoidType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -1566,6 +1567,14 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::STONECUTTER_BLOCK, function(Reader $in) : Block{
 			return Blocks::STONECUTTER()
 				->setFacing($in->readCardinalHorizontalFacing());
+		});
+		$this->map(Ids::STRUCTURE_VOID, function(Reader $in) : Block{
+			return Blocks::STRUCTURE_VOID()
+				->setStructureVoidType(match($type = $in->readString(StateNames::STRUCTURE_VOID_TYPE)){
+					StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
+					StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
+					default => throw $in->badValueException(StateNames::STRUCTURE_VOID_TYPE, $type),
+				});
 		});
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
 			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
