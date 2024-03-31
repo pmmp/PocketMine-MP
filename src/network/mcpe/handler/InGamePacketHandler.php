@@ -25,8 +25,11 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\Lectern;
+use pocketmine\block\StructureBlock;
 use pocketmine\block\tile\Sign;
+use pocketmine\block\tile\StructureBlock as TileStructureBlock;
 use pocketmine\block\utils\SignText;
+use pocketmine\block\utils\StructureBlockType;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
@@ -82,6 +85,7 @@ use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
+use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\ActorEvent;
@@ -1023,5 +1027,29 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleEmote(EmotePacket $packet) : bool{
 		$this->player->emote($packet->getEmoteId());
 		return true;
+	}
+
+	public function handleStructureBlockUpdate(StructureBlockUpdatePacket $packet) : bool{
+		$pos = $packet->blockPosition;
+		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
+		$world = $this->player->getWorld();
+		if(!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+			return false;
+		}
+
+		$tile = $world->getTileAt($pos->getX(), $pos->getY(), $pos->getZ());
+		$block = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+		if($tile instanceof TileStructureBlock && $block instanceof StructureBlock && $this->player->canInteract($block->getPosition(), 15)){
+			try{
+				$type = StructureBlockType::fromInt($packet->structureEditorData->structureBlockType);
+				$tile->updateFromPacket($packet);
+			}catch(\ValueError $e){
+				throw PacketHandlingException::wrap($e);
+			}
+			$block->setType($type);
+			return true;
+		}
+		return false;
 	}
 }
