@@ -21,18 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\world\sound;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\utils\DyeColor;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class DyeColorIdMapTest extends TestCase{
+class ArmorEquipIronSound implements Sound{
 
-	public function testAllColorsMapped() : void{
-		foreach(DyeColor::cases() as $color){
-			$id = DyeColorIdMap::getInstance()->toId($color);
-			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color === $color2);
-		}
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ARMOR_EQUIP_IRON, $pos, false)];
 	}
 }

@@ -208,6 +208,7 @@ abstract class Noise{
 			throw new \InvalidArgumentException("xSize % samplingRate must return 0");
 		}
 
+		/** @phpstan-var \SplFixedArray<float> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
@@ -240,6 +241,7 @@ abstract class Noise{
 		assert($xSize % $samplingRate === 0, new \InvalidArgumentException("xSize % samplingRate must return 0"));
 		assert($zSize % $samplingRate === 0, new \InvalidArgumentException("zSize % samplingRate must return 0"));
 
+		/** @phpstan-var \SplFixedArray<\SplFixedArray<float>> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
