@@ -35,12 +35,12 @@ class StructureVoid extends Transparent{
 		$w->enum($this->type);
 	}
 
-	public function getType() : StructureVoidType{
+	public function getStructureVoidType() : StructureVoidType{
 		return $this->type;
 	}
 
 	/** @return $this */
-	public function setType(StructureVoidType $type) : self{
+	public function setStructureVoidType(StructureVoidType $type) : self{
 		$this->type = $type;
 		return $this;
 	}
