@@ -1643,7 +1643,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::STRUCTURE_VOID(), function(StructureVoid $block) : Writer{
 			return Writer::create(Ids::STRUCTURE_VOID)
-				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getType()){
+				->writeString(StateNames::STRUCTURE_VOID_TYPE, match($block->getStructureVoidType()){
 					StructureVoidType::VOID => StringValues::STRUCTURE_VOID_TYPE_VOID,
 					StructureVoidType::AIR => StringValues::STRUCTURE_VOID_TYPE_AIR,
 				});

@@ -1554,7 +1554,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::STRUCTURE_VOID, function(Reader $in) : Block{
 			return Blocks::STRUCTURE_VOID()
-				->setType(match($type = $in->readString(StateNames::STRUCTURE_VOID_TYPE)){
+				->setStructureVoidType(match($type = $in->readString(StateNames::STRUCTURE_VOID_TYPE)){
 					StringValues::STRUCTURE_VOID_TYPE_VOID => StructureVoidType::VOID,
 					StringValues::STRUCTURE_VOID_TYPE_AIR => StructureVoidType::AIR,
 					default => throw $in->badValueException(StateNames::STRUCTURE_VOID_TYPE, $type),
