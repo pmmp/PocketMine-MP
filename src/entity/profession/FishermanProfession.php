@@ -54,14 +54,14 @@ final class FishermanProfession extends VillagerProfession{
 				tier: 0,
 				traderExp: 2
 			),
-//				new TradeRecipe( //TODO: Implement this after implementing cod bucket
-//					buyA: VanillaItems::EMERALD()->setCount(3),
-//					sell: VanillaItems::COD_BUCKET()->setCount(1),
-//					maxUses: 16,
-//					priceMultiplier: 0.05,
-//					tier: 1,
-//					traderExp: 1
-//				),
+			//new TradeRecipe( //TODO: Implement this after implementing cod bucket
+			//	buyA: VanillaItems::EMERALD()->setCount(3),
+			//	sell: VanillaItems::COD_BUCKET()->setCount(1),
+			//	maxUses: 16,
+			//	priceMultiplier: 0.05,
+			//	tier: 1,
+			//	traderExp: 1
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::EMERALD()->setCount(1),
 				sell: VanillaItems::COOKED_FISH()->setCount(6),
@@ -79,14 +79,14 @@ final class FishermanProfession extends VillagerProfession{
 				tier: 2,
 				traderExp: 10
 			),
-//				new TradeRecipe( //TODO: Implement this after implementing campfire
-//					buyA: VanillaItems::EMERALD()->setCount(2),
-//					sell: VanillaBlocks::CAMPFIRE()->setCount(1),
-//					maxUses: 12,
-//					priceMultiplier: 0.05,
-//					tier: 2,
-//					traderExp: 5
-//				),
+			//new TradeRecipe( //TODO: Implement this after implementing campfire
+			//	buyA: VanillaItems::EMERALD()->setCount(2),
+			//	sell: VanillaBlocks::CAMPFIRE()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.05,
+			//	tier: 2,
+			//	traderExp: 5
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::EMERALD()->setCount(1),
 				sell: VanillaItems::COOKED_SALMON()->setCount(6),

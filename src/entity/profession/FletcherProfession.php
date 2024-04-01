@@ -79,14 +79,14 @@ final class FletcherProfession extends VillagerProfession{
 				tier: 2,
 				traderExp: 20
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing crossbow
-//				buyA: VanillaItems::EMERALD()->setCount(3),
-//				sell: VanillaItems::CROSSBOW()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.05,
-//				tier: 2,
-//				traderExp: 10
-//			),
+			//new TradeRecipe(//TODO: Implement this after implementing crossbow
+			//	buyA: VanillaItems::EMERALD()->setCount(3),
+			//	sell: VanillaItems::CROSSBOW()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.05,
+			//	tier: 2,
+			//	traderExp: 10
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::FEATHER()->setCount(24),
 				sell: VanillaItems::EMERALD()->setCount(1),
@@ -111,25 +111,25 @@ final class FletcherProfession extends VillagerProfession{
 				tier: 4,
 				traderExp: 30
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing crossbow
-//				buyA: VanillaItems::EMERALD()->setCount(8),
-//				sell: VanillaItems::CROSSBOW()->setCount(1)->setEnchantments([
-//					EnchantmentInstance::get(Enchantment::get(Enchantment::MULTISHOT), 1)
-//				]),
-//				maxUses: 3,
-//				priceMultiplier: 0.05,
-//				tier: 4,
-//				traderExp: 15
-//			),
-//			new TradeRecipe(//TODO: Implement this after implementing tipped arrows
-//				buyA: VanillaItems::ARROW()->setCount(2),
-//				buyB: VanillaItems::TIPPED_ARROW()->setCount(1),
-//				sell: VanillaItems::EMERALD()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.05,
-//				tier: 4,
-//				traderExp: 30
-//			)
+			//new TradeRecipe(//TODO: Implement this after implementing crossbow
+			//	buyA: VanillaItems::EMERALD()->setCount(8),
+			//	sell: VanillaItems::CROSSBOW()->setCount(1)->setEnchantments([
+			//		EnchantmentInstance::get(Enchantment::get(Enchantment::MULTISHOT), 1)
+			//	]),
+			//	maxUses: 3,
+			//	priceMultiplier: 0.05,
+			//	tier: 4,
+			//	traderExp: 15
+			//),
+			//new TradeRecipe(//TODO: Implement this after implementing tipped arrows
+			//	buyA: VanillaItems::ARROW()->setCount(2),
+			//	buyB: VanillaItems::TIPPED_ARROW()->setCount(1),
+			//	sell: VanillaItems::EMERALD()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.05,
+			//	tier: 4,
+			//	traderExp: 30
+			//)
 		];
 	}
 }

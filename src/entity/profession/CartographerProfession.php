@@ -50,14 +50,14 @@ final class CartographerProfession extends VillagerProfession{
 				tier: 0,
 				traderExp: 2
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing empty map
-//				buyA: VanillaItems::EMERALD()->setCount(7),
-//				sell: VanillaItems::EMPTY_MAP()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.05,
-//				tier: 0,
-//				traderExp: 1
-//			),
+			//new TradeRecipe(//TODO: Implement this after implementing empty map
+			//	buyA: VanillaItems::EMERALD()->setCount(7),
+			//	sell: VanillaItems::EMPTY_MAP()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.05,
+			//	tier: 0,
+			//	traderExp: 1
+			//),
 			new TradeRecipe(
 				buyA: VanillaBlocks::GLASS_PANE()->asItem()->setCount(11),
 				sell: VanillaItems::EMERALD()->setCount(1),
@@ -66,15 +66,15 @@ final class CartographerProfession extends VillagerProfession{
 				tier: 1,
 				traderExp: 10
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing explorer map
-//				buyA: VanillaItems::EMERALD()->setCount(13),
-//				sell: VanillaItems::OCEAN_EXPLORER_MAP()->setCount(1),
-//				buyB: VanillaItems::COMPASS()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.2,
-//				tier: 1,
-//				traderExp: 5
-//			),
+			//new TradeRecipe(//TODO: Implement this after implementing explorer map
+			//	buyA: VanillaItems::EMERALD()->setCount(13),
+			//	sell: VanillaItems::OCEAN_EXPLORER_MAP()->setCount(1),
+			//	buyB: VanillaItems::COMPASS()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.2,
+			//	tier: 1,
+			//	traderExp: 5
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::COMPASS()->setCount(1),
 				sell: VanillaItems::EMERALD()->setCount(1),
@@ -83,15 +83,15 @@ final class CartographerProfession extends VillagerProfession{
 				tier: 2,
 				traderExp: 20
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing woodland explorer map
-//				buyA: VanillaItems::EMERALD()->setCount(14),
-//				sell: VanillaItems::WOODLAND_EXPLORER_MAP()->setCount(1),
-//				buyB: VanillaItems::COMPASS()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.2,
-//				tier: 2,
-//				traderExp: 10
-//			),
+			//new TradeRecipe(//TODO: Implement this after implementing woodland explorer map
+			//	buyA: VanillaItems::EMERALD()->setCount(14),
+			//	sell: VanillaItems::WOODLAND_EXPLORER_MAP()->setCount(1),
+			//	buyB: VanillaItems::COMPASS()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.2,
+			//	tier: 2,
+			//	traderExp: 10
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::EMERALD()->setCount(7),
 				sell: VanillaBlocks::ITEM_FRAME()->asItem()->setCount(1),

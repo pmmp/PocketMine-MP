@@ -142,14 +142,14 @@ final class ArmorerProfession extends VillagerProfession{
 				tier: 2,
 				traderExp: 10
 			),
-//			new TradeRecipe(//TODO: Implement this after implementing shield
-//				buyA: VanillaItems::EMERALD()->setCount(5),
-//				sell: VanillaItems::SHIELD()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.2,
-//				tier: 2,
-//				traderExp: 10
-//			),
+			//new TradeRecipe(//TODO: Implement this after implementing shield
+			//	buyA: VanillaItems::EMERALD()->setCount(5),
+			//	sell: VanillaItems::SHIELD()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.2,
+			//	tier: 2,
+			//	traderExp: 10
+			//),
 			new TradeRecipe(
 				buyA: VanillaItems::EMERALD()->setCount(random_int(19, 33)),
 				sell: VanillaItems::DIAMOND_LEGGINGS()->setCount(1),

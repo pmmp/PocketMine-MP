@@ -117,14 +117,14 @@ final class LeatherworkerProfession extends VillagerProfession{
 				tier: 3,
 				traderExp: 30
 			),
-//			new TradeRecipe(//TODO: Implement this when saddle is implemented.
-//				buyA: VanillaItems::EMERALD()->setCount(6),
-//				sell: VanillaItems::SADDLE()->setCount(1),
-//				maxUses: 12,
-//				priceMultiplier: 0.2,
-//				tier: 3,
-//				traderExp: 30
-//			)
+			//new TradeRecipe(//TODO: Implement this when saddle is implemented.
+			//	buyA: VanillaItems::EMERALD()->setCount(6),
+			//	sell: VanillaItems::SADDLE()->setCount(1),
+			//	maxUses: 12,
+			//	priceMultiplier: 0.2,
+			//	tier: 3,
+			//	traderExp: 30
+			//)
 		];
 	}
 }
