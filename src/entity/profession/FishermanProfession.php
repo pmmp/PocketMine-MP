@@ -130,12 +130,12 @@ final class FishermanProfession extends VillagerProfession{
 			),
 			new TradeRecipe(
 				buyA: (match($biomeId){
-					BiomeIds::TAIGA, BiomeIds::COLD_TAIGA => VanillaItems::SPRUCE_BOAT(),
+					BiomeIds::TAIGA, BiomeIds::ICE_PLAINS => VanillaItems::SPRUCE_BOAT(),
 					BiomeIds::DESERT, BiomeIds::JUNGLE => VanillaItems::JUNGLE_BOAT(),
 					BiomeIds::SAVANNA => VanillaItems::ACACIA_BOAT(),
 					BiomeIds::SWAMPLAND => VanillaItems::DARK_OAK_BOAT(),
 					default => VanillaItems::OAK_BOAT()
-				})->setCount(1), //TODO: check if this is correct
+				})->setCount(1),
 				sell: VanillaItems::EMERALD()->setCount(1),
 				maxUses: 12,
 				priceMultiplier: 0.05,
