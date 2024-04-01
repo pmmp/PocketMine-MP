@@ -24,10 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\entity\trade\TradeRecipe;
+use pocketmine\entity\trade\TradeRecipeData;
 use pocketmine\event\player\PlayerItemTradeEvent;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use function array_key_last;
 use function count;
 
 final class TradingTransaction extends InventoryTransaction{
@@ -37,7 +39,11 @@ final class TradingTransaction extends InventoryTransaction{
 
 	private ?Item $outputItem = null;
 
-	public function __construct(Player $source, private readonly TradeRecipe $recipe){
+	public function __construct(
+		Player $source,
+		private readonly TradeRecipeData $recipeData,
+		private readonly TradeRecipe $recipe
+	){
 		parent::__construct($source);
 	}
 
@@ -115,6 +121,15 @@ final class TradingTransaction extends InventoryTransaction{
 		parent::execute();
 
 		$this->recipe->setUses($this->recipe->getUses() + 1);
+		$this->recipeData->setTradeExperience($this->recipeData->getTradeExperience() + $this->recipe->getTraderExp());
+		$tierExpRequirements = $this->recipeData->getTierExpRequirements();
+		$nextTier = $this->recipeData->getTier() + 1;
+		if($nextTier >= ($last = (int) array_key_last($tierExpRequirements))){
+			$nextTier = $last;
+		}
+		if(isset($tierExpRequirements[$nextTier]) && $this->recipeData->getTradeExperience() >= $tierExpRequirements[$nextTier]){
+			$this->recipeData->setTier($nextTier);
+		}
 	}
 
 	protected function callExecuteEvent() : bool{

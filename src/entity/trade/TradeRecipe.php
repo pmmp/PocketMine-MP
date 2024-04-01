@@ -128,4 +128,29 @@ final class TradeRecipe{
 		}
 		return $nbt;
 	}
+
+	public static function nbtDeserialize(CompoundTag $nbt) : self{
+		$buyATag = $nbt->getCompoundTag(self::TAG_BUY_A);
+		$sellTag = $nbt->getCompoundTag(self::TAG_SELL);
+		if($buyATag === null || $sellTag === null){
+			throw new \InvalidArgumentException("Missing buyA or sell tag in trade recipe");
+		}
+		$buyA = Item::nbtDeserialize($buyATag);
+		$sell = Item::nbtDeserialize($sellTag);
+		$buyB = null;
+		if(($buyBTag = $nbt->getCompoundTag(self::TAG_BUY_B)) !== null){
+			$buyB = Item::nbtDeserialize($buyBTag);
+		}
+		return new self(
+			$buyA,
+			$sell,
+			$buyB,
+			$nbt->getInt(self::TAG_MAX_USES, 16),
+			$nbt->getFloat(self::TAG_PRICE_MULTIPLIER_A, 0.05),
+			$nbt->getInt(self::TAG_REWARD_EXP, 0),
+			$nbt->getInt(self::TAG_TIER, 0),
+			$nbt->getInt(self::TAG_TRADER_EXP, 0),
+			$nbt->getInt(self::TAG_USES, 0)
+		);
+	}
 }

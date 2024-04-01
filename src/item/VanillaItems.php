@@ -28,7 +28,7 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
-use pocketmine\entity\Villager;
+use pocketmine\entity\VillagerV2;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
@@ -597,7 +597,7 @@ final class VanillaItems{
 		});
 		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
+				return new VillagerV2(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 	}

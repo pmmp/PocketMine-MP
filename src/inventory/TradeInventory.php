@@ -29,8 +29,10 @@ use pocketmine\entity\trade\TradeRecipeData;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
+use pocketmine\player\Player;
 use function count;
 
 final class TradeInventory extends EntityInventory{
@@ -52,6 +54,16 @@ final class TradeInventory extends EntityInventory{
 
 	public function getRecipeData() : TradeRecipeData{
 		return $this->recipeData;
+	}
+
+	public function onOpen(Player $who) : void{
+		parent::onOpen($who);
+		$this->entity->getNetworkProperties()->setLong(EntityMetadataProperties::TRADING_PLAYER_EID, $who->getId());
+	}
+
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+		$this->entity->getNetworkProperties()->setLong(EntityMetadataProperties::TRADING_PLAYER_EID, -1);
 	}
 
 	public function createInventoryOpenPackets(int $id) : array{
@@ -80,17 +92,18 @@ final class TradeInventory extends EntityInventory{
 			->setTag(self::TAG_RECIPES, $recipesTag)
 			->setTag(self::TAG_TIER_EXP_REQUIREMENTS, new ListTag($tierExpRequirements));
 
-		return [UpdateTradePacket::create(
-			$id,
-			WindowTypes::TRADING,
-			0,
-			$recipeData->getTier(),
-			$holder->getId(),
-			-1,
-			$this->name,
-			true,
-			true,
-			new CacheableNbt($nbt)
-		)];
+		return [
+			UpdateTradePacket::create(
+				$id,
+				WindowTypes::TRADING,
+				0,
+				$recipeData->getTier(),
+				$holder->getId(),
+				-1,
+				$this->name,
+				true,
+				true,
+				new CacheableNbt($nbt)
+			)];
 	}
 }

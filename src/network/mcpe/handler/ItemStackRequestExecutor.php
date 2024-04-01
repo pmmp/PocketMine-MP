@@ -345,9 +345,10 @@ class ItemStackRequestExecutor{
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}elseif($window instanceof TradeInventory){
-				$recipe = $window->getRecipeData()->getRecipe($action->getRecipeId() - 1);
+				$recipeData = $window->getRecipeData();
+				$recipe = $recipeData->getRecipe($action->getRecipeId() - 1);
 				if($recipe !== null){
-					$this->specialTransaction = new TradingTransaction($this->player, $recipe);
+					$this->specialTransaction = new TradingTransaction($this->player, $recipeData, $recipe);
 					$this->setNextCreatedItem($recipe->getSell());
 				}
 			}else{

@@ -40,6 +40,7 @@ final class TradeRecipeData{
 	public function __construct(
 		private array $recipes,
 		private int $tier = 0,
+		private int $tradeExperience = 0,
 		private array $tierExpRequirements = self::DEFAULT_TIER_EXP_REQUIREMENTS,
 	){
 	}
@@ -54,6 +55,10 @@ final class TradeRecipeData{
 
 	public function setTier(int $tier) : void{
 		$this->tier = $tier;
+	}
+
+	public function setTradeExperience(int $tradeExperience) : void{
+		$this->tradeExperience = $tradeExperience;
 	}
 
 	/**
@@ -76,5 +81,9 @@ final class TradeRecipeData{
 
 	public function getTier() : int{
 		return $this->tier;
+	}
+
+	public function getTradeExperience() : int{
+		return $this->tradeExperience;
 	}
 }
