@@ -39,6 +39,7 @@ use pocketmine\utils\Utils;
 use function array_filter;
 use function array_map;
 use function asort;
+use function basename;
 use function dirname;
 use function max;
 use function preg_last_error_msg;
@@ -46,28 +47,23 @@ use function preg_match;
 use function preg_replace;
 use const SORT_NUMERIC;
 
-//Do NOT remove this - it's used to disable consistency checks in VanillaBlocks/VanillaItems
-//Consistency checks get in the way of regenerating the constants
-const RUNNING = 1;
-
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
- * @param int[]    $stringToTypeIdMap
- * @param string[] $backwardsCompatibilityConstants
+ * @param int[] $stringToTypeIdMap
+ * @param int[] $backwardsCompatibilityConstants
  *
  * @phpstan-param array<string, int> $stringToTypeIdMap
- * @phpstan-param array<string>      $backwardsCompatibilityConstants
+ * @phpstan-param array<string, int> $backwardsCompatibilityConstants
  */
 function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCompatibilityConstants) : void{
 	$replacement = "";
 
-	$max = max($stringToTypeIdMap);
-	$stringToTypeIdMap["FIRST_RESERVED_ID"] = ++$max;
-
-	foreach($backwardsCompatibilityConstants as $name){
+	foreach(Utils::stringifyKeys($backwardsCompatibilityConstants) as $name => $id){
 		if(!isset($stringToTypeIdMap[$name])){
-			$stringToTypeIdMap[$name] = ++$max;
+			$stringToTypeIdMap[$name] = $id;
+		}else{
+			\GlobalLogger::get()->warning("Backwards compatibility constant $name no longer required for $file, please remove it from the list in " . basename(__FILE__));
 		}
 	}
 
@@ -75,32 +71,19 @@ function patchTypeIds(string $file, array $stringToTypeIdMap, array $backwardsCo
 	$previousTypeName = null;
 	foreach(Utils::stringifyKeys($stringToTypeIdMap) as $typeName => $typeId){
 		//this shouldn't need any preprocessing - VanillaBlocks/VanillaItems should enforce that only valid type names are used
-		if($previousTypeName !== null){
-			$diff = $typeId - $stringToTypeIdMap[$previousTypeName];
-			$value = "self::$previousTypeName" . ($diff !== 0 ? " + $diff" : "");
-		}else{
-			$value = $typeId;
-		}
-		if($typeName === "FIRST_RESERVED_ID"){
+		if($previousTypeName !== null && $typeId !== $stringToTypeIdMap[$previousTypeName] + 1){
 			$replacement .= "\n";
 		}
-		$replacement .= "\tpublic const $typeName = $value;\n";
-		if($typeName === "FIRST_RESERVED_ID"){
-			$replacement .= "\n";
-		}
+		$replacement .= "\tpublic const $typeName = $typeId;\n";
 		$previousTypeName = $typeName;
 	}
 
 	$contents = Filesystem::fileGetContents($file);
-	if(preg_match('/[\h ]*public const (FIRST_UNUSED_[A-Z_\d]+_ID) = (?:self::[A-Z_\d]+ \+ )?\d+;/', $contents, $matches) !== 1){
+	if(preg_match('/[\h ]*public const (FIRST_UNUSED_[A-Z_\d]+_ID) = \d+;/', $contents, $matches) !== 1){
 		throw new AssumptionFailedError("Failed to find FIRST_UNUSED_*_ID constant in $file");
 	}
 	$firstUnusedName = $matches[1];
-	if($previousTypeName !== null){
-		$firstUnusedValue = "self::$previousTypeName + 1";
-	}else{
-		throw new AssumptionFailedError("No type IDs given???");
-	}
+	$firstUnusedValue = max($stringToTypeIdMap) + 1;
 	$replacement .= "\n\tpublic const $firstUnusedName = $firstUnusedValue;\n\n";
 
 	$patched = preg_replace(
@@ -117,16 +100,16 @@ patchTypeIds(
 	dirname(__DIR__) . '/src/block/BlockTypeIds.php',
 	array_map(array: VanillaBlocks::getAll(), callback: fn(Block $b) => $b->getTypeId()),
 	[
-		"POWDER_SNOW_CAULDRON",
-		"CHERRY_SAPLING",
+		"POWDER_SNOW_CAULDRON" => 10674,
+		"CHERRY_SAPLING" => 10699,
 	] //not yet implemented stuff that had manually-defined type IDs prior to 5.0.0 release - we need to make sure these still exist for backwards compatibility
 );
 patchTypeIds(
 	dirname(__DIR__) . '/src/item/ItemTypeIds.php',
 	array_map(array: array_filter(VanillaItems::getAll(), fn(Item $b) => !$b instanceof ItemBlock), callback: fn(Item $b) => $b->getTypeId()),
 	[
-		"POWDER_SNOW_BUCKET",
-		"LINGERING_POTION",
+		"POWDER_SNOW_BUCKET" => 20258,
+		"LINGERING_POTION" => 20259,
 	] //not yet implemented stuff that had manually-defined type IDs prior to 5.0.0 release - we need to make sure these still exist for backwards compatibility
 );
 echo "Done. Don't forget to run CS fixup after generating code.\n";

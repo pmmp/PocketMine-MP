@@ -69,6 +69,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\CloningRegistryTrait;
 use function defined;
 use function mb_strtolower;
+use function mb_strtoupper;
 use function strtolower;
 
 /**
@@ -775,17 +776,27 @@ final class VanillaBlocks{
 		//NOOP
 	}
 
-	protected static function register(string $name, Block $block) : void{
-		self::_registryRegister($name, $block);
-	}
-
-	private static int $nextTypeId = 10_000;
-
 	/**
-	 * @phpstan-param class-string<covariant Tile>|null $tileClass
+	 * @phpstan-template TBlock of Block
+	 * @phpstan-param \Closure(int) : TBlock $createBlock
+	 * @phpstan-return TBlock
 	 */
-	private static function newBID(?string $tileClass = null) : BID{
-		return new BID(self::$nextTypeId++, $tileClass);
+	protected static function register(string $name, \Closure $createBlock) : Block{
+		//this sketchy hack allows us to avoid manually writing the constants inline
+		//since type IDs are generated from this class anyway, I'm OK with this hack
+		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
+		$reflect = new \ReflectionClass(BlockTypeIds::class);
+		$typeId = $reflect->getConstant(mb_strtoupper($name));
+		if(!is_int($typeId)){
+			//this allows registering new stuff without adding new type ID constants
+			//this reduces the number of mandatory steps to test new features in local development
+			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
+			$typeId = BlockTypeIds::newId();
+		}
+		$block = $createBlock($typeId);
+		self::_registryRegister($name, $block);
+
+		return $block;
 	}
 
 	/**
@@ -800,12 +811,12 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
-		self::register("air", new Air(self::newBID(), "Air", new Info(BreakInfo::indestructible(-1.0))));
+		self::register("air", fn(int $id) => new Air(new BID($id), "Air", new Info(BreakInfo::indestructible(-1.0))));
 
 		$railBreakInfo = new Info(new BreakInfo(0.7));
-		self::register("activator_rail", new ActivatorRail(self::newBID(), "Activator Rail", $railBreakInfo));
-		self::register("anvil", new Anvil(self::newBID(), "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
-		self::register("bamboo", new Bamboo(self::newBID(), "Bamboo", new Info(new class(2.0 /* 1.0 in PC */, ToolType::AXE) extends BreakInfo{
+		self::register("activator_rail", fn(int $id) => new ActivatorRail(new BID($id), "Activator Rail", $railBreakInfo));
+		self::register("anvil", fn(int $id) => new Anvil(new BID($id), "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
+		self::register("bamboo", fn(int $id) => new Bamboo(new BID($id), "Bamboo", new Info(new class(2.0 /* 1.0 in PC */, ToolType::AXE) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
 				if($item->getBlockToolType() === ToolType::SWORD){
 					return 0.0;
@@ -813,237 +824,237 @@ final class VanillaBlocks{
 				return parent::getBreakTime($item);
 			}
 		}, [Tags::POTTABLE_PLANTS])));
-		self::register("bamboo_sapling", new BambooSapling(self::newBID(), "Bamboo Sapling", new Info(BreakInfo::instant())));
+		self::register("bamboo_sapling", fn(int $id) => new BambooSapling(new BID($id), "Bamboo Sapling", new Info(BreakInfo::instant())));
 
 		$bannerBreakInfo = new Info(BreakInfo::axe(1.0));
-		self::register("banner", new FloorBanner(self::newBID(TileBanner::class), "Banner", $bannerBreakInfo));
-		self::register("wall_banner", new WallBanner(self::newBID(TileBanner::class), "Wall Banner", $bannerBreakInfo));
-		self::register("barrel", new Barrel(self::newBID(TileBarrel::class), "Barrel", new Info(BreakInfo::axe(2.5))));
-		self::register("barrier", new Transparent(self::newBID(), "Barrier", new Info(BreakInfo::indestructible())));
-		self::register("beacon", new Beacon(self::newBID(TileBeacon::class), "Beacon", new Info(new BreakInfo(3.0))));
-		self::register("bed", new Bed(self::newBID(TileBed::class), "Bed Block", new Info(new BreakInfo(0.2))));
-		self::register("bedrock", new Bedrock(self::newBID(), "Bedrock", new Info(BreakInfo::indestructible())));
+		self::register("banner", fn(int $id) => new FloorBanner(new BID($id, TileBanner::class), "Banner", $bannerBreakInfo));
+		self::register("wall_banner", fn(int $id) => new WallBanner(new BID($id, TileBanner::class), "Wall Banner", $bannerBreakInfo));
+		self::register("barrel", fn(int $id) => new Barrel(new BID($id, TileBarrel::class), "Barrel", new Info(BreakInfo::axe(2.5))));
+		self::register("barrier", fn(int $id) => new Transparent(new BID($id), "Barrier", new Info(BreakInfo::indestructible())));
+		self::register("beacon", fn(int $id) => new Beacon(new BID($id, TileBeacon::class), "Beacon", new Info(new BreakInfo(3.0))));
+		self::register("bed", fn(int $id) => new Bed(new BID($id, TileBed::class), "Bed Block", new Info(new BreakInfo(0.2))));
+		self::register("bedrock", fn(int $id) => new Bedrock(new BID($id), "Bedrock", new Info(BreakInfo::indestructible())));
 
-		self::register("beetroots", new Beetroot(self::newBID(), "Beetroot Block", new Info(BreakInfo::instant())));
-		self::register("bell", new Bell(self::newBID(TileBell::class), "Bell", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
-		self::register("blue_ice", new BlueIce(self::newBID(), "Blue Ice", new Info(BreakInfo::pickaxe(2.8))));
-		self::register("bone_block", new BoneBlock(self::newBID(), "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD))));
-		self::register("bookshelf", new Bookshelf(self::newBID(), "Bookshelf", new Info(BreakInfo::axe(1.5))));
-		self::register("chiseled_bookshelf", new ChiseledBookshelf(self::newBID(TileChiseledBookshelf::class), "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))));
-		self::register("brewing_stand", new BrewingStand(self::newBID(TileBrewingStand::class), "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
+		self::register("beetroots", fn(int $id) => new Beetroot(new BID($id), "Beetroot Block", new Info(BreakInfo::instant())));
+		self::register("bell", fn(int $id) => new Bell(new BID($id, TileBell::class), "Bell", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
+		self::register("blue_ice", fn(int $id) => new BlueIce(new BID($id), "Blue Ice", new Info(BreakInfo::pickaxe(2.8))));
+		self::register("bone_block", fn(int $id) => new BoneBlock(new BID($id), "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD))));
+		self::register("bookshelf", fn(int $id) => new Bookshelf(new BID($id), "Bookshelf", new Info(BreakInfo::axe(1.5))));
+		self::register("chiseled_bookshelf", fn(int $id) => new ChiseledBookshelf(new BID($id, TileChiseledBookshelf::class), "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))));
+		self::register("brewing_stand", fn(int $id) => new BrewingStand(new BID($id, TileBrewingStand::class), "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
 
 		$bricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
-		self::register("brick_stairs", new Stair(self::newBID(), "Brick Stairs", $bricksBreakInfo));
-		self::register("bricks", new Opaque(self::newBID(), "Bricks", $bricksBreakInfo));
+		self::register("brick_stairs", fn(int $id) => new Stair(new BID($id), "Brick Stairs", $bricksBreakInfo));
+		self::register("bricks", fn(int $id) => new Opaque(new BID($id), "Bricks", $bricksBreakInfo));
 
-		self::register("brown_mushroom", new BrownMushroom(self::newBID(), "Brown Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
-		self::register("cactus", new Cactus(self::newBID(), "Cactus", new Info(new BreakInfo(0.4), [Tags::POTTABLE_PLANTS])));
-		self::register("cake", new Cake(self::newBID(), "Cake", new Info(new BreakInfo(0.5))));
-		self::register("carrots", new Carrot(self::newBID(), "Carrot Block", new Info(BreakInfo::instant())));
+		self::register("brown_mushroom", fn(int $id) => new BrownMushroom(new BID($id), "Brown Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("cactus", fn(int $id) => new Cactus(new BID($id), "Cactus", new Info(new BreakInfo(0.4), [Tags::POTTABLE_PLANTS])));
+		self::register("cake", fn(int $id) => new Cake(new BID($id), "Cake", new Info(new BreakInfo(0.5))));
+		self::register("carrots", fn(int $id) => new Carrot(new BID($id), "Carrot Block", new Info(BreakInfo::instant())));
 
 		$chestBreakInfo = new Info(BreakInfo::axe(2.5));
-		self::register("chest", new Chest(self::newBID(TileChest::class), "Chest", $chestBreakInfo));
-		self::register("clay", new Clay(self::newBID(), "Clay Block", new Info(BreakInfo::shovel(0.6))));
-		self::register("coal", new Coal(self::newBID(), "Coal Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
+		self::register("chest", fn(int $id) => new Chest(new BID($id, TileChest::class), "Chest", $chestBreakInfo));
+		self::register("clay", fn(int $id) => new Clay(new BID($id), "Clay Block", new Info(BreakInfo::shovel(0.6))));
+		self::register("coal", fn(int $id) => new Coal(new BID($id), "Coal Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
 
 		$cobblestoneBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
-		self::register("cobblestone", $cobblestone = new Opaque(self::newBID(), "Cobblestone", $cobblestoneBreakInfo));
-		self::register("mossy_cobblestone", new Opaque(self::newBID(), "Mossy Cobblestone", $cobblestoneBreakInfo));
-		self::register("cobblestone_stairs", new Stair(self::newBID(), "Cobblestone Stairs", $cobblestoneBreakInfo));
-		self::register("mossy_cobblestone_stairs", new Stair(self::newBID(), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
+		$cobblestone = self::register("cobblestone", fn(int $id) => new Opaque(new BID($id), "Cobblestone", $cobblestoneBreakInfo));
+		self::register("mossy_cobblestone", fn(int $id) => new Opaque(new BID($id), "Mossy Cobblestone", $cobblestoneBreakInfo));
+		self::register("cobblestone_stairs", fn(int $id) => new Stair(new BID($id), "Cobblestone Stairs", $cobblestoneBreakInfo));
+		self::register("mossy_cobblestone_stairs", fn(int $id) => new Stair(new BID($id), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register("cobweb", new Cobweb(self::newBID(), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
-		self::register("cocoa_pod", new CocoaBlock(self::newBID(), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
-		self::register("coral_block", new CoralBlock(self::newBID(), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD))));
-		self::register("daylight_sensor", new DaylightSensor(self::newBID(TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
-		self::register("dead_bush", new DeadBush(self::newBID(), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
-		self::register("detector_rail", new DetectorRail(self::newBID(), "Detector Rail", $railBreakInfo));
+		self::register("cobweb", fn(int $id) => new Cobweb(new BID($id), "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
+		self::register("cocoa_pod", fn(int $id) => new CocoaBlock(new BID($id), "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
+		self::register("coral_block", fn(int $id) => new CoralBlock(new BID($id), "Coral Block", new Info(BreakInfo::pickaxe(7.0, ToolTier::WOOD))));
+		self::register("daylight_sensor", fn(int $id) => new DaylightSensor(new BID($id, TileDaylightSensor::class), "Daylight Sensor", new Info(BreakInfo::axe(0.2))));
+		self::register("dead_bush", fn(int $id) => new DeadBush(new BID($id), "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
+		self::register("detector_rail", fn(int $id) => new DetectorRail(new BID($id), "Detector Rail", $railBreakInfo));
 
-		self::register("diamond", new Opaque(self::newBID(), "Diamond Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
-		self::register("dirt", new Dirt(self::newBID(), "Dirt", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
-		self::register("sunflower", new DoublePlant(self::newBID(), "Sunflower", new Info(BreakInfo::instant())));
-		self::register("lilac", new DoublePlant(self::newBID(), "Lilac", new Info(BreakInfo::instant())));
-		self::register("rose_bush", new DoublePlant(self::newBID(), "Rose Bush", new Info(BreakInfo::instant())));
-		self::register("peony", new DoublePlant(self::newBID(), "Peony", new Info(BreakInfo::instant())));
-		self::register("pink_petals", new PinkPetals(self::newBID(), "Pink Petals", new Info(BreakInfo::instant())));
-		self::register("double_tallgrass", new DoubleTallGrass(self::newBID(), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
-		self::register("large_fern", new DoubleTallGrass(self::newBID(), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
-		self::register("pitcher_plant", new DoublePlant(self::newBID(), "Pitcher Plant", new Info(BreakInfo::instant())));
-		self::register("pitcher_crop", new PitcherCrop(self::newBID(), "Pitcher Crop", new Info(BreakInfo::instant())));
-		self::register("double_pitcher_crop", new DoublePitcherCrop(self::newBID(), "Double Pitcher Crop", new Info(BreakInfo::instant())));
-		self::register("dragon_egg", new DragonEgg(self::newBID(), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
-		self::register("dried_kelp", new DriedKelp(self::newBID(), "Dried Kelp Block", new Info(new BreakInfo(0.5, ToolType::NONE, 0, 12.5))));
-		self::register("emerald", new Opaque(self::newBID(), "Emerald Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
-		self::register("enchanting_table", new EnchantingTable(self::newBID(TileEnchantingTable::class), "Enchanting Table", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
-		self::register("end_portal_frame", new EndPortalFrame(self::newBID(), "End Portal Frame", new Info(BreakInfo::indestructible())));
-		self::register("end_rod", new EndRod(self::newBID(), "End Rod", new Info(BreakInfo::instant())));
-		self::register("end_stone", new Opaque(self::newBID(), "End Stone", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 45.0))));
+		self::register("diamond", fn(int $id) => new Opaque(new BID($id), "Diamond Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
+		self::register("dirt", fn(int $id) => new Dirt(new BID($id), "Dirt", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
+		self::register("sunflower", fn(int $id) => new DoublePlant(new BID($id), "Sunflower", new Info(BreakInfo::instant())));
+		self::register("lilac", fn(int $id) => new DoublePlant(new BID($id), "Lilac", new Info(BreakInfo::instant())));
+		self::register("rose_bush", fn(int $id) => new DoublePlant(new BID($id), "Rose Bush", new Info(BreakInfo::instant())));
+		self::register("peony", fn(int $id) => new DoublePlant(new BID($id), "Peony", new Info(BreakInfo::instant())));
+		self::register("pink_petals", fn(int $id) => new PinkPetals(new BID($id), "Pink Petals", new Info(BreakInfo::instant())));
+		self::register("double_tallgrass", fn(int $id) => new DoubleTallGrass(new BID($id), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("large_fern", fn(int $id) => new DoubleTallGrass(new BID($id), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("pitcher_plant", fn(int $id) => new DoublePlant(new BID($id), "Pitcher Plant", new Info(BreakInfo::instant())));
+		self::register("pitcher_crop", fn(int $id) => new PitcherCrop(new BID($id), "Pitcher Crop", new Info(BreakInfo::instant())));
+		self::register("double_pitcher_crop", fn(int $id) => new DoublePitcherCrop(new BID($id), "Double Pitcher Crop", new Info(BreakInfo::instant())));
+		self::register("dragon_egg", fn(int $id) => new DragonEgg(new BID($id), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
+		self::register("dried_kelp", fn(int $id) => new DriedKelp(new BID($id), "Dried Kelp Block", new Info(new BreakInfo(0.5, ToolType::NONE, 0, 12.5))));
+		self::register("emerald", fn(int $id) => new Opaque(new BID($id), "Emerald Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
+		self::register("enchanting_table", fn(int $id) => new EnchantingTable(new BID($id, TileEnchantingTable::class), "Enchanting Table", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
+		self::register("end_portal_frame", fn(int $id) => new EndPortalFrame(new BID($id), "End Portal Frame", new Info(BreakInfo::indestructible())));
+		self::register("end_rod", fn(int $id) => new EndRod(new BID($id), "End Rod", new Info(BreakInfo::instant())));
+		self::register("end_stone", fn(int $id) => new Opaque(new BID($id), "End Stone", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 45.0))));
 
 		$endBrickBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD, 4.0));
-		self::register("end_stone_bricks", new Opaque(self::newBID(), "End Stone Bricks", $endBrickBreakInfo));
-		self::register("end_stone_brick_stairs", new Stair(self::newBID(), "End Stone Brick Stairs", $endBrickBreakInfo));
+		self::register("end_stone_bricks", fn(int $id) => new Opaque(new BID($id), "End Stone Bricks", $endBrickBreakInfo));
+		self::register("end_stone_brick_stairs", fn(int $id) => new Stair(new BID($id), "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		self::register("ender_chest", new EnderChest(self::newBID(TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD, 3000.0))));
-		self::register("farmland", new Farmland(self::newBID(), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
-		self::register("fire", new Fire(self::newBID(), "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
+		self::register("ender_chest", fn(int $id) => new EnderChest(new BID($id, TileEnderChest::class), "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD, 3000.0))));
+		self::register("farmland", fn(int $id) => new Farmland(new BID($id), "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
+		self::register("fire", fn(int $id) => new Fire(new BID($id), "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
 		$flowerTypeInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
-		self::register("dandelion", new Flower(self::newBID(), "Dandelion", $flowerTypeInfo));
-		self::register("poppy", new Flower(self::newBID(), "Poppy", $flowerTypeInfo));
-		self::register("allium", new Flower(self::newBID(), "Allium", $flowerTypeInfo));
-		self::register("azure_bluet", new Flower(self::newBID(), "Azure Bluet", $flowerTypeInfo));
-		self::register("blue_orchid", new Flower(self::newBID(), "Blue Orchid", $flowerTypeInfo));
-		self::register("cornflower", new Flower(self::newBID(), "Cornflower", $flowerTypeInfo));
-		self::register("lily_of_the_valley", new Flower(self::newBID(), "Lily of the Valley", $flowerTypeInfo));
-		self::register("orange_tulip", new Flower(self::newBID(), "Orange Tulip", $flowerTypeInfo));
-		self::register("oxeye_daisy", new Flower(self::newBID(), "Oxeye Daisy", $flowerTypeInfo));
-		self::register("pink_tulip", new Flower(self::newBID(), "Pink Tulip", $flowerTypeInfo));
-		self::register("red_tulip", new Flower(self::newBID(), "Red Tulip", $flowerTypeInfo));
-		self::register("white_tulip", new Flower(self::newBID(), "White Tulip", $flowerTypeInfo));
-		self::register("torchflower", new Flower(self::newBID(), "Torchflower", $flowerTypeInfo));
-		self::register("torchflower_crop", new TorchflowerCrop(self::newBID(), "Torchflower Crop", new Info(BreakInfo::instant())));
-		self::register("flower_pot", new FlowerPot(self::newBID(TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
-		self::register("frosted_ice", new FrostedIce(self::newBID(), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
-		self::register("furnace", new Furnace(self::newBID(TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::FURNACE));
-		self::register("blast_furnace", new Furnace(self::newBID(TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::BLAST_FURNACE));
-		self::register("smoker", new Furnace(self::newBID(TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::SMOKER));
+		self::register("dandelion", fn(int $id) => new Flower(new BID($id), "Dandelion", $flowerTypeInfo));
+		self::register("poppy", fn(int $id) => new Flower(new BID($id), "Poppy", $flowerTypeInfo));
+		self::register("allium", fn(int $id) => new Flower(new BID($id), "Allium", $flowerTypeInfo));
+		self::register("azure_bluet", fn(int $id) => new Flower(new BID($id), "Azure Bluet", $flowerTypeInfo));
+		self::register("blue_orchid", fn(int $id) => new Flower(new BID($id), "Blue Orchid", $flowerTypeInfo));
+		self::register("cornflower", fn(int $id) => new Flower(new BID($id), "Cornflower", $flowerTypeInfo));
+		self::register("lily_of_the_valley", fn(int $id) => new Flower(new BID($id), "Lily of the Valley", $flowerTypeInfo));
+		self::register("orange_tulip", fn(int $id) => new Flower(new BID($id), "Orange Tulip", $flowerTypeInfo));
+		self::register("oxeye_daisy", fn(int $id) => new Flower(new BID($id), "Oxeye Daisy", $flowerTypeInfo));
+		self::register("pink_tulip", fn(int $id) => new Flower(new BID($id), "Pink Tulip", $flowerTypeInfo));
+		self::register("red_tulip", fn(int $id) => new Flower(new BID($id), "Red Tulip", $flowerTypeInfo));
+		self::register("white_tulip", fn(int $id) => new Flower(new BID($id), "White Tulip", $flowerTypeInfo));
+		self::register("torchflower", fn(int $id) => new Flower(new BID($id), "Torchflower", $flowerTypeInfo));
+		self::register("torchflower_crop", fn(int $id) => new TorchflowerCrop(new BID($id), "Torchflower Crop", new Info(BreakInfo::instant())));
+		self::register("flower_pot", fn(int $id) => new FlowerPot(new BID($id, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
+		self::register("frosted_ice", fn(int $id) => new FrostedIce(new BID($id), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
+		self::register("furnace", fn(int $id) => new Furnace(new BID($id, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::FURNACE));
+		self::register("blast_furnace", fn(int $id) => new Furnace(new BID($id, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::BLAST_FURNACE));
+		self::register("smoker", fn(int $id) => new Furnace(new BID($id, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::SMOKER));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
-		self::register("glass", new Glass(self::newBID(), "Glass", $glassBreakInfo));
-		self::register("glass_pane", new GlassPane(self::newBID(), "Glass Pane", $glassBreakInfo));
-		self::register("glowing_obsidian", new GlowingObsidian(self::newBID(), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND, 50.0))));
-		self::register("glowstone", new Glowstone(self::newBID(), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
-		self::register("glow_lichen", new GlowLichen(self::newBID(), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
-		self::register("gold", new Opaque(self::newBID(), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON, 30.0))));
+		self::register("glass", fn(int $id) => new Glass(new BID($id), "Glass", $glassBreakInfo));
+		self::register("glass_pane", fn(int $id) => new GlassPane(new BID($id), "Glass Pane", $glassBreakInfo));
+		self::register("glowing_obsidian", fn(int $id) => new GlowingObsidian(new BID($id), "Glowing Obsidian", new Info(BreakInfo::pickaxe(10.0, ToolTier::DIAMOND, 50.0))));
+		self::register("glowstone", fn(int $id) => new Glowstone(new BID($id), "Glowstone", new Info(BreakInfo::pickaxe(0.3))));
+		self::register("glow_lichen", fn(int $id) => new GlowLichen(new BID($id), "Glow Lichen", new Info(BreakInfo::axe(0.2, null, 0.2))));
+		self::register("gold", fn(int $id) => new Opaque(new BID($id), "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON, 30.0))));
 
 		$grassBreakInfo = BreakInfo::shovel(0.6);
-		self::register("grass", new Grass(self::newBID(), "Grass", new Info($grassBreakInfo, [Tags::DIRT])));
-		self::register("grass_path", new GrassPath(self::newBID(), "Grass Path", new Info($grassBreakInfo)));
-		self::register("gravel", new Gravel(self::newBID(), "Gravel", new Info(BreakInfo::shovel(0.6))));
+		self::register("grass", fn(int $id) => new Grass(new BID($id), "Grass", new Info($grassBreakInfo, [Tags::DIRT])));
+		self::register("grass_path", fn(int $id) => new GrassPath(new BID($id), "Grass Path", new Info($grassBreakInfo)));
+		self::register("gravel", fn(int $id) => new Gravel(new BID($id), "Gravel", new Info(BreakInfo::shovel(0.6))));
 
 		$hardenedClayBreakInfo = new Info(BreakInfo::pickaxe(1.25, ToolTier::WOOD, 21.0));
-		self::register("hardened_clay", new HardenedClay(self::newBID(), "Hardened Clay", $hardenedClayBreakInfo));
+		self::register("hardened_clay", fn(int $id) => new HardenedClay(new BID($id), "Hardened Clay", $hardenedClayBreakInfo));
 
 		$hardenedGlassBreakInfo = new Info(new BreakInfo(10.0));
-		self::register("hardened_glass", new HardenedGlass(self::newBID(), "Hardened Glass", $hardenedGlassBreakInfo));
-		self::register("hardened_glass_pane", new HardenedGlassPane(self::newBID(), "Hardened Glass Pane", $hardenedGlassBreakInfo));
-		self::register("hay_bale", new HayBale(self::newBID(), "Hay Bale", new Info(new BreakInfo(0.5))));
-		self::register("hopper", new Hopper(self::newBID(TileHopper::class), "Hopper", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 15.0))));
-		self::register("ice", new Ice(self::newBID(), "Ice", new Info(BreakInfo::pickaxe(0.5))));
+		self::register("hardened_glass", fn(int $id) => new HardenedGlass(new BID($id), "Hardened Glass", $hardenedGlassBreakInfo));
+		self::register("hardened_glass_pane", fn(int $id) => new HardenedGlassPane(new BID($id), "Hardened Glass Pane", $hardenedGlassBreakInfo));
+		self::register("hay_bale", fn(int $id) => new HayBale(new BID($id), "Hay Bale", new Info(new BreakInfo(0.5))));
+		self::register("hopper", fn(int $id) => new Hopper(new BID($id, TileHopper::class), "Hopper", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 15.0))));
+		self::register("ice", fn(int $id) => new Ice(new BID($id), "Ice", new Info(BreakInfo::pickaxe(0.5))));
 
 		$updateBlockBreakInfo = new Info(new BreakInfo(1.0));
-		self::register("info_update", new Opaque(self::newBID(), "update!", $updateBlockBreakInfo));
-		self::register("info_update2", new Opaque(self::newBID(), "ate!upd", $updateBlockBreakInfo));
-		self::register("invisible_bedrock", new Transparent(self::newBID(), "Invisible Bedrock", new Info(BreakInfo::indestructible())));
+		self::register("info_update", fn(int $id) => new Opaque(new BID($id), "update!", $updateBlockBreakInfo));
+		self::register("info_update2", fn(int $id) => new Opaque(new BID($id), "ate!upd", $updateBlockBreakInfo));
+		self::register("invisible_bedrock", fn(int $id) => new Transparent(new BID($id), "Invisible Bedrock", new Info(BreakInfo::indestructible())));
 
 		$ironBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::STONE, 30.0));
-		self::register("iron", new Opaque(self::newBID(), "Iron Block", $ironBreakInfo));
-		self::register("iron_bars", new Thin(self::newBID(), "Iron Bars", $ironBreakInfo));
+		self::register("iron", fn(int $id) => new Opaque(new BID($id), "Iron Block", $ironBreakInfo));
+		self::register("iron_bars", fn(int $id) => new Thin(new BID($id), "Iron Bars", $ironBreakInfo));
 		$ironDoorBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 25.0));
-		self::register("iron_door", new Door(self::newBID(), "Iron Door", $ironDoorBreakInfo));
-		self::register("iron_trapdoor", new Trapdoor(self::newBID(), "Iron Trapdoor", $ironDoorBreakInfo));
+		self::register("iron_door", fn(int $id) => new Door(new BID($id), "Iron Door", $ironDoorBreakInfo));
+		self::register("iron_trapdoor", fn(int $id) => new Trapdoor(new BID($id), "Iron Trapdoor", $ironDoorBreakInfo));
 
 		$itemFrameInfo = new Info(new BreakInfo(0.25));
-		self::register("item_frame", new ItemFrame(self::newBID(TileItemFrame::class), "Item Frame", $itemFrameInfo));
-		self::register("glowing_item_frame", new ItemFrame(self::newBID(TileGlowingItemFrame::class), "Glow Item Frame", $itemFrameInfo));
+		self::register("item_frame", fn(int $id) => new ItemFrame(new BID($id, TileItemFrame::class), "Item Frame", $itemFrameInfo));
+		self::register("glowing_item_frame", fn(int $id) => new ItemFrame(new BID($id, TileGlowingItemFrame::class), "Glow Item Frame", $itemFrameInfo));
 
-		self::register("jukebox", new Jukebox(self::newBID(TileJukebox::class), "Jukebox", new Info(BreakInfo::axe(0.8)))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
-		self::register("ladder", new Ladder(self::newBID(), "Ladder", new Info(BreakInfo::axe(0.4))));
+		self::register("jukebox", fn(int $id) => new Jukebox(new BID($id, TileJukebox::class), "Jukebox", new Info(BreakInfo::axe(0.8)))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
+		self::register("ladder", fn(int $id) => new Ladder(new BID($id), "Ladder", new Info(BreakInfo::axe(0.4))));
 
 		$lanternBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD));
-		self::register("lantern", new Lantern(self::newBID(), "Lantern", $lanternBreakInfo, 15));
-		self::register("soul_lantern", new Lantern(self::newBID(), "Soul Lantern", $lanternBreakInfo, 10));
+		self::register("lantern", fn(int $id) => new Lantern(new BID($id), "Lantern", $lanternBreakInfo, 15));
+		self::register("soul_lantern", fn(int $id) => new Lantern(new BID($id), "Soul Lantern", $lanternBreakInfo, 10));
 
-		self::register("lapis_lazuli", new Opaque(self::newBID(), "Lapis Lazuli Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE))));
-		self::register("lava", new Lava(self::newBID(), "Lava", new Info(BreakInfo::indestructible(500.0))));
-		self::register("lectern", new Lectern(self::newBID(TileLectern::class), "Lectern", new Info(BreakInfo::axe(2.0))));
-		self::register("lever", new Lever(self::newBID(), "Lever", new Info(new BreakInfo(0.5))));
-		self::register("magma", new Magma(self::newBID(), "Magma Block", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
-		self::register("melon", new Melon(self::newBID(), "Melon Block", new Info(BreakInfo::axe(1.0))));
-		self::register("melon_stem", new MelonStem(self::newBID(), "Melon Stem", new Info(BreakInfo::instant())));
-		self::register("monster_spawner", new MonsterSpawner(self::newBID(TileMonsterSpawner::class), "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
-		self::register("mycelium", new Mycelium(self::newBID(), "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
+		self::register("lapis_lazuli", fn(int $id) => new Opaque(new BID($id), "Lapis Lazuli Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE))));
+		self::register("lava", fn(int $id) => new Lava(new BID($id), "Lava", new Info(BreakInfo::indestructible(500.0))));
+		self::register("lectern", fn(int $id) => new Lectern(new BID($id, TileLectern::class), "Lectern", new Info(BreakInfo::axe(2.0))));
+		self::register("lever", fn(int $id) => new Lever(new BID($id), "Lever", new Info(new BreakInfo(0.5))));
+		self::register("magma", fn(int $id) => new Magma(new BID($id), "Magma Block", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
+		self::register("melon", fn(int $id) => new Melon(new BID($id), "Melon Block", new Info(BreakInfo::axe(1.0))));
+		self::register("melon_stem", fn(int $id) => new MelonStem(new BID($id), "Melon Stem", new Info(BreakInfo::instant())));
+		self::register("monster_spawner", fn(int $id) => new MonsterSpawner(new BID($id, TileMonsterSpawner::class), "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
+		self::register("mycelium", fn(int $id) => new Mycelium(new BID($id), "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 
 		$netherBrickBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
-		self::register("nether_bricks", new Opaque(self::newBID(), "Nether Bricks", $netherBrickBreakInfo));
-		self::register("red_nether_bricks", new Opaque(self::newBID(), "Red Nether Bricks", $netherBrickBreakInfo));
-		self::register("nether_brick_fence", new Fence(self::newBID(), "Nether Brick Fence", $netherBrickBreakInfo));
-		self::register("nether_brick_stairs", new Stair(self::newBID(), "Nether Brick Stairs", $netherBrickBreakInfo));
-		self::register("red_nether_brick_stairs", new Stair(self::newBID(), "Red Nether Brick Stairs", $netherBrickBreakInfo));
-		self::register("chiseled_nether_bricks", new Opaque(self::newBID(), "Chiseled Nether Bricks", $netherBrickBreakInfo));
-		self::register("cracked_nether_bricks", new Opaque(self::newBID(), "Cracked Nether Bricks", $netherBrickBreakInfo));
+		self::register("nether_bricks", fn(int $id) => new Opaque(new BID($id), "Nether Bricks", $netherBrickBreakInfo));
+		self::register("red_nether_bricks", fn(int $id) => new Opaque(new BID($id), "Red Nether Bricks", $netherBrickBreakInfo));
+		self::register("nether_brick_fence", fn(int $id) => new Fence(new BID($id), "Nether Brick Fence", $netherBrickBreakInfo));
+		self::register("nether_brick_stairs", fn(int $id) => new Stair(new BID($id), "Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register("red_nether_brick_stairs", fn(int $id) => new Stair(new BID($id), "Red Nether Brick Stairs", $netherBrickBreakInfo));
+		self::register("chiseled_nether_bricks", fn(int $id) => new Opaque(new BID($id), "Chiseled Nether Bricks", $netherBrickBreakInfo));
+		self::register("cracked_nether_bricks", fn(int $id) => new Opaque(new BID($id), "Cracked Nether Bricks", $netherBrickBreakInfo));
 
-		self::register("nether_portal", new NetherPortal(self::newBID(), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
-		self::register("nether_reactor_core", new NetherReactor(self::newBID(), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
-		self::register("nether_wart_block", new Opaque(self::newBID(), "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
-		self::register("nether_wart", new NetherWartPlant(self::newBID(), "Nether Wart", new Info(BreakInfo::instant())));
-		self::register("netherrack", new Netherrack(self::newBID(), "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
-		self::register("note_block", new Note(self::newBID(TileNote::class), "Note Block", new Info(BreakInfo::axe(0.8))));
-		self::register("obsidian", new Opaque(self::newBID(), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
-		self::register("packed_ice", new PackedIce(self::newBID(), "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
-		self::register("podzol", new Podzol(self::newBID(), "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
-		self::register("potatoes", new Potato(self::newBID(), "Potato Block", new Info(BreakInfo::instant())));
-		self::register("powered_rail", new PoweredRail(self::newBID(), "Powered Rail", $railBreakInfo));
+		self::register("nether_portal", fn(int $id) => new NetherPortal(new BID($id), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
+		self::register("nether_reactor_core", fn(int $id) => new NetherReactor(new BID($id), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
+		self::register("nether_wart_block", fn(int $id) => new Opaque(new BID($id), "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
+		self::register("nether_wart", fn(int $id) => new NetherWartPlant(new BID($id), "Nether Wart", new Info(BreakInfo::instant())));
+		self::register("netherrack", fn(int $id) => new Netherrack(new BID($id), "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
+		self::register("note_block", fn(int $id) => new Note(new BID($id, TileNote::class), "Note Block", new Info(BreakInfo::axe(0.8))));
+		self::register("obsidian", fn(int $id) => new Opaque(new BID($id), "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
+		self::register("packed_ice", fn(int $id) => new PackedIce(new BID($id), "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
+		self::register("podzol", fn(int $id) => new Podzol(new BID($id), "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
+		self::register("potatoes", fn(int $id) => new Potato(new BID($id), "Potato Block", new Info(BreakInfo::instant())));
+		self::register("powered_rail", fn(int $id) => new PoweredRail(new BID($id), "Powered Rail", $railBreakInfo));
 
 		$prismarineBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register("prismarine", new Opaque(self::newBID(), "Prismarine", $prismarineBreakInfo));
-		self::register("dark_prismarine", new Opaque(self::newBID(), "Dark Prismarine", $prismarineBreakInfo));
-		self::register("prismarine_bricks", new Opaque(self::newBID(), "Prismarine Bricks", $prismarineBreakInfo));
-		self::register("prismarine_bricks_stairs", new Stair(self::newBID(), "Prismarine Bricks Stairs", $prismarineBreakInfo));
-		self::register("dark_prismarine_stairs", new Stair(self::newBID(), "Dark Prismarine Stairs", $prismarineBreakInfo));
-		self::register("prismarine_stairs", new Stair(self::newBID(), "Prismarine Stairs", $prismarineBreakInfo));
+		self::register("prismarine", fn(int $id) => new Opaque(new BID($id), "Prismarine", $prismarineBreakInfo));
+		self::register("dark_prismarine", fn(int $id) => new Opaque(new BID($id), "Dark Prismarine", $prismarineBreakInfo));
+		self::register("prismarine_bricks", fn(int $id) => new Opaque(new BID($id), "Prismarine Bricks", $prismarineBreakInfo));
+		self::register("prismarine_bricks_stairs", fn(int $id) => new Stair(new BID($id), "Prismarine Bricks Stairs", $prismarineBreakInfo));
+		self::register("dark_prismarine_stairs", fn(int $id) => new Stair(new BID($id), "Dark Prismarine Stairs", $prismarineBreakInfo));
+		self::register("prismarine_stairs", fn(int $id) => new Stair(new BID($id), "Prismarine Stairs", $prismarineBreakInfo));
 
 		$pumpkinBreakInfo = new Info(BreakInfo::axe(1.0));
-		self::register("pumpkin", new Pumpkin(self::newBID(), "Pumpkin", $pumpkinBreakInfo));
-		self::register("carved_pumpkin", new CarvedPumpkin(self::newBID(), "Carved Pumpkin", new Info(BreakInfo::axe(1.0), enchantmentTags: [EnchantmentTags::MASK])));
-		self::register("lit_pumpkin", new LitPumpkin(self::newBID(), "Jack o'Lantern", $pumpkinBreakInfo));
+		self::register("pumpkin", fn(int $id) => new Pumpkin(new BID($id), "Pumpkin", $pumpkinBreakInfo));
+		self::register("carved_pumpkin", fn(int $id) => new CarvedPumpkin(new BID($id), "Carved Pumpkin", new Info(BreakInfo::axe(1.0), enchantmentTags: [EnchantmentTags::MASK])));
+		self::register("lit_pumpkin", fn(int $id) => new LitPumpkin(new BID($id), "Jack o'Lantern", $pumpkinBreakInfo));
 
-		self::register("pumpkin_stem", new PumpkinStem(self::newBID(), "Pumpkin Stem", new Info(BreakInfo::instant())));
+		self::register("pumpkin_stem", fn(int $id) => new PumpkinStem(new BID($id), "Pumpkin Stem", new Info(BreakInfo::instant())));
 
 		$purpurBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register("purpur", new Opaque(self::newBID(), "Purpur Block", $purpurBreakInfo));
-		self::register("purpur_pillar", new SimplePillar(self::newBID(), "Purpur Pillar", $purpurBreakInfo));
-		self::register("purpur_stairs", new Stair(self::newBID(), "Purpur Stairs", $purpurBreakInfo));
+		self::register("purpur", fn(int $id) => new Opaque(new BID($id), "Purpur Block", $purpurBreakInfo));
+		self::register("purpur_pillar", fn(int $id) => new SimplePillar(new BID($id), "Purpur Pillar", $purpurBreakInfo));
+		self::register("purpur_stairs", fn(int $id) => new Stair(new BID($id), "Purpur Stairs", $purpurBreakInfo));
 
 		$quartzBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD));
-		self::register("quartz", new Opaque(self::newBID(), "Quartz Block", $quartzBreakInfo));
-		self::register("chiseled_quartz", new SimplePillar(self::newBID(), "Chiseled Quartz Block", $quartzBreakInfo));
-		self::register("quartz_pillar", new SimplePillar(self::newBID(), "Quartz Pillar", $quartzBreakInfo));
-		self::register("smooth_quartz", new Opaque(self::newBID(), "Smooth Quartz Block", $quartzBreakInfo));
-		self::register("quartz_bricks", new Opaque(self::newBID(), "Quartz Bricks", $quartzBreakInfo));
+		self::register("quartz", fn(int $id) => new Opaque(new BID($id), "Quartz Block", $quartzBreakInfo));
+		self::register("chiseled_quartz", fn(int $id) => new SimplePillar(new BID($id), "Chiseled Quartz Block", $quartzBreakInfo));
+		self::register("quartz_pillar", fn(int $id) => new SimplePillar(new BID($id), "Quartz Pillar", $quartzBreakInfo));
+		self::register("smooth_quartz", fn(int $id) => new Opaque(new BID($id), "Smooth Quartz Block", $quartzBreakInfo));
+		self::register("quartz_bricks", fn(int $id) => new Opaque(new BID($id), "Quartz Bricks", $quartzBreakInfo));
 
-		self::register("quartz_stairs", new Stair(self::newBID(), "Quartz Stairs", $quartzBreakInfo));
-		self::register("smooth_quartz_stairs", new Stair(self::newBID(), "Smooth Quartz Stairs", $quartzBreakInfo));
+		self::register("quartz_stairs", fn(int $id) => new Stair(new BID($id), "Quartz Stairs", $quartzBreakInfo));
+		self::register("smooth_quartz_stairs", fn(int $id) => new Stair(new BID($id), "Smooth Quartz Stairs", $quartzBreakInfo));
 
-		self::register("rail", new Rail(self::newBID(), "Rail", $railBreakInfo));
-		self::register("red_mushroom", new RedMushroom(self::newBID(), "Red Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
-		self::register("redstone", new Redstone(self::newBID(), "Redstone Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
-		self::register("redstone_comparator", new RedstoneComparator(self::newBID(TileComparator::class), "Redstone Comparator", new Info(BreakInfo::instant())));
-		self::register("redstone_lamp", new RedstoneLamp(self::newBID(), "Redstone Lamp", new Info(new BreakInfo(0.3))));
-		self::register("redstone_repeater", new RedstoneRepeater(self::newBID(), "Redstone Repeater", new Info(BreakInfo::instant())));
-		self::register("redstone_torch", new RedstoneTorch(self::newBID(), "Redstone Torch", new Info(BreakInfo::instant())));
-		self::register("redstone_wire", new RedstoneWire(self::newBID(), "Redstone", new Info(BreakInfo::instant())));
-		self::register("reserved6", new Reserved6(self::newBID(), "reserved6", new Info(BreakInfo::instant())));
+		self::register("rail", fn(int $id) => new Rail(new BID($id), "Rail", $railBreakInfo));
+		self::register("red_mushroom", fn(int $id) => new RedMushroom(new BID($id), "Red Mushroom", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("redstone", fn(int $id) => new Redstone(new BID($id), "Redstone Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
+		self::register("redstone_comparator", fn(int $id) => new RedstoneComparator(new BID($id, TileComparator::class), "Redstone Comparator", new Info(BreakInfo::instant())));
+		self::register("redstone_lamp", fn(int $id) => new RedstoneLamp(new BID($id), "Redstone Lamp", new Info(new BreakInfo(0.3))));
+		self::register("redstone_repeater", fn(int $id) => new RedstoneRepeater(new BID($id), "Redstone Repeater", new Info(BreakInfo::instant())));
+		self::register("redstone_torch", fn(int $id) => new RedstoneTorch(new BID($id), "Redstone Torch", new Info(BreakInfo::instant())));
+		self::register("redstone_wire", fn(int $id) => new RedstoneWire(new BID($id), "Redstone", new Info(BreakInfo::instant())));
+		self::register("reserved6", fn(int $id) => new Reserved6(new BID($id), "reserved6", new Info(BreakInfo::instant())));
 
 		$sandTypeInfo = new Info(BreakInfo::shovel(0.5), [Tags::SAND]);
-		self::register("sand", new Sand(self::newBID(), "Sand", $sandTypeInfo));
-		self::register("red_sand", new Sand(self::newBID(), "Red Sand", $sandTypeInfo));
+		self::register("sand", fn(int $id) => new Sand(new BID($id), "Sand", $sandTypeInfo));
+		self::register("red_sand", fn(int $id) => new Sand(new BID($id), "Red Sand", $sandTypeInfo));
 
-		self::register("sea_lantern", new SeaLantern(self::newBID(), "Sea Lantern", new Info(new BreakInfo(0.3))));
-		self::register("sea_pickle", new SeaPickle(self::newBID(), "Sea Pickle", new Info(BreakInfo::instant())));
-		self::register("mob_head", new MobHead(self::newBID(TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0), enchantmentTags: [EnchantmentTags::MASK])));
-		self::register("slime", new Slime(self::newBID(), "Slime Block", new Info(BreakInfo::instant())));
-		self::register("snow", new Snow(self::newBID(), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD))));
-		self::register("snow_layer", new SnowLayer(self::newBID(), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD))));
-		self::register("soul_sand", new SoulSand(self::newBID(), "Soul Sand", new Info(BreakInfo::shovel(0.5))));
-		self::register("sponge", new Sponge(self::newBID(), "Sponge", new Info(new BreakInfo(0.6, ToolType::HOE))));
+		self::register("sea_lantern", fn(int $id) => new SeaLantern(new BID($id), "Sea Lantern", new Info(new BreakInfo(0.3))));
+		self::register("sea_pickle", fn(int $id) => new SeaPickle(new BID($id), "Sea Pickle", new Info(BreakInfo::instant())));
+		self::register("mob_head", fn(int $id) => new MobHead(new BID($id, TileMobHead::class), "Mob Head", new Info(new BreakInfo(1.0), enchantmentTags: [EnchantmentTags::MASK])));
+		self::register("slime", fn(int $id) => new Slime(new BID($id), "Slime Block", new Info(BreakInfo::instant())));
+		self::register("snow", fn(int $id) => new Snow(new BID($id), "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD))));
+		self::register("snow_layer", fn(int $id) => new SnowLayer(new BID($id), "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD))));
+		self::register("soul_sand", fn(int $id) => new SoulSand(new BID($id), "Soul Sand", new Info(BreakInfo::shovel(0.5))));
+		self::register("sponge", fn(int $id) => new Sponge(new BID($id), "Sponge", new Info(new BreakInfo(0.6, ToolType::HOE))));
 		$shulkerBoxBreakInfo = new Info(BreakInfo::pickaxe(2));
-		self::register("shulker_box", new ShulkerBox(self::newBID(TileShulkerBox::class), "Shulker Box", $shulkerBoxBreakInfo));
+		self::register("shulker_box", fn(int $id) => new ShulkerBox(new BID($id, TileShulkerBox::class), "Shulker Box", $shulkerBoxBreakInfo));
 
 		$stoneBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register(
+		$stone = self::register(
 			"stone",
-			$stone = new class(self::newBID(), "Stone", $stoneBreakInfo) extends Opaque{
+			fn(int $id) => new class(new BID($id), "Stone", $stoneBreakInfo) extends Opaque{
 				public function getDropsForCompatibleTool(Item $item) : array{
 					return [VanillaBlocks::COBBLESTONE()->asItem()];
 				}
@@ -1053,110 +1064,110 @@ final class VanillaBlocks{
 				}
 			}
 		);
-		self::register("andesite", new Opaque(self::newBID(), "Andesite", $stoneBreakInfo));
-		self::register("diorite", new Opaque(self::newBID(), "Diorite", $stoneBreakInfo));
-		self::register("granite", new Opaque(self::newBID(), "Granite", $stoneBreakInfo));
-		self::register("polished_andesite", new Opaque(self::newBID(), "Polished Andesite", $stoneBreakInfo));
-		self::register("polished_diorite", new Opaque(self::newBID(), "Polished Diorite", $stoneBreakInfo));
-		self::register("polished_granite", new Opaque(self::newBID(), "Polished Granite", $stoneBreakInfo));
+		self::register("andesite", fn(int $id) => new Opaque(new BID($id), "Andesite", $stoneBreakInfo));
+		self::register("diorite", fn(int $id) => new Opaque(new BID($id), "Diorite", $stoneBreakInfo));
+		self::register("granite", fn(int $id) => new Opaque(new BID($id), "Granite", $stoneBreakInfo));
+		self::register("polished_andesite", fn(int $id) => new Opaque(new BID($id), "Polished Andesite", $stoneBreakInfo));
+		self::register("polished_diorite", fn(int $id) => new Opaque(new BID($id), "Polished Diorite", $stoneBreakInfo));
+		self::register("polished_granite", fn(int $id) => new Opaque(new BID($id), "Polished Granite", $stoneBreakInfo));
 
-		self::register("stone_bricks", $stoneBrick = new Opaque(self::newBID(), "Stone Bricks", $stoneBreakInfo));
-		self::register("mossy_stone_bricks", $mossyStoneBrick = new Opaque(self::newBID(), "Mossy Stone Bricks", $stoneBreakInfo));
-		self::register("cracked_stone_bricks", $crackedStoneBrick = new Opaque(self::newBID(), "Cracked Stone Bricks", $stoneBreakInfo));
-		self::register("chiseled_stone_bricks", $chiseledStoneBrick = new Opaque(self::newBID(), "Chiseled Stone Bricks", $stoneBreakInfo));
+		$stoneBrick = self::register("stone_bricks", fn(int $id) => new Opaque(new BID($id), "Stone Bricks", $stoneBreakInfo));
+		$mossyStoneBrick = self::register("mossy_stone_bricks", fn(int $id) => new Opaque(new BID($id), "Mossy Stone Bricks", $stoneBreakInfo));
+		$crackedStoneBrick = self::register("cracked_stone_bricks", fn(int $id) => new Opaque(new BID($id), "Cracked Stone Bricks", $stoneBreakInfo));
+		$chiseledStoneBrick = self::register("chiseled_stone_bricks", fn(int $id) => new Opaque(new BID($id), "Chiseled Stone Bricks", $stoneBreakInfo));
 
 		$infestedStoneBreakInfo = new Info(BreakInfo::pickaxe(0.75));
-		self::register("infested_stone", new InfestedStone(self::newBID(), "Infested Stone", $infestedStoneBreakInfo, $stone));
-		self::register("infested_stone_brick", new InfestedStone(self::newBID(), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick));
-		self::register("infested_cobblestone", new InfestedStone(self::newBID(), "Infested Cobblestone", $infestedStoneBreakInfo, $cobblestone));
-		self::register("infested_mossy_stone_brick", new InfestedStone(self::newBID(), "Infested Mossy Stone Brick", $infestedStoneBreakInfo, $mossyStoneBrick));
-		self::register("infested_cracked_stone_brick", new InfestedStone(self::newBID(), "Infested Cracked Stone Brick", $infestedStoneBreakInfo, $crackedStoneBrick));
-		self::register("infested_chiseled_stone_brick", new InfestedStone(self::newBID(), "Infested Chiseled Stone Brick", $infestedStoneBreakInfo, $chiseledStoneBrick));
+		self::register("infested_stone", fn(int $id) => new InfestedStone(new BID($id), "Infested Stone", $infestedStoneBreakInfo, $stone));
+		self::register("infested_stone_brick", fn(int $id) => new InfestedStone(new BID($id), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick));
+		self::register("infested_cobblestone", fn(int $id) => new InfestedStone(new BID($id), "Infested Cobblestone", $infestedStoneBreakInfo, $cobblestone));
+		self::register("infested_mossy_stone_brick", fn(int $id) => new InfestedStone(new BID($id), "Infested Mossy Stone Brick", $infestedStoneBreakInfo, $mossyStoneBrick));
+		self::register("infested_cracked_stone_brick", fn(int $id) => new InfestedStone(new BID($id), "Infested Cracked Stone Brick", $infestedStoneBreakInfo, $crackedStoneBrick));
+		self::register("infested_chiseled_stone_brick", fn(int $id) => new InfestedStone(new BID($id), "Infested Chiseled Stone Brick", $infestedStoneBreakInfo, $chiseledStoneBrick));
 
-		self::register("stone_stairs", new Stair(self::newBID(), "Stone Stairs", $stoneBreakInfo));
-		self::register("smooth_stone", new Opaque(self::newBID(), "Smooth Stone", $stoneBreakInfo));
-		self::register("andesite_stairs", new Stair(self::newBID(), "Andesite Stairs", $stoneBreakInfo));
-		self::register("diorite_stairs", new Stair(self::newBID(), "Diorite Stairs", $stoneBreakInfo));
-		self::register("granite_stairs", new Stair(self::newBID(), "Granite Stairs", $stoneBreakInfo));
-		self::register("polished_andesite_stairs", new Stair(self::newBID(), "Polished Andesite Stairs", $stoneBreakInfo));
-		self::register("polished_diorite_stairs", new Stair(self::newBID(), "Polished Diorite Stairs", $stoneBreakInfo));
-		self::register("polished_granite_stairs", new Stair(self::newBID(), "Polished Granite Stairs", $stoneBreakInfo));
-		self::register("stone_brick_stairs", new Stair(self::newBID(), "Stone Brick Stairs", $stoneBreakInfo));
-		self::register("mossy_stone_brick_stairs", new Stair(self::newBID(), "Mossy Stone Brick Stairs", $stoneBreakInfo));
-		self::register("stone_button", new StoneButton(self::newBID(), "Stone Button", new Info(BreakInfo::pickaxe(0.5))));
-		self::register("stonecutter", new Stonecutter(self::newBID(), "Stonecutter", new Info(BreakInfo::pickaxe(3.5))));
-		self::register("stone_pressure_plate", new StonePressurePlate(self::newBID(), "Stone Pressure Plate", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
+		self::register("stone_stairs", fn(int $id) => new Stair(new BID($id), "Stone Stairs", $stoneBreakInfo));
+		self::register("smooth_stone", fn(int $id) => new Opaque(new BID($id), "Smooth Stone", $stoneBreakInfo));
+		self::register("andesite_stairs", fn(int $id) => new Stair(new BID($id), "Andesite Stairs", $stoneBreakInfo));
+		self::register("diorite_stairs", fn(int $id) => new Stair(new BID($id), "Diorite Stairs", $stoneBreakInfo));
+		self::register("granite_stairs", fn(int $id) => new Stair(new BID($id), "Granite Stairs", $stoneBreakInfo));
+		self::register("polished_andesite_stairs", fn(int $id) => new Stair(new BID($id), "Polished Andesite Stairs", $stoneBreakInfo));
+		self::register("polished_diorite_stairs", fn(int $id) => new Stair(new BID($id), "Polished Diorite Stairs", $stoneBreakInfo));
+		self::register("polished_granite_stairs", fn(int $id) => new Stair(new BID($id), "Polished Granite Stairs", $stoneBreakInfo));
+		self::register("stone_brick_stairs", fn(int $id) => new Stair(new BID($id), "Stone Brick Stairs", $stoneBreakInfo));
+		self::register("mossy_stone_brick_stairs", fn(int $id) => new Stair(new BID($id), "Mossy Stone Brick Stairs", $stoneBreakInfo));
+		self::register("stone_button", fn(int $id) => new StoneButton(new BID($id), "Stone Button", new Info(BreakInfo::pickaxe(0.5))));
+		self::register("stonecutter", fn(int $id) => new Stonecutter(new BID($id), "Stonecutter", new Info(BreakInfo::pickaxe(3.5))));
+		self::register("stone_pressure_plate", fn(int $id) => new StonePressurePlate(new BID($id), "Stone Pressure Plate", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
-		self::register("brick_slab", new Slab(self::newBID(), "Brick", $stoneSlabBreakInfo));
-		self::register("cobblestone_slab", new Slab(self::newBID(), "Cobblestone", $stoneSlabBreakInfo));
-		self::register("fake_wooden_slab", new Slab(self::newBID(), "Fake Wooden", $stoneSlabBreakInfo));
-		self::register("nether_brick_slab", new Slab(self::newBID(), "Nether Brick", $stoneSlabBreakInfo));
-		self::register("quartz_slab", new Slab(self::newBID(), "Quartz", $stoneSlabBreakInfo));
-		self::register("sandstone_slab", new Slab(self::newBID(), "Sandstone", $stoneSlabBreakInfo));
-		self::register("smooth_stone_slab", new Slab(self::newBID(), "Smooth Stone", $stoneSlabBreakInfo));
-		self::register("stone_brick_slab", new Slab(self::newBID(), "Stone Brick", $stoneSlabBreakInfo));
-		self::register("dark_prismarine_slab", new Slab(self::newBID(), "Dark Prismarine", $stoneSlabBreakInfo));
-		self::register("mossy_cobblestone_slab", new Slab(self::newBID(), "Mossy Cobblestone", $stoneSlabBreakInfo));
-		self::register("prismarine_slab", new Slab(self::newBID(), "Prismarine", $stoneSlabBreakInfo));
-		self::register("prismarine_bricks_slab", new Slab(self::newBID(), "Prismarine Bricks", $stoneSlabBreakInfo));
-		self::register("purpur_slab", new Slab(self::newBID(), "Purpur", $stoneSlabBreakInfo));
-		self::register("red_nether_brick_slab", new Slab(self::newBID(), "Red Nether Brick", $stoneSlabBreakInfo));
-		self::register("red_sandstone_slab", new Slab(self::newBID(), "Red Sandstone", $stoneSlabBreakInfo));
-		self::register("smooth_sandstone_slab", new Slab(self::newBID(), "Smooth Sandstone", $stoneSlabBreakInfo));
-		self::register("andesite_slab", new Slab(self::newBID(), "Andesite", $stoneSlabBreakInfo));
-		self::register("diorite_slab", new Slab(self::newBID(), "Diorite", $stoneSlabBreakInfo));
-		self::register("end_stone_brick_slab", new Slab(self::newBID(), "End Stone Brick", $stoneSlabBreakInfo));
-		self::register("granite_slab", new Slab(self::newBID(), "Granite", $stoneSlabBreakInfo));
-		self::register("polished_andesite_slab", new Slab(self::newBID(), "Polished Andesite", $stoneSlabBreakInfo));
-		self::register("polished_diorite_slab", new Slab(self::newBID(), "Polished Diorite", $stoneSlabBreakInfo));
-		self::register("polished_granite_slab", new Slab(self::newBID(), "Polished Granite", $stoneSlabBreakInfo));
-		self::register("smooth_red_sandstone_slab", new Slab(self::newBID(), "Smooth Red Sandstone", $stoneSlabBreakInfo));
-		self::register("cut_red_sandstone_slab", new Slab(self::newBID(), "Cut Red Sandstone", $stoneSlabBreakInfo));
-		self::register("cut_sandstone_slab", new Slab(self::newBID(), "Cut Sandstone", $stoneSlabBreakInfo));
-		self::register("mossy_stone_brick_slab", new Slab(self::newBID(), "Mossy Stone Brick", $stoneSlabBreakInfo));
-		self::register("smooth_quartz_slab", new Slab(self::newBID(), "Smooth Quartz", $stoneSlabBreakInfo));
-		self::register("stone_slab", new Slab(self::newBID(), "Stone", $stoneSlabBreakInfo));
+		self::register("brick_slab", fn(int $id) => new Slab(new BID($id), "Brick", $stoneSlabBreakInfo));
+		self::register("cobblestone_slab", fn(int $id) => new Slab(new BID($id), "Cobblestone", $stoneSlabBreakInfo));
+		self::register("fake_wooden_slab", fn(int $id) => new Slab(new BID($id), "Fake Wooden", $stoneSlabBreakInfo));
+		self::register("nether_brick_slab", fn(int $id) => new Slab(new BID($id), "Nether Brick", $stoneSlabBreakInfo));
+		self::register("quartz_slab", fn(int $id) => new Slab(new BID($id), "Quartz", $stoneSlabBreakInfo));
+		self::register("sandstone_slab", fn(int $id) => new Slab(new BID($id), "Sandstone", $stoneSlabBreakInfo));
+		self::register("smooth_stone_slab", fn(int $id) => new Slab(new BID($id), "Smooth Stone", $stoneSlabBreakInfo));
+		self::register("stone_brick_slab", fn(int $id) => new Slab(new BID($id), "Stone Brick", $stoneSlabBreakInfo));
+		self::register("dark_prismarine_slab", fn(int $id) => new Slab(new BID($id), "Dark Prismarine", $stoneSlabBreakInfo));
+		self::register("mossy_cobblestone_slab", fn(int $id) => new Slab(new BID($id), "Mossy Cobblestone", $stoneSlabBreakInfo));
+		self::register("prismarine_slab", fn(int $id) => new Slab(new BID($id), "Prismarine", $stoneSlabBreakInfo));
+		self::register("prismarine_bricks_slab", fn(int $id) => new Slab(new BID($id), "Prismarine Bricks", $stoneSlabBreakInfo));
+		self::register("purpur_slab", fn(int $id) => new Slab(new BID($id), "Purpur", $stoneSlabBreakInfo));
+		self::register("red_nether_brick_slab", fn(int $id) => new Slab(new BID($id), "Red Nether Brick", $stoneSlabBreakInfo));
+		self::register("red_sandstone_slab", fn(int $id) => new Slab(new BID($id), "Red Sandstone", $stoneSlabBreakInfo));
+		self::register("smooth_sandstone_slab", fn(int $id) => new Slab(new BID($id), "Smooth Sandstone", $stoneSlabBreakInfo));
+		self::register("andesite_slab", fn(int $id) => new Slab(new BID($id), "Andesite", $stoneSlabBreakInfo));
+		self::register("diorite_slab", fn(int $id) => new Slab(new BID($id), "Diorite", $stoneSlabBreakInfo));
+		self::register("end_stone_brick_slab", fn(int $id) => new Slab(new BID($id), "End Stone Brick", $stoneSlabBreakInfo));
+		self::register("granite_slab", fn(int $id) => new Slab(new BID($id), "Granite", $stoneSlabBreakInfo));
+		self::register("polished_andesite_slab", fn(int $id) => new Slab(new BID($id), "Polished Andesite", $stoneSlabBreakInfo));
+		self::register("polished_diorite_slab", fn(int $id) => new Slab(new BID($id), "Polished Diorite", $stoneSlabBreakInfo));
+		self::register("polished_granite_slab", fn(int $id) => new Slab(new BID($id), "Polished Granite", $stoneSlabBreakInfo));
+		self::register("smooth_red_sandstone_slab", fn(int $id) => new Slab(new BID($id), "Smooth Red Sandstone", $stoneSlabBreakInfo));
+		self::register("cut_red_sandstone_slab", fn(int $id) => new Slab(new BID($id), "Cut Red Sandstone", $stoneSlabBreakInfo));
+		self::register("cut_sandstone_slab", fn(int $id) => new Slab(new BID($id), "Cut Sandstone", $stoneSlabBreakInfo));
+		self::register("mossy_stone_brick_slab", fn(int $id) => new Slab(new BID($id), "Mossy Stone Brick", $stoneSlabBreakInfo));
+		self::register("smooth_quartz_slab", fn(int $id) => new Slab(new BID($id), "Smooth Quartz", $stoneSlabBreakInfo));
+		self::register("stone_slab", fn(int $id) => new Slab(new BID($id), "Stone", $stoneSlabBreakInfo));
 
-		self::register("legacy_stonecutter", new Opaque(self::newBID(), "Legacy Stonecutter", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
-		self::register("sugarcane", new Sugarcane(self::newBID(), "Sugarcane", new Info(BreakInfo::instant())));
-		self::register("sweet_berry_bush", new SweetBerryBush(self::newBID(), "Sweet Berry Bush", new Info(BreakInfo::instant())));
-		self::register("tnt", new TNT(self::newBID(), "TNT", new Info(BreakInfo::instant())));
-		self::register("fern", new TallGrass(self::newBID(), "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
-		self::register("tall_grass", new TallGrass(self::newBID(), "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("legacy_stonecutter", fn(int $id) => new Opaque(new BID($id), "Legacy Stonecutter", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
+		self::register("sugarcane", fn(int $id) => new Sugarcane(new BID($id), "Sugarcane", new Info(BreakInfo::instant())));
+		self::register("sweet_berry_bush", fn(int $id) => new SweetBerryBush(new BID($id), "Sweet Berry Bush", new Info(BreakInfo::instant())));
+		self::register("tnt", fn(int $id) => new TNT(new BID($id), "TNT", new Info(BreakInfo::instant())));
+		self::register("fern", fn(int $id) => new TallGrass(new BID($id), "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
+		self::register("tall_grass", fn(int $id) => new TallGrass(new BID($id), "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
-		self::register("blue_torch", new Torch(self::newBID(), "Blue Torch", new Info(BreakInfo::instant())));
-		self::register("purple_torch", new Torch(self::newBID(), "Purple Torch", new Info(BreakInfo::instant())));
-		self::register("red_torch", new Torch(self::newBID(), "Red Torch", new Info(BreakInfo::instant())));
-		self::register("green_torch", new Torch(self::newBID(), "Green Torch", new Info(BreakInfo::instant())));
-		self::register("torch", new Torch(self::newBID(), "Torch", new Info(BreakInfo::instant())));
+		self::register("blue_torch", fn(int $id) => new Torch(new BID($id), "Blue Torch", new Info(BreakInfo::instant())));
+		self::register("purple_torch", fn(int $id) => new Torch(new BID($id), "Purple Torch", new Info(BreakInfo::instant())));
+		self::register("red_torch", fn(int $id) => new Torch(new BID($id), "Red Torch", new Info(BreakInfo::instant())));
+		self::register("green_torch", fn(int $id) => new Torch(new BID($id), "Green Torch", new Info(BreakInfo::instant())));
+		self::register("torch", fn(int $id) => new Torch(new BID($id), "Torch", new Info(BreakInfo::instant())));
 
-		self::register("trapped_chest", new TrappedChest(self::newBID(TileChest::class), "Trapped Chest", $chestBreakInfo));
-		self::register("tripwire", new Tripwire(self::newBID(), "Tripwire", new Info(BreakInfo::instant())));
-		self::register("tripwire_hook", new TripwireHook(self::newBID(), "Tripwire Hook", new Info(BreakInfo::instant())));
-		self::register("underwater_torch", new UnderwaterTorch(self::newBID(), "Underwater Torch", new Info(BreakInfo::instant())));
-		self::register("vines", new Vine(self::newBID(), "Vines", new Info(BreakInfo::axe(0.2))));
-		self::register("water", new Water(self::newBID(), "Water", new Info(BreakInfo::indestructible(500.0))));
-		self::register("lily_pad", new WaterLily(self::newBID(), "Lily Pad", new Info(BreakInfo::instant())));
+		self::register("trapped_chest", fn(int $id) => new TrappedChest(new BID($id, TileChest::class), "Trapped Chest", $chestBreakInfo));
+		self::register("tripwire", fn(int $id) => new Tripwire(new BID($id), "Tripwire", new Info(BreakInfo::instant())));
+		self::register("tripwire_hook", fn(int $id) => new TripwireHook(new BID($id), "Tripwire Hook", new Info(BreakInfo::instant())));
+		self::register("underwater_torch", fn(int $id) => new UnderwaterTorch(new BID($id), "Underwater Torch", new Info(BreakInfo::instant())));
+		self::register("vines", fn(int $id) => new Vine(new BID($id), "Vines", new Info(BreakInfo::axe(0.2))));
+		self::register("water", fn(int $id) => new Water(new BID($id), "Water", new Info(BreakInfo::indestructible(500.0))));
+		self::register("lily_pad", fn(int $id) => new WaterLily(new BID($id), "Lily Pad", new Info(BreakInfo::instant())));
 
 		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD));
-		self::register("weighted_pressure_plate_heavy", new WeightedPressurePlateHeavy(
-			self::newBID(),
+		self::register("weighted_pressure_plate_heavy", fn(int $id) => new WeightedPressurePlateHeavy(
+			new BID($id),
 			"Weighted Pressure Plate Heavy",
 			$weightedPressurePlateBreakInfo,
 			deactivationDelayTicks: 10,
 			signalStrengthFactor: 0.1
 		));
-		self::register("weighted_pressure_plate_light", new WeightedPressurePlateLight(
-			self::newBID(),
+		self::register("weighted_pressure_plate_light", fn(int $id) => new WeightedPressurePlateLight(
+			new BID($id),
 			"Weighted Pressure Plate Light",
 			$weightedPressurePlateBreakInfo,
 			deactivationDelayTicks: 10,
 			signalStrengthFactor: 1.0
 		));
-		self::register("wheat", new Wheat(self::newBID(), "Wheat Block", new Info(BreakInfo::instant())));
+		self::register("wheat", fn(int $id) => new Wheat(new BID($id), "Wheat Block", new Info(BreakInfo::instant())));
 
 		$leavesBreakInfo = new Info(new class(0.2, ToolType::HOE) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
@@ -1170,39 +1181,39 @@ final class VanillaBlocks{
 
 		foreach(SaplingType::cases() as $saplingType){
 			$name = $saplingType->getDisplayName();
-			self::register(strtolower($saplingType->name) . "_sapling", new Sapling(self::newBID(), $name . " Sapling", $saplingTypeInfo, $saplingType));
+			self::register(strtolower($saplingType->name) . "_sapling", fn(int $id) => new Sapling(new BID($id), $name . " Sapling", $saplingTypeInfo, $saplingType));
 		}
 		foreach(LeavesType::cases() as $leavesType){
 			$name = $leavesType->getDisplayName();
-			self::register(strtolower($leavesType->name) . "_leaves", new Leaves(self::newBID(), $name . " Leaves", $leavesBreakInfo, $leavesType));
+			self::register(strtolower($leavesType->name) . "_leaves", fn(int $id) => new Leaves(new BID($id), $name . " Leaves", $leavesBreakInfo, $leavesType));
 		}
 
 		$sandstoneBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD));
-		self::register("red_sandstone_stairs", new Stair(self::newBID(), "Red Sandstone Stairs", $sandstoneBreakInfo));
-		self::register("smooth_red_sandstone_stairs", new Stair(self::newBID(), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
-		self::register("red_sandstone", new Opaque(self::newBID(), "Red Sandstone", $sandstoneBreakInfo));
-		self::register("chiseled_red_sandstone", new Opaque(self::newBID(), "Chiseled Red Sandstone", $sandstoneBreakInfo));
-		self::register("cut_red_sandstone", new Opaque(self::newBID(), "Cut Red Sandstone", $sandstoneBreakInfo));
-		self::register("smooth_red_sandstone", new Opaque(self::newBID(), "Smooth Red Sandstone", $sandstoneBreakInfo));
+		self::register("red_sandstone_stairs", fn(int $id) => new Stair(new BID($id), "Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("smooth_red_sandstone_stairs", fn(int $id) => new Stair(new BID($id), "Smooth Red Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("red_sandstone", fn(int $id) => new Opaque(new BID($id), "Red Sandstone", $sandstoneBreakInfo));
+		self::register("chiseled_red_sandstone", fn(int $id) => new Opaque(new BID($id), "Chiseled Red Sandstone", $sandstoneBreakInfo));
+		self::register("cut_red_sandstone", fn(int $id) => new Opaque(new BID($id), "Cut Red Sandstone", $sandstoneBreakInfo));
+		self::register("smooth_red_sandstone", fn(int $id) => new Opaque(new BID($id), "Smooth Red Sandstone", $sandstoneBreakInfo));
 
-		self::register("sandstone_stairs", new Stair(self::newBID(), "Sandstone Stairs", $sandstoneBreakInfo));
-		self::register("smooth_sandstone_stairs", new Stair(self::newBID(), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
-		self::register("sandstone", new Opaque(self::newBID(), "Sandstone", $sandstoneBreakInfo));
-		self::register("chiseled_sandstone", new Opaque(self::newBID(), "Chiseled Sandstone", $sandstoneBreakInfo));
-		self::register("cut_sandstone", new Opaque(self::newBID(), "Cut Sandstone", $sandstoneBreakInfo));
-		self::register("smooth_sandstone", new Opaque(self::newBID(), "Smooth Sandstone", $sandstoneBreakInfo));
+		self::register("sandstone_stairs", fn(int $id) => new Stair(new BID($id), "Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("smooth_sandstone_stairs", fn(int $id) => new Stair(new BID($id), "Smooth Sandstone Stairs", $sandstoneBreakInfo));
+		self::register("sandstone", fn(int $id) => new Opaque(new BID($id), "Sandstone", $sandstoneBreakInfo));
+		self::register("chiseled_sandstone", fn(int $id) => new Opaque(new BID($id), "Chiseled Sandstone", $sandstoneBreakInfo));
+		self::register("cut_sandstone", fn(int $id) => new Opaque(new BID($id), "Cut Sandstone", $sandstoneBreakInfo));
+		self::register("smooth_sandstone", fn(int $id) => new Opaque(new BID($id), "Smooth Sandstone", $sandstoneBreakInfo));
 
-		self::register("glazed_terracotta", new GlazedTerracotta(self::newBID(), "Glazed Terracotta", new Info(BreakInfo::pickaxe(1.4, ToolTier::WOOD))));
-		self::register("dyed_shulker_box", new DyedShulkerBox(self::newBID(TileShulkerBox::class), "Dyed Shulker Box", $shulkerBoxBreakInfo));
-		self::register("stained_glass", new StainedGlass(self::newBID(), "Stained Glass", $glassBreakInfo));
-		self::register("stained_glass_pane", new StainedGlassPane(self::newBID(), "Stained Glass Pane", $glassBreakInfo));
-		self::register("stained_clay", new StainedHardenedClay(self::newBID(), "Stained Clay", $hardenedClayBreakInfo));
-		self::register("stained_hardened_glass", new StainedHardenedGlass(self::newBID(), "Stained Hardened Glass", $hardenedGlassBreakInfo));
-		self::register("stained_hardened_glass_pane", new StainedHardenedGlassPane(self::newBID(), "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
-		self::register("carpet", new Carpet(self::newBID(), "Carpet", new Info(new BreakInfo(0.1))));
-		self::register("concrete", new Concrete(self::newBID(), "Concrete", new Info(BreakInfo::pickaxe(1.8, ToolTier::WOOD))));
-		self::register("concrete_powder", new ConcretePowder(self::newBID(), "Concrete Powder", new Info(BreakInfo::shovel(0.5))));
-		self::register("wool", new Wool(self::newBID(), "Wool", new Info(new class(0.8, ToolType::SHEARS) extends BreakInfo{
+		self::register("glazed_terracotta", fn(int $id) => new GlazedTerracotta(new BID($id), "Glazed Terracotta", new Info(BreakInfo::pickaxe(1.4, ToolTier::WOOD))));
+		self::register("dyed_shulker_box", fn(int $id) => new DyedShulkerBox(new BID($id, TileShulkerBox::class), "Dyed Shulker Box", $shulkerBoxBreakInfo));
+		self::register("stained_glass", fn(int $id) => new StainedGlass(new BID($id), "Stained Glass", $glassBreakInfo));
+		self::register("stained_glass_pane", fn(int $id) => new StainedGlassPane(new BID($id), "Stained Glass Pane", $glassBreakInfo));
+		self::register("stained_clay", fn(int $id) => new StainedHardenedClay(new BID($id), "Stained Clay", $hardenedClayBreakInfo));
+		self::register("stained_hardened_glass", fn(int $id) => new StainedHardenedGlass(new BID($id), "Stained Hardened Glass", $hardenedGlassBreakInfo));
+		self::register("stained_hardened_glass_pane", fn(int $id) => new StainedHardenedGlassPane(new BID($id), "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
+		self::register("carpet", fn(int $id) => new Carpet(new BID($id), "Carpet", new Info(new BreakInfo(0.1))));
+		self::register("concrete", fn(int $id) => new Concrete(new BID($id), "Concrete", new Info(BreakInfo::pickaxe(1.8, ToolTier::WOOD))));
+		self::register("concrete_powder", fn(int $id) => new ConcretePowder(new BID($id), "Concrete Powder", new Info(BreakInfo::shovel(0.5))));
+		self::register("wool", fn(int $id) => new Wool(new BID($id), "Wool", new Info(new class(0.8, ToolType::SHEARS) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
 				$time = parent::getBreakTime($item);
 				if($item->getBlockToolType() === ToolType::SHEARS){
@@ -1215,54 +1226,54 @@ final class VanillaBlocks{
 
 		//TODO: in the future these won't all have the same hardness; they only do now because of the old metadata crap
 		$wallBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
-		self::register("cobblestone_wall", new Wall(self::newBID(), "Cobblestone Wall", $wallBreakInfo));
-		self::register("andesite_wall", new Wall(self::newBID(), "Andesite Wall", $wallBreakInfo));
-		self::register("brick_wall", new Wall(self::newBID(), "Brick Wall", $wallBreakInfo));
-		self::register("diorite_wall", new Wall(self::newBID(), "Diorite Wall", $wallBreakInfo));
-		self::register("end_stone_brick_wall", new Wall(self::newBID(), "End Stone Brick Wall", $wallBreakInfo));
-		self::register("granite_wall", new Wall(self::newBID(), "Granite Wall", $wallBreakInfo));
-		self::register("mossy_stone_brick_wall", new Wall(self::newBID(), "Mossy Stone Brick Wall", $wallBreakInfo));
-		self::register("mossy_cobblestone_wall", new Wall(self::newBID(), "Mossy Cobblestone Wall", $wallBreakInfo));
-		self::register("nether_brick_wall", new Wall(self::newBID(), "Nether Brick Wall", $wallBreakInfo));
-		self::register("prismarine_wall", new Wall(self::newBID(), "Prismarine Wall", $wallBreakInfo));
-		self::register("red_nether_brick_wall", new Wall(self::newBID(), "Red Nether Brick Wall", $wallBreakInfo));
-		self::register("red_sandstone_wall", new Wall(self::newBID(), "Red Sandstone Wall", $wallBreakInfo));
-		self::register("sandstone_wall", new Wall(self::newBID(), "Sandstone Wall", $wallBreakInfo));
-		self::register("stone_brick_wall", new Wall(self::newBID(), "Stone Brick Wall", $wallBreakInfo));
+		self::register("cobblestone_wall", fn(int $id) => new Wall(new BID($id), "Cobblestone Wall", $wallBreakInfo));
+		self::register("andesite_wall", fn(int $id) => new Wall(new BID($id), "Andesite Wall", $wallBreakInfo));
+		self::register("brick_wall", fn(int $id) => new Wall(new BID($id), "Brick Wall", $wallBreakInfo));
+		self::register("diorite_wall", fn(int $id) => new Wall(new BID($id), "Diorite Wall", $wallBreakInfo));
+		self::register("end_stone_brick_wall", fn(int $id) => new Wall(new BID($id), "End Stone Brick Wall", $wallBreakInfo));
+		self::register("granite_wall", fn(int $id) => new Wall(new BID($id), "Granite Wall", $wallBreakInfo));
+		self::register("mossy_stone_brick_wall", fn(int $id) => new Wall(new BID($id), "Mossy Stone Brick Wall", $wallBreakInfo));
+		self::register("mossy_cobblestone_wall", fn(int $id) => new Wall(new BID($id), "Mossy Cobblestone Wall", $wallBreakInfo));
+		self::register("nether_brick_wall", fn(int $id) => new Wall(new BID($id), "Nether Brick Wall", $wallBreakInfo));
+		self::register("prismarine_wall", fn(int $id) => new Wall(new BID($id), "Prismarine Wall", $wallBreakInfo));
+		self::register("red_nether_brick_wall", fn(int $id) => new Wall(new BID($id), "Red Nether Brick Wall", $wallBreakInfo));
+		self::register("red_sandstone_wall", fn(int $id) => new Wall(new BID($id), "Red Sandstone Wall", $wallBreakInfo));
+		self::register("sandstone_wall", fn(int $id) => new Wall(new BID($id), "Sandstone Wall", $wallBreakInfo));
+		self::register("stone_brick_wall", fn(int $id) => new Wall(new BID($id), "Stone Brick Wall", $wallBreakInfo));
 
 		self::registerElements();
 
 		$chemistryTableBreakInfo = new Info(BreakInfo::pickaxe(2.5, ToolTier::WOOD));
-		self::register("compound_creator", new ChemistryTable(self::newBID(), "Compound Creator", $chemistryTableBreakInfo));
-		self::register("element_constructor", new ChemistryTable(self::newBID(), "Element Constructor", $chemistryTableBreakInfo));
-		self::register("lab_table", new ChemistryTable(self::newBID(), "Lab Table", $chemistryTableBreakInfo));
-		self::register("material_reducer", new ChemistryTable(self::newBID(), "Material Reducer", $chemistryTableBreakInfo));
+		self::register("compound_creator", fn(int $id) => new ChemistryTable(new BID($id), "Compound Creator", $chemistryTableBreakInfo));
+		self::register("element_constructor", fn(int $id) => new ChemistryTable(new BID($id), "Element Constructor", $chemistryTableBreakInfo));
+		self::register("lab_table", fn(int $id) => new ChemistryTable(new BID($id), "Lab Table", $chemistryTableBreakInfo));
+		self::register("material_reducer", fn(int $id) => new ChemistryTable(new BID($id), "Material Reducer", $chemistryTableBreakInfo));
 
-		self::register("chemical_heat", new ChemicalHeat(self::newBID(), "Heat Block", $chemistryTableBreakInfo));
+		self::register("chemical_heat", fn(int $id) => new ChemicalHeat(new BID($id), "Heat Block", $chemistryTableBreakInfo));
 
 		self::registerMushroomBlocks();
 
-		self::register("coral", new Coral(
-			self::newBID(),
+		self::register("coral", fn(int $id) => new Coral(
+			new BID($id),
 			"Coral",
 			new Info(BreakInfo::instant()),
 		));
-		self::register("coral_fan", new FloorCoralFan(
-			self::newBID(),
+		self::register("coral_fan", fn(int $id) => new FloorCoralFan(
+			new BID($id),
 			"Coral Fan",
 			new Info(BreakInfo::instant()),
 		));
-		self::register("wall_coral_fan", new WallCoralFan(
-			self::newBID(),
+		self::register("wall_coral_fan", fn(int $id) => new WallCoralFan(
+			new BID($id),
 			"Wall Coral Fan",
 			new Info(BreakInfo::instant()),
 		));
 
-		self::register("mangrove_roots", new MangroveRoots(self::newBID(), "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
-		self::register("muddy_mangrove_roots", new SimplePillar(self::newBID(), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
-		self::register("froglight", new Froglight(self::newBID(), "Froglight", new Info(new BreakInfo(0.3))));
-		self::register("sculk", new Sculk(self::newBID(), "Sculk", new Info(new BreakInfo(0.6, ToolType::HOE))));
-		self::register("reinforced_deepslate", new class(self::newBID(), "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 3600.0))) extends Opaque{
+		self::register("mangrove_roots", fn(int $id) => new MangroveRoots(new BID($id), "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
+		self::register("muddy_mangrove_roots", fn(int $id) => new SimplePillar(new BID($id), "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
+		self::register("froglight", fn(int $id) => new Froglight(new BID($id), "Froglight", new Info(new BreakInfo(0.3))));
+		self::register("sculk", fn(int $id) => new Sculk(new BID($id), "Sculk", new Info(new BreakInfo(0.6, ToolType::HOE))));
+		self::register("reinforced_deepslate", fn(int $id) => new class(new BID($id), "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 3600.0))) extends Opaque{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [];
 			}
@@ -1280,12 +1291,6 @@ final class VanillaBlocks{
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
-
-		//this hack ensures that contributors don't accidentally break the entire server by adding new things without
-		//regenerating type IDs. Unit tests will normally catch this, but contributors might not run them
-		if(!defined('pocketmine\build\generate_type_id_consts\RUNNING') && self::$nextTypeId !== BlockTypeIds::FIRST_RESERVED_ID){
-			throw new AssumptionFailedError("BlockTypeIds is not in sync with VanillaBlocks - regenerate it using build/generate-type-id-consts.php");
-		}
 	}
 
 	private static function registerWoodenBlocks() : void{
@@ -1300,20 +1305,20 @@ final class VanillaBlocks{
 			$name = $woodType->getDisplayName();
 			$idName = fn(string $suffix) => strtolower($woodType->name) . "_" . $suffix;
 
-			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), new Wood(self::newBID(), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), new Wood(self::newBID(), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), fn(int $id) => new Wood(new BID($id), $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), fn(int $id) => new Wood(new BID($id), $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 
-			self::register($idName("planks"), new Planks(self::newBID(), $name . " Planks", $planksBreakInfo, $woodType));
-			self::register($idName("fence"), new WoodenFence(self::newBID(), $name . " Fence", $planksBreakInfo, $woodType));
-			self::register($idName("slab"), new WoodenSlab(self::newBID(), $name, $planksBreakInfo, $woodType));
+			self::register($idName("planks"), fn(int $id) => new Planks(new BID($id), $name . " Planks", $planksBreakInfo, $woodType));
+			self::register($idName("fence"), fn(int $id) => new WoodenFence(new BID($id), $name . " Fence", $planksBreakInfo, $woodType));
+			self::register($idName("slab"), fn(int $id) => new WoodenSlab(new BID($id), $name, $planksBreakInfo, $woodType));
 
-			self::register($idName("fence_gate"), new FenceGate(self::newBID(), $name . " Fence Gate", $planksBreakInfo, $woodType));
-			self::register($idName("stairs"), new WoodenStairs(self::newBID(), $name . " Stairs", $planksBreakInfo, $woodType));
-			self::register($idName("door"), new WoodenDoor(self::newBID(), $name . " Door", $woodenDoorBreakInfo, $woodType));
+			self::register($idName("fence_gate"), fn(int $id) => new FenceGate(new BID($id), $name . " Fence Gate", $planksBreakInfo, $woodType));
+			self::register($idName("stairs"), fn(int $id) => new WoodenStairs(new BID($id), $name . " Stairs", $planksBreakInfo, $woodType));
+			self::register($idName("door"), fn(int $id) => new WoodenDoor(new BID($id), $name . " Door", $woodenDoorBreakInfo, $woodType));
 
-			self::register($idName("button"), new WoodenButton(self::newBID(), $name . " Button", $woodenButtonBreakInfo, $woodType));
-			self::register($idName("pressure_plate"), new WoodenPressurePlate(self::newBID(), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
-			self::register($idName("trapdoor"), new WoodenTrapdoor(self::newBID(), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
+			self::register($idName("button"), fn(int $id) => new WoodenButton(new BID($id), $name . " Button", $woodenButtonBreakInfo, $woodType));
+			self::register($idName("pressure_plate"), fn(int $id) => new WoodenPressurePlate(new BID($id), $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
+			self::register($idName("trapdoor"), fn(int $id) => new WoodenTrapdoor(new BID($id), $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
 			$signAsItem = match($woodType){
 				WoodType::OAK => VanillaItems::OAK_SIGN(...),
@@ -1327,28 +1332,28 @@ final class VanillaBlocks{
 				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
 			};
-			self::register($idName("sign"), new FloorSign(self::newBID(), $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
-			self::register($idName("wall_sign"), new WallSign(self::newBID(), $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
+			self::register($idName("sign"), fn(int $id) => new FloorSign(new BID($id), $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
+			self::register($idName("wall_sign"), fn(int $id) => new WallSign(new BID($id), $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 		}
 	}
 
 	private static function registerMushroomBlocks() : void{
 		$mushroomBlockBreakInfo = new Info(BreakInfo::axe(0.2));
 
-		self::register("brown_mushroom_block", new BrownMushroomBlock(self::newBID(), "Brown Mushroom Block", $mushroomBlockBreakInfo));
-		self::register("red_mushroom_block", new RedMushroomBlock(self::newBID(), "Red Mushroom Block", $mushroomBlockBreakInfo));
+		self::register("brown_mushroom_block", fn(int $id) => new BrownMushroomBlock(new BID($id), "Brown Mushroom Block", $mushroomBlockBreakInfo));
+		self::register("red_mushroom_block", fn(int $id) => new RedMushroomBlock(new BID($id), "Red Mushroom Block", $mushroomBlockBreakInfo));
 
 		//finally, the stems
-		self::register("mushroom_stem", new MushroomStem(self::newBID(), "Mushroom Stem", $mushroomBlockBreakInfo));
-		self::register("all_sided_mushroom_stem", new MushroomStem(self::newBID(), "All Sided Mushroom Stem", $mushroomBlockBreakInfo));
+		self::register("mushroom_stem", fn(int $id) => new MushroomStem(new BID($id), "Mushroom Stem", $mushroomBlockBreakInfo));
+		self::register("all_sided_mushroom_stem", fn(int $id) => new MushroomStem(new BID($id), "All Sided Mushroom Stem", $mushroomBlockBreakInfo));
 	}
 
 	private static function registerElements() : void{
 		$instaBreak = new Info(BreakInfo::instant());
-		self::register("element_zero", new Opaque(self::newBID(), "???", $instaBreak));
+		self::register("element_zero", fn(int $id) => new Opaque(new BID($id), "???", $instaBreak));
 
 		$register = fn(string $name, string $displayName, string $symbol, int $atomicWeight, int $group) =>
-			self::register("element_$name", new Element(self::newBID(), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
+			self::register("element_$name", fn(int $id) => new Element(new BID($id), $displayName, $instaBreak, $symbol, $atomicWeight, $group));
 
 		$register("hydrogen", "Hydrogen", "h", 1, 5);
 		$register("helium", "Helium", "he", 2, 7);
@@ -1472,140 +1477,140 @@ final class VanillaBlocks{
 
 	private static function registerOres() : void{
 		$stoneOreBreakInfo = fn(ToolTier $toolTier) => new Info(BreakInfo::pickaxe(3.0, $toolTier));
-		self::register("coal_ore", new CoalOre(self::newBID(), "Coal Ore", $stoneOreBreakInfo(ToolTier::WOOD)));
-		self::register("copper_ore", new CopperOre(self::newBID(), "Copper Ore", $stoneOreBreakInfo(ToolTier::STONE)));
-		self::register("diamond_ore", new DiamondOre(self::newBID(), "Diamond Ore", $stoneOreBreakInfo(ToolTier::IRON)));
-		self::register("emerald_ore", new EmeraldOre(self::newBID(), "Emerald Ore", $stoneOreBreakInfo(ToolTier::IRON)));
-		self::register("gold_ore", new GoldOre(self::newBID(), "Gold Ore", $stoneOreBreakInfo(ToolTier::IRON)));
-		self::register("iron_ore", new IronOre(self::newBID(), "Iron Ore", $stoneOreBreakInfo(ToolTier::STONE)));
-		self::register("lapis_lazuli_ore", new LapisOre(self::newBID(), "Lapis Lazuli Ore", $stoneOreBreakInfo(ToolTier::STONE)));
-		self::register("redstone_ore", new RedstoneOre(self::newBID(), "Redstone Ore", $stoneOreBreakInfo(ToolTier::IRON)));
+		self::register("coal_ore", fn(int $id) => new CoalOre(new BID($id), "Coal Ore", $stoneOreBreakInfo(ToolTier::WOOD)));
+		self::register("copper_ore", fn(int $id) => new CopperOre(new BID($id), "Copper Ore", $stoneOreBreakInfo(ToolTier::STONE)));
+		self::register("diamond_ore", fn(int $id) => new DiamondOre(new BID($id), "Diamond Ore", $stoneOreBreakInfo(ToolTier::IRON)));
+		self::register("emerald_ore", fn(int $id) => new EmeraldOre(new BID($id), "Emerald Ore", $stoneOreBreakInfo(ToolTier::IRON)));
+		self::register("gold_ore", fn(int $id) => new GoldOre(new BID($id), "Gold Ore", $stoneOreBreakInfo(ToolTier::IRON)));
+		self::register("iron_ore", fn(int $id) => new IronOre(new BID($id), "Iron Ore", $stoneOreBreakInfo(ToolTier::STONE)));
+		self::register("lapis_lazuli_ore", fn(int $id) => new LapisOre(new BID($id), "Lapis Lazuli Ore", $stoneOreBreakInfo(ToolTier::STONE)));
+		self::register("redstone_ore", fn(int $id) => new RedstoneOre(new BID($id), "Redstone Ore", $stoneOreBreakInfo(ToolTier::IRON)));
 
 		$deepslateOreBreakInfo = fn(ToolTier $toolTier) => new Info(BreakInfo::pickaxe(4.5, $toolTier));
-		self::register("deepslate_coal_ore", new CoalOre(self::newBID(), "Deepslate Coal Ore", $deepslateOreBreakInfo(ToolTier::WOOD)));
-		self::register("deepslate_copper_ore", new CopperOre(self::newBID(), "Deepslate Copper Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
-		self::register("deepslate_diamond_ore", new DiamondOre(self::newBID(), "Deepslate Diamond Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
-		self::register("deepslate_emerald_ore", new EmeraldOre(self::newBID(), "Deepslate Emerald Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
-		self::register("deepslate_gold_ore", new GoldOre(self::newBID(), "Deepslate Gold Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
-		self::register("deepslate_iron_ore", new IronOre(self::newBID(), "Deepslate Iron Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
-		self::register("deepslate_lapis_lazuli_ore", new LapisOre(self::newBID(), "Deepslate Lapis Lazuli Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
-		self::register("deepslate_redstone_ore", new RedstoneOre(self::newBID(), "Deepslate Redstone Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
+		self::register("deepslate_coal_ore", fn(int $id) => new CoalOre(new BID($id), "Deepslate Coal Ore", $deepslateOreBreakInfo(ToolTier::WOOD)));
+		self::register("deepslate_copper_ore", fn(int $id) => new CopperOre(new BID($id), "Deepslate Copper Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
+		self::register("deepslate_diamond_ore", fn(int $id) => new DiamondOre(new BID($id), "Deepslate Diamond Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
+		self::register("deepslate_emerald_ore", fn(int $id) => new EmeraldOre(new BID($id), "Deepslate Emerald Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
+		self::register("deepslate_gold_ore", fn(int $id) => new GoldOre(new BID($id), "Deepslate Gold Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
+		self::register("deepslate_iron_ore", fn(int $id) => new IronOre(new BID($id), "Deepslate Iron Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
+		self::register("deepslate_lapis_lazuli_ore", fn(int $id) => new LapisOre(new BID($id), "Deepslate Lapis Lazuli Ore", $deepslateOreBreakInfo(ToolTier::STONE)));
+		self::register("deepslate_redstone_ore", fn(int $id) => new RedstoneOre(new BID($id), "Deepslate Redstone Ore", $deepslateOreBreakInfo(ToolTier::IRON)));
 
 		$netherrackOreBreakInfo = new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD));
-		self::register("nether_quartz_ore", new NetherQuartzOre(self::newBID(), "Nether Quartz Ore", $netherrackOreBreakInfo));
-		self::register("nether_gold_ore", new NetherGoldOre(self::newBID(), "Nether Gold Ore", $netherrackOreBreakInfo));
+		self::register("nether_quartz_ore", fn(int $id) => new NetherQuartzOre(new BID($id), "Nether Quartz Ore", $netherrackOreBreakInfo));
+		self::register("nether_gold_ore", fn(int $id) => new NetherGoldOre(new BID($id), "Nether Gold Ore", $netherrackOreBreakInfo));
 	}
 
 	private static function registerCraftingTables() : void{
 		//TODO: this is the same for all wooden crafting blocks
 		$craftingBlockBreakInfo = new Info(BreakInfo::axe(2.5));
-		self::register("cartography_table", new CartographyTable(self::newBID(), "Cartography Table", $craftingBlockBreakInfo));
-		self::register("crafting_table", new CraftingTable(self::newBID(), "Crafting Table", $craftingBlockBreakInfo));
-		self::register("fletching_table", new FletchingTable(self::newBID(), "Fletching Table", $craftingBlockBreakInfo));
-		self::register("loom", new Loom(self::newBID(), "Loom", $craftingBlockBreakInfo));
-		self::register("smithing_table", new SmithingTable(self::newBID(), "Smithing Table", $craftingBlockBreakInfo));
+		self::register("cartography_table", fn(int $id) => new CartographyTable(new BID($id), "Cartography Table", $craftingBlockBreakInfo));
+		self::register("crafting_table", fn(int $id) => new CraftingTable(new BID($id), "Crafting Table", $craftingBlockBreakInfo));
+		self::register("fletching_table", fn(int $id) => new FletchingTable(new BID($id), "Fletching Table", $craftingBlockBreakInfo));
+		self::register("loom", fn(int $id) => new Loom(new BID($id), "Loom", $craftingBlockBreakInfo));
+		self::register("smithing_table", fn(int $id) => new SmithingTable(new BID($id), "Smithing Table", $craftingBlockBreakInfo));
 	}
 
 	private static function registerChorusBlocks() : void{
 		$chorusBlockBreakInfo = new Info(BreakInfo::axe(0.4));
-		self::register("chorus_plant", new ChorusPlant(self::newBID(), "Chorus Plant", $chorusBlockBreakInfo));
-		self::register("chorus_flower", new ChorusFlower(self::newBID(), "Chorus Flower", $chorusBlockBreakInfo));
+		self::register("chorus_plant", fn(int $id) => new ChorusPlant(new BID($id), "Chorus Plant", $chorusBlockBreakInfo));
+		self::register("chorus_flower", fn(int $id) => new ChorusFlower(new BID($id), "Chorus Flower", $chorusBlockBreakInfo));
 	}
 
 	private static function registerBlocksR13() : void{
-		self::register("light", new Light(self::newBID(), "Light Block", new Info(BreakInfo::indestructible())));
-		self::register("wither_rose", new WitherRose(self::newBID(), "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("light", fn(int $id) => new Light(new BID($id), "Light Block", new Info(BreakInfo::indestructible())));
+		self::register("wither_rose", fn(int $id) => new WitherRose(new BID($id), "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 	}
 
 	private static function registerBlocksR14() : void{
-		self::register("honeycomb", new Opaque(self::newBID(), "Honeycomb Block", new Info(new BreakInfo(0.6))));
+		self::register("honeycomb", fn(int $id) => new Opaque(new BID($id), "Honeycomb Block", new Info(new BreakInfo(0.6))));
 	}
 
 	private static function registerBlocksR16() : void{
 		//for some reason, slabs have weird hardness like the legacy ones
 		$slabBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
-		self::register("ancient_debris", new class(self::newBID(), "Ancient Debris", new Info(BreakInfo::pickaxe(30, ToolTier::DIAMOND, 3600.0))) extends Opaque{
+		self::register("ancient_debris", fn(int $id) => new class(new BID($id), "Ancient Debris", new Info(BreakInfo::pickaxe(30, ToolTier::DIAMOND, 3600.0))) extends Opaque{
 			public function isFireProofAsItem() : bool{ return true; }
 		});
 		$netheriteBreakInfo = new Info(BreakInfo::pickaxe(50, ToolTier::DIAMOND, 3600.0));
-		self::register("netherite", new class(self::newBID(), "Netherite Block", $netheriteBreakInfo) extends Opaque{
+		self::register("netherite", fn(int $id) => new class(new BID($id), "Netherite Block", $netheriteBreakInfo) extends Opaque{
 			public function isFireProofAsItem() : bool{ return true; }
 		});
 
 		$basaltBreakInfo = new Info(BreakInfo::pickaxe(1.25, ToolTier::WOOD, 21.0));
-		self::register("basalt", new SimplePillar(self::newBID(), "Basalt", $basaltBreakInfo));
-		self::register("polished_basalt", new SimplePillar(self::newBID(), "Polished Basalt", $basaltBreakInfo));
-		self::register("smooth_basalt", new Opaque(self::newBID(), "Smooth Basalt", $basaltBreakInfo));
+		self::register("basalt", fn(int $id) => new SimplePillar(new BID($id), "Basalt", $basaltBreakInfo));
+		self::register("polished_basalt", fn(int $id) => new SimplePillar(new BID($id), "Polished Basalt", $basaltBreakInfo));
+		self::register("smooth_basalt", fn(int $id) => new Opaque(new BID($id), "Smooth Basalt", $basaltBreakInfo));
 
 		$blackstoneBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register("blackstone", new Opaque(self::newBID(), "Blackstone", $blackstoneBreakInfo));
-		self::register("blackstone_slab", new Slab(self::newBID(), "Blackstone", $slabBreakInfo));
-		self::register("blackstone_stairs", new Stair(self::newBID(), "Blackstone Stairs", $blackstoneBreakInfo));
-		self::register("blackstone_wall", new Wall(self::newBID(), "Blackstone Wall", $blackstoneBreakInfo));
+		self::register("blackstone", fn(int $id) => new Opaque(new BID($id), "Blackstone", $blackstoneBreakInfo));
+		self::register("blackstone_slab", fn(int $id) => new Slab(new BID($id), "Blackstone", $slabBreakInfo));
+		self::register("blackstone_stairs", fn(int $id) => new Stair(new BID($id), "Blackstone Stairs", $blackstoneBreakInfo));
+		self::register("blackstone_wall", fn(int $id) => new Wall(new BID($id), "Blackstone Wall", $blackstoneBreakInfo));
 
-		self::register("gilded_blackstone", new GildedBlackstone(self::newBID(), "Gilded Blackstone", $blackstoneBreakInfo));
+		self::register("gilded_blackstone", fn(int $id) => new GildedBlackstone(new BID($id), "Gilded Blackstone", $blackstoneBreakInfo));
 
 		//TODO: polished blackstone ought to have 2.0 hardness (as per java) but it's 1.5 in Bedrock (probably parity bug)
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
-		self::register("polished_blackstone", new Opaque(self::newBID(), $prefix(""), $blackstoneBreakInfo));
-		self::register("polished_blackstone_button", new StoneButton(self::newBID(), $prefix("Button"), new Info(BreakInfo::pickaxe(0.5))));
-		self::register("polished_blackstone_pressure_plate", new StonePressurePlate(self::newBID(), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), 20));
-		self::register("polished_blackstone_slab", new Slab(self::newBID(), $prefix(""), $slabBreakInfo));
-		self::register("polished_blackstone_stairs", new Stair(self::newBID(), $prefix("Stairs"), $blackstoneBreakInfo));
-		self::register("polished_blackstone_wall", new Wall(self::newBID(), $prefix("Wall"), $blackstoneBreakInfo));
-		self::register("chiseled_polished_blackstone", new Opaque(self::newBID(), "Chiseled Polished Blackstone", $blackstoneBreakInfo));
+		self::register("polished_blackstone", fn(int $id) => new Opaque(new BID($id), $prefix(""), $blackstoneBreakInfo));
+		self::register("polished_blackstone_button", fn(int $id) => new StoneButton(new BID($id), $prefix("Button"), new Info(BreakInfo::pickaxe(0.5))));
+		self::register("polished_blackstone_pressure_plate", fn(int $id) => new StonePressurePlate(new BID($id), $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), 20));
+		self::register("polished_blackstone_slab", fn(int $id) => new Slab(new BID($id), $prefix(""), $slabBreakInfo));
+		self::register("polished_blackstone_stairs", fn(int $id) => new Stair(new BID($id), $prefix("Stairs"), $blackstoneBreakInfo));
+		self::register("polished_blackstone_wall", fn(int $id) => new Wall(new BID($id), $prefix("Wall"), $blackstoneBreakInfo));
+		self::register("chiseled_polished_blackstone", fn(int $id) => new Opaque(new BID($id), "Chiseled Polished Blackstone", $blackstoneBreakInfo));
 
 		$prefix = fn(string $thing) => "Polished Blackstone Brick" . ($thing !== "" ? " $thing" : "");
-		self::register("polished_blackstone_bricks", new Opaque(self::newBID(), "Polished Blackstone Bricks", $blackstoneBreakInfo));
-		self::register("polished_blackstone_brick_slab", new Slab(self::newBID(), "Polished Blackstone Brick", $slabBreakInfo));
-		self::register("polished_blackstone_brick_stairs", new Stair(self::newBID(), $prefix("Stairs"), $blackstoneBreakInfo));
-		self::register("polished_blackstone_brick_wall", new Wall(self::newBID(), $prefix("Wall"), $blackstoneBreakInfo));
-		self::register("cracked_polished_blackstone_bricks", new Opaque(self::newBID(), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
+		self::register("polished_blackstone_bricks", fn(int $id) => new Opaque(new BID($id), "Polished Blackstone Bricks", $blackstoneBreakInfo));
+		self::register("polished_blackstone_brick_slab", fn(int $id) => new Slab(new BID($id), "Polished Blackstone Brick", $slabBreakInfo));
+		self::register("polished_blackstone_brick_stairs", fn(int $id) => new Stair(new BID($id), $prefix("Stairs"), $blackstoneBreakInfo));
+		self::register("polished_blackstone_brick_wall", fn(int $id) => new Wall(new BID($id), $prefix("Wall"), $blackstoneBreakInfo));
+		self::register("cracked_polished_blackstone_bricks", fn(int $id) => new Opaque(new BID($id), "Cracked Polished Blackstone Bricks", $blackstoneBreakInfo));
 
-		self::register("soul_torch", new Torch(self::newBID(), "Soul Torch", new Info(BreakInfo::instant())));
-		self::register("soul_fire", new SoulFire(self::newBID(), "Soul Fire", new Info(BreakInfo::instant(), [Tags::FIRE])));
+		self::register("soul_torch", fn(int $id) => new Torch(new BID($id), "Soul Torch", new Info(BreakInfo::instant())));
+		self::register("soul_fire", fn(int $id) => new SoulFire(new BID($id), "Soul Fire", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
 		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
-		self::register("soul_soil", new Opaque(self::newBID(), "Soul Soil", new Info(BreakInfo::shovel(1.0))));
+		self::register("soul_soil", fn(int $id) => new Opaque(new BID($id), "Soul Soil", new Info(BreakInfo::shovel(1.0))));
 
-		self::register("shroomlight", new class(self::newBID(), "Shroomlight", new Info(new BreakInfo(1.0, ToolType::HOE))) extends Opaque{
+		self::register("shroomlight", fn(int $id) => new class(new BID($id), "Shroomlight", new Info(new BreakInfo(1.0, ToolType::HOE))) extends Opaque{
 			public function getLightLevel() : int{ return 15; }
 		});
 
-		self::register("warped_wart_block", new Opaque(self::newBID(), "Warped Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
-		self::register("crying_obsidian", new class(self::newBID(), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND, 6000.0))) extends Opaque{
+		self::register("warped_wart_block", fn(int $id) => new Opaque(new BID($id), "Warped Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
+		self::register("crying_obsidian", fn(int $id) => new class(new BID($id), "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND, 6000.0))) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});
 
-		self::register("twisting_vines", new NetherVines(self::newBID(), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
-		self::register("weeping_vines", new NetherVines(self::newBID(), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
+		self::register("twisting_vines", fn(int $id) => new NetherVines(new BID($id), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
+		self::register("weeping_vines", fn(int $id) => new NetherVines(new BID($id), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
 
 		$netherRootsInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
-		self::register("crimson_roots", new NetherRoots(self::newBID(), "Crimson Roots", $netherRootsInfo));
-		self::register("warped_roots", new NetherRoots(self::newBID(), "Warped Roots", $netherRootsInfo));
+		self::register("crimson_roots", fn(int $id) => new NetherRoots(new BID($id), "Crimson Roots", $netherRootsInfo));
+		self::register("warped_roots", fn(int $id) => new NetherRoots(new BID($id), "Warped Roots", $netherRootsInfo));
 
-		self::register("chain", new Chain(self::newBID(), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
+		self::register("chain", fn(int $id) => new Chain(new BID($id), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
 	}
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
 		$amethystInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD));
-		self::register("amethyst", new class(self::newBID(), "Amethyst", $amethystInfo) extends Opaque{
+		self::register("amethyst", fn(int $id) => new class(new BID($id), "Amethyst", $amethystInfo) extends Opaque{
 			use AmethystTrait;
 		});
-		self::register("budding_amethyst", new BuddingAmethyst(self::newBID(), "Budding Amethyst", $amethystInfo));
-		self::register("amethyst_cluster", new AmethystCluster(self::newBID(), "Amethyst Cluster", $amethystInfo));
+		self::register("budding_amethyst", fn(int $id) => new BuddingAmethyst(new BID($id), "Budding Amethyst", $amethystInfo));
+		self::register("amethyst_cluster", fn(int $id) => new AmethystCluster(new BID($id), "Amethyst Cluster", $amethystInfo));
 
-		self::register("calcite", new Opaque(self::newBID(), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD))));
-		self::register("tuff", new Opaque(self::newBID(), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
+		self::register("calcite", fn(int $id) => new Opaque(new BID($id), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD))));
+		self::register("tuff", fn(int $id) => new Opaque(new BID($id), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
 
-		self::register("raw_copper", new Opaque(self::newBID(), "Raw Copper Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
-		self::register("raw_gold", new Opaque(self::newBID(), "Raw Gold Block", new Info(BreakInfo::pickaxe(5, ToolTier::IRON, 30.0))));
-		self::register("raw_iron", new Opaque(self::newBID(), "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
+		self::register("raw_copper", fn(int $id) => new Opaque(new BID($id), "Raw Copper Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
+		self::register("raw_gold", fn(int $id) => new Opaque(new BID($id), "Raw Gold Block", new Info(BreakInfo::pickaxe(5, ToolTier::IRON, 30.0))));
+		self::register("raw_iron", fn(int $id) => new Opaque(new BID($id), "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
 
 		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD, 18.0));
-		self::register("deepslate", new class(self::newBID(), "Deepslate", $deepslateBreakInfo) extends SimplePillar{
+		self::register("deepslate", fn(int $id) => new class(new BID($id), "Deepslate", $deepslateBreakInfo) extends SimplePillar{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLED_DEEPSLATE()->asItem()];
 			}
@@ -1616,85 +1621,85 @@ final class VanillaBlocks{
 		});
 
 		//TODO: parity issue here - in Java this has a hardness of 3.0, but in bedrock it's 3.5
-		self::register("chiseled_deepslate", new Opaque(self::newBID(), "Chiseled Deepslate", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0))));
+		self::register("chiseled_deepslate", fn(int $id) => new Opaque(new BID($id), "Chiseled Deepslate", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0))));
 
 		$deepslateBrickBreakInfo = new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0));
-		self::register("deepslate_bricks", new Opaque(self::newBID(), "Deepslate Bricks", $deepslateBrickBreakInfo));
-		self::register("deepslate_brick_slab", new Slab(self::newBID(), "Deepslate Brick", $deepslateBrickBreakInfo));
-		self::register("deepslate_brick_stairs", new Stair(self::newBID(), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
-		self::register("deepslate_brick_wall", new Wall(self::newBID(), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
-		self::register("cracked_deepslate_bricks", new Opaque(self::newBID(), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
+		self::register("deepslate_bricks", fn(int $id) => new Opaque(new BID($id), "Deepslate Bricks", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_slab", fn(int $id) => new Slab(new BID($id), "Deepslate Brick", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_stairs", fn(int $id) => new Stair(new BID($id), "Deepslate Brick Stairs", $deepslateBrickBreakInfo));
+		self::register("deepslate_brick_wall", fn(int $id) => new Wall(new BID($id), "Deepslate Brick Wall", $deepslateBrickBreakInfo));
+		self::register("cracked_deepslate_bricks", fn(int $id) => new Opaque(new BID($id), "Cracked Deepslate Bricks", $deepslateBrickBreakInfo));
 
 		$deepslateTilesBreakInfo = new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0));
-		self::register("deepslate_tiles", new Opaque(self::newBID(), "Deepslate Tiles", $deepslateTilesBreakInfo));
-		self::register("deepslate_tile_slab", new Slab(self::newBID(), "Deepslate Tile", $deepslateTilesBreakInfo));
-		self::register("deepslate_tile_stairs", new Stair(self::newBID(), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
-		self::register("deepslate_tile_wall", new Wall(self::newBID(), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
-		self::register("cracked_deepslate_tiles", new Opaque(self::newBID(), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
+		self::register("deepslate_tiles", fn(int $id) => new Opaque(new BID($id), "Deepslate Tiles", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_slab", fn(int $id) => new Slab(new BID($id), "Deepslate Tile", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_stairs", fn(int $id) => new Stair(new BID($id), "Deepslate Tile Stairs", $deepslateTilesBreakInfo));
+		self::register("deepslate_tile_wall", fn(int $id) => new Wall(new BID($id), "Deepslate Tile Wall", $deepslateTilesBreakInfo));
+		self::register("cracked_deepslate_tiles", fn(int $id) => new Opaque(new BID($id), "Cracked Deepslate Tiles", $deepslateTilesBreakInfo));
 
 		$cobbledDeepslateBreakInfo = new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0));
-		self::register("cobbled_deepslate", new Opaque(self::newBID(), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
-		self::register("cobbled_deepslate_slab", new Slab(self::newBID(), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
-		self::register("cobbled_deepslate_stairs", new Stair(self::newBID(), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
-		self::register("cobbled_deepslate_wall", new Wall(self::newBID(), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate", fn(int $id) => new Opaque(new BID($id), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_slab", fn(int $id) => new Slab(new BID($id), "Cobbled Deepslate", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_stairs", fn(int $id) => new Stair(new BID($id), "Cobbled Deepslate Stairs", $cobbledDeepslateBreakInfo));
+		self::register("cobbled_deepslate_wall", fn(int $id) => new Wall(new BID($id), "Cobbled Deepslate Wall", $cobbledDeepslateBreakInfo));
 
 		$polishedDeepslateBreakInfo = new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD, 18.0));
-		self::register("polished_deepslate", new Opaque(self::newBID(), "Polished Deepslate", $polishedDeepslateBreakInfo));
-		self::register("polished_deepslate_slab", new Slab(self::newBID(), "Polished Deepslate", $polishedDeepslateBreakInfo));
-		self::register("polished_deepslate_stairs", new Stair(self::newBID(), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
-		self::register("polished_deepslate_wall", new Wall(self::newBID(), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate", fn(int $id) => new Opaque(new BID($id), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_slab", fn(int $id) => new Slab(new BID($id), "Polished Deepslate", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_stairs", fn(int $id) => new Stair(new BID($id), "Polished Deepslate Stairs", $polishedDeepslateBreakInfo));
+		self::register("polished_deepslate_wall", fn(int $id) => new Wall(new BID($id), "Polished Deepslate Wall", $polishedDeepslateBreakInfo));
 
-		self::register("tinted_glass", new TintedGlass(self::newBID(), "Tinted Glass", new Info(new BreakInfo(0.3))));
+		self::register("tinted_glass", fn(int $id) => new TintedGlass(new BID($id), "Tinted Glass", new Info(new BreakInfo(0.3))));
 
 		//blast resistance should be 30 if we were matched with java :(
 		$copperBreakInfo = new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE, 18.0));
-		self::register("lightning_rod", new LightningRod(self::newBID(), "Lightning Rod", $copperBreakInfo));
+		self::register("lightning_rod", fn(int $id) => new LightningRod(new BID($id), "Lightning Rod", $copperBreakInfo));
 
-		self::register("copper", new Copper(self::newBID(), "Copper Block", $copperBreakInfo));
-		self::register("cut_copper", new Copper(self::newBID(), "Cut Copper Block", $copperBreakInfo));
-		self::register("cut_copper_slab", new CopperSlab(self::newBID(), "Cut Copper Slab", $copperBreakInfo));
-		self::register("cut_copper_stairs", new CopperStairs(self::newBID(), "Cut Copper Stairs", $copperBreakInfo));
+		self::register("copper", fn(int $id) => new Copper(new BID($id), "Copper Block", $copperBreakInfo));
+		self::register("cut_copper", fn(int $id) => new Copper(new BID($id), "Cut Copper Block", $copperBreakInfo));
+		self::register("cut_copper_slab", fn(int $id) => new CopperSlab(new BID($id), "Cut Copper Slab", $copperBreakInfo));
+		self::register("cut_copper_stairs", fn(int $id) => new CopperStairs(new BID($id), "Cut Copper Stairs", $copperBreakInfo));
 
 		$candleBreakInfo = new Info(new BreakInfo(0.1));
-		self::register("candle", new Candle(self::newBID(), "Candle", $candleBreakInfo));
-		self::register("dyed_candle", new DyedCandle(self::newBID(), "Dyed Candle", $candleBreakInfo));
+		self::register("candle", fn(int $id) => new Candle(new BID($id), "Candle", $candleBreakInfo));
+		self::register("dyed_candle", fn(int $id) => new DyedCandle(new BID($id), "Dyed Candle", $candleBreakInfo));
 
 		//TODO: duplicated break info :(
 		$cakeBreakInfo = new Info(new BreakInfo(0.5));
-		self::register("cake_with_candle", new CakeWithCandle(self::newBID(), "Cake With Candle", $cakeBreakInfo));
-		self::register("cake_with_dyed_candle", new CakeWithDyedCandle(self::newBID(), "Cake With Dyed Candle", $cakeBreakInfo));
+		self::register("cake_with_candle", fn(int $id) => new CakeWithCandle(new BID($id), "Cake With Candle", $cakeBreakInfo));
+		self::register("cake_with_dyed_candle", fn(int $id) => new CakeWithDyedCandle(new BID($id), "Cake With Dyed Candle", $cakeBreakInfo));
 
-		self::register("hanging_roots", new HangingRoots(self::newBID(), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("hanging_roots", fn(int $id) => new HangingRoots(new BID($id), "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
-		self::register("cave_vines", new CaveVines(self::newBID(), "Cave Vines", new Info(BreakInfo::instant())));
+		self::register("cave_vines", fn(int $id) => new CaveVines(new BID($id), "Cave Vines", new Info(BreakInfo::instant())));
 
-		self::register("small_dripleaf", new SmallDripleaf(self::newBID(), "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
-		self::register("big_dripleaf_head", new BigDripleafHead(self::newBID(), "Big Dripleaf", new Info(BreakInfo::instant())));
-		self::register("big_dripleaf_stem", new BigDripleafStem(self::newBID(), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
+		self::register("small_dripleaf", fn(int $id) => new SmallDripleaf(new BID($id), "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("big_dripleaf_head", fn(int $id) => new BigDripleafHead(new BID($id), "Big Dripleaf", new Info(BreakInfo::instant())));
+		self::register("big_dripleaf_stem", fn(int $id) => new BigDripleafStem(new BID($id), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerBlocksR18() : void{
-		self::register("spore_blossom", new SporeBlossom(self::newBID(), "Spore Blossom", new Info(BreakInfo::instant())));
+		self::register("spore_blossom", fn(int $id) => new SporeBlossom(new BID($id), "Spore Blossom", new Info(BreakInfo::instant())));
 	}
 
 	private static function registerMudBlocks() : void{
-		self::register("mud", new Opaque(self::newBID(), "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD])));
-		self::register("packed_mud", new Opaque(self::newBID(), "Packed Mud", new Info(BreakInfo::pickaxe(1.0, null, 15.0))));
+		self::register("mud", fn(int $id) => new Opaque(new BID($id), "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD])));
+		self::register("packed_mud", fn(int $id) => new Opaque(new BID($id), "Packed Mud", new Info(BreakInfo::pickaxe(1.0, null, 15.0))));
 
 		$mudBricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
-		self::register("mud_bricks", new Opaque(self::newBID(), "Mud Bricks", $mudBricksBreakInfo));
-		self::register("mud_brick_slab", new Slab(self::newBID(), "Mud Brick", $mudBricksBreakInfo));
-		self::register("mud_brick_stairs", new Stair(self::newBID(), "Mud Brick Stairs", $mudBricksBreakInfo));
-		self::register("mud_brick_wall", new Wall(self::newBID(), "Mud Brick Wall", $mudBricksBreakInfo));
+		self::register("mud_bricks", fn(int $id) => new Opaque(new BID($id), "Mud Bricks", $mudBricksBreakInfo));
+		self::register("mud_brick_slab", fn(int $id) => new Slab(new BID($id), "Mud Brick", $mudBricksBreakInfo));
+		self::register("mud_brick_stairs", fn(int $id) => new Stair(new BID($id), "Mud Brick Stairs", $mudBricksBreakInfo));
+		self::register("mud_brick_wall", fn(int $id) => new Wall(new BID($id), "Mud Brick Wall", $mudBricksBreakInfo));
 	}
 
 	private static function registerCauldronBlocks() : void{
 		$cauldronBreakInfo = new Info(BreakInfo::pickaxe(2, ToolTier::WOOD));
 
-		self::register("cauldron", new Cauldron(self::newBID(TileCauldron::class), "Cauldron", $cauldronBreakInfo));
-		self::register("water_cauldron", new WaterCauldron(self::newBID(TileCauldron::class), "Water Cauldron", $cauldronBreakInfo));
-		self::register("lava_cauldron", new LavaCauldron(self::newBID(TileCauldron::class), "Lava Cauldron", $cauldronBreakInfo));
-		self::register("potion_cauldron", new PotionCauldron(self::newBID(TileCauldron::class), "Potion Cauldron", $cauldronBreakInfo));
+		self::register("cauldron", fn(int $id) => new Cauldron(new BID($id, TileCauldron::class), "Cauldron", $cauldronBreakInfo));
+		self::register("water_cauldron", fn(int $id) => new WaterCauldron(new BID($id, TileCauldron::class), "Water Cauldron", $cauldronBreakInfo));
+		self::register("lava_cauldron", fn(int $id) => new LavaCauldron(new BID($id, TileCauldron::class), "Lava Cauldron", $cauldronBreakInfo));
+		self::register("potion_cauldron", fn(int $id) => new PotionCauldron(new BID($id, TileCauldron::class), "Potion Cauldron", $cauldronBreakInfo));
 	}
 }
