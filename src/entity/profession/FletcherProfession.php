@@ -113,9 +113,7 @@ final class FletcherProfession extends VillagerProfession{
 			),
 			//new TradeRecipe(//TODO: Implement this after implementing crossbow
 			//	buyA: VanillaItems::EMERALD()->setCount(8),
-			//	sell: VanillaItems::CROSSBOW()->setCount(1)->setEnchantments([
-			//		EnchantmentInstance::get(Enchantment::get(Enchantment::MULTISHOT), 1)
-			//	]),
+			//	sell: VanillaItems::CROSSBOW()->setCount(1)->addEnchantment(new EnchantmentInstance(VanillaEnchantments::MULTISHOT(), 1)),
 			//	maxUses: 3,
 			//	priceMultiplier: 0.05,
 			//	tier: 4,

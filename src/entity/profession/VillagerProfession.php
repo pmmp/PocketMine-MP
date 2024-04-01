@@ -57,4 +57,3 @@ abstract class VillagerProfession{
 	/** @phpstan-return list<TradeRecipe> */
 	abstract public function getRecipes(int $biomeId) : array;
 }
-
