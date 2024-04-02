@@ -28,29 +28,36 @@ use pocketmine\nbt\tag\CompoundTag;
 
 final class TradeRecipe{
 
-	public const TAG_BUY_A = "buyA";
-	public const TAG_BUY_B = "buyB";
-	public const TAG_SELL = "sell";
-	public const TAG_REWARD_EXP = "rewardExp";
-	public const TAG_TIER = "tier";
-	public const TAG_TRADER_EXP = "traderExp";
-	public const TAG_MAX_USES = "maxUses";
-	public const TAG_PRICE_MULTIPLIER_A = "priceMultiplierA";
-	public const TAG_PRICE_MULTIPLIER_B = "priceMultiplierB";
-	public const TAG_USES = "uses";
+	private const TAG_BUY_A = "buyA";
+	private const TAG_BUY_B = "buyB";
+	private const TAG_SELL = "sell";
+	private const TAG_REWARD_EXP = "rewardExp";
+	private const TAG_TIER = "tier";
+	private const TAG_TRADER_EXP = "traderExp";
+	private const TAG_MAX_USES = "maxUses";
+	private const TAG_PRICE_MULTIPLIER_A = "priceMultiplierA";
+	private const TAG_PRICE_MULTIPLIER_B = "priceMultiplierB";
+	private const TAG_USES = "uses";
 
 	public const TAG_NET_ID = "netId";
+
+	private const DEFAULT_MAX_USES = 16;
+	private const DEFAULT_PRICE_MULTIPLIER = 0.05;
+	private const DEFAULT_REWARD_EXP = 0;
+	private const DEFAULT_TIER = 0;
+	private const DEFAULT_TRADER_EXP = 0;
+	private const DEFAULT_USES = 0;
 
 	public function __construct(
 		private readonly Item $buyA,
 		private readonly Item $sell,
 		private readonly ?Item $buyB = null,
-		private readonly int $maxUses = 16,
-		private readonly float $priceMultiplier = 0.05,
-		private readonly int $rewardExp = 0,
-		private int $tier = 0,
-		private int $traderExp = 0,
-		private int $uses = 0
+		private readonly int $maxUses = self::DEFAULT_MAX_USES,
+		private readonly float $priceMultiplier = self::DEFAULT_PRICE_MULTIPLIER,
+		private readonly int $rewardExp = self::DEFAULT_REWARD_EXP,
+		private int $tier = self::DEFAULT_TIER,
+		private int $traderExp = self::DEFAULT_TRADER_EXP,
+		private int $uses = self::DEFAULT_USES
 	){
 		if($buyA->isNull() || $sell->isNull() || ($buyB !== null && $buyB->isNull())){
 			throw new \InvalidArgumentException("Recipe items cannot be null");
