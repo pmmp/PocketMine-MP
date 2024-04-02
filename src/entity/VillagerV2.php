@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\data\bedrock\VillagerProfessionIdMap;
-use pocketmine\data\bedrock\VillagerProfessionTypeIds;
 use pocketmine\data\SavedDataLoadingException;
+use pocketmine\entity\profession\VanillaVillagerProfessions;
 use pocketmine\entity\profession\VillagerProfession;
 use pocketmine\entity\trade\TradeRecipe;
 use pocketmine\entity\trade\TradeRecipeData;
@@ -41,7 +41,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use function array_map;
-use function random_int;
+use function array_rand;
+use function array_values;
 
 final class VillagerV2 extends Living implements Ageable{
 
@@ -75,10 +76,9 @@ final class VillagerV2 extends Living implements Ageable{
 		parent::initEntity($nbt);
 
 		$professionId = $nbt->getInt(self::TAG_PROFESSION, -1);
-		if($professionId === -1){
-			$professionId = random_int(VillagerProfessionTypeIds::UNEMPLOYED, VillagerProfessionTypeIds::NITWIT);
-		}
-		$profession = VillagerProfessionIdMap::getInstance()->fromId($professionId);
+
+		$allProfessions = array_values(VanillaVillagerProfessions::getAll());
+		$profession = $professionId !== -1 ? VillagerProfessionIdMap::getInstance()->fromId($professionId) : $allProfessions[array_rand($allProfessions)];
 		if($profession === null){
 			throw new SavedDataLoadingException("Invalid profession ID $professionId");
 		}
