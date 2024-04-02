@@ -155,22 +155,27 @@ final class VillagerV2 extends Living implements Ageable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
+
 		$nbt->setInt(self::TAG_PROFESSION, $this->profession->getId());
 		$nbt->setInt(self::TAG_VARIANT, $this->profession->getId());
 		$nbt->setInt(self::TAG_TRADE_EXPERIENCE, $this->recipeData->getTradeExperience());
 		$nbt->setInt(self::TAG_TRADE_TIER, $this->recipeData->getTier());
+
 		$offers = CompoundTag::create();
+
 		$recipes = $this->recipeData->getRecipes();
 		$recipesTag = array_map(static function(TradeRecipe $recipe) : Tag{
 			return $recipe->nbtSerialize();
 		}, $recipes);
 		$offers->setTag(self::TAG_RECIPES, new ListTag($recipesTag));
+
 		$tierExpRequirements = [];
 		foreach($this->recipeData->getTierExpRequirements() as $tier => $expRequirement){
 			$tierExpRequirements[] = CompoundTag::create()
 				->setInt((string) $tier, $expRequirement);
 		}
 		$offers->setTag(self::TAG_TIER_EXP_REQUIREMENTS, new ListTag($tierExpRequirements));
+
 		$nbt->setTag(self::TAG_OFFERS, $offers);
 		return $nbt;
 	}
