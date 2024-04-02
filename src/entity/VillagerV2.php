@@ -147,7 +147,7 @@ final class VillagerV2 extends Living implements Ageable{
 	}
 
 	public function onInteract(Player $player, Vector3 $clickPos) : bool{
-		if(!$this->profession->canTrade()){
+		if($this->isBaby() || !$this->profession->canTrade()){
 			return true;
 		}
 		return $player->setCurrentWindow(new TradeInventory($this->profession->getVillagerName(), $this, $this->recipeData));
