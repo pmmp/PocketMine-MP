@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\thread\Thread;
 use pocketmine\thread\ThreadManager;
 use function count;
 use function exec;
@@ -122,7 +123,7 @@ final class Process{
 
 		//TODO: more OS
 
-		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
+		return Thread::getRunningCount() + 1; //pmmpthread doesn't count the main thread
 	}
 
 	/**
