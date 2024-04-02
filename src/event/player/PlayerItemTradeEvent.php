@@ -40,10 +40,16 @@ final class PlayerItemTradeEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
+	/**
+	 * Returns the first item that the trader wants to buy.
+	 */
 	public function getBuyA() : Item{
 		return clone $this->buyA;
 	}
 
+	/**
+	 * Returns the second item that the trader wants to buy, or null if the trader only wants to buy one item.
+	 */
 	public function getBuyB() : ?Item{
 		return $this->buyB === null ? null : clone $this->buyB;
 	}
