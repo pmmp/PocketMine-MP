@@ -152,12 +152,12 @@ final class TradeRecipe{
 			$buyA,
 			$sell,
 			$buyB,
-			$nbt->getInt(self::TAG_MAX_USES, 16),
-			$nbt->getFloat(self::TAG_PRICE_MULTIPLIER_A, 0.05),
-			$nbt->getInt(self::TAG_REWARD_EXP, 0),
-			$nbt->getInt(self::TAG_TIER, 0),
-			$nbt->getInt(self::TAG_TRADER_EXP, 0),
-			$nbt->getInt(self::TAG_USES, 0)
+			$nbt->getInt(self::TAG_MAX_USES, self::DEFAULT_MAX_USES),
+			$nbt->getFloat(self::TAG_PRICE_MULTIPLIER_A, self::DEFAULT_PRICE_MULTIPLIER),
+			$nbt->getInt(self::TAG_REWARD_EXP, self::DEFAULT_REWARD_EXP),
+			$nbt->getInt(self::TAG_TIER, self::DEFAULT_TIER),
+			$nbt->getInt(self::TAG_TRADER_EXP, self::DEFAULT_TRADER_EXP),
+			$nbt->getInt(self::TAG_USES, self::DEFAULT_USES)
 		);
 	}
 }
