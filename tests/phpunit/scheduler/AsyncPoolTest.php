@@ -32,7 +32,6 @@ use pocketmine\utils\MainLogger;
 use function define;
 use function dirname;
 use function microtime;
-use function sys_get_temp_dir;
 use function usleep;
 
 class AsyncPoolTest extends TestCase{
