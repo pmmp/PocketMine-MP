@@ -327,7 +327,7 @@ JIT_WARNING
 		}
 		$logFile = isset($opts[BootstrapOptions::NO_LOG_FILE]) ? null : Path::join($dataPath, "server.log");
 
-		$logger = new MainLogger($logFile, Path::join($dataPath, "log_archive"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger($logFile, Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()), false, Path::join($dataPath, "log_archive"));
 		if($logFile === null){
 			$logger->notice("Logging to file disabled. Ensure logs are collected by other means (e.g. Docker logs).");
 		}
