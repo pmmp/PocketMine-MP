@@ -26,7 +26,6 @@ namespace pocketmine\entity\profession;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\VillagerProfessionTypeIds;
 use pocketmine\entity\trade\TradeRecipe;
-use pocketmine\item\VanillaItems;
 
 final class LeatherworkerProfession extends VillagerProfession{
 
@@ -36,95 +35,6 @@ final class LeatherworkerProfession extends VillagerProfession{
 
 	/** @phpstan-return list<TradeRecipe> */
 	public function getRecipes(int $biomeId) : array{
-		return [
-			new TradeRecipe(
-				buyA: VanillaItems::LEATHER()->setCount(6),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 16,
-				priceMultiplier: 0.05,
-				tier: 0,
-				traderExp: 2
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(3),
-				sell: VanillaItems::LEATHER_PANTS()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 0,
-				traderExp: 1
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(7),
-				sell: VanillaItems::LEATHER_TUNIC()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 0,
-				traderExp: 1
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::FLINT()->setCount(26),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 1,
-				traderExp: 10
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(5),
-				sell: VanillaItems::LEATHER_CAP()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 1,
-				traderExp: 5
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(4),
-				sell: VanillaItems::LEATHER_BOOTS()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 1,
-				traderExp: 5
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::RABBIT_HIDE()->setCount(9),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 2,
-				traderExp: 20
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(7),
-				sell: VanillaItems::LEATHER_TUNIC()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 2,
-				traderExp: 10
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::SCUTE()->setCount(4),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 3,
-				traderExp: 30
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(5),
-				sell: VanillaItems::LEATHER_CAP()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 3,
-				traderExp: 30
-			),
-			//new TradeRecipe(//TODO: Implement this when saddle is implemented.
-			//	buyA: VanillaItems::EMERALD()->setCount(6),
-			//	sell: VanillaItems::SADDLE()->setCount(1),
-			//	maxUses: 12,
-			//	priceMultiplier: 0.2,
-			//	tier: 3,
-			//	traderExp: 30
-			//)
-		];
+		return [];
 	}
 }

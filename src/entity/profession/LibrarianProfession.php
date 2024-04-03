@@ -26,7 +26,6 @@ namespace pocketmine\entity\profession;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\VillagerProfessionTypeIds;
 use pocketmine\entity\trade\TradeRecipe;
-use pocketmine\item\VanillaItems;
 
 final class LibrarianProfession extends VillagerProfession{
 
@@ -36,123 +35,6 @@ final class LibrarianProfession extends VillagerProfession{
 
 	/** @phpstan-return list<TradeRecipe> */
 	public function getRecipes(int $biomeId) : array{
-		return [
-			new TradeRecipe(
-				buyA: VanillaItems::PAPER()->setCount(24),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 16,
-				priceMultiplier: 0.05,
-				tier: 0,
-				traderExp: 2
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(9),
-				sell: VanillaBlocks::BOOKSHELF()->asItem()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 0,
-				traderExp: 1
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaItems::ENCHANTED_BOOK()->setCount(1),
-				buyB: VanillaItems::BOOK()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 0,
-				traderExp: 1
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::BOOK()->setCount(4),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 1,
-				traderExp: 10
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaBlocks::LANTERN()->asItem()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 1,
-				traderExp: 5
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaItems::ENCHANTED_BOOK()->setCount(1),
-				buyB: VanillaItems::BOOK()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 1,
-				traderExp: 5
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::INK_SAC()->setCount(5),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 2,
-				traderExp: 20
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaBlocks::GLASS()->asItem()->setCount(4),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 2,
-				traderExp: 10
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaItems::ENCHANTED_BOOK()->setCount(1),
-				buyB: VanillaItems::BOOK()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 2,
-				traderExp: 10
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::WRITABLE_BOOK()->setCount(2),
-				sell: VanillaItems::EMERALD()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 3,
-				traderExp: 30
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(4),
-				sell: VanillaItems::COMPASS()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 3,
-				traderExp: 15
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(5),
-				sell: VanillaItems::CLOCK()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 3,
-				traderExp: 15
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(1),
-				sell: VanillaItems::ENCHANTED_BOOK()->setCount(1),
-				buyB: VanillaItems::BOOK()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.2,
-				tier: 3,
-				traderExp: 15
-			),
-			new TradeRecipe(
-				buyA: VanillaItems::EMERALD()->setCount(20),
-				sell: VanillaItems::NAME_TAG()->setCount(1),
-				maxUses: 12,
-				priceMultiplier: 0.05,
-				tier: 4,
-				traderExp: 30
-			)
-		];
+		return [];
 	}
 }
