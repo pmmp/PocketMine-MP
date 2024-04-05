@@ -39,12 +39,12 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 	private bool $useFormattingCodes = false;
 	private string $mainThreadName;
 	private string $timezone;
-	private MainLoggerThread $logWriterThread;
+	private ?MainLoggerThread $logWriterThread = null;
 
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false){
+	public function __construct(?string $logFile, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false, ?string $logArchiveDir = null){
 		parent::__construct();
 		$this->logDebug = $logDebug;
 
@@ -52,8 +52,10 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 		$this->mainThreadName = $mainThreadName;
 		$this->timezone = $timezone->getName();
 
-		$this->logWriterThread = new MainLoggerThread($logFile);
-		$this->logWriterThread->start(NativeThread::INHERIT_NONE);
+		if($logFile !== null){
+			$this->logWriterThread = new MainLoggerThread($logFile, $logArchiveDir);
+			$this->logWriterThread->start(NativeThread::INHERIT_NONE);
+		}
 	}
 
 	/**
@@ -166,10 +168,12 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 	}
 
 	public function shutdownLogWriterThread() : void{
-		if(NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
-			$this->logWriterThread->shutdown();
-		}else{
-			throw new \LogicException("Only the creator thread can shutdown the logger thread");
+		if($this->logWriterThread !== null){
+			if(NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+				$this->logWriterThread->shutdown();
+			}else{
+				throw new \LogicException("Only the creator thread can shutdown the logger thread");
+			}
 		}
 	}
 
@@ -193,7 +197,9 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
 			Terminal::writeLine($message);
-			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
+			if($this->logWriterThread !== null){
+				$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
+			}
 
 			/**
 			 * @var ThreadSafeLoggerAttachment $attachment
@@ -205,11 +211,11 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 	}
 
 	public function syncFlushBuffer() : void{
-		$this->logWriterThread->syncFlushBuffer();
+		$this->logWriterThread?->syncFlushBuffer();
 	}
 
 	public function __destruct(){
-		if(!$this->logWriterThread->isJoined() && NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+		if($this->logWriterThread !== null && !$this->logWriterThread->isJoined() && NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
 			$this->shutdownLogWriterThread();
 		}
 	}

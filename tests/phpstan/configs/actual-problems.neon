@@ -651,6 +651,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Parameter \\#1 \\$playerInfo of class pocketmine\\\\event\\\\player\\\\PlayerResourcePackOfferEvent constructor expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\command\\\\Command\\:\\:testPermissionSilent\\(\\) expects pocketmine\\\\command\\\\CommandSender, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php

@@ -114,6 +114,13 @@ trait RegistryTrait{
 		if(count($arguments) > 0){
 			throw new \ArgumentCountError("Expected exactly 0 arguments, " . count($arguments) . " passed");
 		}
+
+		//fast path
+		if(self::$members !== null && isset(self::$members[$name])){
+			return self::preprocessMember(self::$members[$name]);
+		}
+
+		//fallback
 		try{
 			return self::_registryFromString($name);
 		}catch(\InvalidArgumentException $e){

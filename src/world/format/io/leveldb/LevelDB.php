@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io\leveldb;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
@@ -58,6 +59,7 @@ use function count;
 use function defined;
 use function extension_loaded;
 use function file_exists;
+use function implode;
 use function is_dir;
 use function mkdir;
 use function ord;
@@ -184,6 +186,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$paletteSize = $stream->getLInt();
 		}
 
+		$blockDecodeErrors = [];
+
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
 				$offset = $stream->getOffset();
@@ -199,16 +203,23 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
 			}catch(BlockStateDeserializeException $e){
 				//while not ideal, this is not a fatal error
-				$logger->error("Failed to upgrade blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$blockDecodeErrors[] = "Palette offset $i / Upgrade error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 				continue;
 			}
 			try{
 				$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
+			}catch(UnsupportedBlockStateException $e){
+				$blockDecodeErrors[] = "Palette offset $i / " . $e->getMessage();
+				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}catch(BlockStateDeserializeException $e){
-				$logger->error("Failed to deserialize blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$blockDecodeErrors[] = "Palette offset $i / Deserialize error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
+		}
+
+		if(count($blockDecodeErrors) > 0){
+			$logger->error("Errors decoding blocks:\n - " . implode("\n - ", $blockDecodeErrors));
 		}
 
 		//TODO: exceptions
@@ -443,7 +454,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$subChunks = [];
 		for($yy = 0; $yy < 8; ++$yy){
-			$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy)];
+			$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy, new \PrefixedLogger($logger, "Subchunk y=$yy"))];
 			if(isset($convertedLegacyExtraData[$yy])){
 				$storages[] = $convertedLegacyExtraData[$yy];
 			}
@@ -482,7 +493,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData)];
+		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData, $logger)];
 		if($convertedLegacyExtraData !== null){
 			$storages[] = $convertedLegacyExtraData;
 		}
