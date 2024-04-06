@@ -34,6 +34,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
@@ -53,6 +54,8 @@ use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\CameraInstructionPacket;
+use pocketmine\network\mcpe\protocol\CameraPresetsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
@@ -81,6 +84,7 @@ use pocketmine\network\mcpe\protocol\TransferPacket;
 use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
@@ -96,6 +100,8 @@ use pocketmine\network\NetworkSessionManager;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\player\camera\CameraPresetFactory;
+use pocketmine\player\camera\instruction\CameraInstruction;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
@@ -1086,6 +1092,17 @@ class NetworkSession{
 		));
 	}
 
+	public function sendCameraPresets() : void {
+		$presetsTag = new ListTag();
+		foreach (CameraPresetFactory::getInstance()->getAll() as $preset) {
+			$presetsTag->push($preset->toCompoundTag());
+		}
+
+		$this->sendDataPacket(CameraPresetsPacket::create(
+			new CacheableNbt(CompoundTag::create()->setTag("presets", $presetsTag))
+		));
+	}
+
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
@@ -1278,6 +1295,15 @@ class NetworkSession{
 
 	public function onToastNotification(string $title, string $body) : void{
 		$this->sendDataPacket(ToastRequestPacket::create($title, $body));
+	}
+
+	public function onCameraInstruction(CameraInstruction ...$instructions) : void{
+		$instructionsData = CompoundTag::create();
+		foreach ($instructions as $instruction) {
+			$instruction->writeInstructionData($instructionsData);
+		}
+
+		$this->sendDataPacket(CameraInstructionPacket::create(new CacheableNbt($instructionsData)));
 	}
 
 	public function onOpenSignEditor(Vector3 $signPosition, bool $frontSide) : void{

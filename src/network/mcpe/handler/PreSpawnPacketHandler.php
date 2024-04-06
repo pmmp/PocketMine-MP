@@ -83,7 +83,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$levelSettings->gameRules = [
 				"naturalregeneration" => new BoolGameRule(false, false) //Hack for client side regeneration
 			];
-			$levelSettings->experiments = new Experiments([], false);
+			$levelSettings->experiments = new Experiments(["cameras" => true], true);
 
 			$this->session->sendDataPacket(StartGamePacket::create(
 				$this->player->getId(),
@@ -128,6 +128,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->session->getLogger()->debug("Sending abilities");
 			$this->session->syncAbilities($this->player);
 			$this->session->syncAdventureSettings();
+
+			$this->session->getLogger()->debug("Sending camera presets");
+			$this->session->sendCameraPresets();
 
 			$this->session->getLogger()->debug("Sending effects");
 			foreach($this->player->getEffects()->all() as $effect){
