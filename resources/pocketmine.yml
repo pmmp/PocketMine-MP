@@ -212,8 +212,8 @@ worlds:
   #These settings will override the generator set in server.properties and allows loading multiple worlds
   #Example:
   #world:
-  # seed: 404
-  # generator: FLAT
+  # seed: 275492403
+  # generator: NORMAL
   # preset: 2;bedrock,59xstone,3xdirt,grass;1
 
 plugins:
