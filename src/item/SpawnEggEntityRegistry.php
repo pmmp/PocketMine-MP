@@ -25,14 +25,13 @@ namespace pocketmine\item;
 
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 
 final class SpawnEggEntityRegistry{
 	use SingletonTrait;
 
 	/**
-	 * @phpstan-var array<string, SpawnEgg>
-	 * @var SpawnEgg[]
+	 * @phpstan-var array<int, string>
+	 * @var string[]
 	 */
 	private array $entityMap = [];
 
@@ -43,14 +42,12 @@ final class SpawnEggEntityRegistry{
 	}
 
 	public function register(string $entitySaveId, SpawnEgg $spawnEgg) : void{
-		$this->entityMap[$entitySaveId] = $spawnEgg;
+		$this->entityMap[$spawnEgg->getTypeId()] = $entitySaveId;
 	}
 
 	public function getEntityId(SpawnEgg $item) : ?string{
-		foreach(Utils::stringifyKeys($this->entityMap) as $entitySaveId => $spawnEgg){
-			if($spawnEgg->equals($item, false, false)){
-				return $entitySaveId;
-			}
+		if(isset($this->entityMap[$item->getTypeId()])){
+			return $this->entityMap[$item->getTypeId()];
 		}
 		return null;
 	}

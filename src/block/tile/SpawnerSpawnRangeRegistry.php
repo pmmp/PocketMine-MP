@@ -33,13 +33,17 @@ final class SpawnerSpawnRangeRegistry{
 	 * @phpstan-var array<string, AxisAlignedBB>
 	 * @var AxisAlignedBB[]
 	 */
-	private array $spawnRange;
+	private array $spawnRange = [];
 
 	public function register(string $entitySaveId, AxisAlignedBB $spawnRange) : void{
+		if(isset($this->spawnRange[$entitySaveId])){
+			throw new \InvalidArgumentException("Spawn range for entity $entitySaveId is already registered");
+		}
 		$this->spawnRange[$entitySaveId] = $spawnRange;
 	}
 
 	public function getSpawnRange(string $entitySaveId) : ?AxisAlignedBB{
-		return (clone $this->spawnRange[$entitySaveId]) ?? null;
+		$spawnRange = $this->spawnRange[$entitySaveId] ?? null;
+		return $spawnRange === null ? null : clone $spawnRange;
 	}
 }
