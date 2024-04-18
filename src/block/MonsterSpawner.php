@@ -181,8 +181,9 @@ class MonsterSpawner extends Transparent{
 				}
 			}
 		}
+		$entityTypeId = $this->entityTypeId;
 		if(SpawnerAttemptSpawnEvent::hasHandlers()){
-			$ev = new SpawnerAttemptSpawnEvent($this, $this->entityTypeId);
+			$ev = new SpawnerAttemptSpawnEvent($this, $entityTypeId);
 			$ev->call();
 			if($ev->isCancelled()){
 				return true;
@@ -194,7 +195,7 @@ class MonsterSpawner extends Transparent{
 			$spawnLocation = $position->add(mt_rand(-$this->spawnRange, $this->spawnRange), 0, mt_rand(-$this->spawnRange, $this->spawnRange));
 			$spawnLocation = Location::fromObject($spawnLocation, $world);
 			$nbt = CompoundTag::create()
-				->setString(EntityFactory::TAG_IDENTIFIER, $this->entityTypeId)
+				->setString(EntityFactory::TAG_IDENTIFIER, $entityTypeId)
 				->setTag(Entity::TAG_POS, new ListTag([
 					new DoubleTag($spawnLocation->x),
 					new DoubleTag($spawnLocation->y),
