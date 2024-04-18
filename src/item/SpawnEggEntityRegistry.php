@@ -46,9 +46,6 @@ final class SpawnEggEntityRegistry{
 	}
 
 	public function getEntityId(SpawnEgg $item) : ?string{
-		if(isset($this->entityMap[$item->getTypeId()])){
-			return $this->entityMap[$item->getTypeId()];
-		}
-		return null;
+		return $this->entityMap[$item->getTypeId()] ?? null;
 	}
 }
