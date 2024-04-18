@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f3dd41a25226b5ff1030d822b2c46d02",
+    "content-hash": "40f8971303dc2060ae4e28e6fc84bdfc",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -122,16 +122,16 @@
         },
         {
             "name": "pocketmine/bedrock-block-upgrade-schema",
-            "version": "3.6.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
-                "reference": "1496e275db5148cb96bdaa998115e5e31a5c1e4d"
+                "reference": "ebd768e5b202cae59b0a7057982e3a2f40ba1954"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/1496e275db5148cb96bdaa998115e5e31a5c1e4d",
-                "reference": "1496e275db5148cb96bdaa998115e5e31a5c1e4d",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/ebd768e5b202cae59b0a7057982e3a2f40ba1954",
+                "reference": "ebd768e5b202cae59b0a7057982e3a2f40ba1954",
                 "shasum": ""
             },
             "type": "library",
@@ -142,9 +142,9 @@
             "description": "Schemas describing how to upgrade saved block data in older Minecraft: Bedrock Edition world saves",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
-                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/3.6.0"
+                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/4.0.0"
             },
-            "time": "2024-02-28T19:25:25+00:00"
+            "time": "2024-04-05T16:02:20+00:00"
         },
         {
             "name": "pocketmine/bedrock-data",
@@ -376,25 +376,25 @@
         },
         {
             "name": "pocketmine/errorhandler",
-            "version": "0.6.0",
+            "version": "0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ErrorHandler.git",
-                "reference": "dae214a04348b911e8219ebf125ff1c5589cc878"
+                "reference": "cae94884368a74ece5294b9ff7fef18732dcd921"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/dae214a04348b911e8219ebf125ff1c5589cc878",
-                "reference": "dae214a04348b911e8219ebf125ff1c5589cc878",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/cae94884368a74ece5294b9ff7fef18732dcd921",
+                "reference": "cae94884368a74ece5294b9ff7fef18732dcd921",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.2",
-                "phpunit/phpunit": "^9.5"
+                "phpstan/phpstan": "~1.10.3",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/phpunit": "^9.5 || ^10.0 || ^11.0"
             },
             "type": "library",
             "autoload": {
@@ -409,9 +409,9 @@
             "description": "Utilities to handle nasty PHP E_* errors in a usable way",
             "support": {
                 "issues": "https://github.com/pmmp/ErrorHandler/issues",
-                "source": "https://github.com/pmmp/ErrorHandler/tree/0.6.0"
+                "source": "https://github.com/pmmp/ErrorHandler/tree/0.7.0"
             },
-            "time": "2022-01-08T21:05:46+00:00"
+            "time": "2024-04-02T18:29:54+00:00"
         },
         {
             "name": "pocketmine/locale-data",
@@ -1380,16 +1380,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.60",
+            "version": "1.10.66",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "95dcea7d6c628a3f2f56d091d8a0219485a86bbe"
+                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/95dcea7d6c628a3f2f56d091d8a0219485a86bbe",
-                "reference": "95dcea7d6c628a3f2f56d091d8a0219485a86bbe",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/94779c987e4ebd620025d9e5fdd23323903950bd",
+                "reference": "94779c987e4ebd620025d9e5fdd23323903950bd",
                 "shasum": ""
             },
             "require": {
@@ -1438,7 +1438,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-03-07T13:30:19+00:00"
+            "time": "2024-03-28T16:17:31+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -2335,16 +2335,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "6.0.1",
+            "version": "6.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "43c751b41d74f96cbbd4e07b7aec9675651e2951"
+                "reference": "8074dbcd93529b357029f5cc5058fd3e43666984"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/43c751b41d74f96cbbd4e07b7aec9675651e2951",
-                "reference": "43c751b41d74f96cbbd4e07b7aec9675651e2951",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/8074dbcd93529b357029f5cc5058fd3e43666984",
+                "reference": "8074dbcd93529b357029f5cc5058fd3e43666984",
                 "shasum": ""
             },
             "require": {
@@ -2359,7 +2359,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "6.0-dev"
+                    "dev-main": "6.1-dev"
                 }
             },
             "autoload": {
@@ -2387,7 +2387,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/environment/issues",
                 "security": "https://github.com/sebastianbergmann/environment/security/policy",
-                "source": "https://github.com/sebastianbergmann/environment/tree/6.0.1"
+                "source": "https://github.com/sebastianbergmann/environment/tree/6.1.0"
             },
             "funding": [
                 {
@@ -2395,7 +2395,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-04-11T05:39:26+00:00"
+            "time": "2024-03-23T08:47:14+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -2953,7 +2953,7 @@
         "ext-openssl": "*",
         "ext-pcre": "*",
         "ext-phar": "*",
-        "ext-pmmpthread": "^6.0.7",
+        "ext-pmmpthread": "^6.1.0",
         "ext-reflection": "*",
         "ext-simplexml": "*",
         "ext-sockets": "*",
