@@ -145,6 +145,46 @@ class MonsterSpawner extends Spawnable{
 		$this->entityTypeId = $entityTypeId;
 	}
 
+	public function getSpawnPotentials() : ?ListTag{
+		return $this->spawnPotentials;
+	}
+
+	public function setSpawnPotentials(?ListTag $spawnPotentials) : void{
+		$this->spawnPotentials = $spawnPotentials;
+	}
+
+	public function getSpawnData() : ?CompoundTag{
+		return $this->spawnData;
+	}
+
+	public function setSpawnData(?CompoundTag $spawnData) : void{
+		$this->spawnData = $spawnData;
+	}
+
+	public function getDisplayEntityHeight() : float{
+		return $this->displayEntityHeight;
+	}
+
+	public function setDisplayEntityHeight(float $displayEntityHeight) : void{
+		$this->displayEntityHeight = $displayEntityHeight;
+	}
+
+	public function getDisplayEntityWidth() : float{
+		return $this->displayEntityWidth;
+	}
+
+	public function setDisplayEntityWidth(float $displayEntityWidth) : void{
+		$this->displayEntityWidth = $displayEntityWidth;
+	}
+
+	public function getDisplayEntityScale() : float{
+		return $this->displayEntityScale;
+	}
+
+	public function setDisplayEntityScale(float $displayEntityScale) : void{
+		$this->displayEntityScale = $displayEntityScale;
+	}
+
 	public function getSpawnDelay() : int{
 		return $this->spawnDelay;
 	}
