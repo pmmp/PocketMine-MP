@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\player\Player;
 use pocketmine\world\particle\MobSpawnParticle;
+use function assert;
 use function mt_rand;
 
 class MonsterSpawner extends Transparent{
