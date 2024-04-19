@@ -63,7 +63,7 @@ class TimingsHandler{
 	/**
 	 * @phpstan-return ObjectSet<\Closure() : list<CollectPromise>>
 	 */
-	public static function getCollectCallbacks() : ?ObjectSet{ return self::$collectCallbacks ??= new ObjectSet(); }
+	public static function getCollectCallbacks() : ObjectSet{ return self::$collectCallbacks ??= new ObjectSet(); }
 
 	/**
 	 * @return string[]
