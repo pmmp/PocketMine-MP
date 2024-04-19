@@ -30,13 +30,16 @@ use function implode;
 use function spl_object_id;
 
 class TimingsHandler{
-	private const FORMAT_VERSION = 2; //peak timings fix
+	private const FORMAT_VERSION = 3; //thread timings collection
 
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
 
-	/** @return string[] */
-	public static function printTimings() : array{
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public static function printRecords(?int $threadId) : array{
 		$groups = [];
 
 		foreach(TimingsRecord::getAll() as $timings){
@@ -49,7 +52,7 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			$group = $timings->getGroup();
+			$group = $timings->getGroup() . ($threadId !== null ? " ThreadId: $threadId" : "");
 			$groups[$group][] = implode(" ", [
 				$timings->getName(),
 				"Time: $time",
@@ -72,6 +75,15 @@ class TimingsHandler{
 			}
 		}
 
+		return $result;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public static function printFooter() : array{
+		$result = [];
+
 		$result[] = "# Version " . Server::getInstance()->getVersion();
 		$result[] = "# " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion();
 
@@ -79,7 +91,22 @@ class TimingsHandler{
 
 		$sampleTime = hrtime(true) - self::$timingStart;
 		$result[] = "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)";
+
 		return $result;
+	}
+
+	/**
+	 * @deprecated This only collects timings from the main thread. A proper implementation should collect timings from
+	 * all threads and aggregate them. However, since the methods of doing this would be thread-specific, this must be
+	 * done outside the Timings system.
+	 *
+	 * @return string[]
+	 */
+	public static function printTimings() : array{
+		$records = self::printRecords(null);
+		$footer = self::printFooter();
+
+		return [...$records, ...$footer];
 	}
 
 	public static function isEnabled() : bool{

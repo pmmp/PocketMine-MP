@@ -26,12 +26,19 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
+use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\scheduler\BulkCurlTaskOperation;
+use pocketmine\scheduler\TimingsCollectionTask;
+use pocketmine\scheduler\TimingsControlTask;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\utils\Utils;
@@ -41,7 +48,6 @@ use function count;
 use function fclose;
 use function file_exists;
 use function fopen;
-use function fseek;
 use function fwrite;
 use function http_build_query;
 use function is_array;
@@ -74,17 +80,24 @@ class TimingsCommand extends VanillaCommand{
 
 		$mode = strtolower($args[0]);
 
+		$asyncPool = $sender->getServer()->getAsyncPool();
 		if($mode === "on"){
 			if(TimingsHandler::isEnabled()){
 				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
 				return true;
 			}
 			TimingsHandler::setEnabled();
+			foreach($asyncPool->getRunningWorkers() as $workerId){
+				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::ENABLE), $workerId);
+			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
 
 			return true;
 		}elseif($mode === "off"){
 			TimingsHandler::setEnabled(false);
+			foreach($asyncPool->getRunningWorkers() as $workerId){
+				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::DISABLE), $workerId);
+			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
 			return true;
 		}
@@ -99,6 +112,9 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
+			foreach($asyncPool->getRunningWorkers() as $workerId){
+				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::RESET), $workerId);
+			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$timings = "";
@@ -116,67 +132,100 @@ class TimingsCommand extends VanillaCommand{
 					$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
 				}
 
-				$fileTimings = fopen($timings, "a+b");
+				$fileTimings = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timings, "a+b"));
 			}
-			$lines = TimingsHandler::printTimings();
-			foreach($lines as $line){
+
+			$mainThreadLines = TimingsHandler::printRecords(null);
+			foreach($mainThreadLines as $line){
 				fwrite($fileTimings, $line . PHP_EOL);
 			}
+			$asyncTimingsPromises = [];
+			foreach($asyncPool->getRunningWorkers() as $workerId){
+				$resolver = new PromiseResolver();
+				$asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
 
-			if($paste){
-				fseek($fileTimings, 0);
-				$data = [
-					"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
-					"data" => $content = stream_get_contents($fileTimings)
-				];
-				fclose($fileTimings);
-
-				$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
-
-				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
-					[new BulkCurlTaskOperation(
-						"https://$host?upload=true",
-						10,
-						[],
-						[
-							CURLOPT_HTTPHEADER => [
-								"User-Agent: $agent",
-								"Content-Type: application/x-www-form-urlencoded"
-							],
-							CURLOPT_POST => true,
-							CURLOPT_POSTFIELDS => http_build_query($data),
-							CURLOPT_AUTOREFERER => false,
-							CURLOPT_FOLLOWLOCATION => false
-						]
-					)],
-					function(array $results) use ($sender, $host) : void{
-						/** @phpstan-var array<InternetRequestResult|InternetException> $results */
-						if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
-							return;
+				$promise = $resolver->getPromise();
+				$promise->onCompletion(
+					function(array $lines) use ($fileTimings) : void{
+						foreach($lines as $line){
+							fwrite($fileTimings, $line . PHP_EOL);
 						}
-						$result = $results[0];
-						if($result instanceof InternetException){
-							$sender->getServer()->getLogger()->logException($result);
-							return;
-						}
-						$response = json_decode($result->getBody(), true);
-						if(is_array($response) && isset($response["id"])){
-							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
-								"https://" . $host . "/?id=" . $response["id"]));
-						}else{
-							$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
-							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
-						}
+					},
+					function() : void{
+						throw new AssumptionFailedError("This promise is not expected to be rejected");
 					}
-				));
-			}else{
-				fclose($fileTimings);
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
+				);
+				$asyncTimingsPromises[] = $promise;
 			}
+			$sender->sendMessage("Waiting for timings results from " . count($asyncTimingsPromises) . " workers...");
+
+			Promise::all($asyncTimingsPromises)->onCompletion(
+				function() use ($fileTimings, $paste, $sender, $asyncPool, $timings) : void{
+					foreach(TimingsHandler::printFooter() as $line){
+						fwrite($fileTimings, $line . PHP_EOL);
+					}
+
+					if($paste){
+						$this->uploadReport(Utils::assumeNotFalse(stream_get_contents($fileTimings), "No obvious reason for this to fail"), $sender, $asyncPool);
+					}else{
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
+					}
+					fclose($fileTimings);
+				},
+				function() : void{
+					throw new AssumptionFailedError("This promise is not expected to be rejected");
+				}
+			);
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
 
 		return true;
+	}
+
+	private function uploadReport(string $fileTimings, CommandSender $sender, AsyncPool $asyncPool) : void{
+		$data = [
+			"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
+			"data" => $fileTimings
+		];
+
+		$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
+
+		$asyncPool->submitTask(new BulkCurlTask(
+			[new BulkCurlTaskOperation(
+				"https://$host?upload=true",
+				10,
+				[],
+				[
+					CURLOPT_HTTPHEADER => [
+						"User-Agent: $agent",
+						"Content-Type: application/x-www-form-urlencoded"
+					],
+					CURLOPT_POST => true,
+					CURLOPT_POSTFIELDS => http_build_query($data),
+					CURLOPT_AUTOREFERER => false,
+					CURLOPT_FOLLOWLOCATION => false
+				]
+			)],
+			function(array $results) use ($sender, $host) : void{
+				/** @phpstan-var array<InternetRequestResult|InternetException> $results */
+				if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
+					return;
+				}
+				$result = $results[0];
+				if($result instanceof InternetException){
+					$sender->getServer()->getLogger()->logException($result);
+					return;
+				}
+				$response = json_decode($result->getBody(), true);
+				if(is_array($response) && isset($response["id"])){
+					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
+						"https://" . $host . "/?id=" . $response["id"]));
+				}else{
+					$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
+					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
+				}
+			}
+		));
 	}
 }
