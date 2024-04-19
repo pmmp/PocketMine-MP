@@ -166,7 +166,7 @@ class TimingsCommand extends VanillaCommand{
 					}
 
 					if($paste){
-						$this->uploadReport(Utils::assumeNotFalse(stream_get_contents($fileTimings), "No obvious reason for this to fail"), $sender, $asyncPool);
+						$this->uploadReport(Utils::assumeNotFalse(stream_get_contents($fileTimings, offset: 0), "No obvious reason for this to fail"), $sender, $asyncPool);
 					}else{
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
 					}
