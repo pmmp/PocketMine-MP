@@ -29,10 +29,14 @@ use pocketmine\Server;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use function array_merge;
+use function array_push;
 use function hrtime;
 use function implode;
 use function spl_object_id;
 
+/**
+ * @phpstan-type CollectPromise Promise<list<string>>
+ */
 class TimingsHandler{
 	private const FORMAT_VERSION = 3; //thread timings collection
 
@@ -43,7 +47,7 @@ class TimingsHandler{
 	private static ?ObjectSet $toggleCallbacks = null;
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private static ?ObjectSet $resetCallbacks = null;
-	/** @phpstan-var ObjectSet<\Closure() : Promise<list<string>>> */
+	/** @phpstan-var ObjectSet<\Closure() : list<CollectPromise>> */
 	private static ?ObjectSet $collectCallbacks = null;
 
 	/**
@@ -57,7 +61,7 @@ class TimingsHandler{
 	public static function getResetCallbacks() : ObjectSet{ return self::$resetCallbacks ??= new ObjectSet(); }
 
 	/**
-	 * @phpstan-return ObjectSet<\Closure() : Promise<list<string>>>
+	 * @phpstan-return ObjectSet<\Closure() : list<CollectPromise>>
 	 */
 	public static function getCollectCallbacks() : ?ObjectSet{ return self::$collectCallbacks ??= new ObjectSet(); }
 
@@ -151,7 +155,8 @@ class TimingsHandler{
 		$otherThreadRecordPromises = [];
 		if(self::$collectCallbacks !== null){
 			foreach(self::$collectCallbacks as $callback){
-				$otherThreadRecordPromises[] = $callback();
+				$callbackPromises = $callback();
+				array_push($otherThreadRecordPromises, ...$callbackPromises);
 			}
 		}
 

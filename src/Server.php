@@ -125,7 +125,6 @@ use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
 use function array_fill;
-use function array_merge;
 use function array_sum;
 use function base64_encode;
 use function chr;
@@ -913,7 +912,7 @@ class Server{
 					$this->asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::RESET), $workerId);
 				}
 			});
-			TimingsHandler::getCollectCallbacks()->add(function() : Promise{
+			TimingsHandler::getCollectCallbacks()->add(function() : array{
 				$promises = [];
 				foreach($this->asyncPool->getRunningWorkers() as $workerId){
 					$resolver = new PromiseResolver();
@@ -921,17 +920,8 @@ class Server{
 
 					$promises[] = $resolver->getPromise();
 				}
-				$resolver = new PromiseResolver();
-				Promise::all($promises)->onCompletion(
-					function(array $workerRecords) use ($resolver) : void{
-						$resolver->resolve(array_merge(...$workerRecords));
-					},
-					function() : void{
-						throw new AssumptionFailedError("TimingsCollectionTask should never reject a promise");
-					}
-				);
 
-				return $resolver->getPromise();
+				return $promises;
 			});
 
 			$netCompressionThreshold = -1;
