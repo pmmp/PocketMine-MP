@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pocketmine\Server;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use function hrtime;
 use function implode;
@@ -34,6 +35,21 @@ class TimingsHandler{
 
 	private static bool $enabled = false;
 	private static int $timingStart = 0;
+
+	/** @phpstan-var ObjectSet<\Closure(bool $enable) : void> */
+	private static ?ObjectSet $toggleCallbacks = null;
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private static ?ObjectSet $resetCallbacks = null;
+
+	/**
+	 * @phpstan-return ObjectSet<\Closure(bool $enable) : void>
+	 */
+	public static function getToggleCallbacks() : ObjectSet{ return self::$toggleCallbacks ??= new ObjectSet(); }
+
+	/**
+	 * @phpstan-return ObjectSet<\Closure() : void>
+	 */
+	public static function getResetCallbacks() : ObjectSet{ return self::$resetCallbacks ??= new ObjectSet(); }
 
 	/**
 	 * @return string[]
@@ -115,17 +131,31 @@ class TimingsHandler{
 
 	public static function setEnabled(bool $enable = true) : void{
 		self::$enabled = $enable;
-		self::reload();
+		self::internalReload();
+		if(self::$toggleCallbacks !== null){
+			foreach(self::$toggleCallbacks as $callback){
+				$callback($enable);
+			}
+		}
 	}
 
 	public static function getStartTime() : float{
 		return self::$timingStart;
 	}
 
-	public static function reload() : void{
+	private static function internalReload() : void{
 		TimingsRecord::reset();
 		if(self::$enabled){
 			self::$timingStart = hrtime(true);
+		}
+	}
+
+	public static function reload() : void{
+		self::internalReload();
+		if(self::$resetCallbacks !== null){
+			foreach(self::$resetCallbacks as $callback){
+				$callback();
+			}
 		}
 	}
 

@@ -36,7 +36,6 @@ use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\scheduler\TimingsCollectionTask;
-use pocketmine\scheduler\TimingsControlTask;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\InternetException;
@@ -80,24 +79,17 @@ class TimingsCommand extends VanillaCommand{
 
 		$mode = strtolower($args[0]);
 
-		$asyncPool = $sender->getServer()->getAsyncPool();
 		if($mode === "on"){
 			if(TimingsHandler::isEnabled()){
 				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
 				return true;
 			}
 			TimingsHandler::setEnabled();
-			foreach($asyncPool->getRunningWorkers() as $workerId){
-				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::ENABLE), $workerId);
-			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
 
 			return true;
 		}elseif($mode === "off"){
 			TimingsHandler::setEnabled(false);
-			foreach($asyncPool->getRunningWorkers() as $workerId){
-				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::DISABLE), $workerId);
-			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
 			return true;
 		}
@@ -112,9 +104,6 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
-			foreach($asyncPool->getRunningWorkers() as $workerId){
-				$asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::RESET), $workerId);
-			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$timings = "";
@@ -140,6 +129,7 @@ class TimingsCommand extends VanillaCommand{
 				fwrite($fileTimings, $line . PHP_EOL);
 			}
 			$asyncTimingsPromises = [];
+			$asyncPool = $sender->getServer()->getAsyncPool();
 			foreach($asyncPool->getRunningWorkers() as $workerId){
 				$resolver = new PromiseResolver();
 				$asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);

@@ -901,6 +901,16 @@ class Server{
 					$this->asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::ENABLE), $i);
 				}
 			});
+			TimingsHandler::getToggleCallbacks()->add(function(bool $enable) : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(new TimingsControlTask($enable ? TimingsControlTask::ENABLE : TimingsControlTask::DISABLE), $workerId);
+				}
+			});
+			TimingsHandler::getResetCallbacks()->add(function() : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::RESET), $workerId);
+				}
+			});
 
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
