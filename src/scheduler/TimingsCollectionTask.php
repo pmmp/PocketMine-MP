@@ -41,7 +41,7 @@ final class TimingsCollectionTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$this->setResult(TimingsHandler::printRecords(NativeThread::getCurrentThreadId()));
+		$this->setResult(TimingsHandler::printCurrentThreadRecords(NativeThread::getCurrentThreadId()));
 	}
 
 	public function onCompletion() : void{

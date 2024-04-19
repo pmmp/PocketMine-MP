@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\timings;
 
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
+use function array_merge;
 use function hrtime;
 use function implode;
 use function spl_object_id;
@@ -40,6 +43,8 @@ class TimingsHandler{
 	private static ?ObjectSet $toggleCallbacks = null;
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private static ?ObjectSet $resetCallbacks = null;
+	/** @phpstan-var ObjectSet<\Closure() : Promise<list<string>>> */
+	private static ?ObjectSet $collectCallbacks = null;
 
 	/**
 	 * @phpstan-return ObjectSet<\Closure(bool $enable) : void>
@@ -52,10 +57,15 @@ class TimingsHandler{
 	public static function getResetCallbacks() : ObjectSet{ return self::$resetCallbacks ??= new ObjectSet(); }
 
 	/**
+	 * @phpstan-return ObjectSet<\Closure() : Promise<list<string>>>
+	 */
+	public static function getCollectCallbacks() : ?ObjectSet{ return self::$collectCallbacks ??= new ObjectSet(); }
+
+	/**
 	 * @return string[]
 	 * @phpstan-return list<string>
 	 */
-	public static function printRecords(?int $threadId) : array{
+	public static function printCurrentThreadRecords(?int $threadId) : array{
 		$groups = [];
 
 		foreach(TimingsRecord::getAll() as $timings){
@@ -97,7 +107,7 @@ class TimingsHandler{
 	/**
 	 * @return string[]
 	 */
-	public static function printFooter() : array{
+	private static function printFooter() : array{
 		$result = [];
 
 		$result[] = "# Version " . Server::getInstance()->getVersion();
@@ -112,17 +122,50 @@ class TimingsHandler{
 	}
 
 	/**
-	 * @deprecated This only collects timings from the main thread. A proper implementation should collect timings from
-	 * all threads and aggregate them. However, since the methods of doing this would be thread-specific, this must be
-	 * done outside the Timings system.
+	 * @deprecated This only collects timings from the main thread. Collecting timings from all threads is an async
+	 * operation, so it can't be done synchronously.
 	 *
 	 * @return string[]
 	 */
 	public static function printTimings() : array{
-		$records = self::printRecords(null);
+		$records = self::printCurrentThreadRecords(null);
 		$footer = self::printFooter();
 
 		return [...$records, ...$footer];
+	}
+
+	/**
+	 * Collects timings asynchronously, allowing timings from multiple threads to be aggregated into a single report.
+	 *
+	 * NOTE: You need to add a callback to collectCallbacks if you want to include timings from other threads. They
+	 * won't be automatically collected if you don't, since the main thread has no way to access them.
+	 *
+	 * This is an asynchronous operation, and the result is returned as a promise.
+	 * The caller must add a callback to the returned promise to get the complete timings report.
+	 *
+	 * @phpstan-return Promise<list<string>>
+	 */
+	public static function requestPrintTimings() : Promise{
+		$thisThreadRecords = self::printCurrentThreadRecords(null);
+
+		$otherThreadRecordPromises = [];
+		if(self::$collectCallbacks !== null){
+			foreach(self::$collectCallbacks as $callback){
+				$otherThreadRecordPromises[] = $callback();
+			}
+		}
+
+		$resolver = new PromiseResolver();
+		Promise::all($otherThreadRecordPromises)->onCompletion(
+			function(array $promisedRecords) use ($resolver, $thisThreadRecords) : void{
+				$resolver->resolve([...$thisThreadRecords, ...array_merge(...$promisedRecords), ...self::printFooter()]);
+			},
+			function() : void{
+				throw new \AssertionError("This promise is not expected to be rejected");
+			}
+		);
+
+		return $resolver->getPromise();
 	}
 
 	public static function isEnabled() : bool{

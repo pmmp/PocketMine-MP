@@ -30,17 +30,12 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\promise\Promise;
-use pocketmine\promise\PromiseResolver;
-use pocketmine\scheduler\AsyncPool;
 use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\scheduler\BulkCurlTaskOperation;
-use pocketmine\scheduler\TimingsCollectionTask;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
-use pocketmine\utils\Utils;
 use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
 use function count;
@@ -49,10 +44,10 @@ use function file_exists;
 use function fopen;
 use function fwrite;
 use function http_build_query;
+use function implode;
 use function is_array;
 use function json_decode;
 use function mkdir;
-use function stream_get_contents;
 use function strtolower;
 use const CURLOPT_AUTOREFERER;
 use const CURLOPT_FOLLOWLOCATION;
@@ -106,65 +101,12 @@ class TimingsCommand extends VanillaCommand{
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
-			$timings = "";
-			if($paste){
-				$fileTimings = Utils::assumeNotFalse(fopen("php://temp", "r+b"), "Opening php://temp should never fail");
-			}else{
-				$index = 0;
-				$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
-
-				if(!file_exists($timingFolder)){
-					mkdir($timingFolder, 0777);
-				}
-				$timings = Path::join($timingFolder, "timings.txt");
-				while(file_exists($timings)){
-					$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
-				}
-
-				$fileTimings = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timings, "a+b"));
-			}
-
-			$mainThreadLines = TimingsHandler::printRecords(null);
-			foreach($mainThreadLines as $line){
-				fwrite($fileTimings, $line . PHP_EOL);
-			}
-			$asyncTimingsPromises = [];
-			$asyncPool = $sender->getServer()->getAsyncPool();
-			foreach($asyncPool->getRunningWorkers() as $workerId){
-				$resolver = new PromiseResolver();
-				$asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
-
-				$promise = $resolver->getPromise();
-				$promise->onCompletion(
-					function(array $lines) use ($fileTimings) : void{
-						foreach($lines as $line){
-							fwrite($fileTimings, $line . PHP_EOL);
-						}
-					},
-					function() : void{
-						throw new AssumptionFailedError("This promise is not expected to be rejected");
-					}
-				);
-				$asyncTimingsPromises[] = $promise;
-			}
-			$sender->sendMessage("Waiting for timings results from " . count($asyncTimingsPromises) . " workers...");
-
-			Promise::all($asyncTimingsPromises)->onCompletion(
-				function() use ($fileTimings, $paste, $sender, $asyncPool, $timings) : void{
-					foreach(TimingsHandler::printFooter() as $line){
-						fwrite($fileTimings, $line . PHP_EOL);
-					}
-
-					if($paste){
-						$this->uploadReport(Utils::assumeNotFalse(stream_get_contents($fileTimings, offset: 0), "No obvious reason for this to fail"), $sender, $asyncPool);
-					}else{
-						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
-					}
-					fclose($fileTimings);
-				},
-				function() : void{
-					throw new AssumptionFailedError("This promise is not expected to be rejected");
-				}
+			$timingsPromise = TimingsHandler::requestPrintTimings();
+			//TODO: i18n
+			Command::broadcastCommandMessage($sender, "Compiling timings report");
+			$timingsPromise->onCompletion(
+				fn(array $lines) => $paste ? $this->uploadReport($lines, $sender) : $this->createReportFile($lines, $sender),
+				fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
 			);
 		}else{
 			throw new InvalidCommandSyntaxException();
@@ -173,15 +115,44 @@ class TimingsCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function uploadReport(string $fileTimings, CommandSender $sender, AsyncPool $asyncPool) : void{
+	/**
+	 * @param string[] $lines
+	 * @phpstan-param list<string> $lines
+	 */
+	private function createReportFile(array $lines, CommandSender $sender) : void{
+		$index = 0;
+		$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
+
+		if(!file_exists($timingFolder)){
+			mkdir($timingFolder, 0777);
+		}
+		$timings = Path::join($timingFolder, "timings.txt");
+		while(file_exists($timings)){
+			$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
+		}
+
+		$fileTimings = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timings, "a+b"));
+		foreach($lines as $line){
+			fwrite($fileTimings, $line . PHP_EOL);
+		}
+		fclose($fileTimings);
+
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
+	}
+
+	/**
+	 * @param string[] $lines
+	 * @phpstan-param list<string> $lines
+	 */
+	private function uploadReport(array $lines, CommandSender $sender) : void{
 		$data = [
 			"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
-			"data" => $fileTimings
+			"data" => implode("\n", $lines)
 		];
 
 		$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 
-		$asyncPool->submitTask(new BulkCurlTask(
+		$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
 			[new BulkCurlTaskOperation(
 				"https://$host?upload=true",
 				10,

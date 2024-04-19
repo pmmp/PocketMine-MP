@@ -89,6 +89,7 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
+use pocketmine\scheduler\TimingsCollectionTask;
 use pocketmine\scheduler\TimingsControlTask;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
@@ -124,6 +125,7 @@ use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
 use function array_fill;
+use function array_merge;
 use function array_sum;
 use function base64_encode;
 use function chr;
@@ -910,6 +912,26 @@ class Server{
 				foreach($this->asyncPool->getRunningWorkers() as $workerId){
 					$this->asyncPool->submitTaskToWorker(new TimingsControlTask(TimingsControlTask::RESET), $workerId);
 				}
+			});
+			TimingsHandler::getCollectCallbacks()->add(function() : Promise{
+				$promises = [];
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$resolver = new PromiseResolver();
+					$this->asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
+
+					$promises[] = $resolver->getPromise();
+				}
+				$resolver = new PromiseResolver();
+				Promise::all($promises)->onCompletion(
+					function(array $workerRecords) use ($resolver) : void{
+						$resolver->resolve(array_merge(...$workerRecords));
+					},
+					function() : void{
+						throw new AssumptionFailedError("TimingsCollectionTask should never reject a promise");
+					}
+				);
+
+				return $resolver->getPromise();
 			});
 
 			$netCompressionThreshold = -1;
