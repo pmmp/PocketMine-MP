@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
-use pmmp\thread\ThreadSafeArray;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
@@ -34,21 +33,21 @@ use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
-use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
-use pocketmine\thread\ThreadCrashException;
-use pocketmine\timings\Timings;
 use pocketmine\utils\Utils;
 use pocketmine\YmlServerProperties;
 use raklib\generic\DisconnectReason;
-use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
-use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
-use raklib\server\ipc\UserToRakLibThreadMessageSender;
+use raklib\server\Server as RakLibServer;
 use raklib\server\ServerEventListener;
+use raklib\server\ServerEventSource;
+use raklib\server\ServerInterface;
+use raklib\server\ServerSocket;
+use raklib\server\SimpleProtocolAcceptor;
+use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
 use function addcslashes;
 use function base64_encode;
@@ -71,15 +70,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	private Network $network;
 
 	private int $rakServerId;
-	private RakLibServer $rakLib;
 
 	/** @var NetworkSession[] */
 	private array $sessions = [];
 
-	private RakLibToUserThreadMessageReceiver $eventReceiver;
-	private UserToRakLibThreadMessageSender $interface;
-
-	private int $sleeperNotifierId;
+	private RakLibServer $rakLib;
 
 	private PacketBroadcaster $packetBroadcaster;
 	private EntityEventBroadcaster $entityEventBroadcaster;
@@ -101,46 +96,25 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
-		$sleeperEntry = $this->server->getTickSleeper()->addNotifier(function() : void{
-			Timings::$connection->startTiming();
-			try{
-				while($this->eventReceiver->handle($this));
-			}finally{
-				Timings::$connection->stopTiming();
-			}
-		});
-		$this->sleeperNotifierId = $sleeperEntry->getNotifierId();
-
-		/** @phpstan-var ThreadSafeArray<int, string> $mainToThreadBuffer */
-		$mainToThreadBuffer = new ThreadSafeArray();
-		/** @phpstan-var ThreadSafeArray<int, string> $threadToMainBuffer */
-		$threadToMainBuffer = new ThreadSafeArray();
-
+		$socket = new ServerSocket(new InternetAddress($ip, $port, $ipV6 ? 6 : 4));
 		$this->rakLib = new RakLibServer(
-			$this->server->getLogger(),
-			$mainToThreadBuffer,
-			$threadToMainBuffer,
-			new InternetAddress($ip, $port, $ipV6 ? 6 : 4),
 			$this->rakServerId,
+			new \PrefixedLogger($this->server->getLogger(), "RakLib " . ($ipV6 ? "[$ip]" : $ip) . ":$port"),
+			$socket,
 			$this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::NETWORK_MAX_MTU_SIZE, 1492),
-			self::MCPE_RAKNET_PROTOCOL_VERSION,
-			$sleeperEntry
-		);
-		$this->eventReceiver = new RakLibToUserThreadMessageReceiver(
-			new PthreadsChannelReader($threadToMainBuffer)
-		);
-		$this->interface = new UserToRakLibThreadMessageSender(
-			new PthreadsChannelWriter($mainToThreadBuffer)
+			new SimpleProtocolAcceptor(self::MCPE_RAKNET_PROTOCOL_VERSION),
+			new class implements ServerEventSource{
+				public function process(ServerInterface $server) : bool{
+					return false;
+				}
+			},
+			$this,
+			new ExceptionTraceCleaner(\pocketmine\PATH),
+			recvMaxSplitParts: 512
 		);
 	}
 
 	public function start() : void{
-		$this->server->getLogger()->debug("Waiting for RakLib to start...");
-		try{
-			$this->rakLib->startAndWait();
-		}catch(SocketException $e){
-			throw new NetworkInterfaceStartException($e->getMessage(), 0, $e);
-		}
 		$this->server->getLogger()->debug("RakLib booted successfully");
 	}
 
@@ -149,13 +123,10 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function tick() : void{
-		if(!$this->rakLib->isRunning()){
-			$e = $this->rakLib->getCrashInfo();
-			if($e !== null){
-				throw new ThreadCrashException("RakLib crashed", $e);
-			}
-			throw new \Exception("RakLib Thread crashed without crash information");
-		}
+		//TODO: this is only called once per 50ms - this isn't fast enough for RakLib, which needs to tick every 10ms
+		//this will cause increased latency
+		//since tickProcessor also sleeps, this is also wasting CPU time
+		$this->rakLib->tickProcessor();
 	}
 
 	public function onClientDisconnect(int $sessionId, int $reason) : void{
@@ -174,13 +145,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	public function close(int $sessionId) : void{
 		if(isset($this->sessions[$sessionId])){
 			unset($this->sessions[$sessionId]);
-			$this->interface->closeSession($sessionId);
+			$this->rakLib->closeSession($sessionId);
 		}
 	}
 
 	public function shutdown() : void{
-		$this->server->getTickSleeper()->removeNotifier($this->sleeperNotifierId);
-		$this->rakLib->quit();
+		$this->rakLib->waitShutdown();
 	}
 
 	public function onClientConnect(int $sessionId, string $address, int $port, int $clientID) : void{
@@ -222,7 +192,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 
-				$this->interface->blockAddress($address, 5);
+				$this->rakLib->blockAddress($address, 5);
 			}catch(\Throwable $e){
 				//record the name of the player who caused the crash, to make it easier to find the reproducing steps
 				$this->server->getLogger()->emergency("Crash occurred while handling a packet from session: $name");
@@ -232,11 +202,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function blockAddress(string $address, int $timeout = 300) : void{
-		$this->interface->blockAddress($address, $timeout);
+		$this->rakLib->blockAddress($address, $timeout);
 	}
 
 	public function unblockAddress(string $address) : void{
-		$this->interface->unblockAddress($address);
+		$this->rakLib->unblockAddress($address);
 	}
 
 	public function onRawPacketReceive(string $address, int $port, string $payload) : void{
@@ -244,11 +214,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function sendRawPacket(string $address, int $port, string $payload) : void{
-		$this->interface->sendRaw($address, $port, $payload);
+		$this->rakLib->sendRaw($address, $port, $payload);
 	}
 
 	public function addRawPacketFilter(string $regex) : void{
-		$this->interface->addRawPacketFilter($regex);
+		$this->rakLib->addRawPacketFilter($regex);
 	}
 
 	public function onPacketAck(int $sessionId, int $identifierACK) : void{
@@ -260,7 +230,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	public function setName(string $name) : void{
 		$info = $this->server->getQueryInformation();
 
-		$this->interface->setName(implode(";",
+		$this->rakLib->setName(implode(";",
 			[
 				"MCPE",
 				rtrim(addcslashes($name, ";"), '\\'),
@@ -280,11 +250,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function setPortCheck(bool $name) : void{
-		$this->interface->setPortCheck($name);
+		$this->rakLib->setPortCheck($name);
 	}
 
 	public function setPacketLimit(int $limit) : void{
-		$this->interface->setPacketsPerTickLimit($limit);
+		$this->rakLib->setPacketsPerTickLimit($limit);
 	}
 
 	public function onBandwidthStatsUpdate(int $bytesSentDiff, int $bytesReceivedDiff) : void{
@@ -299,7 +269,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$pk->orderChannel = 0;
 			$pk->identifierACK = $receiptId;
 
-			$this->interface->sendEncapsulated($sessionId, $pk, $immediate);
+			$this->rakLib->sendEncapsulated($sessionId, $pk, $immediate);
 		}
 	}
 
