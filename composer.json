@@ -83,11 +83,14 @@
          "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
          "@php -dphar.readonly=0 build/server-phar.php"
       ],
-      "update-registry-annotations": [
+      "update-codegen": [
+         "@php build/generate-bedrockdata-path-consts.php",
+         "@php build/generate-biome-ids.php",
+         "@php build/generate-block-serializer-consts.php vendor/pocketmine/bedrock-data/canonical_block_states.nbt",
+         "@php build/generate-item-type-names.php vendor/pocketmine/bedrock-data/required_item_list.json",
+         "@php build/generate-known-translation-apis.php",
+         "@php build/generate-pocketmine-yml-property-consts.php",
          "@php build/generate-registry-annotations.php src"
-      ],
-      "update-translation-apis": [
-         "@php build/generate-known-translation-apis.php"
       ]
    }
 }
