@@ -51,7 +51,7 @@ class BlockTypeIdsTest extends TestCase{
 		foreach(Utils::stringifyKeys(VanillaBlocks::getAll()) as $name => $block){
 			$expected = $block->getTypeId();
 			$actual = $reflect->getConstant($name);
-			self::assertSame($expected, $actual, "VanillaBlocks::$name() does not match BlockTypeIds::$name");
+			self::assertSame($expected, $actual, "VanillaBlocks::$name() does not match BlockTypeIds::$name - re-run build/generate-type-id-consts.php to regenerate the constants");
 		}
 	}
 }

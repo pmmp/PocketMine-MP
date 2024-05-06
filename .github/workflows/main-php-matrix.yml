@@ -150,6 +150,9 @@ jobs:
       - name: Update generated code
         run: composer update-codegen
 
+      - name: Regenerate BlockTypeIds and ItemTypeIds
+        run: php build/generate-type-id-consts.php
+
       - name: Verify code is unchanged
         run: |
           git diff
