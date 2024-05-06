@@ -124,8 +124,8 @@ namespace pocketmine {
 		}
 
 		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
-			if(version_compare($pmmpthread_version, "6.0.7") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
-				$messages[] = "pmmpthread ^6.0.7 is required, while you have $pmmpthread_version.";
+			if(version_compare($pmmpthread_version, "6.1.0") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.1.0 is required, while you have $pmmpthread_version.";
 			}
 		}
 
@@ -317,7 +317,7 @@ JIT_WARNING
 		//Logger has a dependency on timezone
 		Timezone::init();
 
-		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI]);
+		$opts = getopt("", [BootstrapOptions::NO_WIZARD, BootstrapOptions::ENABLE_ANSI, BootstrapOptions::DISABLE_ANSI, BootstrapOptions::NO_LOG_FILE]);
 		if(isset($opts[BootstrapOptions::ENABLE_ANSI])){
 			Terminal::init(true);
 		}elseif(isset($opts[BootstrapOptions::DISABLE_ANSI])){
@@ -325,8 +325,13 @@ JIT_WARNING
 		}else{
 			Terminal::init();
 		}
+		$logFile = isset($opts[BootstrapOptions::NO_LOG_FILE]) ? null : Path::join($dataPath, "server.log");
 
-		$logger = new MainLogger(Path::join($dataPath, "server.log"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger($logFile, Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()), false, Path::join($dataPath, "log_archive"));
+		if($logFile === null){
+			$logger->notice("Logging to file disabled. Ensure logs are collected by other means (e.g. Docker logs).");
+		}
+
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);

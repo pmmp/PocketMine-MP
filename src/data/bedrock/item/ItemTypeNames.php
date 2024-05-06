@@ -75,6 +75,7 @@ final class ItemTypeNames{
 	public const BLUE_DYE = "minecraft:blue_dye";
 	public const BOAT = "minecraft:boat";
 	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
+	public const BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:bolt_armor_trim_smithing_template";
 	public const BONE = "minecraft:bone";
 	public const BONE_MEAL = "minecraft:bone_meal";
 	public const BOOK = "minecraft:book";
@@ -82,6 +83,7 @@ final class ItemTypeNames{
 	public const BOW = "minecraft:bow";
 	public const BOWL = "minecraft:bowl";
 	public const BREAD = "minecraft:bread";
+	public const BREEZE_ROD = "minecraft:breeze_rod";
 	public const BREEZE_SPAWN_EGG = "minecraft:breeze_spawn_egg";
 	public const BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 	public const BREWING_STAND = "minecraft:brewing_stand";
@@ -141,6 +143,8 @@ final class ItemTypeNames{
 	public const COPPER_DOOR = "minecraft:copper_door";
 	public const COPPER_INGOT = "minecraft:copper_ingot";
 	public const CORAL = "minecraft:coral";
+	public const CORAL_FAN = "minecraft:coral_fan";
+	public const CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
 	public const COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
 	public const CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
 	public const CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
@@ -155,7 +159,6 @@ final class ItemTypeNames{
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
-	public const DEBUG_STICK = "minecraft:debug_stick";
 	public const DIAMOND = "minecraft:diamond";
 	public const DIAMOND_AXE = "minecraft:diamond_axe";
 	public const DIAMOND_BOOTS = "minecraft:diamond_boots";
@@ -205,6 +208,9 @@ final class ItemTypeNames{
 	public const FISHING_ROD = "minecraft:fishing_rod";
 	public const FLINT = "minecraft:flint";
 	public const FLINT_AND_STEEL = "minecraft:flint_and_steel";
+	public const FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:flow_armor_trim_smithing_template";
+	public const FLOW_BANNER_PATTERN = "minecraft:flow_banner_pattern";
+	public const FLOW_POTTERY_SHERD = "minecraft:flow_pottery_sherd";
 	public const FLOWER_BANNER_PATTERN = "minecraft:flower_banner_pattern";
 	public const FLOWER_POT = "minecraft:flower_pot";
 	public const FOX_SPAWN_EGG = "minecraft:fox_spawn_egg";
@@ -242,6 +248,8 @@ final class ItemTypeNames{
 	public const GREEN_DYE = "minecraft:green_dye";
 	public const GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
 	public const GUNPOWDER = "minecraft:gunpowder";
+	public const GUSTER_BANNER_PATTERN = "minecraft:guster_banner_pattern";
+	public const GUSTER_POTTERY_SHERD = "minecraft:guster_pottery_sherd";
 	public const HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
 	public const HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
@@ -297,6 +305,7 @@ final class ItemTypeNames{
 	public const LODESTONE_COMPASS = "minecraft:lodestone_compass";
 	public const LOG = "minecraft:log";
 	public const LOG2 = "minecraft:log2";
+	public const MACE = "minecraft:mace";
 	public const MAGENTA_DYE = "minecraft:magenta_dye";
 	public const MAGMA_CREAM = "minecraft:magma_cream";
 	public const MAGMA_CUBE_SPAWN_EGG = "minecraft:magma_cube_spawn_egg";
@@ -404,6 +413,7 @@ final class ItemTypeNames{
 	public const RAW_IRON = "minecraft:raw_iron";
 	public const RECOVERY_COMPASS = "minecraft:recovery_compass";
 	public const RED_DYE = "minecraft:red_dye";
+	public const RED_FLOWER = "minecraft:red_flower";
 	public const REDSTONE = "minecraft:redstone";
 	public const REPEATER = "minecraft:repeater";
 	public const RIB_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:rib_armor_trim_smithing_template";
@@ -412,6 +422,8 @@ final class ItemTypeNames{
 	public const SALMON = "minecraft:salmon";
 	public const SALMON_BUCKET = "minecraft:salmon_bucket";
 	public const SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
+	public const SAPLING = "minecraft:sapling";
+	public const SCRAPE_POTTERY_SHERD = "minecraft:scrape_pottery_sherd";
 	public const SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 	public const SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:shaper_armor_trim_smithing_template";
 	public const SHEAF_POTTERY_SHERD = "minecraft:sheaf_pottery_sherd";

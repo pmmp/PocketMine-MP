@@ -35,6 +35,7 @@ enum BannerPatternType{
 	case DIAGONAL_UP_LEFT;
 	case DIAGONAL_UP_RIGHT;
 	case FLOWER;
+	case GLOBE;
 	case GRADIENT;
 	case GRADIENT_UP;
 	case HALF_HORIZONTAL;
@@ -42,6 +43,7 @@ enum BannerPatternType{
 	case HALF_VERTICAL;
 	case HALF_VERTICAL_RIGHT;
 	case MOJANG;
+	case PIGLIN;
 	case RHOMBUS;
 	case SKULL;
 	case SMALL_STRIPES;
