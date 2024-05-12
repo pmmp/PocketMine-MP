@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [8.1]
+        php-version: [8.2]
 
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +20,12 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.26.0
+        uses: shivammathur/setup-php@2.30.4
         with:
           php-version: ${{ matrix.php-version }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -76,17 +76,21 @@ jobs:
             ${{ steps.php-binary-url.outputs.PHP_BINARY_URL }} \
             > build_info.json
 
+      - name: Generate core permission doc for doc.pmmp.io
+        run: php tools/generate-permission-doc.php rst
+
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release_artifacts
           path: |
             ${{ github.workspace }}/PocketMine-MP.phar
             ${{ github.workspace }}/start.*
             ${{ github.workspace }}/build_info.json
+            ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.13.0
+        uses: ncipollo/release-action@v1.14.0
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}

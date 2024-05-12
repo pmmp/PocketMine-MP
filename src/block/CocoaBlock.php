@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -39,27 +39,15 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Transparent{
+class CocoaBlock extends Flowable{
 	use HorizontalFacingTrait;
+	use AgeableTrait;
 
 	public const MAX_AGE = 2;
 
-	protected int $age = 0;
-
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->boundedInt(2, 0, self::MAX_AGE, $this->age);
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
 	/**
@@ -76,12 +64,8 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getWoodType()->equals(WoodType::JUNGLE());
+		return $block instanceof Wood && $block->getWoodType() === WoodType::JUNGLE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -110,7 +94,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{

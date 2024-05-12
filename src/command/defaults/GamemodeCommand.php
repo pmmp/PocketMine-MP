@@ -61,13 +61,13 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		if($target->getGamemode()->equals($gameMode)){
+		if($target->getGamemode() === $gameMode){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
 			return true;
 		}
 
 		$target->setGamemode($gameMode);
-		if(!$gameMode->equals($target->getGamemode())){
+		if($gameMode !== $target->getGamemode()){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
 		}else{
 			if($target === $sender){

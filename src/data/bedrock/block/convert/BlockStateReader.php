@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -39,20 +38,24 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Utils;
+use function array_keys;
+use function count;
 use function get_class;
+use function implode;
 
 final class BlockStateReader{
 
 	/**
-	 * @var true[]
-	 * @phpstan-var array<string, true>
+	 * @var Tag[]
+	 * @phpstan-var array<string, Tag>
 	 */
-	private array $usedStates = [];
+	private array $unusedStates;
 
 	public function __construct(
 		private BlockStateData $data
-	){}
+	){
+		$this->unusedStates = $this->data->getStates();
+	}
 
 	public function missingOrWrongTypeException(string $name, ?Tag $tag) : BlockStateDeserializeException{
 		return new BlockStateDeserializeException("Property \"$name\" " . ($tag !== null ? "has unexpected type " . get_class($tag) : "is missing"));
@@ -67,7 +70,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readBool(string $name) : bool{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof ByteTag){
 			switch($tag->getValue()){
@@ -81,7 +84,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readInt(string $name) : int{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof IntTag){
 			return $tag->getValue();
@@ -100,7 +103,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readString(string $name) : string{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		//TODO: only allow a specific set of values (strings are primarily used for enums)
 		$tag = $this->data->getState($name);
 		if($tag instanceof StringTag){
@@ -133,6 +136,19 @@ final class BlockStateReader{
 			4 => Facing::WEST,
 			5 => Facing::EAST
 		]);
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public function readBlockFace() : int{
+		return match($raw = $this->readString(BlockStateNames::MC_BLOCK_FACE)){
+			StringValues::MC_BLOCK_FACE_DOWN => Facing::DOWN,
+			StringValues::MC_BLOCK_FACE_UP => Facing::UP,
+			StringValues::MC_BLOCK_FACE_NORTH => Facing::NORTH,
+			StringValues::MC_BLOCK_FACE_SOUTH => Facing::SOUTH,
+			StringValues::MC_BLOCK_FACE_WEST => Facing::WEST,
+			StringValues::MC_BLOCK_FACE_EAST => Facing::EAST,
+			default => throw $this->badValueException(BlockStateNames::MC_BLOCK_FACE, $raw)
+		};
 	}
 
 	/**
@@ -224,30 +240,6 @@ final class BlockStateReader{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public function readColor() : DyeColor{
-		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow
-		return match($color = $this->readString(BlockStateNames::COLOR)){
-			StringValues::COLOR_BLACK => DyeColor::BLACK(),
-			StringValues::COLOR_BLUE => DyeColor::BLUE(),
-			StringValues::COLOR_BROWN => DyeColor::BROWN(),
-			StringValues::COLOR_CYAN => DyeColor::CYAN(),
-			StringValues::COLOR_GRAY => DyeColor::GRAY(),
-			StringValues::COLOR_GREEN => DyeColor::GREEN(),
-			StringValues::COLOR_LIGHT_BLUE => DyeColor::LIGHT_BLUE(),
-			StringValues::COLOR_LIME => DyeColor::LIME(),
-			StringValues::COLOR_MAGENTA => DyeColor::MAGENTA(),
-			StringValues::COLOR_ORANGE => DyeColor::ORANGE(),
-			StringValues::COLOR_PINK => DyeColor::PINK(),
-			StringValues::COLOR_PURPLE => DyeColor::PURPLE(),
-			StringValues::COLOR_RED => DyeColor::RED(),
-			StringValues::COLOR_SILVER => DyeColor::LIGHT_GRAY(),
-			StringValues::COLOR_WHITE => DyeColor::WHITE(),
-			StringValues::COLOR_YELLOW => DyeColor::YELLOW(),
-			default => throw $this->badValueException(BlockStateNames::COLOR, $color),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
 	public function readCoralFacing() : int{
 		return $this->parseFacingValue($this->readInt(BlockStateNames::CORAL_DIRECTION), [
 			0 => Facing::WEST,
@@ -294,8 +286,8 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readSlabPosition() : SlabType{
 		return match($rawValue = $this->readString(BlockStateNames::MC_VERTICAL_HALF)){
-			StringValues::MC_VERTICAL_HALF_BOTTOM => SlabType::BOTTOM(),
-			StringValues::MC_VERTICAL_HALF_TOP => SlabType::TOP(),
+			StringValues::MC_VERTICAL_HALF_BOTTOM => SlabType::BOTTOM,
+			StringValues::MC_VERTICAL_HALF_TOP => SlabType::TOP,
 			default => throw $this->badValueException(BlockStateNames::MC_VERTICAL_HALF, $rawValue, "Invalid slab position"),
 		};
 	}
@@ -320,11 +312,11 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readCoralType() : CoralType{
 		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
-			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE(),
-			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN(),
-			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
-			StringValues::CORAL_COLOR_RED => CoralType::FIRE(),
-			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN(),
+			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE,
+			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN,
+			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE,
+			StringValues::CORAL_COLOR_RED => CoralType::FIRE,
+			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN,
 			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
 		};
 	}
@@ -332,10 +324,10 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readBellAttachmentType() : BellAttachmentType{
 		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
-			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
-			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
-			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
-			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
+			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING,
+			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR,
+			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL,
+			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS,
 			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
 		};
 	}
@@ -347,8 +339,8 @@ final class BlockStateReader{
 			//we need to find a better way to auto-generate the constant names when they are reused
 			//for now, using these constants is better than nothing since it still gives static analysability
 			StringValues::WALL_CONNECTION_TYPE_EAST_NONE => null,
-			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT(),
-			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL(),
+			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT,
+			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL,
 			default => throw $this->badValueException($name, $type),
 		};
 	}
@@ -358,7 +350,7 @@ final class BlockStateReader{
 	 */
 	public function ignored(string $name) : void{
 		if($this->data->getState($name) !== null){
-			$this->usedStates[$name] = true;
+			unset($this->unusedStates[$name]);
 		}else{
 			throw $this->missingOrWrongTypeException($name, null);
 		}
@@ -375,10 +367,8 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function checkUnreadProperties() : void{
-		foreach(Utils::stringifyKeys($this->data->getStates()) as $name => $tag){
-			if(!isset($this->usedStates[$name])){
-				throw new BlockStateDeserializeException("Unread property \"$name\"");
-			}
+		if(count($this->unusedStates) > 0){
+			throw new BlockStateDeserializeException("Unread properties: " . implode(", ", array_keys($this->unusedStates)));
 		}
 	}
 }
