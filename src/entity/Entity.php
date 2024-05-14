@@ -658,6 +658,9 @@ abstract class Entity{
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev);
 			$hasUpdate = true;
+		}elseif($this->isOnGround()){
+			$block = $this->getWorld()->getBlock($this->getLocation()->subtract(0, 1, 0));
+			$block->onEntityCollide($this);
 		}
 
 		if($this->isOnFire() && $this->doOnFireTick($tickDiff)){
