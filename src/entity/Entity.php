@@ -660,7 +660,13 @@ abstract class Entity{
 			$hasUpdate = true;
 		}elseif($this->isOnGround()){
 			$block = $this->getWorld()->getBlock($this->getLocation()->subtract(0, 1, 0));
-			$block->onEntityCollide($this);
+			$entityBox = $this->getBoundingBox()->addCoord(0, -0.00001, 0);
+			foreach ($block->getCollisionBoxes() as $blockBox) {
+				if ($entityBox->intersectsWith($blockBox)) {
+					$block->onEntityCollide($this);
+					break;
+				}
+			}
 		}
 
 		if($this->isOnFire() && $this->doOnFireTick($tickDiff)){
