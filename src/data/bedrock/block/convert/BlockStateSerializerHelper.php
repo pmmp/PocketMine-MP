@@ -107,10 +107,9 @@ final class BlockStateSerializerHelper{
 			->writeBool(BlockStateNames::OPEN_BIT, $block->isOpen());
 	}
 
-	public static function encodeDoublePlant(DoublePlant $block, string $doublePlantType, Writer $out) : Writer{
+	public static function encodeDoublePlant(DoublePlant $block, Writer $out) : Writer{
 		return $out
-			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop())
-			->writeString(BlockStateNames::DOUBLE_PLANT_TYPE, $doublePlantType);
+			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop());
 	}
 
 	public static function encodeFenceGate(FenceGate $block, Writer $out) : Writer{
@@ -183,11 +182,21 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::REDSTONE_SIGNAL, $block->isPressed() ? 15 : 0);
 	}
 
-	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : Writer{
-		$slabType = $block->getSlabType();
-		return Writer::create($slabType === SlabType::DOUBLE ? $doubleId : $singleId)
+	private static function encodeSingleSlab(Slab $block, string $id) : Writer{
+		return Writer::create($id)
+			->writeSlabPosition($block->getSlabType());
+	}
+
+	private static function encodeDoubleSlab(Slab $block, string $id) : Writer{
+		return Writer::create($id)
 			//this is (intentionally) also written for double slabs (as zero) to maintain bug parity with MCPE
-			->writeSlabPosition($slabType === SlabType::DOUBLE ? SlabType::BOTTOM : $slabType);
+			->writeSlabPosition(SlabType::BOTTOM);
+	}
+
+	public static function encodeSlab(Slab $block, string $singleId, string $doubleId) : Writer{
+		return $block->getSlabType() === SlabType::DOUBLE ?
+			self::encodeDoubleSlab($block, $doubleId) :
+			self::encodeSingleSlab($block, $singleId);
 	}
 
 	public static function encodeStairs(Stair $block, Writer $out) : Writer{
@@ -215,8 +224,12 @@ final class BlockStateSerializerHelper{
 			->writeString($typeKey, $typeValue);
 	}
 
-	public static function encodeStoneSlab1(Slab $block, string $typeValue) : Writer{
-		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB, Ids::DOUBLE_STONE_BLOCK_SLAB, BlockStateNames::STONE_SLAB_TYPE, $typeValue);
+	public static function encodeStoneSlab1(Slab $block, string $singleId, string $doubleTypeValue) : Writer{
+		//1.21 made this a mess by flattening single slab IDs but not double ones
+		return $block->getSlabType() === SlabType::DOUBLE ?
+			self::encodeDoubleSlab($block, Ids::DOUBLE_STONE_BLOCK_SLAB)
+				->writeString(BlockStateNames::STONE_SLAB_TYPE, $doubleTypeValue) :
+			self::encodeSingleSlab($block, $singleId);
 	}
 
 	public static function encodeStoneSlab2(Slab $block, string $typeValue) : Writer{
