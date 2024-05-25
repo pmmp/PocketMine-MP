@@ -80,7 +80,7 @@ use function preg_match_all;
 use function preg_replace;
 use function shell_exec;
 use function spl_object_id;
-use function str_ends_with;
+use function str_contains;
 use function str_pad;
 use function str_split;
 use function str_starts_with;
