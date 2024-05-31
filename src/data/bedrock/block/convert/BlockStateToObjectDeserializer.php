@@ -1437,7 +1437,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 					$in->ignored(StateNames::PILLAR_AXIS);
 					return Blocks::SMOOTH_QUARTZ();
 				default:
-					return throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
+					throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
 			}
 		});
 		$this->mapStairs(Ids::QUARTZ_STAIRS, fn() => Blocks::QUARTZ_STAIRS());
