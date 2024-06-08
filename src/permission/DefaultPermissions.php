@@ -106,6 +106,7 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_UNBAN_IP, l10n::pocketmine_permission_command_unban_ip()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_UNBAN_PLAYER, l10n::pocketmine_permission_command_unban_player()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_VERSION, l10n::pocketmine_permission_command_version()), [$everyoneRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_VERSION_DETAIL, l10n::pocketmine_permission_command_version_detail()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_ADD, l10n::pocketmine_permission_command_whitelist_add()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_DISABLE, l10n::pocketmine_permission_command_whitelist_disable()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_ENABLE, l10n::pocketmine_permission_command_whitelist_enable()), [$operatorRoot]);

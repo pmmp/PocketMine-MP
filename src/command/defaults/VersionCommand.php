@@ -82,6 +82,10 @@ class VersionCommand extends VanillaCommand{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
 
+			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_VERSION_DETAIL)){
+				return true;
+			}
+
 			if($exactPlugin instanceof Plugin){
 				$this->describeToSender($exactPlugin, $sender);
 
