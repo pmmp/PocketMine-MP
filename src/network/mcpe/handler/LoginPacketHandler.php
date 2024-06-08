@@ -77,7 +77,7 @@ class LoginPacketHandler extends PacketHandler{
 				reason: "Invalid skin: " . $e->getMessage(),
 				disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_invalidSkin()
 			);
-
+            $this->server->getNetwork()->blockAddress($this->session->getIp());
 			return true;
 		}
 
