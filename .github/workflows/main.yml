@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.30.4
+        uses: shivammathur/setup-php@2.30.5
         with:
           php-version: 8.2
           tools: php-cs-fixer:3.49
