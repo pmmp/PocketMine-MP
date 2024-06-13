@@ -27,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use Symfony\Component\Filesystem\Path;
+use function sprintf;
 use const PHP_INT_MAX;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
