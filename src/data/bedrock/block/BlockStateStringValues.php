@@ -62,12 +62,6 @@ final class BlockStateStringValues{
 	public const CHISEL_TYPE_LINES = "lines";
 	public const CHISEL_TYPE_SMOOTH = "smooth";
 
-	public const CORAL_COLOR_BLUE = "blue";
-	public const CORAL_COLOR_PINK = "pink";
-	public const CORAL_COLOR_PURPLE = "purple";
-	public const CORAL_COLOR_RED = "red";
-	public const CORAL_COLOR_YELLOW = "yellow";
-
 	public const CRACKED_STATE_CRACKED = "cracked";
 	public const CRACKED_STATE_MAX_CRACKED = "max_cracked";
 	public const CRACKED_STATE_NO_CRACKS = "no_cracks";
@@ -79,13 +73,6 @@ final class BlockStateStringValues{
 
 	public const DIRT_TYPE_COARSE = "coarse";
 	public const DIRT_TYPE_NORMAL = "normal";
-
-	public const DOUBLE_PLANT_TYPE_FERN = "fern";
-	public const DOUBLE_PLANT_TYPE_GRASS = "grass";
-	public const DOUBLE_PLANT_TYPE_PAEONIA = "paeonia";
-	public const DOUBLE_PLANT_TYPE_ROSE = "rose";
-	public const DOUBLE_PLANT_TYPE_SUNFLOWER = "sunflower";
-	public const DOUBLE_PLANT_TYPE_SYRINGA = "syringa";
 
 	public const DRIPSTONE_THICKNESS_BASE = "base";
 	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
@@ -219,11 +206,6 @@ final class BlockStateStringValues{
 
 	public const STRUCTURE_VOID_TYPE_AIR = "air";
 	public const STRUCTURE_VOID_TYPE_VOID = "void";
-
-	public const TALL_GRASS_TYPE_DEFAULT = "default";
-	public const TALL_GRASS_TYPE_FERN = "fern";
-	public const TALL_GRASS_TYPE_SNOW = "snow";
-	public const TALL_GRASS_TYPE_TALL = "tall";
 
 	public const TORCH_FACING_DIRECTION_EAST = "east";
 	public const TORCH_FACING_DIRECTION_NORTH = "north";

@@ -39,7 +39,19 @@ final class BlockStateDataTest extends TestCase{
 		) as $schema){
 			$expected = BlockStateData::CURRENT_VERSION;
 			$actual = $schema->getVersionId();
-			self::assertLessThanOrEqual($expected, $actual, "Schema version $actual is newer than the current version $expected");
+			self::assertLessThanOrEqual($expected, $actual, sprintf(
+				"Schema version %d (%d.%d.%d.%d) is newer than the current version %d (%d.%d.%d.%d)",
+				$actual,
+				($actual >> 24) & 0xff,
+				($actual >> 16) & 0xff,
+				($actual >> 8) & 0xff,
+				$actual & 0xff,
+				$expected,
+				($expected >> 24) & 0xff,
+				($expected >> 16) & 0xff,
+				($expected >> 8) & 0xff,
+				$expected & 0xff
+			));
 		}
 	}
 }
