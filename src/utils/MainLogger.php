@@ -44,7 +44,7 @@ class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(?string $logFile, string $logArchiveDir, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false){
+	public function __construct(?string $logFile, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false, ?string $logArchiveDir = null){
 		parent::__construct();
 		$this->logDebug = $logDebug;
 

@@ -81,7 +81,6 @@ final class BlockStateNames{
 	public const EXTINGUISHED = "extinguished";
 	public const FACING_DIRECTION = "facing_direction";
 	public const FILL_LEVEL = "fill_level";
-	public const FLOWER_TYPE = "flower_type";
 	public const GROUND_SIGN_DIRECTION = "ground_sign_direction";
 	public const GROWING_PLANT_AGE = "growing_plant_age";
 	public const GROWTH = "growth";
@@ -124,7 +123,6 @@ final class BlockStateNames{
 	public const ROTATION = "rotation";
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
-	public const SAPLING_TYPE = "sapling_type";
 	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const SPONGE_TYPE = "sponge_type";

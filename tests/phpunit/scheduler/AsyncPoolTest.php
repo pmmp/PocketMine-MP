@@ -32,7 +32,6 @@ use pocketmine\utils\MainLogger;
 use function define;
 use function dirname;
 use function microtime;
-use function sys_get_temp_dir;
 use function usleep;
 
 class AsyncPoolTest extends TestCase{
@@ -44,13 +43,12 @@ class AsyncPoolTest extends TestCase{
 
 	public function setUp() : void{
 		@define('pocketmine\\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 3) . '/vendor/autoload.php');
-		$this->mainLogger = new MainLogger(null, sys_get_temp_dir(), false, "Main", new \DateTimeZone('UTC'));
+		$this->mainLogger = new MainLogger(null, false, "Main", new \DateTimeZone('UTC'));
 		$this->pool = new AsyncPool(2, 1024, new ThreadSafeClassLoader(), $this->mainLogger, new SleeperHandler());
 	}
 
 	public function tearDown() : void{
 		$this->pool->shutdown();
-		$this->mainLogger->shutdownLogWriterThread();
 	}
 
 	public function testTaskLeak() : void{
