@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,7 +29,6 @@ use pocketmine\utils\AssumptionFailedError;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function openssl_error_string;
-use function openssl_free_key;
 use function openssl_pkey_get_details;
 use function openssl_pkey_new;
 use function random_bytes;
@@ -40,20 +39,18 @@ class PrepareEncryptionTask extends AsyncTask{
 
 	private static ?\OpenSSLAsymmetricKey $SERVER_PRIVATE_KEY = null;
 
-	/** @var string */
-	private $serverPrivateKey;
+	private string $serverPrivateKey;
 
-	/** @var string|null */
-	private $aesKey = null;
-	/** @var string|null */
-	private $handshakeJwt = null;
-	/** @var string */
-	private $clientPub;
+	private ?string $aesKey = null;
+	private ?string $handshakeJwt = null;
 
 	/**
 	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
 	 */
-	public function __construct(string $clientPub, \Closure $onCompletion){
+	public function __construct(
+		private string $clientPub,
+		\Closure $onCompletion
+	){
 		if(self::$SERVER_PRIVATE_KEY === null){
 			$serverPrivateKey = openssl_pkey_new(["ec" => ["curve_name" => "secp384r1"]]);
 			if($serverPrivateKey === false){
@@ -63,7 +60,6 @@ class PrepareEncryptionTask extends AsyncTask{
 		}
 
 		$this->serverPrivateKey = igbinary_serialize(openssl_pkey_get_details(self::$SERVER_PRIVATE_KEY));
-		$this->clientPub = $clientPub;
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
 	}
 
@@ -78,9 +74,6 @@ class PrepareEncryptionTask extends AsyncTask{
 		$salt = random_bytes(16);
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
 		$this->handshakeJwt = EncryptionUtils::generateServerHandshakeJwt($serverPriv, $salt);
-
-		@openssl_free_key($serverPriv);
-		@openssl_free_key($clientPub);
 	}
 
 	public function onCompletion() : void{

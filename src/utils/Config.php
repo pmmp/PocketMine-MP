@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use Webmozart\PathUtil\Path;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
+use Symfony\Component\Filesystem\Path;
 use function array_change_key_case;
 use function array_fill_keys;
 use function array_keys;
@@ -32,7 +33,7 @@ use function count;
 use function date;
 use function explode;
 use function file_exists;
-use function file_get_contents;
+use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -53,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const YAML_UTF8_ENCODING;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -72,26 +74,22 @@ class Config{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $config = [];
+	private array $config = [];
 
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $nestedCache = [];
+	private array $nestedCache = [];
 
-	/** @var string */
-	private $file;
-	/** @var int */
-	private $type = Config::DETECT;
-	/** @var int */
-	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private string $file;
+	private int $type = Config::DETECT;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
-	/** @var bool */
-	private $changed = false;
+	private bool $changed = false;
 
 	/** @var int[] */
-	public static $formats = [
+	public static array $formats = [
 		"properties" => Config::PROPERTIES,
 		"cnf" => Config::CNF,
 		"conf" => Config::CNF,
@@ -110,8 +108,8 @@ class Config{
 	];
 
 	/**
-	 * @param string  $file Path of the file to be loaded
-	 * @param int     $type Config type to load, -1 by default (detect)
+	 * @param string  $file    Path of the file to be loaded
+	 * @param int     $type    Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @phpstan-param array<string, mixed> $default
 	 */
@@ -163,24 +161,32 @@ class Config{
 			$this->config = $default;
 			$this->save();
 		}else{
-			$content = file_get_contents($this->file);
-			if($content === false){
-				throw new \RuntimeException("Unable to load config file");
-			}
-			$config = null;
+			$content = Filesystem::fileGetContents($this->file);
 			switch($this->type){
 				case Config::PROPERTIES:
 					$config = self::parseProperties($content);
 					break;
 				case Config::JSON:
-					$config = json_decode($content, true);
+					try{
+						$config = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+					}catch(\JsonException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::YAML:
 					$content = self::fixYAMLIndexes($content);
-					$config = yaml_parse($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => yaml_parse($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::SERIALIZED:
-					$config = unserialize($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => unserialize($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::ENUM:
 					$config = array_fill_keys(self::parseList($content), true);
@@ -188,7 +194,10 @@ class Config{
 				default:
 					throw new \InvalidArgumentException("Invalid config type specified");
 			}
-			$this->config = is_array($config) ? $config : $default;
+			if(!is_array($config)){
+				throw new ConfigLoadException("Failed to load config $this->file: Expected array for base type, but got " . get_debug_type($config));
+			}
+			$this->config = $config;
 			if($this->fillDefaults($default, $this->config) > 0){
 				$this->save();
 			}
@@ -329,11 +338,7 @@ class Config{
 		$this->remove($k);
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed  $value
-	 */
-	public function setNested($key, $value) : void{
+	public function setNested(string $key, mixed $value) : void{
 		$vars = explode(".", $key);
 		$base = array_shift($vars);
 
@@ -341,14 +346,14 @@ class Config{
 			$this->config[$base] = [];
 		}
 
-		$base =& $this->config[$base];
+		$base = &$this->config[$base];
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
 			if(!isset($base[$baseKey])){
 				$base[$baseKey] = [];
 			}
-			$base =& $base[$baseKey];
+			$base = &$base[$baseKey];
 		}
 
 		$base = $value;
@@ -356,13 +361,7 @@ class Config{
 		$this->changed = true;
 	}
 
-	/**
-	 * @param string $key
-	 * @param mixed  $default
-	 *
-	 * @return mixed
-	 */
-	public function getNested($key, $default = null){
+	public function getNested(string $key, mixed $default = null) : mixed{
 		if(isset($this->nestedCache[$key])){
 			return $this->nestedCache[$key];
 		}
@@ -377,7 +376,7 @@ class Config{
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
-			if(is_array($base) and isset($base[$baseKey])){
+			if(is_array($base) && isset($base[$baseKey])){
 				$base = $base[$baseKey];
 			}else{
 				return $default;
@@ -393,14 +392,14 @@ class Config{
 
 		$vars = explode(".", $key);
 
-		$currentNode =& $this->config;
+		$currentNode = &$this->config;
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
 				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
-					$currentNode =& $currentNode[$nodeName];
+					$currentNode = &$currentNode[$nodeName];
 				}
 			}else{
 				break;
@@ -408,21 +407,11 @@ class Config{
 		}
 	}
 
-	/**
-	 * @param string $k
-	 * @param mixed  $default
-	 *
-	 * @return bool|mixed
-	 */
-	public function get($k, $default = false){
+	public function get(string $k, mixed $default = false) : mixed{
 		return $this->config[$k] ?? $default;
 	}
 
-	/**
-	 * @param string $k key to be set
-	 * @param mixed  $v value to set key
-	 */
-	public function set($k, $v = true) : void{
+	public function set(string $k, mixed $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
 		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
@@ -442,10 +431,9 @@ class Config{
 	}
 
 	/**
-	 * @param string $k
-	 * @param bool   $lowercase If set, searches Config in single-case / lowercase.
+	 * @param bool $lowercase If set, searches Config in single-case / lowercase.
 	 */
-	public function exists($k, bool $lowercase = false) : bool{
+	public function exists(string $k, bool $lowercase = false) : bool{
 		if($lowercase){
 			$k = strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
@@ -455,10 +443,7 @@ class Config{
 		}
 	}
 
-	/**
-	 * @param string $k
-	 */
-	public function remove($k) : void{
+	public function remove(string $k) : void{
 		unset($this->config[$k]);
 		$this->changed = true;
 	}
@@ -481,15 +466,16 @@ class Config{
 
 	/**
 	 * @param mixed[] $default
-	 * @param mixed[] $data reference parameter
+	 * @param mixed[] $data    reference parameter
 	 * @phpstan-param array<string, mixed> $default
 	 * @phpstan-param array<string, mixed> $data
+	 * @phpstan-param-out array<string, mixed> $data
 	 */
-	private function fillDefaults(array $default, &$data) : int{
+	private function fillDefaults(array $default, array &$data) : int{
 		$changed = 0;
 		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
-				if(!isset($data[$k]) or !is_array($data[$k])){
+				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);

@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -36,17 +37,21 @@ class Fence extends Transparent{
 		return 0.25;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
 			}
 		}
+
+		return $this;
 	}
 
 	/**
@@ -61,7 +66,7 @@ class Fence extends Transparent{
 		$connectWest = isset($this->connections[Facing::WEST]);
 		$connectEast = isset($this->connections[Facing::EAST]);
 
-		if($connectWest or $connectEast){
+		if($connectWest || $connectEast){
 			//X axis (west/east)
 			$bbs[] = AxisAlignedBB::one()
 				->squash(Axis::Z, $inset)
@@ -73,7 +78,7 @@ class Fence extends Transparent{
 		$connectNorth = isset($this->connections[Facing::NORTH]);
 		$connectSouth = isset($this->connections[Facing::SOUTH]);
 
-		if($connectNorth or $connectSouth){
+		if($connectNorth || $connectSouth){
 			//Z axis (north/south)
 			$bbs[] = AxisAlignedBB::one()
 				->squash(Axis::X, $inset)
@@ -92,5 +97,9 @@ class Fence extends Transparent{
 		}
 
 		return $bbs;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER : SupportType::NONE;
 	}
 }

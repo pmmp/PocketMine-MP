@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,12 +31,11 @@ use pocketmine\player\Player;
 class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Block */
-	private $bed;
-
-	public function __construct(Player $player, Block $bed){
+	public function __construct(
+		Player $player,
+		private Block $bed
+	){
 		$this->player = $player;
-		$this->bed = $bed;
 	}
 
 	public function getBed() : Block{

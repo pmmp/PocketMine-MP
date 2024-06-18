@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,22 +30,18 @@ use pocketmine\world\utils\SubChunkExplorerStatus;
 use function max;
 
 class BlockLightUpdate extends LightUpdate{
-
 	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
+	 * @param int[] $lightFilters
+	 * @param int[] $lightEmitters
+	 * @phpstan-param array<int, int> $lightFilters
+	 * @phpstan-param array<int, int> $lightEmitters
 	 */
-	private $lightEmitters;
-
-	/**
-	 * @param \SplFixedArray|int[] $lightFilters
-	 * @param \SplFixedArray|int[] $lightEmitters
-	 * @phpstan-param \SplFixedArray<int> $lightFilters
-	 * @phpstan-param \SplFixedArray<int> $lightEmitters
-	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters, \SplFixedArray $lightEmitters){
+	public function __construct(
+		SubChunkExplorer $subChunkExplorer,
+		array $lightFilters,
+		private array $lightEmitters
+	){
 		parent::__construct($subChunkExplorer, $lightFilters);
-		$this->lightEmitters = $lightEmitters;
 	}
 
 	protected function getCurrentLightArray() : LightArray{
@@ -54,8 +50,8 @@ class BlockLightUpdate extends LightUpdate{
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
 		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
-			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
-			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
+			$block = $this->subChunkExplorer->currentSubChunk->getBlockStateId($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
+			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block] ?? 0, $this->getHighestAdjacentLight($x, $y, $z) - ($this->lightFilters[$block] ?? self::BASE_LIGHT_FILTER)));
 		}
 	}
 
@@ -71,7 +67,7 @@ class BlockLightUpdate extends LightUpdate{
 
 			foreach($subChunk->getBlockLayers() as $layer){
 				foreach($layer->getPalette() as $state){
-					if($this->lightEmitters[$state] > 0){
+					if(($this->lightEmitters[$state] ?? 0) > 0){
 						$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 						break 2;
 					}
@@ -87,7 +83,7 @@ class BlockLightUpdate extends LightUpdate{
 		for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
 				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
-					$light = $this->lightEmitters[$subChunk->getFullBlock($x, $y, $z)];
+					$light = $this->lightEmitters[$subChunk->getBlockStateId($x, $y, $z)] ?? 0;
 					if($light > 0){
 						$this->setAndUpdateLight(
 							$baseX + $x,

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,12 +29,8 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class ArmSwingAnimation implements Animation{
 
-	/** @var Living */
-	private $entity; //TODO: not sure if this should be constrained to humanoids, but we don't have any concept of that right now
-
-	public function __construct(Living $entity){
-		$this->entity = $entity;
-	}
+	//TODO: not sure if this should be constrained to humanoids, but we don't have any concept of that right now
+	public function __construct(private Living $entity){}
 
 	public function encode() : array{
 		return [

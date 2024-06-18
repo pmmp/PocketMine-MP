@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,8 +37,9 @@ use function json_decode;
 use function parse_ini_file;
 use function preg_match;
 use function readlink;
+use function str_contains;
 use function str_replace;
-use function strpos;
+use function str_starts_with;
 use function substr;
 use function timezone_abbreviations_list;
 use function timezone_name_from_abbr;
@@ -55,13 +56,13 @@ abstract class Timezone{
 	}
 
 	public static function init() : void{
-		$timezone = ini_get("date.timezone");
+		$timezone = Utils::assumeNotFalse(ini_get("date.timezone"), "date.timezone should always be set in ini");
 		if($timezone !== ""){
 			/*
 			 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
 			 * an incorrect timezone abbreviation in php.ini apparently.
 			 */
-			if(strpos($timezone, "/") === false){
+			if(!str_contains($timezone, "/")){
 				$default_timezone = timezone_name_from_abbr($timezone);
 				if($default_timezone !== false){
 					ini_set("date.timezone", $default_timezone);
@@ -77,7 +78,7 @@ abstract class Timezone{
 			}
 		}
 
-		if(($timezone = self::detectSystemTimezone()) !== false and date_default_timezone_set($timezone)){
+		if(($timezone = self::detectSystemTimezone()) !== false && date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
@@ -85,11 +86,11 @@ abstract class Timezone{
 		}
 
 		if(($response = Internet::getURL("http://ip-api.com/json")) !== null //If system timezone detection fails or timezone is an invalid value.
-			and is_array($ip_geolocation_data = json_decode($response->getBody(), true))
-			and isset($ip_geolocation_data['status'])
-			and $ip_geolocation_data['status'] !== 'fail'
-			and is_string($ip_geolocation_data['timezone'])
-			and date_default_timezone_set($ip_geolocation_data['timezone'])
+			&& is_array($ip_geolocation_data = json_decode($response->getBody(), true))
+			&& isset($ip_geolocation_data['status'])
+			&& $ip_geolocation_data['status'] !== 'fail'
+			&& is_string($ip_geolocation_data['timezone'])
+			&& date_default_timezone_set($ip_geolocation_data['timezone'])
 		){
 			//Again, for redundancy.
 			ini_set("date.timezone", $ip_geolocation_data['timezone']);
@@ -101,10 +102,7 @@ abstract class Timezone{
 		\GlobalLogger::get()->warning("Timezone could not be automatically determined or was set to an invalid value. An incorrect timezone will result in incorrect timestamps on console logs. It has been set to \"UTC\" by default. You can change it on the php.ini file.");
 	}
 
-	/**
-	 * @return string|false
-	 */
-	public static function detectSystemTimezone(){
+	public static function detectSystemTimezone() : string|false{
 		switch(Utils::getOS()){
 			case Utils::OS_WINDOWS:
 				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
@@ -150,7 +148,7 @@ abstract class Timezone{
 
 				// RHEL / CentOS
 				$data = @parse_ini_file('/etc/sysconfig/clock');
-				if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
+				if($data !== false && isset($data['ZONE']) && is_string($data['ZONE'])){
 					return trim($data['ZONE']);
 				}
 
@@ -165,7 +163,7 @@ abstract class Timezone{
 				return self::parseOffset($offset);
 			case Utils::OS_MACOS:
 				$filename = @readlink('/etc/localtime');
-				if($filename !== false and strpos($filename, '/usr/share/zoneinfo/') === 0){
+				if($filename !== false && str_starts_with($filename, '/usr/share/zoneinfo/')){
 					$timezone = substr($filename, 20);
 					return trim($timezone);
 				}
@@ -178,16 +176,14 @@ abstract class Timezone{
 
 	/**
 	 * @param string $offset In the format of +09:00, +02:00, -04:00 etc.
-	 *
-	 * @return string|false
 	 */
-	private static function parseOffset($offset){
+	private static function parseOffset(string $offset) : string|false{
 		//Make signed offsets unsigned for date_parse
-		if(strpos($offset, '-') !== false){
+		if(str_starts_with($offset, '-')){
 			$negative_offset = true;
 			$offset = str_replace('-', '', $offset);
 		}else{
-			if(strpos($offset, '+') !== false){
+			if(str_starts_with($offset, '+')){
 				$negative_offset = false;
 				$offset = str_replace('+', '', $offset);
 			}else{
@@ -208,7 +204,7 @@ abstract class Timezone{
 		//That's been a bug in PHP since 2008!
 		foreach(timezone_abbreviations_list() as $zones){
 			foreach($zones as $timezone){
-				if($timezone['offset'] == $offset){
+				if($timezone['timezone_id'] !== null && $timezone['offset'] == $offset){
 					return $timezone['timezone_id'];
 				}
 			}

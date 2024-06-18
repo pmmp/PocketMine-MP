@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,21 +34,15 @@ use function substr;
 class EncryptionContext{
 	private const CHECKSUM_ALGO = "sha256";
 
-	/** @var bool */
-	public static $ENABLED = true;
+	public static bool $ENABLED = true;
 
-	/** @var string */
-	private $key;
+	private string $key;
 
-	/** @var Cipher */
-	private $decryptCipher;
+	private Cipher $decryptCipher;
+	private int $decryptCounter = 0;
 
-	/** @var int */
-	private $decryptCounter = 0;
-	/** @var Cipher */
-	private $encryptCipher;
-	/** @var int */
-	private $encryptCounter = 0;
+	private Cipher $encryptCipher;
+	private int $encryptCounter = 0;
 
 	public function __construct(string $encryptionKey, string $algorithm, string $iv){
 		$this->key = $encryptionKey;
@@ -61,7 +55,7 @@ class EncryptionContext{
 	}
 
 	/**
-	 * Returns an EncryptionContext suitable for decrypting Minecraft packets from 1.16.200 and up.
+	 * Returns an EncryptionContext suitable for decrypting Minecraft packets from 1.16.220.50 (protocol version 429) and up.
 	 *
 	 * MCPE uses GCM, but without the auth tag, which defeats the whole purpose of using GCM.
 	 * GCM is just a wrapper around CTR which adds the auth tag, so CTR can replace GCM for this case.

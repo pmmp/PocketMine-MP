@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,26 +32,20 @@ abstract class Biome{
 
 	public const MAX_BIOMES = 256;
 
-	/** @var int */
-	private $id;
-	/** @var bool */
-	private $registered = false;
+	private int $id;
+	private bool $registered = false;
 
 	/** @var Populator[] */
-	private $populators = [];
+	private array $populators = [];
 
-	/** @var int */
-	private $minElevation;
-	/** @var int */
-	private $maxElevation;
+	private int $minElevation;
+	private int $maxElevation;
 
 	/** @var Block[] */
-	private $groundCover = [];
+	private array $groundCover = [];
 
-	/** @var float */
-	protected $rainfall = 0.5;
-	/** @var float */
-	protected $temperature = 0.5;
+	protected float $rainfall = 0.5;
+	protected float $temperature = 0.5;
 
 	public function clearPopulators() : void{
 		$this->populators = [];

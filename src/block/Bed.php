@@ -17,18 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -48,34 +48,23 @@ class Bed extends Transparent{
 	protected bool $occupied = false;
 	protected bool $head = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->color = DyeColor::RED();
-		parent::__construct($idInfo, $name, $breakInfo);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->occupied);
+		$w->bool($this->head);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->occupied ? BlockLegacyMetadata::BED_FLAG_OCCUPIED : 0) |
-			($this->head ? BlockLegacyMetadata::BED_FLAG_HEAD : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::BED_FLAG_OCCUPIED) !== 0;
-		$this->head = ($stateMeta & BlockLegacyMetadata::BED_FLAG_HEAD) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
+		}else{
+			$this->color = DyeColor::RED; //legacy pre-1.1 beds don't have tiles
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -92,6 +81,10 @@ class Bed extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
 	}
 
 	public function isHeadPart() : bool{
@@ -120,14 +113,14 @@ class Bed extends Transparent{
 
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide($this->getOtherHalfSide());
-		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){
+		if($other instanceof Bed && $other->head !== $this->head && $other->facing === $this->facing){
 			return $other;
 		}
 
 		return null;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
 			$playerPos = $player->getPosition();
@@ -135,24 +128,24 @@ class Bed extends Transparent{
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($playerPos->distanceSquared($this->position) > 4 and $playerPos->distanceSquared($other->position) > 4){
+			}elseif($playerPos->distanceSquared($this->position) > 4 && $playerPos->distanceSquared($other->position) > 4){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
 				return true;
 			}
 
 			$time = $this->position->getWorld()->getTimeOfDay();
 
-			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
+			$isNight = ($time >= World::TIME_NIGHT && $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
-				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
+				$player->sendMessage(KnownTranslationFactory::tile_bed_noSleep()->prefix(TextFormat::GRAY));
 
 				return true;
 			}
 
 			$b = ($this->isHeadPart() ? $this : $other);
 
-			if($b->isOccupied()){
+			if($b->occupied){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_occupied()->prefix(TextFormat::GRAY));
 
 				return true;
@@ -166,7 +159,7 @@ class Bed extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($other = $this->getOtherHalf()) !== null and $other->occupied !== $this->occupied){
+		if(!$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
 			$this->occupied = $other->occupied;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
@@ -181,12 +174,11 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isTransparent()){
+		if($this->canBeSupportedAt($blockReplace)){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
+			if($next->canBeReplaced() && $this->canBeSupportedAt($next)){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);
@@ -205,10 +197,6 @@ class Bed extends Transparent{
 		return [];
 	}
 
-	protected function writeStateToItemMeta() : int{
-		return DyeColorIdMap::getInstance()->toId($this->color);
-	}
-
 	public function getAffectedBlocks() : array{
 		if(($other = $this->getOtherHalf()) !== null){
 			return [$this, $other];
@@ -216,4 +204,10 @@ class Bed extends Transparent{
 
 		return parent::getAffectedBlocks();
 	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
+	}
+
+	public function getMaxStackSize() : int{ return 1; }
 }

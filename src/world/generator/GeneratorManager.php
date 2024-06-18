@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,10 +37,10 @@ final class GeneratorManager{
 	 * @var GeneratorManagerEntry[] name => classname mapping
 	 * @phpstan-var array<string, GeneratorManagerEntry>
 	 */
-	private $list = [];
+	private array $list = [];
 
 	public function __construct(){
-		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{
+		$this->addGenerator(Flat::class, "flat", function(string $preset) : ?InvalidGeneratorOptionsException{
 			if($preset === ""){
 				return null;
 			}
@@ -50,18 +50,18 @@ final class GeneratorManager{
 			}catch(InvalidGeneratorOptionsException $e){
 				return $e;
 			}
-		}));
+		});
 		$this->addGenerator(Normal::class, "normal", fn() => null);
-		$this->addGenerator(Normal::class, "default", fn() => null);
-		$this->addGenerator(Nether::class, "hell", fn() => null);
+		$this->addAlias("normal", "default");
 		$this->addGenerator(Nether::class, "nether", fn() => null);
+		$this->addAlias("nether", "hell");
 	}
 
 	/**
-	 * @param string                          $class Fully qualified name of class that extends \pocketmine\world\generator\Generator
-	 * @param string                          $name Alias for this generator type that can be written in configs
-	 * @param \Closure                        $presetValidator Callback to validate generator options for new worlds
-	 * @param bool                            $overwrite Whether to force overwriting any existing registered generator with the same name
+	 * @param string   $class           Fully qualified name of class that extends \pocketmine\world\generator\Generator
+	 * @param string   $name            Alias for this generator type that can be written in configs
+	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
+	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
 	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
 	 *
@@ -73,11 +73,27 @@ final class GeneratorManager{
 		Utils::testValidInstance($class, Generator::class);
 
 		$name = strtolower($name);
-		if(!$overwrite and isset($this->list[$name])){
+		if(!$overwrite && isset($this->list[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
 		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator);
+	}
+
+	/**
+	 * Aliases an already-registered generator name to another name. Useful if you want to map a generator name to an
+	 * existing generator without having to replicate the parameters.
+	 */
+	public function addAlias(string $name, string $alias) : void{
+		$name = strtolower($name);
+		$alias = strtolower($alias);
+		if(!isset($this->list[$name])){
+			throw new \InvalidArgumentException("Alias \"$name\" is not assigned");
+		}
+		if(isset($this->list[$alias])){
+			throw new \InvalidArgumentException("Alias \"$alias\" is already assigned");
+		}
+		$this->list[$alias] = $this->list[$name];
 	}
 
 	/**

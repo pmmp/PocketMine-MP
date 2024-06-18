@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,19 +32,14 @@ use function strtolower;
 use function trim;
 
 class BanList{
-
 	/** @var BanEntry[] */
-	private $list = [];
+	private array $list = [];
 
-	/** @var string */
-	private $file;
+	private bool $enabled = true;
 
-	/** @var bool */
-	private $enabled = true;
-
-	public function __construct(string $file){
-		$this->file = $file;
-	}
+	public function __construct(
+		private string $file
+	){}
 
 	public function isEnabled() : bool{
 		return $this->enabled;

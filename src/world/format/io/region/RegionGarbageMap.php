@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,9 +32,8 @@ use const SORT_NUMERIC;
 final class RegionGarbageMap{
 
 	/** @var RegionLocationTableEntry[] */
-	private $entries = [];
-	/** @var bool */
-	private $clean = false;
+	private array $entries = [];
+	private bool $clean = false;
 
 	/**
 	 * @param RegionLocationTableEntry[] $entries
@@ -95,7 +94,7 @@ final class RegionGarbageMap{
 			/** @var int|null $prevIndex */
 			$prevIndex = null;
 			foreach($this->entries as $k => $entry){
-				if($prevIndex !== null and $this->entries[$prevIndex]->getLastSector() + 1 === $entry->getFirstSector()){
+				if($prevIndex !== null && $this->entries[$prevIndex]->getLastSector() + 1 === $entry->getFirstSector()){
 					//this SHOULD overwrite the previous index and not appear at the end
 					$this->entries[$prevIndex] = new RegionLocationTableEntry(
 						$this->entries[$prevIndex]->getFirstSector(),

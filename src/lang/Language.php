@@ -17,22 +17,26 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-use Webmozart\PathUtil\Path;
+use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_map;
+use function count;
 use function explode;
 use function file_exists;
 use function is_dir;
 use function ord;
 use function parse_ini_file;
 use function scandir;
+use function str_ends_with;
 use function str_replace;
+use function str_starts_with;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -60,16 +64,20 @@ class Language{
 
 			if($allFiles !== false){
 				$files = array_filter($allFiles, function(string $filename) : bool{
-					return substr($filename, -4) === ".ini";
+					return str_ends_with($filename, ".ini");
 				});
 
 				$result = [];
 
 				foreach($files as $file){
-					$code = explode(".", $file)[0];
-					$strings = self::loadLang($path, $code);
-					if(isset($strings["language.name"])){
-						$result[$code] = $strings["language.name"];
+					try{
+						$code = explode(".", $file)[0];
+						$strings = self::loadLang($path, $code);
+						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
+							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
+						}
+					}catch(LanguageNotFoundException $e){
+						// no-op
 					}
 				}
 
@@ -80,19 +88,17 @@ class Language{
 		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
 	}
 
-	/** @var string */
-	protected $langName;
-
+	protected string $langName;
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $lang = [];
+	protected array $lang = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $fallbackLang = [];
+	protected array $fallbackLang = [];
 
 	/**
 	 * @throws LanguageNotFoundException
@@ -123,7 +129,10 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
+			$strings = array_map('stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
+			if(count($strings) > 0){
+				return $strings;
+			}
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
@@ -133,8 +142,10 @@ class Language{
 	 * @param (float|int|string|Translatable)[] $params
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
-		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+		$baseText = ($onlyPrefix === null || str_starts_with($str, $onlyPrefix)) ? $this->internalGet($str) : null;
+		if($baseText === null){ //key not found, embedded inside format string, or doesn't match prefix
+			$baseText = $this->parseTranslation($str, $onlyPrefix);
+		}
 
 		foreach($params as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
@@ -146,7 +157,9 @@ class Language{
 
 	public function translate(Translatable $c) : string{
 		$baseText = $this->internalGet($c->getText());
-		$baseText = $this->parseTranslation($baseText ?? $c->getText());
+		if($baseText === null){ //key not found or embedded inside format string
+			$baseText = $this->parseTranslation($c->getText());
+		}
 
 		foreach($c->getParameters() as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
@@ -164,6 +177,27 @@ class Language{
 		return $this->internalGet($id) ?? $id;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public function getAll() : array{
+		return $this->lang;
+	}
+
+	/**
+	 * Replaces translation keys embedded inside a string with their raw values.
+	 * Embedded translation keys must be prefixed by a "%" character.
+	 *
+	 * This is used to allow the "text" field of a Translatable to contain formatting (e.g. colour codes) and
+	 * multiple embedded translation keys.
+	 *
+	 * Normal translations whose "text" is just a single translation key don't need to use this method, and can be
+	 * processed via get() directly.
+	 *
+	 * @param string|null $onlyPrefix If non-null, only translation keys with this prefix will be replaced. This is
+	 *                                used to allow a client to do its own translating of vanilla strings.
+	 */
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
 		$newString = "";
 
@@ -175,14 +209,14 @@ class Language{
 			if($replaceString !== null){
 				$ord = ord($c);
 				if(
-					($ord >= 0x30 and $ord <= 0x39) // 0-9
-					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-					$c === "." or $c === "-"
+					($ord >= 0x30 && $ord <= 0x39) // 0-9
+					|| ($ord >= 0x41 && $ord <= 0x5a) // A-Z
+					|| ($ord >= 0x61 && $ord <= 0x7a) || // a-z
+					$c === "." || $c === "-"
 				){
 					$replaceString .= $c;
 				}else{
-					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+					if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 						$newString .= $t;
 					}else{
 						$newString .= $replaceString;
@@ -203,7 +237,7 @@ class Language{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 				$newString .= $t;
 			}else{
 				$newString .= $replaceString;

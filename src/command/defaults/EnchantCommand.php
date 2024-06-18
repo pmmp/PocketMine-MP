@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,37 +25,34 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\utils\TextFormat;
 use function count;
 
 class EnchantCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"enchant",
 			KnownTranslationFactory::pocketmine_command_enchant_description(),
 			KnownTranslationFactory::commands_enchant_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
+		$this->setPermissions([
+			DefaultPermissionNames::COMMAND_ENCHANT_SELF,
+			DefaultPermissionNames::COMMAND_ENCHANT_OTHER
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
-
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
 		if($player === null){
-			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 
@@ -80,8 +77,9 @@ class EnchantCommand extends VanillaCommand{
 			}
 		}
 
-		$item->addEnchantment(new EnchantmentInstance($enchantment, $level));
-		$player->getInventory()->setItemInHand($item);
+		//this is necessary to deal with enchanted books, which are a different item type than regular books
+		$enchantedItem = EnchantingHelper::enchantItem($item, [new EnchantmentInstance($enchantment, $level)]);
+		$player->getInventory()->setItemInHand($enchantedItem);
 
 		self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_enchant_success($player->getName()));
 		return true;

@@ -16,7 +16,7 @@ if exist bin\php\php.exe (
 )
 
 if "%PHP_BINARY%"=="" (
-	echo Couldn't find a PHP binary in system PATH or %~dp0\bin\php
+	echo Couldn't find a PHP binary in system PATH or "%~dp0bin\php"
 	echo Please refer to the installation instructions at https://doc.pmmp.io/en/rtfd/installation.html
 	pause
 	exit 1

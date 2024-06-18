@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -62,6 +62,7 @@ abstract class TextFormat{
 	public const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
+	public const MINECOIN_GOLD = TextFormat::ESCAPE . "g";
 
 	public const COLORS = [
 		self::BLACK => self::BLACK,
@@ -80,6 +81,7 @@ abstract class TextFormat{
 		self::LIGHT_PURPLE => self::LIGHT_PURPLE,
 		self::YELLOW => self::YELLOW,
 		self::WHITE => self::WHITE,
+		self::MINECOIN_GOLD => self::MINECOIN_GOLD,
 	];
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
@@ -128,7 +130,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-gk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
@@ -142,7 +144,7 @@ abstract class TextFormat{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-gk-or]/u", "", $string));
 		}
 		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
@@ -153,7 +155,32 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-gk-or])/u', TextFormat::ESCAPE . '$1', $string);
+	}
+
+	/**
+	 * Adds base formatting to the string. The given format codes will be inserted directly after any RESET (§r) codes.
+	 *
+	 * This is useful for log messages, where a RESET code should return to the log message's original colour (e.g.
+	 * blue for NOTICE), rather than whatever the terminal's base text colour is (usually some off-white colour).
+	 *
+	 * Example behaviour:
+	 * - Base format "§c" (red) + "Hello" (no format) = "§r§cHello"
+	 * - Base format "§c" + "Hello §rWorld" = "§r§cHello §r§cWorld"
+	 *
+	 * Note: Adding base formatting to the output string a second time will result in a combination of formats from both
+	 * calls. This is not by design, but simply a consequence of the way the function is implemented.
+	 */
+	public static function addBase(string $baseFormat, string $string) : string{
+		$baseFormatParts = self::tokenize($baseFormat);
+		foreach($baseFormatParts as $part){
+			if(!isset(self::FORMATS[$part]) && !isset(self::COLORS[$part])){
+				throw new \InvalidArgumentException("Unexpected base format token \"$part\", expected only color and format tokens");
+			}
+		}
+		$baseFormat = self::RESET . $baseFormat;
+
+		return $baseFormat . str_replace(TextFormat::RESET, $baseFormat, $string);
 	}
 
 	/**
@@ -252,6 +279,10 @@ abstract class TextFormat{
 					break;
 				case TextFormat::WHITE:
 					$newString .= "<span style=color:#FFF>";
+					++$tokens;
+					break;
+				case TextFormat::MINECOIN_GOLD:
+					$newString .= "<span style=color:#dd0>";
 					++$tokens;
 					break;
 				default:

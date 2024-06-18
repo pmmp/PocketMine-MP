@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,20 +28,16 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Utils;
 
 class BlockTransaction{
-	/** @var ChunkManager */
-	private $world;
-
 	/** @var Block[][][] */
-	private $blocks = [];
+	private array $blocks = [];
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(ChunkManager $world, int $x, int $y, int $z) : bool)[]
 	 */
-	private $validators = [];
+	private array $validators = [];
 
-	public function __construct(ChunkManager $world){
-		$this->world = $world;
+	public function __construct(private ChunkManager $world){
 		$this->addValidator(static function(ChunkManager $world, int $x, int $y, int $z) : bool{
 			return $world->isInWorld($x, $y, $z);
 		});

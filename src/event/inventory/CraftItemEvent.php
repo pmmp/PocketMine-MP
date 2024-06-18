@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,32 +30,22 @@ use pocketmine\event\Event;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 
 class CraftItemEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var CraftingTransaction */
-	private $transaction;
-	/** @var CraftingRecipe */
-	private $recipe;
-	/** @var int */
-	private $repetitions;
-	/** @var Item[] */
-	private $inputs;
-	/** @var Item[] */
-	private $outputs;
-
 	/**
-	 * @param Item[]              $inputs
-	 * @param Item[]              $outputs
+	 * @param Item[] $inputs
+	 * @param Item[] $outputs
 	 */
-	public function __construct(CraftingTransaction $transaction, CraftingRecipe $recipe, int $repetitions, array $inputs, array $outputs){
-		$this->transaction = $transaction;
-		$this->recipe = $recipe;
-		$this->repetitions = $repetitions;
-		$this->inputs = $inputs;
-		$this->outputs = $outputs;
-	}
+	public function __construct(
+		private CraftingTransaction $transaction,
+		private CraftingRecipe $recipe,
+		private int $repetitions,
+		private array $inputs,
+		private array $outputs
+	){}
 
 	/**
 	 * Returns the inventory transaction involved in this crafting event.
@@ -85,7 +75,7 @@ class CraftItemEvent extends Event implements Cancellable{
 	 * @return Item[]
 	 */
 	public function getInputs() : array{
-		return $this->inputs;
+		return Utils::cloneObjectArray($this->inputs);
 	}
 
 	/**
@@ -94,7 +84,7 @@ class CraftItemEvent extends Event implements Cancellable{
 	 * @return Item[]
 	 */
 	public function getOutputs() : array{
-		return $this->outputs;
+		return Utils::cloneObjectArray($this->outputs);
 	}
 
 	public function getPlayer() : Player{

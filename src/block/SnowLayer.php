@@ -17,15 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
@@ -39,33 +41,28 @@ use function max;
 class SnowLayer extends Flowable implements Fallable{
 	use FallableTrait;
 
-	protected int $layers = 1;
+	public const MIN_LAYERS = 1;
+	public const MAX_LAYERS = 8;
 
-	protected function writeStateToMeta() : int{
-		return $this->layers - 1;
-	}
+	protected int $layers = self::MIN_LAYERS;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, 1, 8);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
 
 	/** @return $this */
 	public function setLayers(int $layers) : self{
-		if($layers < 1 || $layers > 8){
-			throw new \InvalidArgumentException("Layers must be in range 1-8");
+		if($layers < self::MIN_LAYERS || $layers > self::MAX_LAYERS){
+			throw new \InvalidArgumentException("Layers must be in range " . self::MIN_LAYERS . " ... " . self::MAX_LAYERS);
 		}
 		$this->layers = $layers;
 		return $this;
 	}
 
 	public function canBeReplaced() : bool{
-		return $this->layers < 8;
+		return $this->layers < self::MAX_LAYERS;
 	}
 
 	/**
@@ -76,18 +73,25 @@ class SnowLayer extends Flowable implements Fallable{
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
-	private function canBeSupportedBy(Block $b) : bool{
-		return $b->isSolid() or ($b instanceof SnowLayer and $b->isSameType($this) and $b->layers === 8);
+	public function getSupportType(int $facing) : SupportType{
+		if(!$this->canBeReplaced()){
+			return SupportType::FULL;
+		}
+		return SupportType::NONE;
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) === SupportType::FULL;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof SnowLayer){
-			if($blockReplace->layers >= 8){
+			if($blockReplace->layers >= self::MAX_LAYERS){
 				return false;
 			}
 			$this->layers = $blockReplace->layers + 1;
 		}
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+		if($this->canBeSupportedAt($blockReplace)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -99,13 +103,10 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR(), false);
+		$world = $this->position->getWorld();
+		if($world->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
+			BlockEventHelper::melt($this, VanillaBlocks::AIR());
 		}
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

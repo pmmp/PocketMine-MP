@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\event\world;
 
 /**
- * Called when a World is saved
+ * Called when a world is saved. Saving may be triggered manually (e.g. via commands) or automatically (autosave).
  */
 class WorldSaveEvent extends WorldEvent{
 

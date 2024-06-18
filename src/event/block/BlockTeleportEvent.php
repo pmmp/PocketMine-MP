@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,16 +27,16 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\math\Vector3;
+use pocketmine\utils\Utils;
 
 class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Vector3 */
-	private $to;
-
-	public function __construct(Block $block, Vector3 $to){
+	public function __construct(
+		Block $block,
+		private Vector3 $to
+	){
 		parent::__construct($block);
-		$this->to = $to;
 	}
 
 	public function getTo() : Vector3{
@@ -44,6 +44,7 @@ class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	}
 
 	public function setTo(Vector3 $to) : void{
+		Utils::checkVector3NotInfOrNaN($to);
 		$this->to = $to;
 	}
 }

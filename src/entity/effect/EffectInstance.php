@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,26 +28,15 @@ use pocketmine\utils\Limits;
 use function max;
 
 class EffectInstance{
-	/** @var Effect */
-	private $effectType;
-
-	/** @var int */
-	private $duration;
-
-	/** @var int */
-	private $amplifier;
-
-	/** @var bool */
-	private $visible;
-
-	/** @var bool */
-	private $ambient;
-
-	/** @var Color */
-	private $color;
+	private Effect $effectType;
+	private int $duration;
+	private int $amplifier;
+	private bool $visible;
+	private bool $ambient;
+	private Color $color;
 
 	/**
-	 * @param int|null   $duration Passing null will use the effect type's default duration
+	 * @param int|null $duration Passing null will use the effect type's default duration
 	 */
 	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;
@@ -77,7 +66,7 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setDuration(int $duration) : EffectInstance{
-		if($duration < 0 or $duration > Limits::INT32_MAX){
+		if($duration < 0 || $duration > Limits::INT32_MAX){
 			throw new \InvalidArgumentException("Effect duration must be in range 0 - " . Limits::INT32_MAX . ", got $duration");
 		}
 		$this->duration = $duration;
@@ -118,7 +107,7 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setAmplifier(int $amplifier) : EffectInstance{
-		if($amplifier < 0 or $amplifier > 255){
+		if($amplifier < 0 || $amplifier > 255){
 			throw new \InvalidArgumentException("Amplifier must be in range 0 - 255, got $amplifier");
 		}
 		$this->amplifier = $amplifier;

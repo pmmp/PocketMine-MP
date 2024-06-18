@@ -17,31 +17,35 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\thread\NonThreadSafeValue;
+use function chr;
 
 class CompressBatchTask extends AsyncTask{
 
 	private const TLS_KEY_PROMISE = "promise";
 
-	/** @var string */
-	private $data;
-	/** @var Compressor */
-	private $compressor;
+	/** @phpstan-var NonThreadSafeValue<Compressor> */
+	private NonThreadSafeValue $compressor;
 
-	public function __construct(string $data, CompressBatchPromise $promise, Compressor $compressor){
-		$this->data = $data;
-		$this->compressor = $compressor;
+	public function __construct(
+		private string $data,
+		CompressBatchPromise $promise,
+		Compressor $compressor
+	){
+		$this->compressor = new NonThreadSafeValue($compressor);
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);
 	}
 
 	public function onRun() : void{
-		$this->setResult($this->compressor->compress($this->data));
+		$compressor = $this->compressor->deserialize();
+		$this->setResult(chr($compressor->getNetworkId()) . $compressor->compress($this->data));
 	}
 
 	public function onCompletion() : void{

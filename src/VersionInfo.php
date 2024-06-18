@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,16 +31,30 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "4.0.3";
+	public const BASE_VERSION = "5.15.1";
 	public const IS_DEVELOPMENT_BUILD = true;
 	public const BUILD_CHANNEL = "stable";
+
+	/**
+	 * PocketMine-MP-specific version ID for world data. Used to determine what fixes need to be applied to old world
+	 * data (e.g. stuff saved wrongly by past versions).
+	 * This version supplements the Minecraft vanilla world version.
+	 *
+	 * This should be bumped if any **non-Mojang** BC-breaking change or bug fix is made to world save data of any kind
+	 * (entities, tiles, blocks, biomes etc.). For example, if PM accidentally saved a block with its facing value
+	 * swapped, we would bump this, but not if Mojang did the same change.
+	 */
+	public const WORLD_DATA_VERSION = 1;
+	/**
+	 * Name of the NBT tag used to store the world data version.
+	 */
+	public const TAG_WORLD_DATA_VERSION = "PMMPDataVersion"; //TAG_Long
 
 	private function __construct(){
 		//NOOP
 	}
 
-	/** @var string|null */
-	private static $gitHash = null;
+	private static ?string $gitHash = null;
 
 	public static function GIT_HASH() : string{
 		if(self::$gitHash === null){
@@ -49,7 +63,8 @@ final class VersionInfo{
 			if(\Phar::running(true) === ""){
 				$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
 			}else{
-				$phar = new \Phar(\Phar::running(false));
+				$pharPath = \Phar::running(false);
+				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
 				$meta = $phar->getMetadata();
 				if(isset($meta["git"])){
 					$gitHash = $meta["git"];
@@ -68,7 +83,8 @@ final class VersionInfo{
 		if(self::$buildNumber === null){
 			self::$buildNumber = 0;
 			if(\Phar::running(true) !== ""){
-				$phar = new \Phar(\Phar::running(false));
+				$pharPath = \Phar::running(false);
+				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
 				$meta = $phar->getMetadata();
 				if(is_array($meta) && isset($meta["build"]) && is_int($meta["build"])){
 					self::$buildNumber = $meta["build"];
@@ -79,8 +95,7 @@ final class VersionInfo{
 		return self::$buildNumber;
 	}
 
-	/** @var VersionString|null */
-	private static $fullVersion = null;
+	private static ?VersionString $fullVersion = null;
 
 	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){

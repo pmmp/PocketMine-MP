@@ -17,35 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class DeadBush extends Flowable{
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->getSide(Facing::DOWN)->isTransparent()){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
+	use StaticSupportTrait;
 
 	public function getDropsForIncompatibleTool(Item $item) : array{
 		return [
@@ -63,5 +48,23 @@ class DeadBush extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			match($supportBlock->getTypeId()){
+				//can't use DIRT tag here because it includes farmland
+				BlockTypeIds::PODZOL,
+				BlockTypeIds::MYCELIUM,
+				BlockTypeIds::DIRT,
+				BlockTypeIds::GRASS,
+				BlockTypeIds::HARDENED_CLAY,
+				BlockTypeIds::STAINED_CLAY => true,
+				//TODO: moss block
+				default => false,
+			};
 	}
 }

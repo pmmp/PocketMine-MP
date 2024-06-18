@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,67 +30,49 @@ use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
+use function copy;
 use function count;
 use function dirname;
-use function fclose;
 use function file_exists;
-use function fopen;
 use function mkdir;
 use function rtrim;
-use function stream_copy_to_stream;
-use function strpos;
+use function str_contains;
 use function strtolower;
 use function trim;
+use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
+	private bool $isEnabled = false;
 
-	/** @var PluginLoader */
-	private $loader;
+	private string $resourceFolder;
 
-	/** @var Server */
-	private $server;
+	private ?Config $config = null;
+	private string $configFile;
 
-	/** @var bool */
-	private $isEnabled = false;
+	private PluginLogger $logger;
+	private TaskScheduler $scheduler;
 
-	/** @var PluginDescription */
-	private $description;
-
-	/** @var string */
-	private $dataFolder;
-	/** @var Config|null */
-	private $config = null;
-	/** @var string */
-	private $configFile;
-	/** @var string */
-	private $file;
-
-	/** @var PluginLogger */
-	private $logger;
-
-	/** @var TaskScheduler */
-	private $scheduler;
-
-	/** @var ResourceProvider */
-	private $resourceProvider;
-
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider){
-		$this->loader = $loader;
-		$this->server = $server;
-		$this->description = $description;
+	public function __construct(
+		private PluginLoader $loader,
+		private Server $server,
+		private PluginDescription $description,
+		private string $dataFolder,
+		private string $file,
+		private ResourceProvider $resourceProvider
+	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
+		$this->resourceFolder = Path::join($this->file, "resources") . "/";
+
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
-		$prefix = $this->getDescription()->getPrefix();
+		$prefix = $this->description->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
 		$this->scheduler = new TaskScheduler($this->getFullName());
-		$this->resourceProvider = $resourceProvider;
 
 		$this->onLoad();
 
@@ -163,9 +145,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private function registerYamlCommands() : void{
 		$pluginCmds = [];
 
-		foreach(Utils::stringifyKeys($this->getDescription()->getCommands()) as $key => $data){
-			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName(), ":")));
+		foreach(Utils::stringifyKeys($this->description->getCommands()) as $key => $data){
+			if(str_contains($key, ":")){
+				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->description->getFullName(), ":")));
 				continue;
 			}
 
@@ -180,8 +162,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 			$aliasList = [];
 			foreach($data->getAliases() as $alias){
-				if(strpos($alias, ":") !== false){
-					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName(), ":")));
+				if(str_contains($alias, ":")){
+					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->description->getFullName(), ":")));
 					continue;
 				}
 				$aliasList[] = $alias;
@@ -199,7 +181,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		}
 
 		if(count($pluginCmds) > 0){
-			$this->server->getCommandMap()->registerAll($this->getDescription()->getName(), $pluginCmds);
+			$this->server->getCommandMap()->registerAll($this->description->getName(), $pluginCmds);
 		}
 	}
 
@@ -208,12 +190,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @phpstan-return (Command&PluginOwned)|null
 	 */
 	public function getCommand(string $name){
-		$command = $this->getServer()->getPluginCommand($name);
-		if($command === null or $command->getOwningPlugin() !== $this){
-			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
+		$command = $this->server->getPluginCommand($name);
+		if($command === null || $command->getOwningPlugin() !== $this){
+			$command = $this->server->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
 		}
 
-		if($command instanceof PluginOwned and $command->getOwningPlugin() === $this){
+		if($command instanceof PluginOwned && $command->getOwningPlugin() === $this){
 			return $command;
 		}else{
 			return null;
@@ -221,13 +203,34 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @param string[]      $args
+	 * @param string[] $args
 	 */
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		return false;
 	}
 
 	/**
+	 * Returns the path to the folder where the plugin's embedded resource files are usually located.
+	 * Note: This is NOT the same as the data folder. The files in this folder should be considered read-only.
+	 */
+	public function getResourceFolder() : string{
+		return $this->resourceFolder;
+	}
+
+	/**
+	 * Returns the full path to a data file in the plugin's resources folder.
+	 * This path can be used with standard PHP functions like fopen() or file_get_contents().
+	 *
+	 * Note: Any path returned by this function should be considered READ-ONLY.
+	 */
+	public function getResourcePath(string $filename) : string{
+		return Path::join($this->getResourceFolder(), $filename);
+	}
+
+	/**
+	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourcePath()}, like
+	 * file_get_contents() or fopen().
+	 *
 	 * Gets an embedded resource on the plugin file.
 	 * WARNING: You must close the resource given using fclose()
 	 *
@@ -245,26 +248,21 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		if(($resource = $this->getResource($filename)) === null){
+		$source = Path::join($this->resourceFolder, $filename);
+		if(!file_exists($source)){
 			return false;
 		}
 
-		$out = Path::join($this->dataFolder, $filename);
-		if(!file_exists(dirname($out))){
-			mkdir(dirname($out), 0755, true);
-		}
-
-		if(file_exists($out) and !$replace){
+		$destination = Path::join($this->dataFolder, $filename);
+		if(file_exists($destination) && !$replace){
 			return false;
 		}
 
-		$fp = fopen($out, "wb");
-		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
+		if(!file_exists(dirname($destination))){
+			mkdir(dirname($destination), 0755, true);
+		}
 
-		$ret = stream_copy_to_stream($resource, $fp) > 0;
-		fclose($fp);
-		fclose($resource);
-		return $ret;
+		return copy($source, $destination);
 	}
 
 	/**
