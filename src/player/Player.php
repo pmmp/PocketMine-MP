@@ -508,6 +508,31 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flying;
 	}
 
+	/**
+	 * Sets the player's speed when flying.
+	 *
+	 * If set to zero, the player will not be able to move in the xz plane when flying, and negative values
+	 * will invert the controls.
+	 *
+	 * Note: The value of the movement speed attribute has no effect on the flight speed.
+	 */
+	public function setFlightSpeed(float $flightSpeed) : void{
+		if($this->flightSpeed !== $flightSpeed){
+			$this->flightSpeed = $flightSpeed;
+			$this->getNetworkSession()->syncAbilities($this);
+		}
+	}
+
+	/**
+	 * Returns the player's speed when flying.
+	 *
+	 * If zero, the player is not be able to move in the xz plane when flying, and negative values
+	 * will invert the controls.
+	 */
+	public function getFlightSpeed() : float{
+		return $this->flightSpeed;
+	}
+
 	public function setAutoJump(bool $value) : void{
 		if($this->autoJump !== $value){
 			$this->autoJump = $value;
@@ -517,17 +542,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function hasAutoJump() : bool{
 		return $this->autoJump;
-	}
-
-	public function setFlightSpeed(float $flightSpeed) : void{
-		if($this->flightSpeed !== $flightSpeed){
-			$this->flightSpeed = $flightSpeed;
-			$this->getNetworkSession()->syncAbilities($this);
-		}
-	}
-
-	public function getFlightSpeed() : float{
-		return $this->flightSpeed;
 	}
 
 	public function spawnTo(Player $player) : void{
