@@ -17,19 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static CoralType BRAIN()
  * @method static CoralType BUBBLE()
@@ -37,28 +35,22 @@ use pocketmine\utils\EnumTrait;
  * @method static CoralType HORN()
  * @method static CoralType TUBE()
  */
-final class CoralType{
-	use EnumTrait {
-		__construct as Enum___construct;
+enum CoralType{
+	use LegacyEnumShimTrait;
+
+	case TUBE;
+	case BRAIN;
+	case BUBBLE;
+	case FIRE;
+	case HORN;
+
+	public function getDisplayName() : string{
+		return match($this){
+			self::TUBE => "Tube",
+			self::BRAIN => "Brain",
+			self::BUBBLE => "Bubble",
+			self::FIRE => "Fire",
+			self::HORN => "Horn",
+		};
 	}
-
-	/** @var string */
-	private $displayName;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("tube", "Tube"),
-			new self("brain", "Brain"),
-			new self("bubble", "Bubble"),
-			new self("fire", "Fire"),
-			new self("horn", "Horn"),
-		);
-	}
-
-	private function __construct(string $name, string $displayName){
-		$this->Enum___construct($name);
-		$this->displayName = $displayName;
-	}
-
-	public function getDisplayName() : string{ return $this->displayName; }
 }

@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -37,12 +38,12 @@ class Ice extends Transparent{
 		return 0.98;
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
+		if(($player === null || $player->isSurvival()) && !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::WATER());
 			return true;
 		}
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item, $player, $returnedItems);
 	}
 
 	public function ticksRandomly() : bool{
@@ -50,8 +51,9 @@ class Ice extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
-			$this->position->getWorld()->useBreakOn($this->position);
+		$world = $this->position->getWorld();
+		if($world->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
+			BlockEventHelper::melt($this, VanillaBlocks::WATER());
 		}
 	}
 

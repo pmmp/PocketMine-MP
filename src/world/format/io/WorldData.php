@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,6 +33,8 @@ interface WorldData{
 	public function save() : void;
 
 	public function getName() : string;
+
+	public function setName(string $value) : void;
 
 	/**
 	 * Returns the generator name

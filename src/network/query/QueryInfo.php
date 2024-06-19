@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,6 +29,8 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
+use function array_map;
 use function chr;
 use function count;
 use function str_replace;
@@ -37,52 +39,39 @@ use function substr;
 final class QueryInfo{
 	public const GAME_ID = "MINECRAFTPE";
 
-	/** @var string */
-	private $serverName;
-	/** @var bool */
-	private $listPlugins;
+	private string $serverName;
+	private bool $listPlugins;
 	/** @var Plugin[] */
-	private $plugins;
-	/** @var Player[] */
-	private $players;
+	private array $plugins;
+	/** @var string[] */
+	private array $players;
 
-	/** @var string */
-	private $gametype;
-	/** @var string */
-	private $version;
-	/** @var string */
-	private $server_engine;
-	/** @var string */
-	private $map;
-	/** @var int */
-	private $numPlayers;
-	/** @var int */
-	private $maxPlayers;
-	/** @var string */
-	private $whitelist;
-	/** @var int */
-	private $port;
-	/** @var string */
-	private $ip;
+	private string $gametype;
+	private string $version;
+	private string $server_engine;
+	private string $map;
+	private int $numPlayers;
+	private int $maxPlayers;
+	private string $whitelist;
+	private int $port;
+	private string $ip;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private $extraData = [];
+	private array $extraData = [];
 
-	/** @var string|null */
-	private $longQueryCache = null;
-	/** @var string|null */
-	private $shortQueryCache = null;
+	private ?string $longQueryCache = null;
+	private ?string $shortQueryCache = null;
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
+		$this->listPlugins = $server->getConfigGroup()->getPropertyBool(YmlServerProperties::SETTINGS_QUERY_PLUGINS, true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
-		$this->players = $server->getOnlinePlayers();
+		$this->players = array_map(fn(Player $p) => $p->getName(), $server->getOnlinePlayers());
 
-		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode() === GameMode::SURVIVAL || $server->getGamemode() === GameMode::ADVENTURE) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$world = $server->getWorldManager()->getDefaultWorld();
@@ -135,17 +124,17 @@ final class QueryInfo{
 	}
 
 	/**
-	 * @return Player[]
+	 * @return string[]
 	 */
 	public function getPlayerList() : array{
 		return $this->players;
 	}
 
 	/**
-	 * @param Player[] $players
+	 * @param string[] $players
 	 */
 	public function setPlayerList(array $players) : void{
-		Utils::validateArrayValueType($players, function(Player $_) : void{});
+		Utils::validateArrayValueType($players, function(string $_) : void{});
 		$this->players = $players;
 		$this->destroyCache();
 	}
@@ -204,7 +193,7 @@ final class QueryInfo{
 		$query = "";
 
 		$plist = $this->server_engine;
-		if(count($this->plugins) > 0 and $this->listPlugins){
+		if(count($this->plugins) > 0 && $this->listPlugins){
 			$plist .= ":";
 			foreach($this->plugins as $p){
 				$d = $p->getDescription();
@@ -239,7 +228,7 @@ final class QueryInfo{
 
 		$query .= "\x00\x01player_\x00\x00";
 		foreach($this->players as $player){
-			$query .= $player->getName() . "\x00";
+			$query .= $player . "\x00";
 		}
 		$query .= "\x00";
 

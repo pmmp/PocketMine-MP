@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,24 +35,14 @@ use pocketmine\event\entity\EntityEvent;
 class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Human */
-	protected $entity;
-	/** @var int */
-	private $oldLevel;
-	/** @var float */
-	private $oldProgress;
-	/** @var int|null */
-	private $newLevel;
-	/** @var float|null */
-	private $newProgress;
-
-	public function __construct(Human $player, int $oldLevel, float $oldProgress, ?int $newLevel, ?float $newProgress){
+	public function __construct(
+		Human $player,
+		private int $oldLevel,
+		private float $oldProgress,
+		private ?int $newLevel,
+		private ?float $newProgress
+	){
 		$this->entity = $player;
-
-		$this->oldLevel = $oldLevel;
-		$this->oldProgress = $oldProgress;
-		$this->newLevel = $newLevel;
-		$this->newProgress = $newProgress;
 	}
 
 	public function getOldLevel() : int{

@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -38,18 +38,9 @@ abstract class Button extends Flowable{
 
 	protected bool $pressed = false;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeFacing($this->facing) | ($this->pressed ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
-		$this->facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
-		$this->pressed = ($stateMeta & BlockLegacyMetadata::BUTTON_FLAG_POWERED) !== 0;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->pressed);
 	}
 
 	public function isPressed() : bool{ return $this->pressed; }
@@ -61,19 +52,22 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		//TODO: check valid target block
-		$this->facing = $face;
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($this->canBeSupportedAt($blockReplace, $face)){
+			$this->facing = $face;
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	abstract protected function getActivationTime() : int;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->pressed){
 			$this->pressed = true;
-			$this->position->getWorld()->setBlock($this->position, $this);
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this);
+			$world->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 		}
 
 		return true;
@@ -82,8 +76,19 @@ abstract class Button extends Flowable{
 	public function onScheduledUpdate() : void{
 		if($this->pressed){
 			$this->pressed = false;
-			$this->position->getWorld()->setBlock($this->position, $this);
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this);
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedAt($this, $this->facing)){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType(Facing::opposite($face))->hasCenterSupport();
 	}
 }

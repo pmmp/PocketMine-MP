@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorInMetadataTrait;
+use pocketmine\block\utils\ColoredTrait;
 
 final class StainedGlassPane extends GlassPane{
-	use ColorInMetadataTrait;
+	use ColoredTrait;
 }

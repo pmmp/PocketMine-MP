@@ -17,87 +17,46 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\entity\Entity;
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
-use pocketmine\event\entity\EntityCombustByBlockEvent;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
+use function intdiv;
+use function max;
 use function min;
 use function mt_rand;
 
-class Fire extends Flowable{
+class Fire extends BaseFire{
+	use AgeableTrait;
 
-	protected int $age = 0;
+	public const MAX_AGE = 15;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
+	protected function getFireDamage() : int{
+		return 1;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 15);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > 15){
-			throw new \InvalidArgumentException("Age must be in range 0-15");
-		}
-		$this->age = $age;
-		return $this;
-	}
-
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
-	public function getLightLevel() : int{
-		return 15;
-	}
-
-	public function canBeReplaced() : bool{
-		return true;
-	}
-
-	public function onEntityInside(Entity $entity) : bool{
-		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
-		$entity->attack($ev);
-
-		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
-		if($entity instanceof Arrow){
-			$ev->cancel();
-		}
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$entity->setOnFire($ev->getDuration());
-		}
-		return true;
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP) === SupportType::FULL;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+		$world = $this->position->getWorld();
+		$down = $this->getSide(Facing::DOWN);
+		if(SoulFire::canBeSupportedBy($down)){
+			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
+		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
+			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
+			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 		}
 	}
 
@@ -109,7 +68,7 @@ class Fire extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 
 		$result = null;
-		if($this->age < 15 and mt_rand(0, 2) === 0){
+		if($this->age < self::MAX_AGE && mt_rand(0, 2) === 0){
 			$this->age++;
 			$result = $this;
 		}
@@ -117,37 +76,29 @@ class Fire extends Flowable{
 
 		if(!$down->burnsForever()){
 			//TODO: check rain
-			if($this->age === 15){
-				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
+			if($this->age === self::MAX_AGE){
+				if(!$down->isFlammable() && mt_rand(0, 3) === 3){ //1/4 chance to extinguish
 					$canSpread = false;
 					$result = VanillaBlocks::AIR();
 				}
 			}elseif(!$this->hasAdjacentFlammableBlocks()){
 				$canSpread = false;
-				if(!$down->isSolid() or $this->age > 3){
+				if($down->isTransparent() || $this->age > 3){
 					$result = VanillaBlocks::AIR();
 				}
 			}
 		}
 
+		$world = $this->position->getWorld();
 		if($result !== null){
-			$this->position->getWorld()->setBlock($this->position, $result);
+			$world->setBlock($this->position, $result);
 		}
 
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
+		$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 
 		if($canSpread){
-			//TODO: raise upper bound for chance in humid biomes
-
-			foreach($this->getHorizontalSides() as $side){
-				$this->burnBlock($side, 300);
-			}
-
-			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
-			$this->burnBlock($this->getSide(Facing::UP), 350);
-			$this->burnBlock($this->getSide(Facing::DOWN), 350);
-
-			//TODO: fire spread
+			$this->burnBlocksAround();
+			$this->spreadFire();
 		}
 	}
 
@@ -165,21 +116,104 @@ class Fire extends Flowable{
 		return false;
 	}
 
+	private function burnBlocksAround() : void{
+		//TODO: raise upper bound for chance in humid biomes
+
+		foreach($this->getHorizontalSides() as $side){
+			$this->burnBlock($side, 300);
+		}
+
+		//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
+		$this->burnBlock($this->getSide(Facing::UP), 350);
+		$this->burnBlock($this->getSide(Facing::DOWN), 350);
+	}
+
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
-			$ev = new BlockBurnEvent($block, $this);
-			$ev->call();
-			if(!$ev->isCancelled()){
+			$cancelled = false;
+			if(BlockBurnEvent::hasHandlers()){
+				$ev = new BlockBurnEvent($block, $this);
+				$ev->call();
+				$cancelled = $ev->isCancelled();
+			}
+			if(!$cancelled){
 				$block->onIncinerate();
 
-				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
-					$fire = clone $this;
-					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$this->position->getWorld()->setBlock($block->position, $fire);
-				}else{
-					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+				$world = $this->position->getWorld();
+				if($world->getBlock($block->position)->isSameState($block)){
+					$spreadedFire = false;
+					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
+						$fire = clone $this;
+						$fire->age = min(self::MAX_AGE, $fire->age + (mt_rand(0, 4) >> 2));
+						$spreadedFire = $this->spreadBlock($block, $fire);
+					}
+					if(!$spreadedFire){
+						$world->setBlock($block->position, VanillaBlocks::AIR());
+					}
 				}
 			}
 		}
+	}
+
+	private function spreadFire() : void{
+		$world = $this->position->getWorld();
+		$difficultyChanceIncrease = $world->getDifficulty() * 7;
+		$ageDivisor = $this->age + 30;
+
+		for($y = -1; $y <= 4; ++$y){
+			$targetY = $y + (int) $this->position->y;
+			if($targetY < World::Y_MIN || $targetY >= World::Y_MAX){
+				continue;
+			}
+			//Higher blocks have a lower chance of catching fire
+			$randomBound = 100 + ($y > 1 ? ($y - 1) * 100 : 0);
+
+			for($z = -1; $z <= 1; ++$z){
+				$targetZ = $z + (int) $this->position->z;
+				for($x = -1; $x <= 1; ++$x){
+					if($x === 0 && $y === 0 && $z === 0){
+						continue;
+					}
+					$targetX = $x + (int) $this->position->x;
+					if(!$world->isInWorld($targetX, $targetY, $targetZ)){
+						continue;
+					}
+
+					if(!$world->isChunkLoaded($targetX >> Chunk::COORD_BIT_SIZE, $targetZ >> Chunk::COORD_BIT_SIZE)){
+						continue;
+					}
+					$block = $world->getBlockAt($targetX, $targetY, $targetZ);
+					if($block->getTypeId() !== BlockTypeIds::AIR){
+						continue;
+					}
+
+					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
+
+					$encouragement = 0;
+					foreach($block->position->sides() as $vector3){
+						if($world->isInWorld($vector3->x, $vector3->y, $vector3->z)){
+							$encouragement = max($encouragement, $world->getBlockAt($vector3->x, $vector3->y, $vector3->z)->getFlameEncouragement());
+						}
+					}
+
+					if($encouragement <= 0){
+						continue;
+					}
+
+					$maxChance = intdiv($encouragement + 40 + $difficultyChanceIncrease, $ageDivisor);
+					//TODO: max chance is lowered by half in humid biomes
+
+					if($maxChance > 0 && mt_rand(0, $randomBound - 1) <= $maxChance){
+						$new = clone $this;
+						$new->age = min(self::MAX_AGE, $this->age + (mt_rand(0, 4) >> 2));
+						$this->spreadBlock($block, $new);
+					}
+				}
+			}
+		}
+	}
+
+	private function spreadBlock(Block $block, Block $newState) : bool{
+		return BlockEventHelper::spread($block, $newState, $this);
 	}
 }

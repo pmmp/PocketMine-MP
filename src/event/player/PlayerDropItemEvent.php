@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,17 +29,16 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 
 /**
- * Called when a player tries to drop an item from its hotbar
+ * Called when a player tries to drop an item
  */
 class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $drop;
-
-	public function __construct(Player $player, Item $drop){
+	public function __construct(
+		Player $player,
+		private Item $drop
+	){
 		$this->player = $player;
-		$this->drop = $drop;
 	}
 
 	public function getItem() : Item{

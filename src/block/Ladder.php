@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -35,7 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Ladder extends Transparent{
-	use NormalHorizontalFacingInMetadataTrait;
+	use HorizontalFacingTrait;
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -64,8 +65,12 @@ class Ladder extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isTransparent() and Facing::axis($face) !== Axis::Y){
+		if($this->canBeSupportedAt($blockReplace, Facing::opposite($face)) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -74,8 +79,12 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face) === SupportType::FULL;
 	}
 }

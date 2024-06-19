@@ -1,16 +1,33 @@
 <?php
 
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
 declare(strict_types=1);
 
 namespace pocketmine\tools\simulate_chunk_selector;
 
 use pocketmine\player\ChunkSelector;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
-use Webmozart\PathUtil\Path;
-use function assert;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function fwrite;
@@ -37,16 +54,10 @@ use const STR_PAD_LEFT;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function newImage(int $scale, int $radius) : \GdImage{
-	$image = imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2);
-	if($image === false){
-		throw new AssumptionFailedError();
-	}
+	$image = Utils::assumeNotFalse(imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2));
 	imagesavealpha($image, true);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	if($black === false){
-		throw new AssumptionFailedError();
-	}
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
 	imagefill($image, 0, 0, $black);
 	return $image;
 }
@@ -58,10 +69,9 @@ function render(int $radius, int $baseX, int $baseZ, int $chunksPerStep, int $sc
 	$middleOffsetX = $scale * ($radius + $offsetX);
 	$middleOffsetZ = $scale * ($radius + $offsetZ);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	$yellow = imagecolorallocate($image, 255, 255, 51);
-	$red = imagecolorallocate($image, 255, 0, 0);
-	if($black === false || $yellow === false || $red === false) throw new AssumptionFailedError();
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
+	$yellow = Utils::assumeNotFalse(imagecolorallocate($image, 255, 255, 51));
+	$red = Utils::assumeNotFalse(imagecolorallocate($image, 255, 0, 0));
 
 	$frame = 0;
 	$seen = [];
@@ -116,7 +126,12 @@ if(count(getopt("", ["help"])) !== 0){
 	exit(0);
 }
 
-foreach(Utils::stringifyKeys(getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:"])) as $name => $value){
+$opts = getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:", "output:"]);
+foreach(["radius", "baseX", "baseZ", "scale", "chunksPerStep"] as $name){
+	$value = $opts[$name] ?? null;
+	if($value === null){
+		continue;
+	}
 	if(!is_string($value) || (string) ((int) $value) !== $value){
 		fwrite(STDERR, "Value for --$name must be an integer\n");
 		exit(1);
@@ -127,8 +142,7 @@ foreach(Utils::stringifyKeys(getopt("", ["radius:", "baseX:", "baseZ:", "scale:"
 		"baseX" => ($baseX = $value),
 		"baseZ" => ($baseZ = $value),
 		"scale" => ($scale = $value),
-		"chunksPerStep" => ($nChunksPerStep = $value),
-		default => throw new AssumptionFailedError("getopt() returned unknown option")
+		"chunksPerStep" => ($nChunksPerStep = $value)
 	};
 }
 if($radius === null){
@@ -137,10 +151,10 @@ if($radius === null){
 }
 
 $outputDirectory = null;
-foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
-	assert($name === "output");
+if(isset($opts["output"])){
+	$value = $opts["output"];
 	if(!is_string($value)){
-		fwrite(STDERR, "Value for --$name must be a string\n");
+		fwrite(STDERR, "Value for --output be a string\n");
 		exit(1);
 	}
 	if(!@mkdir($value) && !is_dir($value)){
@@ -152,11 +166,7 @@ foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
 		fwrite(STDERR, "Output directory $value is not empty\n");
 		exit(1);
 	}
-	$realPath = realpath($value);
-	if($realPath === false){
-		throw new AssumptionFailedError();
-	}
-	$outputDirectory = $realPath;
+	$outputDirectory = Utils::assumeNotFalse(realpath($value), "We just created this directory, we should be able to get its realpath");
 }
 if($outputDirectory === null){
 	fwrite(STDERR, "Please specify an output directory using --output\n");
@@ -164,9 +174,5 @@ if($outputDirectory === null){
 }
 $image = newImage($scale, $radius);
 
-$black = imagecolorallocate($image, 0, 0, 0);
-$green = imagecolorallocate($image, 0, 220, 0);
-if($black === false || $green === false){
-	throw new AssumptionFailedError();
-}
+$green = Utils::assumeNotFalse(imagecolorallocate($image, 0, 220, 0));
 render($radius, $baseX, $baseZ, $nChunksPerStep, $scale, $image, $green, 0, 0, $outputDirectory);

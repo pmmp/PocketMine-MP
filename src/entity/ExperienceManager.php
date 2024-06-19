@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -38,23 +38,18 @@ use function min;
 
 class ExperienceManager{
 
-	/** @var Human */
-	private $entity;
+	private Attribute $levelAttr;
+	private Attribute $progressAttr;
 
-	/** @var Attribute */
-	private $levelAttr;
-	/** @var Attribute */
-	private $progressAttr;
+	private int $totalXp = 0;
 
-	/** @var int */
-	private $totalXp = 0;
+	private bool $canAttractXpOrbs = true;
 
-	/** @var int */
-	private $xpCooldown = 0;
+	private int $xpCooldown = 0;
 
-	public function __construct(Human $entity){
-		$this->entity = $entity;
-
+	public function __construct(
+		private Human $entity
+	){
 		$this->levelAttr = self::fetchAttribute($entity, Attribute::EXPERIENCE_LEVEL);
 		$this->progressAttr = self::fetchAttribute($entity, Attribute::EXPERIENCE);
 	}
@@ -242,21 +237,20 @@ class ExperienceManager{
 	}
 
 	public function onPickupXp(int $xpValue) : void{
-		static $mainHandIndex = -1;
-		static $offHandIndex = -2;
+		$mainHandIndex = -1;
+		$offHandIndex = -2;
 
 		//TODO: replace this with a more generic equipment getting/setting interface
-		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$mainHandIndex] = $item;
 		}
-		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$offHandIndex] = $item;
 		}
 		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
-			if($armorItem instanceof Durable and $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
+			if($armorItem instanceof Durable && $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
 				$equipment[$k] = $armorItem;
 			}
 		}
@@ -293,5 +287,13 @@ class ExperienceManager{
 		if($this->xpCooldown > 0){
 			$this->xpCooldown = max(0, $this->xpCooldown - $tickDiff);
 		}
+	}
+
+	public function canAttractXpOrbs() : bool{
+		return $this->canAttractXpOrbs;
+	}
+
+	public function setCanAttractXpOrbs(bool $v = true) : void{
+		$this->canAttractXpOrbs = $v;
 	}
 }

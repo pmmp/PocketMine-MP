@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,23 +36,19 @@ use const SORT_STRING;
 
 class ListCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"list",
 			KnownTranslationFactory::pocketmine_command_list_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$playerNames = array_map(function(Player $player) : string{
 			return $player->getName();
 		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender) : bool{
-			return !($sender instanceof Player) or $sender->canSee($player);
+			return !($sender instanceof Player) || $sender->canSee($player);
 		}));
 		sort($playerNames, SORT_STRING);
 

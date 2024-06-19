@@ -17,17 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -44,6 +47,7 @@ use function mt_rand;
 use const PHP_INT_MAX;
 
 class Bamboo extends Transparent{
+	use StaticSupportTrait;
 
 	public const NO_LEAVES = 0;
 	public const SMALL_LEAVES = 1;
@@ -53,18 +57,10 @@ class Bamboo extends Transparent{
 	protected bool $ready = false;
 	protected int $leafSize = self::NO_LEAVES;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->thick = ($stateMeta & BlockLegacyMetadata::BAMBOO_FLAG_THICK) !== 0;
-		$this->leafSize = BlockDataSerializer::readBoundedInt("leafSize", ($stateMeta >> BlockLegacyMetadata::BAMBOO_LEAF_SIZE_SHIFT) & BlockLegacyMetadata::BAMBOO_LEAF_SIZE_MASK, self::NO_LEAVES, self::LARGE_LEAVES);
-		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_FLAG_READY) !== 0;
-	}
-
-	public function writeStateToMeta() : int{
-		return ($this->thick ? BlockLegacyMetadata::BAMBOO_FLAG_THICK : 0) | ($this->leafSize << BlockLegacyMetadata::BAMBOO_LEAF_SIZE_SHIFT) | ($this->ready ? BlockLegacyMetadata::BAMBOO_FLAG_READY : 0);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
+		$w->bool($this->thick);
+		$w->bool($this->ready);
 	}
 
 	public function isThick() : bool{ return $this->thick; }
@@ -100,6 +96,10 @@ class Bamboo extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::SOUTH, $inset)->trim(Facing::EAST, $inset)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
 	private static function getOffsetSeed(int $x, int $y, int $z) : int{
 		$p1 = gmp_mul($z, 0x6ebfff5);
 		$p2 = gmp_mul($x, 0x2fc20f);
@@ -122,27 +122,26 @@ class Bamboo extends Transparent{
 		return new Vector3($retX, 0, $retZ);
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		//TODO: tags would be better for this
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		return
-			$block instanceof Dirt ||
-			$block instanceof Grass ||
-			$block instanceof Gravel ||
-			$block instanceof Sand ||
-			$block instanceof Mycelium ||
-			$block instanceof Podzol;
+			$supportBlock->hasSameTypeId($this) ||
+			$supportBlock->getTypeId() === BlockTypeIds::GRAVEL ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	private function seekToTop() : Bamboo{
 		$world = $this->position->getWorld();
 		$top = $this;
-		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->isSameType($this)){
+		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->hasSameTypeId($this)){
 			$top = $next;
 		}
 		return $top;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
 			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){
@@ -158,13 +157,6 @@ class Bamboo extends Transparent{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		$below = $this->position->getWorld()->getBlock($this->position->down());
-		if(!$this->canBeSupportedBy($below) and !$below->isSameType($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
 	private function grow(int $maxHeight, int $growAmount, ?Player $player) : bool{
 		$world = $this->position->getWorld();
 		if(!$world->getBlock($this->position->up())->canBeReplaced()){
@@ -172,7 +164,7 @@ class Bamboo extends Transparent{
 		}
 
 		$height = 1;
-		while($world->getBlock($this->position->subtract(0, $height, 0))->isSameType($this)){
+		while($world->getBlock($this->position->subtract(0, $height, 0))->hasSameTypeId($this)){
 			if(++$height >= $maxHeight){
 				return false;
 			}
@@ -181,7 +173,7 @@ class Bamboo extends Transparent{
 		$newHeight = $height + $growAmount;
 
 		$stemBlock = (clone $this)->setReady(false)->setLeafSize(self::NO_LEAVES);
-		if($newHeight >= 4 && !$stemBlock->isThick()){ //don't change it to false if height is less, because it might have been chopped
+		if($newHeight >= 4 && !$stemBlock->thick){ //don't change it to false if height is less, because it might have been chopped
 			$stemBlock = $stemBlock->setThick(true);
 		}
 		$smallLeavesBlock = (clone $stemBlock)->setLeafSize(self::SMALL_LEAVES);
@@ -207,7 +199,7 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$tx = new BlockTransaction($this->position->getWorld());
+		$tx = new BlockTransaction($world);
 		foreach($newBlocks as $idx => $newBlock){
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
@@ -236,5 +228,9 @@ class Bamboo extends Transparent{
 			$this->ready = true;
 			$world->setBlock($this->position, $this);
 		}
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::BAMBOO();
 	}
 }

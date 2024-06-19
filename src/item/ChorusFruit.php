@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -56,21 +56,23 @@ class ChorusFruit extends Food{
 		$maxY = $minY + 16;
 		$maxZ = $minZ + 16;
 
+		$worldMinY = $world->getMinY();
+
 		for($attempts = 0; $attempts < 16; ++$attempts){
 			$x = mt_rand($minX, $maxX);
 			$y = mt_rand($minY, $maxY);
 			$z = mt_rand($minZ, $maxZ);
 
-			while($y >= 0 and !$world->getBlockAt($x, $y, $z)->isSolid()){
+			while($y >= $worldMinY && !$world->getBlockAt($x, $y, $z)->isSolid()){
 				$y--;
 			}
-			if($y < 0){
+			if($y < $worldMinY){
 				continue;
 			}
 
 			$blockUp = $world->getBlockAt($x, $y + 1, $z);
 			$blockUp2 = $world->getBlockAt($x, $y + 2, $z);
-			if($blockUp->isSolid() or $blockUp instanceof Liquid or $blockUp2->isSolid() or $blockUp2 instanceof Liquid){
+			if($blockUp->isSolid() || $blockUp instanceof Liquid || $blockUp2->isSolid() || $blockUp2 instanceof Liquid){
 				continue;
 			}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,13 +31,10 @@ use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
  */
 abstract class WorldProviderManagerEntry{
 
-	/** @phpstan-var IsValid */
-	protected \Closure $isValid;
-
 	/** @phpstan-param IsValid $isValid */
-	protected function __construct(\Closure $isValid){
-		$this->isValid = $isValid;
-	}
+	protected function __construct(
+		protected \Closure $isValid
+	){}
 
 	/**
 	 * Tells if the path is a valid world.
@@ -49,5 +46,5 @@ abstract class WorldProviderManagerEntry{
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
-	abstract public function fromPath(string $path) : WorldProvider;
+	abstract public function fromPath(string $path, \Logger $logger) : WorldProvider;
 }

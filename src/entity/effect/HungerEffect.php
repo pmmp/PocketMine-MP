@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,7 +36,7 @@ class HungerEffect extends Effect{
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
 		if($entity instanceof Human){
-			$entity->getHungerManager()->exhaust(0.025 * $instance->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
+			$entity->getHungerManager()->exhaust(0.1 * $instance->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
 		}
 	}
 }

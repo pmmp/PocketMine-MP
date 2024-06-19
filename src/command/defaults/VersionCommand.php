@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,9 +32,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use function count;
-use function function_exists;
 use function implode;
-use function opcache_get_status;
 use function sprintf;
 use function stripos;
 use function strtolower;
@@ -42,9 +40,9 @@ use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"version",
 			KnownTranslationFactory::pocketmine_command_version_description(),
 			KnownTranslationFactory::pocketmine_command_version_usage(),
 			["ver", "about"]
@@ -53,42 +51,33 @@ class VersionCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
-				VersionInfo::NAME
+				TextFormat::GREEN . VersionInfo::NAME . TextFormat::RESET
 			));
+			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				VersionInfo::VERSION()->getFullVersion(),
-				VersionInfo::GIT_HASH()
+				$versionColor . VersionInfo::VERSION()->getFullVersion() . TextFormat::RESET,
+				TextFormat::GREEN . VersionInfo::GIT_HASH() . TextFormat::RESET
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
-				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-				(string) ProtocolInfo::CURRENT_PROTOCOL
+				TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::RESET,
+				TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL . TextFormat::RESET
 			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(PHP_VERSION));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN . PHP_VERSION . TextFormat::RESET));
 
-			if(
-				function_exists('opcache_get_status') &&
-				($opcacheStatus = opcache_get_status(false)) !== false &&
-				isset($opcacheStatus["jit"]["on"])
-			){
-				$jit = $opcacheStatus["jit"];
-				if($jit["on"] === true){
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(
-						sprintf("CRTO: %s%s%s%s", $jit["opt_flags"] >> 2, $jit["opt_flags"] & 0x03, $jit["kind"], $jit["opt_level"])
-					);
+			$jitMode = Utils::getOpcacheJitMode();
+			if($jitMode !== null){
+				if($jitMode !== 0){
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(sprintf("CRTO: %d", $jitMode));
 				}else{
 					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
 				}
 			}else{
 				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(Utils::getOS()));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
@@ -118,7 +107,7 @@ class VersionCommand extends VanillaCommand{
 
 	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
 		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
+		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::RESET . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
 
 		if($desc->getDescription() !== ""){
 			$sender->sendMessage($desc->getDescription());

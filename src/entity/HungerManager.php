@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,25 +32,17 @@ use function min;
 
 class HungerManager{
 
-	/** @var Human */
-	private $entity;
+	private Attribute $hungerAttr;
+	private Attribute $saturationAttr;
+	private Attribute $exhaustionAttr;
 
-	/** @var Attribute */
-	private $hungerAttr;
-	/** @var Attribute */
-	private $saturationAttr;
-	/** @var Attribute */
-	private $exhaustionAttr;
+	private int $foodTickTimer = 0;
 
-	/** @var int */
-	private $foodTickTimer = 0;
+	private bool $enabled = true;
 
-	/** @var bool */
-	private $enabled = true;
-
-	public function __construct(Human $entity){
-		$this->entity = $entity;
-
+	public function __construct(
+		private Human $entity
+	){
 		$this->hungerAttr = self::fetchAttribute($entity, Attribute::HUNGER);
 		$this->saturationAttr = self::fetchAttribute($entity, Attribute::SATURATION);
 		$this->exhaustionAttr = self::fetchAttribute($entity, Attribute::EXHAUSTION);
@@ -141,14 +133,18 @@ class HungerManager{
 		if(!$this->enabled){
 			return 0;
 		}
-		$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
-		$ev->call();
-		if($ev->isCancelled()){
-			return 0.0;
+		$evAmount = $amount;
+		if(PlayerExhaustEvent::hasHandlers()){
+			$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
+			$ev->call();
+			if($ev->isCancelled()){
+				return 0.0;
+			}
+			$evAmount = $ev->getAmount();
 		}
 
 		$exhaustion = $this->getExhaustion();
-		$exhaustion += $ev->getAmount();
+		$exhaustion += $evAmount;
 
 		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
@@ -167,7 +163,7 @@ class HungerManager{
 		}
 		$this->setExhaustion($exhaustion);
 
-		return $ev->getAmount();
+		return $evAmount;
 	}
 
 	public function getFoodTickTimer() : int{
@@ -182,7 +178,7 @@ class HungerManager{
 	}
 
 	public function tick(int $tickDiff = 1) : void{
-		if(!$this->entity->isAlive() or !$this->enabled){
+		if(!$this->entity->isAlive() || !$this->enabled){
 			return;
 		}
 		$food = $this->getFood();
@@ -194,12 +190,12 @@ class HungerManager{
 			$this->foodTickTimer = 0;
 		}
 
-		if($difficulty === World::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
+		if($difficulty === World::DIFFICULTY_PEACEFUL && $this->foodTickTimer % 10 === 0){
 			if($food < $this->getMaxFood()){
 				$this->addFood(1.0);
 				$food = $this->getFood();
 			}
-			if($this->foodTickTimer % 20 === 0 and $health < $this->entity->getMaxHealth()){
+			if($this->foodTickTimer % 20 === 0 && $health < $this->entity->getMaxHealth()){
 				$this->entity->heal(new EntityRegainHealthEvent($this->entity, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
 			}
 		}
@@ -208,10 +204,10 @@ class HungerManager{
 			if($food >= 18){
 				if($health < $this->entity->getMaxHealth()){
 					$this->entity->heal(new EntityRegainHealthEvent($this->entity, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-					$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
+					$this->exhaust(6.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 				}
 			}elseif($food <= 0){
-				if(($difficulty === World::DIFFICULTY_EASY and $health > 10) or ($difficulty === World::DIFFICULTY_NORMAL and $health > 1) or $difficulty === World::DIFFICULTY_HARD){
+				if(($difficulty === World::DIFFICULTY_EASY && $health > 10) || ($difficulty === World::DIFFICULTY_NORMAL && $health > 1) || $difficulty === World::DIFFICULTY_HARD){
 					$this->entity->attack(new EntityDamageEvent($this->entity, EntityDamageEvent::CAUSE_STARVATION, 1));
 				}
 			}

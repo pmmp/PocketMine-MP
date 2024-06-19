@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,85 +31,90 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function base64_decode;
 use function base64_encode;
 use function count;
-use function get_class;
 use function gettype;
 use function hex2bin;
 use function is_string;
+use function morton2d_encode;
 
 class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
 
 	public const TAG_ENCH = "ench";
+	private const TAG_ENCH_ID = "id"; //TAG_Short
+	private const TAG_ENCH_LVL = "lvl"; //TAG_Short
+
 	public const TAG_DISPLAY = "display";
 	public const TAG_BLOCK_ENTITY_TAG = "BlockEntityTag";
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/** @var ItemIdentifier */
-	private $identifier;
-	/** @var CompoundTag */
-	private $nbt;
-	/** @var int */
-	protected $count = 1;
-	/** @var string */
-	protected $name;
+	public const TAG_KEEP_ON_DEATH = "minecraft:keep_on_death";
+
+	private const TAG_CAN_PLACE_ON = "CanPlaceOn"; //TAG_List<TAG_String>
+	private const TAG_CAN_DESTROY = "CanDestroy"; //TAG_List<TAG_String>
+
+	private CompoundTag $nbt;
+
+	protected int $count = 1;
 
 	//TODO: this stuff should be moved to itemstack properties, not mushed in with type properties
 
-	/** @var string */
-	protected $customName = "";
+	protected string $customName = "";
 	/** @var string[] */
-	protected $lore = [];
-	/**
-	 * TODO: this needs to die in a fire
-	 * @var CompoundTag|null
-	 */
-	protected $blockEntityTag = null;
+	protected array $lore = [];
+	/** TODO: this needs to die in a fire */
+	protected ?CompoundTag $blockEntityTag = null;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $canPlaceOn = [];
+	protected array $canPlaceOn = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $canDestroy;
+	protected array $canDestroy = [];
+
+	protected bool $keepOnDeath = false;
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
 	 * into the index.
 	 *
-	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
+	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use VanillaItems for that
 	 * purpose.
+	 * @see VanillaItems
+	 *
+	 * @param string[] $enchantmentTags
 	 */
-	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
-		$this->identifier = $identifier;
-		$this->name = $name;
-
-		$this->canPlaceOn = [];
-		$this->canDestroy = [];
+	public function __construct(
+		private ItemIdentifier $identifier,
+		protected string $name = "Unknown",
+		private array $enchantmentTags = []
+	){
 		$this->nbt = new CompoundTag();
 	}
 
@@ -223,6 +228,17 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether players will retain this item on death. If a non-player dies it will be excluded from the drops.
+	 */
+	public function keepOnDeath() : bool{
+		return $this->keepOnDeath;
+	}
+
+	public function setKeepOnDeath(bool $keepOnDeath) : void{
+		$this->keepOnDeath = $keepOnDeath;
+	}
+
+	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
 	public function hasNamedTag() : bool{
@@ -277,7 +293,7 @@ class Item implements \JsonSerializable{
 		if($display !== null){
 			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName);
 			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
-			if($lore !== null and $lore->getTagType() === NBT::TAG_String){
+			if($lore !== null && $lore->getTagType() === NBT::TAG_String){
 				/** @var StringTag $t */
 				foreach($lore as $t){
 					$this->lore[] = $t->getValue();
@@ -287,11 +303,11 @@ class Item implements \JsonSerializable{
 
 		$this->removeEnchantments();
 		$enchantments = $tag->getListTag(self::TAG_ENCH);
-		if($enchantments !== null and $enchantments->getTagType() === NBT::TAG_Compound){
+		if($enchantments !== null && $enchantments->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $enchantment */
 			foreach($enchantments as $enchantment){
-				$magicNumber = $enchantment->getShort("id", -1);
-				$level = $enchantment->getShort("lvl", 0);
+				$magicNumber = $enchantment->getShort(self::TAG_ENCH_ID, -1);
+				$level = $enchantment->getShort(self::TAG_ENCH_LVL, 0);
 				if($level <= 0){
 					continue;
 				}
@@ -305,49 +321,56 @@ class Item implements \JsonSerializable{
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		$this->canPlaceOn = [];
-		$canPlaceOn = $tag->getListTag("CanPlaceOn");
-		if($canPlaceOn !== null){
+		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON);
+		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canPlaceOn as $entry){
 				$this->canPlaceOn[$entry->getValue()] = $entry->getValue();
 			}
 		}
 		$this->canDestroy = [];
-		$canDestroy = $tag->getListTag("CanDestroy");
-		if($canDestroy !== null){
+		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY);
+		if($canDestroy !== null && $canDestroy->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canDestroy as $entry){
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
+
+		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
-		$display = $tag->getCompoundTag(self::TAG_DISPLAY) ?? new CompoundTag();
+		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 
-		$this->hasCustomName() ?
-			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
-			$display->removeTag(self::TAG_DISPLAY_NAME);
+		if($this->customName !== ""){
+			$display ??= new CompoundTag();
+			$display->setString(self::TAG_DISPLAY_NAME, $this->customName);
+		}else{
+			$display?->removeTag(self::TAG_DISPLAY_NAME);
+		}
 
 		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
 			foreach($this->lore as $line){
 				$loreTag->push(new StringTag($line));
 			}
+			$display ??= new CompoundTag();
 			$display->setTag(self::TAG_DISPLAY_LORE, $loreTag);
 		}else{
-			$display->removeTag(self::TAG_DISPLAY_LORE);
+			$display?->removeTag(self::TAG_DISPLAY_LORE);
 		}
-		$display->count() > 0 ?
+		$display !== null && $display->count() > 0 ?
 			$tag->setTag(self::TAG_DISPLAY, $display) :
 			$tag->removeTag(self::TAG_DISPLAY);
 
-		if($this->hasEnchantments()){
+		if(count($this->enchantments) > 0){
 			$ench = new ListTag();
-			foreach($this->getEnchantments() as $enchantmentInstance){
+			$enchantmentIdMap = EnchantmentIdMap::getInstance();
+			foreach($this->enchantments as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort("id", EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
-					->setShort("lvl", $enchantmentInstance->getLevel())
+					->setShort(self::TAG_ENCH_ID, $enchantmentIdMap->toId($enchantmentInstance->getType()))
+					->setShort(self::TAG_ENCH_LVL, $enchantmentInstance->getLevel())
 				);
 			}
 			$tag->setTag(self::TAG_ENCH, $ench);
@@ -355,8 +378,8 @@ class Item implements \JsonSerializable{
 			$tag->removeTag(self::TAG_ENCH);
 		}
 
-		($blockData = $this->getCustomBlockData()) !== null ?
-			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
+		$this->blockEntityTag !== null ?
+			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $this->blockEntityTag) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		if(count($this->canPlaceOn) > 0){
@@ -364,18 +387,24 @@ class Item implements \JsonSerializable{
 			foreach($this->canPlaceOn as $item){
 				$canPlaceOn->push(new StringTag($item));
 			}
-			$tag->setTag("CanPlaceOn", $canPlaceOn);
+			$tag->setTag(self::TAG_CAN_PLACE_ON, $canPlaceOn);
 		}else{
-			$tag->removeTag("CanPlaceOn");
+			$tag->removeTag(self::TAG_CAN_PLACE_ON);
 		}
 		if(count($this->canDestroy) > 0){
 			$canDestroy = new ListTag();
 			foreach($this->canDestroy as $item){
 				$canDestroy->push(new StringTag($item));
 			}
-			$tag->setTag("CanDestroy", $canDestroy);
+			$tag->setTag(self::TAG_CAN_DESTROY, $canDestroy);
 		}else{
-			$tag->removeTag("CanDestroy");
+			$tag->removeTag(self::TAG_CAN_DESTROY);
+		}
+
+		if($this->keepOnDeath){
+			$tag->setByte(self::TAG_KEEP_ON_DEATH, 1);
+		}else{
+			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
 		}
 	}
 
@@ -412,7 +441,7 @@ class Item implements \JsonSerializable{
 	}
 
 	public function isNull() : bool{
-		return $this->count <= 0 or $this->getId() === ItemIds::AIR;
+		return $this->count <= 0;
 	}
 
 	/**
@@ -429,6 +458,29 @@ class Item implements \JsonSerializable{
 		return $this->name;
 	}
 
+	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to this item during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->enchantmentTags;
+	}
+
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return 1;
+	}
+
 	final public function canBePlaced() : bool{
 		return $this->getBlock()->canBePlaced();
 	}
@@ -440,20 +492,26 @@ class Item implements \JsonSerializable{
 		return VanillaBlocks::AIR();
 	}
 
-	final public function getId() : int{
-		return $this->identifier->getId();
+	final public function getTypeId() : int{
+		return $this->identifier->getTypeId();
 	}
 
-	public function getMeta() : int{
-		return $this->identifier->getMeta();
+	final public function getStateId() : int{
+		return morton2d_encode($this->identifier->getTypeId(), $this->computeStateData());
+	}
+
+	private function computeStateData() : int{
+		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
+		$this->describeState($writer);
+		return $writer->getValue();
 	}
 
 	/**
-	 * Returns whether this item can match any item with an equivalent ID with any meta value.
-	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
+	 * Describes state properties of the item, such as colour, skull type, etc.
+	 * This allows associating basic extra data with the item at runtime in a more efficient format than NBT.
 	 */
-	public function hasAnyDamageValue() : bool{
-		return $this->identifier->getMeta() === -1;
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		//NOOP
 	}
 
 	/**
@@ -478,6 +536,13 @@ class Item implements \JsonSerializable{
 		$item->pop();
 
 		return $item;
+	}
+
+	/**
+	 * Returns whether this item can survive being dropped into lava, or fire.
+	 */
+	public function isFireProof() : bool{
+		return false;
 	}
 
 	/**
@@ -519,38 +584,66 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Called when a player uses this item on a block.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		return ItemUseResult::NONE();
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+		return ItemUseResult::NONE;
 	}
 
 	/**
 	 * Called when a player uses the item on air, for example throwing a projectile.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
-		return ItemUseResult::NONE();
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
+		return ItemUseResult::NONE;
 	}
 
 	/**
 	 * Called when a player is using this item and releases it. Used to handle bow shoot actions.
 	 * Returns whether the item was changed, for example count decrease or durability change.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onReleaseUsing(Player $player) : ItemUseResult{
-		return ItemUseResult::NONE();
+	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
+		return ItemUseResult::NONE;
 	}
 
 	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		return false;
 	}
 
 	/**
 	 * Called when this item is used to attack an entity. Usually used to update durability.
+	 *
+	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onAttackEntity(Entity $victim) : bool{
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when this item is being worn by an entity.
+	 * Returns whether it did something.
+	 */
+	public function onTickWorn(Living $entity) : bool{
+		return false;
+	}
+
+	/**
+	 * Called when a player uses the item to interact with entity, for example by using a name tag.
+	 *
+	 * @param Vector3 $clickVector The exact position of the click (absolute coordinates)
+	 * @return bool whether some action took place
+	 */
+	public function onInteractEntity(Player $player, Entity $entity, Vector3 $clickVector) : bool{
 		return false;
 	}
 
@@ -564,13 +657,12 @@ class Item implements \JsonSerializable{
 	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
-	 * @param bool $checkDamage Whether to verify that the damage values match.
+	 * @param bool $checkDamage   @deprecated
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->getId() === $item->getId() and
-			(!$checkDamage or $this->getMeta() === $item->getMeta()) and
-			(!$checkCompound or $this->getNamedTag()->equals($item->getNamedTag()));
+		return $this->getStateId() === $item->getStateId() &&
+			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
 	/**
@@ -584,55 +676,29 @@ class Item implements \JsonSerializable{
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
 	 */
 	final public function equalsExact(Item $other) : bool{
-		return $this->equals($other, true, true) and $this->count === $other->count;
+		return $this->canStackWith($other) && $this->count === $other->count;
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->getId() . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeStateData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**
-	 * Returns an array of item stack properties that can be serialized to json.
-	 *
-	 * @return mixed[]
-	 * @phpstan-return array{id: int, damage?: int, count?: int, nbt_b64?: string}
+	 * @phpstan-return never
 	 */
-	final public function jsonSerialize() : array{
-		$data = [
-			"id" => $this->getId()
-		];
-
-		if($this->getMeta() !== 0){
-			$data["damage"] = $this->getMeta();
-		}
-
-		if($this->getCount() !== 1){
-			$data["count"] = $this->getCount();
-		}
-
-		if($this->hasNamedTag()){
-			$data["nbt_b64"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag())));
-		}
-
-		return $data;
+	public function jsonSerialize() : array{
+		throw new \LogicException("json_encode()ing Item instances is no longer supported. Make your own method to convert the item to an array or stdClass.");
 	}
 
 	/**
-	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
+	 * Deserializes item JSON data produced by json_encode()ing Item instances in older versions of PocketMine-MP.
+	 * This method exists solely to allow upgrading old JSON data stored by plugins.
+	 *
 	 * @param mixed[] $data
-	 * @phpstan-param array{
-	 * 	id: int,
-	 * 	damage?: int,
-	 * 	count?: int,
-	 * 	nbt?: string,
-	 * 	nbt_hex?: string,
-	 * 	nbt_b64?: string
-	 * } $data
 	 *
-	 * @throws NbtDataException
-	 * @throws \InvalidArgumentException
+	 * @throws SavedDataLoadingException
 	 */
-	final public static function jsonDeserialize(array $data) : Item{
+	final public static function legacyJsonDeserialize(array $data) : Item{
 		$nbt = "";
 
 		//Backwards compatibility
@@ -643,9 +709,19 @@ class Item implements \JsonSerializable{
 		}elseif(isset($data["nbt_b64"])){
 			$nbt = base64_decode($data["nbt_b64"], true);
 		}
-		return ItemFactory::getInstance()->get(
-			(int) $data["id"], (int) ($data["damage"] ?? 0), (int) ($data["count"] ?? 1), $nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
+
+		$itemStackData = GlobalItemDataHandlers::getUpgrader()->upgradeItemTypeDataInt(
+			(int) $data["id"],
+			(int) ($data["damage"] ?? 0),
+			(int) ($data["count"] ?? 1),
+			$nbt !== "" ? (new LittleEndianNbtSerializer())->read($nbt)->mustGetCompoundTag() : null
 		);
+
+		try{
+			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
@@ -654,56 +730,24 @@ class Item implements \JsonSerializable{
 	 * @param int $slot optional, the inventory slot of the item
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
-		$result = CompoundTag::create()
-			->setShort("id", $this->getId())
-			->setByte("Count", Binary::signByte($this->count))
-			->setShort("Damage", $this->getMeta());
-
-		if($this->hasNamedTag()){
-			$result->setTag("tag", $this->getNamedTag());
-		}
-
-		if($slot !== -1){
-			$result->setByte("Slot", $slot);
-		}
-
-		return $result;
+		return GlobalItemDataHandlers::getSerializer()->serializeStack($this, $slot !== -1 ? $slot : null)->toNbt();
 	}
 
 	/**
 	 * Deserializes an Item from an NBT CompoundTag
-	 * @throws NbtException
 	 * @throws SavedDataLoadingException
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
-		if($tag->getTag("id") === null or $tag->getTag("Count") === null){
-			return ItemFactory::getInstance()->get(0);
+		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
+		if($itemData === null){
+			return VanillaItems::AIR();
 		}
 
-		$count = Binary::unsignByte($tag->getByte("Count"));
-		$meta = $tag->getShort("Damage", 0);
-
-		$idTag = $tag->getTag("id");
-		if($idTag instanceof ShortTag){
-			$item = ItemFactory::getInstance()->get($idTag->getValue(), $meta, $count);
-		}elseif($idTag instanceof StringTag){ //PC item save format
-			try{
-				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
-			}catch(LegacyStringToItemParserException $e){
-				//TODO: improve error handling
-				return ItemFactory::air();
-			}
-			$item->setCount($count);
-		}else{
-			throw new SavedDataLoadingException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
+		try{
+			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemData);
+		}catch(ItemTypeDeserializeException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
-
-		$itemNBT = $tag->getCompoundTag("tag");
-		if($itemNBT !== null){
-			$item->setNamedTag(clone $itemNBT);
-		}
-
-		return $item;
 	}
 
 	public function __clone(){

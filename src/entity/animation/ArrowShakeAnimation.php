@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,15 +29,10 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 class ArrowShakeAnimation implements Animation{
 
-	/** @var Arrow */
-	private $arrow;
-	/** @var int */
-	private $durationInTicks;
-
-	public function __construct(Arrow $arrow, int $durationInTicks){
-		$this->arrow = $arrow;
-		$this->durationInTicks = $durationInTicks;
-	}
+	public function __construct(
+		private Arrow $arrow,
+		private int $durationInTicks
+	){}
 
 	public function encode() : array{
 		return [

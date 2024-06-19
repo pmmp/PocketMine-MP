@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,17 +25,17 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
+use pocketmine\ServerProperties;
 use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"defaultgamemode",
 			KnownTranslationFactory::pocketmine_command_defaultgamemode_description(),
 			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);
@@ -43,10 +43,6 @@ class DefaultGamemodeCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -57,7 +53,8 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", GameModeIdMap::getInstance()->toId($gameMode));
+		//TODO: this probably shouldn't use the enum name directly
+		$sender->getServer()->getConfigGroup()->setConfigString(ServerProperties::GAME_MODE, $gameMode->name);
 		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslatableName()));
 		return true;
 	}

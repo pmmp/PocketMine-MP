@@ -17,14 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use function preg_match;
-
+/**
+ * This trait allows a class to simulate a Java-style enum. Members are exposed as static methods and handled via
+ * __callStatic().
+ *
+ * Classes using this trait need to include \@method tags in their class docblock for every enum member.
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run build/generate-registry-annotations.php
+ *
+ * @deprecated Use native PHP 8.1 enums instead. Use {@link LegacyEnumShimTrait} if you need to provide backwards
+ * compatible EnumTrait-like API for migrated enums.
+ */
 trait EnumTrait{
 	use RegistryTrait;
 	use NotCloneable;
@@ -50,6 +58,7 @@ trait EnumTrait{
 	 * This is overridden to change the return typehint.
 	 *
 	 * @return self[]
+	 * @phpstan-return array<string, self>
 	 */
 	public static function getAll() : array{
 		//phpstan doesn't support generic traits yet :(
@@ -70,9 +79,7 @@ trait EnumTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private function __construct(string $enumName){
-		if(preg_match('/^\D[A-Za-z\d_]+$/u', $enumName, $matches) === 0){
-			throw new \InvalidArgumentException("Invalid enum member name \"$enumName\", should only contain letters, numbers and underscores, and must not start with a number");
-		}
+		self::verifyName($enumName);
 		$this->enumName = $enumName;
 		if(self::$nextId === null){
 			self::$nextId = Process::pid(); //this provides enough base entropy to prevent hardcoding

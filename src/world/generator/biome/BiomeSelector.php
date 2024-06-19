@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,16 +30,14 @@ use pocketmine\world\biome\UnknownBiome;
 use pocketmine\world\generator\noise\Simplex;
 
 abstract class BiomeSelector{
-	/** @var Simplex */
-	private $temperature;
-	/** @var Simplex */
-	private $rainfall;
+	private Simplex $temperature;
+	private Simplex $rainfall;
 
 	/**
 	 * @var Biome[]|\SplFixedArray
 	 * @phpstan-var \SplFixedArray<Biome>
 	 */
-	private $map = null;
+	private \SplFixedArray $map;
 
 	public function __construct(Random $random){
 		$this->temperature = new Simplex($random, 2, 1 / 16, 1 / 512);

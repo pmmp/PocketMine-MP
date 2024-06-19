@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -66,4 +66,5 @@ final class EnchantmentIds{
 	public const PIERCING = 34;
 	public const QUICK_CHARGE = 35;
 	public const SOUL_SPEED = 36;
+	public const SWIFT_SNEAK = 37;
 }

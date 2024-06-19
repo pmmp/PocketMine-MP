@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,7 @@ final class ThreadLocalGeneratorContext{
 	 * @var self[]
 	 * @phpstan-var array<int, self>
 	 */
-	private static $contexts = [];
+	private static array $contexts = [];
 
 	public static function register(self $context, int $worldId) : void{
 		self::$contexts[$worldId] = $context;
@@ -45,19 +45,11 @@ final class ThreadLocalGeneratorContext{
 		return self::$contexts[$worldId] ?? null;
 	}
 
-	/** @var Generator */
-	private $generator;
-
-	/** @var int */
-	private $worldMinY;
-	/** @var int */
-	private $worldMaxY;
-
-	public function __construct(Generator $generator, int $worldMinY, int $worldMaxY){
-		$this->generator = $generator;
-		$this->worldMinY = $worldMinY;
-		$this->worldMaxY = $worldMaxY;
-	}
+	public function __construct(
+		private Generator $generator,
+		private int $worldMinY,
+		private int $worldMaxY
+	){}
 
 	public function getGenerator() : Generator{ return $this->generator; }
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,12 +29,18 @@ use pocketmine\block\Block;
  * Called when a block spreads to another block, such as grass spreading to nearby dirt blocks.
  */
 class BlockSpreadEvent extends BaseBlockChangeEvent{
-	/** @var Block */
-	private $source;
 
-	public function __construct(Block $block, Block $source, Block $newState){
+	/**
+	 * @param Block $block    Block being replaced (TODO: rename this)
+	 * @param Block $source   Origin of the spread
+	 * @param Block $newState Replacement block
+	 */
+	public function __construct(
+		Block $block,
+		private Block $source,
+		Block $newState
+	){
 		parent::__construct($block, $newState);
-		$this->source = $source;
 	}
 
 	public function getSource() : Block{

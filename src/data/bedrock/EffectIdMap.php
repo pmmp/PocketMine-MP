@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,23 +26,11 @@ namespace pocketmine\data\bedrock;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
-use function spl_object_id;
 
 final class EffectIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var Effect[]
-	 * @phpstan-var array<int, Effect>
-	 */
-	private $idToEffect = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private $effectToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<Effect> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
 		$this->register(EffectIds::SPEED, VanillaEffects::SPEED());
@@ -74,25 +62,6 @@ final class EffectIdMap{
 		//TODO: SLOW_FALLING
 		//TODO: BAD_OMEN
 		//TODO: VILLAGE_HERO
-	}
-
-	//TODO: not a big fan of the code duplication here :(
-
-	public function register(int $mcpeId, Effect $effect) : void{
-		$this->idToEffect[$mcpeId] = $effect;
-		$this->effectToId[spl_object_id($effect)] = $mcpeId;
-	}
-
-	public function fromId(int $id) : ?Effect{
-		//we might not have all the effect IDs registered
-		return $this->idToEffect[$id] ?? null;
-	}
-
-	public function toId(Effect $effect) : int{
-		if(!array_key_exists(spl_object_id($effect), $this->effectToId)){
-			//this should never happen, so we treat it as an exceptional condition
-			throw new \InvalidArgumentException("Effect does not have a mapped ID");
-		}
-		return $this->effectToId[spl_object_id($effect)];
+		$this->register(EffectIds::DARKNESS, VanillaEffects::DARKNESS());
 	}
 }

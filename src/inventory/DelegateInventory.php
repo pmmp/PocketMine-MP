@@ -17,35 +17,52 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\player\Player;
-use function count;
 
 /**
  * An inventory which is backed by another inventory, and acts as a proxy to that inventory.
  */
 class DelegateInventory extends BaseInventory{
-
-	private Inventory $backingInventory;
 	private InventoryListener $inventoryListener;
+	private bool $backingInventoryChanging = false;
 
-	public function __construct(Inventory $backingInventory){
+	public function __construct(
+		private Inventory $backingInventory
+	){
 		parent::__construct();
-		$this->backingInventory = $backingInventory;
+		$weakThis = \WeakReference::create($this);
 		$this->backingInventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
-			function(Inventory $unused, int $slot, Item $oldItem) : void{
-				$this->onSlotChange($slot, $oldItem);
+			static function(Inventory $unused, int $slot, Item $oldItem) use ($weakThis) : void{
+				if(($strongThis = $weakThis->get()) !== null){
+					$strongThis->backingInventoryChanging = true;
+					try{
+						$strongThis->onSlotChange($slot, $oldItem);
+					}finally{
+						$strongThis->backingInventoryChanging = false;
+					}
+				}
 			},
-			function(Inventory $unused, array $oldContents) : void{
-				$this->onContentChange($oldContents);
+			static function(Inventory $unused, array $oldContents) use ($weakThis) : void{
+				if(($strongThis = $weakThis->get()) !== null){
+					$strongThis->backingInventoryChanging = true;
+					try{
+						$strongThis->onContentChange($oldContents);
+					}finally{
+						$strongThis->backingInventoryChanging = false;
+					}
+				}
 			}
 		));
+	}
+
+	public function __destruct(){
+		$this->backingInventory->getListeners()->remove($this->inventoryListener);
 	}
 
 	public function getSize() : int{
@@ -68,11 +85,19 @@ class DelegateInventory extends BaseInventory{
 		$this->backingInventory->setContents($items);
 	}
 
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-		if(count($this->getViewers()) === 0 && count($this->getListeners()->toArray()) === 1){
-			$this->backingInventory->getListeners()->remove($this->inventoryListener);
-			$this->inventoryListener = CallbackInventoryListener::onAnyChange(static function() : void{}); //break cyclic reference
+	public function isSlotEmpty(int $index) : bool{
+		return $this->backingInventory->isSlotEmpty($index);
+	}
+
+	protected function onSlotChange(int $index, Item $before) : void{
+		if($this->backingInventoryChanging){
+			parent::onSlotChange($index, $before);
+		}
+	}
+
+	protected function onContentChange(array $itemsBefore) : void{
+		if($this->backingInventoryChanging){
+			parent::onContentChange($itemsBefore);
 		}
 	}
 }
