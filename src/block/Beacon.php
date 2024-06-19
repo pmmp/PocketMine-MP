@@ -31,7 +31,7 @@ use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_merge;
@@ -42,25 +42,25 @@ final class Beacon extends Transparent{
 	public const MAX_LEVEL_BEACON = 4;
 
 	public const ALLOWED_ITEM_IDS = [
-		ItemIds::IRON_INGOT => true,
-		ItemIds::GOLD_INGOT => true,
-		ItemIds::DIAMOND => true,
-		ItemIds::EMERALD => true
-		//TODO: netherite ingot
+		ItemTypeIds::IRON_INGOT => true,
+		ItemTypeIds::GOLD_INGOT => true,
+		ItemTypeIds::DIAMOND => true,
+		ItemTypeIds::EMERALD => true,
+		ItemTypeIds::NETHERITE_INGOT => true
 	];
 
 	private const ALLOWED_BLOCK_IDS = [
-		BlockLegacyIds::IRON_BLOCK => true,
-		BlockLegacyIds::GOLD_BLOCK => true,
-		BlockLegacyIds::DIAMOND_BLOCK => true,
-		BlockLegacyIds::EMERALD_BLOCK => true
-		//TODO netherite block
+		BlockTypeIds::IRON => true,
+		BlockTypeIds::GOLD => true,
+		BlockTypeIds::DIAMOND => true,
+		BlockTypeIds::EMERALD => true,
+		BlockTypeIds::NETHERITE => true
 	];
 
 	private ?Effect $primaryEffect = null;
 	private ?Effect $secondaryEffect = null;
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
@@ -68,6 +68,7 @@ final class Beacon extends Transparent{
 			$this->secondaryEffect = EffectIdMap::getInstance()->fromId($tile->getSecondaryEffect());
 		}
 
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -118,7 +119,7 @@ final class Beacon extends Transparent{
 		return 15;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new BeaconInventory($this->position));
 		}
@@ -174,7 +175,7 @@ final class Beacon extends Transparent{
 		for($x = -$level; $x <= $level; $x++){
 			for($z = -$level; $z <= $level; $z++){
 				$block = $world->getBlock($pos->add($x, 0, $z));
-				if(!isset(self::ALLOWED_BLOCK_IDS[$block->getId()])){
+				if(!isset(self::ALLOWED_BLOCK_IDS[$block->getTypeId()])){
 					return false;
 				}
 			}
