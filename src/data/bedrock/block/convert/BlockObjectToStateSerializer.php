@@ -57,6 +57,7 @@ use pocketmine\block\CocoaBlock;
 use pocketmine\block\Concrete;
 use pocketmine\block\ConcretePowder;
 use pocketmine\block\Copper;
+use pocketmine\block\CopperBulb;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
 use pocketmine\block\Coral;
@@ -1280,6 +1281,23 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 					)
 				)
 			);
+		});
+		$this->map(Blocks::COPPER_BULB(), function(CopperBulb $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Writer::create($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_BULB,
+					Ids::WAXED_EXPOSED_COPPER_BULB,
+					Ids::WAXED_WEATHERED_COPPER_BULB,
+					Ids::WAXED_OXIDIZED_COPPER_BULB) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_BULB,
+					Ids::EXPOSED_COPPER_BULB,
+					Ids::WEATHERED_COPPER_BULB,
+					Ids::OXIDIZED_COPPER_BULB
+				))
+				->writeBool(StateNames::LIT, $block->isLit())
+				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
 		});
 		$this->map(Blocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
 			return Writer::create(Ids::COCOA)
