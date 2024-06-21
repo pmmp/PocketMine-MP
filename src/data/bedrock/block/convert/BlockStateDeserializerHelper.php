@@ -32,6 +32,7 @@ use pocketmine\block\CopperStairs;
 use pocketmine\block\Crops;
 use pocketmine\block\DaylightSensor;
 use pocketmine\block\Door;
+use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\FloorSign;
@@ -48,6 +49,7 @@ use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\CopperOxidation;
+use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
@@ -137,6 +139,12 @@ final class BlockStateDeserializerHelper{
 			->setFacing(Facing::rotateY($in->readLegacyHorizontalFacing(), false))
 			->setHingeRight($in->readBool(BlockStateNames::DOOR_HINGE_BIT))
 			->setOpen($in->readBool(BlockStateNames::OPEN_BIT));
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeDoublePlant(DoublePlant $block, BlockStateReader $in) : DoublePlant{
+		return $block
+			->setTop($in->readBool(BlockStateNames::UPPER_BLOCK_BIT));
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -231,6 +239,17 @@ final class BlockStateDeserializerHelper{
 		//TODO: not sure what the deal is here ... seems like a mojang bug / artifact of bad implementation?
 		//best to keep this separate from weighted plates anyway...
 		return $block->setPressed($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15) !== 0);
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeSingleSlab(Slab $block, BlockStateReader $in) : Slab{
+		return $block->setSlabType($in->readSlabPosition());
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeDoubleSlab(Slab $block, BlockStateReader $in) : Slab{
+		$in->ignored(StateNames::MC_VERTICAL_HALF);
+		return $block->setSlabType(SlabType::DOUBLE);
 	}
 
 	/** @throws BlockStateDeserializeException */

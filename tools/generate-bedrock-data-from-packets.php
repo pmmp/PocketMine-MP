@@ -195,7 +195,7 @@ class ParserPacketHandler extends PacketHandler{
 	 * @return mixed[]
 	 */
 	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) $object;
+		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
 		ksort($result, SORT_STRING);
 
 		foreach($result as $property => $value){
@@ -335,21 +335,25 @@ class ParserPacketHandler extends PacketHandler{
 				}
 			}
 		}
+		$unlockingIngredients = $entry->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapedRecipeData(
 			array_map(fn(array $array) => implode('', $array), $shape),
 			$outputsByKey,
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $entry->getOutput()),
 			$entry->getBlockName(),
-			$entry->getPriority()
+			$entry->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 
 	private function shapelessRecipeToJson(ShapelessRecipe $recipe) : ShapelessRecipeData{
+		$unlockingIngredients = $recipe->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapelessRecipeData(
 			array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $recipe->getInputs()),
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $recipe->getOutputs()),
 			$recipe->getBlockName(),
-			$recipe->getPriority()
+			$recipe->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 

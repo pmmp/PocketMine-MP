@@ -44,7 +44,6 @@ use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
-use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -115,11 +114,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	 * @phpstan-param \Closure(Reader) : Slab $getBlock
 	 */
 	public function mapSlab(string $singleId, string $doubleId, \Closure $getBlock) : void{
-		$this->map($singleId, fn(Reader $in) : Slab => $getBlock($in)->setSlabType($in->readSlabPosition()));
-		$this->map($doubleId, function(Reader $in) use ($getBlock) : Slab{
-			$in->ignored(StateNames::MC_VERTICAL_HALF);
-			return $getBlock($in)->setSlabType(SlabType::DOUBLE);
-		});
+		$this->map($singleId, fn(Reader $in) => Helper::decodeSingleSlab($getBlock($in), $in));
+		$this->map($doubleId, fn(Reader $in) => Helper::decodeDoubleSlab($getBlock($in), $in));
 	}
 
 	/**
@@ -449,6 +445,17 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		] as [$coralType, $aliveId, $deadId]){
 			$this->map($aliveId, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN()->setCoralType($coralType)->setDead(false), $in));
 			$this->map($deadId, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN()->setCoralType($coralType)->setDead(true), $in));
+		}
+
+		foreach([
+			[CoralType::BRAIN, Ids::BRAIN_CORAL_BLOCK, Ids::DEAD_BRAIN_CORAL_BLOCK],
+			[CoralType::BUBBLE, Ids::BUBBLE_CORAL_BLOCK, Ids::DEAD_BUBBLE_CORAL_BLOCK],
+			[CoralType::FIRE, Ids::FIRE_CORAL_BLOCK, Ids::DEAD_FIRE_CORAL_BLOCK],
+			[CoralType::HORN, Ids::HORN_CORAL_BLOCK, Ids::DEAD_HORN_CORAL_BLOCK],
+			[CoralType::TUBE, Ids::TUBE_CORAL_BLOCK, Ids::DEAD_TUBE_CORAL_BLOCK],
+		] as [$coralType, $aliveId, $deadId]){
+			$this->map($aliveId, fn(Reader $in) => Blocks::CORAL_BLOCK()->setCoralType($coralType)->setDead(false));
+			$this->map($deadId, fn(Reader $in) => Blocks::CORAL_BLOCK()->setCoralType($coralType)->setDead(true));
 		}
 	}
 
@@ -819,6 +826,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::ENCHANTING_TABLE, fn() => Blocks::ENCHANTING_TABLE());
 		$this->mapSimple(Ids::END_BRICKS, fn() => Blocks::END_STONE_BRICKS());
 		$this->mapSimple(Ids::END_STONE, fn() => Blocks::END_STONE());
+		$this->mapSimple(Ids::FERN, fn() => Blocks::FERN());
 		$this->mapSimple(Ids::FLETCHING_TABLE, fn() => Blocks::FLETCHING_TABLE());
 		$this->mapSimple(Ids::GILDED_BLACKSTONE, fn() => Blocks::GILDED_BLACKSTONE());
 		$this->mapSimple(Ids::GLASS, fn() => Blocks::GLASS());
@@ -884,6 +892,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
 		$this->mapSimple(Ids::SCULK, fn() => Blocks::SCULK());
 		$this->mapSimple(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
+		$this->mapSimple(Ids::SHORT_GRASS, fn() => Blocks::TALL_GRASS()); //no, this is not a typo - tall_grass is now the double block, just to be confusing :(
 		$this->mapSimple(Ids::SHROOMLIGHT, fn() => Blocks::SHROOMLIGHT());
 		$this->mapSimple(Ids::SLIME, fn() => Blocks::SLIME());
 		$this->mapSimple(Ids::SMITHING_TABLE, fn() => Blocks::SMITHING_TABLE());
@@ -1109,11 +1118,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::NONE));
 		$this->mapSlab(Ids::CUT_COPPER_SLAB, Ids::DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::NONE));
 		$this->mapStairs(Ids::CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::NONE));
-		$this->map(Ids::CORAL_BLOCK, function(Reader $in) : Block{
-			return Blocks::CORAL_BLOCK()
-				->setCoralType($in->readCoralType())
-				->setDead($in->readBool(StateNames::DEAD_BIT));
-		});
 		$this->map(Ids::CORAL_FAN_HANG, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN : CoralType::TUBE));
 		$this->map(Ids::CORAL_FAN_HANG2, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
@@ -1154,17 +1158,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				});
 		});
 		$this->map(Ids::DIRT_WITH_ROOTS, fn() => Blocks::DIRT()->setDirtType(DirtType::ROOTED));
-		$this->map(Ids::DOUBLE_PLANT, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::DOUBLE_PLANT_TYPE)){
-				StringValues::DOUBLE_PLANT_TYPE_FERN => Blocks::LARGE_FERN(),
-				StringValues::DOUBLE_PLANT_TYPE_GRASS => Blocks::DOUBLE_TALLGRASS(),
-				StringValues::DOUBLE_PLANT_TYPE_PAEONIA => Blocks::PEONY(),
-				StringValues::DOUBLE_PLANT_TYPE_ROSE => Blocks::ROSE_BUSH(),
-				StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER => Blocks::SUNFLOWER(),
-				StringValues::DOUBLE_PLANT_TYPE_SYRINGA => Blocks::LILAC(),
-				default => throw $in->badValueException(StateNames::DOUBLE_PLANT_TYPE, $type),
-			})->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
-		});
+		$this->map(Ids::LARGE_FERN, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::LARGE_FERN(), $in));
+		$this->map(Ids::TALL_GRASS, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::DOUBLE_TALLGRASS(), $in));
+		$this->map(Ids::PEONY, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::PEONY(), $in));
+		$this->map(Ids::ROSE_BUSH, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::ROSE_BUSH(), $in));
+		$this->map(Ids::SUNFLOWER, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::SUNFLOWER(), $in));
+		$this->map(Ids::LILAC, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::LILAC(), $in));
 		$this->mapStairs(Ids::END_BRICK_STAIRS, fn() => Blocks::END_STONE_BRICK_STAIRS());
 		$this->map(Ids::END_PORTAL_FRAME, function(Reader $in) : Block{
 			return Blocks::END_PORTAL_FRAME()
@@ -1437,7 +1436,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 					$in->ignored(StateNames::PILLAR_AXIS);
 					return Blocks::SMOOTH_QUARTZ();
 				default:
-					return throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
+					throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
 			}
 		});
 		$this->mapStairs(Ids::QUARTZ_STAIRS, fn() => Blocks::QUARTZ_STAIRS());
@@ -1552,7 +1551,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::STONE_BRICK_STAIRS, fn() => Blocks::STONE_BRICK_STAIRS());
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
 		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
-		$this->mapSlab(Ids::STONE_BLOCK_SLAB, Ids::DOUBLE_STONE_BLOCK_SLAB, fn(Reader $in) => Helper::mapStoneSlab1Type($in));
+
+		//mess for partially flattened slabs - the single IDs were flattened but not the double ones
+		$this->map(Ids::DOUBLE_STONE_BLOCK_SLAB, fn(Reader $in) => Helper::decodeDoubleSlab(Helper::mapStoneSlab1Type($in), $in));
+		$this->map(Ids::BRICK_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::BRICK_SLAB(), $in));
+		$this->map(Ids::COBBLESTONE_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::COBBLESTONE_SLAB(), $in));
+		$this->map(Ids::NETHER_BRICK_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::NETHER_BRICK_SLAB(), $in));
+		$this->map(Ids::PETRIFIED_OAK_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::FAKE_WOODEN_SLAB(), $in));
+		$this->map(Ids::QUARTZ_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::QUARTZ_SLAB(), $in));
+		$this->map(Ids::SANDSTONE_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::SANDSTONE_SLAB(), $in));
+		$this->map(Ids::SMOOTH_STONE_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::SMOOTH_STONE_SLAB(), $in));
+		$this->map(Ids::STONE_BRICK_SLAB, fn(Reader $in) => Helper::decodeSingleSlab(Blocks::STONE_BRICK_SLAB(), $in));
+
 		$this->mapSlab(Ids::STONE_BLOCK_SLAB2, Ids::DOUBLE_STONE_BLOCK_SLAB2, fn(Reader $in) => Helper::mapStoneSlab2Type($in));
 		$this->mapSlab(Ids::STONE_BLOCK_SLAB3, Ids::DOUBLE_STONE_BLOCK_SLAB3, fn(Reader $in) => Helper::mapStoneSlab3Type($in));
 		$this->mapSlab(Ids::STONE_BLOCK_SLAB4, Ids::DOUBLE_STONE_BLOCK_SLAB4, fn(Reader $in) => Helper::mapStoneSlab4Type($in));
@@ -1576,13 +1586,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
 			return Blocks::SWEET_BERRY_BUSH()
 				->setAge(min($growth, SweetBerryBush::STAGE_MATURE));
-		});
-		$this->map(Ids::TALLGRASS, function(Reader $in) : Block{
-			return match($type = $in->readString(StateNames::TALL_GRASS_TYPE)){
-				StringValues::TALL_GRASS_TYPE_DEFAULT, StringValues::TALL_GRASS_TYPE_SNOW, StringValues::TALL_GRASS_TYPE_TALL => Blocks::TALL_GRASS(),
-				StringValues::TALL_GRASS_TYPE_FERN => Blocks::FERN(),
-				default => throw $in->badValueException(StateNames::TALL_GRASS_TYPE, $type),
-			};
 		});
 		$this->map(Ids::TNT, function(Reader $in) : Block{
 			return Blocks::TNT()
