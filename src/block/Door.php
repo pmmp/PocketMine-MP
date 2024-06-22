@@ -127,7 +127,7 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->hasSameTypeId($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
+			if($this->isCompatibleForHinge($next) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
@@ -175,5 +175,9 @@ class Door extends Transparent{
 
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
+	}
+
+	protected function isCompatibleForHinge(Block $other) : bool{
+		return $other->hasSameTypeId($this);
 	}
 }

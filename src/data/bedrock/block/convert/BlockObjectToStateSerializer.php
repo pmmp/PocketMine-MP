@@ -58,8 +58,10 @@ use pocketmine\block\Concrete;
 use pocketmine\block\ConcretePowder;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperBulb;
+use pocketmine\block\CopperDoor;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
+use pocketmine\block\CopperTrapdoor;
 use pocketmine\block\Coral;
 use pocketmine\block\CoralBlock;
 use pocketmine\block\DaylightSensor;
@@ -1298,6 +1300,50 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				))
 				->writeBool(StateNames::LIT, $block->isLit())
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
+		});
+		$this->map(Blocks::COPPER_DOOR(), function(CopperDoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeDoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_DOOR,
+						Ids::WAXED_EXPOSED_COPPER_DOOR,
+						Ids::WAXED_WEATHERED_COPPER_DOOR,
+						Ids::WAXED_OXIDIZED_COPPER_DOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_DOOR,
+						Ids::EXPOSED_COPPER_DOOR,
+						Ids::WEATHERED_COPPER_DOOR,
+						Ids::OXIDIZED_COPPER_DOOR
+					)
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_TRAPDOOR(), function(CopperTrapdoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeTrapdoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_TRAPDOOR,
+						Ids::WAXED_EXPOSED_COPPER_TRAPDOOR,
+						Ids::WAXED_WEATHERED_COPPER_TRAPDOOR,
+						Ids::WAXED_OXIDIZED_COPPER_TRAPDOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_TRAPDOOR,
+						Ids::EXPOSED_COPPER_TRAPDOOR,
+						Ids::WEATHERED_COPPER_TRAPDOOR,
+						Ids::OXIDIZED_COPPER_TRAPDOOR
+					)
+				)
+			);
 		});
 		$this->map(Blocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
 			return Writer::create(Ids::COCOA)
