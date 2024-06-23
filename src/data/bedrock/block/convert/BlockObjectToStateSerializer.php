@@ -59,6 +59,7 @@ use pocketmine\block\ConcretePowder;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperBulb;
 use pocketmine\block\CopperDoor;
+use pocketmine\block\CopperGrate;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
 use pocketmine\block\CopperTrapdoor;
@@ -1231,6 +1232,23 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 					Ids::EXPOSED_CHISELED_COPPER,
 					Ids::WEATHERED_CHISELED_COPPER,
 					Ids::OXIDIZED_CHISELED_COPPER
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_GRATE,
+					Ids::WAXED_EXPOSED_COPPER_GRATE,
+					Ids::WAXED_WEATHERED_COPPER_GRATE,
+					Ids::WAXED_OXIDIZED_COPPER_GRATE
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_GRATE,
+					Ids::EXPOSED_COPPER_GRATE,
+					Ids::WEATHERED_COPPER_GRATE,
+					Ids::OXIDIZED_COPPER_GRATE
 				)
 			);
 		});

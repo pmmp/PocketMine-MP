@@ -29,6 +29,7 @@ use pocketmine\block\Candle;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperBulb;
 use pocketmine\block\CopperDoor;
+use pocketmine\block\CopperGrate;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
 use pocketmine\block\CopperTrapdoor;
@@ -105,24 +106,24 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
-	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor
+	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate
 	 *
 	 * @phpstan-param TBlock $block
 	 * @phpstan-return TBlock
 	 */
-	public static function decodeCopper(Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor{
+	public static function decodeCopper(Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate{
 		$block->setOxidation($oxidation);
 		$block->setWaxed(false);
 		return $block;
 	}
 
 	/**
-	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor
+	 * @phpstan-template TBlock of Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate
 	 *
 	 * @phpstan-param TBlock $block
 	 * @phpstan-return TBlock
 	 */
-	public static function decodeWaxedCopper(Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor{
+	public static function decodeWaxedCopper(Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs|CopperBulb|CopperDoor|CopperTrapdoor|CopperGrate{
 		$block->setOxidation($oxidation);
 		$block->setWaxed(true);
 		return $block;

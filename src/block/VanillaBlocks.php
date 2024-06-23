@@ -208,6 +208,7 @@ use function strtolower;
  * @method static Copper COPPER()
  * @method static CopperBulb COPPER_BULB()
  * @method static CopperDoor COPPER_DOOR()
+ * @method static CopperGrate COPPER_GRATE()
  * @method static CopperOre COPPER_ORE()
  * @method static CopperTrapdoor COPPER_TRAPDOOR()
  * @method static Coral CORAL()
@@ -1626,6 +1627,7 @@ final class VanillaBlocks{
 
 		self::register("copper", new Copper(new BID(Ids::COPPER), "Copper Block", $copperBreakInfo));
 		self::register("chiseled_copper", new Copper(new BID(Ids::CHISELED_COPPER), "Chiseled Copper", $copperBreakInfo));
+		self::register("copper_grate", new CopperGrate(new BID(Ids::COPPER_GRATE), "Copper Grate", $copperBreakInfo));
 		self::register("cut_copper", new Copper(new BID(Ids::CUT_COPPER), "Cut Copper Block", $copperBreakInfo));
 		self::register("cut_copper_slab", new CopperSlab(new BID(Ids::CUT_COPPER_SLAB), "Cut Copper Slab", $copperBreakInfo));
 		self::register("cut_copper_stairs", new CopperStairs(new BID(Ids::CUT_COPPER_STAIRS), "Cut Copper Stairs", $copperBreakInfo));
