@@ -1217,6 +1217,23 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER)
 			);
 		});
+		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_CHISELED_COPPER,
+					Ids::WAXED_EXPOSED_CHISELED_COPPER,
+					Ids::WAXED_WEATHERED_CHISELED_COPPER,
+					Ids::WAXED_OXIDIZED_CHISELED_COPPER
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::CHISELED_COPPER,
+					Ids::EXPOSED_CHISELED_COPPER,
+					Ids::WEATHERED_CHISELED_COPPER,
+					Ids::OXIDIZED_CHISELED_COPPER
+				)
+			);
+		});
 		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : Writer{
 			$oxidation = $block->getOxidation();
 			return new Writer($block->isWaxed() ?

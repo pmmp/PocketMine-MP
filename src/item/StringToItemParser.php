@@ -98,6 +98,7 @@ final class StringToItemParser extends StringToTParser{
 			foreach(["" => false, "waxed_" => true] as $waxedPrefix => $waxed){
 				$register = fn(string $name, \Closure $callback) => $result->registerBlock($waxedPrefix . $oxPrefix . $name, $callback);
 				$register("copper_block", fn() => Blocks::COPPER()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("chiseled_copper", fn() => Blocks::CHISELED_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("cut_copper_block", fn() => Blocks::CUT_COPPER()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("cut_copper_stairs", fn() => Blocks::CUT_COPPER_STAIRS()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("cut_copper_slab", fn() => Blocks::CUT_COPPER_SLAB()->setOxidation($oxidation)->setWaxed($waxed));

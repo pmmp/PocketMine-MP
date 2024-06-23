@@ -179,6 +179,7 @@ use function strtolower;
  * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
  * @method static ChiseledBookshelf CHISELED_BOOKSHELF()
+ * @method static Copper CHISELED_COPPER()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
@@ -1624,6 +1625,7 @@ final class VanillaBlocks{
 		self::register("lightning_rod", new LightningRod(new BID(Ids::LIGHTNING_ROD), "Lightning Rod", $copperBreakInfo));
 
 		self::register("copper", new Copper(new BID(Ids::COPPER), "Copper Block", $copperBreakInfo));
+		self::register("chiseled_copper", new Copper(new BID(Ids::CHISELED_COPPER), "Chiseled Copper", $copperBreakInfo));
 		self::register("cut_copper", new Copper(new BID(Ids::CUT_COPPER), "Cut Copper Block", $copperBreakInfo));
 		self::register("cut_copper_slab", new CopperSlab(new BID(Ids::CUT_COPPER_SLAB), "Cut Copper Slab", $copperBreakInfo));
 		self::register("cut_copper_stairs", new CopperStairs(new BID(Ids::CUT_COPPER_STAIRS), "Cut Copper Stairs", $copperBreakInfo));
