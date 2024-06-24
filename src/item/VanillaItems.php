@@ -241,7 +241,7 @@ use function strtolower;
  * @method static Item NETHER_STAR()
  * @method static Boat OAK_BOAT()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
- * @method static Item IMINOUS_BOTTLE()
+ * @method static Item OMINOUS_BOTTLE()
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
  * @method static Item PHANTOM_MEMBRANE()
@@ -511,6 +511,7 @@ final class VanillaItems{
 			public function isFireProof() : bool{ return true; }
 		});
 		self::register("oak_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_SIGN), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
+		self::register("ominous_bottle", new Item(new IID(Ids::OMINOUS_BOTTLE), "Ominous Bottle"));
 		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
 		self::register("paper", new Item(new IID(Ids::PAPER), "Paper"));
 		self::register("phantom_membrane", new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));

@@ -326,6 +326,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items::NETHERITE_UPGRADE_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::OAK_BOAT, Items::OAK_BOAT());
 		$this->map1to1Item(Ids::OAK_SIGN, Items::OAK_SIGN());
+		$this->map1to1Item(Ids::OMINOUS_BOTTLE, Items::OMINOUS_BOTTLE());
 		$this->map1to1Item(Ids::PAINTING, Items::PAINTING());
 		$this->map1to1Item(Ids::PAPER, Items::PAPER());
 		$this->map1to1Item(Ids::PHANTOM_MEMBRANE, Items::PHANTOM_MEMBRANE());
