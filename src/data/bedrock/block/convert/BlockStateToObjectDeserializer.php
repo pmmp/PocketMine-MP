@@ -954,7 +954,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::WEATHERED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::WEATHERED()));
 		$this->mapSimple(Ids::OXIDIZED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::OXIDIZED()));
 	
-		$this->mapSimple(Ids::COPPER_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::COPPER_DOOR(), $in));
+		$this->map(Ids::COPPER_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::COPPER_DOOR(), $in));
 		$this->mapSimple(Ids::COPPER_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::COPPER_TRAPDOOR(), $in));
 	}
 

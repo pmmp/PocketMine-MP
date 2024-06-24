@@ -65,12 +65,16 @@ class Mace extends Tool{
         if(($user = $victim->getLastDamageCause()->getDamager()) !== null){
             $height = $user->getFallDistance();
 
-			$motion = $user->getMotion();
-			$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+            if($height >= 2) {
+				// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
+				$damage = ($height - 1) * 5;
+				$victim->setHealth($victim->getHealth() - $damage);
 
-			// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
-            $damage = ($height - 1) * 5;
-            if($height >= 2) $victim->setHealth($victim->getHealth() - $damage);
+				$motion = $user->getMotion();
+				$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+	
+				$user->fallDistance = 0;
+			}
         }
             
         $this->applyDamage(2);
