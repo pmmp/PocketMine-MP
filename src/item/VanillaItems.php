@@ -69,6 +69,7 @@ use function strtolower;
  * @method static Bow BOW()
  * @method static Bowl BOWL()
  * @method static Bread BREAD()
+ * @method static Item BREEZE_ROD()
  * @method static Item BRICK()
  * @method static Bucket BUCKET()
  * @method static Carrot CARROT()
@@ -186,6 +187,7 @@ use function strtolower;
  * @method static Item GOLD_NUGGET()
  * @method static Item GUNPOWDER()
  * @method static Item HEART_OF_THE_SEA()
+ * @method static Item HEAVY_CORE()
  * @method static Item HONEYCOMB()
  * @method static HoneyBottle HONEY_BOTTLE()
  * @method static Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE()
@@ -210,6 +212,7 @@ use function strtolower;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
+ * @method static Mace MACE();
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
@@ -238,6 +241,7 @@ use function strtolower;
  * @method static Item NETHER_STAR()
  * @method static Boat OAK_BOAT()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
+ * @method static Item IMINOUS_BOTTLE()
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
  * @method static Item PHANTOM_MEMBRANE()
@@ -313,6 +317,7 @@ use function strtolower;
  * @method static Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static TorchflowerSeeds TORCHFLOWER_SEEDS()
  * @method static Totem TOTEM()
+ * @method static Item TRIAL_KEY()
  * @method static TurtleHelmet TURTLE_HELMET()
  * @method static Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
@@ -322,6 +327,7 @@ use function strtolower;
  * @method static Item WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
+ * @method static WindCharge WIND_CHARGE()
  * @method static Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Axe WOODEN_AXE()
  * @method static Hoe WOODEN_HOE()
@@ -382,6 +388,7 @@ final class VanillaItems{
 		self::register("bow", new Bow(new IID(Ids::BOW), "Bow", [EnchantmentTags::BOW]));
 		self::register("bowl", new Bowl(new IID(Ids::BOWL), "Bowl"));
 		self::register("bread", new Bread(new IID(Ids::BREAD), "Bread"));
+		self::register("breeze_rod", new Item(new IID(Ids::BREEZE_ROD), "Breeze Rod"));
 		self::register("brick", new Item(new IID(Ids::BRICK), "Brick"));
 		self::register("bucket", new Bucket(new IID(Ids::BUCKET), "Bucket"));
 		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
@@ -474,6 +481,7 @@ final class VanillaItems{
 		self::register("golden_carrot", new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
 		self::register("gunpowder", new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
 		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
+		self::register("heavy_core", new Item(new IID(Ids::HEAVY_CORE), "Heavy Core"));
 		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
 		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
 		self::register("ink_sac", new Item(new IID(Ids::INK_SAC), "Ink Sac"));
@@ -563,12 +571,15 @@ final class VanillaItems{
 		self::register("sweet_berries", new SweetBerries(new IID(Ids::SWEET_BERRIES), "Sweet Berries"));
 		self::register("torchflower_seeds", new TorchflowerSeeds(new IID(Ids::TORCHFLOWER_SEEDS), "Torchflower Seeds"));
 		self::register("totem", new Totem(new IID(Ids::TOTEM), "Totem of Undying"));
+		self::register("trial_key", new Item(new IID(Ids::TRIAL_KEY), "Trial Key"));
 		self::register("warped_sign", new ItemBlockWallOrFloor(new IID(Ids::WARPED_SIGN), Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));
 		self::register("wheat_seeds", new WheatSeeds(new IID(Ids::WHEAT_SEEDS), "Wheat Seeds"));
+		self::register("wind_charge", new WindCharge(new IID(Ids::WIND_CHARGE), "Wind Charge"));
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
+	
 
 		foreach(BoatType::cases() as $type){
 			//boat type is static, because different types of wood may have different properties
@@ -618,6 +629,7 @@ final class VanillaItems{
 		self::register("diamond_pickaxe", new Pickaxe(new IID(Ids::DIAMOND_PICKAXE), "Diamond Pickaxe", ToolTier::DIAMOND, [EnchantmentTags::PICKAXE]));
 		self::register("golden_pickaxe", new Pickaxe(new IID(Ids::GOLDEN_PICKAXE), "Golden Pickaxe", ToolTier::GOLD, [EnchantmentTags::PICKAXE]));
 		self::register("iron_pickaxe", new Pickaxe(new IID(Ids::IRON_PICKAXE), "Iron Pickaxe", ToolTier::IRON, [EnchantmentTags::PICKAXE]));
+		self::register("mace", new Mace(new IID(Ids::MACE), "Mace", [EnchantmentTags::SWORD]));
 		self::register("netherite_pickaxe", new Pickaxe(new IID(Ids::NETHERITE_PICKAXE), "Netherite Pickaxe", ToolTier::NETHERITE, [EnchantmentTags::PICKAXE]));
 		self::register("stone_pickaxe", new Pickaxe(new IID(Ids::STONE_PICKAXE), "Stone Pickaxe", ToolTier::STONE, [EnchantmentTags::PICKAXE]));
 		self::register("wooden_pickaxe", new Pickaxe(new IID(Ids::WOODEN_PICKAXE), "Wooden Pickaxe", ToolTier::WOOD, [EnchantmentTags::PICKAXE]));

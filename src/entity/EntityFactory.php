@@ -44,6 +44,7 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -99,6 +100,10 @@ final class EntityFactory{
 		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt) : ExperienceBottle{
 			return new ExperienceBottle(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['ThrownExpBottle', 'minecraft:xp_bottle']);
+
+		$this->register(WindCharge::class, function(World $world, CompoundTag $nbt) : WindCharge{
+			return new WindCharge(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['ThrownWindcharge', 'minecraft:wind_charge']);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
 			$value = 1;

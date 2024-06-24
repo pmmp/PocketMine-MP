@@ -4,6 +4,8 @@ cd /d %~dp0
 
 set PHP_BINARY=
 
+node start.js
+
 where /q php.exe
 if %ERRORLEVEL%==0 (
 	set PHP_BINARY=php

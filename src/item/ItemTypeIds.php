@@ -324,8 +324,14 @@ final class ItemTypeIds{
 	public const SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 20285;
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
+	public const BREEZE_ROD = 20288;
+	public const HEAVY_CORE = 20289;
+	public const TRIAL_KEY = 20290;
+	public const WIND_CHARGE = 20291;
+	public const OMINOUS_BOTTLE = 20292;
+	public const MACE = 20293;
 
-	public const FIRST_UNUSED_ITEM_ID = 20288;
+	public const FIRST_UNUSED_ITEM_ID = 20294;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

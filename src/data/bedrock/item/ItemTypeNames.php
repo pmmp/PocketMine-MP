@@ -255,6 +255,7 @@ final class ItemTypeNames{
 	public const HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
 	public const HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
+	public const HEAVY_CORE = "minecraft:heavy_core";
 	public const HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
 	public const HEARTBREAK_POTTERY_SHERD = "minecraft:heartbreak_pottery_sherd";
 	public const HOGLIN_SPAWN_EGG = "minecraft:hoglin_spawn_egg";
@@ -494,6 +495,7 @@ final class ItemTypeNames{
 	public const TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
 	public const TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
 	public const TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
+	public const TRIAL_EXPLORER_MAP = "minecraft:trial_explorer_map";
 	public const TRIAL_KEY = "minecraft:trial_key";
 	public const TRIDENT = "minecraft:trident";
 	public const TROPICAL_FISH = "minecraft:tropical_fish";

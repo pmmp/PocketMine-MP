@@ -48,6 +48,7 @@ enum ToolTier{
 	case DIAMOND;
 	case NETHERITE;
 
+
 	/**
 	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
 	 * @phpstan-return TMetadata
@@ -67,6 +68,7 @@ enum ToolTier{
 			self::IRON => self::meta(4, 251, 7, 6, 14),
 			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
 			self::NETHERITE => self::meta(6, 2032, 9, 9, 15)
+
 		};
 	}
 
