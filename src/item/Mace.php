@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\math\Vector3;
 
 class Mace extends Tool{
 
@@ -60,14 +61,15 @@ class Mace extends Tool{
 		return false;
 	}
 
-	// make this look real
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
         if(($user = $victim->getLastDamageCause()->getDamager()) !== null){
             $height = $user->getFallDistance();
 
+			$motion = $user->getMotion();
+			$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+
 			// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
             $damage = ($height - 1) * 5;
-
             if($height >= 2) $victim->setHealth($victim->getHealth() - $damage);
         }
             
