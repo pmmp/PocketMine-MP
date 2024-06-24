@@ -56,7 +56,7 @@ final class CeilingHangingSign extends BaseSign{
 		}
 
 		$supportType = $blockReplace->getAdjacentSupportType(Facing::UP);
-		if($supportType->equals(SupportType::CENTER())){
+		if($supportType->equals(SupportType::CENTER)){
 			$this->centerAttached = true;
 		}
 		if($player !== null){
