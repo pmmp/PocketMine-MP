@@ -64,8 +64,9 @@ class Mace extends Tool{
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
         if(($user = $victim->getLastDamageCause()->getDamager()) !== null){
             $height = $user->getFallDistance();
+
+			// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
             $damage = ($height - 1) * 5;
-            if($damage > 25) $damage = 25;
 
             if($height >= 2) $victim->setHealth($victim->getHealth() - $damage);
         }
