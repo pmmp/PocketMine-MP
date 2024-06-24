@@ -26,7 +26,9 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Candle;
+use pocketmine\block\ChiseledCopper;
 use pocketmine\block\Copper;
+use pocketmine\block\CopperGrate;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
 use pocketmine\block\Crops;
@@ -107,7 +109,7 @@ final class BlockStateDeserializerHelper{
 	 * @phpstan-param TBlock $block
 	 * @phpstan-return TBlock
 	 */
-	public static function decodeCopper(Copper|CopperSlab|CopperStairs $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs{
+	public static function decodeCopper(Copper|CopperSlab|CopperStairs|CopperGrate|ChiseledCopper $block, CopperOxidation $oxidation) : Copper|CopperSlab|CopperStairs|CopperGrate|ChiseledCopper{
 		$block->setOxidation($oxidation);
 		$block->setWaxed(false);
 		return $block;

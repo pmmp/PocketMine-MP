@@ -769,6 +769,20 @@ use function strtolower;
  * @method static Flower WHITE_TULIP()
  * @method static WitherRose WITHER_ROSE()
  * @method static Wool WOOL()
+ * 
+ * @method static Door COPPER_DOOR()
+ * @method static CopperBulb COPPER_BULB()
+ * @method static ChiseledCopper CHISELED_COPPER()
+ * @method static Trapdoor COPPER_TRAPDOOR()
+ * @method static CopperGrate COPPER_GRATE()
+ * 
+ * @method static Stair TUFF_BRICK_STAIRS()
+ * @method static Slab TUFF_BRICK_SLAB()
+ * @method static Wall TUFF_BRICK_WALL() 
+ * @method static Stair POLISHED_TUFF_STAIRS()
+ * @method static Slab POLISHED_TUFF_SLAB()
+ * @method static Wall POLISHED_TUFF_WALL()
+ * 
  */
 final class VanillaBlocks{
 	use CloningRegistryTrait;
@@ -793,6 +807,11 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
+
+
+
+
+
 		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
 		self::register("air", new Air(new BID(Ids::AIR), "Air", new Info(BreakInfo::indestructible(-1.0))));
@@ -1058,11 +1077,6 @@ final class VanillaBlocks{
 		self::register("cracked_stone_bricks", $crackedStoneBrick = new Opaque(new BID(Ids::CRACKED_STONE_BRICKS), "Cracked Stone Bricks", $stoneBreakInfo));
 		self::register("chiseled_stone_bricks", $chiseledStoneBrick = new Opaque(new BID(Ids::CHISELED_STONE_BRICKS), "Chiseled Stone Bricks", $stoneBreakInfo));
 
-		self::register("chiseled_tuff", new Opaque(new BID(Ids::CHISELED_TUFF), "Chiseled Tuff", $stoneBreakInfo));
-		self::register("chiseled_tuff_bricks", new Opaque(new BID(Ids::CHISELED_TUFF_BRICKS), "Chiseled Tuff Bricks", $stoneBreakInfo));
-		self::register("polished_tuff", new Opaque(new BID(Ids::POLISHED_TUFF), "Polished Tuff", $stoneBreakInfo));
-		self::register("tuff_bricks", new Opaque(new BID(Ids::TUFF_BRICKS), "Tuff Bricks", $stoneBreakInfo));
-
 		$infestedStoneBreakInfo = new Info(BreakInfo::pickaxe(0.75));
 		self::register("infested_stone", new InfestedStone(new BID(Ids::INFESTED_STONE), "Infested Stone", $infestedStoneBreakInfo, $stone));
 		self::register("infested_stone_brick", new InfestedStone(new BID(Ids::INFESTED_STONE_BRICK), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick));
@@ -1278,6 +1292,29 @@ final class VanillaBlocks{
 		self::registerOres();
 		self::registerWoodenBlocks();
 		self::registerCauldronBlocks();
+
+		$copperBreakInfo = new Info(BreakInfo::pickaxe(6.0, ToolTier::WOOD, 7.0));
+		$copperDoorBreakInfo = new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 3.0));
+
+		self::register("copper_grate", new CopperGrate(new BID(Ids::COPPER_GRATE), "Copper Grate", $copperBreakInfo));
+		self::register("chiseled_copper", new ChiseledCopper(new BID(Ids::CHISELED_COPPER), "Chiseled Copper",  $copperBreakInfo));
+		self::register("chiseled_tuff", new Opaque(new BID(Ids::CHISELED_TUFF), "Chiseled Tuff", $stoneBreakInfo));
+
+		self::register("tuff_bricks", new Opaque(new BID(Ids::TUFF_BRICKS), "Tuff Bricks", $stoneBreakInfo));
+		self::register("tuff_brick_stairs", new Stair(new BID(Ids::TUFF_BRICK_STAIRS), "Tuff Brick Stairs", $stoneBreakInfo));
+		self::register("tuff_brick_slab", new Slab(new BID(Ids::TUFF_BRICK_SLAB), "Tuff Brick Slab", $stoneBreakInfo));
+		self::register("tuff_brick_wall", new Wall(new BID(Ids::TUFF_BRICK_WALL), "Tuff Brick Wall", $stoneBreakInfo));
+
+		self::register("chiseled_tuff_bricks", new Opaque(new BID(Ids::CHISELED_TUFF_BRICKS), "Chiseled Tuff Bricks", $stoneBreakInfo));
+
+		self::register("copper_door", new Door(new BID(Ids::COPPER_DOOR), "Copper Door", $copperDoorBreakInfo));
+		self::register("copper_trapdoor", new Trapdoor(new BID(Ids::COPPER_TRAPDOOR), "Copper Trapdoor",  $copperDoorBreakInfo));
+
+		self::register("polished_tuff", new Opaque(new BID(Ids::POLISHED_TUFF), "Polished Tuff", $stoneBreakInfo));
+		self::register("polished_tuff_stairs", new Stair(new BID(Ids::POLISHED_TUFF_STAIRS), "Polished TuffStairs", $stoneBreakInfo));
+		self::register("polished_tuff_slab", new Slab(new BID(Ids::POLISHED_TUFF_SLAB), "Polished TuffSlab", $stoneBreakInfo));
+		self::register("polished_tuff_wall", new Wall(new BID(Ids::POLISHED_TUFF_WALL), "Polished TuffWall", $stoneBreakInfo));
+
 	}
 
 	private static function registerWoodenBlocks() : void{

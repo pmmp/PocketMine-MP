@@ -929,11 +929,33 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::WHITE_TULIP, fn() => Blocks::WHITE_TULIP());
 
 
-		// Temp Holding
 		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
-		$this->mapSimple(Ids::CHISELED_TUFF_BRICKS, fn() => Blocks::CHISELED_TUFF_BRICKS());
+
 		$this->mapSimple(Ids::POLISHED_TUFF, fn() => Blocks::POLISHED_TUFF());
+		$this->mapStairs(Ids::POLISHED_TUFF_STAIRS, fn() => Blocks::POLISHED_TUFF_STAIRS());
+		$this->mapSlab(Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB, fn() => Blocks::POLISHED_TUFF_SLAB());
+		$this->map(Ids::POLISHED_TUFF_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::POLISHED_TUFF_WALL(), $in));
+
+		//Tuff Brick
 		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
+		$this->mapStairs(Ids::TUFF_BRICK_STAIRS, fn() => Blocks::TUFF_BRICK_STAIRS());
+		$this->mapSlab(Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB, fn() => Blocks::TUFF_BRICK_SLAB());
+		$this->map(Ids::TUFF_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::TUFF_BRICK_WALL(), $in));
+
+		//Copper Grate
+		$this->mapSimple(Ids::COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::NONE()));
+		$this->mapSimple(Ids::EXPOSED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::EXPOSED()));
+		$this->mapSimple(Ids::WEATHERED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::WEATHERED()));
+		$this->mapSimple(Ids::OXIDIZED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::OXIDIZED()));
+
+		//Chiseled Copper
+		$this->mapSimple(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE()));
+		$this->mapSimple(Ids::EXPOSED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::EXPOSED()));
+		$this->mapSimple(Ids::WEATHERED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::WEATHERED()));
+		$this->mapSimple(Ids::OXIDIZED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::OXIDIZED()));
+	
+		$this->mapSimple(Ids::COPPER_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::COPPER_DOOR(), $in));
+		$this->mapSimple(Ids::COPPER_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::COPPER_TRAPDOOR(), $in));
 	}
 
 	private function registerDeserializers() : void{

@@ -29,6 +29,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 
 class WindCharge extends Throwable{
+    private float $scale = 2.5;
+    
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
     protected function getInitialDragMultiplier() : float{ return 0; }
@@ -41,20 +43,19 @@ class WindCharge extends Throwable{
         //TODO implement wind charge explosion sound when added.
         $this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-        $scale = 2.5;
-        $minX = (int) floor($source->x - $scale - 1);
-		$maxX = (int) ceil($source->x + $scale + 1);
-		$minY = (int) floor($source->y - $scale - 1);
-		$maxY = (int) ceil($source->y + $scale + 1);
-		$minZ = (int) floor($source->z - $scale - 1);
-		$maxZ = (int) ceil($source->z + $scale + 1);
+        $minX = (int) floor($source->x - $this->scale - 1);
+		$maxX = (int) ceil($source->x + $this->scale + 1);
+		$minY = (int) floor($source->y - $this->scale - 1);
+		$maxY = (int) ceil($source->y + $this->scale + 1);
+		$minZ = (int) floor($source->z - $this->scale - 1);
+		$maxZ = (int) ceil($source->z + $this->scale + 1);
 
         $bound = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
         $list = $source->getWorld()->getNearbyEntities($bound);
 
         foreach($list as $entity){
             $entityPos = $entity->getPosition();
-			$distance = $entityPos->distance($source) / $scale;
+			$distance = $entityPos->distance($source) / $this->scale;
 			$motion = $entityPos->subtractVector($source)->normalize();
             $impact = (1 - $distance) * ($exposure = 1.5);
 

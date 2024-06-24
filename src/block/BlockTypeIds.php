@@ -758,8 +758,15 @@ final class BlockTypeIds{
 	public const TRIAL_SPAWNER = 10728;
 	public const VAULT = 10729;
 	public const HEAVY_CORE = 10730;
+	public const TUFF_BRICK_STAIRS = 10731;
+	public const TUFF_BRICK_SLAB = 10732;
+	public const TUFF_BRICK_WALL = 10733;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10731;
+	public const POLISHED_TUFF_STAIRS = 10734;
+	public const POLISHED_TUFF_SLAB = 10735;
+	public const POLISHED_TUFF_WALL = 10736;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10737;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
