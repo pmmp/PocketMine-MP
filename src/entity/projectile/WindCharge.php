@@ -29,14 +29,13 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 
 class WindCharge extends Throwable{
-    private float $radius= 2.5;
+    private float $radius = 2.5;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
     protected function getInitialDragMultiplier() : float{ return 0; }
     protected function getInitialGravity() : float{ return 0; }
     
-
 	protected function onHit(ProjectileHitEvent $event) : void{
         $source = $this->getPosition();
 
