@@ -20,7 +20,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.30.4
+        uses: shivammathur/setup-php@2.31.0
         with:
           php-version: ${{ matrix.php-version }}
 
