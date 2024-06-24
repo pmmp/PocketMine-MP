@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\AmethystCluster;
 use pocketmine\block\Block;
 use pocketmine\block\Light;
 use pocketmine\block\utils\CopperOxidation;
@@ -134,6 +135,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("all_sided_mushroom_stem", fn() => Blocks::ALL_SIDED_MUSHROOM_STEM());
 		$result->registerBlock("allium", fn() => Blocks::ALLIUM());
 		$result->registerBlock("amethyst_block", fn() => Blocks::AMETHYST());
+		$result->registerBlock("amethyst_cluster", fn() => Blocks::AMETHYST_CLUSTER());
 		$result->registerBlock("ancient_debris", fn() => Blocks::ANCIENT_DEBRIS());
 		$result->registerBlock("andesite", fn() => Blocks::ANDESITE());
 		$result->registerBlock("andesite_slab", fn() => Blocks::ANDESITE_SLAB());
@@ -196,6 +198,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("bricks_block", fn() => Blocks::BRICKS());
 		$result->registerBlock("brown_mushroom", fn() => Blocks::BROWN_MUSHROOM());
 		$result->registerBlock("brown_mushroom_block", fn() => Blocks::BROWN_MUSHROOM_BLOCK());
+		$result->registerBlock("budding_amethyst", fn() => Blocks::BUDDING_AMETHYST());
 		$result->registerBlock("burning_furnace", fn() => Blocks::FURNACE());
 		$result->registerBlock("bush", fn() => Blocks::DEAD_BUSH());
 		$result->registerBlock("cactus", fn() => Blocks::CACTUS());
@@ -206,6 +209,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("carpet", fn() => Blocks::CARPET());
 		$result->registerBlock("carrot_block", fn() => Blocks::CARROTS());
 		$result->registerBlock("carrots", fn() => Blocks::CARROTS());
+		$result->registerBlock("cartography_table", fn() => Blocks::CARTOGRAPHY_TABLE());
 		$result->registerBlock("carved_pumpkin", fn() => Blocks::CARVED_PUMPKIN());
 		$result->registerBlock("cauldron", fn() => Blocks::CAULDRON());
 		$result->registerBlock("cave_vines", fn() => Blocks::CAVE_VINES());
@@ -227,6 +231,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chemistry_table", fn() => Blocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => Blocks::CHEST());
 		$result->registerBlock("chipped_anvil", fn() => Blocks::ANVIL()->setDamage(1));
+		$result->registerBlock("chiseled_bookshelf", fn() => Blocks::CHISELED_BOOKSHELF());
 		$result->registerBlock("chiseled_deepslate", fn() => Blocks::CHISELED_DEEPSLATE());
 		$result->registerBlock("chiseled_nether_bricks", fn() => Blocks::CHISELED_NETHER_BRICKS());
 		$result->registerBlock("chiseled_polished_blackstone", fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
@@ -287,6 +292,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
 		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
+		$result->registerBlock("crimson_roots", fn() => Blocks::CRIMSON_ROOTS());
 		$result->registerBlock("crimson_sign", fn() => Blocks::CRIMSON_SIGN());
 		$result->registerBlock("crimson_slab", fn() => Blocks::CRIMSON_SLAB());
 		$result->registerBlock("crimson_stairs", fn() => Blocks::CRIMSON_STAIRS());
@@ -743,6 +749,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("lapis_lazuli_block", fn() => Blocks::LAPIS_LAZULI());
 		$result->registerBlock("lapis_lazuli_ore", fn() => Blocks::LAPIS_LAZULI_ORE());
 		$result->registerBlock("lapis_ore", fn() => Blocks::LAPIS_LAZULI_ORE());
+		$result->registerBlock("large_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_LARGE_BUD));
 		$result->registerBlock("large_fern", fn() => Blocks::LARGE_FERN());
 		$result->registerBlock("lava", fn() => Blocks::LAVA());
 		$result->registerBlock("leave", fn() => Blocks::OAK_LEAVES());
@@ -785,6 +792,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("mangrove_trapdoor", fn() => Blocks::MANGROVE_TRAPDOOR());
 		$result->registerBlock("mangrove_wood", fn() => Blocks::MANGROVE_WOOD()->setStripped(false));
 		$result->registerBlock("material_reducer", fn() => Blocks::MATERIAL_REDUCER());
+		$result->registerBlock("medium_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_MEDIUM_BUD));
 		$result->registerBlock("melon_block", fn() => Blocks::MELON());
 		$result->registerBlock("melon_stem", fn() => Blocks::MELON_STEM());
 		$result->registerBlock("mob_head", fn() => Blocks::MOB_HEAD());
@@ -860,6 +868,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("pink_petals", fn() => Blocks::PINK_PETALS());
 		$result->registerBlock("pink_tulip", fn() => Blocks::PINK_TULIP());
 		$result->registerBlock("piglin_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PIGLIN));
+		$result->registerBlock("pitcher_plant", fn() => Blocks::PITCHER_PLANT());
 		$result->registerBlock("plank", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("planks", fn() => Blocks::OAK_PLANKS());
 		$result->registerBlock("player_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::PLAYER));
@@ -975,7 +984,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("slabs", fn() => Blocks::SMOOTH_STONE_SLAB());
 		$result->registerBlock("slime", fn() => Blocks::SLIME());
 		$result->registerBlock("slime_block", fn() => Blocks::SLIME());
+		$result->registerBlock("small_amethyst_bud", fn() => Blocks::AMETHYST_CLUSTER()->setStage(AmethystCluster::STAGE_SMALL_BUD));
 		$result->registerBlock("small_dripleaf", fn() => Blocks::SMALL_DRIPLEAF());
+		$result->registerBlock("smithing_table", fn() => Blocks::SMITHING_TABLE());
 		$result->registerBlock("smoker", fn() => Blocks::SMOKER());
 		$result->registerBlock("smooth_basalt", fn() => Blocks::SMOOTH_BASALT());
 		$result->registerBlock("smooth_quartz", fn() => Blocks::SMOOTH_QUARTZ());
@@ -1048,6 +1059,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("stripped_acacia_wood", fn() => Blocks::ACACIA_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_birch_log", fn() => Blocks::BIRCH_LOG()->setStripped(true));
 		$result->registerBlock("stripped_birch_wood", fn() => Blocks::BIRCH_WOOD()->setStripped(true));
+		$result->registerBlock("stripped_cherry_log", fn() => Blocks::CHERRY_LOG()->setStripped(true));
+		$result->registerBlock("stripped_cherry_wood", fn() => Blocks::CHERRY_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(true));
 		$result->registerBlock("stripped_crimson_stem", fn() => Blocks::CRIMSON_STEM()->setStripped(true));
 		$result->registerBlock("stripped_dark_oak_log", fn() => Blocks::DARK_OAK_LOG()->setStripped(true));
@@ -1074,6 +1087,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("tinted_glass", fn() => Blocks::TINTED_GLASS());
 		$result->registerBlock("tnt", fn() => Blocks::TNT());
 		$result->registerBlock("torch", fn() => Blocks::TORCH());
+		$result->registerBlock("torchflower", fn() => Blocks::TORCHFLOWER());
 		$result->registerBlock("trapdoor", fn() => Blocks::OAK_TRAPDOOR());
 		$result->registerBlock("trapped_chest", fn() => Blocks::TRAPPED_CHEST());
 		$result->registerBlock("trip_wire", fn() => Blocks::TRIPWIRE());
@@ -1104,6 +1118,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
 		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
+		$result->registerBlock("warped_roots", fn() => Blocks::WARPED_ROOTS());
 		$result->registerBlock("warped_sign", fn() => Blocks::WARPED_SIGN());
 		$result->registerBlock("warped_slab", fn() => Blocks::WARPED_SLAB());
 		$result->registerBlock("warped_stairs", fn() => Blocks::WARPED_STAIRS());
@@ -1154,6 +1169,13 @@ final class StringToItemParser extends StringToTParser{
 
 			$result->register($prefix("suspicious_stew"), fn() => Items::SUSPICIOUS_STEW()->setType($suspiciousStewType));
 		}
+
+		foreach(PotionType::cases() as $potionType){
+			$prefix = fn(string $name) => strtolower($potionType->name) . "_" . $name;
+
+			$result->register($prefix("potion"), fn() => Items::POTION()->setType($potionType));
+			$result->register($prefix("splash_potion"), fn() => Items::SPLASH_POTION()->setType($potionType));
+		}
 	}
 
 	private static function registerItems(self $result) : void{
@@ -1165,8 +1187,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("apple_enchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("appleenchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("arrow", fn() => Items::ARROW());
-		$result->register("awkward_potion", fn() => Items::POTION()->setType(PotionType::AWKWARD));
-		$result->register("awkward_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::AWKWARD));
 		$result->register("baked_potato", fn() => Items::BAKED_POTATO());
 		$result->register("baked_potatoes", fn() => Items::BAKED_POTATO());
 		$result->register("beef", fn() => Items::RAW_BEEF());
@@ -1245,6 +1265,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("clown_fish", fn() => Items::CLOWNFISH());
 		$result->register("clownfish", fn() => Items::CLOWNFISH());
 		$result->register("coal", fn() => Items::COAL());
+		$result->register("coast_armor_trim_smithing_template", fn() => Items::COAST_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("cocoa_beans", fn() => Items::COCOA_BEANS());
 		$result->register("cod", fn() => Items::RAW_FISH());
 		$result->register("compass", fn() => Items::COMPASS());
@@ -1273,6 +1294,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("disc_fragment_5", fn() => Items::DISC_FRAGMENT_5());
 		$result->register("dragon_breath", fn() => Items::DRAGON_BREATH());
 		$result->register("dried_kelp", fn() => Items::DRIED_KELP());
+		$result->register("dune_armor_trim_smithing_template", fn() => Items::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("dye", fn() => Items::INK_SAC());
 		$result->register("echo_shard", fn() => Items::ECHO_SHARD());
 		$result->register("egg", fn() => Items::EGG());
@@ -1283,12 +1305,11 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("enchanting_bottle", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("ender_pearl", fn() => Items::ENDER_PEARL());
 		$result->register("experience_bottle", fn() => Items::EXPERIENCE_BOTTLE());
+		$result->register("eye_armor_trim_smithing_template", fn() => Items::EYE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("eye_drops", fn() => Items::MEDICINE()->setType(MedicineType::EYE_DROPS));
 		$result->register("feather", fn() => Items::FEATHER());
 		$result->register("fermented_spider_eye", fn() => Items::FERMENTED_SPIDER_EYE());
 		$result->register("fire_charge", fn() => Items::FIRE_CHARGE());
-		$result->register("fire_resistance_potion", fn() => Items::POTION()->setType(PotionType::FIRE_RESISTANCE));
-		$result->register("fire_resistance_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::FIRE_RESISTANCE));
 		$result->register("fish", fn() => Items::RAW_FISH());
 		$result->register("fishing_rod", fn() => Items::FISHING_ROD());
 		$result->register("flint", fn() => Items::FLINT());
@@ -1324,16 +1345,11 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("golden_shovel", fn() => Items::GOLDEN_SHOVEL());
 		$result->register("golden_sword", fn() => Items::GOLDEN_SWORD());
 		$result->register("gunpowder", fn() => Items::GUNPOWDER());
-		$result->register("harming_potion", fn() => Items::POTION()->setType(PotionType::HARMING));
-		$result->register("harming_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::HARMING));
-		$result->register("healing_potion", fn() => Items::POTION()->setType(PotionType::HEALING));
-		$result->register("healing_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::HEALING));
 		$result->register("heart_of_the_sea", fn() => Items::HEART_OF_THE_SEA());
 		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
+		$result->register("host_armor_trim_smithing_template", fn() => Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("ink_sac", fn() => Items::INK_SAC());
-		$result->register("invisibility_potion", fn() => Items::POTION()->setType(PotionType::INVISIBILITY));
-		$result->register("invisibility_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::INVISIBILITY));
 		$result->register("iron_axe", fn() => Items::IRON_AXE());
 		$result->register("iron_boots", fn() => Items::IRON_BOOTS());
 		$result->register("iron_chestplate", fn() => Items::IRON_CHESTPLATE());
@@ -1348,8 +1364,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("jungle_boat", fn() => Items::JUNGLE_BOAT());
 		$result->register("lapis_lazuli", fn() => Items::LAPIS_LAZULI());
 		$result->register("lava_bucket", fn() => Items::LAVA_BUCKET());
-		$result->register("leaping_potion", fn() => Items::POTION()->setType(PotionType::LEAPING));
-		$result->register("leaping_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LEAPING));
 		$result->register("leather", fn() => Items::LEATHER());
 		$result->register("leather_boots", fn() => Items::LEATHER_BOOTS());
 		$result->register("leather_cap", fn() => Items::LEATHER_CAP());
@@ -1358,48 +1372,19 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("leather_leggings", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_pants", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_tunic", fn() => Items::LEATHER_TUNIC());
-		$result->register("long_fire_resistance_potion", fn() => Items::POTION()->setType(PotionType::LONG_FIRE_RESISTANCE));
-		$result->register("long_fire_resistance_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_FIRE_RESISTANCE));
-		$result->register("long_invisibility_potion", fn() => Items::POTION()->setType(PotionType::LONG_INVISIBILITY));
-		$result->register("long_invisibility_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_INVISIBILITY));
-		$result->register("long_leaping_potion", fn() => Items::POTION()->setType(PotionType::LONG_LEAPING));
-		$result->register("long_leaping_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_LEAPING));
-		$result->register("long_mundane_potion", fn() => Items::POTION()->setType(PotionType::LONG_MUNDANE));
-		$result->register("long_mundane_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_MUNDANE));
-		$result->register("long_night_vision_potion", fn() => Items::POTION()->setType(PotionType::LONG_NIGHT_VISION));
-		$result->register("long_night_vision_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_NIGHT_VISION));
-		$result->register("long_poison_potion", fn() => Items::POTION()->setType(PotionType::LONG_POISON));
-		$result->register("long_poison_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_POISON));
-		$result->register("long_regeneration_potion", fn() => Items::POTION()->setType(PotionType::LONG_REGENERATION));
-		$result->register("long_regeneration_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_REGENERATION));
-		$result->register("long_slow_falling_potion", fn() => Items::POTION()->setType(PotionType::LONG_SLOW_FALLING));
-		$result->register("long_slow_falling_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_SLOW_FALLING));
-		$result->register("long_slowness_potion", fn() => Items::POTION()->setType(PotionType::LONG_SLOWNESS));
-		$result->register("long_slowness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_SLOWNESS));
-		$result->register("long_strength_potion", fn() => Items::POTION()->setType(PotionType::LONG_STRENGTH));
-		$result->register("long_strength_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_STRENGTH));
-		$result->register("long_swiftness_potion", fn() => Items::POTION()->setType(PotionType::LONG_SWIFTNESS));
-		$result->register("long_swiftness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_SWIFTNESS));
-		$result->register("long_turtle_master_potion", fn() => Items::POTION()->setType(PotionType::LONG_TURTLE_MASTER));
-		$result->register("long_turtle_master_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_TURTLE_MASTER));
-		$result->register("long_water_breathing_potion", fn() => Items::POTION()->setType(PotionType::LONG_WATER_BREATHING));
-		$result->register("long_water_breathing_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_WATER_BREATHING));
-		$result->register("long_weakness_potion", fn() => Items::POTION()->setType(PotionType::LONG_WEAKNESS));
-		$result->register("long_weakness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::LONG_WEAKNESS));
 		$result->register("magma_cream", fn() => Items::MAGMA_CREAM());
 		$result->register("melon", fn() => Items::MELON());
 		$result->register("melon_seeds", fn() => Items::MELON_SEEDS());
 		$result->register("melon_slice", fn() => Items::MELON());
 		$result->register("milk_bucket", fn() => Items::MILK_BUCKET());
 		$result->register("minecart", fn() => Items::MINECART());
-		$result->register("mundane_potion", fn() => Items::POTION()->setType(PotionType::MUNDANE));
-		$result->register("mundane_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::MUNDANE));
 		$result->register("mushroom_stew", fn() => Items::MUSHROOM_STEW());
 		$result->register("mutton", fn() => Items::RAW_MUTTON());
 		$result->register("mutton_cooked", fn() => Items::COOKED_MUTTON());
 		$result->register("mutton_raw", fn() => Items::RAW_MUTTON());
 		$result->register("muttoncooked", fn() => Items::COOKED_MUTTON());
 		$result->register("muttonraw", fn() => Items::RAW_MUTTON());
+		$result->register("name_tag", fn() => Items::NAME_TAG());
 		$result->register("nautilus_shell", fn() => Items::NAUTILUS_SHELL());
 		$result->register("nether_brick", fn() => Items::NETHER_BRICK());
 		$result->register("nether_quartz", fn() => Items::NETHER_QUARTZ());
@@ -1417,14 +1402,12 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("netherite_shovel", fn() => Items::NETHERITE_SHOVEL());
 		$result->register("netherite_sword", fn() => Items::NETHERITE_SWORD());
 		$result->register("netherstar", fn() => Items::NETHER_STAR());
-		$result->register("night_vision_potion", fn() => Items::POTION()->setType(PotionType::NIGHT_VISION));
-		$result->register("night_vision_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::NIGHT_VISION));
+		$result->register("netherite_upgrade_smithing_template", fn() => Items::NETHERITE_UPGRADE_SMITHING_TEMPLATE());
 		$result->register("oak_boat", fn() => Items::OAK_BOAT());
 		$result->register("painting", fn() => Items::PAINTING());
 		$result->register("paper", fn() => Items::PAPER());
 		$result->register("phantom_membrane", fn() => Items::PHANTOM_MEMBRANE());
-		$result->register("poison_potion", fn() => Items::POTION()->setType(PotionType::POISON));
-		$result->register("poison_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::POISON));
+		$result->register("pitcher_pod", fn() => Items::PITCHER_POD());
 		$result->register("poisonous_potato", fn() => Items::POISONOUS_POTATO());
 		$result->register("popped_chorus_fruit", fn() => Items::POPPED_CHORUS_FRUIT());
 		$result->register("porkchop", fn() => Items::RAW_PORKCHOP());
@@ -1441,6 +1424,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("rabbit_foot", fn() => Items::RABBIT_FOOT());
 		$result->register("rabbit_hide", fn() => Items::RABBIT_HIDE());
 		$result->register("rabbit_stew", fn() => Items::RABBIT_STEW());
+		$result->register("raiser_armor_trim_smithing_template", fn() => Items::RAISER_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("raw_beef", fn() => Items::RAW_BEEF());
 		$result->register("raw_cod", fn() => Items::RAW_FISH());
 		$result->register("raw_copper", fn() => Items::RAW_COPPER());
@@ -1469,23 +1453,23 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("record_ward", fn() => Items::RECORD_WARD());
 		$result->register("redstone", fn() => Items::REDSTONE_DUST());
 		$result->register("redstone_dust", fn() => Items::REDSTONE_DUST());
-		$result->register("regeneration_potion", fn() => Items::POTION()->setType(PotionType::REGENERATION));
-		$result->register("regeneration_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::REGENERATION));
+		$result->register("rib_armor_trim_smithing_template", fn() => Items::RIB_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("rotten_flesh", fn() => Items::ROTTEN_FLESH());
 		$result->register("salmon", fn() => Items::RAW_SALMON());
 		$result->register("scute", fn() => Items::SCUTE());
+		$result->register("sentry_armor_trim_smithing_template", fn() => Items::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE());
+		$result->register("shaper_armor_trim_smithing_template", fn() => Items::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("seeds", fn() => Items::WHEAT_SEEDS());
 		$result->register("shears", fn() => Items::SHEARS());
 		$result->register("shulker_shell", fn() => Items::SHULKER_SHELL());
+		$result->register("silence_armor_trim_smithing_template", fn() => Items::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("slime_ball", fn() => Items::SLIMEBALL());
+		$result->register("snout_armor_trim_smithing_template", fn() => Items::SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("slimeball", fn() => Items::SLIMEBALL());
-		$result->register("slow_falling_potion", fn() => Items::POTION()->setType(PotionType::SLOW_FALLING));
-		$result->register("slow_falling_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::SLOW_FALLING));
-		$result->register("slowness_potion", fn() => Items::POTION()->setType(PotionType::SLOWNESS));
-		$result->register("slowness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::SLOWNESS));
 		$result->register("snowball", fn() => Items::SNOWBALL());
 		$result->register("speckled_melon", fn() => Items::GLISTERING_MELON());
 		$result->register("spider_eye", fn() => Items::SPIDER_EYE());
+		$result->register("spire_armor_trim_smithing_template", fn() => Items::SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("splash_potion", fn() => Items::SPLASH_POTION());
 		$result->register("spruce_boat", fn() => Items::SPRUCE_BOAT());
 		$result->register("spyglass", fn() => Items::SPYGLASS());
@@ -1498,52 +1482,24 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("stone_pickaxe", fn() => Items::STONE_PICKAXE());
 		$result->register("stone_shovel", fn() => Items::STONE_SHOVEL());
 		$result->register("stone_sword", fn() => Items::STONE_SWORD());
-		$result->register("strength_potion", fn() => Items::POTION()->setType(PotionType::STRENGTH));
-		$result->register("strength_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRENGTH));
 		$result->register("string", fn() => Items::STRING());
-		$result->register("strong_harming_potion", fn() => Items::POTION()->setType(PotionType::STRONG_HARMING));
-		$result->register("strong_harming_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_HARMING));
-		$result->register("strong_healing_potion", fn() => Items::POTION()->setType(PotionType::STRONG_HEALING));
-		$result->register("strong_healing_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_HEALING));
-		$result->register("strong_leaping_potion", fn() => Items::POTION()->setType(PotionType::STRONG_LEAPING));
-		$result->register("strong_leaping_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_LEAPING));
-		$result->register("strong_poison_potion", fn() => Items::POTION()->setType(PotionType::STRONG_POISON));
-		$result->register("strong_poison_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_POISON));
-		$result->register("strong_regeneration_potion", fn() => Items::POTION()->setType(PotionType::STRONG_REGENERATION));
-		$result->register("strong_regeneration_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_REGENERATION));
-		$result->register("strong_slowness_potion", fn() => Items::POTION()->setType(PotionType::STRONG_SLOWNESS));
-		$result->register("strong_slowness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_SLOWNESS));
-		$result->register("strong_strength_potion", fn() => Items::POTION()->setType(PotionType::STRONG_STRENGTH));
-		$result->register("strong_strength_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_STRENGTH));
-		$result->register("strong_swiftness_potion", fn() => Items::POTION()->setType(PotionType::STRONG_SWIFTNESS));
-		$result->register("strong_swiftness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_SWIFTNESS));
-		$result->register("strong_turtle_master_potion", fn() => Items::POTION()->setType(PotionType::STRONG_TURTLE_MASTER));
-		$result->register("strong_turtle_master_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::STRONG_TURTLE_MASTER));
 		$result->register("sugar", fn() => Items::SUGAR());
 		$result->register("suspicious_stew", fn() => Items::SUSPICIOUS_STEW());
 		$result->register("sweet_berries", fn() => Items::SWEET_BERRIES());
-		$result->register("swiftness_potion", fn() => Items::POTION()->setType(PotionType::SWIFTNESS));
-		$result->register("swiftness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::SWIFTNESS));
-		$result->register("thick_potion", fn() => Items::POTION()->setType(PotionType::THICK));
-		$result->register("thick_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::THICK));
 		$result->register("tonic", fn() => Items::MEDICINE()->setType(MedicineType::TONIC));
+		$result->register("torchflower_seeds", fn() => Items::TORCHFLOWER_SEEDS());
+		$result->register("tide_armor_trim_smithing_template", fn() => Items::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("totem", fn() => Items::TOTEM());
 		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
-		$result->register("turtle_master_potion", fn() => Items::POTION()->setType(PotionType::TURTLE_MASTER));
-		$result->register("turtle_master_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::TURTLE_MASTER));
+		$result->register("vex_armor_trim_smithing_template", fn() => Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());
 		$result->register("villager_spawn_egg", fn() => Items::VILLAGER_SPAWN_EGG());
-		$result->register("water_breathing_potion", fn() => Items::POTION()->setType(PotionType::WATER_BREATHING));
-		$result->register("water_breathing_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::WATER_BREATHING));
+		$result->register("ward_armor_trim_smithing_template", fn() => Items::WARD_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("water_bucket", fn() => Items::WATER_BUCKET());
-		$result->register("water_potion", fn() => Items::POTION()->setType(PotionType::WATER));
-		$result->register("water_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::WATER));
-		$result->register("weakness_potion", fn() => Items::POTION()->setType(PotionType::WEAKNESS));
-		$result->register("weakness_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::WEAKNESS));
+		$result->register("wayfinder_armor_trim_smithing_template", fn() => Items::WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("wheat", fn() => Items::WHEAT());
 		$result->register("wheat_seeds", fn() => Items::WHEAT_SEEDS());
-		$result->register("wither_potion", fn() => Items::POTION()->setType(PotionType::WITHER));
-		$result->register("wither_splash_potion", fn() => Items::SPLASH_POTION()->setType(PotionType::WITHER));
+		$result->register("wild_armor_trim_smithing_template", fn() => Items::WILD_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("wooden_axe", fn() => Items::WOODEN_AXE());
 		$result->register("wooden_hoe", fn() => Items::WOODEN_HOE());
 		$result->register("wooden_pickaxe", fn() => Items::WOODEN_PICKAXE());

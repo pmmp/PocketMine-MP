@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
-use pocketmine\block\ItemFrame;
 use pocketmine\block\Lectern;
 use pocketmine\block\tile\Sign;
 use pocketmine\block\utils\SignText;
@@ -57,11 +56,9 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\ItemStackRequestPacket;
 use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
@@ -79,7 +76,6 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
-use pocketmine\network\mcpe\protocol\RequestAbilityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -116,7 +112,6 @@ use function fmod;
 use function get_debug_type;
 use function implode;
 use function in_array;
-use function is_bool;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -224,11 +219,13 @@ class InGamePacketHandler extends PacketHandler{
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
 				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
-				($gliding !== null && !$this->player->toggleGlide($gliding));
+				($gliding !== null && !$this->player->toggleGlide($gliding)) |
+				($flying !== null && !$this->player->toggleFlight($flying));
 			if((bool) $mismatch){
 				$this->player->sendData([$this->player]);
 			}
@@ -445,9 +442,18 @@ class InGamePacketHandler extends PacketHandler{
 			return false;
 		}
 		$serverItemStack = $this->session->getTypeConverter()->coreItemStackToNet($sourceSlotItem);
-		//because the client doesn't tell us the expected itemstack ID, we have to deep-compare our known
-		//itemstack info with the one the client sent. This is costly, but we don't have any other option :(
-		if(!$serverItemStack->equals($clientItemStack)){
+		//Sadly we don't have itemstack IDs here, so we have to compare the basic item properties to ensure that we're
+		//dropping the item the client expects (inventory might be out of sync with the client).
+		if(
+			$serverItemStack->getId() !== $clientItemStack->getId() ||
+			$serverItemStack->getMeta() !== $clientItemStack->getMeta() ||
+			$serverItemStack->getCount() !== $clientItemStack->getCount() ||
+			$serverItemStack->getBlockRuntimeId() !== $clientItemStack->getBlockRuntimeId()
+			//Raw extraData may not match because of TAG_Compound key ordering differences, and decoding it to compare
+			//is costly. Assume that we're in sync if id+meta+count+runtimeId match.
+			//NB: Make sure $clientItemStack isn't used to create the dropped item, as that would allow the client
+			//to change the item NBT since we're not validating it.
+		){
 			return false;
 		}
 
@@ -731,10 +737,6 @@ class InGamePacketHandler extends PacketHandler{
 		return true; //this packet is useless
 	}
 
-	public function handleCraftingEvent(CraftingEventPacket $packet) : bool{
-		return true; //this is a broken useless packet, so we don't use it
-	}
-
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
 		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 		if($pos->distanceSquared($this->player->getLocation()) > 10000){
@@ -804,15 +806,6 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$blockPosition = $packet->blockPosition;
-		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
-		if($block instanceof ItemFrame && $block->getFramedItem() !== null){
-			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
-		}
-		return false;
-	}
-
 	public function handleBossEvent(BossEventPacket $packet) : bool{
 		return false; //TODO
 	}
@@ -874,8 +867,12 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
+		$inventory = $this->player->getInventory();
+		if(!$inventory->slotExists($packet->inventorySlot)){
+			return false;
+		}
 		//TODO: break this up into book API things
-		$oldBook = $this->player->getInventory()->getItem($packet->inventorySlot);
+		$oldBook = $inventory->getItem($packet->inventorySlot);
 		if(!($oldBook instanceof WritableBook)){
 			return false;
 		}
@@ -990,11 +987,6 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
-		if($packet->dropBook){
-			//Drop book is handled with an interact event on use item transaction
-			return true;
-		}
-
 		$pos = $packet->blockPosition;
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
@@ -1031,23 +1023,5 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleEmote(EmotePacket $packet) : bool{
 		$this->player->emote($packet->getEmoteId());
 		return true;
-	}
-
-	public function handleRequestAbility(RequestAbilityPacket $packet) : bool{
-		if($packet->getAbilityId() === RequestAbilityPacket::ABILITY_FLYING){
-			$isFlying = $packet->getAbilityValue();
-			if(!is_bool($isFlying)){
-				throw new PacketHandlingException("Flying ability should always have a bool value");
-			}
-			if($isFlying !== $this->player->isFlying()){
-				if(!$this->player->toggleFlight($isFlying)){
-					$this->session->syncAbilities($this->player);
-				}
-			}
-
-			return true;
-		}
-
-		return false;
 	}
 }

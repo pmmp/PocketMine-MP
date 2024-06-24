@@ -21,18 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\block;
 
-use PHPUnit\Framework\TestCase;
-use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\math\Facing;
 
-class DyeColorIdMapTest extends TestCase{
+final class NetherRoots extends Flowable{
+	use StaticSupportTrait;
 
-	public function testAllColorsMapped() : void{
-		foreach(DyeColor::cases() as $color){
-			$id = DyeColorIdMap::getInstance()->toId($color);
-			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color === $color2);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		//TODO: nylium, moss
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
 	}
 }

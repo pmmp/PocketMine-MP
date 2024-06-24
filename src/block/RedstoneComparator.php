@@ -27,6 +27,7 @@ use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -41,6 +42,7 @@ class RedstoneComparator extends Flowable{
 	use HorizontalFacingTrait;
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
+	use StaticSupportTrait;
 
 	protected bool $isSubtractMode = false;
 
@@ -85,26 +87,16 @@ class RedstoneComparator extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedAt($blockReplace)){
-			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
-			}
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
-
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->isSubtractMode = !$this->isSubtractMode;
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{

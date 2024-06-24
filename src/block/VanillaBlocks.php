@@ -38,6 +38,7 @@ use pocketmine\block\tile\BlastFurnace as TileBlastFurnace;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
@@ -54,19 +55,16 @@ use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Smoker as TileSmoker;
+use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\LeavesType;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
-use pocketmine\math\RayTraceResult;
 use pocketmine\utils\CloningRegistryTrait;
-use pocketmine\world\sound\AmethystBlockChimeSound;
-use pocketmine\world\sound\BlockPunchSound;
 use function mb_strtolower;
 use function strtolower;
 
@@ -98,6 +96,7 @@ use function strtolower;
  * @method static Flower ALLIUM()
  * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
  * @method static Opaque AMETHYST()
+ * @method static AmethystCluster AMETHYST_CLUSTER()
  * @method static Opaque ANCIENT_DEBRIS()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
@@ -153,6 +152,7 @@ use function strtolower;
  * @method static Wall BRICK_WALL()
  * @method static BrownMushroom BROWN_MUSHROOM()
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
+ * @method static BuddingAmethyst BUDDING_AMETHYST()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
  * @method static CakeWithCandle CAKE_WITH_CANDLE()
@@ -184,6 +184,7 @@ use function strtolower;
  * @method static WallSign CHERRY_WALL_SIGN()
  * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
+ * @method static ChiseledBookshelf CHISELED_BOOKSHELF()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
@@ -229,6 +230,7 @@ use function strtolower;
  * @method static Wood CRIMSON_HYPHAE()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
+ * @method static NetherRoots CRIMSON_ROOTS()
  * @method static FloorSign CRIMSON_SIGN()
  * @method static WoodenSlab CRIMSON_SLAB()
  * @method static WoodenStairs CRIMSON_STAIRS()
@@ -292,6 +294,7 @@ use function strtolower;
  * @method static Stair DIORITE_STAIRS()
  * @method static Wall DIORITE_WALL()
  * @method static Dirt DIRT()
+ * @method static DoublePitcherCrop DOUBLE_PITCHER_CROP()
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
@@ -593,6 +596,8 @@ use function strtolower;
  * @method static DoublePlant PEONY()
  * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
+ * @method static PitcherCrop PITCHER_CROP()
+ * @method static DoublePlant PITCHER_PLANT()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
  * @method static Slab POLISHED_ANDESITE_SLAB()
@@ -742,6 +747,8 @@ use function strtolower;
  * @method static TintedGlass TINTED_GLASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
+ * @method static Flower TORCHFLOWER()
+ * @method static TorchflowerCrop TORCHFLOWER_CROP()
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
@@ -759,6 +766,7 @@ use function strtolower;
  * @method static Wood WARPED_HYPHAE()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
+ * @method static NetherRoots WARPED_ROOTS()
  * @method static FloorSign WARPED_SIGN()
  * @method static WoodenSlab WARPED_SLAB()
  * @method static WoodenStairs WARPED_STAIRS()
@@ -800,7 +808,7 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
-		$railBreakInfo = new Info(new BlockBreakInfo(0.7));
+		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
 		self::register("air", new Air(new BID(Ids::AIR), "Air", new Info(BreakInfo::indestructible(-1.0))));
 		self::register("anvil", new Anvil(new BID(Ids::ANVIL), "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
@@ -828,6 +836,7 @@ final class VanillaBlocks{
 		self::register("blue_ice", new BlueIce(new BID(Ids::BLUE_ICE), "Blue Ice", new Info(BreakInfo::pickaxe(2.8))));
 		self::register("bone_block", new BoneBlock(new BID(Ids::BONE_BLOCK), "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD))));
 		self::register("bookshelf", new Bookshelf(new BID(Ids::BOOKSHELF), "Bookshelf", new Info(BreakInfo::axe(1.5))));
+		self::register("chiseled_bookshelf", new ChiseledBookshelf(new BID(Ids::CHISELED_BOOKSHELF, TileChiseledBookshelf::class), "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))));
 		self::register("brewing_stand", new BrewingStand(new BID(Ids::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
 
 		$bricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
@@ -866,6 +875,9 @@ final class VanillaBlocks{
 		self::register("pink_petals", new PinkPetals(new BID(Ids::PINK_PETALS), "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", new DoubleTallGrass(new BID(Ids::DOUBLE_TALLGRASS), "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 		self::register("large_fern", new DoubleTallGrass(new BID(Ids::LARGE_FERN), "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("pitcher_plant", new DoublePlant(new BID(Ids::PITCHER_PLANT), "Pitcher Plant", new Info(BreakInfo::instant())));
+		self::register("pitcher_crop", new PitcherCrop(new BID(Ids::PITCHER_CROP), "Pitcher Crop", new Info(BreakInfo::instant())));
+		self::register("double_pitcher_crop", new DoublePitcherCrop(new BID(Ids::DOUBLE_PITCHER_CROP), "Double Pitcher Crop", new Info(BreakInfo::instant())));
 		self::register("dragon_egg", new DragonEgg(new BID(Ids::DRAGON_EGG), "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
 		self::register("dried_kelp", new DriedKelp(new BID(Ids::DRIED_KELP), "Dried Kelp Block", new Info(new BreakInfo(0.5, ToolType::NONE, 0, 12.5))));
 		self::register("emerald", new Opaque(new BID(Ids::EMERALD), "Emerald Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
@@ -895,6 +907,8 @@ final class VanillaBlocks{
 		self::register("pink_tulip", new Flower(new BID(Ids::PINK_TULIP), "Pink Tulip", $flowerTypeInfo));
 		self::register("red_tulip", new Flower(new BID(Ids::RED_TULIP), "Red Tulip", $flowerTypeInfo));
 		self::register("white_tulip", new Flower(new BID(Ids::WHITE_TULIP), "White Tulip", $flowerTypeInfo));
+		self::register("torchflower", new Flower(new BID(Ids::TORCHFLOWER), "Torchflower", $flowerTypeInfo));
+		self::register("torchflower_crop", new TorchflowerCrop(new BID(Ids::TORCHFLOWER_CROP), "Torchflower Crop", new Info(BreakInfo::instant())));
 		self::register("flower_pot", new FlowerPot(new BID(Ids::FLOWER_POT, TileFlowerPot::class), "Flower Pot", new Info(BreakInfo::instant())));
 		self::register("frosted_ice", new FrostedIce(new BID(Ids::FROSTED_ICE), "Frosted Ice", new Info(BreakInfo::pickaxe(2.5))));
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::FURNACE));
@@ -1505,7 +1519,9 @@ final class VanillaBlocks{
 		//for some reason, slabs have weird hardness like the legacy ones
 		$slabBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
-		self::register("ancient_debris", new Opaque(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new Info(BreakInfo::pickaxe(30, ToolTier::DIAMOND, 3600.0))));
+		self::register("ancient_debris", new class(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris", new Info(BreakInfo::pickaxe(30, ToolTier::DIAMOND, 3600.0))) extends Opaque{
+			public function isFireProofAsItem() : bool{ return true; }
+		});
 		$netheriteBreakInfo = new Info(BreakInfo::pickaxe(50, ToolTier::DIAMOND, 3600.0));
 		self::register("netherite", new class(new BID(Ids::NETHERITE), "Netherite Block", $netheriteBreakInfo) extends Opaque{
 			public function isFireProofAsItem() : bool{ return true; }
@@ -1559,17 +1575,21 @@ final class VanillaBlocks{
 		self::register("twisting_vines", new NetherVines(new BID(Ids::TWISTING_VINES), "Twisting Vines", new Info(BreakInfo::instant()), Facing::UP));
 		self::register("weeping_vines", new NetherVines(new BID(Ids::WEEPING_VINES), "Weeping Vines", new Info(BreakInfo::instant()), Facing::DOWN));
 
+		$netherRootsInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS]);
+		self::register("crimson_roots", new NetherRoots(new BID(Ids::CRIMSON_ROOTS), "Crimson Roots", $netherRootsInfo));
+		self::register("warped_roots", new NetherRoots(new BID(Ids::WARPED_ROOTS), "Warped Roots", $netherRootsInfo));
+
 		self::register("chain", new Chain(new BID(Ids::CHAIN), "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
 	}
 
 	private static function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
-		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD))) extends Opaque{
-			public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
-				$this->position->getWorld()->addSound($this->position, new AmethystBlockChimeSound());
-				$this->position->getWorld()->addSound($this->position, new BlockPunchSound($this));
-			}
+		$amethystInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD));
+		self::register("amethyst", new class(new BID(Ids::AMETHYST), "Amethyst", $amethystInfo) extends Opaque{
+			use AmethystTrait;
 		});
+		self::register("budding_amethyst", new BuddingAmethyst(new BID(Ids::BUDDING_AMETHYST), "Budding Amethyst", $amethystInfo));
+		self::register("amethyst_cluster", new AmethystCluster(new BID(Ids::AMETHYST_CLUSTER), "Amethyst Cluster", $amethystInfo));
 
 		self::register("calcite", new Opaque(new BID(Ids::CALCITE), "Calcite", new Info(BreakInfo::pickaxe(0.75, ToolTier::WOOD))));
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
@@ -1642,7 +1662,7 @@ final class VanillaBlocks{
 
 		self::register("cave_vines", new CaveVines(new BID(Ids::CAVE_VINES), "Cave Vines", new Info(BreakInfo::instant())));
 
-		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(BlockToolType::SHEARS, toolHarvestLevel: 1))));
+		self::register("small_dripleaf", new SmallDripleaf(new BID(Ids::SMALL_DRIPLEAF), "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", new BigDripleafHead(new BID(Ids::BIG_DRIPLEAF_HEAD), "Big Dripleaf", new Info(BreakInfo::instant())));
 		self::register("big_dripleaf_stem", new BigDripleafStem(new BID(Ids::BIG_DRIPLEAF_STEM), "Big Dripleaf Stem", new Info(BreakInfo::instant())));
 	}
