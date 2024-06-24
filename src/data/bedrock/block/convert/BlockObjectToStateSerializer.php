@@ -956,6 +956,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::HARDENED_GLASS(), Ids::HARD_GLASS);
 		$this->mapSimple(Blocks::HARDENED_GLASS_PANE(), Ids::HARD_GLASS_PANE);
 		$this->mapSimple(Blocks::HONEYCOMB(), Ids::HONEYCOMB_BLOCK);
+		$this->mapSimple(Blocks::HEAVY_CORE(), Ids::HEAVY_CORE);
 		$this->mapSimple(Blocks::ICE(), Ids::ICE);
 		$this->mapSimple(Blocks::INFO_UPDATE(), Ids::INFO_UPDATE);
 		$this->mapSimple(Blocks::INFO_UPDATE2(), Ids::INFO_UPDATE2);
@@ -1036,6 +1037,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::PINK_TULIP(), Ids::PINK_TULIP);
 		$this->mapSimple(Blocks::RED_TULIP(), Ids::RED_TULIP);
 		$this->mapSimple(Blocks::WHITE_TULIP(), Ids::WHITE_TULIP);
+
+
+		// Temp Holding
+		$this->mapSimple(Blocks::CHISELED_TUFF(), Ids::CHISELED_TUFF);
+		$this->mapSimple(Blocks::CHISELED_TUFF_BRICKS(), IDS::CHISELED_TUFF_BRICKS);
+		$this->mapSimple(Blocks::POLISHED_TUFF(), Ids::POLISHED_TUFF);
+		$this->mapSimple(Blocks::TUFF_BRICKS(), Ids::TUFF_BRICKS);
 	}
 
 	private function registerSerializers() : void{

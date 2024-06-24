@@ -843,6 +843,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::HARD_GLASS, fn() => Blocks::HARDENED_GLASS());
 		$this->mapSimple(Ids::HARD_GLASS_PANE, fn() => Blocks::HARDENED_GLASS_PANE());
 		$this->mapSimple(Ids::HARDENED_CLAY, fn() => Blocks::HARDENED_CLAY());
+		$this->mapSimple(Ids::HEAVY_CORE, fn() => Blocks::HEAVY_CORE());
 		$this->mapSimple(Ids::HONEYCOMB_BLOCK, fn() => Blocks::HONEYCOMB());
 		$this->mapSimple(Ids::ICE, fn() => Blocks::ICE());
 		$this->mapSimple(Ids::INFO_UPDATE, fn() => Blocks::INFO_UPDATE());
@@ -926,6 +927,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::PINK_TULIP, fn() => Blocks::PINK_TULIP());
 		$this->mapSimple(Ids::RED_TULIP, fn() => Blocks::RED_TULIP());
 		$this->mapSimple(Ids::WHITE_TULIP, fn() => Blocks::WHITE_TULIP());
+
+
+		// Temp Holding
+		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
+		$this->mapSimple(Ids::CHISELED_TUFF_BRICKS, fn() => Blocks::CHISELED_TUFF_BRICKS());
+		$this->mapSimple(Ids::POLISHED_TUFF, fn() => Blocks::POLISHED_TUFF());
+		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
 	}
 
 	private function registerDeserializers() : void{

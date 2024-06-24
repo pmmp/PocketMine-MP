@@ -325,13 +325,26 @@ final class ItemTypeIds{
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
 	public const BREEZE_ROD = 20288;
-	public const HEAVY_CORE = 20289;
-	public const TRIAL_KEY = 20290;
-	public const WIND_CHARGE = 20291;
-	public const OMINOUS_BOTTLE = 20292;
-	public const MACE = 20293;
+	public const TRIAL_KEY = 2089;
+	public const WIND_CHARGE = 20290;
+	public const OMINOUS_BOTTLE = 20291;
+	public const MACE = 20292;
 
-	public const FIRST_UNUSED_ITEM_ID = 20294;
+	public const CRAFTER = 20293;
+	public const CHISELED_TUFF = 20294;
+	public const CHISELED_TUFF_BRICKS = 20295;
+	public const POLISHED_TUFF = 20296;
+	public const TUFF_BRICKS = 20297;
+	public const COPPER_DOOR = 20298;
+	public const COPPER_BULB = 20299;
+	public const CHISELED_COPPER = 20300;
+	public const COPPER_TRAPDOOR = 20301;
+	public const COPPER_GRATE = 20302;
+	public const TRIAL_SPAWNER = 20303;
+	public const VAULT = 20304;
+	public const HEAVY_CORE = 20305;
+
+	public const FIRST_UNUSED_ITEM_ID = 20306;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

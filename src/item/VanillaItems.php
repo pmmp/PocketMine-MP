@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\HeavyCore;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -481,7 +482,6 @@ final class VanillaItems{
 		self::register("golden_carrot", new GoldenCarrot(new IID(Ids::GOLDEN_CARROT), "Golden Carrot"));
 		self::register("gunpowder", new Item(new IID(Ids::GUNPOWDER), "Gunpowder"));
 		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
-		self::register("heavy_core", new Item(new IID(Ids::HEAVY_CORE), "Heavy Core"));
 		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
 		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
 		self::register("ink_sac", new Item(new IID(Ids::INK_SAC), "Ink Sac"));

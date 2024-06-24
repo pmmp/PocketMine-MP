@@ -186,6 +186,10 @@ use function strtolower;
  * @method static Opaque CHISELED_RED_SANDSTONE()
  * @method static Opaque CHISELED_SANDSTONE()
  * @method static Opaque CHISELED_STONE_BRICKS()
+ * @method static Opaque CHISELED_TUFF()
+ * @method static Opaque CHISELED_TUFF_BRICKS()
+ * @method static Opaque POLISHED_TUFF()
+ * @method static Opaque TUFF_BRICKS()
  * @method static ChorusFlower CHORUS_FLOWER()
  * @method static ChorusPlant CHORUS_PLANT()
  * @method static Clay CLAY()
@@ -454,6 +458,7 @@ use function strtolower;
  * @method static HardenedGlass HARDENED_GLASS()
  * @method static HardenedGlassPane HARDENED_GLASS_PANE()
  * @method static HayBale HAY_BALE()
+ * @method static Opaque HEAVY_CORE()
  * @method static Opaque HONEYCOMB()
  * @method static Hopper HOPPER()
  * @method static Ice ICE()
@@ -915,6 +920,7 @@ final class VanillaBlocks{
 		self::register("hardened_glass", new HardenedGlass(new BID(Ids::HARDENED_GLASS), "Hardened Glass", $hardenedGlassBreakInfo));
 		self::register("hardened_glass_pane", new HardenedGlassPane(new BID(Ids::HARDENED_GLASS_PANE), "Hardened Glass Pane", $hardenedGlassBreakInfo));
 		self::register("hay_bale", new HayBale(new BID(Ids::HAY_BALE), "Hay Bale", new Info(new BreakInfo(0.5))));
+		self::register("heavy_core", new Opaque(new BID(Ids::HEAVY_CORE), "Heavy Core", new Info(new BreakInfo(3))));
 		self::register("hopper", new Hopper(new BID(Ids::HOPPER, TileHopper::class), "Hopper", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 15.0))));
 		self::register("ice", new Ice(new BID(Ids::ICE), "Ice", new Info(BreakInfo::pickaxe(0.5))));
 
@@ -1051,6 +1057,11 @@ final class VanillaBlocks{
 		self::register("mossy_stone_bricks", $mossyStoneBrick = new Opaque(new BID(Ids::MOSSY_STONE_BRICKS), "Mossy Stone Bricks", $stoneBreakInfo));
 		self::register("cracked_stone_bricks", $crackedStoneBrick = new Opaque(new BID(Ids::CRACKED_STONE_BRICKS), "Cracked Stone Bricks", $stoneBreakInfo));
 		self::register("chiseled_stone_bricks", $chiseledStoneBrick = new Opaque(new BID(Ids::CHISELED_STONE_BRICKS), "Chiseled Stone Bricks", $stoneBreakInfo));
+
+		self::register("chiseled_tuff", new Opaque(new BID(Ids::CHISELED_TUFF), "Chiseled Tuff", $stoneBreakInfo));
+		self::register("chiseled_tuff_bricks", new Opaque(new BID(Ids::CHISELED_TUFF_BRICKS), "Chiseled Tuff Bricks", $stoneBreakInfo));
+		self::register("polished_tuff", new Opaque(new BID(Ids::POLISHED_TUFF), "Polished Tuff", $stoneBreakInfo));
+		self::register("tuff_bricks", new Opaque(new BID(Ids::TUFF_BRICKS), "Tuff Bricks", $stoneBreakInfo));
 
 		$infestedStoneBreakInfo = new Info(BreakInfo::pickaxe(0.75));
 		self::register("infested_stone", new InfestedStone(new BID(Ids::INFESTED_STONE), "Infested Stone", $infestedStoneBreakInfo, $stone));

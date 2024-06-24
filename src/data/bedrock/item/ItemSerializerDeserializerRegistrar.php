@@ -258,7 +258,6 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::GOLDEN_SWORD, Items::GOLDEN_SWORD());
 		$this->map1to1Item(Ids::GUNPOWDER, Items::GUNPOWDER());
 		$this->map1to1Item(Ids::HEART_OF_THE_SEA, Items::HEART_OF_THE_SEA());
-		$this->map1to1Item(Ids::HEAVY_CORE, Items::HEAVY_CORE());
 		$this->map1to1Item(Ids::HONEY_BOTTLE, Items::HONEY_BOTTLE());
 		$this->map1to1Item(Ids::HONEYCOMB, Items::HONEYCOMB());
 		$this->map1to1Item(Ids::HOST_ARMOR_TRIM_SMITHING_TEMPLATE, Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
