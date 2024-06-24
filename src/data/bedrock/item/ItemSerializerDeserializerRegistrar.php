@@ -137,6 +137,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
 		$this->map1to1Block(Ids::CHERRY_DOOR, Blocks::CHERRY_DOOR());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
+		$this->map1to1Block(Ids::COPPER_DOOR, Blocks::COPPER_DOOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
 		$this->map1to1Block(Ids::DARK_OAK_DOOR, Blocks::DARK_OAK_DOOR());
 		$this->map1to1Block(Ids::FLOWER_POT, Blocks::FLOWER_POT());
