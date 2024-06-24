@@ -60,6 +60,7 @@ class Mace extends Tool{
 		return false;
 	}
 
+	// make this look real
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
         if(($user = $victim->getLastDamageCause()->getDamager()) !== null){
             $height = $user->getFallDistance();
