@@ -1315,6 +1315,8 @@ final class VanillaBlocks{
 		self::register("polished_tuff_slab", new Slab(new BID(Ids::POLISHED_TUFF_SLAB), "Polished TuffSlab", $stoneBreakInfo));
 		self::register("polished_tuff_wall", new Wall(new BID(Ids::POLISHED_TUFF_WALL), "Polished TuffWall", $stoneBreakInfo));
 
+
+
 	}
 
 	private static function registerWoodenBlocks() : void{
