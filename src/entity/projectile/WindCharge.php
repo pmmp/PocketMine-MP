@@ -27,41 +27,43 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
+use function ceil;
+use function floor;
 
 class WindCharge extends Throwable{
-    private float $radius = 2.5;
+	private float $radius = 2.5;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
-    protected function getInitialDragMultiplier() : float{ return 0; }
-    protected function getInitialGravity() : float{ return 0; }
-    
+	protected function getInitialDragMultiplier() : float{ return 0; }
+	protected function getInitialGravity() : float{ return 0; }
+
 	protected function onHit(ProjectileHitEvent $event) : void{
-        $source = $this->getPosition();
+		$source = $this->getPosition();
 
-        //TODO implement wind charge explosion sound when added.
-        $this->getWorld()->addParticle($source, new WindExplosionParticle());
+		//TODO implement wind charge explosion sound when added.
+		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-        $minX = (int) floor($source->x - $this->radius - 1);
+		$minX = (int) floor($source->x - $this->radius - 1);
 		$maxX = (int) ceil($source->x + $this->radius + 1);
 		$minY = (int) floor($source->y - $this->radius - 1);
 		$maxY = (int) ceil($source->y + $this->radius + 1);
 		$minZ = (int) floor($source->z - $this->radius - 1);
 		$maxZ = (int) ceil($source->z + $this->radius + 1);
 
-        $bound = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
-        $list = $source->getWorld()->getNearbyEntities($bound);
+		$bound = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		$list = $source->getWorld()->getNearbyEntities($bound);
 
-        foreach($list as $entity){
-            $entityPos = $entity->getPosition();
+		foreach($list as $entity){
+			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / $this->radius;
 			$motion = $entityPos->subtractVector($source)->normalize();
-            $impact = (1 - $distance) * ($exposure = 1.5);
+			$impact = (1 - $distance) * ($exposure = 1.5);
 
-            if ($impact <= 0) continue;
+			if ($impact <= 0) continue;
 
-            ($distance <= 1) ? $vertical = 0 : $vertical = 0.75;
+			($distance <= 1) ? $vertical = 0 : $vertical = 0.75;
 			$entity->setMotion($entity->getMotion()->addVector($motion->multiply($impact)->add(0, $vertical, 0)));
-        }
+		}
 	}
 }
