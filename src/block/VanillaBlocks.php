@@ -213,7 +213,6 @@ use function strtolower;
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
  * @method static Copper COPPER()
- * @method static CopperBulb COPPER_BULB()
  * @method static Door COPPER_DOOR()
  * @method static CopperGrate COPPER_GRATE()
  * @method static Trapdoor COPPER_TRAPDOOR()
