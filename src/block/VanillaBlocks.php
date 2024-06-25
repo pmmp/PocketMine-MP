@@ -804,11 +804,6 @@ final class VanillaBlocks{
 	}
 
 	protected static function setup() : void{
-
-
-
-
-
 		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail", $railBreakInfo));
 		self::register("air", new Air(new BID(Ids::AIR), "Air", new Info(BreakInfo::indestructible(-1.0))));

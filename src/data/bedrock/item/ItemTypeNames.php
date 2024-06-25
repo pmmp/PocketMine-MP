@@ -495,7 +495,6 @@ final class ItemTypeNames{
 	public const TORCHFLOWER_SEEDS = "minecraft:torchflower_seeds";
 	public const TOTEM_OF_UNDYING = "minecraft:totem_of_undying";
 	public const TRADER_LLAMA_SPAWN_EGG = "minecraft:trader_llama_spawn_egg";
-	public const TRIAL_EXPLORER_MAP = "minecraft:trial_explorer_map";
 	public const TRIAL_KEY = "minecraft:trial_key";
 	public const TRIDENT = "minecraft:trident";
 	public const TROPICAL_FISH = "minecraft:tropical_fish";
