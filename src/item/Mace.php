@@ -35,9 +35,9 @@ class Mace extends Tool{
 		return BlockToolType::SWORD;
 	}
 
-    public function getMaxDurability(): int{
-        return 250;
-    }
+	public function getMaxDurability() : int{
+		return 250;
+	}
 
 	public function getAttackPoints() : int{
 		return 5;
@@ -63,26 +63,26 @@ class Mace extends Tool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-        if($victim->getLastDamageCause()->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
-			
+		if($victim->getLastDamageCause()->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
+
 			/** @var Entity $user */
 			$user = $victim->getLastDamageCause()->getDamager();
-            $height = $user->getFallDistance();
+			$height = $user->getFallDistance();
 
-            if($height >= 2) {
+			if($height >= 2) {
 				// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
 				$damage = ($height - 1) * 5;
 				$victim->setHealth($victim->getHealth() - $damage);
 
 				$motion = $user->getMotion();
 				$user->setMotion(new Vector3($motion->x, 0, $motion->z));
-	
+
 				$user->fallDistance = 0;
 			}
-        }
-            
-        $this->applyDamage(2);
-        
-        return true;
+		}
+
+		$this->applyDamage(2);
+
+		return true;
 	}
 }
