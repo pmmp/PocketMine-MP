@@ -908,6 +908,15 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::TINTED_GLASS, fn() => Blocks::TINTED_GLASS());
 		$this->mapSimple(Ids::TORCHFLOWER, fn() => Blocks::TORCHFLOWER());
 		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
+		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
+		$this->mapSimple(Ids::POLISHED_TUFF, fn() => Blocks::POLISHED_TUFF());
+		$this->mapStairs(Ids::POLISHED_TUFF_STAIRS, fn() => Blocks::POLISHED_TUFF_STAIRS());
+		$this->mapSlab(Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB, fn() => Blocks::POLISHED_TUFF_SLAB());
+		$this->map(Ids::POLISHED_TUFF_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::POLISHED_TUFF_WALL(), $in));
+		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
+		$this->mapStairs(Ids::TUFF_BRICK_STAIRS, fn() => Blocks::TUFF_BRICK_STAIRS());
+		$this->mapSlab(Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB, fn() => Blocks::TUFF_BRICK_SLAB());
+		$this->map(Ids::TUFF_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::TUFF_BRICK_WALL(), $in));
 		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
 		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
 		$this->mapSimple(Ids::WARPED_ROOTS, fn() => Blocks::WARPED_ROOTS());
@@ -915,7 +924,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
 		$this->mapSimple(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
 		$this->mapSimple(Ids::YELLOW_FLOWER, fn() => Blocks::DANDELION());
-
 		$this->mapSimple(Ids::ALLIUM, fn() => Blocks::ALLIUM());
 		$this->mapSimple(Ids::CORNFLOWER, fn() => Blocks::CORNFLOWER());
 		$this->mapSimple(Ids::AZURE_BLUET, fn() => Blocks::AZURE_BLUET());
@@ -927,35 +935,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::PINK_TULIP, fn() => Blocks::PINK_TULIP());
 		$this->mapSimple(Ids::RED_TULIP, fn() => Blocks::RED_TULIP());
 		$this->mapSimple(Ids::WHITE_TULIP, fn() => Blocks::WHITE_TULIP());
-
-
-		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
-
-		$this->mapSimple(Ids::POLISHED_TUFF, fn() => Blocks::POLISHED_TUFF());
-		$this->mapStairs(Ids::POLISHED_TUFF_STAIRS, fn() => Blocks::POLISHED_TUFF_STAIRS());
-		$this->mapSlab(Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB, fn() => Blocks::POLISHED_TUFF_SLAB());
-		$this->map(Ids::POLISHED_TUFF_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::POLISHED_TUFF_WALL(), $in));
-
-		//Tuff Brick
-		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
-		$this->mapStairs(Ids::TUFF_BRICK_STAIRS, fn() => Blocks::TUFF_BRICK_STAIRS());
-		$this->mapSlab(Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB, fn() => Blocks::TUFF_BRICK_SLAB());
-		$this->map(Ids::TUFF_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::TUFF_BRICK_WALL(), $in));
-
-		//Copper Grate
-		$this->mapSimple(Ids::COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::NONE()));
-		$this->mapSimple(Ids::EXPOSED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::EXPOSED()));
-		$this->mapSimple(Ids::WEATHERED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::WEATHERED()));
-		$this->mapSimple(Ids::OXIDIZED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::OXIDIZED()));
-
-		//Chiseled Copper
-		$this->mapSimple(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE()));
-		$this->mapSimple(Ids::EXPOSED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::EXPOSED()));
-		$this->mapSimple(Ids::WEATHERED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::WEATHERED()));
-		$this->mapSimple(Ids::OXIDIZED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::OXIDIZED()));
-	
-		$this->map(Ids::COPPER_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::COPPER_DOOR(), $in));
-		$this->mapSimple(Ids::COPPER_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::COPPER_TRAPDOOR(), $in));
 	}
 
 	private function registerDeserializers() : void{
@@ -1148,6 +1127,20 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::NONE));
 		$this->mapSlab(Ids::CUT_COPPER_SLAB, Ids::DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::NONE));
 		$this->mapStairs(Ids::CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::NONE));
+		
+		$this->mapSimple(Ids::COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::NONE()));
+		$this->mapSimple(Ids::EXPOSED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::EXPOSED()));
+		$this->mapSimple(Ids::WEATHERED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::WEATHERED()));
+		$this->mapSimple(Ids::OXIDIZED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::OXIDIZED()));
+
+		$this->mapSimple(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE()));
+		$this->mapSimple(Ids::EXPOSED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::EXPOSED()));
+		$this->mapSimple(Ids::WEATHERED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::WEATHERED()));
+		$this->mapSimple(Ids::OXIDIZED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::OXIDIZED()));
+	
+		$this->map(Ids::COPPER_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::COPPER_DOOR(), $in));
+		$this->mapSimple(Ids::COPPER_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::COPPER_TRAPDOOR(), $in));
+
 		$this->map(Ids::CORAL_FAN_HANG, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN : CoralType::TUBE));
 		$this->map(Ids::CORAL_FAN_HANG2, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)

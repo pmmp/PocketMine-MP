@@ -1040,43 +1040,18 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::RED_TULIP(), Ids::RED_TULIP);
 		$this->mapSimple(Blocks::WHITE_TULIP(), Ids::WHITE_TULIP);
 
-		// $this->map(Blocks::BLACKSTONE_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::BLACKSTONE_WALL)));
-
-		// Temp Holding
 		$this->mapSimple(Blocks::CHISELED_TUFF(), Ids::CHISELED_TUFF);
 		$this->mapSimple(Blocks::CHISELED_TUFF_BRICKS(), IDS::CHISELED_TUFF_BRICKS);
 
-		// Polished Tuff
 		$this->mapSimple(Blocks::POLISHED_TUFF(), Ids::POLISHED_TUFF);
 		$this->mapStairs(Blocks::POLISHED_TUFF_STAIRS(), Ids::POLISHED_TUFF_STAIRS);
 		$this->mapSlab(Blocks::POLISHED_TUFF_SLAB(), Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB);
 		$this->map(Blocks::POLISHED_TUFF_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::POLISHED_TUFF_WALL)));
 
-		// Tuff Bricks
 		$this->mapSimple(Blocks::TUFF_BRICKS(), Ids::TUFF_BRICKS);
 		$this->mapStairs(Blocks::TUFF_BRICK_STAIRS(), Ids::TUFF_BRICK_STAIRS);
 		$this->mapSlab(Blocks::TUFF_BRICK_SLAB(), Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB);
 		$this->map(Blocks::TUFF_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::TUFF_BRICK_WALL)));
-
-		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_COPPER_GRATE, Ids::WAXED_EXPOSED_COPPER_GRATE, Ids::WAXED_WEATHERED_COPPER_GRATE, Ids::WAXED_OXIDIZED_COPPER_GRATE) :
-				Helper::selectCopperId($oxidation, Ids::COPPER_GRATE, Ids::EXPOSED_COPPER_GRATE, Ids::WEATHERED_COPPER_GRATE, Ids::OXIDIZED_COPPER_GRATE)
-			);
-		});
-
-		$this->map(Blocks::CHISELED_COPPER(), function(ChiseledCopper $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_CHISELED_COPPER, Ids::WAXED_EXPOSED_CHISELED_COPPER, Ids::WAXED_WEATHERED_CHISELED_COPPER, Ids::WAXED_OXIDIZED_CHISELED_COPPER) :
-				Helper::selectCopperId($oxidation, Ids::CHISELED_COPPER, Ids::EXPOSED_CHISELED_COPPER, Ids::WEATHERED_CHISELED_COPPER, Ids::OXIDIZED_CHISELED_COPPER)
-			);
-		});
-
-
-		$this->map(Blocks::COPPER_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::COPPER_DOOR)));
-		$this->map(Blocks::COPPER_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::COPPER_TRAPDOOR)));
 	}
 
 	private function registerSerializers() : void{
@@ -1248,6 +1223,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::COBBLESTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, Ids::COBBLESTONE_SLAB, StringValues::STONE_SLAB_TYPE_COBBLESTONE));
 		$this->mapStairs(Blocks::COBBLESTONE_STAIRS(), Ids::STONE_STAIRS);
 		$this->map(Blocks::COBBLESTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_COBBLESTONE));
+		$this->map(Blocks::COPPER_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::COPPER_DOOR)));
+		$this->map(Blocks::COPPER_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::COPPER_TRAPDOOR)));
 		$this->map(Blocks::COPPER(), function(Copper $block) : Writer{
 			$oxidation = $block->getOxidation();
 			return new Writer($block->isWaxed() ?
@@ -1320,6 +1297,21 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 						Ids::OXIDIZED_CUT_COPPER_STAIRS
 					)
 				)
+			);
+		});
+		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation, Ids::WAXED_COPPER_GRATE, Ids::WAXED_EXPOSED_COPPER_GRATE, Ids::WAXED_WEATHERED_COPPER_GRATE, Ids::WAXED_OXIDIZED_COPPER_GRATE) :
+				Helper::selectCopperId($oxidation, Ids::COPPER_GRATE, Ids::EXPOSED_COPPER_GRATE, Ids::WEATHERED_COPPER_GRATE, Ids::OXIDIZED_COPPER_GRATE)
+			);
+		});
+
+		$this->map(Blocks::CHISELED_COPPER(), function(ChiseledCopper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation, Ids::WAXED_CHISELED_COPPER, Ids::WAXED_EXPOSED_CHISELED_COPPER, Ids::WAXED_WEATHERED_CHISELED_COPPER, Ids::WAXED_OXIDIZED_CHISELED_COPPER) :
+				Helper::selectCopperId($oxidation, Ids::CHISELED_COPPER, Ids::EXPOSED_CHISELED_COPPER, Ids::WEATHERED_CHISELED_COPPER, Ids::OXIDIZED_CHISELED_COPPER)
 			);
 		});
 		$this->map(Blocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
