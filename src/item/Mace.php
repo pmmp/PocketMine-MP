@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 
 class Mace extends Tool{
@@ -62,7 +63,10 @@ class Mace extends Tool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-        if(($user = $victim->getLastDamageCause()->getDamager()) !== null){
+        if($victim->getLastDamageCause()->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
+			
+			/** @var Entity $user */
+			$user = $victim->getLastDamageCause()->getDamager();
             $height = $user->getFallDistance();
 
             if($height >= 2) {
