@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -112,17 +112,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return BrewingStandInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : BrewingStandInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return BrewingStandInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : BrewingStandInventory{
 		return $this->inventory;
 	}
 

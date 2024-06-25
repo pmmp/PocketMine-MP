@@ -25,12 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\projectile\SplashPotion;
@@ -53,30 +52,29 @@ use function count;
 use function mt_rand;
 
 class Campfire extends Transparent{
-	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
+	use HorizontalFacingTrait{
+		describeBlockOnlyState as encodeFacingState;
+	}
 
 	protected bool $lit = true;
 	protected CampfireInventory $inventory;
 	/** @var array<int, int> */
 	protected array $cookingTimes = [];
 
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing) | (!$this->lit ? BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED : 0);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$this->encodeFacingState($w);
+		$w->bool($this->lit);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta & 0x03);
-		$this->lit = ($stateMeta & BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED) === 0;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileCampfire){
 			$this->inventory = $tile->getInventory();
 			$this->cookingTimes = $tile->getCookingTimes();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -85,10 +83,6 @@ class Campfire extends Transparent{
 		if($tile instanceof TileCampfire){
 			$tile->setCookingTimes($this->cookingTimes);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function hasEntityCollision() : bool{
@@ -110,7 +104,7 @@ class Campfire extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function getInventory() : CampfireInventory{
@@ -156,10 +150,13 @@ class Campfire extends Transparent{
 		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasCenterSupport()){
 			return false;
 		}
+		if($player !== null){
+			$this->facing = $player->getHorizontalFacing();
+		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			if($item instanceof FlintSteel){
 				if(!$this->lit){
@@ -174,7 +171,7 @@ class Campfire extends Transparent{
 				return true;
 			}
 
-			if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE())->match($item) !== null){
+			if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item) !== null){
 				$ingredient = clone $item;
 				$ingredient->setCount(1);
 				if(count($this->inventory->addItem($ingredient)) === 0){
@@ -201,7 +198,7 @@ class Campfire extends Transparent{
 			}
 			return false;
 		}
-		if($entity instanceof SplashPotion && $entity->getPotionType()->equals(PotionType::WATER())){
+		if($entity instanceof SplashPotion && $entity->getPotionType()->equals(PotionType::WATER)){
 			$this->extinguish();
 			return true;
 		}elseif($entity instanceof Living){
@@ -217,10 +214,10 @@ class Campfire extends Transparent{
 			$items = $this->inventory->getContents();
 			foreach($items as $slot => $item){
 				$this->setCookingTime($slot, $this->getCookingTime($slot) + 20);
-				if($this->getCookingTime($slot) >= FurnaceType::CAMPFIRE()->getCookDurationTicks()){
+				if($this->getCookingTime($slot) >= FurnaceType::CAMPFIRE->getCookDurationTicks()){
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
-					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE())->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
+					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
 					$this->position->getWorld()->dropItem($this->position->add(0, 1, 0), $result);
 				}
 			}

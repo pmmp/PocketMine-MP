@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,9 +27,10 @@ class PaintingMotive{
 	private static bool $initialized = false;
 
 	/** @var PaintingMotive[] */
-	protected static $motives = [];
+	protected static array $motives = [];
 
 	public static function init() : void{
+		self::$initialized = true;
 		foreach([
 			new PaintingMotive(1, 1, "Alban"),
 			new PaintingMotive(1, 1, "Aztec"),
@@ -67,10 +68,16 @@ class PaintingMotive{
 	}
 
 	public static function registerMotive(PaintingMotive $motive) : void{
+		if(!self::$initialized){
+			self::init();
+		}
 		self::$motives[$motive->getName()] = $motive;
 	}
 
 	public static function getMotiveByName(string $name) : ?PaintingMotive{
+		if(!self::$initialized){
+			self::init();
+		}
 		return self::$motives[$name] ?? null;
 	}
 
@@ -84,18 +91,11 @@ class PaintingMotive{
 		return self::$motives;
 	}
 
-	/** @var string */
-	protected $name;
-	/** @var int */
-	protected $width;
-	/** @var int */
-	protected $height;
-
-	public function __construct(int $width, int $height, string $name){
-		$this->name = $name;
-		$this->width = $width;
-		$this->height = $height;
-	}
+	public function __construct(
+		protected int $width,
+		protected int $height,
+		protected string $name
+	){}
 
 	public function getName() : string{
 		return $this->name;

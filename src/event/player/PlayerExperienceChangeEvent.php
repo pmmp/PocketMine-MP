@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,9 +34,6 @@ use pocketmine\event\entity\EntityEvent;
  */
 class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
-
-	/** @var Human */
-	protected $entity;
 
 	public function __construct(
 		Human $player,

@@ -17,26 +17,30 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\ItemFrameAddItemSound;
+use pocketmine\world\sound\ItemFrameRemoveItemSound;
+use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
-	use HorizontalFacingTrait;
+	use AnyFacingTrait;
 
 	public const ROTATIONS = 8;
 
@@ -46,16 +50,12 @@ class ItemFrame extends Flowable{
 	protected int $itemRotation = 0;
 	protected float $itemDropChance = 1.0;
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->facing($this->facing);
+		$w->bool($this->hasMap);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::read5MinusHorizontalFacing($stateMeta);
-		$this->hasMap = ($stateMeta & BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP) !== 0;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
@@ -66,6 +66,8 @@ class ItemFrame extends Flowable{
 			$this->itemRotation = $tile->getItemRotation() % self::ROTATIONS;
 			$this->itemDropChance = $tile->getItemDropChance();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -76,10 +78,6 @@ class ItemFrame extends Flowable{
 			$tile->setItemRotation($this->itemRotation);
 			$tile->setItemDropChance($this->itemDropChance);
 		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getFramedItem() : ?Item{
@@ -133,11 +131,15 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameRotateItemSound());
 		}elseif(!$item->isNull()){
 			$this->framedItem = $item->pop();
+
+			$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
 		}else{
 			return true;
 		}
@@ -151,22 +153,28 @@ class ItemFrame extends Flowable{
 		if($this->framedItem === null){
 			return false;
 		}
+		$world = $this->position->getWorld();
 		if(lcg_value() <= $this->itemDropChance){
-			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$world->addSound($this->position, new ItemFrameRemoveItemSound());
 		}
 		$this->setFramedItem(null);
-		$this->position->getWorld()->setBlock($this->position, $this);
+		$world->setBlock($this->position, $this);
 		return true;
 	}
 
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
+	}
+
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 

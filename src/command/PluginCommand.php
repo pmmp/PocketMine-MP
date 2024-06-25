@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -40,10 +40,6 @@ final class PluginCommand extends Command implements PluginOwned{
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 
 		if(!$this->owner->isEnabled()){
-			return false;
-		}
-
-		if(!$this->testPermission($sender)){
 			return false;
 		}
 

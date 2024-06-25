@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,11 +42,13 @@ class Armor extends Durable{
 
 	private ArmorTypeInfo $armorInfo;
 
-	/** @var Color|null */
-	protected $customColor = null;
+	protected ?Color $customColor = null;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info){
-		parent::__construct($identifier, $name);
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = []){
+		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->armorInfo = $info;
 	}
 
@@ -69,6 +71,18 @@ class Armor extends Durable{
 		return 1;
 	}
 
+	public function isFireProof() : bool{
+		return $this->armorInfo->isFireProof();
+	}
+
+	public function getMaterial() : ArmorMaterial{
+		return $this->armorInfo->getMaterial();
+	}
+
+	public function getEnchantability() : int{
+		return $this->armorInfo->getMaterial()->getEnchantability();
+	}
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */
@@ -83,6 +97,12 @@ class Armor extends Durable{
 	 */
 	public function setCustomColor(Color $color) : self{
 		$this->customColor = $color;
+		return $this;
+	}
+
+	/** @return $this */
+	public function clearCustomColor() : self{
+		$this->customColor = null;
 		return $this;
 	}
 
@@ -120,18 +140,21 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
-		if($thisCopy->getCount() === 0){
-			$player->getInventory()->setItemInHand($existing);
-		}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
-			$player->getInventory()->setItemInHand($thisCopy);
-			$player->getInventory()->addItem($existing);
+		$player->getInventory()->setItemInHand($existing);
+		$sound = $new->getMaterial()->getEquipSound();
+		if($sound !== null){
+			$player->broadcastSound($sound);
 		}
-		return ItemUseResult::SUCCESS();
+		if(!$thisCopy->isNull()){
+			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
+			$returnedItems[] = $thisCopy;
+		}
+		return ItemUseResult::SUCCESS;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{

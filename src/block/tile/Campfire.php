@@ -56,17 +56,14 @@ class Campfire extends Spawnable implements Container{
 		);
 	}
 
-	/**
-	 * @return CampfireInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : CampfireInventory{
 		return $this->inventory;
 	}
 
 	/**
 	 * @return CampfireInventory
 	 */
-	public function getRealInventory(){
+	public function getRealInventory() : CampfireInventory{
 		return $this->inventory;
 	}
 

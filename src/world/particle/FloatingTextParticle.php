@@ -17,48 +17,38 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
-use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
-use pocketmine\network\mcpe\protocol\PlayerListPacket;
+use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
-use pocketmine\network\mcpe\protocol\types\DeviceOS;
+use pocketmine\network\mcpe\protocol\types\entity\ByteMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\entity\IntMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\LongMetadataProperty;
-use pocketmine\network\mcpe\protocol\types\GameMode;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
-use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use Ramsey\Uuid\Uuid;
-use function str_repeat;
+use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
+use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 
 class FloatingTextParticle implements Particle{
 	//TODO: HACK!
 
-	/** @var string */
-	protected $text;
-	/** @var string */
-	protected $title;
-	/** @var int|null */
-	protected $entityId = null;
-	/** @var bool */
-	protected $invisible = false;
+	protected ?int $entityId = null;
+	protected bool $invisible = false;
 
-	public function __construct(string $text, string $title = ""){
-		$this->text = $text;
-		$this->title = $title;
-	}
+	public function __construct(
+		protected string $text,
+		protected string $title = ""
+	){}
 
 	public function getText() : string{
 		return $this->text;
@@ -94,39 +84,35 @@ class FloatingTextParticle implements Particle{
 		}
 
 		if(!$this->invisible){
-			$uuid = Uuid::uuid4();
 			$name = $this->title . ($this->text !== "" ? "\n" . $this->text : "");
 
-			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData(new Skin("Standard_Custom", str_repeat("\x00", 8192))))]);
-
 			$actorFlags = (
-				1 << EntityMetadataFlags::IMMOBILE
+				1 << EntityMetadataFlags::NO_AI
 			);
 			$actorMetadata = [
 				EntityMetadataProperties::FLAGS => new LongMetadataProperty($actorFlags),
-				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01) //zero causes problems on debug builds
+				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01), //zero causes problems on debug builds
+				EntityMetadataProperties::BOUNDING_BOX_WIDTH => new FloatMetadataProperty(0.0),
+				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty(0.0),
+				EntityMetadataProperties::NAMETAG => new StringMetadataProperty($name),
+				EntityMetadataProperties::VARIANT => new IntMetadataProperty(TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId(VanillaBlocks::AIR()->getStateId())),
+				EntityMetadataProperties::ALWAYS_SHOW_NAMETAG => new ByteMetadataProperty(1),
 			];
-			$p[] = AddPlayerPacket::create(
-				$uuid,
-				$name,
+			$p[] = AddActorPacket::create(
 				$this->entityId, //TODO: actor unique ID
 				$this->entityId,
-				"",
-				$pos, //TODO: check offset
+				EntityIds::FALLING_BLOCK,
+				$pos, //TODO: check offset (0.49?)
 				null,
 				0,
 				0,
 				0,
-				ItemStackWrapper::legacy(ItemStack::null()),
-				GameMode::SURVIVAL,
-				$actorMetadata,
-				AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->entityId),
+				0,
 				[],
-				"",
-				DeviceOS::UNKNOWN
+				$actorMetadata,
+				new PropertySyncData([], []),
+				[]
 			);
-
-			$p[] = PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($uuid)]);
 		}
 
 		return $p;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,5 +46,5 @@ abstract class WorldProviderManagerEntry{
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
-	abstract public function fromPath(string $path) : WorldProvider;
+	abstract public function fromPath(string $path, \Logger $logger) : WorldProvider;
 }

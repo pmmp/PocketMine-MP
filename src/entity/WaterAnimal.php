@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,8 +28,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
 abstract class WaterAnimal extends Living implements Ageable{
-	/** @var bool */
-	protected $baby = false;
+	protected bool $baby = false;
 
 	public function isBaby() : bool{
 		return $this->baby;

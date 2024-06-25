@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,11 +28,11 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\io\BaseWorldProvider;
-use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -73,7 +73,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/** @var RegionLoader[] */
-	protected $regions = [];
+	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{
 		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));
@@ -92,6 +92,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @param int $regionX reference parameter
 	 * @param int $regionZ reference parameter
+	 * @phpstan-param-out int $regionX
+	 * @phpstan-param-out int $regionZ
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
@@ -116,12 +118,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			try{
 				$this->regions[$index] = RegionLoader::loadExisting($path);
 			}catch(CorruptedRegionException $e){
-				$logger = \GlobalLogger::get();
-				$logger->error("Corrupted region file detected: " . $e->getMessage());
+				$this->logger->error("Corrupted region file detected: " . $e->getMessage());
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
-				$logger->error("Corrupted region file has been backed up to " . $backupPath);
+				$this->logger->error("Corrupted region file has been backed up to " . $backupPath);
 
 				$this->regions[$index] = RegionLoader::createNew($path);
 			}
@@ -146,7 +147,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ?ChunkData;
+	abstract protected function deserializeChunk(string $data, \Logger $logger) : ?LoadedChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -188,7 +189,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) && is_int($regionZ));
@@ -199,7 +200,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 		$chunkData = $this->loadRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunkData !== null){
-			return $this->deserializeChunk($chunkData);
+			return $this->deserializeChunk($chunkData, new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ"));
 		}
 
 		return null;

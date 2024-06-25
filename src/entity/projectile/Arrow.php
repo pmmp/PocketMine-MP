@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,11 +33,14 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\EntityEventBroadcaster;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ArrowHitSound;
+use function ceil;
 use function mt_rand;
 use function sqrt;
 
@@ -51,24 +54,13 @@ class Arrow extends Projectile{
 
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 	public const TAG_CRIT = "crit"; //TAG_Byte
+	private const TAG_LIFE = "life"; //TAG_Short
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
-	/** @var float */
-	protected $damage = 2.0;
-
-	/** @var int */
-	protected $pickupMode = self::PICKUP_ANY;
-
-	/** @var float */
-	protected $punchKnockback = 0.0;
-
-	/** @var int */
-	protected $collideTicks = 0;
-
-	/** @var bool */
-	protected $critical = false;
+	protected float $damage = 2.0;
+	protected int $pickupMode = self::PICKUP_ANY;
+	protected float $punchKnockback = 0.0;
+	protected int $collideTicks = 0;
+	protected bool $critical = false;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, ?CompoundTag $nbt = null){
 		parent::__construct($location, $shootingEntity, $nbt);
@@ -77,19 +69,23 @@ class Arrow extends Projectile{
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
+	protected function getInitialDragMultiplier() : float{ return 0.01; }
+
+	protected function getInitialGravity() : float{ return 0.05; }
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
 		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
 		$this->critical = $nbt->getByte(self::TAG_CRIT, 0) === 1;
-		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
+		$this->collideTicks = $nbt->getShort(self::TAG_LIFE, $this->collideTicks);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
 		$nbt->setByte(self::TAG_CRIT, $this->critical ? 1 : 0);
-		$nbt->setShort("life", $this->collideTicks);
+		$nbt->setShort(self::TAG_LIFE, $this->collideTicks);
 		return $nbt;
 	}
 
@@ -103,7 +99,7 @@ class Arrow extends Projectile{
 	}
 
 	public function getResultDamage() : int{
-		$base = parent::getResultDamage();
+		$base = (int) ceil($this->motion->length() * parent::getResultDamage());
 		if($this->isCritical()){
 			return ($base + mt_rand(0, (int) ($base / 2) + 1));
 		}else{
@@ -194,9 +190,10 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
-		}
+		NetworkBroadcastUtils::broadcastEntityEvent(
+			$this->getViewers(),
+			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onPickUpItem($recipients, $player, $this)
+		);
 
 		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();

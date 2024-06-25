@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,10 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class Podzol extends Opaque{
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [

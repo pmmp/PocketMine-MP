@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
 
 class CommandStringHelperTest extends TestCase{
 
-	public function parseQuoteAwareProvider() : \Generator{
+	public static function parseQuoteAwareProvider() : \Generator{
 		yield [
 			'give "steve jobs" apple',
 			['give', 'steve jobs', 'apple']

@@ -17,11 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io\leveldb;
+
+use pocketmine\VersionInfo;
 
 final class ChunkDataKey{
 	private function __construct(){
@@ -49,5 +51,7 @@ final class ChunkDataKey{
 	public const GENERATED_BEFORE_CNC_BLENDING = "\x3d";
 
 	public const OLD_VERSION = "\x76";
+
+	public const PM_DATA_VERSION = VersionInfo::TAG_WORLD_DATA_VERSION;
 
 }

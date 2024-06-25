@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,10 +44,8 @@ abstract class Biome{
 	/** @var Block[] */
 	private array $groundCover = [];
 
-	/** @var float */
-	protected $rainfall = 0.5;
-	/** @var float */
-	protected $temperature = 0.5;
+	protected float $rainfall = 0.5;
+	protected float $temperature = 0.5;
 
 	public function clearPopulators() : void{
 		$this->populators = [];

@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
 use pocketmine\data\bedrock\PotionTypeIdMap;
@@ -50,13 +50,11 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
+	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
-	/** @var bool */
-	protected $linger = false;
+	protected bool $linger = false;
 	protected PotionType $potionType;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, PotionType $potionType, ?CompoundTag $nbt = null){
@@ -64,9 +62,11 @@ class SplashPotion extends Throwable{
 		parent::__construct($location, $shootingEntity, $nbt);
 	}
 
+	protected function getInitialGravity() : float{ return 0.05; }
+
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
 
 		return $nbt;
 	}
@@ -98,8 +98,8 @@ class SplashPotion extends Throwable{
 
 		if($hasEffects){
 			if(!$this->willLinger()){
-				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
-					if($entity instanceof Living && $entity->isAlive()){
+				foreach($this->getWorld()->getCollidingEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+					if($entity instanceof Living){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
 						if($distanceSquared > 16){ //4 blocks
 							continue;
@@ -129,14 +129,14 @@ class SplashPotion extends Throwable{
 			}else{
 				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
+		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType() === PotionType::WATER){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
-			if($blockIn->getId() === BlockLegacyIds::FIRE){
+			if($blockIn->hasTypeTag(BlockTypeTags::FIRE)){
 				$this->getWorld()->setBlock($blockIn->getPosition(), VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
-				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
+				if($horizontalSide->hasTypeTag(BlockTypeTags::FIRE)){
 					$this->getWorld()->setBlock($horizontalSide->getPosition(), VanillaBlocks::AIR());
 				}
 			}

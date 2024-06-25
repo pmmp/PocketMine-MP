@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -57,19 +57,19 @@ final class EntityDataHelper{
 	 * @throws SavedDataLoadingException
 	 */
 	public static function parseLocation(CompoundTag $nbt, World $world) : Location{
-		$pos = self::parseVec3($nbt, "Pos", false);
+		$pos = self::parseVec3($nbt, Entity::TAG_POS, false);
 
-		$yawPitch = $nbt->getTag("Rotation");
+		$yawPitch = $nbt->getTag(Entity::TAG_ROTATION);
 		if(!($yawPitch instanceof ListTag) || $yawPitch->getTagType() !== NBT::TAG_Float){
-			throw new SavedDataLoadingException("'Rotation' should be a List<Float>");
+			throw new SavedDataLoadingException("'" . Entity::TAG_ROTATION . "' should be a List<Float>");
 		}
 		/** @var FloatTag[] $values */
 		$values = $yawPitch->getValue();
 		if(count($values) !== 2){
 			throw new SavedDataLoadingException("Expected exactly 2 entries for 'Rotation'");
 		}
-		self::validateFloat("Rotation", "yaw", $values[0]->getValue());
-		self::validateFloat("Rotation", "pitch", $values[1]->getValue());
+		self::validateFloat(Entity::TAG_ROTATION, "yaw", $values[0]->getValue());
+		self::validateFloat(Entity::TAG_ROTATION, "pitch", $values[1]->getValue());
 
 		return Location::fromObject($pos, $world, $values[0]->getValue(), $values[1]->getValue());
 	}
@@ -80,7 +80,7 @@ final class EntityDataHelper{
 	public static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
 		$pos = $nbt->getTag($tagName);
 		if($pos === null && $optional){
-			return new Vector3(0, 0, 0);
+			return Vector3::zero();
 		}
 		if(!($pos instanceof ListTag) || ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
 			throw new SavedDataLoadingException("'$tagName' should be a List<Double> or List<Float>");

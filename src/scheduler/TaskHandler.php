@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,34 +27,24 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class TaskHandler{
+	protected int $nextRun;
 
-	/** @var Task */
-	protected $task;
-
-	/** @var int */
-	protected $delay;
-
-	/** @var int */
-	protected $period;
-
-	/** @var int */
-	protected $nextRun;
-
-	/** @var bool */
-	protected $cancelled = false;
+	protected bool $cancelled = false;
 
 	private TimingsHandler $timings;
 
 	private string $taskName;
 	private string $ownerName;
 
-	public function __construct(Task $task, int $delay = -1, int $period = -1, ?string $ownerName = null){
+	public function __construct(
+		protected Task $task,
+		protected int $delay = -1,
+		protected int $period = -1,
+		?string $ownerName = null
+	){
 		if($task->getHandler() !== null){
 			throw new \InvalidArgumentException("Cannot assign multiple handlers to the same task");
 		}
-		$this->task = $task;
-		$this->delay = $delay;
-		$this->period = $period;
 		$this->taskName = $task->getName();
 		$this->ownerName = $ownerName ?? "Unknown";
 		$this->timings = Timings::getScheduledTaskTimings($this, $period);
@@ -69,6 +59,9 @@ class TaskHandler{
 		return $this->nextRun;
 	}
 
+	/**
+	 * @internal
+	 */
 	public function setNextRun(int $ticks) : void{
 		$this->nextRun = $ticks;
 	}
@@ -103,11 +96,17 @@ class TaskHandler{
 		}
 	}
 
+	/**
+	 * @internal
+	 */
 	public function remove() : void{
 		$this->cancelled = true;
 		$this->task->setHandler(null);
 	}
 
+	/**
+	 * @internal
+	 */
 	public function run() : void{
 		$this->timings->startTiming();
 		try{

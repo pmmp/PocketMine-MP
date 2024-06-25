@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,6 +30,11 @@ use pocketmine\block\Block;
  */
 class BlockSpreadEvent extends BaseBlockChangeEvent{
 
+	/**
+	 * @param Block $block    Block being replaced (TODO: rename this)
+	 * @param Block $source   Origin of the spread
+	 * @param Block $newState Replacement block
+	 */
 	public function __construct(
 		Block $block,
 		private Block $source,

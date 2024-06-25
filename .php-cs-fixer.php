@@ -42,11 +42,40 @@ return (new PhpCsFixer\Config)
 			'import_functions' => true,
 			'import_classes' => null,
 		],
+		'header_comment' => [
+			'comment_type' => 'comment',
+			'header' => <<<BODY
+
+ ____            _        _   __  __ _                  __  __ ____
+|  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+| |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+|  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+|_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+@author PocketMine Team
+@link http://www.pocketmine.net/
+
+
+BODY,
+			'location' => 'after_open'
+		],
 		'indentation_type' => true,
 		'logical_operators' => true,
+		'native_constant_invocation' => [
+			'scope' => 'namespaced'
+		],
 		'native_function_invocation' => [
 			'scope' => 'namespaced',
 			'include' => ['@all'],
+		],
+		'new_with_braces' => [
+			'named_class' => true,
+			'anonymous_class' => false,
 		],
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
@@ -65,6 +94,12 @@ return (new PhpCsFixer\Config)
 				'const',
 			],
 			'sort_algorithm' => 'alpha'
+		],
+		'phpdoc_align' => [
+			'align' => 'vertical',
+			'tags' => [
+				'param',
+			]
 		],
 		'phpdoc_line_span' => [
 			'property' => 'single',

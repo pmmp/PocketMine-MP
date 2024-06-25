@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -33,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_key_exists;
+use function spl_object_id;
 
 class BrewingStand extends Transparent{
 
@@ -42,33 +44,8 @@ class BrewingStand extends Transparent{
 	 */
 	protected array $slots = [];
 
-	protected function writeStateToMeta() : int{
-		$flags = 0;
-		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			$flags |= (array_key_exists($slot->id(), $this->slots) ? $flag : 0);
-		}
-		return $flags;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->slots = [];
-		foreach([
-			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
-			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
-		] as $flag => $slot){
-			if(($stateMeta & $flag) !== 0){
-				$this->slots[$slot->id()] = $slot;
-			}
-		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->enumSet($this->slots, BrewingStandSlot::cases());
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -85,18 +62,18 @@ class BrewingStand extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function hasSlot(BrewingStandSlot $slot) : bool{
-		return array_key_exists($slot->id(), $this->slots);
+		return array_key_exists(spl_object_id($slot), $this->slots);
 	}
 
 	public function setSlot(BrewingStandSlot $slot, bool $occupied) : self{
 		if($occupied){
-			$this->slots[$slot->id()] = $slot;
+			$this->slots[spl_object_id($slot)] = $slot;
 		}else{
-			unset($this->slots[$slot->id()]);
+			unset($this->slots[spl_object_id($slot)]);
 		}
 		return $this;
 	}
@@ -113,12 +90,12 @@ class BrewingStand extends Transparent{
 	public function setSlots(array $slots) : self{
 		$this->slots = [];
 		foreach($slots as $slot){
-			$this->slots[$slot->id()] = $slot;
+			$this->slots[spl_object_id($slot)] = $slot;
 		}
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$stand = $this->position->getWorld()->getTile($this->position);
 			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
@@ -130,14 +107,15 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$brewing = $this->position->getWorld()->getTile($this->position);
+		$world = $this->position->getWorld();
+		$brewing = $world->getTile($this->position);
 		if($brewing instanceof TileBrewingStand){
 			if($brewing->onUpdate()){
-				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+				$world->scheduleDelayedBlockUpdate($this->position, 1);
 			}
 
 			$changed = false;
-			foreach(BrewingStandSlot::getAll() as $slot){
+			foreach(BrewingStandSlot::cases() as $slot){
 				$occupied = !$brewing->getInventory()->isSlotEmpty($slot->getSlotNumber());
 				if($occupied !== $this->hasSlot($slot)){
 					$this->setSlot($slot, $occupied);
@@ -146,7 +124,7 @@ class BrewingStand extends Transparent{
 			}
 
 			if($changed){
-				$this->position->getWorld()->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this);
 			}
 		}
 	}

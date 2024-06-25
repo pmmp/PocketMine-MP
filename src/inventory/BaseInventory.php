@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
+use pocketmine\utils\Utils;
 use function array_slice;
 use function count;
 use function max;
@@ -37,15 +38,14 @@ use function spl_object_id;
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
 abstract class BaseInventory implements Inventory{
-	/** @var int */
-	protected $maxStackSize = Inventory::MAX_STACK;
+	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
-	protected $viewers = [];
+	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
-	protected $listeners;
+	protected ObjectSet $listeners;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();
@@ -76,13 +76,16 @@ abstract class BaseInventory implements Inventory{
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContents(array $items) : void{
+		Utils::validateArrayValueType($items, function(Item $item) : void{});
 		if(count($items) > $this->getSize()){
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
@@ -104,13 +107,22 @@ abstract class BaseInventory implements Inventory{
 		$this->onContentChange($oldContents);
 	}
 
+	/**
+	 * Helper for utility functions which search the inventory.
+	 * TODO: make this abstract instead of providing a slow default implementation (BC break)
+	 */
+	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
+		$item = $this->getItem($slot);
+		return $item->equals($test, true, $checkTags) ? $item->getCount() : 0;
+	}
+
 	public function contains(Item $item) : bool{
 		$count = max(1, $item->getCount());
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
-		foreach($this->getContents() as $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
-				$count -= $i->getCount();
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			$slotCount = $this->getMatchingItemCount($i, $item, $checkTags);
+			if($slotCount > 0){
+				$count -= $slotCount;
 				if($count <= 0){
 					return true;
 				}
@@ -122,33 +134,23 @@ abstract class BaseInventory implements Inventory{
 
 	public function all(Item $item) : array{
 		$slots = [];
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
-		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
-				$slots[$index] = $i;
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			if($this->getMatchingItemCount($i, $item, $checkTags) > 0){
+				$slots[$i] = $this->getItem($i);
 			}
 		}
 
 		return $slots;
 	}
+
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
-		$checkDamage = $exact || !$item->hasAnyDamageValue();
 		$checkTags = $exact || $item->hasNamedTag();
 
-		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags) && ($i->getCount() === $count || (!$exact && $i->getCount() > $count))){
-				return $index;
-			}
-		}
-
-		return -1;
-	}
-
-	public function firstEmpty() : int{
-		foreach($this->getContents(true) as $i => $slot){
-			if($slot->isNull()){
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			$slotCount = $this->getMatchingItemCount($i, $item, $checkTags);
+			if($slotCount > 0 && ($slotCount === $count || (!$exact && $slotCount > $count))){
 				return $i;
 			}
 		}
@@ -156,6 +158,20 @@ abstract class BaseInventory implements Inventory{
 		return -1;
 	}
 
+	public function firstEmpty() : int{
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			if($this->isSlotEmpty($i)){
+				return $i;
+			}
+		}
+
+		return -1;
+	}
+
+	/**
+	 * TODO: make this abstract and force implementations to implement it properly (BC break)
+	 * This default implementation works, but is slow.
+	 */
 	public function isSlotEmpty(int $index) : bool{
 		return $this->getItem($index)->isNull();
 	}
@@ -166,14 +182,16 @@ abstract class BaseInventory implements Inventory{
 
 	public function getAddableItemQuantity(Item $item) : int{
 		$count = $item->getCount();
+		$maxStackSize = min($this->getMaxStackSize(), $item->getMaxStackSize());
+
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$slot = $this->getItem($i);
-			if($item->canStackWith($slot)){
-				if(($diff = min($slot->getMaxStackSize(), $item->getMaxStackSize()) - $slot->getCount()) > 0){
+			if($this->isSlotEmpty($i)){
+				$count -= $maxStackSize;
+			}else{
+				$slotCount = $this->getMatchingItemCount($i, $item, true);
+				if($slotCount > 0 && ($diff = $maxStackSize - $slotCount) > 0){
 					$count -= $diff;
 				}
-			}elseif($slot->isNull()){
-				$count -= min($this->getMaxStackSize(), $item->getMaxStackSize());
 			}
 
 			if($count <= 0){
@@ -207,22 +225,29 @@ abstract class BaseInventory implements Inventory{
 		return $returnSlots;
 	}
 
-	private function internalAddItem(Item $slot) : Item{
+	private function internalAddItem(Item $newItem) : Item{
 		$emptySlots = [];
 
+		$maxStackSize = min($this->getMaxStackSize(), $newItem->getMaxStackSize());
+
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($item->isNull()){
+			if($this->isSlotEmpty($i)){
 				$emptySlots[] = $i;
+				continue;
+			}
+			$slotCount = $this->getMatchingItemCount($i, $newItem, true);
+			if($slotCount === 0){
+				continue;
 			}
 
-			if($slot->canStackWith($item) && $item->getCount() < $item->getMaxStackSize()){
-				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
+			if($slotCount < $maxStackSize){
+				$amount = min($maxStackSize - $slotCount, $newItem->getCount());
 				if($amount > 0){
-					$slot->setCount($slot->getCount() - $amount);
-					$item->setCount($item->getCount() + $amount);
-					$this->setItem($i, $item);
-					if($slot->getCount() <= 0){
+					$newItem->setCount($newItem->getCount() - $amount);
+					$slotItem = $this->getItem($i);
+					$slotItem->setCount($slotItem->getCount() + $amount);
+					$this->setItem($i, $slotItem);
+					if($newItem->getCount() <= 0){
 						break;
 					}
 				}
@@ -231,65 +256,66 @@ abstract class BaseInventory implements Inventory{
 
 		if(count($emptySlots) > 0){
 			foreach($emptySlots as $slotIndex){
-				$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
-				$slot->setCount($slot->getCount() - $amount);
-				$item = clone $slot;
-				$item->setCount($amount);
-				$this->setItem($slotIndex, $item);
-				if($slot->getCount() <= 0){
+				$amount = min($maxStackSize, $newItem->getCount());
+				$newItem->setCount($newItem->getCount() - $amount);
+				$slotItem = clone $newItem;
+				$slotItem->setCount($amount);
+				$this->setItem($slotIndex, $slotItem);
+				if($newItem->getCount() <= 0){
 					break;
 				}
 			}
 		}
 
-		return $slot;
+		return $newItem;
 	}
 
 	public function remove(Item $item) : void{
-		$checkDamage = !$item->hasAnyDamageValue();
 		$checkTags = $item->hasNamedTag();
 
-		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
-				$this->clear($index);
+		for($i = 0, $size = $this->getSize(); $i < $size; $i++){
+			if($this->getMatchingItemCount($i, $item, $checkTags) > 0){
+				$this->clear($i);
 			}
 		}
 	}
 
 	public function removeItem(Item ...$slots) : array{
-		/** @var Item[] $itemSlots */
+		/** @var Item[] $searchItems */
 		/** @var Item[] $slots */
-		$itemSlots = [];
+		$searchItems = [];
 		foreach($slots as $slot){
 			if(!$slot->isNull()){
-				$itemSlots[] = clone $slot;
+				$searchItems[] = clone $slot;
 			}
 		}
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			$item = $this->getItem($i);
-			if($item->isNull()){
+			if($this->isSlotEmpty($i)){
 				continue;
 			}
 
-			foreach($itemSlots as $index => $slot){
-				if($slot->equals($item, !$slot->hasAnyDamageValue(), $slot->hasNamedTag())){
-					$amount = min($item->getCount(), $slot->getCount());
-					$slot->setCount($slot->getCount() - $amount);
-					$item->setCount($item->getCount() - $amount);
-					$this->setItem($i, $item);
-					if($slot->getCount() <= 0){
-						unset($itemSlots[$index]);
+			foreach($searchItems as $index => $search){
+				$slotCount = $this->getMatchingItemCount($i, $search, $search->hasNamedTag());
+				if($slotCount > 0){
+					$amount = min($slotCount, $search->getCount());
+					$search->setCount($search->getCount() - $amount);
+
+					$slotItem = $this->getItem($i);
+					$slotItem->setCount($slotItem->getCount() - $amount);
+					$this->setItem($i, $slotItem);
+					if($search->getCount() <= 0){
+						unset($searchItems[$index]);
 					}
 				}
 			}
 
-			if(count($itemSlots) === 0){
+			if(count($searchItems) === 0){
 				break;
 			}
 		}
 
-		return $itemSlots;
+		return $searchItems;
 	}
 
 	public function clear(int $index) : void{
@@ -343,7 +369,7 @@ abstract class BaseInventory implements Inventory{
 			if($invManager === null){
 				continue;
 			}
-			$invManager->syncSlot($this, $index);
+			$invManager->onSlotChange($this, $index);
 		}
 	}
 

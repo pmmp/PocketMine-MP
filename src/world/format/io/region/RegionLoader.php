@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -64,27 +64,20 @@ class RegionLoader{
 
 	public const FIRST_SECTOR = 2; //location table occupies 0 and 1
 
-	/** @var int */
-	public static $COMPRESSION_LEVEL = 7;
-
-	/** @var string */
-	protected $filePath;
 	/** @var resource */
 	protected $filePointer;
-	/** @var int */
-	protected $nextSector = self::FIRST_SECTOR;
+	protected int $nextSector = self::FIRST_SECTOR;
 	/** @var RegionLocationTableEntry[]|null[] */
-	protected $locationTable = [];
-	/** @var RegionGarbageMap */
-	protected $garbageTable;
-	/** @var int */
-	public $lastUsed = 0;
+	protected array $locationTable = [];
+	protected RegionGarbageMap $garbageTable;
+	public int $lastUsed;
 
 	/**
 	 * @throws CorruptedRegionException
 	 */
-	private function __construct(string $filePath){
-		$this->filePath = $filePath;
+	private function __construct(
+		protected string $filePath
+	){
 		$this->garbageTable = new RegionGarbageMap([]);
 		$this->lastUsed = time();
 
@@ -276,6 +269,8 @@ class RegionLoader{
 	/**
 	 * @param int $x reference parameter
 	 * @param int $z reference parameter
+	 * @phpstan-param-out int $x
+	 * @phpstan-param-out int $z
 	 */
 	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
 		$x = $offset & 0x1f;

@@ -17,19 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+/** @deprecated */
 final class ItemFlags{
 
 	private function __construct(){
 		//NOOP
 	}
-
-	//TODO: this should probably move to protocol
 
 	public const NONE = 0x0;
 	public const ALL = 0xffff;

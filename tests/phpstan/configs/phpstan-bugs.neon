@@ -1,49 +1,19 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/block/BaseBanner.php
+			path: ../../../src/block/CakeWithCandle.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\TileFactory\\:\\:\\$saveNames \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, bool\\|string\\>\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/block/tile/TileFactory.php
-
-		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/console/ConsoleCommandSender.php
-
-		-
-			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:getDestructorCallbacks\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
-
-		-
-			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
+			path: ../../../src/block/DoubleTallGrass.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Negated boolean expression is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
@@ -56,37 +26,27 @@ parameters:
 			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
 
 		-
-			message: "#^Comparison operation \"\\<\" between int\\<1, max\\> and 1 is always false\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Static property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$threadLocalStorage \\(ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\) does not accept non\\-empty\\-array\\<int, non\\-empty\\-array\\<string, mixed\\>\\>\\|ArrayObject\\<int, array\\<string, mixed\\>\\>\\.$#"
+			message: "#^Casting to int something that's already int\\.$#"
 			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
+			path: ../../../src/world/generator/normal/Normal.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Thread\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with false will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/thread/Thread.php
+			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Property pocketmine\\\\thread\\\\Worker\\:\\:\\$classLoaders \\(\\(iterable\\<ClassLoader\\>&Threaded\\)\\|null\\) does not accept array\\<int, ClassLoader\\>\\|\\(iterable\\<ClassLoader\\>&Threaded\\)\\.$#"
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false and 'All promise should…' will always evaluate to false\\.$#"
 			count: 1
-			path: ../../../src/thread/Worker.php
+			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php
-
-		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
 			count: 2
-			path: ../../../src/world/format/io/region/RegionLoader.php
+			path: ../../phpunit/promise/PromiseTest.php
 

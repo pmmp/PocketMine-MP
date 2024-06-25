@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\thread\ThreadManager;
+use pocketmine\thread\Thread;
 use function count;
 use function exec;
 use function fclose;
@@ -38,8 +38,8 @@ use function posix_kill;
 use function preg_match;
 use function proc_close;
 use function proc_open;
+use function str_starts_with;
 use function stream_get_contents;
-use function strpos;
 use function trim;
 
 final class Process{
@@ -99,9 +99,9 @@ final class Process{
 			if($mappings === false) throw new AssumptionFailedError("/proc/self/maps should always be accessible");
 			foreach($mappings as $line){
 				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
+					if(str_starts_with($matches[3], "heap")){
 						$heap += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
+					}elseif(str_starts_with($matches[3], "stack")){
 						$stack += (int) hexdec($matches[2]) - (int) hexdec($matches[1]);
 					}
 				}
@@ -122,10 +122,13 @@ final class Process{
 
 		//TODO: more OS
 
-		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
+		return Thread::getRunningCount() + 1; //pmmpthread doesn't count the main thread
 	}
 
-	public static function kill(int $pid, bool $subprocesses) : void{
+	/**
+	 * @param bool $subprocesses @deprecated
+	 */
+	public static function kill(int $pid, bool $subprocesses = false) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
 			$logger->syncFlushBuffer();
@@ -150,12 +153,14 @@ final class Process{
 
 	/**
 	 * @param string      $command Command to execute
-	 * @param string|null $stdout Reference parameter to write stdout to
-	 * @param string|null $stderr Reference parameter to write stderr to
+	 * @param string|null $stdout  Reference parameter to write stdout to
+	 * @param string|null $stderr  Reference parameter to write stderr to
+	 * @phpstan-param-out string $stdout
+	 * @phpstan-param-out string $stderr
 	 *
 	 * @return int process exit code
 	 */
-	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
+	public static function execute(string $command, ?string &$stdout = null, ?string &$stderr = null) : int{
 		$process = proc_open($command, [
 			["pipe", "r"],
 			["pipe", "w"],

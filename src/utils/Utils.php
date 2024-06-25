@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,6 +31,7 @@ use DaveRandom\CallbackValidator\CallbackType;
 use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\math\Vector3;
+use pocketmine\thread\ThreadCrashInfoFrame;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -69,6 +70,7 @@ use function mb_check_encoding;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
+use function opcache_get_status;
 use function ord;
 use function php_uname;
 use function phpversion;
@@ -78,11 +80,12 @@ use function preg_match_all;
 use function preg_replace;
 use function shell_exec;
 use function spl_object_id;
+use function str_ends_with;
 use function str_pad;
 use function str_split;
+use function str_starts_with;
 use function stripos;
 use function strlen;
-use function strpos;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
@@ -108,6 +111,7 @@ final class Utils{
 
 	private static ?string $os = null;
 	private static ?UuidInterface $serverUniqueId = null;
+	private static ?int $cpuCores = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -117,7 +121,7 @@ final class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
-		if(substr($func->getName(), -strlen('{closure}')) !== '{closure}'){
+		if(!str_ends_with($func->getName(), '{closure}')){
 			//closure wraps a named function, can be done with reflection or fromCallable()
 			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
 
@@ -169,16 +173,17 @@ final class Utils{
 	}
 
 	/**
-	 * @phpstan-template T of object
+	 * @phpstan-template TKey of array-key
+	 * @phpstan-template TValue of object
 	 *
 	 * @param object[] $array
-	 * @phpstan-param T[] $array
+	 * @phpstan-param array<TKey, TValue> $array
 	 *
 	 * @return object[]
-	 * @phpstan-return T[]
+	 * @phpstan-return array<TKey, TValue>
 	 */
 	public static function cloneObjectArray(array $array) : array{
-		/** @phpstan-var \Closure(T) : T $callback */
+		/** @phpstan-var \Closure(TValue) : TValue $callback */
 		$callback = self::cloneCallback();
 		return array_map($callback, $array);
 	}
@@ -271,7 +276,7 @@ final class Utils{
 		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
-				if(strpos(php_uname("m"), "iP") === 0){
+				if(str_starts_with(php_uname("m"), "iP")){
 					self::$os = self::OS_IOS;
 				}else{
 					self::$os = self::OS_MACOS;
@@ -295,14 +300,11 @@ final class Utils{
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
-		static $processors = 0;
-
-		if($processors > 0 && !$recalculate){
-			return $processors;
-		}else{
-			$processors = 0;
+		if(self::$cpuCores !== null && !$recalculate){
+			return self::$cpuCores;
 		}
 
+		$processors = 0;
 		switch(Utils::getOS()){
 			case Utils::OS_LINUX:
 			case Utils::OS_ANDROID:
@@ -314,7 +316,7 @@ final class Utils{
 					}
 				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
 					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
-						$processors = (int) ($matches[2] - $matches[1]);
+						$processors = ((int) $matches[2]) - ((int) $matches[1]);
 					}
 				}
 				break;
@@ -326,7 +328,7 @@ final class Utils{
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
-		return $processors;
+		return self::$cpuCores = $processors;
 	}
 
 	/**
@@ -346,10 +348,8 @@ final class Utils{
 
 	/**
 	 * Returns a string that can be printed, replaces non-printable characters
-	 *
-	 * @param mixed $str
 	 */
-	public static function printable($str) : string{
+	public static function printable(mixed $str) : string{
 		if(!is_string($str)){
 			return gettype($str);
 		}
@@ -365,21 +365,12 @@ final class Utils{
 				$ord -= 0x100;
 			}
 			$hash = 31 * $hash + $ord;
-			while($hash > 0x7FFFFFFF){
-				$hash -= 0x100000000;
-			}
-			while($hash < -0x80000000){
-				$hash += 0x100000000;
-			}
 			$hash &= 0xFFFFFFFF;
 		}
 		return $hash;
 	}
 
-	/**
-	 * @param object $value
-	 */
-	public static function getReferenceCount($value, bool $includeCurrent = true) : int{
+	public static function getReferenceCount(object $value, bool $includeCurrent = true) : int{
 		ob_start();
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
@@ -481,13 +472,37 @@ final class Utils{
 	}
 
 	/**
+	 * Similar to {@link Utils::printableTrace()}, but associates metadata such as file and line number with each frame.
+	 * This is used to transmit thread-safe information about crash traces to the main thread when a thread crashes.
+	 *
+	 * @param mixed[][] $rawTrace
+	 * @phpstan-param list<array<string, mixed>> $rawTrace
+	 *
+	 * @return ThreadCrashInfoFrame[]
+	 */
+	public static function printableTraceWithMetadata(array $rawTrace, int $maxStringLength = 80) : array{
+		$printableTrace = self::printableTrace($rawTrace, $maxStringLength);
+		$safeTrace = [];
+		foreach($printableTrace as $frameId => $printableFrame){
+			$rawFrame = $rawTrace[$frameId];
+			$safeTrace[$frameId] = new ThreadCrashInfoFrame(
+				$printableFrame,
+				$rawFrame["file"] ?? "unknown",
+				$rawFrame["line"] ?? 0
+			);
+		}
+
+		return $safeTrace;
+	}
+
+	/**
 	 * @return mixed[][]
 	 * @phpstan-return list<array<string, mixed>>
 	 */
 	public static function currentTrace(int $skipFrames = 0) : array{
 		++$skipFrames; //omit this frame from trace, in addition to other skipped frames
-		if(function_exists("xdebug_get_function_stack")){
-			$trace = array_reverse(xdebug_get_function_stack());
+		if(function_exists("xdebug_get_function_stack") && count($trace = @xdebug_get_function_stack()) !== 0){
+			$trace = array_reverse($trace);
 		}else{
 			$e = new \Exception();
 			$trace = $e->getTrace();
@@ -546,7 +561,7 @@ final class Utils{
 	 * incompatible.
 	 *
 	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
-	 * @param callable              $subject Callable to check the signature of
+	 * @param callable              $subject   Callable to check the signature of
 	 * @phpstan-param anyCallable|CallbackType $signature
 	 * @phpstan-param anyCallable              $subject
 	 *
@@ -633,5 +648,31 @@ final class Utils{
 
 	public static function checkLocationNotInfOrNaN(Location $location) : void{
 		self::checkVector3NotInfOrNaN($location);
+	}
+
+	/**
+	 * Returns an integer describing the current OPcache JIT setting.
+	 * @see https://www.php.net/manual/en/opcache.configuration.php#ini.opcache.jit
+	 */
+	public static function getOpcacheJitMode() : ?int{
+		if(
+			function_exists('opcache_get_status') &&
+			($opcacheStatus = opcache_get_status(false)) !== false &&
+			isset($opcacheStatus["jit"]["on"])
+		){
+			$jit = $opcacheStatus["jit"];
+			if($jit["on"] === true){
+				return (($jit["opt_flags"] >> 2) * 1000) +
+					(($jit["opt_flags"] & 0x03) * 100) +
+					($jit["kind"] * 10) +
+					$jit["opt_level"];
+			}
+
+			//jit available, but disabled
+			return 0;
+		}
+
+		//jit not available
+		return null;
 	}
 }

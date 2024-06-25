@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -47,7 +47,7 @@ class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 	 * Returns the item used.
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,7 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\event\entity\EntityPreExplodeEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -39,19 +39,18 @@ use pocketmine\world\Position;
 
 class PrimedTNT extends Entity implements Explosive{
 
+	private const TAG_FUSE = "Fuse"; //TAG_Short
+
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
-	/** @var int */
-	protected $fuse;
-
+	protected int $fuse;
 	protected bool $worksUnderwater = false;
 
-	public $canCollide = false;
-
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	public function getFuse() : int{
 		return $this->fuse;
@@ -81,7 +80,7 @@ class PrimedTNT extends Entity implements Explosive{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->fuse = $nbt->getShort("Fuse", 80);
+		$this->fuse = $nbt->getShort(self::TAG_FUSE, 80);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -90,7 +89,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("Fuse", $this->fuse);
+		$nbt->setShort(self::TAG_FUSE, $this->fuse);
 
 		return $nbt;
 	}
@@ -116,11 +115,11 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function explode() : void{
-		$ev = new ExplosionPrimeEvent($this, 4);
+		$ev = new EntityPreExplodeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
 			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getForce(), $this);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

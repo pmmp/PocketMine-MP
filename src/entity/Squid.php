@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,10 +39,8 @@ class Squid extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SQUID; }
 
-	/** @var Vector3|null */
-	public $swimDirection = null;
-	/** @var float */
-	public $swimSpeed = 0.1;
+	public ?Vector3 $swimDirection = null;
+	public float $swimSpeed = 0.1;
 
 	private int $switchDirectionTicker = 0;
 

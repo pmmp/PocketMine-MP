@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -37,10 +37,10 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
 use pocketmine\Server;
-use pocketmine\timings\TimingsHandler;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_diff_key;
 use function array_key_exists;
 use function array_keys;
@@ -62,7 +62,7 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
-use function strpos;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -70,10 +70,13 @@ use function strtolower;
  */
 class PluginManager{
 	/** @var Plugin[] */
-	protected $plugins = [];
+	protected array $plugins = [];
 
 	/** @var Plugin[] */
-	protected $enabledPlugins = [];
+	protected array $enabledPlugins = [];
+
+	/** @var array<string, array<string, true>> */
+	private array $pluginDependents = [];
 
 	private bool $loadPluginsGuard = false;
 
@@ -81,7 +84,7 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
 	 */
-	protected $fileAssociations = [];
+	protected array $fileAssociations = [];
 
 	public function __construct(
 		private Server $server,
@@ -270,6 +273,17 @@ class PluginManager{
 
 				$name = $description->getName();
 
+				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
+					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+						$name,
+						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
+					)));
+					//this does NOT increment loadErrorCount, because using the graylist to prevent a plugin from
+					//loading is not considered accidental; this is the same as if the plugin were manually removed
+					//this means that the server will continue to boot even if some plugins were blocked by graylist
+					continue;
+				}
+
 				if(($loadabilityError = $loadabilityChecker->check($description)) !== null){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					$loadErrorCount++;
@@ -282,19 +296,8 @@ class PluginManager{
 					continue;
 				}
 
-				if(strpos($name, " ") !== false){
+				if(str_contains($name, " ")){
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
-				}
-
-				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
-					)));
-					//this does NOT increment loadErrorCount, because using the graylist to prevent a plugin from
-					//loading is not considered accidental; this is the same as if the plugin were manually removed
-					//this means that the server will continue to boot even if some plugins were blocked by graylist
-					continue;
 				}
 
 				$triage->plugins[$name] = new PluginLoadTriageEntry($file, $loader, $description);
@@ -316,6 +319,9 @@ class PluginManager{
 	/**
 	 * @param string[][] $dependencyLists
 	 * @param Plugin[]   $loadedPlugins
+	 *
+	 * @phpstan-param array<string, list<string>> $dependencyLists
+	 * @phpstan-param-out array<string, list<string>> $dependencyLists
 	 */
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){
@@ -453,6 +459,15 @@ class PluginManager{
 			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
+				foreach($plugin->getDescription()->getDepend() as $dependency){
+					$this->pluginDependents[$dependency][$plugin->getDescription()->getName()] = true;
+				}
+				foreach($plugin->getDescription()->getSoftDepend() as $dependency){
+					if(isset($this->plugins[$dependency])){
+						$this->pluginDependents[$dependency][$plugin->getDescription()->getName()] = true;
+					}
+				}
+
 				(new PluginEnableEvent($plugin))->call();
 
 				return true;
@@ -472,8 +487,19 @@ class PluginManager{
 	}
 
 	public function disablePlugins() : void{
-		foreach($this->getPlugins() as $plugin){
-			$this->disablePlugin($plugin);
+		while(count($this->enabledPlugins) > 0){
+			foreach($this->enabledPlugins as $plugin){
+				if(!$plugin->isEnabled()){
+					continue; //in case a plugin disabled another plugin
+				}
+				$name = $plugin->getDescription()->getName();
+				if(isset($this->pluginDependents[$name]) && count($this->pluginDependents[$name]) > 0){
+					$this->server->getLogger()->debug("Deferring disable of plugin $name due to dependent plugins still enabled: " . implode(", ", array_keys($this->pluginDependents[$name])));
+					continue;
+				}
+
+				$this->disablePlugin($plugin);
+			}
 		}
 	}
 
@@ -483,6 +509,15 @@ class PluginManager{
 			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
+			foreach(Utils::stringifyKeys($this->pluginDependents) as $dependency => $dependentList){
+				if(isset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()])){
+					if(count($this->pluginDependents[$dependency]) === 1){
+						unset($this->pluginDependents[$dependency]);
+					}else{
+						unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
+					}
+				}
+			}
 
 			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();
@@ -615,11 +650,16 @@ class PluginManager{
 
 		$handlerName = Utils::getNiceClosureName($handler);
 
+		$reflect = new \ReflectionFunction($handler);
+		if($reflect->isGenerator()){
+			throw new PluginException("Generator function $handlerName cannot be used as an event handler");
+		}
+
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
 		}
 
-		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
+		$timings = Timings::getEventHandlerTimings($event, $handlerName, $plugin->getDescription()->getFullName());
 
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);

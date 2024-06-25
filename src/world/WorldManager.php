@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,7 +30,6 @@ use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
-use pocketmine\timings\Timings;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -39,7 +38,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -55,12 +54,14 @@ use function strval;
 use function trim;
 
 class WorldManager{
+	public const TICKS_PER_AUTOSAVE = 300 * Server::TARGET_TICKS_PER_SECOND;
+
 	/** @var World[] */
 	private array $worlds = [];
 	private ?World $defaultWorld = null;
 
 	private bool $autoSave = true;
-	private int $autoSaveTicks = 6000;
+	private int $autoSaveTicks = self::TICKS_PER_AUTOSAVE;
 	private int $autoSaveTicker = 0;
 
 	public function __construct(
@@ -128,10 +129,6 @@ class WorldManager{
 		}
 
 		$ev = new WorldUnloadEvent($world);
-		if($world === $this->defaultWorld && !$forceUnload){
-			$ev->cancel();
-		}
-
 		$ev->call();
 
 		if(!$forceUnload && $ev->isCancelled()){
@@ -166,7 +163,7 @@ class WorldManager{
 	/**
 	 * Loads a world from the data directory
 	 *
-	 * @param bool   $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
+	 * @param bool $autoUpgrade Converts worlds to the default format if the world's format is not writable / deprecated
 	 *
 	 * @throws WorldException
 	 */
@@ -195,7 +192,7 @@ class WorldManager{
 		$providerClass = array_shift($providers);
 
 		try{
-			$provider = $providerClass->fromPath($path);
+			$provider = $providerClass->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name"));
 		}catch(CorruptedWorldException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
@@ -237,8 +234,10 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_start($name)));
 
-			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
-			$provider = $converter->execute();
+			$providerClass = $this->providerManager->getDefault();
+			$converter = new FormatConverter($provider, $providerClass, Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
+			$converter->execute();
+			$provider = $providerClass->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name"));
 
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_finish($name, $converter->getBackupPath())));
 		}
@@ -268,7 +267,7 @@ class WorldManager{
 		$path = $this->getWorldPath($name);
 		$providerEntry->generate($path, $name, $options);
 
-		$world = new World($this->server, $name, $providerEntry->fromPath($path), $this->server->getAsyncPool());
+		$world = new World($this->server, $name, $providerEntry->fromPath($path, new \PrefixedLogger($this->server->getLogger(), "World Provider: $name")), $this->server->getAsyncPool());
 		$this->worlds[$world->getId()] = $world;
 
 		$world->setAutoSave($this->autoSave);
@@ -284,7 +283,7 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE;
 			$centerZ = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
-			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ));
+			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ), preserve_keys: false);
 			$done = 0;
 			$total = count($selected);
 			foreach($selected as $index){
@@ -348,8 +347,8 @@ class WorldManager{
 			$world->doTick($currentTick);
 			$tickMs = (microtime(true) - $worldTime) * 1000;
 			$world->tickRateTime = $tickMs;
-			if($tickMs >= 50){
-				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / 50, 2)));
+			if($tickMs >= Server::TARGET_SECONDS_PER_TICK * 1000){
+				$world->getLogger()->debug(sprintf("Tick took too long: %gms (%g ticks)", $tickMs, round($tickMs / (Server::TARGET_SECONDS_PER_TICK * 1000), 2)));
 			}
 		}
 
@@ -389,7 +388,6 @@ class WorldManager{
 	}
 
 	private function doAutoSave() : void{
-		Timings::$worldSave->startTiming();
 		foreach($this->worlds as $world){
 			foreach($world->getPlayers() as $player){
 				if($player->spawned){
@@ -398,6 +396,5 @@ class WorldManager{
 			}
 			$world->save(false);
 		}
-		Timings::$worldSave->stopTiming();
 	}
 }

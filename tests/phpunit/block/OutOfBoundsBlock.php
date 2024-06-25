@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,4 @@ namespace pocketmine\block;
 
 class OutOfBoundsBlock extends Block{
 
-	public function getName() : string{
-		return "Out of Bounds Block";
-	}
 }

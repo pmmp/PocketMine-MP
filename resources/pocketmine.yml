@@ -85,8 +85,11 @@ network:
   batch-threshold: 256
   #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
   compression-level: 6
-  #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
+  #Use AsyncTasks for compression during the main game session. Increases latency, but may reduce main thread load
   async-compression: false
+  #Threshold for async compression, in bytes. Only packets larger than this will be compressed asynchronously
+  #Due to large overhead of AsyncTask, async compression isn't worth it except for large packets
+  async-compression-threshold: 10000
   #Experimental. Use UPnP to automatically port forward
   upnp-forwarding: false
   #Maximum size in bytes of packets sent over the network (default 1492 bytes). Packets larger than this will be
@@ -119,8 +122,6 @@ chunk-sending:
   spawn-radius: 4
 
 chunk-ticking:
-  #Max amount of chunks processed each tick
-  per-tick: 40
   #Radius of chunks around a player to tick
   tick-radius: 3
   #Number of blocks inside ticking areas' subchunks that get ticked every tick. Higher values will accelerate events
@@ -168,6 +169,9 @@ timings:
   host: timings.pmmp.io
 
 console:
+  #Whether to accept commands via the console. If disabled, anything typed on the console will be ignored.
+  #Useful to save resources on headless servers where the console is never used (e.g. hosted server, Docker, etc.)
+  enable-input: true
   #Choose whether to enable server stats reporting on the console title.
   #NOTE: The title ticker will be disabled regardless if console colours are not enabled.
   title-tick: true
