@@ -1125,6 +1125,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				Blocks::RED_TORCH()->setFacing($in->readTorchFacing());
 		});
 		$this->map(Ids::COPPER_BLOCK, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::NONE));
+
 		$this->map(Ids::CUT_COPPER, fn() => Helper::decodeCopper(Blocks::CUT_COPPER(), CopperOxidation::NONE));
 		$this->mapSlab(Ids::CUT_COPPER_SLAB, Ids::DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::NONE));
 		$this->mapStairs(Ids::CUT_COPPER_STAIRS, fn() => Helper::decodeCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::NONE));
@@ -1671,8 +1672,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::WALL_BANNER()
 				->setFacing($in->readHorizontalFacing());
 		});
+
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::WAXED_COPPER, fn() => Helper::decodeWaxedCopper(Blocks::COPPER(), CopperOxidation::NONE));
+		$this->map(Ids::WAXED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::NONE));
+		$this->map(Ids::WAXED_EXPOSED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::EXPOSED));
+		$this->map(Ids::WAXED_WEATHERED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::WEATHERED));
+		$this->map(Ids::WAXED_OXIDIZED_COPPER_GRATE, fn() => Helper::decodeCopper(Blocks::COPPER_GRATE(), CopperOxidation::OXIDIZED));
 		$this->map(Ids::WAXED_CUT_COPPER, fn() => Helper::decodeWaxedCopper(Blocks::CUT_COPPER(), CopperOxidation::NONE));
 		$this->mapSlab(Ids::WAXED_CUT_COPPER_SLAB, Ids::WAXED_DOUBLE_CUT_COPPER_SLAB, fn() => Helper::decodeWaxedCopper(Blocks::CUT_COPPER_SLAB(), CopperOxidation::NONE));
 		$this->mapStairs(Ids::WAXED_CUT_COPPER_STAIRS, fn() => Helper::decodeWaxedCopper(Blocks::CUT_COPPER_STAIRS(), CopperOxidation::NONE));
