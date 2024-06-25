@@ -751,7 +751,7 @@ final class BlockTypeIds{
 	public const POLISHED_TUFF = 10721;
 	public const TUFF_BRICKS = 10722;
 	public const COPPER_DOOR = 10723;
-	public const TUFF_BRICK_WALL = 10734;
+	public const TUFF_BRICK_WALL = 10724;
 	public const CHISELED_COPPER = 10725;
 	public const COPPER_TRAPDOOR = 10726;
 	public const COPPER_GRATE = 10727;
