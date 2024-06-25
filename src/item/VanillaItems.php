@@ -324,7 +324,6 @@ use function strtolower;
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
  * @method static Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE()
- * @method static WindCharge WIND_CHARGE()
  * @method static Axe WOODEN_AXE()
  * @method static Hoe WOODEN_HOE()
  * @method static Pickaxe WOODEN_PICKAXE()
@@ -569,7 +568,6 @@ final class VanillaItems{
 		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));
 		self::register("wheat_seeds", new WheatSeeds(new IID(Ids::WHEAT_SEEDS), "Wheat Seeds"));
-		self::register("wind_charge", new WindCharge(new IID(Ids::WIND_CHARGE), "Wind Charge"));
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 

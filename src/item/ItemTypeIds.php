@@ -325,7 +325,6 @@ final class ItemTypeIds{
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
 	public const MACE = 20288;
-	public const WIND_CHARGE = 20289;
 
 	public const FIRST_UNUSED_ITEM_ID = 20290;
 
