@@ -210,6 +210,7 @@ use function strtolower;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
+ * @method static Mace MACE()
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
@@ -322,6 +323,7 @@ use function strtolower;
  * @method static Item WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
+ * @method static WindCharge WIND_CHARGE()
  * @method static Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Axe WOODEN_AXE()
  * @method static Hoe WOODEN_HOE()
@@ -567,6 +569,7 @@ final class VanillaItems{
 		self::register("water_bucket", new LiquidBucket(new IID(Ids::WATER_BUCKET), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", new Item(new IID(Ids::WHEAT), "Wheat"));
 		self::register("wheat_seeds", new WheatSeeds(new IID(Ids::WHEAT_SEEDS), "Wheat Seeds"));
+		self::register("wind_charge", new WindCharge(new IID(Ids::WIND_CHARGE), "Wind Charge"));
 		self::register("writable_book", new WritableBook(new IID(Ids::WRITABLE_BOOK), "Book & Quill"));
 		self::register("written_book", new WrittenBook(new IID(Ids::WRITTEN_BOOK), "Written Book"));
 
@@ -624,6 +627,7 @@ final class VanillaItems{
 		self::register("diamond_shovel", new Shovel(new IID(Ids::DIAMOND_SHOVEL), "Diamond Shovel", ToolTier::DIAMOND, [EnchantmentTags::SHOVEL]));
 		self::register("golden_shovel", new Shovel(new IID(Ids::GOLDEN_SHOVEL), "Golden Shovel", ToolTier::GOLD, [EnchantmentTags::SHOVEL]));
 		self::register("iron_shovel", new Shovel(new IID(Ids::IRON_SHOVEL), "Iron Shovel", ToolTier::IRON, [EnchantmentTags::SHOVEL]));
+		self::register("mace", new Mace(new IID(Ids::MACE), "Mace", [EnchantmentTags::SWORD]));
 		self::register("netherite_shovel", new Shovel(new IID(Ids::NETHERITE_SHOVEL), "Netherite Shovel", ToolTier::NETHERITE, [EnchantmentTags::SHOVEL]));
 		self::register("stone_shovel", new Shovel(new IID(Ids::STONE_SHOVEL), "Stone Shovel", ToolTier::STONE, [EnchantmentTags::SHOVEL]));
 		self::register("wooden_shovel", new Shovel(new IID(Ids::WOODEN_SHOVEL), "Wooden Shovel", ToolTier::WOOD, [EnchantmentTags::SHOVEL]));
