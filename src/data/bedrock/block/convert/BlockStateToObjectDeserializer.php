@@ -909,6 +909,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::TORCHFLOWER, fn() => Blocks::TORCHFLOWER());
 		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
+		$this->mapSimple(Ids::CHISELED_TUFF_BRICKS, fn() => Blocks::CHISELED_TUFF_BRICKS());
 		$this->mapSimple(Ids::POLISHED_TUFF, fn() => Blocks::POLISHED_TUFF());
 		$this->mapStairs(Ids::POLISHED_TUFF_STAIRS, fn() => Blocks::POLISHED_TUFF_STAIRS());
 		$this->mapSlab(Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB, fn() => Blocks::POLISHED_TUFF_SLAB());
