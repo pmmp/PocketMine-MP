@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -60,9 +60,6 @@ class Campfire extends Spawnable implements Container{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return CampfireInventory
-	 */
 	public function getRealInventory() : CampfireInventory{
 		return $this->inventory;
 	}
