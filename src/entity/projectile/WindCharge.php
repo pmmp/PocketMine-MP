@@ -31,7 +31,7 @@ use function ceil;
 use function floor;
 
 class WindCharge extends Throwable{
-	private float $radius = 2.5;
+	protected float $radius = 2.5;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
