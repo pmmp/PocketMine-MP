@@ -74,7 +74,9 @@ class WindCharge extends Throwable{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if(!$source instanceof EntityDamageByEntityEvent) return;
+		if(!$source instanceof EntityDamageByEntityEvent || ($entity = $source->getDamager()) === null){
+				return;
+		}
 
 		if(($entity = $source->getDamager()) == null) return;
 		$this->setOwningEntity($entity);
