@@ -47,6 +47,7 @@ use pocketmine\world\sound\DoorSound;
 use pocketmine\world\sound\FlintSteelSound;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
+use pocketmine\world\sound\WindChargeBurstSound;
 
 use function ceil;
 use function floor;
@@ -97,7 +98,7 @@ class WindCharge extends Throwable{
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$source = $this->getLocation();
 
-		//TODO implement wind charge explosion sound when added.
+		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
 		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
 		$list = $source->getWorld()->getNearbyEntities($this->getBound($source, $this->radius));
