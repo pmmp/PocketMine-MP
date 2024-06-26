@@ -23,16 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Bell;
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
-use pocketmine\block\Button;
-use pocketmine\block\CakeWithCandle;
-use pocketmine\block\Candle;
-use pocketmine\block\ChorusFlower;
-use pocketmine\block\Door;
-use pocketmine\block\Lever;
-use pocketmine\block\Trapdoor;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -41,13 +32,8 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
-use pocketmine\world\sound\DoorSound;
-use pocketmine\world\sound\FlintSteelSound;
-use pocketmine\world\sound\RedstonePowerOffSound;
-use pocketmine\world\sound\RedstonePowerOnSound;
 use pocketmine\world\sound\WindChargeBurstSound;
 
 use function ceil;

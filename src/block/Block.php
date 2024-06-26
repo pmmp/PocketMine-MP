@@ -516,12 +516,12 @@ class Block{
 
 	/**
 	 * Called when this block is updated by wind charge in the world.
-	 * 
-	 * @param WindCharge $windCharge    Exact position where the click occurred, relative to the block's integer position
-	*/
-	public function onWindChargeInteraction(WindCharge $windCharge): void {
+	 *
+	 * @param WindCharge $windCharge Exact position where the click occurred, relative to the block's integer position
+	 */
+	public function onWindChargeInteraction(WindCharge $windCharge) : void {
 
-    }
+	}
 
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything

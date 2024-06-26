@@ -135,7 +135,7 @@ final class Bell extends Transparent{
 		return false;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		$this->ring($this->facing);
 	}
 

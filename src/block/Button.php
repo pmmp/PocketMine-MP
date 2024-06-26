@@ -93,11 +93,11 @@ abstract class Button extends Flowable{
 		return $block->getAdjacentSupportType(Facing::opposite($face))->hasCenterSupport();
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
 			return;
 		}
-		
+
 		$this->pressed = true;
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);

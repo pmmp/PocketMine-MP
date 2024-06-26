@@ -119,10 +119,9 @@ final class ChorusFlower extends Flowable{
 		return true;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		$this->position->getWorld()->useBreakOn($this->position);
 	}
-
 
 	private function canGrowUpwards(int $stemHeight, bool $endStoneBelow) : bool{
 		$world = $this->position->getWorld();

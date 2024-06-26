@@ -178,7 +178,7 @@ class Door extends Transparent{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
 			return;
 		}

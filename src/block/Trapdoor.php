@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\WindChargeAlterTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
@@ -94,7 +93,7 @@ class Trapdoor extends Transparent{
 		return true;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		if($this->getTypeId() == BlockTypeIds::IRON_TRAPDOOR) {
 			return;
 		}

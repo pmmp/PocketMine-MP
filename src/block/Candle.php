@@ -100,7 +100,7 @@ class Candle extends Transparent{
 		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		if(!$this->lit) {
 			return;
 		}

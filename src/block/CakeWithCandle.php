@@ -61,7 +61,7 @@ class CakeWithCandle extends BaseCake{
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge): void{
+	public function onWindChargeInteraction(WindCharge $windCharge) : void{
 		if(!$this->lit) {
 			return;
 		}
