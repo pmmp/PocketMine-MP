@@ -60,6 +60,16 @@ class WindCharge extends Throwable{
 	protected function getInitialDragMultiplier() : float{ return 0; }
 	protected function getInitialGravity() : float{ return 0; }
 
+	public function attack(EntityDamageEvent $source) : void{
+		if(!$source instanceof EntityDamageByEntityEvent) return;
+		/** @var EntityDamageByEntityEvent $source */
+
+		if(($entity = $source->getDamager()) == null) return;
+		$this->setOwningEntity($entity);
+
+		$this->setMotion($entity->getDirectionVector()->multiply(1.5));
+	}
+
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		if($this->getOwningEntity() === null)$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
 		else $ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
