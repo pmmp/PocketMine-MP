@@ -41,6 +41,7 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 use pocketmine\world\sound\DoorSound;
@@ -57,10 +58,19 @@ class WindCharge extends Throwable{
 	protected float $radius = 2.5;
 	protected float $damage = 0.5;
 
+	protected float $createdAt = 0;
+	protected float $lifetime = 300;
+
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
 	protected function getInitialDragMultiplier() : float{ return 0; }
 	protected function getInitialGravity() : float{ return 0; }
+
+	protected function initEntity(CompoundTag $nbt) : void{ 
+		parent::initEntity($nbt);
+
+		$this->createdAt = time();
+	}
 
 	public function attack(EntityDamageEvent $source) : void{
 		if(!$source instanceof EntityDamageByEntityEvent) return;
@@ -93,6 +103,14 @@ class WindCharge extends Throwable{
 				}
 			}
 		}
+	}
+
+	protected function entityBaseTick(int $tickDiff = 1) : bool{
+		parent::entityBaseTick($tickDiff);
+
+		if($this->createdAt + $this->lifetime <= time()) $this->flagForDespawn();
+
+		return true;
 	}
 
 	protected function onHit(ProjectileHitEvent $event) : void{
