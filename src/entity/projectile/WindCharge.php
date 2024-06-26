@@ -132,13 +132,13 @@ class WindCharge extends Throwable{
 	}
 
 	private function getBound(Vector3 $source, float $radius) : AxisAlignedBB {
-		$minX = (int) floor($source->x - $radius - 1);
-		$maxX = (int) ceil($source->x + $radius + 1);
-		$minY = (int) floor($source->y - $radius - 1);
-		$maxY = (int) ceil($source->y + $radius + 1);
-		$minZ = (int) floor($source->z - $radius - 1);
-		$maxZ = (int) ceil($source->z + $radius + 1);
-
-		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+		return new AxisAlignedBB(
+			(int) floor($source->x - $radius - 1),
+			(int) floor($source->y - $radius - 1), 
+			(int) floor($source->z - $radius - 1), 
+			(int) ceil($source->x + $radius + 1), 
+			(int) ceil($source->y + $radius + 1), 
+			(int) ceil($source->z + $radius + 1)
+		);
 	}
 }
