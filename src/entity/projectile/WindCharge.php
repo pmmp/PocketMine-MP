@@ -157,8 +157,6 @@ class WindCharge extends Throwable{
 
 	private function checkAffect(Block $affectedBlock) : void {
 		if($affectedBlock instanceof Trapdoor) {
-			/** @var Trapdoor $affectedBlock */
-
 			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_TRAPDOOR) return;
 			$affectedBlock->setOpen(!$affectedBlock->isOpen());
 			$world = $affectedBlock->getPosition()->getWorld();
@@ -169,8 +167,6 @@ class WindCharge extends Throwable{
 		}
 
 		if($affectedBlock instanceof Door) {
-			/** @var Door $affectedBlock */
-
 			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_DOOR) return;
 			$affectedBlock->setOpen(!$affectedBlock->isOpen());
 			$world = $affectedBlock->getPosition()->getWorld();
@@ -181,8 +177,6 @@ class WindCharge extends Throwable{
 		}
 
 		if($affectedBlock instanceof Button) {
-			/** @var Button $affectedBlock */
-
 			($affectedBlock->getTypeId() == BlockTypeIds::STONE_BUTTON || $affectedBlock->getTypeId() == BlockTypeIds::POLISHED_BLACKSTONE_BUTTON) ? $delay = 20 : $delay = 30;
 
 			$affectedBlock->setPressed(!$affectedBlock->isPressed());
@@ -195,8 +189,6 @@ class WindCharge extends Throwable{
 		}
 
 		if($affectedBlock instanceof Lever) {
-			/** @var Lever $affectedBlock */
-
 			$affectedBlock->setActivated(!$affectedBlock->isActivated());
 			$world = $affectedBlock->getPosition()->getWorld();
 			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
@@ -209,24 +201,18 @@ class WindCharge extends Throwable{
 		}
 
 		if($affectedBlock instanceof Bell) {
-			/** @var Bell $affectedBlock */
-
 			$affectedBlock->ring($affectedBlock->getFacing());
 
 			return;
 		}
 
 		if($affectedBlock instanceof ChorusFlower) {
-			/** @var ChorusFlower $affectedBlock */
-
 			$affectedBlock->getPosition()->getWorld()->useBreakOn($affectedBlock->getPosition());
 
 			return;
 		}
 
 		if($affectedBlock instanceof Candle || $affectedBlock instanceof CakeWithCandle) {
-			/** @var Candle $affectedBlock */
-
 			if(!$affectedBlock->isLit()) return;
 
 			$newCandle = $affectedBlock->setLit(false);
