@@ -29,6 +29,7 @@ use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Button;
 use pocketmine\block\CakeWithCandle;
 use pocketmine\block\Candle;
+use pocketmine\block\ChorusFlower;
 use pocketmine\block\Door;
 use pocketmine\block\Lever;
 use pocketmine\block\Trapdoor;
@@ -76,78 +77,7 @@ class WindCharge extends Throwable{
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
 					$affectedBlock = $this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z));
 
-					if($affectedBlock instanceof Trapdoor) {
-						/** @var Trapdoor $affectedBlock */
-
-						if($affectedBlock->getTypeId() == BlockTypeIds::IRON_TRAPDOOR) continue;
-						$affectedBlock->setOpen(!$affectedBlock->isOpen());
-						$world = $affectedBlock->getPosition()->getWorld();
-						$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-						$world->addSound($affectedBlock->getPosition(), new DoorSound());
-
-						continue;
-					}
-
-					if($affectedBlock instanceof Door) {
-						/** @var Door $affectedBlock */
-
-						if($affectedBlock->getTypeId() == BlockTypeIds::IRON_DOOR) continue;
-						$affectedBlock->setOpen(!$affectedBlock->isOpen());
-						$world = $affectedBlock->getPosition()->getWorld();
-						$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-						$world->addSound($affectedBlock->getPosition(), new DoorSound());
-
-						continue;
-					}
-
-					if($affectedBlock instanceof Button) {
-						/** @var Button $affectedBlock */
-
-						$affectedBlock->setPressed(!$affectedBlock->isPressed());
-						$world = $affectedBlock->getPosition()->getWorld();
-						$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-						$world->scheduleDelayedBlockUpdate($affectedBlock->getPosition(), 1);
-						$world->addSound($affectedBlock->getPosition()->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
-
-						continue;
-					}
-
-					if($affectedBlock instanceof Lever) {
-						/** @var Lever $affectedBlock */
-
-						$affectedBlock->setActivated(!$affectedBlock->isActivated());
-						$world = $affectedBlock->getPosition()->getWorld();
-						$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-						$world->addSound(
-							$affectedBlock->getPosition()->add(0.5, 0.5, 0.5),
-							$affectedBlock->isActivated() ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
-						);
-
-						continue;
-					}
-
-					if($affectedBlock instanceof Bell) {
-						/** @var Bell $affectedBlock */
-
-						$affectedBlock->ring($affectedBlock->getFacing());
-
-						continue;
-					}
-
-					if($affectedBlock instanceof Candle || $affectedBlock instanceof CakeWithCandle) {
-						/** @var Candle $affectedBlock */
-
-						if(!$affectedBlock->isLit()) continue;
-
-						$newCandle = $affectedBlock->setLit(false);
-						$world = $affectedBlock->getPosition()->getWorld();
-						$world->setBlock($affectedBlock->getPosition(), $newCandle);
-						$world->addSound($affectedBlock->getPosition(), new FlintSteelSound());
-
-						continue;
-					}
-
-					//TODO Decorated pots shatter on impact
+					$this->checkAffect($affectedBlock);
 				}
 			}
 		}
@@ -185,5 +115,90 @@ class WindCharge extends Throwable{
 		$maxZ = (int) ceil($source->z + $radius + 1);
 
 		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+	}
+
+	private function checkAffect(Block $affectedBlock) : void {
+		if($affectedBlock instanceof Trapdoor) {
+			/** @var Trapdoor $affectedBlock */
+
+			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_TRAPDOOR) return;
+			$affectedBlock->setOpen(!$affectedBlock->isOpen());
+			$world = $affectedBlock->getPosition()->getWorld();
+			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
+			$world->addSound($affectedBlock->getPosition(), new DoorSound());
+
+			return;
+		}
+
+		if($affectedBlock instanceof Door) {
+			/** @var Door $affectedBlock */
+
+			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_DOOR) return;
+			$affectedBlock->setOpen(!$affectedBlock->isOpen());
+			$world = $affectedBlock->getPosition()->getWorld();
+			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
+			$world->addSound($affectedBlock->getPosition(), new DoorSound());
+
+			return;
+		}
+
+		if($affectedBlock instanceof Button) {
+			/** @var Button $affectedBlock */
+
+			($affectedBlock->getTypeId() == BlockTypeIds::STONE_BUTTON || $affectedBlock->getTypeId() == BlockTypeIds::POLISHED_BLACKSTONE_BUTTON) ? $delay = 20 : $delay = 30;
+
+			$affectedBlock->setPressed(!$affectedBlock->isPressed());
+			$world = $affectedBlock->getPosition()->getWorld();
+			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
+			$world->scheduleDelayedBlockUpdate($affectedBlock->getPosition(), $delay);
+			$world->addSound($affectedBlock->getPosition()->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
+
+			return;
+		}
+
+		if($affectedBlock instanceof Lever) {
+			/** @var Lever $affectedBlock */
+
+			$affectedBlock->setActivated(!$affectedBlock->isActivated());
+			$world = $affectedBlock->getPosition()->getWorld();
+			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
+			$world->addSound(
+				$affectedBlock->getPosition()->add(0.5, 0.5, 0.5),
+				$affectedBlock->isActivated() ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
+			);
+
+			return;
+		}
+
+		if($affectedBlock instanceof Bell) {
+			/** @var Bell $affectedBlock */
+
+			$affectedBlock->ring($affectedBlock->getFacing());
+
+			return;
+		}
+
+		if($affectedBlock instanceof ChorusFlower) {
+			/** @var ChorusFlower $affectedBlock */
+
+			$affectedBlock->getPosition()->getWorld()->useBreakOn($affectedBlock->getPosition());
+
+			return;
+		}
+
+		if($affectedBlock instanceof Candle || $affectedBlock instanceof CakeWithCandle) {
+			/** @var Candle $affectedBlock */
+
+			if(!$affectedBlock->isLit()) return;
+
+			$newCandle = $affectedBlock->setLit(false);
+			$world = $affectedBlock->getPosition()->getWorld();
+			$world->setBlock($affectedBlock->getPosition(), $newCandle);
+			$world->addSound($affectedBlock->getPosition(), new FlintSteelSound());
+
+			return;
+		}
+
+		//TODO Decorated pots shatter on impact
 	}
 }
