@@ -53,6 +53,7 @@ use pocketmine\world\sound\WindChargeBurstSound;
 use function ceil;
 use function floor;
 use function round;
+use function time;
 
 class WindCharge extends Throwable{
 	protected float $radius = 2.5;
@@ -66,7 +67,7 @@ class WindCharge extends Throwable{
 	protected function getInitialDragMultiplier() : float{ return 0; }
 	protected function getInitialGravity() : float{ return 0; }
 
-	protected function initEntity(CompoundTag $nbt) : void{ 
+	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
 		$this->createdAt = time();
