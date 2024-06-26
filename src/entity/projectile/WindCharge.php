@@ -41,8 +41,6 @@ use function floor;
 use function round;
 
 class WindCharge extends Throwable{
-	protected float $radius = 2.5;
-	protected float $damage = 1;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
@@ -54,10 +52,6 @@ class WindCharge extends Throwable{
 				return;
 		}
 
-		if(($entity = $source->getDamager()) == null) {
-			return;
-		}
-
 		$this->setOwningEntity($entity);
 
 		$this->setMotion($entity->getDirectionVector()->multiply(1.5));
@@ -65,9 +59,9 @@ class WindCharge extends Throwable{
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		if($this->getOwningEntity() === null) {
-			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, 1);
 		} else {
-			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, 1);
 		}
 
 		$entityHit->attack($ev);
@@ -77,7 +71,7 @@ class WindCharge extends Throwable{
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		parent::onHitBlock($blockHit, $hitResult);
-		$bound = $this->getBound($blockHit->getPosition(), $this->radius - 1);
+		$bound = $this->getBound($blockHit->getPosition(), 1.5);
 
 		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
@@ -105,10 +99,10 @@ class WindCharge extends Throwable{
 		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
 		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, $this->radius), $this) as $entity){
+		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, 2.5), $this) as $entity){
 
 			$entityPos = $entity->getPosition();
-			$distance = $entityPos->distance($source) / $this->radius;
+			$distance = $entityPos->distance($source) / 2.5;
 			$motion = $entityPos->subtractVector($source)->normalize();
 
 			$exposure = 1;
