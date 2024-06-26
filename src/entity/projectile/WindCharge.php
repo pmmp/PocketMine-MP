@@ -115,12 +115,12 @@ class WindCharge extends Throwable{
 			if ($impact <= 0) continue;
 
 			if (round($entityPos->getX(), 1) == round($source->getX(), 1) && round($entityPos->getZ(), 1) == round($source->getZ(), 1)) {
-				$entity->setMotion($entity->getMotion()->add(0, 0.8, 0));
+				$entity->setMotion($entity->getMotion()->add(0, 0.5 * $exposure, 0));
 
 				return;
 			}
 
-			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.5, 0)->addVector($motion->multiply($impact)));
+			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.4, 0)->addVector($motion->multiply($impact)));
 		}
 	}
 
