@@ -53,25 +53,15 @@ use pocketmine\world\sound\WindChargeBurstSound;
 use function ceil;
 use function floor;
 use function round;
-use function time;
 
 class WindCharge extends Throwable{
 	protected float $radius = 2.5;
-	protected float $damage = 0.5;
-
-	protected float $createdAt = 0;
-	protected float $lifetime = 300;
+	protected float $damage = 1;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
 	protected function getInitialDragMultiplier() : float{ return 0; }
 	protected function getInitialGravity() : float{ return 0; }
-
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
-
-		$this->createdAt = time();
-	}
 
 	public function attack(EntityDamageEvent $source) : void{
 		if(!$source instanceof EntityDamageByEntityEvent || ($entity = $source->getDamager()) === null){
@@ -110,7 +100,7 @@ class WindCharge extends Throwable{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		parent::entityBaseTick($tickDiff);
 
-		if($this->createdAt + $this->lifetime <= time()) $this->flagForDespawn();
+		if($this->ticksLived >= 6000) $this->flagForDespawn();
 
 		return true;
 	}
