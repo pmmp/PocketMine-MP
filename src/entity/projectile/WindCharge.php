@@ -50,6 +50,7 @@ use pocketmine\world\sound\RedstonePowerOnSound;
 
 use function ceil;
 use function floor;
+use function round;
 
 class WindCharge extends Throwable{
 	protected float $radius = 2.5;
@@ -102,17 +103,24 @@ class WindCharge extends Throwable{
 		$list = $source->getWorld()->getNearbyEntities($this->getBound($source, $this->radius));
 
 		foreach($list as $entity){
+			if($entity == $this) continue;
+
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / $this->radius;
 			$motion = $entityPos->subtractVector($source)->normalize();
-			($entity->isUnderwater()) ? $exposure = 0.5 : $exposure = 1.5;
 
+			($entity->isUnderwater()) ? $exposure = 0.5 : $exposure = 1.5;
 			$impact = (1 - $distance) * $exposure;
 
 			if ($impact <= 0) continue;
 
-			($distance <= 1) ? $vertical = 0 : $vertical = 0.75;
-			$entity->setMotion($entity->getMotion()->addVector($motion->multiply($impact)->add(0, $vertical, 0)));
+			if (round($entityPos->getX(), 1) == round($source->getX(), 1) && round($entityPos->getZ(), 1) == round($source->getZ(), 1)) {
+				$entity->setMotion($entity->getMotion()->add(0, 0.8, 0));
+
+				return;
+			}
+
+			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.5, 0)->addVector($motion->multiply($impact)));
 		}
 	}
 
