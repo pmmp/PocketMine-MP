@@ -105,7 +105,7 @@ class WindCharge extends Throwable{
 		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
 		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-		foreach($source->world->getCollidingEntities($this->getBound($source, $this->radius), $this) as $entity){
+		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, $this->radius), $this) as $entity){
 
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / $this->radius;
