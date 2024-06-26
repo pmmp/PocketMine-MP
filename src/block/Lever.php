@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -99,6 +100,16 @@ class Lever extends Flowable{
 			$this->activated ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
 		return true;
+	}
+
+	public function onWindChargeInteraction(WindCharge $windCharge): void{
+		$this->activated = !$this->activated;
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound(
+			$this->position->add(0.5, 0.5, 0.5),
+			$this->isActivated() ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
+		);
 	}
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{

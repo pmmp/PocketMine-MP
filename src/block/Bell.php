@@ -29,6 +29,7 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -132,6 +133,10 @@ final class Bell extends Transparent{
 		}
 
 		return false;
+	}
+
+	public function onWindChargeInteraction(WindCharge $windCharge): void{
+		$this->ring($this->facing);
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{

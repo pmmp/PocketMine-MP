@@ -36,6 +36,7 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTagRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTags;
@@ -514,6 +515,15 @@ class Block{
 	}
 
 	/**
+	 * Called when this block is updated by wind charge in the world.
+	 * 
+	 * @param WindCharge $windCharge    Exact position where the click occurred, relative to the block's integer position
+	*/
+	public function onWindChargeInteraction(WindCharge $windCharge): void {
+
+    }
+
+	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
 	 *
 	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
@@ -526,7 +536,7 @@ class Block{
 	/**
 	 * Called when this block is attacked (left-clicked) by a player attempting to start breaking it in survival.
 	 *
-	 * @return bool if an action took place, prevents starting to break the block if true.
+	 * @return bool if an action took place, prs starting to break the block if true.
 	 */
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		return false;

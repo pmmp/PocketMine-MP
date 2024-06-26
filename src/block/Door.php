@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -175,5 +176,16 @@ class Door extends Transparent{
 
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
+	}
+
+	public function onWindChargeInteraction(WindCharge $windCharge): void{
+		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
+			return;
+		}
+
+		$this->open = !$this->open;
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->addSound($this->position, new DoorSound());
 	}
 }

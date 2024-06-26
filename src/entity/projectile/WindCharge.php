@@ -68,15 +68,22 @@ class WindCharge extends Throwable{
 				return;
 		}
 
-		if(($entity = $source->getDamager()) == null) return;
+		if(($entity = $source->getDamager()) == null) {
+			return;
+		}
+
 		$this->setOwningEntity($entity);
 
 		$this->setMotion($entity->getDirectionVector()->multiply(1.5));
 	}
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
-		if($this->getOwningEntity() === null)$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
-		else $ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+		if($this->getOwningEntity() === null) {
+			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+		} else {
+			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+		}
+
 		$entityHit->attack($ev);
 
 		$this->flagForDespawn();
@@ -89,9 +96,8 @@ class WindCharge extends Throwable{
 		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
-					$affectedBlock = $this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z));
 
-					$this->checkAffect($affectedBlock);
+					$this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z))->onWindChargeInteraction($this);
 				}
 			}
 		}
@@ -100,7 +106,9 @@ class WindCharge extends Throwable{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		parent::entityBaseTick($tickDiff);
 
-		if($this->ticksLived >= 6000) $this->flagForDespawn();
+		if($this->ticksLived >= 6000) {
+			$this->flagForDespawn();
+		}
 
 		return true;
 	}
@@ -123,7 +131,9 @@ class WindCharge extends Throwable{
 			}
 
 			$impact = (1 - $distance) * $exposure;
-			if ($impact <= 0) continue;
+			if ($impact <= 0) {
+				continue;
+			}
 
 			if (round($entityPos->getX(), 1) == round($source->getX(), 1) && round($entityPos->getZ(), 1) == round($source->getZ(), 1)) {
 				$entity->setMotion($entity->getMotion()->add(0, 0.75 * $exposure, 0));
@@ -144,76 +154,5 @@ class WindCharge extends Throwable{
 		$maxZ = (int) ceil($source->z + $radius + 1);
 
 		return new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
-	}
-
-	private function checkAffect(Block $affectedBlock) : void {
-		if($affectedBlock instanceof Trapdoor) {
-			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_TRAPDOOR) return;
-			$affectedBlock->setOpen(!$affectedBlock->isOpen());
-			$world = $affectedBlock->getPosition()->getWorld();
-			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-			$world->addSound($affectedBlock->getPosition(), new DoorSound());
-
-			return;
-		}
-
-		if($affectedBlock instanceof Door) {
-			if($affectedBlock->getTypeId() == BlockTypeIds::IRON_DOOR) return;
-			$affectedBlock->setOpen(!$affectedBlock->isOpen());
-			$world = $affectedBlock->getPosition()->getWorld();
-			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-			$world->addSound($affectedBlock->getPosition(), new DoorSound());
-
-			return;
-		}
-
-		if($affectedBlock instanceof Button) {
-			($affectedBlock->getTypeId() == BlockTypeIds::STONE_BUTTON || $affectedBlock->getTypeId() == BlockTypeIds::POLISHED_BLACKSTONE_BUTTON) ? $delay = 20 : $delay = 30;
-
-			$affectedBlock->setPressed(!$affectedBlock->isPressed());
-			$world = $affectedBlock->getPosition()->getWorld();
-			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-			$world->scheduleDelayedBlockUpdate($affectedBlock->getPosition(), $delay);
-			$world->addSound($affectedBlock->getPosition()->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
-
-			return;
-		}
-
-		if($affectedBlock instanceof Lever) {
-			$affectedBlock->setActivated(!$affectedBlock->isActivated());
-			$world = $affectedBlock->getPosition()->getWorld();
-			$world->setBlock($affectedBlock->getPosition(), $affectedBlock);
-			$world->addSound(
-				$affectedBlock->getPosition()->add(0.5, 0.5, 0.5),
-				$affectedBlock->isActivated() ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
-			);
-
-			return;
-		}
-
-		if($affectedBlock instanceof Bell) {
-			$affectedBlock->ring($affectedBlock->getFacing());
-
-			return;
-		}
-
-		if($affectedBlock instanceof ChorusFlower) {
-			$affectedBlock->getPosition()->getWorld()->useBreakOn($affectedBlock->getPosition());
-
-			return;
-		}
-
-		if($affectedBlock instanceof Candle || $affectedBlock instanceof CakeWithCandle) {
-			if(!$affectedBlock->isLit()) return;
-
-			$newCandle = $affectedBlock->setLit(false);
-			$world = $affectedBlock->getPosition()->getWorld();
-			$world->setBlock($affectedBlock->getPosition(), $newCandle);
-			$world->addSound($affectedBlock->getPosition(), new FlintSteelSound());
-
-			return;
-		}
-
-		//TODO Decorated pots shatter on impact
 	}
 }

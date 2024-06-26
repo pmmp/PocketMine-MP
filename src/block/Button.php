@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -90,5 +91,17 @@ abstract class Button extends Flowable{
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{
 		return $block->getAdjacentSupportType(Facing::opposite($face))->hasCenterSupport();
+	}
+
+	public function onWindChargeInteraction(WindCharge $windCharge): void{
+		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
+			return;
+		}
+		
+		$this->pressed = true;
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $this);
+		$world->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
+		$world->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 	}
 }

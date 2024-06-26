@@ -25,11 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
 use pocketmine\entity\Living;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\FlintSteelSound;
 
 class CakeWithCandle extends BaseCake{
 	use CandleTrait {
@@ -57,6 +59,17 @@ class CakeWithCandle extends BaseCake{
 		}
 
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+	}
+
+	public function onWindChargeInteraction(WindCharge $windCharge): void{
+		if(!$this->lit) {
+			return;
+		}
+
+		$newCandle = $this->setLit(false);
+		$world = $this->position->getWorld();
+		$world->setBlock($this->position, $newCandle);
+		$world->addSound($this->position, new FlintSteelSound());
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
