@@ -111,27 +111,27 @@ class WindCharge extends Throwable{
 		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
 		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-		$list = $source->getWorld()->getNearbyEntities($this->getBound($source, $this->radius));
-
-		foreach($list as $entity){
-			if($entity == $this) continue;
+		foreach($source->world->getCollidingEntities($this->getBound($source, $this->radius), $this) as $entity){
 
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / $this->radius;
 			$motion = $entityPos->subtractVector($source)->normalize();
 
-			($entity->isUnderwater()) ? $exposure = 0.5 : $exposure = 1.5;
-			$impact = (1 - $distance) * $exposure;
+			$exposure = 1;
+			if ($entity->isUnderwater()){
+				$exposure = 0.5;
+			}
 
+			$impact = (1 - $distance) * $exposure;
 			if ($impact <= 0) continue;
 
 			if (round($entityPos->getX(), 1) == round($source->getX(), 1) && round($entityPos->getZ(), 1) == round($source->getZ(), 1)) {
-				$entity->setMotion($entity->getMotion()->add(0, 0.5 * $exposure, 0));
+				$entity->setMotion($entity->getMotion()->add(0, 0.75 * $exposure, 0));
 
 				return;
 			}
 
-			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.4, 0)->addVector($motion->multiply($impact)));
+			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.4, 0)->addVector($motion->multiply($impact * $exposure)));
 		}
 	}
 
