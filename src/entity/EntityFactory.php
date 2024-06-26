@@ -170,7 +170,7 @@ final class EntityFactory{
 			return new Villager(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Villager', 'minecraft:villager']);
 
-		$this->register(WindCharge::class, function(World $world, CompoundTag $nbt): WindCharge {
+		$this->register(WindCharge::class, function(World $world, CompoundTag $nbt) : WindCharge {
 			return new WindCharge(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['Wind Charge', 'minecraft:wind_charge']);
 
