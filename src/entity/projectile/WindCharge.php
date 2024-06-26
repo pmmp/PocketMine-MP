@@ -23,8 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
+use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityDamageByChildEntityEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\RayTraceResult;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 use function ceil;
@@ -32,11 +37,21 @@ use function floor;
 
 class WindCharge extends Throwable{
 	protected float $radius = 2.5;
+	protected float $damage = 0.5;
 
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
 	protected function getInitialDragMultiplier() : float{ return 0; }
 	protected function getInitialGravity() : float{ return 0; }
+
+	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
+		if($this->getOwningEntity() === null)$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+		else $ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $this->damage);
+		
+		$entityHit->attack($ev);
+
+		$this->flagForDespawn();
+	}
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$source = $this->getPosition();
