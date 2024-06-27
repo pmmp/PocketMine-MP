@@ -66,9 +66,8 @@ class CakeWithCandle extends BaseCake{
 			return;
 		}
 
-		$newCandle = $this->setLit(false);
 		$world = $this->position->getWorld();
-		$world->setBlock($this->position, $newCandle);
+		$world->setBlock($this->position, $this->setLit(false));
 		$world->addSound($this->position, new FlintSteelSound());
 	}
 
