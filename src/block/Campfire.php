@@ -41,6 +41,7 @@ use pocketmine\item\Item;
 use pocketmine\item\PotionType;
 use pocketmine\item\Shovel;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -112,6 +113,10 @@ class Campfire extends Transparent{
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 9 / 16)];
 	}
 
 	public function getInventory() : CampfireInventory{
