@@ -42,6 +42,9 @@ use function round;
 
 class WindCharge extends Throwable{
 
+	public const RADIUS = 2.5;
+	public const DAMAGE = 1;
+
 	public static function getNetworkTypeId() : string{ return EntityIds::WIND_CHARGE_PROJECTILE; }
 
 	protected function getInitialDragMultiplier() : float{ return 0; }
@@ -59,9 +62,9 @@ class WindCharge extends Throwable{
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		if($this->getOwningEntity() === null) {
-			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, 1);
+			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, self::DAMAGE);
 		} else {
-			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, 1);
+			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, self::DAMAGE);
 		}
 
 		$entityHit->attack($ev);
@@ -71,12 +74,11 @@ class WindCharge extends Throwable{
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		parent::onHitBlock($blockHit, $hitResult);
-		$bound = $this->getBound($blockHit->getPosition(), 1.5);
+		$bound = $this->getBound($blockHit->getPosition(), self::RADIUS - 1);
 
 		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
-
 					$this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z))->onWindChargeInteraction($this);
 				}
 			}
@@ -99,7 +101,7 @@ class WindCharge extends Throwable{
 		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
 		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
-		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, 2.5), $this) as $entity){
+		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, self::RADIUS), $this) as $entity){
 
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / 2.5;
