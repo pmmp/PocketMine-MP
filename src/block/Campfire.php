@@ -49,6 +49,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
+use pocketmine\world\sound\ItemFrameAddItemSound;
 use function count;
 use function mt_rand;
 
@@ -175,6 +176,7 @@ class Campfire extends Transparent{
 				$ingredient->setCount(1);
 				if(count($this->inventory->addItem($ingredient)) === 0){
 					$item->pop();
+					$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
 					return true;
 				}
 			}
