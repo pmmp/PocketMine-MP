@@ -125,7 +125,7 @@ class Campfire extends Transparent{
 		return $this->inventory;
 	}
 
-	/** Sets the number of ticks left to cook the item to the given slot */
+	/** Sets the number of ticks left to cook the item in the given slot */
 	public function setCookingTime(int $slot, int $time) : void{
 		if($slot < 0 || $slot > 3){
 			throw new \InvalidArgumentException("Slot must be in range 0-3");
