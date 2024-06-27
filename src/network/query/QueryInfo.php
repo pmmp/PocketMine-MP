@@ -29,6 +29,8 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
+use function array_map;
 use function chr;
 use function count;
 use function str_replace;
@@ -41,7 +43,7 @@ final class QueryInfo{
 	private bool $listPlugins;
 	/** @var Plugin[] */
 	private array $plugins;
-	/** @var Player[] */
+	/** @var string[] */
 	private array $players;
 
 	private string $gametype;
@@ -65,11 +67,11 @@ final class QueryInfo{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
+		$this->listPlugins = $server->getConfigGroup()->getPropertyBool(YmlServerProperties::SETTINGS_QUERY_PLUGINS, true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
-		$this->players = $server->getOnlinePlayers();
+		$this->players = array_map(fn(Player $p) => $p->getName(), $server->getOnlinePlayers());
 
-		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode() === GameMode::SURVIVAL || $server->getGamemode() === GameMode::ADVENTURE) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$world = $server->getWorldManager()->getDefaultWorld();
@@ -122,17 +124,17 @@ final class QueryInfo{
 	}
 
 	/**
-	 * @return Player[]
+	 * @return string[]
 	 */
 	public function getPlayerList() : array{
 		return $this->players;
 	}
 
 	/**
-	 * @param Player[] $players
+	 * @param string[] $players
 	 */
 	public function setPlayerList(array $players) : void{
-		Utils::validateArrayValueType($players, function(Player $_) : void{});
+		Utils::validateArrayValueType($players, function(string $_) : void{});
 		$this->players = $players;
 		$this->destroyCache();
 	}
@@ -226,7 +228,7 @@ final class QueryInfo{
 
 		$query .= "\x00\x01player_\x00\x00";
 		foreach($this->players as $player){
-			$query .= $player->getName() . "\x00";
+			$query .= $player . "\x00";
 		}
 		$query .= "\x00";
 

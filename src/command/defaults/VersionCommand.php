@@ -40,9 +40,9 @@ use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"version",
 			KnownTranslationFactory::pocketmine_command_version_description(),
 			KnownTranslationFactory::pocketmine_command_version_usage(),
 			["ver", "about"]
@@ -51,23 +51,20 @@ class VersionCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
-				VersionInfo::NAME
+				TextFormat::GREEN . VersionInfo::NAME . TextFormat::RESET
 			));
+			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				VersionInfo::VERSION()->getFullVersion(),
-				VersionInfo::GIT_HASH()
+				$versionColor . VersionInfo::VERSION()->getFullVersion() . TextFormat::RESET,
+				TextFormat::GREEN . VersionInfo::GIT_HASH() . TextFormat::RESET
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
-				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-				(string) ProtocolInfo::CURRENT_PROTOCOL
+				TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::RESET,
+				TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL . TextFormat::RESET
 			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(PHP_VERSION));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN . PHP_VERSION . TextFormat::RESET));
 
 			$jitMode = Utils::getOpcacheJitMode();
 			if($jitMode !== null){
@@ -79,8 +76,8 @@ class VersionCommand extends VanillaCommand{
 			}else{
 				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(Utils::getOS()));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
@@ -110,7 +107,7 @@ class VersionCommand extends VanillaCommand{
 
 	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
 		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::WHITE . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
+		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::RESET . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
 
 		if($desc->getDescription() !== ""){
 			$sender->sendMessage($desc->getDescription());

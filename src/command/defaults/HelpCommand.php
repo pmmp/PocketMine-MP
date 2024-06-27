@@ -44,9 +44,9 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"help",
 			KnownTranslationFactory::pocketmine_command_help_description(),
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]
@@ -55,10 +55,6 @@ class HelpCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$commandName = "";
 			$pageNumber = 1;
@@ -94,7 +90,7 @@ class HelpCommand extends VanillaCommand{
 				foreach($commands[$pageNumber - 1] as $command){
 					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::WHITE . $descriptionString);
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::RESET . $descriptionString);
 				}
 			}
 
@@ -106,18 +102,18 @@ class HelpCommand extends VanillaCommand{
 					$description = $cmd->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
-						->format(TextFormat::YELLOW . "--------- " . TextFormat::WHITE, TextFormat::YELLOW . " ---------"));
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::WHITE . $descriptionString)
+						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
 						->prefix(TextFormat::GOLD));
 
 					$usage = $cmd->getUsage();
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $usageString)))
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString)))
 						->prefix(TextFormat::GOLD));
 
 					$aliases = $cmd->getAliases();
 					sort($aliases, SORT_NATURAL);
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::WHITE . implode(", ", $aliases))
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::RESET . implode(", ", $aliases))
 						->prefix(TextFormat::GOLD));
 
 					return true;

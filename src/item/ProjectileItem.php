@@ -36,7 +36,7 @@ abstract class ProjectileItem extends Item{
 
 	abstract protected function createEntity(Location $location, Player $thrower) : Throwable;
 
-	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$location = $player->getLocation();
 
 		$projectile = $this->createEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $location->yaw, $location->pitch), $player);
@@ -46,7 +46,7 @@ abstract class ProjectileItem extends Item{
 		$projectileEv->call();
 		if($projectileEv->isCancelled()){
 			$projectile->flagForDespawn();
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
 		$projectile->spawnToAll();
@@ -55,6 +55,6 @@ abstract class ProjectileItem extends Item{
 
 		$this->pop();
 
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 }

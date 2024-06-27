@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\Thread as NativeThread;
 use pocketmine\scheduler\AsyncTask;
-use const PTHREADS_INHERIT_NONE;
 
 /**
  * Specialized Thread class aimed at PocketMine-MP-related usages. It handles setting up autoloading and error handling.
@@ -35,30 +35,6 @@ use const PTHREADS_INHERIT_NONE;
  * CPU.
  * @see AsyncTask
  */
-abstract class Thread extends \Thread{
+abstract class Thread extends NativeThread{
 	use CommonThreadPartsTrait;
-
-	public function start(int $options = PTHREADS_INHERIT_NONE) : bool{
-		//this is intentionally not traitified
-		ThreadManager::getInstance()->add($this);
-
-		if($this->getClassLoaders() === null){
-			$this->setClassLoaders();
-		}
-		return parent::start($options);
-	}
-
-	/**
-	 * Stops the thread using the best way possible. Try to stop it yourself before calling this.
-	 */
-	public function quit() : void{
-		$this->isKilled = true;
-
-		if(!$this->isJoined()){
-			$this->notify();
-			$this->join();
-		}
-
-		ThreadManager::getInstance()->remove($this);
-	}
 }

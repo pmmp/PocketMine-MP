@@ -36,7 +36,7 @@ final class Git{
 	/**
 	 * Returns the git hash of the currently checked out head of the given repository, or null on failure.
 	 *
-	 * @param bool   $dirty reference parameter, set to whether the repo has local changes
+	 * @param bool $dirty reference parameter, set to whether the repo has local changes
 	 */
 	public static function getRepositoryState(string $dir, bool &$dirty) : ?string{
 		if(Process::execute("git -C \"$dir\" rev-parse HEAD", $out) === 0 && $out !== false && strlen($out = trim($out)) === 40){

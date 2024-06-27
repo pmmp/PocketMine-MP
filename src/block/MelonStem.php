@@ -23,9 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+
 class MelonStem extends Stem{
 
 	protected function getPlant() : Block{
 		return VanillaBlocks::MELON();
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::MELON_SEEDS();
 	}
 }

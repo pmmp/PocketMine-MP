@@ -28,7 +28,7 @@ interface PacketSender{
 	/**
 	 * Pushes a packet into the channel to be processed.
 	 */
-	public function send(string $payload, bool $immediate) : void;
+	public function send(string $payload, bool $immediate, ?int $receiptId) : void;
 
 	/**
 	 * Closes the channel, terminating the connection.

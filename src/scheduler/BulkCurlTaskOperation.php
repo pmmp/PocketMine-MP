@@ -26,7 +26,7 @@ namespace pocketmine\scheduler;
 final class BulkCurlTaskOperation{
 	/**
 	 * @param string[] $extraHeaders
-	 * @param mixed[] $extraOpts
+	 * @param mixed[]  $extraOpts
 	 * @phpstan-param list<string> $extraHeaders
 	 * @phpstan-param array<int, mixed> $extraOpts
 	 */

@@ -40,6 +40,7 @@ use function strlen;
 use function time;
 use function trim;
 use const AF_INET;
+use const AF_INET6;
 use const IPPROTO_IPV6;
 use const IPV6_V6ONLY;
 use const PHP_INT_MAX;

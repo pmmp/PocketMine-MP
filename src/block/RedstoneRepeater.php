@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -37,35 +38,17 @@ use pocketmine\world\BlockTransaction;
 class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
+	use StaticSupportTrait;
 
 	public const MIN_DELAY = 1;
 	public const MAX_DELAY = 4;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	protected int $delay = self::MIN_DELAY;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function getId() : int{
-		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, self::MIN_DELAY, self::MAX_DELAY);
-		$this->powered = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | (($this->delay - 1) << 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedIntAuto(self::MIN_DELAY, self::MAX_DELAY, $this->delay);
+		$w->bool($this->powered);
 	}
 
 	public function getDelay() : int{ return $this->delay; }
@@ -87,18 +70,14 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
-			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
-			}
-
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(++$this->delay > self::MAX_DELAY){
 			$this->delay = self::MIN_DELAY;
 		}
@@ -106,14 +85,8 @@ class RedstoneRepeater extends Flowable{
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	//TODO: redstone functionality

@@ -25,13 +25,12 @@ namespace pocketmine\item;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
+use function spl_object_id;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static PotionType AWKWARD()
  * @method static PotionType FIRE_RESISTANCE()
@@ -65,6 +64,7 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType STRONG_LEAPING()
  * @method static PotionType STRONG_POISON()
  * @method static PotionType STRONG_REGENERATION()
+ * @method static PotionType STRONG_SLOWNESS()
  * @method static PotionType STRONG_STRENGTH()
  * @method static PotionType STRONG_SWIFTNESS()
  * @method static PotionType STRONG_TURTLE_MASTER()
@@ -75,154 +75,196 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType WATER_BREATHING()
  * @method static PotionType WEAKNESS()
  * @method static PotionType WITHER()
+ *
+ * @phpstan-type TMetadata array{0: string, 1: \Closure() : list<EffectInstance>}
  */
-final class PotionType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum PotionType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("water", "Water", fn() => []),
-			new self("mundane", "Mundane", fn() => []),
-			new self("long_mundane", "Long Mundane", fn() => []),
-			new self("thick", "Thick", fn() => []),
-			new self("awkward", "Awkward", fn() => []),
-			new self("night_vision", "Night Vision", fn() => [
-				new EffectInstance(VanillaEffects::NIGHT_VISION(), 3600)
-			]),
-			new self("long_night_vision", "Long Night Vision", fn() => [
-				new EffectInstance(VanillaEffects::NIGHT_VISION(), 9600)
-			]),
-			new self("invisibility", "Invisibility", fn() => [
-				new EffectInstance(VanillaEffects::INVISIBILITY(), 3600)
-			]),
-			new self("long_invisibility", "Long Invisibility", fn() => [
-				new EffectInstance(VanillaEffects::INVISIBILITY(), 9600)
-			]),
-			new self("leaping", "Leaping", fn() => [
-				new EffectInstance(VanillaEffects::JUMP_BOOST(), 3600)
-			]),
-			new self("long_leaping", "Long Leaping", fn() => [
-				new EffectInstance(VanillaEffects::JUMP_BOOST(), 9600)
-			]),
-			new self("strong_leaping", "Strong Leaping", fn() => [
-				new EffectInstance(VanillaEffects::JUMP_BOOST(), 1800, 1)
-			]),
-			new self("fire_resistance", "Fire Resistance", fn() => [
-				new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 3600)
-			]),
-			new self("long_fire_resistance", "Long Fire Resistance", fn() => [
-				new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 9600)
-			]),
-			new self("swiftness", "Swiftness", fn() => [
-				new EffectInstance(VanillaEffects::SPEED(), 3600)
-			]),
-			new self("long_swiftness", "Long Swiftness", fn() => [
-				new EffectInstance(VanillaEffects::SPEED(), 9600)
-			]),
-			new self("strong_swiftness", "Strong Swiftness", fn() => [
-				new EffectInstance(VanillaEffects::SPEED(), 1800, 1)
-			]),
-			new self("slowness", "Slowness", fn() => [
-				new EffectInstance(VanillaEffects::SLOWNESS(), 1800)
-			]),
-			new self("long_slowness", "Long Slowness", fn() => [
-				new EffectInstance(VanillaEffects::SLOWNESS(), 4800)
-			]),
-			new self("water_breathing", "Water Breathing", fn() => [
-				new EffectInstance(VanillaEffects::WATER_BREATHING(), 3600)
-			]),
-			new self("long_water_breathing", "Long Water Breathing", fn() => [
-				new EffectInstance(VanillaEffects::WATER_BREATHING(), 9600)
-			]),
-			new self("healing", "Healing", fn() => [
-				new EffectInstance(VanillaEffects::INSTANT_HEALTH())
-			]),
-			new self("strong_healing", "Strong Healing", fn() => [
-				new EffectInstance(VanillaEffects::INSTANT_HEALTH(), null, 1)
-			]),
-			new self("harming", "Harming", fn() => [
-				new EffectInstance(VanillaEffects::INSTANT_DAMAGE())
-			]),
-			new self("strong_harming", "Strong Harming", fn() => [
-				new EffectInstance(VanillaEffects::INSTANT_DAMAGE(), null, 1)
-			]),
-			new self("poison", "Poison", fn() => [
-				new EffectInstance(VanillaEffects::POISON(), 900)
-			]),
-			new self("long_poison", "Long Poison", fn() => [
-				new EffectInstance(VanillaEffects::POISON(), 2400)
-			]),
-			new self("strong_poison", "Strong Poison", fn() => [
-				new EffectInstance(VanillaEffects::POISON(), 440, 1)
-			]),
-			new self("regeneration", "Regeneration", fn() => [
-				new EffectInstance(VanillaEffects::REGENERATION(), 900)
-			]),
-			new self("long_regeneration", "Long Regeneration", fn() => [
-				new EffectInstance(VanillaEffects::REGENERATION(), 2400)
-			]),
-			new self("strong_regeneration", "Strong Regeneration", fn() => [
-				new EffectInstance(VanillaEffects::REGENERATION(), 440, 1)
-			]),
-			new self("strength", "Strength", fn() => [
-				new EffectInstance(VanillaEffects::STRENGTH(), 3600)
-			]),
-			new self("long_strength", "Long Strength", fn() => [
-				new EffectInstance(VanillaEffects::STRENGTH(), 9600)
-			]),
-			new self("strong_strength", "Strong Strength", fn() => [
-				new EffectInstance(VanillaEffects::STRENGTH(), 1800, 1)
-			]),
-			new self("weakness", "Weakness", fn() => [
-				new EffectInstance(VanillaEffects::WEAKNESS(), 1800)
-			]),
-			new self("long_weakness", "Long Weakness", fn() => [
-				new EffectInstance(VanillaEffects::WEAKNESS(), 4800)
-			]),
-			new self("wither", "Wither", fn() => [
-				new EffectInstance(VanillaEffects::WITHER(), 800, 1)
-			]),
-			new self("turtle_master", "Turtle Master", fn() => [
-				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3),
-				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 2),
-			]),
-			new self("long_turtle_master", "Long Turtle Master", fn() => [
-				new EffectInstance(VanillaEffects::SLOWNESS(), 40 * 20, 3),
-				new EffectInstance(VanillaEffects::RESISTANCE(), 40 * 20, 2),
-			]),
-			new self("strong_turtle_master", "Strong Turtle Master", fn() => [
-				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 5),
-				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 3),
-			]),
-			new self("slow_falling", "Slow Falling", fn() => [
-				//TODO
-			]),
-			new self("long_slow_falling", "Long Slow Falling", fn() => [
-				//TODO
-			])
-		);
-	}
+	case WATER;
+	case MUNDANE;
+	case LONG_MUNDANE;
+	case THICK;
+	case AWKWARD;
+	case NIGHT_VISION;
+	case LONG_NIGHT_VISION;
+	case INVISIBILITY;
+	case LONG_INVISIBILITY;
+	case LEAPING;
+	case LONG_LEAPING;
+	case STRONG_LEAPING;
+	case FIRE_RESISTANCE;
+	case LONG_FIRE_RESISTANCE;
+	case SWIFTNESS;
+	case LONG_SWIFTNESS;
+	case STRONG_SWIFTNESS;
+	case SLOWNESS;
+	case LONG_SLOWNESS;
+	case WATER_BREATHING;
+	case LONG_WATER_BREATHING;
+	case HEALING;
+	case STRONG_HEALING;
+	case HARMING;
+	case STRONG_HARMING;
+	case POISON;
+	case LONG_POISON;
+	case STRONG_POISON;
+	case REGENERATION;
+	case LONG_REGENERATION;
+	case STRONG_REGENERATION;
+	case STRENGTH;
+	case LONG_STRENGTH;
+	case STRONG_STRENGTH;
+	case WEAKNESS;
+	case LONG_WEAKNESS;
+	case WITHER;
+	case TURTLE_MASTER;
+	case LONG_TURTLE_MASTER;
+	case STRONG_TURTLE_MASTER;
+	case SLOW_FALLING;
+	case LONG_SLOW_FALLING;
+	case STRONG_SLOWNESS;
 
 	/**
-	 * @phpstan-param \Closure() : list<EffectInstance> $effectsGetter
+	 * @phpstan-return TMetadata
 	 */
-	private function __construct(
-		string $enumName,
-		private string $displayName,
-		private \Closure $effectsGetter
-	){
-		$this->Enum___construct($enumName);
+	private function getMetadata() : array{
+		/** @phpstan-var array<int, TMetadata> $cache */
+		static $cache = [];
+
+		return $cache[spl_object_id($this)] ??= match($this){
+			self::WATER => ["Water", fn() => []],
+			self::MUNDANE => ["Mundane", fn() => []],
+			self::LONG_MUNDANE => ["Long Mundane", fn() => []],
+			self::THICK => ["Thick", fn() => []],
+			self::AWKWARD => ["Awkward", fn() => []],
+			self::NIGHT_VISION => ["Night Vision", fn() => [
+				new EffectInstance(VanillaEffects::NIGHT_VISION(), 3600)
+			]],
+			self::LONG_NIGHT_VISION => ["Long Night Vision", fn() => [
+				new EffectInstance(VanillaEffects::NIGHT_VISION(), 9600)
+			]],
+			self::INVISIBILITY => ["Invisibility", fn() => [
+				new EffectInstance(VanillaEffects::INVISIBILITY(), 3600)
+			]],
+			self::LONG_INVISIBILITY => ["Long Invisibility", fn() => [
+				new EffectInstance(VanillaEffects::INVISIBILITY(), 9600)
+			]],
+			self::LEAPING => ["Leaping", fn() => [
+				new EffectInstance(VanillaEffects::JUMP_BOOST(), 3600)
+			]],
+			self::LONG_LEAPING => ["Long Leaping", fn() => [
+				new EffectInstance(VanillaEffects::JUMP_BOOST(), 9600)
+			]],
+			self::STRONG_LEAPING => ["Strong Leaping", fn() => [
+				new EffectInstance(VanillaEffects::JUMP_BOOST(), 1800, 1)
+			]],
+			self::FIRE_RESISTANCE => ["Fire Resistance", fn() => [
+				new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 3600)
+			]],
+			self::LONG_FIRE_RESISTANCE => ["Long Fire Resistance", fn() => [
+				new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 9600)
+			]],
+			self::SWIFTNESS => ["Swiftness", fn() => [
+				new EffectInstance(VanillaEffects::SPEED(), 3600)
+			]],
+			self::LONG_SWIFTNESS => ["Long Swiftness", fn() => [
+				new EffectInstance(VanillaEffects::SPEED(), 9600)
+			]],
+			self::STRONG_SWIFTNESS => ["Strong Swiftness", fn() => [
+				new EffectInstance(VanillaEffects::SPEED(), 1800, 1)
+			]],
+			self::SLOWNESS => ["Slowness", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 1800)
+			]],
+			self::LONG_SLOWNESS => ["Long Slowness", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 4800)
+			]],
+			self::WATER_BREATHING => ["Water Breathing", fn() => [
+				new EffectInstance(VanillaEffects::WATER_BREATHING(), 3600)
+			]],
+			self::LONG_WATER_BREATHING => ["Long Water Breathing", fn() => [
+				new EffectInstance(VanillaEffects::WATER_BREATHING(), 9600)
+			]],
+			self::HEALING => ["Healing", fn() => [
+				new EffectInstance(VanillaEffects::INSTANT_HEALTH())
+			]],
+			self::STRONG_HEALING => ["Strong Healing", fn() => [
+				new EffectInstance(VanillaEffects::INSTANT_HEALTH(), null, 1)
+			]],
+			self::HARMING => ["Harming", fn() => [
+				new EffectInstance(VanillaEffects::INSTANT_DAMAGE())
+			]],
+			self::STRONG_HARMING => ["Strong Harming", fn() => [
+				new EffectInstance(VanillaEffects::INSTANT_DAMAGE(), null, 1)
+			]],
+			self::POISON => ["Poison", fn() => [
+				new EffectInstance(VanillaEffects::POISON(), 900)
+			]],
+			self::LONG_POISON => ["Long Poison", fn() => [
+				new EffectInstance(VanillaEffects::POISON(), 2400)
+			]],
+			self::STRONG_POISON => ["Strong Poison", fn() => [
+				new EffectInstance(VanillaEffects::POISON(), 440, 1)
+			]],
+			self::REGENERATION => ["Regeneration", fn() => [
+				new EffectInstance(VanillaEffects::REGENERATION(), 900)
+			]],
+			self::LONG_REGENERATION => ["Long Regeneration", fn() => [
+				new EffectInstance(VanillaEffects::REGENERATION(), 2400)
+			]],
+			self::STRONG_REGENERATION => ["Strong Regeneration", fn() => [
+				new EffectInstance(VanillaEffects::REGENERATION(), 440, 1)
+			]],
+			self::STRENGTH => ["Strength", fn() => [
+				new EffectInstance(VanillaEffects::STRENGTH(), 3600)
+			]],
+			self::LONG_STRENGTH => ["Long Strength", fn() => [
+				new EffectInstance(VanillaEffects::STRENGTH(), 9600)
+			]],
+			self::STRONG_STRENGTH => ["Strong Strength", fn() => [
+				new EffectInstance(VanillaEffects::STRENGTH(), 1800, 1)
+			]],
+			self::WEAKNESS => ["Weakness", fn() => [
+				new EffectInstance(VanillaEffects::WEAKNESS(), 1800)
+			]],
+			self::LONG_WEAKNESS => ["Long Weakness", fn() => [
+				new EffectInstance(VanillaEffects::WEAKNESS(), 4800)
+			]],
+			self::WITHER => ["Wither", fn() => [
+				new EffectInstance(VanillaEffects::WITHER(), 800, 1)
+			]],
+			self::TURTLE_MASTER => ["Turtle Master", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 2),
+			]],
+			self::LONG_TURTLE_MASTER => ["Long Turtle Master", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 40 * 20, 3),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 40 * 20, 2),
+			]],
+			self::STRONG_TURTLE_MASTER => ["Strong Turtle Master", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 5),
+				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 3),
+			]],
+			self::SLOW_FALLING => ["Slow Falling", fn() => [
+				//TODO
+			]],
+			self::LONG_SLOW_FALLING => ["Long Slow Falling", fn() => [
+				//TODO
+			]],
+			self::STRONG_SLOWNESS => ["Strong Slowness", fn() => [
+				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3)
+			]]
+		};
 	}
 
-	public function getDisplayName() : string{ return $this->displayName; }
+	public function getDisplayName() : string{ return $this->getMetadata()[0]; }
 
 	/**
 	 * @return EffectInstance[]
 	 * @phpstan-return list<EffectInstance>
 	 */
 	public function getEffects() : array{
-		return ($this->effectsGetter)();
+		return ($this->getMetadata()[1])();
 	}
 }

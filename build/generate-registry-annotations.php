@@ -36,9 +36,10 @@ use function ksort;
 use function mb_strtoupper;
 use function preg_match;
 use function sprintf;
+use function str_ends_with;
 use function str_replace;
-use function substr;
 use const SORT_STRING;
+use const STDERR;
 
 if(count($argv) !== 2){
 	fwrite(STDERR, "Provide a path to process\n");
@@ -120,7 +121,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 if(is_dir($argv[1])){
 	/** @var string $file */
 	foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1], \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME)) as $file){
-		if(substr($file, -4) !== ".php"){
+		if(!str_ends_with($file, ".php")){
 			continue;
 		}
 

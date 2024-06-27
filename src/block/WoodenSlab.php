@@ -23,17 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodTypeTrait;
+
 class WoodenSlab extends Slab{
+	use WoodTypeTrait;
 
 	public function getFuelTime() : int{
-		return 300;
+		return $this->woodType->isFlammable() ? 300 : 0;
 	}
 
 	public function getFlameEncouragement() : int{
-		return 5;
+		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
 	public function getFlammability() : int{
-		return 20;
+		return $this->woodType->isFlammable() ? 20 : 0;
 	}
 }

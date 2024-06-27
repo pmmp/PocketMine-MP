@@ -25,10 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -41,42 +42,24 @@ class RedstoneComparator extends Flowable{
 	use HorizontalFacingTrait;
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
-
-	protected BlockIdentifierFlattened $idInfoFlattened;
+	use StaticSupportTrait;
 
 	protected bool $isSubtractMode = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->bool($this->isSubtractMode);
+		$w->bool($this->powered);
 	}
 
-	public function getId() : int{
-		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->isSubtractMode = ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT) !== 0;
-		$this->powered = ($id === $this->idInfoFlattened->getSecondId() || ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
-	}
-
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
-			($this->isSubtractMode ? BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT : 0) |
-			($this->powered ? BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED : 0);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof Comparator){
 			$this->signalStrength = $tile->getSignalStrength();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -104,30 +87,20 @@ class RedstoneComparator extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
-			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
-			}
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
-
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->isSubtractMode = !$this->isSubtractMode;
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	//TODO: redstone functionality

@@ -24,32 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\thread\Thread;
-use function time;
+use function hrtime;
+use function intdiv;
 
 class ServerKiller extends Thread{
-
-	/** @var int */
-	public $time;
-
 	private bool $stopped = false;
 
-	/**
-	 * @param int $time
-	 */
-	public function __construct($time = 15){
-		$this->time = $time;
-	}
+	public function __construct(
+		public int $time = 15
+	){}
 
 	protected function onRun() : void{
-		$start = time();
-		$this->synchronized(function() : void{
-			if(!$this->stopped){
-				$this->wait($this->time * 1000000);
+		$start = hrtime(true);
+		$remaining = $this->time * 1_000_000;
+		$this->synchronized(function() use (&$remaining, $start) : void{
+			while(!$this->stopped && $remaining > 0){
+				$this->wait($remaining);
+				$remaining -= intdiv(hrtime(true) - $start, 1000);
 			}
 		});
-		if(time() - $start >= $this->time){
+		if($remaining <= 0){
 			echo "\nTook too long to stop, server was killed forcefully!\n";
-			@Process::kill(Process::pid(), true);
+			@Process::kill(Process::pid());
 		}
 	}
 
