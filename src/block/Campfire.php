@@ -33,6 +33,7 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -43,6 +44,7 @@ use pocketmine\item\Shovel;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
@@ -145,7 +147,7 @@ class Campfire extends Transparent{
 		$this->position->getWorld()->setBlock($this->position, $this->setLit(false));
 	}
 
-	private function fire() : void{
+	private function ignite() : void{
 		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
 		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
 	}
@@ -162,57 +164,55 @@ class Campfire extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			if($item instanceof FlintSteel){
-				if(!$this->lit){
-					$item->applyDamage(1);
-					$this->fire();
-				}
-				return true;
-			}
-			if($item instanceof Shovel && $this->lit){
+		if($item instanceof FlintSteel){
+			if(!$this->lit){
 				$item->applyDamage(1);
-				$this->extinguish();
-				return true;
+				$this->ignite();
 			}
+			return true;
+		}
+		if($item instanceof Shovel && $this->lit){
+			$item->applyDamage(1);
+			$this->extinguish();
+			return true;
+		}
 
-			if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item) !== null){
-				$ingredient = clone $item;
-				$ingredient->setCount(1);
-				if(count($this->inventory->addItem($ingredient)) === 0){
-					$item->pop();
-					$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
-					return true;
-				}
+		if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item) !== null){
+			$ingredient = clone $item;
+			$ingredient->setCount(1);
+			if(count($this->inventory->addItem($ingredient)) === 0){
+				$item->pop();
+				$this->position->getWorld()->addSound($this->position, new ItemFrameAddItemSound());
+				return true;
 			}
 		}
 		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
-		$block = $this->getSide(Facing::UP);
-		if($block instanceof Water && $this->lit){
+		if($this->lit && $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::WATER){
 			$this->extinguish();
+			//TODO: Waterlogging
 		}
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
 		if(!$this->lit){
 			if($entity->isOnFire()){
-				$this->fire();
-				return true;
+				$this->ignite();
+				return false;
 			}
-			return false;
-		}
-		if($entity instanceof SplashPotion && $entity->getPotionType()->equals(PotionType::WATER)){
-			$this->extinguish();
 			return true;
 		}elseif($entity instanceof Living){
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1));
-			$entity->setOnFire(8);
-			return false;
 		}
-		return false;
+		return true;
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($this->lit && $projectile instanceof SplashPotion && $projectile->getPotionType() === PotionType::WATER){
+			$this->extinguish();
+		}
 	}
 
 	public function onScheduledUpdate() : void{
