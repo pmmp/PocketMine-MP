@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
@@ -53,17 +54,20 @@ use function mt_rand;
 
 class Campfire extends Transparent{
 	use HorizontalFacingTrait{
-		describeBlockOnlyState as encodeFacingState;
+		HorizontalFacingTrait::describeBlockOnlyState as encodeFacingState;
+	}
+	use LightableTrait{
+		LightableTrait::describeBlockOnlyState as encodeLitState;
 	}
 
-	protected bool $lit = true;
 	protected CampfireInventory $inventory;
-	/** @var array<int, int> */
+
+	/** @var int[] slot => ticks */
 	protected array $cookingTimes = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$this->encodeFacingState($w);
-		$w->bool($this->lit);
+		$this->encodeLitState($w);
 	}
 
 	public function readStateFromWorld() : Block{
@@ -72,6 +76,8 @@ class Campfire extends Transparent{
 		if($tile instanceof TileCampfire){
 			$this->inventory = $tile->getInventory();
 			$this->cookingTimes = $tile->getCookingTimes();
+		}else{
+			$this->inventory = new CampfireInventory($this->position);
 		}
 
 		return $this;
@@ -111,16 +117,7 @@ class Campfire extends Transparent{
 		return $this->inventory;
 	}
 
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/** @return $this */
-	public function setLit(bool $lit) : self{
-		$this->lit = $lit;
-		return $this;
-	}
-
+	/** Sets the number of ticks left to cook the item to the given slot */
 	public function setCookingTime(int $slot, int $time) : void{
 		if($slot < 0 || $slot > 3){
 			throw new \InvalidArgumentException("Slot must be in range 0-3");
@@ -132,6 +129,7 @@ class Campfire extends Transparent{
 		$this->cookingTimes[$slot] = $time;
 	}
 
+	/** Returns the number of ticks left to cook the item in the given slot */
 	public function getCookingTime(int $slot) : int{
 		return $this->cookingTimes[$slot] ?? 0;
 	}
@@ -153,6 +151,7 @@ class Campfire extends Transparent{
 		if($player !== null){
 			$this->facing = $player->getHorizontalFacing();
 		}
+		$this->lit = true;
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
