@@ -37,8 +37,11 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Durable;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\item\PotionType;
 use pocketmine\item\Shovel;
 use pocketmine\item\VanillaItems;
@@ -49,6 +52,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\BlazeShootSound;
 use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
@@ -153,7 +157,7 @@ class Campfire extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasCenterSupport()){
+		if($this->getSide(Facing::DOWN)->hasSameTypeId($this)){
 			return false;
 		}
 		if($player !== null){
@@ -164,14 +168,22 @@ class Campfire extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof FlintSteel){
-			if(!$this->lit){
-				$item->applyDamage(1);
+		if(!$this->lit){
+			if($item->getTypeId() === ItemTypeIds::FIRE_CHARGE){
+				$item->pop();
 				$this->ignite();
+				$this->position->getWorld()->addSound($this->position, new BlazeShootSound());
+				return true;
+			}elseif($item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
+				if($item instanceof Durable){
+					$item->applyDamage(1);
+				}
+				$this->ignite();
+				return true;
 			}
-			return true;
+			return false;
 		}
-		if($item instanceof Shovel && $this->lit){
+		if($item instanceof Shovel){
 			$item->applyDamage(1);
 			$this->extinguish();
 			return true;
