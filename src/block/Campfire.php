@@ -49,7 +49,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Limits;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BlazeShootSound;
 use pocketmine\world\sound\CampfireSound;
@@ -128,19 +127,23 @@ class Campfire extends Transparent{
 		return $this->inventory;
 	}
 
-	/** Sets the number of ticks left to cook the item in the given slot */
+	/**
+	 * Sets the number of ticks during the item in the given slot has been cooked
+	 */
 	public function setCookingTime(int $slot, int $time) : void{
 		if($slot < 0 || $slot > 3){
 			throw new \InvalidArgumentException("Slot must be in range 0-3");
 		}
-		if($time < 0 || $time > Limits::INT32_MAX){
-			throw new \InvalidArgumentException("CookingTime must be in range 0-" . Limits::INT32_MAX);
+		if($time < 0 || $time > FurnaceType::CAMPFIRE->getCookDurationTicks()){
+			throw new \InvalidArgumentException("CookingTime must be in range 0-" . FurnaceType::CAMPFIRE->getCookDurationTicks());
 		}
 
 		$this->cookingTimes[$slot] = $time;
 	}
 
-	/** Returns the number of ticks left to cook the item in the given slot */
+	/**
+	 * Returns the number of ticks left to cook the item in the given slot
+	 */
 	public function getCookingTime(int $slot) : int{
 		return $this->cookingTimes[$slot] ?? 0;
 	}
@@ -180,9 +183,7 @@ class Campfire extends Transparent{
 				$this->ignite();
 				return true;
 			}
-			return false;
-		}
-		if($item instanceof Shovel){
+		}elseif($item instanceof Shovel){
 			$item->applyDamage(1);
 			$this->extinguish();
 			return true;

@@ -35,10 +35,10 @@ use pocketmine\world\World;
 
 class Campfire extends Spawnable implements Container{
 	use ContainerTrait;
-	private const TAG_FIRST_ITEM = "Item1";
-	private const TAG_SECOND_ITEM = "Item2";
-	private const TAG_THIRD_ITEM = "Item3";
-	private const TAG_FOURTH_ITEM = "Item4";
+	private const TAG_FIRST_INPUT_ITEM = "Item1";
+	private const TAG_SECOND_INPUT_ITEM = "Item2";
+	private const TAG_THIRD_INPUT_ITEM = "Item3";
+	private const TAG_FOURTH_INPUT_ITEM = "Item4";
 
 	private const TAG_FIRST_COOKING_TIME = "ItemTime1";
 	private const TAG_SECOND_COOKING_TIME = "ItemTime2";
@@ -90,60 +90,45 @@ class Campfire extends Spawnable implements Container{
 		$this->inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 		foreach([
-			0 => self::TAG_FIRST_ITEM,
-			1 => self::TAG_SECOND_ITEM,
-			2 => self::TAG_THIRD_ITEM,
-			3 => self::TAG_FOURTH_ITEM
-		] as $slot => $tag){
-			if(($tag = $nbt->getTag($tag)) instanceof CompoundTag){
+			[0, self::TAG_FIRST_INPUT_ITEM, self::TAG_FIRST_COOKING_TIME],
+			[1, self::TAG_SECOND_INPUT_ITEM, self::TAG_SECOND_COOKING_TIME],
+			[2, self::TAG_THIRD_INPUT_ITEM, self::TAG_THIRD_COOKING_TIME],
+			[3, self::TAG_FOURTH_INPUT_ITEM, self::TAG_FOURTH_COOKING_TIME],
+		] as [$slot, $itemTag, $cookingTimeTag]){
+			if(($tag = $nbt->getTag($itemTag)) instanceof CompoundTag){
 				$items[$slot] = Item::nbtDeserialize($tag);
 			}
-		}
-		foreach([
-			0 => self::TAG_FIRST_COOKING_TIME,
-			1 => self::TAG_SECOND_COOKING_TIME,
-			2 => self::TAG_THIRD_COOKING_TIME,
-			3 => self::TAG_FOURTH_COOKING_TIME
-		] as $slot => $tag){
-			if(($tag = $nbt->getTag($tag)) instanceof IntTag){
+			if(($tag = $nbt->getTag($cookingTimeTag)) instanceof IntTag){
 				$this->cookingTimes[$slot] = $tag->getValue();
 			}
 		}
-
 		$this->inventory->setContents($items);
 		$this->inventory->getListeners()->add(...$listeners);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		foreach([
-			0 => self::TAG_FIRST_ITEM,
-			1 => self::TAG_SECOND_ITEM,
-			2 => self::TAG_THIRD_ITEM,
-			3 => self::TAG_FOURTH_ITEM
-		] as $slot => $tag){
+			[0, self::TAG_FIRST_INPUT_ITEM, self::TAG_FIRST_COOKING_TIME],
+			[1, self::TAG_SECOND_INPUT_ITEM, self::TAG_SECOND_COOKING_TIME],
+			[2, self::TAG_THIRD_INPUT_ITEM, self::TAG_THIRD_COOKING_TIME],
+			[3, self::TAG_FOURTH_INPUT_ITEM, self::TAG_FOURTH_COOKING_TIME],
+		] as [$slot, $itemTag, $cookingTimeTag]){
 			$item = $this->inventory->getItem($slot);
 			if(!$item->isNull()){
-				$nbt->setTag($tag, $item->nbtSerialize());
-			}
-		}
-		foreach([
-			0 => self::TAG_FIRST_COOKING_TIME,
-			1 => self::TAG_SECOND_COOKING_TIME,
-			2 => self::TAG_THIRD_COOKING_TIME,
-			3 => self::TAG_FOURTH_COOKING_TIME
-		] as $slot => $tag){
-			if(isset($this->cookingTimes[$slot])){
-				$nbt->setInt($tag, $this->cookingTimes[$slot]);
+				$nbt->setTag($itemTag, $item->nbtSerialize());
+				if(isset($this->cookingTimes[$slot])){
+					$nbt->setInt($cookingTimeTag, $this->cookingTimes[$slot]);
+				}
 			}
 		}
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		foreach([
-			0 => self::TAG_FIRST_ITEM,
-			1 => self::TAG_SECOND_ITEM,
-			2 => self::TAG_THIRD_ITEM,
-			3 => self::TAG_FOURTH_ITEM
+			0 => self::TAG_FIRST_INPUT_ITEM,
+			1 => self::TAG_SECOND_INPUT_ITEM,
+			2 => self::TAG_THIRD_INPUT_ITEM,
+			3 => self::TAG_FOURTH_INPUT_ITEM
 		] as $slot => $tag){
 			$item = $this->inventory->getItem($slot);
 			if(!$item->isNull()){
