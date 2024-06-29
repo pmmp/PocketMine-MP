@@ -156,6 +156,7 @@ class Campfire extends Transparent{
 	private function ignite() : void{
 		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
 		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
