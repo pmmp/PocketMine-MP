@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Facing;
 
 class Magma extends Opaque{
 
@@ -38,8 +39,8 @@ class Magma extends Opaque{
 		return true;
 	}
 
-	public function onEntityCollide(Entity $entity) : void{
-		if($entity instanceof Living && !$entity->isSneaking()){
+	public function onEntityCollide(Entity $entity, int $face) : void{
+		if($face === Facing::DOWN && $entity instanceof Living && !$entity->isSneaking()){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 			$entity->attack($ev);
 		}

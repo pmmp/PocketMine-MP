@@ -869,9 +869,9 @@ class Block{
 	}
 
 	/**
-	 * Called when an entity's is above this block
+	 * Called when an entity collide on this block
 	 */
-	public function onEntityCollide(Entity $entity) : void{
+	public function onEntityCollide(Entity $entity, int $face) : void{
 	}
 
 	/**
