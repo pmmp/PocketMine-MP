@@ -660,7 +660,7 @@ abstract class Entity{
 			$hasUpdate = true;
 		}else{
 			$entityBlock = $this->getWorld()->getBlock($this->getLocation());
-			$entityBox = $this->getBoundingBox()->addCoord(0, -0.00001, 0);
+			$entityBox = $this->getBoundingBox()->expandedCopy(0.001, 0.1, 0.001);
 			foreach (Facing::ALL as $face) {
 				$block = $entityBlock->getSide($face);
 				foreach ($block->getCollisionBoxes() as $blockBox) {
