@@ -56,6 +56,7 @@ use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 use function count;
+use function min;
 use function mt_rand;
 
 class Campfire extends Transparent{
