@@ -130,6 +130,14 @@ class Campfire extends Transparent{
 		return $this->inventory;
 	}
 
+	protected function getFurnaceType() : FurnaceType{
+		return FurnaceType::CAMPFIRE;
+	}
+
+	protected function getEntityCollisionDamage() : int{
+		return 1;
+	}
+
 	/**
 	 * Sets the number of ticks during the item in the given slot has been cooked.
 	 */
@@ -137,8 +145,8 @@ class Campfire extends Transparent{
 		if($slot < 0 || $slot > 3){
 			throw new \InvalidArgumentException("Slot must be in range 0-3");
 		}
-		if($time < 0 || $time > FurnaceType::CAMPFIRE->getCookDurationTicks()){
-			throw new \InvalidArgumentException("CookingTime must be in range 0-" . FurnaceType::CAMPFIRE->getCookDurationTicks());
+		if($time < 0 || $time > $this->getFurnaceType()->getCookDurationTicks()){
+			throw new \InvalidArgumentException("CookingTime must be in range 0-" . $this->getFurnaceType()->getCookDurationTicks());
 		}
 
 		$this->cookingTimes[$slot] = $time;
@@ -193,7 +201,7 @@ class Campfire extends Transparent{
 			return true;
 		}
 
-		if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item) !== null){
+		if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($this->getFurnaceType())->match($item) !== null){
 			$ingredient = clone $item;
 			$ingredient->setCount(1);
 			if(count($this->inventory->addItem($ingredient)) === 0){
@@ -220,7 +228,7 @@ class Campfire extends Transparent{
 			}
 			return true;
 		}elseif($entity instanceof Living){
-			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1));
+			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, $this->getEntityCollisionDamage()));
 		}
 		return true;
 	}
@@ -234,12 +242,13 @@ class Campfire extends Transparent{
 	public function onScheduledUpdate() : void{
 		if($this->lit){
 			$items = $this->inventory->getContents();
+			$furnaceType = $this->getFurnaceType();
 			foreach($items as $slot => $item){
 				$this->setCookingTime($slot, $this->getCookingTime($slot) + 20);
-				if($this->getCookingTime($slot) >= FurnaceType::CAMPFIRE->getCookDurationTicks()){
+				if($this->getCookingTime($slot) >= $furnaceType->getCookDurationTicks()){
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
-					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE)->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
+					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
 					$this->position->getWorld()->dropItem($this->position->add(0, 1, 0), $result);
 				}
 			}

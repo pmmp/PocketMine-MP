@@ -1530,6 +1530,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::COVERED_BIT); //seems to be useless
 			return Blocks::SNOW_LAYER()->setLayers($in->readBoundedInt(StateNames::HEIGHT, 0, 7) + 1);
 		});
+		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
+			return Blocks::SOUL_CAMPFIRE()
+				->setFacing($in->readCardinalHorizontalFacing())
+				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
+		});
 		$this->map(Ids::SOUL_FIRE, function(Reader $in) : Block{
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
 			return Blocks::SOUL_FIRE();
