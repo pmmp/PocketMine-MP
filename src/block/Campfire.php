@@ -67,6 +67,8 @@ class Campfire extends Transparent{
 		LightableTrait::describeBlockOnlyState as encodeLitState;
 	}
 
+	private const UPDATE_INTERVAL_TICKS = 20;
+
 	protected CampfireInventory $inventory;
 
 	/**
@@ -246,7 +248,7 @@ class Campfire extends Transparent{
 			$furnaceType = $this->getFurnaceType();
 			$maxCookDuration = $furnaceType->getCookDurationTicks();
 			foreach($items as $slot => $item){
-				$this->setCookingTime($slot, min($maxCookDuration, $this->getCookingTime($slot) + 20));
+				$this->setCookingTime($slot, min($maxCookDuration, $this->getCookingTime($slot) + self::UPDATE_INTERVAL_TICKS));
 				if($this->getCookingTime($slot) >= $maxCookDuration){
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
@@ -261,7 +263,7 @@ class Campfire extends Transparent{
 				$this->position->getWorld()->addSound($this->position, new CampfireSound());
 			}
 
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 		}
 	}
 }
