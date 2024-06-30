@@ -68,7 +68,10 @@ class Campfire extends Transparent{
 
 	protected CampfireInventory $inventory;
 
-	/** @var int[] slot => ticks */
+	/**
+	 * @var int[] slot => ticks
+	 * @phpstan-var array<int, int>
+	 */
 	protected array $cookingTimes = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -128,7 +131,7 @@ class Campfire extends Transparent{
 	}
 
 	/**
-	 * Sets the number of ticks during the item in the given slot has been cooked
+	 * Sets the number of ticks during the item in the given slot has been cooked.
 	 */
 	public function setCookingTime(int $slot, int $time) : void{
 		if($slot < 0 || $slot > 3){
@@ -142,7 +145,7 @@ class Campfire extends Transparent{
 	}
 
 	/**
-	 * Returns the number of ticks left to cook the item in the given slot
+	 * Returns the number of ticks during the item in the given slot has been cooked.
 	 */
 	public function getCookingTime(int $slot) : int{
 		return $this->cookingTimes[$slot] ?? 0;

@@ -35,15 +35,15 @@ use pocketmine\world\World;
 
 class Campfire extends Spawnable implements Container{
 	use ContainerTrait;
-	private const TAG_FIRST_INPUT_ITEM = "Item1";
-	private const TAG_SECOND_INPUT_ITEM = "Item2";
-	private const TAG_THIRD_INPUT_ITEM = "Item3";
-	private const TAG_FOURTH_INPUT_ITEM = "Item4";
+	private const TAG_FIRST_INPUT_ITEM = "Item1"; //TAG_Compound
+	private const TAG_SECOND_INPUT_ITEM = "Item2"; //TAG_Compound
+	private const TAG_THIRD_INPUT_ITEM = "Item3"; //TAG_Compound
+	private const TAG_FOURTH_INPUT_ITEM = "Item4"; //TAG_Compound
 
-	private const TAG_FIRST_COOKING_TIME = "ItemTime1";
-	private const TAG_SECOND_COOKING_TIME = "ItemTime2";
-	private const TAG_THIRD_COOKING_TIME = "ItemTime3";
-	private const TAG_FOURTH_COOKING_TIME = "ItemTime4";
+	private const TAG_FIRST_COOKING_TIME = "ItemTime1"; //TAG_Int
+	private const TAG_SECOND_COOKING_TIME = "ItemTime2"; //TAG_Int
+	private const TAG_THIRD_COOKING_TIME = "ItemTime3"; //TAG_Int
+	private const TAG_FOURTH_COOKING_TIME = "ItemTime4"; //TAG_Int
 
 	protected CampfireInventory $inventory;
 	/** @var array<int, int> */
@@ -71,14 +71,16 @@ class Campfire extends Spawnable implements Container{
 	}
 
 	/**
-	 * @return array<int, int>
+	 * @return int[]
+	 * @phpstan-return array<int, int>
 	 */
 	public function getCookingTimes() : array{
 		return $this->cookingTimes;
 	}
 
 	/**
-	 * @param array<int, int> $cookingTimes
+	 * @param int[] $cookingTimes
+	 * @phpstan-param array<int, int> $cookingTimes
 	 */
 	public function setCookingTimes(array $cookingTimes) : void{
 		$this->cookingTimes = $cookingTimes;
