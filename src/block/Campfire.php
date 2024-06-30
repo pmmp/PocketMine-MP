@@ -67,7 +67,7 @@ class Campfire extends Transparent{
 		LightableTrait::describeBlockOnlyState as encodeLitState;
 	}
 
-	private const UPDATE_INTERVAL_TICKS = 20;
+	private const UPDATE_INTERVAL_TICKS = 10;
 
 	protected CampfireInventory $inventory;
 
@@ -259,7 +259,7 @@ class Campfire extends Transparent{
 			if(count($items) > 0){
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
-			if(mt_rand(1, 3) === 1){
+			if(mt_rand(1, 6) === 1){
 				$this->position->getWorld()->addSound($this->position, new CampfireSound());
 			}
 
