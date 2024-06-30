@@ -581,7 +581,7 @@ parameters:
 			path: ../../../src/network/mcpe/ChunkRequestTask.php
 
 		-
-			message: "#^Match expression does not handle remaining value: pocketmine\\\\crafting\\\\FurnaceType::CAMPFIRE$#"
+			message: "#^Match expression does not handle remaining values\\: pocketmine\\\\crafting\\\\FurnaceType\\:\\:CAMPFIRE\\|pocketmine\\\\crafting\\\\FurnaceType\\:\\:SOUL_CAMPFIRE$#"
 			count: 1
 			path: ../../../src/network/mcpe/InventoryManager.php
 
