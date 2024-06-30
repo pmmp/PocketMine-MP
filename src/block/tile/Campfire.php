@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
 class Campfire extends Spawnable implements Container{
@@ -134,7 +135,7 @@ class Campfire extends Spawnable implements Container{
 		] as $slot => $tag){
 			$item = $this->inventory->getItem($slot);
 			if(!$item->isNull()){
-				$nbt->setTag($tag, $item->nbtSerialize());
+				$nbt->setTag($tag, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($item));
 			}
 		}
 	}
