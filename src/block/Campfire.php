@@ -256,7 +256,7 @@ class Campfire extends Transparent{
 			if(count($items) > 0){
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
-			if(mt_rand(1, 10) === 1){
+			if(mt_rand(1, 3) === 1){
 				$this->position->getWorld()->addSound($this->position, new CampfireSound());
 			}
 
