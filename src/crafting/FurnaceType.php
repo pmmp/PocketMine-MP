@@ -39,6 +39,7 @@ use function spl_object_id;
  * @method static FurnaceType CAMPFIRE()
  * @method static FurnaceType FURNACE()
  * @method static FurnaceType SMOKER()
+ * @method static FurnaceType SOUL_CAMPFIRE()
  *
  * @phpstan-type TMetadata array{0: int, 1: Sound}
  */
