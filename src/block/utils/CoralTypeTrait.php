@@ -27,12 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 trait CoralTypeTrait{
-	protected CoralType $coralType;
+	protected CoralType $coralType = CoralType::TUBE;
 	protected bool $dead = false;
 
 	/** @see Block::describeBlockItemState() */
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->coralType($this->coralType);
+		$w->enum($this->coralType);
 		$w->bool($this->dead);
 	}
 

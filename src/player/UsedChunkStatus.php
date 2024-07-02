@@ -23,28 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static UsedChunkStatus NEEDED()
  * @method static UsedChunkStatus REQUESTED_GENERATION()
  * @method static UsedChunkStatus REQUESTED_SENDING()
  * @method static UsedChunkStatus SENT()
  */
-final class UsedChunkStatus{
-	use EnumTrait;
+enum UsedChunkStatus{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("NEEDED"),
-			new self("REQUESTED_GENERATION"),
-			new self("REQUESTED_SENDING"),
-			new self("SENT")
-		);
-	}
+	case NEEDED;
+	case REQUESTED_GENERATION;
+	case REQUESTED_SENDING;
+	case SENT;
 }

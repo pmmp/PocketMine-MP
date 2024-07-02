@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\snooze\SleeperHandler;
+use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 use function hrtime;
 
 /**
@@ -35,10 +37,27 @@ final class TimeTrackingSleeperHandler extends SleeperHandler{
 
 	private int $notificationProcessingTimeNs = 0;
 
+	/**
+	 * @var TimingsHandler[]
+	 * @phpstan-var array<string, TimingsHandler>
+	 */
+	private static array $handlerTimings = [];
+
 	public function __construct(
 		private TimingsHandler $timings
 	){
 		parent::__construct();
+	}
+
+	public function addNotifier(\Closure $handler) : SleeperHandlerEntry{
+		$name = Utils::getNiceClosureName($handler);
+		$timings = self::$handlerTimings[$name] ??= new TimingsHandler("Snooze Handler: " . $name, $this->timings);
+
+		return parent::addNotifier(function() use ($timings, $handler) : void{
+			$timings->startTiming();
+			$handler();
+			$timings->stopTiming();
+		});
 	}
 
 	/**
