@@ -229,7 +229,6 @@ class Campfire extends Transparent{
 				$this->ignite();
 				return false;
 			}
-			return true;
 		}elseif($entity instanceof Living){
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, $this->getEntityCollisionDamage()));
 		}
