@@ -36,7 +36,7 @@ class Magma extends Opaque{
 	}
 
 	public function onEntityCollide(Entity $entity, int $face) : void{
-		if($face === Facing::DOWN && $entity instanceof Living && !$entity->isSneaking()){
+		if($face === Facing::UP && $entity instanceof Living && !$entity->isSneaking()){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 			$entity->attack($ev);
 		}

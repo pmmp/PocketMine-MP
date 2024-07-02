@@ -665,7 +665,7 @@ abstract class Entity{
 				$block = $entityBlock->getSide($face);
 				foreach ($block->getCollisionBoxes() as $blockBox) {
 					if ($entityBox->intersectsWith($blockBox)) {
-						$block->onEntityCollide($this, $face);
+						$block->onEntityCollide($this, Facing::opposite($face));
 						break;
 					}
 				}
