@@ -251,7 +251,10 @@ class Campfire extends Transparent{
 				if($this->getCookingTime($slot) >= $maxCookDuration){
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
-					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
+					$result =
+						($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ?
+							$item->getResult() :
+							VanillaItems::AIR();
 					$this->position->getWorld()->dropItem($this->position->add(0.5, 1, 0.5), $result);
 				}
 			}
