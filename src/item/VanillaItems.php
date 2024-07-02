@@ -219,6 +219,7 @@ use function strtolower;
  * @method static MilkBucket MILK_BUCKET()
  * @method static Minecart MINECART()
  * @method static MushroomStew MUSHROOM_STEW()
+ * @method static NameTag NAME_TAG()
  * @method static Item NAUTILUS_SHELL()
  * @method static Axe NETHERITE_AXE()
  * @method static Armor NETHERITE_BOOTS()
@@ -490,6 +491,7 @@ final class VanillaItems{
 		self::register("milk_bucket", new MilkBucket(new IID(Ids::MILK_BUCKET), "Milk Bucket"));
 		self::register("minecart", new Minecart(new IID(Ids::MINECART), "Minecart"));
 		self::register("mushroom_stew", new MushroomStew(new IID(Ids::MUSHROOM_STEW), "Mushroom Stew"));
+		self::register("name_tag", new NameTag(new IID(Ids::NAME_TAG), "Name Tag"));
 		self::register("nautilus_shell", new Item(new IID(Ids::NAUTILUS_SHELL), "Nautilus Shell"));
 		self::register("nether_brick", new Item(new IID(Ids::NETHER_BRICK), "Nether Brick"));
 		self::register("nether_quartz", new Item(new IID(Ids::NETHER_QUARTZ), "Nether Quartz"));
@@ -589,12 +591,12 @@ final class VanillaItems{
 			}
 		});
 		self::register("squid_spawn_egg", new class(new IID(Ids::SQUID_SPAWN_EGG), "Squid Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 		self::register("villager_spawn_egg", new class(new IID(Ids::VILLAGER_SPAWN_EGG), "Villager Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});

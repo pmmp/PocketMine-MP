@@ -87,12 +87,13 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			EffectIdMap::getInstance()->toId($effect->getType()),
 			$effect->getAmplifier(),
 			$effect->isVisible(),
-			$effect->getDuration()
+			$effect->getDuration(),
+			tick: 0
 		));
 	}
 
 	public function onEntityEffectRemoved(array $recipients, Living $entity, EffectInstance $effect) : void{
-		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType())));
+		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType()), tick: 0));
 	}
 
 	public function onEntityRemoved(array $recipients, Entity $entity) : void{

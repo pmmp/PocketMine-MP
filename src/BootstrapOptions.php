@@ -47,4 +47,6 @@ final class BootstrapOptions{
 	public const DATA = "data";
 	/** Shows basic server version information and exits */
 	public const VERSION = "version";
+	/** Disables writing logs to server.log */
+	public const NO_LOG_FILE = "no-log-file";
 }

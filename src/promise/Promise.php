@@ -65,13 +65,18 @@ final class Promise{
 	 * will be an array containing the resolution values of each Promises in
 	 * `$promises` indexed by the respective Promises' array keys.
 	 *
-	 * @template TPromiseValue
-	 * @template TKey of array-key
-	 * @phpstan-param array<TKey, Promise<TPromiseValue>> $promises
+	 * @param Promise[] $promises
+	 *
+	 * @phpstan-template TPromiseValue
+	 * @phpstan-template TKey of array-key
+	 * @phpstan-param non-empty-array<TKey, Promise<TPromiseValue>> $promises
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
 	 */
-	public static function all(array $promises) : Promise {
+	public static function all(array $promises) : Promise{
+		if(count($promises) === 0){
+			throw new \InvalidArgumentException("At least one promise must be provided");
+		}
 		/** @phpstan-var PromiseResolver<array<TKey, TPromiseValue>> $resolver */
 		$resolver = new PromiseResolver();
 		$values = [];
@@ -80,13 +85,11 @@ final class Promise{
 
 		foreach($promises as $key => $promise){
 			$promise->onCompletion(
-				function(mixed $value) use ($resolver, $key, &$toResolve, &$continue, &$values) : void{
+				function(mixed $value) use ($resolver, $key, $toResolve, &$values) : void{
 					$values[$key] = $value;
 
-					$toResolve--;
-					if($toResolve === 0 && $continue){
+					if(count($values) === $toResolve){
 						$resolver->resolve($values);
-						$continue = false;
 					}
 				},
 				function() use ($resolver, &$continue) : void{
@@ -100,11 +103,6 @@ final class Promise{
 			if(!$continue){
 				break;
 			}
-		}
-
-		if($toResolve === 0 && $continue){
-			$continue = false;
-			$resolver->resolve($values);
 		}
 
 		return $resolver->getPromise();
