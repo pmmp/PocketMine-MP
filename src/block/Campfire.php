@@ -35,6 +35,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\event\block\CampfireCookEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Durable;
@@ -249,13 +250,21 @@ class Campfire extends Transparent{
 			foreach($items as $slot => $item){
 				$this->setCookingTime($slot, min($maxCookDuration, $this->getCookingTime($slot) + self::UPDATE_INTERVAL_TICKS));
 				if($this->getCookingTime($slot) >= $maxCookDuration){
+					$result =
+						($recipe = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ?
+							$recipe->getResult() :
+							VanillaItems::AIR();
+
+					$ev = new CampfireCookEvent($this, $slot, $item, $result);
+					$ev->call();
+
+					if ($ev->isCancelled()) {
+						continue;
+					}
+
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
-					$result =
-						($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ?
-							$item->getResult() :
-							VanillaItems::AIR();
-					$this->position->getWorld()->dropItem($this->position->add(0.5, 1, 0.5), $result);
+					$this->position->getWorld()->dropItem($this->position->add(0.5, 1, 0.5), $ev->getResult());
 				}
 			}
 			if(count($items) > 0){
