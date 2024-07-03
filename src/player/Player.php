@@ -28,6 +28,7 @@ use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\inventory\BlockInventory;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
@@ -182,6 +183,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+	private const MAX_DISTANCE_FROM_CONTAINER = 12;
 
 	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
 	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
@@ -295,6 +297,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected \Logger $logger;
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
+
+	protected ?Vector3 $openContainerPosition = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
@@ -1373,6 +1377,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($exceededRateLimit){ //client and server positions will be out of sync if this happens
 			$this->logger->debug("Exceeded movement rate limit, forcing to last accepted position");
 			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
+		}
+
+		if ($this->openContainerPosition !== null) {
+			$distance = $this->location->distance($this->openContainerPosition);
+
+			if ($distance > self::MAX_DISTANCE_FROM_CONTAINER) {
+				$this->removeCurrentWindow();
+			}
 		}
 	}
 
@@ -2646,6 +2658,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$inventoryManager->onCurrentWindowChange($inventory);
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
+
+		if ($inventory instanceof BlockInventory) {
+			$block = $inventory->getHolder();
+			$this->openContainerPosition = $block->asPosition();
+		}
+
 		return true;
 	}
 
@@ -2661,6 +2679,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->currentWindow = null;
 			(new InventoryCloseEvent($currentWindow, $this))->call();
 		}
+
+		$this->openContainerPosition = null;
 	}
 
 	protected function addPermanentInventories(Inventory ...$inventories) : void{
