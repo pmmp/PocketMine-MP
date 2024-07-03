@@ -39,6 +39,9 @@ use function spl_object_id;
  */
 abstract class BaseInventory implements Inventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
+
+	protected int $maxDistanceFromContainer = Inventory::MAX_DISTANCE_FROM_CONTAINER;
+
 	/** @var Player[] */
 	protected array $viewers = [];
 	/**
@@ -57,6 +60,14 @@ abstract class BaseInventory implements Inventory{
 
 	public function setMaxStackSize(int $size) : void{
 		$this->maxStackSize = $size;
+	}
+
+	public function getMaxDistanceFromContainer(): int {
+		return $this->maxDistanceFromContainer;
+	}
+
+	public function setMaxDistanceFromContainer(int $maxDistance): void {
+		$this->maxDistanceFromContainer = $maxDistance;
 	}
 
 	abstract protected function internalSetItem(int $index, Item $item) : void;
