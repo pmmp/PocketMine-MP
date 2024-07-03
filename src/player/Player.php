@@ -2660,8 +2660,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->currentWindow = $inventory;
 
 		if ($inventory instanceof BlockInventory) {
-			$block = $inventory->getHolder();
-			$this->openContainerPosition = $block->asPosition();
+			$holder = $inventory->getHolder();
+			$this->openContainerPosition = $holder->asPosition();
 		}
 
 		return true;
