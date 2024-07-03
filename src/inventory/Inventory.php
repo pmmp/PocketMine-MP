@@ -33,6 +33,8 @@ use pocketmine\utils\ObjectSet;
 interface Inventory{
 	public const MAX_STACK = 64;
 
+	public const MAX_DISTANCE_FROM_CONTAINER = 6;
+
 	/**
 	 * Returns the number of slots in the inventory.
 	 */
