@@ -62,11 +62,11 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
-	public function getMaxDistanceFromContainer(): int {
+	public function getMaxDistanceFromContainer() : int {
 		return $this->maxDistanceFromContainer;
 	}
 
-	public function setMaxDistanceFromContainer(int $maxDistance): void {
+	public function setMaxDistanceFromContainer(int $maxDistance) : void {
 		$this->maxDistanceFromContainer = $maxDistance;
 	}
 
