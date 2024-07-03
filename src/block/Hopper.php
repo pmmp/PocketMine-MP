@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\FacingInterface;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
@@ -34,7 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Hopper extends Transparent{
+class Hopper extends Transparent implements FacingInterface{
 	use PoweredByRedstoneTrait;
 
 	private int $facing = Facing::DOWN;
