@@ -83,9 +83,11 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -183,7 +185,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
-	private const MAX_DISTANCE_FROM_CONTAINER = 12;
 
 	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
 	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
@@ -298,6 +299,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
+	protected ?SimpleInventory $openContainerInventory = null;
 	protected ?Vector3 $openContainerPosition = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
@@ -1379,10 +1381,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
 		}
 
-		if ($this->openContainerPosition !== null) {
+		if ($this->openContainerPosition !== null && $this->openContainerInventory !== null) {
 			$distance = $this->location->distance($this->openContainerPosition);
 
-			if ($distance > self::MAX_DISTANCE_FROM_CONTAINER) {
+			if ($distance > $this->openContainerInventory->getMaxDistanceFromContainer()) {
 				$this->removeCurrentWindow();
 			}
 		}
@@ -2659,9 +2661,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 
-		if ($inventory instanceof BlockInventory) {
-			$holder = $inventory->getHolder();
-			$this->openContainerPosition = $holder->asPosition();
+		if ($inventory instanceof BaseInventory) {
+			if ($inventory->getMaxDistanceFromContainer() > 0) {
+				if ($inventory instanceof BlockInventory) {
+					$this->openContainerInventory = $inventory;
+					$holder = $inventory->getHolder();
+					$this->openContainerPosition = $holder->asPosition();
+				}
+			}
 		}
 
 		return true;
@@ -2681,6 +2688,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->openContainerPosition = null;
+		$this->openContainerInventory = null;
 	}
 
 	protected function addPermanentInventories(Inventory ...$inventories) : void{
