@@ -34,7 +34,7 @@ interface FacingInterface {
     /**
      * Set the current facing direction of the block
      * @param int $facing
-     * @return void
+     * @return object
      */
     public function setFacing(int $facing) : object;
 }
