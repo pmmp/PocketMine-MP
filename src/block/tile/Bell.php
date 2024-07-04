@@ -46,8 +46,8 @@ final class Bell extends Spawnable implements FacingInterface{
 
 	public function getFacing() : int{ return $this->facing; }
 
-	public function setFacing(int $facing) : self { 
-		$this->facing = $facing; 
+	public function setFacing(int $facing) : self {
+		$this->facing = $facing;
 		return $this;
 	}
 

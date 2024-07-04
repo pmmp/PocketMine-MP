@@ -177,7 +177,7 @@ class Painting extends Entity implements FacingInterface{
 		return $this->facing;
 	}
 
-	public function setFacing(int $facing): self {
+	public function setFacing(int $facing) : self {
 		$this->facing = $facing;
 		return $this;
 	}
