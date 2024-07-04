@@ -152,7 +152,6 @@ class Campfire extends Transparent{
 		if($time < 0 || $time > $this->getFurnaceType()->getCookDurationTicks()){
 			throw new \InvalidArgumentException("CookingTime must be in range 0-" . $this->getFurnaceType()->getCookDurationTicks());
 		}
-
 		$this->cookingTimes[$slot] = $time;
 	}
 
@@ -258,7 +257,7 @@ class Campfire extends Transparent{
 					$ev = new CampfireCookEvent($this, $slot, $item, $result);
 					$ev->call();
 
-					if ($ev->isCancelled()) {
+					if ($ev->isCancelled()){
 						continue;
 					}
 
@@ -273,7 +272,6 @@ class Campfire extends Transparent{
 			if(mt_rand(1, 6) === 1){
 				$this->position->getWorld()->addSound($this->position, new CampfireSound());
 			}
-
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 		}
 	}

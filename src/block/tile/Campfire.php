@@ -36,6 +36,7 @@ use pocketmine\world\World;
 
 class Campfire extends Spawnable implements Container{
 	use ContainerTrait;
+
 	private const TAG_FIRST_INPUT_ITEM = "Item1"; //TAG_Compound
 	private const TAG_SECOND_INPUT_ITEM = "Item2"; //TAG_Compound
 	private const TAG_THIRD_INPUT_ITEM = "Item3"; //TAG_Compound
