@@ -79,12 +79,12 @@ class VersionCommand extends VanillaCommand{
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
 		}else{
-			$pluginName = implode(" ", $args);
-			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
-
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_VERSION_DETAIL)){
 				return true;
 			}
+
+			$pluginName = implode(" ", $args);
+			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
 
 			if($exactPlugin instanceof Plugin){
 				$this->describeToSender($exactPlugin, $sender);
