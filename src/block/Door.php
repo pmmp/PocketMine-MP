@@ -144,7 +144,7 @@ class Door extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		$this->toggledoor();
+		$this->toggle();
 
 		return true;
 	}
