@@ -27,14 +27,11 @@ interface FacingInterface {
 
 	/**
 	 * Get the current facing direction of the block
-     * @return int
 	 */
 	public function getFacing() : int;
 
     /**
      * Set the current facing direction of the block
-     * @param int $facing
-     * @return object
      */
     public function setFacing(int $facing) : object;
 }
