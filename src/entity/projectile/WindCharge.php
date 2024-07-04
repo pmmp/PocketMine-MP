@@ -79,7 +79,7 @@ class WindCharge extends Throwable{
 		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
-					$this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z))->onWindChargeInteraction($this);
+					$this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z))->onProjectileInteraction($this);
 				}
 			}
 		}

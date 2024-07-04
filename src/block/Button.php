@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -64,11 +65,7 @@ abstract class Button extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->pressed){
-			$this->pressed = true;
-			$world = $this->position->getWorld();
-			$world->setBlock($this->position, $this);
-			$world->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
+			$this->toggle();
 		}
 
 		return true;
@@ -93,12 +90,15 @@ abstract class Button extends Flowable{
 		return $block->getAdjacentSupportType(Facing::opposite($face))->hasCenterSupport();
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge) : void{
-		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
-			return;
+	public function onProjectileInteraction(Projectile $projectile) : void{
+		if($projectile instanceof WindCharge) {
+			$this->toggle();
 		}
+	}
 
+	public function toggle(): void {
 		$this->pressed = true;
+
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
 		$world->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());

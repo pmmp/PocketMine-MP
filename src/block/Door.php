@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -143,17 +144,7 @@ class Door extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		$this->open = !$this->open;
-
-		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		$world = $this->position->getWorld();
-		if($other instanceof Door && $other->hasSameTypeId($this)){
-			$other->open = $this->open;
-			$world->setBlock($other->position, $other);
-		}
-
-		$world->setBlock($this->position, $this);
-		$world->addSound($this->position, new DoorSound());
+		$this->toggledoor();
 
 		return true;
 	}
@@ -178,13 +169,32 @@ class Door extends Transparent{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge) : void{
-		if($this->getTypeId() == BlockTypeIds::IRON_DOOR) {
-			return;
+	// must not use toggle() due to double tiles
+	public function onProjectileInteraction(Projectile $projectile) : void{
+		if($projectile instanceof WindCharge) {
+			if($this->getTypeId() === BlockTypeIds::IRON_DOOR) {
+				return;
+			}
+
+			$this->open = !$this->open;
+
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this);
+			$world->addSound($this->position, new DoorSound());
+		}
+	}
+
+	public function toggle(): void {
+		$this->open = !$this->open;
+
+		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
+		$world = $this->position->getWorld();
+
+		if($other instanceof Door && $other->hasSameTypeId($this)){
+			$other->open = $this->open;
+			$world->setBlock($other->position, $other);
 		}
 
-		$this->open = !$this->open;
-		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
 		$world->addSound($this->position, new DoorSound());
 	}

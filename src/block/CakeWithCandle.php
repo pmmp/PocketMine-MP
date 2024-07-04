@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
 use pocketmine\entity\Living;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -61,14 +62,16 @@ class CakeWithCandle extends BaseCake{
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge) : void{
-		if(!$this->lit) {
-			return;
-		}
+	public function onProjectileInteraction(Projectile $projectile) : void{
+		if($projectile instanceof WindCharge) {
+			if(!$this->lit) {
+				return;
+			}
 
-		$world = $this->position->getWorld();
-		$world->setBlock($this->position, $this->setLit(false));
-		$world->addSound($this->position, new FlintSteelSound());
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this->setLit(false));
+			$world->addSound($this->position, new FlintSteelSound());
+		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

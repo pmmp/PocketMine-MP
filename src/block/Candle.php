@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\CandleTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\entity\projectile\WindCharge;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -100,7 +100,7 @@ class Candle extends Transparent{
 		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge) : void{
+	public function onProjectileInteraction(Projectile $projectile) : void{
 		if(!$this->lit) {
 			return;
 		}
