@@ -516,7 +516,7 @@ class Block{
 	/**
 	 * Called when this block is updated by a state altering projectile in the world.
 	 *
-	 * @param Projectile $projectile Exact position where the click occurred, relative to the block's integer position
+	 * @param Projectile $projectile The projectile affecting the block
 	 */
 	public function onProjectileInteraction(Projectile $projectile) : void {
 
