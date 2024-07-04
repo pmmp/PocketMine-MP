@@ -66,6 +66,8 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -2871,68 +2873,38 @@ class World implements ChunkManager{
 		return $this->chunks[$chunkHash];
 	}
 
-	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData): void {
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
 
-		if(count($chunkData->getEntityNBT()) !== 0){
-			$this->timings->syncChunkLoadEntities->startTiming();
-			$entityFactory = EntityFactory::getInstance();
-			foreach($chunkData->getEntityNBT() as $k => $nbt){
-				try{
-					$entity = $entityFactory->createFromData($this, $nbt);
-				}catch(SavedDataLoadingException $e){
-					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
-					$logger->logException($e);
-					continue;
-				}
-				if($entity === null){
-					$saveIdTag = $nbt->getTag("identifier") ?? $nbt->getTag("id");
-					$saveId = "<unknown>";
-					if($saveIdTag instanceof StringTag){
-						$saveId = $saveIdTag->getValue();
-					}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
-						$saveId = "legacy(" . $saveIdTag->getValue() . ")";
-					}
-					$logger->warning("Deleted unknown entity type $saveId");
-				}
-				//TODO: we can't prevent entities getting added to unloaded chunks if they were saved in the wrong place
-				//here, because entities currently add themselves to the world
-			}
+		$this->loadEntities($chunkData->getEntityNBT(), $logger);
+		$this->loadTileEntities($chunkData->getTileNBT(), $logger);
+	}
 
-			$this->timings->syncChunkLoadEntities->stopTiming();
+	/**
+	 * @param CompoundTag[] $entityNBTs
+	 */
+	private function loadEntities(array $entityNBTs, \PrefixedLogger $logger): void {
+		if (count($entityNBTs) === 0) {
+			return;
 		}
 
-		if(count($chunkData->getTileNBT()) !== 0){
-			$this->timings->syncChunkLoadTileEntities->startTiming();
-			$tileFactory = TileFactory::getInstance();
-			foreach($chunkData->getTileNBT() as $k => $nbt){
-				try{
-					$tile = $tileFactory->createFromData($this, $nbt);
-				}catch(SavedDataLoadingException $e){
-					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
-					$logger->logException($e);
-					continue;
-				}
-				if($tile === null){
-					$logger->warning("Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-					continue;
-				}
+		$this->timings->syncChunkLoadEntities->startTiming();
+		$entityFactory = EntityFactory::getInstance();
 
-				$tilePosition = $tile->getPosition();
-				if(!$this->isChunkLoaded($tilePosition->getFloorX() >> Chunk::COORD_BIT_SIZE, $tilePosition->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
-					$logger->error("Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
-				}elseif(!$this->isInWorld($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ())){
-					$logger->error("Cannot add tile with position outside the world bounds: x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z");
-				}elseif($this->getTile($tilePosition) !== null){
-					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
-				}else{
-					$this->addTile($tile);
-				}
+		foreach ($entityNBTs as $k => $nbt) {
+			try {
+				$entity = $entityFactory->createFromData($this, $nbt);
+			} catch (SavedDataLoadingException $e) {
+				$logger->error("Bad entity data at list position $k: " . $e->getMessage());
+				$logger->logException($e);
+				continue;
 			}
 
-<<<<<<< Updated upstream
-			$this->timings->syncChunkLoadTileEntities->stopTiming();
-=======
+			if ($entity === null) {
+				$saveId = $this->getSaveId($nbt);
+				$logger->warning("Deleted unknown entity type $saveId");
+			}
+
 			//TODO: We can't prevent entities from being added to unloaded chunks if they were saved in the wrong place here,
 			//because entities currently add themselves to the world
 		}
@@ -2941,11 +2913,9 @@ class World implements ChunkManager{
 	}
 
 
-	/**
-	 * @param CompoundTag[] $tileNBTs
-	 */
+
 	private function loadTileEntities(array $tileNBTs, \PrefixedLogger $logger): void {
-		if (count($tileNBTs) === 0) {
+		if (empty($tileNBTs)) {
 			return;
 		}
 
@@ -2995,9 +2965,9 @@ class World implements ChunkManager{
 			$logger->error("Cannot add tile at x={$tilePosition->x},y={$tilePosition->y},z={$tilePosition->z}: Another tile is already at that position");
 		} else {
 			$this->addTile($tile);
->>>>>>> Stashed changes
 		}
 	}
+
 
 	private function queueUnloadChunk(int $x, int $z) : void{
 		$this->unloadQueue[World::chunkHash($x, $z)] = microtime(true);
