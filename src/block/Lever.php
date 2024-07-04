@@ -108,7 +108,7 @@ class Lever extends Flowable{
 		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
-	public function toggle(): void {
+	public function toggle() : void {
 		$this->activated = !$this->activated;
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);

@@ -96,7 +96,7 @@ abstract class Button extends Flowable{
 		}
 	}
 
-	public function toggle(): void {
+	public function toggle() : void {
 		$this->pressed = true;
 
 		$world = $this->position->getWorld();

@@ -184,7 +184,7 @@ class Door extends Transparent{
 		}
 	}
 
-	public function toggle(): void {
+	public function toggle() : void {
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

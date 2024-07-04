@@ -97,12 +97,12 @@ class Trapdoor extends Transparent{
 			if($this->getTypeId() === BlockTypeIds::IRON_TRAPDOOR) {
 				return;
 			}
-			
+
 			$this->toggle();
 		}
 	}
 
-	public function toggle(): void {
+	public function toggle() : void {
 		$this->open = !$this->open;
 
 		$world = $this->position->getWorld();
