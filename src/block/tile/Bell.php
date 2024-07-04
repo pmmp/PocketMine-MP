@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\FacingInterface;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
@@ -30,7 +31,7 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\AssumptionFailedError;
 
-final class Bell extends Spawnable{
+final class Bell extends Spawnable implements FacingInterface{
 	public const TAG_DIRECTION = "Direction"; //TAG_Int
 	public const TAG_RINGING = "Ringing"; //TAG_Byte
 	public const TAG_TICKS = "Ticks"; //TAG_Int
@@ -45,7 +46,10 @@ final class Bell extends Spawnable{
 
 	public function getFacing() : int{ return $this->facing; }
 
-	public function setFacing(int $facing) : void{ $this->facing = $facing; }
+	public function setFacing(int $facing) : self { 
+		$this->facing = $facing; 
+		return $this;
+	}
 
 	public function getTicks() : int{ return $this->ticks; }
 

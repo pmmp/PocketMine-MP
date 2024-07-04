@@ -31,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Torch extends Flowable{
+class Torch extends Flowable implements FacingInterface{
 
 	protected int $facing = Facing::UP;
 

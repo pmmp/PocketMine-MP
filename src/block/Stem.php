@@ -31,7 +31,7 @@ use pocketmine\math\Facing;
 use function array_rand;
 use function mt_rand;
 
-abstract class Stem extends Crops{
+abstract class Stem extends Crops implements FacingInterface{
 	protected int $facing = Facing::UP;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{

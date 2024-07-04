@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\FacingInterface;
 use pocketmine\block\inventory\ShulkerBoxInventory;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -30,7 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
-class ShulkerBox extends Spawnable implements Container, Nameable{
+class ShulkerBox extends Spawnable implements Container, Nameable, FacingInterface{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
@@ -89,8 +90,9 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 		return $this->facing;
 	}
 
-	public function setFacing(int $facing) : void{
+	public function setFacing(int $facing) : self {
 		$this->facing = $facing;
+		return $this;
 	}
 
 	public function getInventory() : ShulkerBoxInventory{

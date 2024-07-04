@@ -35,7 +35,7 @@ use pocketmine\world\BlockTransaction;
 use function assert;
 use function floor;
 
-class MobHead extends Flowable{
+class MobHead extends Flowable implements FacingInterface{
 	public const MIN_ROTATION = 0;
 	public const MAX_ROTATION = 15;
 
