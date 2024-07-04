@@ -52,7 +52,6 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BlazeShootSound;
-use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 use pocketmine\world\sound\ItemFrameAddItemSound;
@@ -270,7 +269,7 @@ class Campfire extends Transparent{
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 			if(mt_rand(1, 6) === 1){
-				$this->position->getWorld()->addSound($this->position, new CampfireSound());
+				$this->position->getWorld()->addSound($this->position, $furnaceType->getCookSound());
 			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 		}
