@@ -65,7 +65,7 @@ abstract class Button extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->pressed){
-			$this->toggle();
+			$this->press();
 		}
 
 		return true;
@@ -92,11 +92,11 @@ abstract class Button extends Flowable{
 
 	public function onProjectileInteraction(Projectile $projectile) : void{
 		if($projectile instanceof WindCharge) {
-			$this->toggle();
+			$this->press();
 		}
 	}
 
-	public function toggle() : void {
+	public function press() : void {
 		$this->pressed = true;
 
 		$world = $this->position->getWorld();

@@ -169,18 +169,13 @@ class Door extends Transparent{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
 	}
 
-	// must not use toggle() due to double tiles
 	public function onProjectileInteraction(Projectile $projectile) : void{
 		if($projectile instanceof WindCharge) {
 			if($this->getTypeId() === BlockTypeIds::IRON_DOOR) {
 				return;
 			}
 
-			$this->open = !$this->open;
-
-			$world = $this->position->getWorld();
-			$world->setBlock($this->position, $this);
-			$world->addSound($this->position, new DoorSound());
+			$this->toggle();
 		}
 	}
 
