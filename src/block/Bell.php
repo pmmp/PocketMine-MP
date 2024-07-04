@@ -135,8 +135,10 @@ final class Bell extends Transparent{
 		return false;
 	}
 
-	public function onWindChargeInteraction(WindCharge $windCharge) : void{
-		$this->ring($this->facing);
+	public function onProjectileInteraction(Projectile $projectile) : void{
+		if($projectile instanceof WindCharge) {
+			$this->ring($this->facing);
+		}
 	}
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
