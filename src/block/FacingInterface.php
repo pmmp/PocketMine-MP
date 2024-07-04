@@ -30,8 +30,8 @@ interface FacingInterface {
 	 */
 	public function getFacing() : int;
 
-    /**
-     * Set the current facing direction of the block
-     */
-    public function setFacing(int $facing) : object;
+	/**
+	 * Set the current facing direction of the block
+	 */
+	public function setFacing(int $facing) : object;
 }
