@@ -2913,9 +2913,11 @@ class World implements ChunkManager{
 	}
 
 
-
+	/**
+	 * @param CompoundTag[] $tileNBTs
+	 */
 	private function loadTileEntities(array $tileNBTs, \PrefixedLogger $logger): void {
-		if (empty($tileNBTs)) {
+		if (count($tileNBTs) === 0) {
 			return;
 		}
 
