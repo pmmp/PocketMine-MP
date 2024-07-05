@@ -27,6 +27,7 @@ use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\inventory\BlockInventory;
+use pocketmine\block\ProximityRestricted;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -1381,7 +1382,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if ($this->openContainerPosition !== null && $this->currentWindow !== null) {
 			$distance = $this->location->distance($this->openContainerPosition);
 
-			if ($distance > $this->currentWindow->getMaxDistanceFromContainer()) {
+			if ($distance > $this->currentWindow->getMaxDistance()) {
 				$this->removeCurrentWindow();
 			}
 		}
