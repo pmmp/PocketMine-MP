@@ -27,6 +27,7 @@ use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\inventory\BlockInventory;
+use pocketmine\block\ProximityRestricted;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -298,7 +299,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
-	protected ?SimpleInventory $openContainerInventory = null;
 	protected ?Vector3 $openContainerPosition = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
@@ -1380,10 +1380,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
 		}
 
-		if ($this->openContainerPosition !== null && $this->openContainerInventory !== null) {
+		if ($this->openContainerPosition !== null && $this->currentWindow !== null) {
 			$distance = $this->location->distance($this->openContainerPosition);
 
-			if ($distance > $this->openContainerInventory->getMaxDistanceFromContainer()) {
+			if ($distance > $this->currentWindow->getMaxDistanceFromContainer()) {
 				$this->removeCurrentWindow();
 			}
 		}
@@ -2660,10 +2660,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 
-		if ($inventory instanceof SimpleInventory) {
-			if ($inventory->getMaxDistanceFromContainer() > 0) {
+		if ($inventory instanceof ProximityResticted) {
+			if ($inventory->getMaxDistance() > 0) {
 				if ($inventory instanceof BlockInventory) {
-					$this->openContainerInventory = $inventory;
 					$holder = $inventory->getHolder();
 					$this->openContainerPosition = $holder->asPosition();
 				}
@@ -2687,7 +2686,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->openContainerPosition = null;
-		$this->openContainerInventory = null;
 	}
 
 	protected function addPermanentInventories(Inventory ...$inventories) : void{
