@@ -2659,7 +2659,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 
-		if ($inventory instanceof ProximityResticted) {
+		if ($inventory instanceof ProximityRestricted) {
 			if ($inventory->getMaxDistance() > 0) {
 				if ($inventory instanceof BlockInventory) {
 					$holder = $inventory->getHolder();
