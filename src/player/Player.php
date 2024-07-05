@@ -1378,12 +1378,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Exceeded movement rate limit, forcing to last accepted position");
 			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
 		}
-
 		if ($this->openContainerPosition !== null && $this->currentWindow !== null) {
-			$distance = $this->location->distance($this->openContainerPosition);
+			if ($this->currentWindow instanceof ProximityRestricted) {
+				$distance = $this->location->distance($this->openContainerPosition);
 
-			if ($distance > $this->currentWindow->getMaxDistance()) {
-				$this->removeCurrentWindow();
+				if ($distance > $this->currentWindow->getMaxDistance()) {
+					$this->removeCurrentWindow();
+				}
 			}
 		}
 	}
