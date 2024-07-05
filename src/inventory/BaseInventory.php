@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\ProximityRestricted;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
@@ -37,10 +38,10 @@ use function spl_object_id;
 /**
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
-abstract class BaseInventory implements Inventory{
+abstract class BaseInventory implements Inventory, ProximityRestricted{
 	protected int $maxStackSize = Inventory::MAX_STACK;
 
-	protected int $maxDistanceFromContainer = Inventory::MAX_DISTANCE_FROM_CONTAINER;
+	protected int $maxDistanceFromContainer = ProximityRestricted::MAX_DISTANCE;
 
 	/** @var Player[] */
 	protected array $viewers = [];
@@ -62,11 +63,11 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
-	public function getMaxDistanceFromContainer() : int {
+	public function getMaxDistance() : int {
 		return $this->maxDistanceFromContainer;
 	}
 
-	public function setMaxDistanceFromContainer(int $maxDistance) : void {
+	public function setMaxDistance(int $maxDistance) : void {
 		$this->maxDistanceFromContainer = $maxDistance;
 	}
 
