@@ -36,7 +36,6 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 use pocketmine\world\sound\WindChargeBurstSound;
-
 use function ceil;
 use function floor;
 use function round;
