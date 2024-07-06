@@ -161,17 +161,6 @@ class Campfire extends Transparent{
 		return $this->cookingTimes[$slot] ?? 0;
 	}
 
-	private function extinguish() : void{
-		$this->position->getWorld()->addSound($this->position, new FireExtinguishSound());
-		$this->position->getWorld()->setBlock($this->position, $this->setLit(false));
-	}
-
-	private function ignite() : void{
-		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
-		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->getSide(Facing::DOWN) instanceof Campfire){
 			return false;
@@ -273,5 +262,16 @@ class Campfire extends Transparent{
 			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 		}
+	}
+
+	private function extinguish() : void{
+		$this->position->getWorld()->addSound($this->position, new FireExtinguishSound());
+		$this->position->getWorld()->setBlock($this->position, $this->setLit(false));
+	}
+
+	private function ignite() : void{
+		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
+		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 	}
 }
