@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Block;
 use pocketmine\block\Door;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
@@ -72,10 +71,23 @@ class WindCharge extends Throwable{
 		$this->flagForDespawn();
 	}
 
-	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
-		parent::onHitBlock($blockHit, $hitResult);
-		$bound = $this->getBound($blockHit->getPosition(), self::RADIUS - 1);
+	protected function entityBaseTick(int $tickDiff = 1) : bool{
+		parent::entityBaseTick($tickDiff);
 
+		if($this->ticksLived >= 6000) {
+			$this->flagForDespawn();
+		}
+
+		return true;
+	}
+
+	protected function onHit(ProjectileHitEvent $event) : void{
+		$source = $this->getLocation();
+
+		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
+		$this->getWorld()->addParticle($source, new WindExplosionParticle());
+
+		$bound = $this->getBound($this->getPosition(), self::RADIUS - 1);
 		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
@@ -92,23 +104,6 @@ class WindCharge extends Throwable{
 				}
 			}
 		}
-	}
-
-	protected function entityBaseTick(int $tickDiff = 1) : bool{
-		parent::entityBaseTick($tickDiff);
-
-		if($this->ticksLived >= 6000) {
-			$this->flagForDespawn();
-		}
-
-		return true;
-	}
-
-	protected function onHit(ProjectileHitEvent $event) : void{
-		$source = $this->getLocation();
-
-		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new WindChargeBurstSound());
-		$this->getWorld()->addParticle($source, new WindExplosionParticle());
 
 		foreach($source->getWorld()->getCollidingEntities($this->getBound($source, self::RADIUS), $this) as $entity){
 
