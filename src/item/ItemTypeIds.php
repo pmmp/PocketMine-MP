@@ -324,8 +324,18 @@ final class ItemTypeIds{
 	public const SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 20285;
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
+	public const ACACIA_HANGING_SIGN = 20288;
+	public const BIRCH_HANGING_SIGN = 20289;
+	public const CHERRY_HANGING_SIGN = 20290;
+	public const CRIMSON_HANGING_SIGN = 20291;
+	public const DARK_OAK_HANGING_SIGN = 20292;
+	public const JUNGLE_HANGING_SIGN = 20293;
+	public const MANGROVE_HANGING_SIGN = 20294;
+	public const OAK_HANGING_SIGN = 20295;
+	public const SPRUCE_HANGING_SIGN = 20296;
+	public const WARPED_HANGING_SIGN = 20297;
 
-	public const FIRST_UNUSED_ITEM_ID = 20288;
+	public const FIRST_UNUSED_ITEM_ID = 20298;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
