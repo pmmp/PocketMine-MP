@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 /**
- * Represents copper blocks that have oxidation and waxed variations.
+ * Represents copper blocks that have oxidized and waxed variations.
  */
 interface Copper{
 
