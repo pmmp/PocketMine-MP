@@ -745,13 +745,15 @@ final class BlockTypeIds{
 	public const PITCHER_PLANT = 10715;
 	public const PITCHER_CROP = 10716;
 	public const DOUBLE_PITCHER_CROP = 10717;
-	public const COPPER_BULB = 10718;
-	public const COPPER_DOOR = 10719;
-	public const COPPER_TRAPDOOR = 10720;
-	public const CHISELED_COPPER = 10721;
-	public const COPPER_GRATE = 10722;
+	public const CAMPFIRE = 10718;
+	public const SOUL_CAMPFIRE = 10719;
+	public const COPPER_BULB = 10720;
+	public const COPPER_DOOR = 10721;
+	public const COPPER_TRAPDOOR = 10722;
+	public const CHISELED_COPPER = 10723;
+	public const COPPER_GRATE = 10724;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10723;
+	public const FIRST_UNUSED_BLOCK_ID = 10725;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
