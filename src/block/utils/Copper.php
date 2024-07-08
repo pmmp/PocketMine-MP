@@ -21,11 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\Copper as CopperInterface;
-use pocketmine\block\utils\CopperTrait;
+/**
+ * Represents copper blocks that have oxidation and waxed variations.
+ */
+interface Copper{
 
-class CopperStairs extends Stair implements CopperInterface{
-	use CopperTrait;
+	public function getOxidation() : CopperOxidation;
+
+	public function setOxidation(CopperOxidation $oxidation) : Copper;
+
+	public function isWaxed() : bool;
+
+	public function setWaxed(bool $waxed) : Copper;
 }
