@@ -35,11 +35,7 @@ class CopperDoor extends Door{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if ($player !== null && !$player->isSneaking()) {
-			return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
-		}
-
-		if ($this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems)) {
+		if ($player !== null && $player->isSneaking() && $this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems)) {
 			//copy copper properties to other half
 			$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 			$world = $this->position->getWorld();
@@ -51,7 +47,7 @@ class CopperDoor extends Door{
 			return true;
 		}
 
-		return false;
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	protected function isCompatibleForHinge(Block $other) : bool{

@@ -34,10 +34,10 @@ class CopperTrapdoor extends Trapdoor{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if ($player !== null && !$player->isSneaking()) {
-			return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+		if ($player !== null && $player->isSneaking() && $this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems)) {
+			return true;
 		}
 
-		return $this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 }
