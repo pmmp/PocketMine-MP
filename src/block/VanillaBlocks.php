@@ -1654,7 +1654,7 @@ final class VanillaBlocks{
 		$mudBricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
 		self::register("mud_bricks", new Opaque(new BID(Ids::MUD_BRICKS), "Mud Bricks", $mudBricksBreakInfo));
-		self::register("mud_brick_slab", new Slab(new BID(Ids::MUD_BRICK_SLAB), "Mud Brick", $mudBricksBreakInfo));
+		self::register("mud_brick_slab", new Slab(new BID(Ids::MUD_BRICK_SLAB), "Mud Brick Slab", $mudBricksBreakInfo));
 		self::register("mud_brick_stairs", new Stair(new BID(Ids::MUD_BRICK_STAIRS), "Mud Brick Stairs", $mudBricksBreakInfo));
 		self::register("mud_brick_wall", new Wall(new BID(Ids::MUD_BRICK_WALL), "Mud Brick Wall", $mudBricksBreakInfo));
 	}
