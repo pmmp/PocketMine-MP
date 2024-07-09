@@ -785,6 +785,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::CHISELED_DEEPSLATE(), Ids::CHISELED_DEEPSLATE);
 		$this->mapSimple(Blocks::CHISELED_NETHER_BRICKS(), Ids::CHISELED_NETHER_BRICKS);
 		$this->mapSimple(Blocks::CHISELED_POLISHED_BLACKSTONE(), Ids::CHISELED_POLISHED_BLACKSTONE);
+		$this->mapSimple(Blocks::CHISELED_TUFF(), Ids::CHISELED_TUFF);
+		$this->mapSimple(Blocks::CHISELED_TUFF_BRICKS(), Ids::CHISELED_TUFF_BRICKS);
 		$this->mapSimple(Blocks::CHORUS_PLANT(), Ids::CHORUS_PLANT);
 		$this->mapSimple(Blocks::CLAY(), Ids::CLAY);
 		$this->mapSimple(Blocks::COAL(), Ids::COAL_BLOCK);
@@ -997,6 +999,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::POLISHED_DEEPSLATE(), Ids::POLISHED_DEEPSLATE);
 		$this->mapSimple(Blocks::POLISHED_DIORITE(), Ids::POLISHED_DIORITE);
 		$this->mapSimple(Blocks::POLISHED_GRANITE(), Ids::POLISHED_GRANITE);
+		$this->mapSimple(Blocks::POLISHED_TUFF(), Ids::POLISHED_TUFF);
 		$this->mapSimple(Blocks::QUARTZ_BRICKS(), Ids::QUARTZ_BRICKS);
 		$this->mapSimple(Blocks::RAW_COPPER(), Ids::RAW_COPPER_BLOCK);
 		$this->mapSimple(Blocks::RAW_GOLD(), Ids::RAW_GOLD_BLOCK);
@@ -1023,6 +1026,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
 		$this->mapSimple(Blocks::TORCHFLOWER(), Ids::TORCHFLOWER);
 		$this->mapSimple(Blocks::TUFF(), Ids::TUFF);
+		$this->mapSimple(Blocks::TUFF_BRICKS(), Ids::TUFF_BRICKS);
 		$this->mapSimple(Blocks::WARPED_WART_BLOCK(), Ids::WARPED_WART_BLOCK);
 		$this->mapSimple(Blocks::WARPED_ROOTS(), Ids::WARPED_ROOTS);
 		$this->mapSimple(Blocks::WITHER_ROSE(), Ids::WITHER_ROSE);
@@ -1539,6 +1543,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapStairs(Blocks::POLISHED_DIORITE_STAIRS(), Ids::POLISHED_DIORITE_STAIRS);
 		$this->map(Blocks::POLISHED_GRANITE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab3($block, StringValues::STONE_SLAB_TYPE_3_POLISHED_GRANITE));
 		$this->mapStairs(Blocks::POLISHED_GRANITE_STAIRS(), Ids::POLISHED_GRANITE_STAIRS);
+		$this->mapSlab(Blocks::POLISHED_TUFF_SLAB(), Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB);
+		$this->mapStairs(Blocks::POLISHED_TUFF_STAIRS(), Ids::POLISHED_TUFF_STAIRS);
+		$this->map(Blocks::POLISHED_TUFF_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::POLISHED_TUFF_WALL)));
 		$this->map(Blocks::POTATOES(), fn(Potato $block) => Helper::encodeCrops($block, new Writer(Ids::POTATOES)));
 		$this->map(Blocks::POWERED_RAIL(), function(PoweredRail $block) : Writer{
 			return Writer::create(Ids::GOLDEN_RAIL)
@@ -1715,6 +1722,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
+		$this->mapSlab(Blocks::TUFF_BRICK_SLAB(), Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB);
+		$this->mapStairs(Blocks::TUFF_BRICK_STAIRS(), Ids::TUFF_BRICK_STAIRS);
+		$this->map(Blocks::TUFF_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::TUFF_BRICK_WALL)));
+		$this->mapSlab(Blocks::TUFF_SLAB(), Ids::TUFF_SLAB, Ids::TUFF_DOUBLE_SLAB);
+		$this->mapStairs(Blocks::TUFF_STAIRS(), Ids::TUFF_STAIRS);
+		$this->map(Blocks::TUFF_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::TUFF_WALL)));
 		$this->map(Blocks::TWISTING_VINES(), function(NetherVines $block) : Writer{
 			return Writer::create(Ids::TWISTING_VINES)
 				->writeInt(StateNames::TWISTING_VINES_AGE, $block->getAge());
