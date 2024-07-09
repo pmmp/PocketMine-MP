@@ -157,6 +157,10 @@ final class Bell extends Transparent{
 		}
 	}
 
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [$this->asItem()];
+	}
+
 	private function isValidFaceToRing(int $faceHit) : bool{
 		return match($this->attachmentType){
 			BellAttachmentType::CEILING => true,
