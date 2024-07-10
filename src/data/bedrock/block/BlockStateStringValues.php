@@ -62,12 +62,6 @@ final class BlockStateStringValues{
 	public const CHISEL_TYPE_LINES = "lines";
 	public const CHISEL_TYPE_SMOOTH = "smooth";
 
-	public const CORAL_COLOR_BLUE = "blue";
-	public const CORAL_COLOR_PINK = "pink";
-	public const CORAL_COLOR_PURPLE = "purple";
-	public const CORAL_COLOR_RED = "red";
-	public const CORAL_COLOR_YELLOW = "yellow";
-
 	public const CRACKED_STATE_CRACKED = "cracked";
 	public const CRACKED_STATE_MAX_CRACKED = "max_cracked";
 	public const CRACKED_STATE_NO_CRACKS = "no_cracks";
@@ -80,30 +74,11 @@ final class BlockStateStringValues{
 	public const DIRT_TYPE_COARSE = "coarse";
 	public const DIRT_TYPE_NORMAL = "normal";
 
-	public const DOUBLE_PLANT_TYPE_FERN = "fern";
-	public const DOUBLE_PLANT_TYPE_GRASS = "grass";
-	public const DOUBLE_PLANT_TYPE_PAEONIA = "paeonia";
-	public const DOUBLE_PLANT_TYPE_ROSE = "rose";
-	public const DOUBLE_PLANT_TYPE_SUNFLOWER = "sunflower";
-	public const DOUBLE_PLANT_TYPE_SYRINGA = "syringa";
-
 	public const DRIPSTONE_THICKNESS_BASE = "base";
 	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
 	public const DRIPSTONE_THICKNESS_MERGE = "merge";
 	public const DRIPSTONE_THICKNESS_MIDDLE = "middle";
 	public const DRIPSTONE_THICKNESS_TIP = "tip";
-
-	public const FLOWER_TYPE_ALLIUM = "allium";
-	public const FLOWER_TYPE_CORNFLOWER = "cornflower";
-	public const FLOWER_TYPE_HOUSTONIA = "houstonia";
-	public const FLOWER_TYPE_LILY_OF_THE_VALLEY = "lily_of_the_valley";
-	public const FLOWER_TYPE_ORCHID = "orchid";
-	public const FLOWER_TYPE_OXEYE = "oxeye";
-	public const FLOWER_TYPE_POPPY = "poppy";
-	public const FLOWER_TYPE_TULIP_ORANGE = "tulip_orange";
-	public const FLOWER_TYPE_TULIP_PINK = "tulip_pink";
-	public const FLOWER_TYPE_TULIP_RED = "tulip_red";
-	public const FLOWER_TYPE_TULIP_WHITE = "tulip_white";
 
 	public const LEVER_DIRECTION_DOWN_EAST_WEST = "down_east_west";
 	public const LEVER_DIRECTION_DOWN_NORTH_SOUTH = "down_north_south";
@@ -176,13 +151,6 @@ final class BlockStateStringValues{
 	public const SAND_TYPE_NORMAL = "normal";
 	public const SAND_TYPE_RED = "red";
 
-	public const SAPLING_TYPE_ACACIA = "acacia";
-	public const SAPLING_TYPE_BIRCH = "birch";
-	public const SAPLING_TYPE_DARK_OAK = "dark_oak";
-	public const SAPLING_TYPE_JUNGLE = "jungle";
-	public const SAPLING_TYPE_OAK = "oak";
-	public const SAPLING_TYPE_SPRUCE = "spruce";
-
 	public const SEA_GRASS_TYPE_DEFAULT = "default";
 	public const SEA_GRASS_TYPE_DOUBLE_BOT = "double_bot";
 	public const SEA_GRASS_TYPE_DOUBLE_TOP = "double_top";
@@ -238,11 +206,6 @@ final class BlockStateStringValues{
 
 	public const STRUCTURE_VOID_TYPE_AIR = "air";
 	public const STRUCTURE_VOID_TYPE_VOID = "void";
-
-	public const TALL_GRASS_TYPE_DEFAULT = "default";
-	public const TALL_GRASS_TYPE_FERN = "fern";
-	public const TALL_GRASS_TYPE_SNOW = "snow";
-	public const TALL_GRASS_TYPE_TALL = "tall";
 
 	public const TORCH_FACING_DIRECTION_EAST = "east";
 	public const TORCH_FACING_DIRECTION_NORTH = "north";

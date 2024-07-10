@@ -20,7 +20,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.30.0
+        uses: shivammathur/setup-php@2.30.4
         with:
           php-version: ${{ matrix.php-version }}
 
@@ -76,6 +76,9 @@ jobs:
             ${{ steps.php-binary-url.outputs.PHP_BINARY_URL }} \
             > build_info.json
 
+      - name: Generate core permission doc for doc.pmmp.io
+        run: php tools/generate-permission-doc.php rst
+
       - name: Upload release artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -84,11 +87,12 @@ jobs:
             ${{ github.workspace }}/PocketMine-MP.phar
             ${{ github.workspace }}/start.*
             ${{ github.workspace }}/build_info.json
+            ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
         uses: ncipollo/release-action@v1.14.0
         with:
-          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
+          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
           commit: ${{ github.sha }}
           draft: true
           prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}

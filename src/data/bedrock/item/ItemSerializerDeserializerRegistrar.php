@@ -133,6 +133,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::BIRCH_DOOR, Blocks::BIRCH_DOOR());
 		$this->map1to1Block(Ids::BREWING_STAND, Blocks::BREWING_STAND());
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
+		$this->map1to1Block(Ids::CAMPFIRE, Blocks::CAMPFIRE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
 		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
 		$this->map1to1Block(Ids::CHERRY_DOOR, Blocks::CHERRY_DOOR());
@@ -148,6 +149,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::MANGROVE_DOOR, Blocks::MANGROVE_DOOR());
 		$this->map1to1Block(Ids::NETHER_WART, Blocks::NETHER_WART());
 		$this->map1to1Block(Ids::REPEATER, Blocks::REDSTONE_REPEATER());
+		$this->map1to1Block(Ids::SOUL_CAMPFIRE, Blocks::SOUL_CAMPFIRE());
 		$this->map1to1Block(Ids::SPRUCE_DOOR, Blocks::SPRUCE_DOOR());
 		$this->map1to1Block(Ids::SUGAR_CANE, Blocks::SUGARCANE());
 		$this->map1to1Block(Ids::WARPED_DOOR, Blocks::WARPED_DOOR());
