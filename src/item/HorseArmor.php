@@ -56,7 +56,7 @@ class HorseArmor extends Item{
 		}else{
 			throw new \Exception("Custom color can only be applied to leather armour.");
 		}
-		
+
 		return $this;
 	}
 
