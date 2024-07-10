@@ -1039,6 +1039,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CAKE()
 				->setBites($in->readBoundedInt(StateNames::BITE_COUNTER, 0, 6));
 		});
+		$this->map(Ids::CAMPFIRE, function(Reader $in) : Block{
+			return Blocks::CAMPFIRE()
+				->setFacing($in->readCardinalHorizontalFacing())
+				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
+		});
 		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
 		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
 			return Blocks::CARVED_PUMPKIN()
@@ -1524,6 +1529,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::SNOW_LAYER, function(Reader $in) : Block{
 			$in->ignored(StateNames::COVERED_BIT); //seems to be useless
 			return Blocks::SNOW_LAYER()->setLayers($in->readBoundedInt(StateNames::HEIGHT, 0, 7) + 1);
+		});
+		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
+			return Blocks::SOUL_CAMPFIRE()
+				->setFacing($in->readCardinalHorizontalFacing())
+				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
 		});
 		$this->map(Ids::SOUL_FIRE, function(Reader $in) : Block{
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
