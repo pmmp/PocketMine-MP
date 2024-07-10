@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use Exception;
 use pocketmine\color\Color;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -53,7 +54,10 @@ class HorseArmor extends Item{
 	public function setCustomColor(?Color $color) : self{
 		if($this->getTypeId() === ItemTypeIds::LEATHER_HORSE_ARMOR){
 			$this->customColor = $color;
+		}else{
+			throw new Exception("Custom color can only be applied to leather armour.");
 		}
+		
 		return $this;
 	}
 
