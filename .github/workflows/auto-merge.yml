@@ -25,5 +25,7 @@ jobs:
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          branch: merge/stable-into-minor-next
           base: minor-next
           title: Merge branch 'stable' into minor-next
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
