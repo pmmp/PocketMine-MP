@@ -10,11 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Reset the default branch with upstream changes
+        run: |
+          git checkout minor-next
+          git merge stable
+
       - name: Create Pull Request for branch 'minor-next'
         id: minor-next
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: merge-stable-into-minor
-          head: stable
           base: minor-next
           title: Merge branch 'stable' into minor-next
