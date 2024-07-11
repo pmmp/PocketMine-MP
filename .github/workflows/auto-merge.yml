@@ -14,7 +14,7 @@ jobs:
         id: minor-next
         uses: peter-evans/create-pull-request@v6
         with:
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
-          branch: minor-next
-          base: stable
+          branch: merge-stable-into-minor
+          head: stable
+          base: minor-next
           title: Merge branch 'stable' into minor-next
