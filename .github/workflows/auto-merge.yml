@@ -1,0 +1,20 @@
+name: Merge stable into child branches
+
+on:
+  push:
+    branches: ["stable"]
+
+jobs:
+  create-pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Pull Request for branch 'minor-next'
+        id: minor-next
+        uses: peter-evans/create-pull-request@v6
+        with:
+          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          branch: minor-next
+          base: stable
+          title: Merge branch 'stable' into minor-next
