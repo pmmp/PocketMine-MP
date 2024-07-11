@@ -22,8 +22,8 @@ jobs:
 
       - name: Create Pull Request for branch 'minor-next'
         id: minor-next
-        token: ${{ secrets.AUTO_MERGE_TOKEN }}
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
           base: minor-next
           title: Merge branch 'stable' into minor-next
