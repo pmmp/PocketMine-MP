@@ -9,8 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all branches and their history
 
-      - name: Reset the default branch with upstream changes
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Merge changes
         run: |
           git checkout minor-next
           git merge stable
