@@ -7,6 +7,10 @@ on:
 jobs:
   create-pull-request:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [minor-next, major-next]
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,17 +21,16 @@ jobs:
 
       - name: Merge changes
         run: |
-          git checkout minor-next
+          git checkout ${{ matrix.branch }}
           git merge stable
 
-      - name: Create Pull Request for branch 'minor-next'
-        id: minor-next
+      - name: Create Pull Request for branch '${{ matrix.branch }}'
+        id: create-pull-request
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          branch: merge/stable-into-minor-next
-          base: minor-next
-          title: Merge branch 'stable' into minor-next
-          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
-          body:
+          branch: merge/stable-into-${{ matrix.branch }}
+          base: ${{ matrix.branch }}
+          title: Merge branch 'stable' into ${{ matrix.branch }}
+          body: |
+            This is an automated pull request to merge changes from 'stable' into '${{ matrix.branch }}'.
