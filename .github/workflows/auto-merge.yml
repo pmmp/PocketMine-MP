@@ -28,4 +28,5 @@ jobs:
           branch: merge/stable-into-minor-next
           base: minor-next
           title: Merge branch 'stable' into minor-next
-          author: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
+          committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          body:
