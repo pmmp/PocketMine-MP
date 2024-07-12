@@ -40,6 +40,11 @@ jobs:
     - name: Checkout base branch
       run: git checkout ${{ github.event.inputs.base }}
 
+    - name: Set Git config
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+
     - name: Attempt to merge head into base
       id: merge
       run: |
