@@ -1,36 +1,60 @@
-name: Merge stable into child branches
+name: Merge head into child branch
 
 on:
-  push:
-    branches: ["stable"]
+  workflow_dispatch:
+    inputs:
+      head:
+        description: 'Branch to merge from'
+        required: true
+        type: choice
+        options:
+          - stable
+          - minor-next
+      base:
+        description: 'Branch to merge into'
+        required: true
+        type: choice
+        options:
+          - minor-next
+          - major-next
 
 jobs:
-  create-pull-request:
+  merge:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        branch: [minor-next, major-next]
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all branches and their history
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      - name: Fetch all branches
-        run: git fetch --all
+    - name: Check if head and base are the same
+      id: check-branches
+      run: |
+        if [ "${{ github.event.inputs.head }}" == "${{ github.event.inputs.base }}" ]; then
+          echo "::error::Head and base branches cannot be the same"
+          exit 1
+        fi
 
-      - name: Merge changes
-        run: |
-          git checkout ${{ matrix.branch }}
-          git merge stable
+    - name: Fetch all branches
+      run: git fetch --all
 
-      - name: Create Pull Request for branch '${{ matrix.branch }}'
-        id: create-pull-request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          branch: merge/stable-into-${{ matrix.branch }}
-          base: ${{ matrix.branch }}
-          title: Merge branch 'stable' into ${{ matrix.branch }}
-          body: |
-            This is an automated pull request to merge changes from 'stable' into '${{ matrix.branch }}'.
+    - name: Checkout base branch
+      run: git checkout ${{ github.event.inputs.base }}
+
+    - name: Attempt to merge head into base
+      id: merge
+      run: |
+        git merge --no-ff --no-commit origin/${{ github.event.inputs.head }} || echo "Merge conflict detected" > conflict.txt
+
+    - name: Check for merge conflicts
+      id: check-conflict
+      run: |
+        if [ -f conflict.txt ]; then
+          echo "::error::Merge conflict detected"
+          exit 1
+        fi
+
+    - name: Commit the merge
+      if: steps.check-conflict.outcome == 'success'
+      run: |
+        git commit -m "Merge '${{ github.event.inputs.head }}' into ${{ github.event.inputs.base }}"
+        git push origin ${{ github.event.inputs.base }}
