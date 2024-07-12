@@ -43,7 +43,7 @@ jobs:
     - name: Attempt to merge head into base
       id: merge
       run: |
-        git merge --no-ff --no-commit origin/${{ github.event.inputs.head }} || echo "Merge conflict detected" > conflict.txt
+        git merge --no-ff --no-commit ${{ github.event.inputs.head }} || echo "Merge conflict detected" > conflict.txt
 
     - name: Check for merge conflicts
       id: check-conflict
