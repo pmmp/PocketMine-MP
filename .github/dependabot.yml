@@ -25,6 +25,9 @@ updates:
         - "*"
       update-types:
         - "patch"
+    phpstan:
+      patterns:
+        - "phpstan/*"
 
 - package-ecosystem: gitsubmodule
   directory: "/"
