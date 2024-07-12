@@ -25,6 +25,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all branches and their history
 
     - name: Check if head and base are the same
       id: check-branches
