@@ -61,6 +61,6 @@ jobs:
         fi
 
     - name: Push changes
-      if: steps.check-conflict.outcome == 'success'
+      if: steps.check-errors.outcome == 'success'
       run: |
         git push origin ${{ github.event.inputs.base }}
