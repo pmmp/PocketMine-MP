@@ -50,18 +50,17 @@ jobs:
     - name: Attempt to merge head into base
       id: merge
       run: |
-        git merge --no-commit ${{ github.event.inputs.head }} || echo "Merge conflict detected" > conflict.txt
+        git merge ${{ github.event.inputs.head }}
 
-    - name: Check for merge conflicts
-      id: check-conflict
+    - name: Check for errors
+      id: check-errors
       run: |
-        if [ -f conflict.txt ]; then
-          echo "::error::Merge conflict detected"
+        if [ $? -ne 0 ]; then
+          echo "::error::Merge conflict or error detected"
           exit 1
         fi
 
-    - name: Commit the merge
+    - name: Push changes
       if: steps.check-conflict.outcome == 'success'
       run: |
-        git commit -m "Merge '${{ github.event.inputs.head }}' into ${{ github.event.inputs.base }}"
         git push origin ${{ github.event.inputs.base }}
