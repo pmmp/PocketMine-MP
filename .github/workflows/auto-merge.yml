@@ -28,8 +28,8 @@ jobs:
       with:
         fetch-depth: 0 # Fetch all branches and their history
 
-    - name: Check if head and base are the same
-      id: check-branches
+    - name: Validate input branches
+      id: validate-branches
       run: |
         if [ "${{ github.event.inputs.head }}" == "${{ github.event.inputs.base }}" ]; then
           echo "::error::Head and base branches cannot be the same"
@@ -52,8 +52,8 @@ jobs:
       run: |
         git merge ${{ github.event.inputs.head }}
 
-    - name: Check for errors
-      id: check-errors
+    - name: Check merge status
+      id: check-status
       run: |
         if [ $? -ne 0 ]; then
           echo "::error::Merge conflict or error detected"
@@ -61,6 +61,6 @@ jobs:
         fi
 
     - name: Push changes
-      if: steps.check-errors.outcome == 'success'
+      if: steps.check-status.outcome == 'success'
       run: |
         git push origin ${{ github.event.inputs.base }}
