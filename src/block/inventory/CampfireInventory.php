@@ -21,20 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\inventory;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\Facing;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\world\Position;
 
-final class NetherRoots extends Flowable{
-	use StaticSupportTrait;
+class CampfireInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
 
-	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: nylium, moss
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+	public function __construct(Position $holder){
+		$this->holder = $holder;
+		parent::__construct(4);
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 }

@@ -21,20 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\Facing;
+/**
+ * Represents copper blocks that have oxidized and waxed variations.
+ */
+interface ICopper{
 
-final class NetherRoots extends Flowable{
-	use StaticSupportTrait;
+	public function getOxidation() : CopperOxidation;
 
-	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: nylium, moss
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
-	}
+	public function setOxidation(CopperOxidation $oxidation) : ICopper;
+
+	public function isWaxed() : bool;
+
+	public function setWaxed(bool $waxed) : ICopper;
 }

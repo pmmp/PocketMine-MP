@@ -21,30 +21,43 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\upgrade;
+namespace pocketmine\event\block;
 
-use function ksort;
-use const SORT_STRING;
+use pocketmine\block\Campfire;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\item\Item;
 
-final class BlockStateUpgradeSchemaFlattenedName{
+class CampfireCookEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
 
-	/**
-	 * @param string[] $flattenedValueRemaps
-	 * @phpstan-param array<string, string> $flattenedValueRemaps
-	 */
 	public function __construct(
-		public string $prefix,
-		public string $flattenedProperty,
-		public string $suffix,
-		public array $flattenedValueRemaps
+		private Campfire $campfire,
+		private int $slot,
+		private Item $input,
+		private Item $result
 	){
-		ksort($this->flattenedValueRemaps, SORT_STRING);
+		parent::__construct($campfire);
+		$this->input = clone $input;
 	}
 
-	public function equals(self $that) : bool{
-		return $this->prefix === $that->prefix &&
-			$this->flattenedProperty === $that->flattenedProperty &&
-			$this->suffix === $that->suffix &&
-			$this->flattenedValueRemaps === $that->flattenedValueRemaps;
+	public function getCampfire() : Campfire{
+		return $this->campfire;
+	}
+
+	public function getSlot() : int{
+		return $this->slot;
+	}
+
+	public function getInput() : Item{
+		return $this->input;
+	}
+
+	public function getResult() : Item{
+		return $this->result;
+	}
+
+	public function setResult(Item $result) : void{
+		$this->result = $result;
 	}
 }

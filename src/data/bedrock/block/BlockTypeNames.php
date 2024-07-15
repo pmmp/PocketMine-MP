@@ -41,6 +41,7 @@ final class BlockTypeNames{
 	public const ACACIA_LOG = "minecraft:acacia_log";
 	public const ACACIA_PLANKS = "minecraft:acacia_planks";
 	public const ACACIA_PRESSURE_PLATE = "minecraft:acacia_pressure_plate";
+	public const ACACIA_SAPLING = "minecraft:acacia_sapling";
 	public const ACACIA_SLAB = "minecraft:acacia_slab";
 	public const ACACIA_STAIRS = "minecraft:acacia_stairs";
 	public const ACACIA_STANDING_SIGN = "minecraft:acacia_standing_sign";
@@ -49,6 +50,7 @@ final class BlockTypeNames{
 	public const ACACIA_WOOD = "minecraft:acacia_wood";
 	public const ACTIVATOR_RAIL = "minecraft:activator_rail";
 	public const AIR = "minecraft:air";
+	public const ALLIUM = "minecraft:allium";
 	public const ALLOW = "minecraft:allow";
 	public const AMETHYST_BLOCK = "minecraft:amethyst_block";
 	public const AMETHYST_CLUSTER = "minecraft:amethyst_cluster";
@@ -59,6 +61,7 @@ final class BlockTypeNames{
 	public const AZALEA = "minecraft:azalea";
 	public const AZALEA_LEAVES = "minecraft:azalea_leaves";
 	public const AZALEA_LEAVES_FLOWERED = "minecraft:azalea_leaves_flowered";
+	public const AZURE_BLUET = "minecraft:azure_bluet";
 	public const BAMBOO = "minecraft:bamboo";
 	public const BAMBOO_BLOCK = "minecraft:bamboo_block";
 	public const BAMBOO_BUTTON = "minecraft:bamboo_button";
@@ -100,6 +103,7 @@ final class BlockTypeNames{
 	public const BIRCH_LOG = "minecraft:birch_log";
 	public const BIRCH_PLANKS = "minecraft:birch_planks";
 	public const BIRCH_PRESSURE_PLATE = "minecraft:birch_pressure_plate";
+	public const BIRCH_SAPLING = "minecraft:birch_sapling";
 	public const BIRCH_SLAB = "minecraft:birch_slab";
 	public const BIRCH_STAIRS = "minecraft:birch_stairs";
 	public const BIRCH_STANDING_SIGN = "minecraft:birch_standing_sign";
@@ -130,6 +134,7 @@ final class BlockTypeNames{
 	public const BLUE_CONCRETE_POWDER = "minecraft:blue_concrete_powder";
 	public const BLUE_GLAZED_TERRACOTTA = "minecraft:blue_glazed_terracotta";
 	public const BLUE_ICE = "minecraft:blue_ice";
+	public const BLUE_ORCHID = "minecraft:blue_orchid";
 	public const BLUE_SHULKER_BOX = "minecraft:blue_shulker_box";
 	public const BLUE_STAINED_GLASS = "minecraft:blue_stained_glass";
 	public const BLUE_STAINED_GLASS_PANE = "minecraft:blue_stained_glass_pane";
@@ -139,8 +144,11 @@ final class BlockTypeNames{
 	public const BOOKSHELF = "minecraft:bookshelf";
 	public const BORDER_BLOCK = "minecraft:border_block";
 	public const BRAIN_CORAL = "minecraft:brain_coral";
+	public const BRAIN_CORAL_BLOCK = "minecraft:brain_coral_block";
+	public const BRAIN_CORAL_FAN = "minecraft:brain_coral_fan";
 	public const BREWING_STAND = "minecraft:brewing_stand";
 	public const BRICK_BLOCK = "minecraft:brick_block";
+	public const BRICK_SLAB = "minecraft:brick_slab";
 	public const BRICK_STAIRS = "minecraft:brick_stairs";
 	public const BROWN_CANDLE = "minecraft:brown_candle";
 	public const BROWN_CANDLE_CAKE = "minecraft:brown_candle_cake";
@@ -157,6 +165,8 @@ final class BlockTypeNames{
 	public const BROWN_WOOL = "minecraft:brown_wool";
 	public const BUBBLE_COLUMN = "minecraft:bubble_column";
 	public const BUBBLE_CORAL = "minecraft:bubble_coral";
+	public const BUBBLE_CORAL_BLOCK = "minecraft:bubble_coral_block";
+	public const BUBBLE_CORAL_FAN = "minecraft:bubble_coral_fan";
 	public const BUDDING_AMETHYST = "minecraft:budding_amethyst";
 	public const CACTUS = "minecraft:cactus";
 	public const CAKE = "minecraft:cake";
@@ -214,6 +224,7 @@ final class BlockTypeNames{
 	public const COBBLED_DEEPSLATE_STAIRS = "minecraft:cobbled_deepslate_stairs";
 	public const COBBLED_DEEPSLATE_WALL = "minecraft:cobbled_deepslate_wall";
 	public const COBBLESTONE = "minecraft:cobblestone";
+	public const COBBLESTONE_SLAB = "minecraft:cobblestone_slab";
 	public const COBBLESTONE_WALL = "minecraft:cobblestone_wall";
 	public const COCOA = "minecraft:cocoa";
 	public const COLORED_TORCH_BP = "minecraft:colored_torch_bp";
@@ -227,12 +238,10 @@ final class BlockTypeNames{
 	public const COPPER_GRATE = "minecraft:copper_grate";
 	public const COPPER_ORE = "minecraft:copper_ore";
 	public const COPPER_TRAPDOOR = "minecraft:copper_trapdoor";
-	public const CORAL_BLOCK = "minecraft:coral_block";
-	public const CORAL_FAN = "minecraft:coral_fan";
-	public const CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
 	public const CORAL_FAN_HANG = "minecraft:coral_fan_hang";
 	public const CORAL_FAN_HANG2 = "minecraft:coral_fan_hang2";
 	public const CORAL_FAN_HANG3 = "minecraft:coral_fan_hang3";
+	public const CORNFLOWER = "minecraft:cornflower";
 	public const CRACKED_DEEPSLATE_BRICKS = "minecraft:cracked_deepslate_bricks";
 	public const CRACKED_DEEPSLATE_TILES = "minecraft:cracked_deepslate_tiles";
 	public const CRACKED_NETHER_BRICKS = "minecraft:cracked_nether_bricks";
@@ -282,6 +291,7 @@ final class BlockTypeNames{
 	public const DARK_OAK_LOG = "minecraft:dark_oak_log";
 	public const DARK_OAK_PLANKS = "minecraft:dark_oak_planks";
 	public const DARK_OAK_PRESSURE_PLATE = "minecraft:dark_oak_pressure_plate";
+	public const DARK_OAK_SAPLING = "minecraft:dark_oak_sapling";
 	public const DARK_OAK_SLAB = "minecraft:dark_oak_slab";
 	public const DARK_OAK_STAIRS = "minecraft:dark_oak_stairs";
 	public const DARK_OAK_TRAPDOOR = "minecraft:dark_oak_trapdoor";
@@ -292,10 +302,20 @@ final class BlockTypeNames{
 	public const DAYLIGHT_DETECTOR = "minecraft:daylight_detector";
 	public const DAYLIGHT_DETECTOR_INVERTED = "minecraft:daylight_detector_inverted";
 	public const DEAD_BRAIN_CORAL = "minecraft:dead_brain_coral";
+	public const DEAD_BRAIN_CORAL_BLOCK = "minecraft:dead_brain_coral_block";
+	public const DEAD_BRAIN_CORAL_FAN = "minecraft:dead_brain_coral_fan";
 	public const DEAD_BUBBLE_CORAL = "minecraft:dead_bubble_coral";
+	public const DEAD_BUBBLE_CORAL_BLOCK = "minecraft:dead_bubble_coral_block";
+	public const DEAD_BUBBLE_CORAL_FAN = "minecraft:dead_bubble_coral_fan";
 	public const DEAD_FIRE_CORAL = "minecraft:dead_fire_coral";
+	public const DEAD_FIRE_CORAL_BLOCK = "minecraft:dead_fire_coral_block";
+	public const DEAD_FIRE_CORAL_FAN = "minecraft:dead_fire_coral_fan";
 	public const DEAD_HORN_CORAL = "minecraft:dead_horn_coral";
+	public const DEAD_HORN_CORAL_BLOCK = "minecraft:dead_horn_coral_block";
+	public const DEAD_HORN_CORAL_FAN = "minecraft:dead_horn_coral_fan";
 	public const DEAD_TUBE_CORAL = "minecraft:dead_tube_coral";
+	public const DEAD_TUBE_CORAL_BLOCK = "minecraft:dead_tube_coral_block";
+	public const DEAD_TUBE_CORAL_FAN = "minecraft:dead_tube_coral_fan";
 	public const DEADBUSH = "minecraft:deadbush";
 	public const DECORATED_POT = "minecraft:decorated_pot";
 	public const DEEPSLATE = "minecraft:deepslate";
@@ -327,7 +347,6 @@ final class BlockTypeNames{
 	public const DIRT_WITH_ROOTS = "minecraft:dirt_with_roots";
 	public const DISPENSER = "minecraft:dispenser";
 	public const DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
-	public const DOUBLE_PLANT = "minecraft:double_plant";
 	public const DOUBLE_STONE_BLOCK_SLAB = "minecraft:double_stone_block_slab";
 	public const DOUBLE_STONE_BLOCK_SLAB2 = "minecraft:double_stone_block_slab2";
 	public const DOUBLE_STONE_BLOCK_SLAB3 = "minecraft:double_stone_block_slab3";
@@ -478,8 +497,11 @@ final class BlockTypeNames{
 	public const EXPOSED_DOUBLE_CUT_COPPER_SLAB = "minecraft:exposed_double_cut_copper_slab";
 	public const FARMLAND = "minecraft:farmland";
 	public const FENCE_GATE = "minecraft:fence_gate";
+	public const FERN = "minecraft:fern";
 	public const FIRE = "minecraft:fire";
 	public const FIRE_CORAL = "minecraft:fire_coral";
+	public const FIRE_CORAL_BLOCK = "minecraft:fire_coral_block";
+	public const FIRE_CORAL_FAN = "minecraft:fire_coral_fan";
 	public const FLETCHING_TABLE = "minecraft:fletching_table";
 	public const FLOWER_POT = "minecraft:flower_pot";
 	public const FLOWERING_AZALEA = "minecraft:flowering_azalea";
@@ -564,11 +586,14 @@ final class BlockTypeNames{
 	public const HARD_YELLOW_STAINED_GLASS_PANE = "minecraft:hard_yellow_stained_glass_pane";
 	public const HARDENED_CLAY = "minecraft:hardened_clay";
 	public const HAY_BLOCK = "minecraft:hay_block";
+	public const HEAVY_CORE = "minecraft:heavy_core";
 	public const HEAVY_WEIGHTED_PRESSURE_PLATE = "minecraft:heavy_weighted_pressure_plate";
 	public const HONEY_BLOCK = "minecraft:honey_block";
 	public const HONEYCOMB_BLOCK = "minecraft:honeycomb_block";
 	public const HOPPER = "minecraft:hopper";
 	public const HORN_CORAL = "minecraft:horn_coral";
+	public const HORN_CORAL_BLOCK = "minecraft:horn_coral_block";
+	public const HORN_CORAL_FAN = "minecraft:horn_coral_fan";
 	public const ICE = "minecraft:ice";
 	public const INFESTED_DEEPSLATE = "minecraft:infested_deepslate";
 	public const INFO_UPDATE = "minecraft:info_update";
@@ -591,6 +616,7 @@ final class BlockTypeNames{
 	public const JUNGLE_LOG = "minecraft:jungle_log";
 	public const JUNGLE_PLANKS = "minecraft:jungle_planks";
 	public const JUNGLE_PRESSURE_PLATE = "minecraft:jungle_pressure_plate";
+	public const JUNGLE_SAPLING = "minecraft:jungle_sapling";
 	public const JUNGLE_SLAB = "minecraft:jungle_slab";
 	public const JUNGLE_STAIRS = "minecraft:jungle_stairs";
 	public const JUNGLE_STANDING_SIGN = "minecraft:jungle_standing_sign";
@@ -603,6 +629,7 @@ final class BlockTypeNames{
 	public const LAPIS_BLOCK = "minecraft:lapis_block";
 	public const LAPIS_ORE = "minecraft:lapis_ore";
 	public const LARGE_AMETHYST_BUD = "minecraft:large_amethyst_bud";
+	public const LARGE_FERN = "minecraft:large_fern";
 	public const LAVA = "minecraft:lava";
 	public const LECTERN = "minecraft:lectern";
 	public const LEVER = "minecraft:lever";
@@ -630,6 +657,8 @@ final class BlockTypeNames{
 	public const LIGHT_GRAY_WOOL = "minecraft:light_gray_wool";
 	public const LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:light_weighted_pressure_plate";
 	public const LIGHTNING_ROD = "minecraft:lightning_rod";
+	public const LILAC = "minecraft:lilac";
+	public const LILY_OF_THE_VALLEY = "minecraft:lily_of_the_valley";
 	public const LIME_CANDLE = "minecraft:lime_candle";
 	public const LIME_CANDLE_CAKE = "minecraft:lime_candle_cake";
 	public const LIME_CARPET = "minecraft:lime_carpet";
@@ -701,6 +730,7 @@ final class BlockTypeNames{
 	public const MYCELIUM = "minecraft:mycelium";
 	public const NETHER_BRICK = "minecraft:nether_brick";
 	public const NETHER_BRICK_FENCE = "minecraft:nether_brick_fence";
+	public const NETHER_BRICK_SLAB = "minecraft:nether_brick_slab";
 	public const NETHER_BRICK_STAIRS = "minecraft:nether_brick_stairs";
 	public const NETHER_GOLD_ORE = "minecraft:nether_gold_ore";
 	public const NETHER_SPROUTS = "minecraft:nether_sprouts";
@@ -717,6 +747,7 @@ final class BlockTypeNames{
 	public const OAK_LEAVES = "minecraft:oak_leaves";
 	public const OAK_LOG = "minecraft:oak_log";
 	public const OAK_PLANKS = "minecraft:oak_planks";
+	public const OAK_SAPLING = "minecraft:oak_sapling";
 	public const OAK_SLAB = "minecraft:oak_slab";
 	public const OAK_STAIRS = "minecraft:oak_stairs";
 	public const OAK_WOOD = "minecraft:oak_wood";
@@ -733,7 +764,9 @@ final class BlockTypeNames{
 	public const ORANGE_STAINED_GLASS = "minecraft:orange_stained_glass";
 	public const ORANGE_STAINED_GLASS_PANE = "minecraft:orange_stained_glass_pane";
 	public const ORANGE_TERRACOTTA = "minecraft:orange_terracotta";
+	public const ORANGE_TULIP = "minecraft:orange_tulip";
 	public const ORANGE_WOOL = "minecraft:orange_wool";
+	public const OXEYE_DAISY = "minecraft:oxeye_daisy";
 	public const OXIDIZED_CHISELED_COPPER = "minecraft:oxidized_chiseled_copper";
 	public const OXIDIZED_COPPER = "minecraft:oxidized_copper";
 	public const OXIDIZED_COPPER_BULB = "minecraft:oxidized_copper_bulb";
@@ -747,6 +780,8 @@ final class BlockTypeNames{
 	public const PACKED_ICE = "minecraft:packed_ice";
 	public const PACKED_MUD = "minecraft:packed_mud";
 	public const PEARLESCENT_FROGLIGHT = "minecraft:pearlescent_froglight";
+	public const PEONY = "minecraft:peony";
+	public const PETRIFIED_OAK_SLAB = "minecraft:petrified_oak_slab";
 	public const PINK_CANDLE = "minecraft:pink_candle";
 	public const PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
 	public const PINK_CARPET = "minecraft:pink_carpet";
@@ -758,6 +793,7 @@ final class BlockTypeNames{
 	public const PINK_STAINED_GLASS = "minecraft:pink_stained_glass";
 	public const PINK_STAINED_GLASS_PANE = "minecraft:pink_stained_glass_pane";
 	public const PINK_TERRACOTTA = "minecraft:pink_terracotta";
+	public const PINK_TULIP = "minecraft:pink_tulip";
 	public const PINK_WOOL = "minecraft:pink_wool";
 	public const PISTON = "minecraft:piston";
 	public const PISTON_ARM_COLLISION = "minecraft:piston_arm_collision";
@@ -794,6 +830,7 @@ final class BlockTypeNames{
 	public const POLISHED_TUFF_SLAB = "minecraft:polished_tuff_slab";
 	public const POLISHED_TUFF_STAIRS = "minecraft:polished_tuff_stairs";
 	public const POLISHED_TUFF_WALL = "minecraft:polished_tuff_wall";
+	public const POPPY = "minecraft:poppy";
 	public const PORTAL = "minecraft:portal";
 	public const POTATOES = "minecraft:potatoes";
 	public const POWDER_SNOW = "minecraft:powder_snow";
@@ -820,6 +857,7 @@ final class BlockTypeNames{
 	public const QUARTZ_BLOCK = "minecraft:quartz_block";
 	public const QUARTZ_BRICKS = "minecraft:quartz_bricks";
 	public const QUARTZ_ORE = "minecraft:quartz_ore";
+	public const QUARTZ_SLAB = "minecraft:quartz_slab";
 	public const QUARTZ_STAIRS = "minecraft:quartz_stairs";
 	public const RAIL = "minecraft:rail";
 	public const RAW_COPPER_BLOCK = "minecraft:raw_copper_block";
@@ -830,7 +868,6 @@ final class BlockTypeNames{
 	public const RED_CARPET = "minecraft:red_carpet";
 	public const RED_CONCRETE = "minecraft:red_concrete";
 	public const RED_CONCRETE_POWDER = "minecraft:red_concrete_powder";
-	public const RED_FLOWER = "minecraft:red_flower";
 	public const RED_GLAZED_TERRACOTTA = "minecraft:red_glazed_terracotta";
 	public const RED_MUSHROOM = "minecraft:red_mushroom";
 	public const RED_MUSHROOM_BLOCK = "minecraft:red_mushroom_block";
@@ -842,6 +879,7 @@ final class BlockTypeNames{
 	public const RED_STAINED_GLASS = "minecraft:red_stained_glass";
 	public const RED_STAINED_GLASS_PANE = "minecraft:red_stained_glass_pane";
 	public const RED_TERRACOTTA = "minecraft:red_terracotta";
+	public const RED_TULIP = "minecraft:red_tulip";
 	public const RED_WOOL = "minecraft:red_wool";
 	public const REDSTONE_BLOCK = "minecraft:redstone_block";
 	public const REDSTONE_LAMP = "minecraft:redstone_lamp";
@@ -853,10 +891,11 @@ final class BlockTypeNames{
 	public const REPEATING_COMMAND_BLOCK = "minecraft:repeating_command_block";
 	public const RESERVED6 = "minecraft:reserved6";
 	public const RESPAWN_ANCHOR = "minecraft:respawn_anchor";
+	public const ROSE_BUSH = "minecraft:rose_bush";
 	public const SAND = "minecraft:sand";
 	public const SANDSTONE = "minecraft:sandstone";
+	public const SANDSTONE_SLAB = "minecraft:sandstone_slab";
 	public const SANDSTONE_STAIRS = "minecraft:sandstone_stairs";
-	public const SAPLING = "minecraft:sapling";
 	public const SCAFFOLDING = "minecraft:scaffolding";
 	public const SCULK = "minecraft:sculk";
 	public const SCULK_CATALYST = "minecraft:sculk_catalyst";
@@ -866,6 +905,7 @@ final class BlockTypeNames{
 	public const SEA_LANTERN = "minecraft:sea_lantern";
 	public const SEA_PICKLE = "minecraft:sea_pickle";
 	public const SEAGRASS = "minecraft:seagrass";
+	public const SHORT_GRASS = "minecraft:short_grass";
 	public const SHROOMLIGHT = "minecraft:shroomlight";
 	public const SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
 	public const SKULL = "minecraft:skull";
@@ -879,6 +919,7 @@ final class BlockTypeNames{
 	public const SMOOTH_RED_SANDSTONE_STAIRS = "minecraft:smooth_red_sandstone_stairs";
 	public const SMOOTH_SANDSTONE_STAIRS = "minecraft:smooth_sandstone_stairs";
 	public const SMOOTH_STONE = "minecraft:smooth_stone";
+	public const SMOOTH_STONE_SLAB = "minecraft:smooth_stone_slab";
 	public const SNIFFER_EGG = "minecraft:sniffer_egg";
 	public const SNOW = "minecraft:snow";
 	public const SNOW_LAYER = "minecraft:snow_layer";
@@ -900,6 +941,7 @@ final class BlockTypeNames{
 	public const SPRUCE_LOG = "minecraft:spruce_log";
 	public const SPRUCE_PLANKS = "minecraft:spruce_planks";
 	public const SPRUCE_PRESSURE_PLATE = "minecraft:spruce_pressure_plate";
+	public const SPRUCE_SAPLING = "minecraft:spruce_sapling";
 	public const SPRUCE_SLAB = "minecraft:spruce_slab";
 	public const SPRUCE_STAIRS = "minecraft:spruce_stairs";
 	public const SPRUCE_STANDING_SIGN = "minecraft:spruce_standing_sign";
@@ -911,10 +953,10 @@ final class BlockTypeNames{
 	public const STICKY_PISTON = "minecraft:sticky_piston";
 	public const STICKY_PISTON_ARM_COLLISION = "minecraft:sticky_piston_arm_collision";
 	public const STONE = "minecraft:stone";
-	public const STONE_BLOCK_SLAB = "minecraft:stone_block_slab";
 	public const STONE_BLOCK_SLAB2 = "minecraft:stone_block_slab2";
 	public const STONE_BLOCK_SLAB3 = "minecraft:stone_block_slab3";
 	public const STONE_BLOCK_SLAB4 = "minecraft:stone_block_slab4";
+	public const STONE_BRICK_SLAB = "minecraft:stone_brick_slab";
 	public const STONE_BRICK_STAIRS = "minecraft:stone_brick_stairs";
 	public const STONE_BUTTON = "minecraft:stone_button";
 	public const STONE_PRESSURE_PLATE = "minecraft:stone_pressure_plate";
@@ -945,10 +987,11 @@ final class BlockTypeNames{
 	public const STRIPPED_WARPED_STEM = "minecraft:stripped_warped_stem";
 	public const STRUCTURE_BLOCK = "minecraft:structure_block";
 	public const STRUCTURE_VOID = "minecraft:structure_void";
+	public const SUNFLOWER = "minecraft:sunflower";
 	public const SUSPICIOUS_GRAVEL = "minecraft:suspicious_gravel";
 	public const SUSPICIOUS_SAND = "minecraft:suspicious_sand";
 	public const SWEET_BERRY_BUSH = "minecraft:sweet_berry_bush";
-	public const TALLGRASS = "minecraft:tallgrass";
+	public const TALL_GRASS = "minecraft:tall_grass";
 	public const TARGET = "minecraft:target";
 	public const TINTED_GLASS = "minecraft:tinted_glass";
 	public const TNT = "minecraft:tnt";
@@ -961,6 +1004,8 @@ final class BlockTypeNames{
 	public const TRIP_WIRE = "minecraft:trip_wire";
 	public const TRIPWIRE_HOOK = "minecraft:tripwire_hook";
 	public const TUBE_CORAL = "minecraft:tube_coral";
+	public const TUBE_CORAL_BLOCK = "minecraft:tube_coral_block";
+	public const TUBE_CORAL_FAN = "minecraft:tube_coral_fan";
 	public const TUFF = "minecraft:tuff";
 	public const TUFF_BRICK_DOUBLE_SLAB = "minecraft:tuff_brick_double_slab";
 	public const TUFF_BRICK_SLAB = "minecraft:tuff_brick_slab";
@@ -1068,6 +1113,7 @@ final class BlockTypeNames{
 	public const WHITE_STAINED_GLASS = "minecraft:white_stained_glass";
 	public const WHITE_STAINED_GLASS_PANE = "minecraft:white_stained_glass_pane";
 	public const WHITE_TERRACOTTA = "minecraft:white_terracotta";
+	public const WHITE_TULIP = "minecraft:white_tulip";
 	public const WHITE_WOOL = "minecraft:white_wool";
 	public const WITHER_ROSE = "minecraft:wither_rose";
 	public const WOODEN_BUTTON = "minecraft:wooden_button";

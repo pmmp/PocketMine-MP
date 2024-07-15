@@ -63,6 +63,12 @@ use function strpos;
 use function substr;
 use function zend_version;
 use function zlib_encode;
+use const E_COMPILE_ERROR;
+use const E_CORE_ERROR;
+use const E_ERROR;
+use const E_PARSE;
+use const E_RECOVERABLE_ERROR;
+use const E_USER_ERROR;
 use const FILE_IGNORE_NEW_LINES;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -84,6 +90,9 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_NONE = "none";
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
+
+	public const FATAL_ERROR_MASK =
+		E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR;
 
 	private CrashDumpData $data;
 	private string $encodedData;
@@ -186,7 +195,7 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = error_get_last();
-			if($error === null){
+			if($error === null || ($error["type"] & self::FATAL_ERROR_MASK) === 0){
 				throw new \RuntimeException("Crash error information missing - did something use exit()?");
 			}
 			$error["trace"] = Utils::printableTrace(Utils::currentTrace(3)); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump

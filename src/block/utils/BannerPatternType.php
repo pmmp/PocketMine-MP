@@ -81,10 +81,12 @@ enum BannerPatternType{
 	case DIAGONAL_RIGHT;
 	case DIAGONAL_UP_LEFT;
 	case DIAGONAL_UP_RIGHT;
+	case FLOW;
 	case FLOWER;
 	case GLOBE;
 	case GRADIENT;
 	case GRADIENT_UP;
+	case GUSTER;
 	case HALF_HORIZONTAL;
 	case HALF_HORIZONTAL_BOTTOM;
 	case HALF_VERTICAL;

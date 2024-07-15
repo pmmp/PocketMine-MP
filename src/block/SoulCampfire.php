@@ -23,18 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\Facing;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\item\Item;
 
-final class NetherRoots extends Flowable{
-	use StaticSupportTrait;
+class SoulCampfire extends Campfire{
 
-	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: nylium, moss
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+	public function getLightLevel() : int{
+		return $this->lit ? 10 : 0;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::SOUL_SOIL()->asItem()
+		];
+	}
+
+	protected function getEntityCollisionDamage() : int{
+		return 2;
+	}
+
+	protected function getFurnaceType() : FurnaceType{
+		return FurnaceType::SOUL_CAMPFIRE;
 	}
 }

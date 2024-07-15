@@ -28,6 +28,10 @@ use pocketmine\block\utils\WoodTypeTrait;
 class WoodenStairs extends Stair{
 	use WoodTypeTrait;
 
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 300 : 0;
+	}
+
 	public function getFlameEncouragement() : int{
 		return 5;
 	}
