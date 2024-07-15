@@ -129,7 +129,7 @@ final class WaterCauldron extends FillableCauldron{
 			}else{
 				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}
-		}elseif($item instanceof Armor || $item instanceof HorseArmor){
+		}elseif($item instanceof Armor || $item instanceof LeatherHorseArmor){
 			if($this->customWaterColor !== null){
 				if(match($item->getTypeId()){ //TODO: a DyeableArmor class would probably be a better idea, since not all types of armor are dyeable
 					ItemTypeIds::LEATHER_CAP,
@@ -144,7 +144,7 @@ final class WaterCauldron extends FillableCauldron{
 					$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
 			}elseif($item->getCustomColor() !== null){
-				if($item instanceof HorseArmor){
+				if($item instanceof LeatherHorseArmor){
 					$item->setCustomColor(null);
 				}else{
 					$item->clearCustomColor();
