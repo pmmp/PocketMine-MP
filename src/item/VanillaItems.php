@@ -142,7 +142,7 @@ use function strtolower;
  * @method static Armor DIAMOND_CHESTPLATE()
  * @method static Armor DIAMOND_HELMET()
  * @method static Hoe DIAMOND_HOE()
- * @method static HorseArmor DIAMOND_HORSE_ARMOR()
+ * @method static Item DIAMOND_HORSE_ARMOR()
  * @method static Armor DIAMOND_LEGGINGS()
  * @method static Pickaxe DIAMOND_PICKAXE()
  * @method static Shovel DIAMOND_SHOVEL()
@@ -179,7 +179,7 @@ use function strtolower;
  * @method static Armor GOLDEN_CHESTPLATE()
  * @method static Armor GOLDEN_HELMET()
  * @method static Hoe GOLDEN_HOE()
- * @method static HorseArmor GOLDEN_HORSE_ARMOR()
+ * @method static Item GOLDEN_HORSE_ARMOR()
  * @method static Armor GOLDEN_LEGGINGS()
  * @method static Pickaxe GOLDEN_PICKAXE()
  * @method static Shovel GOLDEN_SHOVEL()
@@ -197,7 +197,7 @@ use function strtolower;
  * @method static Armor IRON_CHESTPLATE()
  * @method static Armor IRON_HELMET()
  * @method static Hoe IRON_HOE()
- * @method static HorseArmor IRON_HORSE_ARMOR()
+ * @method static Item IRON_HORSE_ARMOR()
  * @method static Item IRON_INGOT()
  * @method static Armor IRON_LEGGINGS()
  * @method static Item IRON_NUGGET()
@@ -211,7 +211,7 @@ use function strtolower;
  * @method static Item LEATHER()
  * @method static Armor LEATHER_BOOTS()
  * @method static Armor LEATHER_CAP()
- * @method static HorseArmor LEATHER_HORSE_ARMOR()
+ * @method static LeatherHorseArmor LEATHER_HORSE_ARMOR()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
  * @method static Item MAGMA_CREAM()
@@ -674,10 +674,16 @@ final class VanillaItems{
 	}
 
 	private static function registerHorseArmorItems() : void{
-		self::register("leather_horse_armor", new HorseArmor(new IID(Ids::LEATHER_HORSE_ARMOR), "Leather Horse Armor"));
-		self::register("iron_horse_armor", new HorseArmor(new IID(Ids::IRON_HORSE_ARMOR), "Iron Horse Armor"));
-		self::register("diamond_horse_armor", new HorseArmor(new IID(Ids::DIAMOND_HORSE_ARMOR), "Diamond Horse Armor"));
-		self::register("golden_horse_armor", new HorseArmor(new IID(Ids::GOLDEN_HORSE_ARMOR), "Golden Horse Armor"));
+		self::register("leather_horse_armor", new LeatherHorseArmor(new IID(Ids::LEATHER_HORSE_ARMOR), "Leather Horse Armor"));
+		self::register("iron_horse_armor", new class(new IID(Ids::IRON_HORSE_ARMOR), "Iron Horse Armor") extends Item {
+				public function getMaxStackSize() : int{ return 1; }
+		}));
+		self::register("diamond_horse_armor", new class(new IID(Ids::DIAMOND_HORSE_ARMOR), "Diamond Horse Armor") extends Item {
+				public function getMaxStackSize() : int{ return 1; }
+		}));
+		self::register("golden_horse_armor", new class(new IID(Ids::GOLDEN_HORSE_ARMOR), "Golden Horse Armor") extends Item {
+				public function getMaxStackSize() : int{ return 1; }
+		}));
 	}
 
 	private static function registerSmithingTemplates() : void{
