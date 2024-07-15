@@ -677,13 +677,13 @@ final class VanillaItems{
 		self::register("leather_horse_armor", new LeatherHorseArmor(new IID(Ids::LEATHER_HORSE_ARMOR), "Leather Horse Armor"));
 		self::register("iron_horse_armor", new class(new IID(Ids::IRON_HORSE_ARMOR), "Iron Horse Armor") extends Item {
 				public function getMaxStackSize() : int{ return 1; }
-		}));
+		});
 		self::register("diamond_horse_armor", new class(new IID(Ids::DIAMOND_HORSE_ARMOR), "Diamond Horse Armor") extends Item {
 				public function getMaxStackSize() : int{ return 1; }
-		}));
+		});
 		self::register("golden_horse_armor", new class(new IID(Ids::GOLDEN_HORSE_ARMOR), "Golden Horse Armor") extends Item {
 				public function getMaxStackSize() : int{ return 1; }
-		}));
+		});
 	}
 
 	private static function registerSmithingTemplates() : void{
