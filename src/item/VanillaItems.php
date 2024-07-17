@@ -461,11 +461,9 @@ final class VanillaItems{
 		self::register("feather", new Item(new IID(Ids::FEATHER), "Feather"));
 		self::register("fermented_spider_eye", new Item(new IID(Ids::FERMENTED_SPIDER_EYE), "Fermented Spider Eye"));
 		self::register("fire_charge", new FireCharge(new IID(Ids::FIRE_CHARGE), "Fire Charge"));
-
 		self::register("fishing_rod", new FishingRod(new IID(Ids::FISHING_ROD), "Fishing Rod", [EnchantmentTags::FISHING_ROD]));
 		self::register("carrot_on_a_stick", new CarrotOnAStick(new IID(Ids::CARROT_ON_A_STICK), "Carrot on a Stick"));
 		self::register("warped_fungus_on_a_stick", new WarpedFungusOnAStick(new IID(Ids::WARPED_FUNGUS_ON_A_STICK), "Warped Fungus on a Stick"));
-
 		self::register("flint", new Item(new IID(Ids::FLINT), "Flint"));
 		self::register("flint_and_steel", new FlintSteel(new IID(Ids::FLINT_AND_STEEL), "Flint and Steel", [EnchantmentTags::FLINT_AND_STEEL]));
 		self::register("ghast_tear", new Item(new IID(Ids::GHAST_TEAR), "Ghast Tear"));
