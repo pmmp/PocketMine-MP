@@ -715,7 +715,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
 			$this->usedItemsCooldown[$item->getStateId()] = $this->server->getTick() + $ticks;
-			$this->networkSession->onItemCooldownChanged($item, $ticks);
+			$this->getNetworkSession()->onItemCooldownChanged($item, $ticks);
 		}
 	}
 
