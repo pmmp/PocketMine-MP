@@ -872,6 +872,7 @@ class Block{
 	 * Called when an entity collide on this block
 	 */
 	public function onEntityCollide(Entity $entity, int $face) : void{
+		//NOOP
 	}
 
 	/**
