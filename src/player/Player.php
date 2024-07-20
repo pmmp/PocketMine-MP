@@ -511,10 +511,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Sets the player's speed when flying.
 	 *
+	 * The flight speed is calculated as `blocks per tick = flightSpeed * 10`. For example, setting the
+	 * flight speed to 0.05 means the player will fly at approximately 0.5 blocks per tick.
+	 * 
 	 * If set to zero, the player will not be able to move in the xz plane when flying, and negative values
 	 * will invert the controls.
 	 *
-	 * Note: The value of the movement speed attribute has no effect on the flight speed.
+	 * Notes: 
+	 * - The value of the movement speed attribute has no effect on the flight speed.
+	 * - When a player sprints while flying, their flight speed is doubled on the client-side.
 	 */
 	public function setFlightSpeed(float $flightSpeed) : void{
 		if($this->flightSpeed !== $flightSpeed){
@@ -525,6 +530,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Returns the player's speed when flying.
+	 *
+	 * The flight speed is calculated as `blocks per tick = flightSpeed * 10`. For example, if the 
+	 * flight speed is set to 0.05, the player will fly at approximately 0.5 blocks per tick.
 	 *
 	 * If zero, the player is not be able to move in the xz plane when flying, and negative values
 	 * will invert the controls.
