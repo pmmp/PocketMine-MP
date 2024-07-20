@@ -21,11 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\inventory;
 
-class Bowl extends Item{
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\world\Position;
 
-	public function getFuelTime() : int{
-		return 200;
+class CampfireInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
+
+	public function __construct(Position $holder){
+		$this->holder = $holder;
+		parent::__construct(4);
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
 	}
 }

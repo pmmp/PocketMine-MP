@@ -21,11 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-class Bowl extends Item{
+use pocketmine\crafting\FurnaceType;
+use pocketmine\item\Item;
 
-	public function getFuelTime() : int{
-		return 200;
+class SoulCampfire extends Campfire{
+
+	public function getLightLevel() : int{
+		return $this->lit ? 10 : 0;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::SOUL_SOIL()->asItem()
+		];
+	}
+
+	protected function getEntityCollisionDamage() : int{
+		return 2;
+	}
+
+	protected function getFurnaceType() : FurnaceType{
+		return FurnaceType::SOUL_CAMPFIRE;
 	}
 }
