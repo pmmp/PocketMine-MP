@@ -1684,19 +1684,19 @@ final class VanillaBlocks{
 		$tuffBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
 
 		self::register("tuff", new Opaque(new BID(Ids::TUFF), "Tuff", $tuffBreakInfo));
-		self::register("tuff_slab", new Slab(new BID(Ids::TUFF_SLAB), "Tuff Slab", $tuffBreakInfo));
+		self::register("tuff_slab", new Slab(new BID(Ids::TUFF_SLAB), "Tuff", $tuffBreakInfo));
 		self::register("tuff_stairs", new Stair(new BID(Ids::TUFF_STAIRS), "Tuff Stairs", $tuffBreakInfo));
 		self::register("tuff_wall", new Wall(new BID(Ids::TUFF_WALL), "Tuff Wall", $tuffBreakInfo));
 		self::register("chiseled_tuff", new Opaque(new BID(Ids::CHISELED_TUFF), "Chiseled Tuff", $tuffBreakInfo));
 
 		self::register("tuff_bricks", new Opaque(new BID(Ids::TUFF_BRICKS), "Tuff Bricks", $tuffBreakInfo));
-		self::register("tuff_brick_slab", new Slab(new BID(Ids::TUFF_BRICK_SLAB), "Tuff Brick Slab", $tuffBreakInfo));
+		self::register("tuff_brick_slab", new Slab(new BID(Ids::TUFF_BRICK_SLAB), "Tuff Brick", $tuffBreakInfo));
 		self::register("tuff_brick_stairs", new Stair(new BID(Ids::TUFF_BRICK_STAIRS), "Tuff Brick Stairs", $tuffBreakInfo));
 		self::register("tuff_brick_wall", new Wall(new BID(Ids::TUFF_BRICK_WALL), "Tuff Brick Wall", $tuffBreakInfo));
 		self::register("chiseled_tuff_bricks", new Opaque(new BID(Ids::CHISELED_TUFF_BRICKS), "Chiseled Tuff Bricks", $tuffBreakInfo));
 
 		self::register("polished_tuff", new Opaque(new BID(Ids::POLISHED_TUFF), "Polished Tuff", $tuffBreakInfo));
-		self::register("polished_tuff_slab", new Slab(new BID(Ids::POLISHED_TUFF_SLAB), "Polished Tuff Slab", $tuffBreakInfo));
+		self::register("polished_tuff_slab", new Slab(new BID(Ids::POLISHED_TUFF_SLAB), "Polished Tuff", $tuffBreakInfo));
 		self::register("polished_tuff_stairs", new Stair(new BID(Ids::POLISHED_TUFF_STAIRS), "Polished Tuff Stairs", $tuffBreakInfo));
 		self::register("polished_tuff_wall", new Wall(new BID(Ids::POLISHED_TUFF_WALL), "Polished Tuff Wall", $tuffBreakInfo));
 	}
