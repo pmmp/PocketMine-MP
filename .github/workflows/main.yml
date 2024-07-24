@@ -37,3 +37,15 @@ jobs:
 
       - name: Run PHP-CS-Fixer
         run: php-cs-fixer fix --dry-run --diff --ansi
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
