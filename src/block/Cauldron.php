@@ -61,7 +61,7 @@ final class Cauldron extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
+		return $facing === Facing::UP ? SupportType::EDGE : SupportType::NONE;
 	}
 
 	/**
@@ -83,7 +83,7 @@ final class Cauldron extends Transparent{
 		}elseif($item->getTypeId() === ItemTypeIds::POWDER_SNOW_BUCKET){
 			//TODO: powder snow cauldron
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
-			if($item->getType()->equals(PotionType::WATER())){
+			if($item->getType() === PotionType::WATER){
 				$this->fill(WaterCauldron::WATER_BOTTLE_FILL_AMOUNT, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
 				$this->fill(PotionCauldron::POTION_FILL_AMOUNT, VanillaBlocks::POTION_CAULDRON()->setPotionItem($item), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);

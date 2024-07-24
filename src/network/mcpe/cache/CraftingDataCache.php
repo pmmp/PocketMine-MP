@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as ProtocolPotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\RecipeUnlockingRequirement;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
@@ -79,14 +80,14 @@ final class CraftingDataCache{
 		$converter = TypeConverter::getInstance();
 		$recipesWithTypeIds = [];
 
+		$noUnlockingRequirement = new RecipeUnlockingRequirement(null);
 		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
 			if($recipe instanceof ShapelessRecipe){
-				$typeTag = match($recipe->getType()->id()){
-					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
-					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
-					ShapelessRecipeType::CARTOGRAPHY()->id() => CraftingRecipeBlockName::CARTOGRAPHY_TABLE,
-					ShapelessRecipeType::SMITHING()->id() => CraftingRecipeBlockName::SMITHING_TABLE,
-					default => throw new AssumptionFailedError("Unreachable"),
+				$typeTag = match($recipe->getType()){
+					ShapelessRecipeType::CRAFTING => CraftingRecipeBlockName::CRAFTING_TABLE,
+					ShapelessRecipeType::STONECUTTER => CraftingRecipeBlockName::STONECUTTER,
+					ShapelessRecipeType::CARTOGRAPHY => CraftingRecipeBlockName::CARTOGRAPHY_TABLE,
+					ShapelessRecipeType::SMITHING => CraftingRecipeBlockName::SMITHING_TABLE,
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
@@ -96,6 +97,7 @@ final class CraftingDataCache{
 					$nullUUID,
 					$typeTag,
 					50,
+					$noUnlockingRequirement,
 					$index
 				);
 			}elseif($recipe instanceof ShapedRecipe){
@@ -114,19 +116,20 @@ final class CraftingDataCache{
 					$nullUUID,
 					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
-					$index
+					true,
+					$noUnlockingRequirement,
+					$index,
 				);
 			}else{
 				//TODO: probably special recipe types
 			}
 		}
 
-		foreach(FurnaceType::getAll() as $furnaceType){
-			$typeTag = match($furnaceType->id()){
-				FurnaceType::FURNACE()->id() => FurnaceRecipeBlockName::FURNACE,
-				FurnaceType::BLAST_FURNACE()->id() => FurnaceRecipeBlockName::BLAST_FURNACE,
-				FurnaceType::SMOKER()->id() => FurnaceRecipeBlockName::SMOKER,
-				default => throw new AssumptionFailedError("Unreachable"),
+		foreach(FurnaceType::cases() as $furnaceType){
+			$typeTag = match($furnaceType){
+				FurnaceType::FURNACE => FurnaceRecipeBlockName::FURNACE,
+				FurnaceType::BLAST_FURNACE => FurnaceRecipeBlockName::BLAST_FURNACE,
+				FurnaceType::SMOKER => FurnaceRecipeBlockName::SMOKER,
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
 				$input = $converter->coreRecipeIngredientToNet($recipe->getInput())->getDescriptor();
@@ -162,7 +165,7 @@ final class CraftingDataCache{
 		}
 
 		$potionContainerChangeRecipes = [];
-		$itemTypeDictionary = TypeConverter::getInstance()->getItemTypeDictionary();
+		$itemTypeDictionary = $converter->getItemTypeDictionary();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipe){
 			$input = $itemTypeDictionary->fromStringId($recipe->getInputItemId());
 			$ingredient = $converter->coreRecipeIngredientToNet($recipe->getIngredient())->getDescriptor();

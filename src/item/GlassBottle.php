@@ -33,11 +33,11 @@ class GlassBottle extends Item{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockClicked->getTypeId() === BlockTypeIds::WATER){
 			$this->pop();
-			$returnedItems[] = VanillaItems::POTION()->setType(PotionType::WATER());
+			$returnedItems[] = VanillaItems::POTION()->setType(PotionType::WATER);
 
-			return ItemUseResult::SUCCESS();
+			return ItemUseResult::SUCCESS;
 		}
 
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 }

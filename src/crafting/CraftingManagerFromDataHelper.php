@@ -211,10 +211,10 @@ final class CraftingManagerFromDataHelper{
 
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
 			$recipeType = match($recipe->block){
-				"crafting_table" => ShapelessRecipeType::CRAFTING(),
-				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				"smithing_table" => ShapelessRecipeType::SMITHING(),
-				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
+				"crafting_table" => ShapelessRecipeType::CRAFTING,
+				"stonecutter" => ShapelessRecipeType::STONECUTTER,
+				"smithing_table" => ShapelessRecipeType::SMITHING,
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
 			if($recipeType === null){
@@ -236,6 +236,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				$inputs,
 				$outputs,
@@ -262,6 +263,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe->shape,
 				$inputs,
@@ -270,9 +272,9 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
 			$furnaceType = match ($recipe->block){
-				"furnace" => FurnaceType::FURNACE(),
-				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
-				"smoker" => FurnaceType::SMOKER(),
+				"furnace" => FurnaceType::FURNACE,
+				"blast_furnace" => FurnaceType::BLAST_FURNACE,
+				"smoker" => FurnaceType::SMOKER,
 				//TODO: campfire
 				default => null
 			};

@@ -85,6 +85,7 @@ class RakLibServer extends Thread{
 		gc_enable();
 		ini_set("display_errors", '1');
 		ini_set("display_startup_errors", '1');
+		\GlobalLogger::set($this->logger);
 
 		$socket = new ServerSocket($this->address->deserialize());
 		$manager = new Server(
@@ -95,7 +96,8 @@ class RakLibServer extends Thread{
 			new SimpleProtocolAcceptor($this->protocolVersion),
 			new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
 			new RakLibToUserThreadMessageSender(new SnoozeAwarePthreadsChannelWriter($this->threadToMainBuffer, $this->sleeperEntry->createNotifier())),
-			new ExceptionTraceCleaner($this->mainPath)
+			new ExceptionTraceCleaner($this->mainPath),
+			recvMaxSplitParts: 512
 		);
 		$this->synchronized(function() : void{
 			$this->ready = true;
@@ -105,11 +107,6 @@ class RakLibServer extends Thread{
 			$manager->tickProcessor();
 		}
 		$manager->waitShutdown();
-	}
-
-	protected function onUncaughtException(\Throwable $e) : void{
-		parent::onUncaughtException($e);
-		$this->logger->logException($e);
 	}
 
 	public function getThreadName() : string{
