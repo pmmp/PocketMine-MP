@@ -324,7 +324,7 @@ final class ItemTypeIds{
 	public const SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 20285;
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
-  public const ICE_BOMB = 20288;
+	public const ICE_BOMB = 20288;
 
 	public const FIRST_UNUSED_ITEM_ID = 20289;
 
