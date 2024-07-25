@@ -37,7 +37,7 @@ use pocketmine\world\sound\BlockBreakSound;
 use const PHP_INT_MAX;
 
 class IceBomb extends Throwable{
-	public static function getNetworkTypeId() : string{ return EntityIds::ICE_BOMB; }
+	public function getNetworkTypeId() : string{ return EntityIds::ICE_BOMB; }
 
 	public function getResultDamage() : int{
 		return -1;
