@@ -224,7 +224,9 @@ use function strtolower;
  * @method static WoodenDoor CRIMSON_DOOR()
  * @method static WoodenFence CRIMSON_FENCE()
  * @method static FenceGate CRIMSON_FENCE_GATE()
+ * @method static Fungus CRIMSON_FUNGUS()
  * @method static Wood CRIMSON_HYPHAE()
+ * @method static Nylium CRIMSON_NYLIUM()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
  * @method static NetherRoots CRIMSON_ROOTS()
@@ -558,6 +560,7 @@ use function strtolower;
  * @method static NetherPortal NETHER_PORTAL()
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
+ * @method static NetherSprouts NETHER_SPROUTS()
  * @method static NetherWartPlant NETHER_WART()
  * @method static Opaque NETHER_WART_BLOCK()
  * @method static Note NOTE_BLOCK()
@@ -760,7 +763,9 @@ use function strtolower;
  * @method static WoodenDoor WARPED_DOOR()
  * @method static WoodenFence WARPED_FENCE()
  * @method static FenceGate WARPED_FENCE_GATE()
+ * @method static Fungus WARPED_FUNGUS()
  * @method static Wood WARPED_HYPHAE()
+ * @method static Nylium WARPED_NYLIUM()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
  * @method static NetherRoots WARPED_ROOTS()
@@ -980,6 +985,15 @@ final class VanillaBlocks{
 		self::register("red_nether_brick_stairs", new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS), "Red Nether Brick Stairs", $netherBrickBreakInfo));
 		self::register("chiseled_nether_bricks", new Opaque(new BID(Ids::CHISELED_NETHER_BRICKS), "Chiseled Nether Bricks", $netherBrickBreakInfo));
 		self::register("cracked_nether_bricks", new Opaque(new BID(Ids::CRACKED_NETHER_BRICKS), "Cracked Nether Bricks", $netherBrickBreakInfo));
+
+		$nyliumBreakInfo = new Info(BreakInfo::axe(0.4, ToolTier::WOOD, 0.4), [Tags::NYLIUM]);
+		self::register("crimson_nylium", new Nylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", $nyliumBreakInfo));
+		self::register("warped_nylium", new Nylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", $nyliumBreakInfo));
+
+		self::register("crimson_fungus", new Fungus(new BID(Ids::CRIMSON_FUNGUS), "Crimson Fungus", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("warped_fungus", new Fungus(new BID(Ids::WARPED_FUNGUS), "Warped Fungus", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+
+		self::register("nether_sprouts", new NetherSprouts(new BID(Ids::NETHER_SPROUTS), "Nether Sprouts", new Info(BreakInfo::instant())));
 
 		self::register("nether_portal", new NetherPortal(new BID(Ids::NETHER_PORTAL), "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", new NetherReactor(new BID(Ids::NETHER_REACTOR_CORE), "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
