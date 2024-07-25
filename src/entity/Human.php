@@ -37,6 +37,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -66,7 +67,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
-use pocketmine\utils\Limits;
 use pocketmine\world\sound\TotemUseSound;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -76,7 +76,6 @@ use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
-use function random_int;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -99,7 +98,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	private const TAG_SKIN_GEOMETRY_NAME = "GeometryName"; //TAG_String
 	private const TAG_SKIN_GEOMETRY_DATA = "GeometryData"; //TAG_ByteArray
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
+	public function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
 	protected PlayerInventory $inventory;
 	protected PlayerOffHandInventory $offHandInventory;
@@ -209,6 +208,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getXpManager() : ExperienceManager{
 		return $this->xpManager;
+	}
+
+	public function getEnchantmentSeed() : int{
+		return $this->xpSeed;
+	}
+
+	public function setEnchantmentSeed(int $seed) : void{
+		$this->xpSeed = $seed;
+	}
+
+	public function regenerateEnchantmentSeed() : void{
+		$this->xpSeed = EnchantingHelper::generateSeed();
 	}
 
 	public function getXpDropAmount() : int{
@@ -334,7 +345,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
+			$this->xpSeed = EnchantingHelper::generateSeed();
 		}
 	}
 

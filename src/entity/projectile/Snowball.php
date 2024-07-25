@@ -28,11 +28,12 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\SnowballPoofParticle;
 
 class Snowball extends Throwable{
-	public static function getNetworkTypeId() : string{ return EntityIds::SNOWBALL; }
+	public function getNetworkTypeId() : string{ return EntityIds::SNOWBALL; }
 
 	protected function onHit(ProjectileHitEvent $event) : void{
+		$world = $this->getWorld();
 		for($i = 0; $i < 6; ++$i){
-			$this->getWorld()->addParticle($this->location, new SnowballPoofParticle());
+			$world->addParticle($this->location, new SnowballPoofParticle());
 		}
 	}
 }

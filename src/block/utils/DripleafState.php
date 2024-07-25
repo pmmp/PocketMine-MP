@@ -23,43 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static DripleafState FULL_TILT()
- * @method static DripleafState PARTIAL_TILT()
- * @method static DripleafState STABLE()
- * @method static DripleafState UNSTABLE()
- */
-final class DripleafState{
-	use EnumTrait {
-		register as Enum_register;
-		__construct as Enum___construct;
-	}
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("stable", null),
-			new self("unstable", 10),
-			new self("partial_tilt", 10),
-			new self("full_tilt", 100)
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private ?int $scheduledUpdateDelayTicks
-	){
-		$this->Enum___construct($enumName);
-	}
+enum DripleafState{
+	case STABLE;
+	case UNSTABLE;
+	case PARTIAL_TILT;
+	case FULL_TILT;
 
 	public function getScheduledUpdateDelayTicks() : ?int{
-		return $this->scheduledUpdateDelayTicks;
+		return match($this){
+			self::STABLE => null,
+			self::UNSTABLE, self::PARTIAL_TILT => 10,
+			self::FULL_TILT => 100,
+		};
 	}
-
 }

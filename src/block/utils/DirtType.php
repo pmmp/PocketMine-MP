@@ -23,26 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static DirtType COARSE()
- * @method static DirtType NORMAL()
- * @method static DirtType ROOTED()
- */
-final class DirtType{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("normal"),
-			new self("coarse"),
-			new self("rooted")
-		);
-	}
+enum DirtType{
+	case NORMAL;
+	case COARSE;
+	case ROOTED;
 }

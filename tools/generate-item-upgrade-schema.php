@@ -94,9 +94,14 @@ foreach($files as $file){
 $newDiff = [];
 
 foreach($target["simple"] as $oldId => $newId){
-	if(($merged["simple"][$oldId] ?? null) !== $newId){
-		$newDiff["renamedIds"][$oldId] = $newId;
+	$previousNewId = $merged["simple"][$oldId] ?? null;
+	if(
+		$previousNewId === $newId || //if previous schemas already accounted for this
+		($previousNewId !== null && isset($target["simple"][$previousNewId])) //or the item's ID has been changed for a second time
+	){
+		continue;
 	}
+	$newDiff["renamedIds"][$oldId] = $newId;
 }
 if(isset($newDiff["renamedIds"])){
 	ksort($newDiff["renamedIds"], SORT_STRING);

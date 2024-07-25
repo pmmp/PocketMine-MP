@@ -23,26 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static FroglightType OCHRE()
- * @method static FroglightType PEARLESCENT()
- * @method static FroglightType VERDANT()
- */
-final class FroglightType{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("ochre"),
-			new self("pearlescent"),
-			new self("verdant")
-		);
-	}
+enum FroglightType{
+	case OCHRE;
+	case PEARLESCENT;
+	case VERDANT;
 }

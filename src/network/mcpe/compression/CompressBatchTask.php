@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\compression;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
+use function chr;
 
 class CompressBatchTask extends AsyncTask{
 
@@ -43,7 +44,8 @@ class CompressBatchTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$this->setResult($this->compressor->deserialize()->compress($this->data));
+		$compressor = $this->compressor->deserialize();
+		$this->setResult(chr($compressor->getNetworkId()) . $compressor->compress($this->data));
 	}
 
 	public function onCompletion() : void{

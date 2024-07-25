@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Runnable;
-use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
-use function assert;
+use function array_key_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -82,16 +81,7 @@ abstract class AsyncTask extends Runnable{
 		$this->onRun();
 
 		$this->finished = true;
-		$worker = NativeThread::getCurrentThread();
-		assert($worker instanceof AsyncWorker);
-		$worker->getNotifier()->wakeupSleeper();
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function isCrashed() : bool{
-		return $this->isTerminated();
+		AsyncWorker::getNotifier()->wakeupSleeper();
 	}
 
 	/**
@@ -118,20 +108,6 @@ abstract class AsyncTask extends Runnable{
 
 	public function setResult(mixed $result) : void{
 		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function cancelRun() : void{
-		//NOOP
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function hasCancelledRun() : bool{
-		return false;
 	}
 
 	public function setSubmitted() : void{
@@ -194,13 +170,6 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
-	 * @deprecated No longer used
-	 */
-	public function onError() : void{
-
-	}
-
-	/**
 	 * Saves mixed data in thread-local storage. Data stored using this storage is **only accessible from the thread it
 	 * was stored on**. Data stored using this method will **not** be serialized.
 	 * This can be used to store references to variables which you need later on on the same thread, but not others.
@@ -230,7 +199,7 @@ abstract class AsyncTask extends Runnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(!isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id]) || !array_key_exists($key, self::$threadLocalStorage[$id])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 

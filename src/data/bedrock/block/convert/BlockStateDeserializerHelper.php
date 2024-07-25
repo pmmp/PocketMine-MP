@@ -41,6 +41,7 @@ use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
+use pocketmine\block\Sapling;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
@@ -93,7 +94,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeComparator(RedstoneComparator $block, BlockStateReader $in) : RedstoneComparator{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setPowered($in->readBool(BlockStateNames::OUTPUT_LIT_BIT))
 			->setSubtractMode($in->readBool(BlockStateNames::OUTPUT_SUBTRACT_BIT));
 	}
@@ -149,7 +150,6 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeFloorCoralFan(FloorCoralFan $block, BlockStateReader $in) : FloorCoralFan{
 		return $block
-			->setCoralType($in->readCoralType())
 			->setAxis(match($in->readBoundedInt(BlockStateNames::CORAL_FAN_DIRECTION, 0, 1)){
 				0 => Axis::X,
 				1 => Axis::Z,
@@ -216,8 +216,14 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeRepeater(RedstoneRepeater $block, BlockStateReader $in) : RedstoneRepeater{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setDelay($in->readBoundedInt(BlockStateNames::REPEATER_DELAY, 0, 3) + 1);
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeSapling(Sapling $block, BlockStateReader $in) : Sapling{
+		return $block
+			->setReady($in->readBool(BlockStateNames::AGE_BIT));
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -360,20 +366,6 @@ final class BlockStateDeserializerHelper{
 			StringValues::STONE_SLAB_TYPE_4_SMOOTH_QUARTZ => VanillaBlocks::SMOOTH_QUARTZ_SLAB(),
 			StringValues::STONE_SLAB_TYPE_4_STONE => VanillaBlocks::STONE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE_4, $type),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public static function mapWoodenSlabType(BlockStateReader $in) : Slab{
-		// * wood_type (StringTag) = acacia, birch, dark_oak, jungle, oak, spruce
-		return match($type = $in->readString(BlockStateNames::WOOD_TYPE)){
-			StringValues::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_SLAB(),
-			StringValues::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_SLAB(),
-			StringValues::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SLAB(),
-			StringValues::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SLAB(),
-			StringValues::WOOD_TYPE_OAK => VanillaBlocks::OAK_SLAB(),
-			StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
-			default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $type),
 		};
 	}
 }

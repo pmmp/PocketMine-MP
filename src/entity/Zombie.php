@@ -29,7 +29,7 @@ use function mt_rand;
 
 class Zombie extends Living{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
+	public function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{
 		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height ??

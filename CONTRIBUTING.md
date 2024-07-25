@@ -88,45 +88,58 @@ Depending on the changes, maintainers might ask you to make changes to the PR to
 ### Requirements
 The following are required as a minimum for pull requests. PRs that don't meet these requirements will be declined unless updated to meet them.
 
-#### Licensing
-PocketMine-MP is licensed under [LGPLv3 license](LICENSE).
-By proposing a pull request, you agree to your code being distributed within PocketMine-MP under the same license.
-If you take code from other projects, that code MUST be licensed under an LGPL-compatible license.
-
-#### PRs should be about exactly ONE thing
-If you want to make multiple changes, those changes should each be contributed as separate pull requests. **DO NOT** mix unrelated changes.
-
-#### PRs must not include unnecessary/unrelated changes
-Do not include changes which aren't strictly necessary. This makes it harder to review a PR, because the code diff becomes larger and harder to review.
-This means:
-- don't reformat or rearrange existing code
-- don't change things that aren't related to the PR's objective
-- don't rewrite existing code just to make it "look nicer"
-- don't change PhpDocs to native types in code you didn't write
-
-#### Tests must be provided
-Where possible, PHPUnit tests should be written for new or changed code.
-If that's not possible (e.g. for in-game functionality), the code must be tested manually and details of the tests done must be provided.
-**Simply saying "Tested" is not acceptable** and will lead to your PR being declined.
-
-#### Comments and documentation must be written in American English
-English is the shared languages of all current maintainers.
-
-#### Code must be in the PocketMine-MP style
-It's your responsibility to ensure your code matches the formatting and styling of the rest of the code.
-If you use PhpStorm, a `Project` code style is provided, which you can use to automatically format new code.
-You can also use [`php-cs-fixer`](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to format your code.
+- **All code must be licensed under the [LGPLv3 license](LICENSE)** as per PocketMine-MP's own license, or a compatible license.
+  - By proposing a pull request, you agree to your code being distributed within PocketMine-MP under the same license.
+  - If you take code from other projects, that code MUST be licensed under an LGPL-compatible license.
+- **PRs should be about ONE thing**
+  - If you want to make multiple changes, those changes should each be contributed as separate pull requests. **DO NOT** mix unrelated changes.
+  - **Do not include unnecessary changes.** This makes the code diff larger and more noisy, making it harder to review.
+    - Don't change things that aren't related to the PR's objective
+    - Don't reformat or rearrange existing code without a good reason related to the PR's objective
+    - Don't rewrite existing code just to make it "look nicer"
+    - Don't change PhpDocs to native types in code you didn't write, unless that's the objective of the PR
+- **Test code changes, and tell us what tests have been done.**
+  - Where possible, PHPUnit tests should be written for new or changed code. If that's not possible (e.g. for in-game functionality), the code must be tested manually and details of the tests done must be provided.
+  - **Simply saying "Tested" is not acceptable** and could lead to your PR being declined.
+- **Code, comments and documentation must be written in American English.** English is the shared languages of all current maintainers.
+- **Code must be in the PocketMine-MP style.**
+  - It's your responsibility to ensure your code matches the formatting and styling of the rest of the code.
+  - If you use PhpStorm, a `Project` code style is provided, which you can use to automatically format new code.
+  - You can also use [`php-cs-fixer`](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to format your code.
+- **Use `final` and `private` wherever possible**.
+  - Changing from `private` to `protected` or `final` to non-`final` doesn't break backwards compatibility, but the opposite does.
+  - `private` and `final` also enable certain performance optimizations which are otherwise not possible.
+  - `private` members can be freely changed, added and removed in the future, so it's ideal for internal functions. Abusing `protected` makes internal improvements inconvenient.
+  - "Let's leave it protected/public in case someone needs it for ... idk what" is **not a valid reason to expose things**. If there isn't a clear reason for something to be accessible from the outside, don't expose it.
+  - **This is a lesson learned through years of experience.** You may not like it, but it's for the best.
+- **Immutable things are almost always preferred.**
+  - Do not add unnecessary setters or public writable properties to classes. As above, "Let's leave it in case someone needs it" is **not a valid reason to expose things**.
+  - Mutable classes and properties are unpredictable, since code has no way to know if the object it's working with might be randomly modified by another part of the code. This makes it harder to maintain code and debug issues.
+  - Most classes exist only to hold some data. These are called "data transfer objects" (DTOs). These types of classes should pretty much always be immutable.
+  - Make use of `final`, `private` and `readonly` modifiers.
 
 ### Recommendations
-
+- **Be patient.** Reviewing pull requests takes a lot of time and energy, and maintainers are often unavailable or busy. Your PR might not receive attention for a while.
+  - Remember, PRs with small diffs are much easier to review. Small PRs are generally reviewed and merged much faster than large ones.
+- **Start small.** Try fixing minor bugs or doing something isolated (e.g. adding a new block or item) before attempting larger changes.
+  - This helps you get familiar with the codebase, the contribution process, and the expectations of maintainers.
+  - Check out the [issues page]() for something that you could tackle without too much effort.
+- **Do not copy-paste other people's code**. Many PRs involve discussion about the changes, and changes are often requested by reviewers. If you don't understand the code you're copy-pasting, your PR is likely to fail.
 - **Do not edit code directly on github.com.** We recommend learning how to use [`git`](https://git-scm.com). `git` allows you to "clone" a repository onto your computer, so that you can make changes using an IDE.
 - **Use an IDE, not a text editor.** We recommend PhpStorm or VSCode.
+- **Do not make large pull requests without an RFC.**
+  - Large changes should be discussed beforehand using the [RFC / Change Proposal](#rfcs--change-proposals) process.
+  - Large changes are much harder to review, and are more likely to be declined if maintainers don't have a good idea what you're trying to do in advance.
 - **Create a new branch on your fork for each pull request.** This allows you to use the same fork to make multiple pull requests at the same time.
+- **Make your PR diff as small as possible.** Smaller PRs are **much more likely** to be accepted, as they are easier to review.
+  - Avoid moving code around in files if possible.
+  - Don't make random CS changes. This makes the diff noisier and harder to review.
 - **Use descriptive commit titles.** You can see an example [here](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
-- **Do not include multiple unrelated changes in one commit.** An atomic style for commits is preferred - this means that changes included in a commit should be part of a single distinct change set. See [this link](https://www.freshconsulting.com/atomic-commits/) for more information on atomic commits. See the [documentation on `git add`](https://git-scm.com/docs/git-add) for information on how to isolate local changes for committing.
-- **Your pull request will be checked and discussed in due time.** Since the team is scattered all around the world, your PR may not receive any attention for some time.
-- **Do not make large pull requests without an RFC.** Large changes should be discussed beforehand using the [RFC / Change Proposal](#rfcs--change-proposals) process. Large changes are much harder to review and are more likely to be declined if maintainers don't have a good idea what you're trying to do in advance.
-- **Do not copy-paste code**. There are potential license issues implicit with copy-pasting, and copy-paste usually indicates a lack of understanding of the actual code. Copy-pasted code is obvious a mile off and **any PR like this is likely to be closed**. If you want to use somebody else's code from a Git repository, **use [GIT's cherry-pick feature](https://git-scm.com/docs/git-cherry-pick)** to cherry-pick the commit.
+- **Split unrelated changes into multiple commits.**
+  - An atomic style for commits is preferred - this means that changes included in a commit should be part of a single distinct change set.
+  - If you need to use "and" or "multiple changes" in your commit message, the commit probably needs to be split up. There are exceptions, but this is a good rule of thumb.
+  - See [this link](https://www.freshconsulting.com/atomic-commits/) for more information on atomic commits.
+  - See the [documentation on `git add -i` or `git add -p`](https://git-scm.com/docs/git-add) for information on how to split up local changes for committing.
 
 
 **Thanks for contributing to PocketMine-MP!**
