@@ -189,6 +189,7 @@ use function strtolower;
  * @method static Item HONEYCOMB()
  * @method static HoneyBottle HONEY_BOTTLE()
  * @method static Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE()
+ * @method static IceBomb ICE_BOMB()
  * @method static Item INK_SAC()
  * @method static Axe IRON_AXE()
  * @method static Armor IRON_BOOTS()
@@ -476,6 +477,7 @@ final class VanillaItems{
 		self::register("heart_of_the_sea", new Item(new IID(Ids::HEART_OF_THE_SEA), "Heart of the Sea"));
 		self::register("honey_bottle", new HoneyBottle(new IID(Ids::HONEY_BOTTLE), "Honey Bottle"));
 		self::register("honeycomb", new Item(new IID(Ids::HONEYCOMB), "Honeycomb"));
+		self::register("ice_bomb", new IceBomb(new IID(Ids::ICE_BOMB), "Ice Bomb"));
 		self::register("ink_sac", new Item(new IID(Ids::INK_SAC), "Ink Sac"));
 		self::register("iron_ingot", new Item(new IID(Ids::IRON_INGOT), "Iron Ingot"));
 		self::register("iron_nugget", new Item(new IID(Ids::IRON_NUGGET), "Iron Nugget"));
