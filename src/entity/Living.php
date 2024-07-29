@@ -25,6 +25,8 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -44,6 +46,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -63,6 +66,7 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function abs;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -683,6 +687,38 @@ abstract class Living extends Entity{
 		Timings::$livingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
+	}
+
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		parent::move($dx, $dy, $dz);
+
+		$diffX = abs($this->location->x - $oldX);
+		$diffZ = abs($this->location->z - $oldZ);
+
+		$frostWalkerLevel = $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
+		if($frostWalkerLevel > 0 && ($diffX > 0.0001 || $diffZ > 0.0001)){
+			$radius = $frostWalkerLevel + 2;
+			$world = $this->getWorld();
+			for($x = -$radius; $x <= $radius; $x++){
+				for($z = -$radius; $z <= $radius; $z++){
+					$pos = $this->location->add($x, -1, $z)->floor();
+					$block = $world->getBlock($pos);
+					if(!$block instanceof Water || !$block->isSource()){
+						continue;
+					}
+					if($world->getBlock($pos->up())->getTypeId() !== BlockTypeIds::AIR){
+						continue;
+					}
+					if(count($world->getNearbyEntities(AxisAlignedBB::one()->offset($pos->x, $pos->y, $pos->z))) !== 0){
+						continue;
+					}
+					$world->setBlock($pos, VanillaBlocks::FROSTED_ICE());
+				}
+			}
+		}
 	}
 
 	/**
