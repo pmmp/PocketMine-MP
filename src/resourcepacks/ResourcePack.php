@@ -59,7 +59,7 @@ interface ResourcePack{
 	 *
 	 * @param int $start  Offset to start reading the chunk from
 	 * @param int $length Maximum length of data to return.
-	 * 
+	 *
 	 * @phpstan-param positive-int $length
 	 *
 	 * @return string byte-array
