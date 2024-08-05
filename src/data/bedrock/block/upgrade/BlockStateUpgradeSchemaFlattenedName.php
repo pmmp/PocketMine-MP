@@ -34,7 +34,7 @@ final class BlockStateUpgradeSchemaFlattenedName{
 	/**
 	 * @param string[] $flattenedValueRemaps
 	 * @phpstan-param array<string, string> $flattenedValueRemaps
-	 * @phpstan-param class-string<ByteTag>|class-string<IntTag>|class-string<StringTag>|null $flattenedPropertyType
+	 * @phpstan-param ?class-string<ByteTag|IntTag|StringTag> $flattenedPropertyType
 	 */
 	public function __construct(
 		public string $prefix,

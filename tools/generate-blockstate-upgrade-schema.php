@@ -318,7 +318,7 @@ function findCommonSuffix(array $strings) : string{
  * @param string[][][] $candidateFlattenedValues
  * @phpstan-param array<string, array<string, array<string, string>>> $candidateFlattenedValues
  * @param string[] $candidateFlattenPropertyTypes
- * @phpstan-param array<string, class-string<ByteTag>|class-string<IntTag>|class-string<StringTag>> $candidateFlattenPropertyTypes
+ * @phpstan-param array<string, class-string<ByteTag|IntTag|StringTag>> $candidateFlattenPropertyTypes
  *
  * @return BlockStateUpgradeSchemaFlattenedName[][]
  * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenedName>>
