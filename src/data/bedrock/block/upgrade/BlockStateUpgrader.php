@@ -24,10 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function count;
+use function get_class;
 use function is_string;
 use function ksort;
 use function max;
@@ -141,14 +145,21 @@ final class BlockStateUpgrader{
 					$newName = $remap->newName;
 				}else{
 					$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
-					if($flattenedValue instanceof StringTag){
-						$embedValue = $remap->newName->flattenedValueRemaps[$flattenedValue->getValue()] ?? $flattenedValue->getValue();
-						$newName = sprintf("%s%s%s", $remap->newName->prefix, $embedValue, $remap->newName->suffix);
-						unset($oldState[$remap->newName->flattenedProperty]);
-					}else{
-						//flattened property is not a TAG_String, so this transformation is not applicable
+					$expectedType = $remap->newName->flattenedPropertyType;
+					if(!$flattenedValue instanceof $expectedType){
+						//flattened property is not of the expected type, so this transformation is not applicable
 						continue;
 					}
+					$embedKey = match(get_class($flattenedValue)){
+						StringTag::class => $flattenedValue->getValue(),
+						ByteTag::class => (string) $flattenedValue->getValue(),
+						IntTag::class => (string) $flattenedValue->getValue(),
+						//flattenedPropertyType is always one of these three types, but PHPStan doesn't know that
+						default => throw new AssumptionFailedError("flattenedPropertyType should be one of these three types, but have " . get_class($flattenedValue)),
+					};
+					$embedValue = $remap->newName->flattenedValueRemaps[$embedKey] ?? $embedKey;
+					$newName = sprintf("%s%s%s", $remap->newName->prefix, $embedValue, $remap->newName->suffix);
+					unset($oldState[$remap->newName->flattenedProperty]);
 				}
 
 				$newState = $remap->newState;

@@ -157,18 +157,29 @@ final class BlockStateUpgradeSchemaUtils{
 
 		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
-				if(isset($remap->newName) === isset($remap->newFlattenedName)){
+				if(isset($remap->newName)){
+					$remapName = $remap->newName;
+				}elseif(isset($remap->newFlattenedName)){
+					$flattenRule = $remap->newFlattenedName;
+					$remapName = new BlockStateUpgradeSchemaFlattenedName(
+						$flattenRule->prefix,
+						$flattenRule->flattenedProperty,
+						$flattenRule->suffix,
+						$flattenRule->flattenedValueRemaps ?? [],
+						match($flattenRule->flattenedPropertyType){
+							"string", null => StringTag::class,
+							"int" => IntTag::class,
+							"byte" => ByteTag::class,
+							default => throw new \UnexpectedValueException("Unexpected flattened property type $flattenRule->flattenedPropertyType, expected 'string', 'int' or 'byte'")
+						}
+					);
+				}else{
 					throw new \UnexpectedValueException("Expected exactly one of 'newName' or 'newFlattenedName' properties to be set");
 				}
 
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
-					$remap->newName ?? new BlockStateUpgradeSchemaFlattenedName(
-						$remap->newFlattenedName->prefix,
-						$remap->newFlattenedName->flattenedProperty,
-						$remap->newFlattenedName->suffix,
-						$remap->newFlattenedName->flattenedValueRemaps ?? [],
-					),
+					$remapName,
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
 					$remap->copiedState ?? []
 				);
@@ -303,7 +314,13 @@ final class BlockStateUpgradeSchemaUtils{
 							$remap->newName->prefix,
 							$remap->newName->flattenedProperty,
 							$remap->newName->suffix,
-							$remap->newName->flattenedValueRemaps
+							$remap->newName->flattenedValueRemaps,
+							match($remap->newName->flattenedPropertyType){
+								StringTag::class => null, //omit for TAG_String, as this is the common case
+								ByteTag::class => "byte",
+								IntTag::class => "int",
+								default => throw new \LogicException("Unexpected tag type " . $remap->newName->flattenedPropertyType . " in flattened property type")
+							}
 						),
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 					$remap->copiedState

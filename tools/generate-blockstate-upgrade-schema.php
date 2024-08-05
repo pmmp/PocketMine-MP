@@ -30,6 +30,8 @@ use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
@@ -48,7 +50,10 @@ use function count;
 use function dirname;
 use function file_put_contents;
 use function fwrite;
+use function get_class;
+use function get_debug_type;
 use function implode;
+use function is_numeric;
 use function json_encode;
 use function ksort;
 use function min;
@@ -312,11 +317,13 @@ function findCommonSuffix(array $strings) : string{
 /**
  * @param string[][][] $candidateFlattenedValues
  * @phpstan-param array<string, array<string, array<string, string>>> $candidateFlattenedValues
+ * @param string[] $candidateFlattenPropertyTypes
+ * @phpstan-param array<string, class-string<ByteTag>|class-string<IntTag>|class-string<StringTag>> $candidateFlattenPropertyTypes
  *
  * @return BlockStateUpgradeSchemaFlattenedName[][]
  * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenedName>>
  */
-function buildFlattenPropertyRules(array $candidateFlattenedValues) : array{
+function buildFlattenPropertyRules(array $candidateFlattenedValues, array $candidateFlattenPropertyTypes) : array{
 	$flattenPropertyRules = [];
 	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
 		foreach(Utils::stringifyKeys($filters) as $filter => $valueToId){
@@ -340,11 +347,26 @@ function buildFlattenPropertyRules(array $candidateFlattenedValues) : array{
 				}
 			}
 
+			$allNumeric = true;
+			if(count($valueMap) > 0){
+				foreach(Utils::stringifyKeys($valueMap) as $value => $newValue){
+					if(!is_numeric($value)){
+						$allNumeric = false;
+						break;
+					}
+				}
+				if($allNumeric){
+					//add a dummy key to force the JSON to be an object and not a list
+					$valueMap["dummy"] = "map_not_list";
+				}
+			}
+
 			$flattenPropertyRules[$propertyName][$filter] = new BlockStateUpgradeSchemaFlattenedName(
 				$idPrefix,
 				$propertyName,
 				$idSuffix,
-				$valueMap
+				$valueMap,
+				$candidateFlattenPropertyTypes[$propertyName],
 			);
 		}
 	}
@@ -407,16 +429,25 @@ function processRemappedStates(array $upgradeTable) : array{
 	$notFlattenedProperties = [];
 
 	$candidateFlattenedValues = [];
+	$candidateFlattenedPropertyTypes = [];
 	foreach($upgradeTable as $pair){
 		foreach(Utils::stringifyKeys($pair->old->getStates()) as $propertyName => $propertyValue){
 			if(isset($notFlattenedProperties[$propertyName])){
 				continue;
 			}
-			if(!$propertyValue instanceof StringTag){
+			if(!$propertyValue instanceof StringTag && !$propertyValue instanceof IntTag && !$propertyValue instanceof ByteTag){
 				$notFlattenedProperties[$propertyName] = true;
 				continue;
 			}
-			$rawValue = $propertyValue->getValue();
+			$previousType = $candidateFlattenedPropertyTypes[$propertyName] ?? null;
+			if($previousType !== null && $previousType !== get_class($propertyValue)){
+				//mismatched types for the same property name - this has never happened so far, but it's not impossible
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$candidateFlattenedPropertyTypes[$propertyName] = get_class($propertyValue);
+
+			$rawValue = (string) $propertyValue->getValue();
 			if($rawValue === ""){
 				$notFlattenedProperties[$propertyName] = true;
 				continue;
@@ -458,7 +489,7 @@ function processRemappedStates(array $upgradeTable) : array{
 		unset($candidateFlattenedValues[$propertyName]);
 	}
 
-	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues);
+	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues, $candidateFlattenedPropertyTypes);
 	$flattenProperty = array_key_first($flattenedProperties);
 	//Properties with fewer rules take up less space for the same result
 	foreach(Utils::stringifyKeys($flattenedProperties) as $propertyName => $rules){
@@ -485,8 +516,8 @@ function processRemappedStates(array $upgradeTable) : array{
 		ksort($cleanedNewState);
 		if($flattenProperty !== null){
 			$flattenedValue = $cleanedOldState[$flattenProperty] ?? null;
-			if(!$flattenedValue instanceof StringTag){
-				throw new AssumptionFailedError("This should always be a TAG_String ($newName $flattenProperty)");
+			if(!$flattenedValue instanceof StringTag && !$flattenedValue instanceof IntTag && !$flattenedValue instanceof ByteTag){
+				throw new AssumptionFailedError("Non-flattenable type of tag ($newName $flattenProperty) but have " . get_debug_type($flattenedValue));
 			}
 			unset($cleanedOldState[$flattenProperty]);
 		}
