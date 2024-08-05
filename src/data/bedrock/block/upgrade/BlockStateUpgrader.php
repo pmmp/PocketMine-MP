@@ -83,6 +83,8 @@ final class BlockStateUpgrader{
 			 * version doesn't tell us which of the schemas have already been applied.
 			 * If there's only one schema for a version (the norm), we can safely assume it's already been applied if
 			 * the version is the same, and skip over it.
+			 * TODO: this causes issues when testing isolated schemas since there will only be one schema for a version.
+			 * The second check should be disabled for that case.
 			 */
 			if($version > $resultVersion || (count($schemaList) === 1 && $version === $resultVersion)){
 				continue;
