@@ -42,6 +42,7 @@ use function array_key_last;
 use function array_keys;
 use function array_map;
 use function array_shift;
+use function array_unique;
 use function array_values;
 use function count;
 use function dirname;
@@ -423,6 +424,10 @@ function processRemappedStates(array $upgradeTable) : array{
 
 			$filter = $pair->old->getStates();
 			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
+				if($unchangedPropertyName === $propertyName){
+					$notFlattenedProperties[$propertyName] = true;
+					continue 2;
+				}
 				unset($filter[$unchangedPropertyName]);
 			}
 			unset($filter[$propertyName]);
@@ -436,18 +441,17 @@ function processRemappedStates(array $upgradeTable) : array{
 					$notFlattenedProperties[$propertyName] = true;
 					continue;
 				}
-				foreach(Utils::stringifyKeys($valuesToIds) as $otherRawValue => $otherNewId){
-					if($otherRawValue === $rawValue){
-						continue;
-					}
-					if($otherNewId === $pair->new->getName()){
-						//this old value maps to the same new ID as another old value - bad candidate for flattening
-						$notFlattenedProperties[$propertyName] = true;
-						continue 2;
-					}
-				}
 			}
 			$candidateFlattenedValues[$propertyName][$rawFilter][$rawValue] = $pair->new->getName();
+		}
+	}
+	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
+		foreach($filters as $valuesToIds){
+			if(count(array_unique($valuesToIds)) === 1){
+				//this property doesn't influence the new ID
+				$notFlattenedProperties[$propertyName] = true;
+				continue 2;
+			}
 		}
 	}
 	foreach(Utils::stringifyKeys($notFlattenedProperties) as $propertyName => $_){
@@ -456,6 +460,12 @@ function processRemappedStates(array $upgradeTable) : array{
 
 	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues);
 	$flattenProperty = array_key_first($flattenedProperties);
+	//Properties with fewer rules take up less space for the same result
+	foreach(Utils::stringifyKeys($flattenedProperties) as $propertyName => $rules){
+		if(count($rules) < count($flattenedProperties[$flattenProperty])){
+			$flattenProperty = $propertyName;
+		}
+	}
 
 	$list = [];
 
