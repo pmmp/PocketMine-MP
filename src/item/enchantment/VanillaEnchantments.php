@@ -33,6 +33,7 @@ use pocketmine\utils\RegistryTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static Enchantment AQUA_AFFINITY()
  * @method static ProtectionEnchantment BLAST_PROTECTION()
  * @method static Enchantment EFFICIENCY()
  * @method static ProtectionEnchantment FEATHER_FALLING()
@@ -143,6 +144,15 @@ final class VanillaEnchantments{
 			3,
 			fn(int $level) : int => 10 * $level,
 			30
+		));
+		self::register("AQUA_AFFINITY", new Enchantment(
+			KnownTranslationFactory::enchantment_waterWorker(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			null,
+			40
 		));
 
 		self::register("SHARPNESS", new SharpnessEnchantment(
