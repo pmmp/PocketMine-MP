@@ -63,20 +63,19 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
-use function array_filter;
-use function array_map;
 use function array_shift;
+use function array_slice;
 use function atan2;
 use function ceil;
 use function count;
 use function floor;
+use function ksort;
 use function lcg_value;
 use function max;
 use function min;
 use function mt_getrandmax;
 use function mt_rand;
 use function round;
-use function sort;
 use function sqrt;
 use const M_PI;
 use const SORT_NUMERIC;
@@ -887,22 +886,21 @@ abstract class Living extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$visibleEffects = [];
+		foreach ($this->effectManager->all() as $effect) {
+			if (!$effect->isVisible() || !$effect->getType()->hasBubbles()) {
+				continue;
+			}
+			$visibleEffects[EffectIdMap::getInstance()->toId($effect->getType())] = $effect->isAmbient();
+		}
 
-		$visibleEffectIds = array_map(
-			fn(EffectInstance $effect) => EffectIdMap::getInstance()->toId($effect->getType()),
-			array_filter(
-				$this->effectManager->all(),
-				fn(EffectInstance $effect) => $effect->isVisible() && $effect->getType()->hasBubbles()
-			)
-		);
-
-		//TODO: HACK! the client may not be able to identify effects if they are not sorted.
-		sort($visibleEffectIds, SORT_NUMERIC);
+		ksort($visibleEffects, SORT_NUMERIC);
 
 		$effectsData = 0;
-		foreach ($visibleEffectIds as $effectId) {
-			$effectsData = ($effectsData << 7) | ($effectId << 1);
+		foreach (array_slice($visibleEffects, 0, 8, true) as $effectId => $isAmbient) {
+			$effectsData = ($effectsData << 7) |
+				(($effectId & 0x3f) << 1) |
+				($isAmbient ? 1 : 0);
 		}
 		$properties->setLong(131, $effectsData); //TODO: Use the appropriate constant!
 
