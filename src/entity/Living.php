@@ -884,7 +884,24 @@ abstract class Living extends Entity{
 		parent::syncNetworkData($properties);
 
 		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+
+		$visibleEffectIds = array_map(
+			fn(EffectInstance $effect) => EffectIdMap::getInstance()->toId($effect->getType()),
+			array_filter(
+				$this->effectManager->all(),
+				fn(EffectInstance $effect) => $effect->isVisible() && $effect->getType()->hasBubbles()
+			)
+		);
+
+		//TODO: HACK! the client may not be able to identify effects if they are not sorted.
+		sort($visibleEffectIds, SORT_NUMERIC);
+
+		$effectsData = 0;
+		foreach ($visibleEffectIds as $effectId) {
+			$effectsData = ($effectsData << 7) | ($effectId << 1);
+		}
+		$properties->setLong(131, $effectsData); //TODO: Use the appropriate constant!
+
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 
