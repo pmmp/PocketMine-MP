@@ -63,6 +63,8 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function array_filter;
+use function array_map;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -74,8 +76,10 @@ use function min;
 use function mt_getrandmax;
 use function mt_rand;
 use function round;
+use function sort;
 use function sqrt;
 use const M_PI;
+use const SORT_NUMERIC;
 
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
