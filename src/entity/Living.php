@@ -894,13 +894,14 @@ abstract class Living extends Entity{
 			$visibleEffects[EffectIdMap::getInstance()->toId($effect->getType())] = $effect->isAmbient();
 		}
 
+		//TODO: HACK! the client may not be able to identify effects if they are not sorted.
 		ksort($visibleEffects, SORT_NUMERIC);
 
 		$effectsData = 0;
 		$packedEffectsCount = 0;
 		foreach ($visibleEffects as $effectId => $isAmbient) {
 			$effectsData = ($effectsData << 7) |
-				(($effectId & 0x3f) << 1) |
+				(($effectId & 0x3f) << 1) | //Why not use 7 bits instead of only 6? mojang...
 				($isAmbient ? 1 : 0);
 
 			if (++$packedEffectsCount >= 8) {
