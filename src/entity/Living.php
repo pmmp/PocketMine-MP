@@ -897,10 +897,15 @@ abstract class Living extends Entity{
 		ksort($visibleEffects, SORT_NUMERIC);
 
 		$effectsData = 0;
-		foreach (array_slice($visibleEffects, 0, 8, true) as $effectId => $isAmbient) {
+		$packedEffectsCount = 0;
+		foreach ($visibleEffects as $effectId => $isAmbient) {
 			$effectsData = ($effectsData << 7) |
 				(($effectId & 0x3f) << 1) |
 				($isAmbient ? 1 : 0);
+
+			if (++$packedEffectsCount >= 8) {
+				break;
+			}
 		}
 		$properties->setLong(131, $effectsData); //TODO: Use the appropriate constant!
 
