@@ -64,7 +64,6 @@ use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
 use function array_shift;
-use function array_slice;
 use function atan2;
 use function ceil;
 use function count;
