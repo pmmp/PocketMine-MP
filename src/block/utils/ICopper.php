@@ -21,22 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\WoodTypeTrait;
+/**
+ * Represents copper blocks that have oxidized and waxed variations.
+ */
+interface ICopper{
 
-class WoodenStairs extends Stair{
-	use WoodTypeTrait;
+	public function getOxidation() : CopperOxidation;
 
-	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 300 : 0;
-	}
+	public function setOxidation(CopperOxidation $oxidation) : ICopper;
 
-	public function getFlameEncouragement() : int{
-		return 5;
-	}
+	public function isWaxed() : bool;
 
-	public function getFlammability() : int{
-		return 20;
-	}
+	public function setWaxed(bool $waxed) : ICopper;
 }

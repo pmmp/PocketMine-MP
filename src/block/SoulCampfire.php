@@ -23,20 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\item\Item;
 
-class WoodenStairs extends Stair{
-	use WoodTypeTrait;
+class SoulCampfire extends Campfire{
 
-	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 300 : 0;
+	public function getLightLevel() : int{
+		return $this->lit ? 10 : 0;
 	}
 
-	public function getFlameEncouragement() : int{
-		return 5;
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::SOUL_SOIL()->asItem()
+		];
 	}
 
-	public function getFlammability() : int{
-		return 20;
+	protected function getEntityCollisionDamage() : int{
+		return 2;
+	}
+
+	protected function getFurnaceType() : FurnaceType{
+		return FurnaceType::SOUL_CAMPFIRE;
 	}
 }

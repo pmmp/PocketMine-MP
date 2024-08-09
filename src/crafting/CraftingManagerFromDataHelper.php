@@ -236,6 +236,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				$inputs,
 				$outputs,
@@ -262,6 +263,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe->shape,
 				$inputs,
@@ -273,7 +275,8 @@ final class CraftingManagerFromDataHelper{
 				"furnace" => FurnaceType::FURNACE,
 				"blast_furnace" => FurnaceType::BLAST_FURNACE,
 				"smoker" => FurnaceType::SMOKER,
-				//TODO: campfire
+				"campfire" => FurnaceType::CAMPFIRE,
+				"soul_campfire" => FurnaceType::SOUL_CAMPFIRE,
 				default => null
 			};
 			if($furnaceType === null){

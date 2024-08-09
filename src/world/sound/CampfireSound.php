@@ -21,22 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class WoodenStairs extends Stair{
-	use WoodTypeTrait;
+final class CampfireSound implements Sound{
 
-	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 300 : 0;
-	}
-
-	public function getFlameEncouragement() : int{
-		return 5;
-	}
-
-	public function getFlammability() : int{
-		return 20;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_CAMPFIRE_CRACKLE, $pos, false)];
 	}
 }

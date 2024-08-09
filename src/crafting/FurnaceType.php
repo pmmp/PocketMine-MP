@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\world\sound\BlastFurnaceSound;
+use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
 use pocketmine\world\sound\Sound;
@@ -36,6 +37,8 @@ enum FurnaceType{
 	case FURNACE;
 	case BLAST_FURNACE;
 	case SMOKER;
+	case CAMPFIRE;
+	case SOUL_CAMPFIRE;
 
 	/**
 	 * @phpstan-return TMetadata
@@ -48,6 +51,7 @@ enum FurnaceType{
 			self::FURNACE => [200, new FurnaceSound()],
 			self::BLAST_FURNACE => [100, new BlastFurnaceSound()],
 			self::SMOKER => [100, new SmokerSound()],
+			self::CAMPFIRE, self::SOUL_CAMPFIRE => [600, new CampfireSound()]
 		};
 	}
 
