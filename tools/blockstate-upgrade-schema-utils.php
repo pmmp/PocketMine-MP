@@ -36,6 +36,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
@@ -90,18 +91,18 @@ function encodeProperty(Tag $tag) : string{
 }
 
 /**
+ * @param TreeRoot[] $oldNewStateList
+ * @phpstan-param list<TreeRoot> $oldNewStateList
+ *
  * @return BlockStateMapping[][]
  * @phpstan-return array<string, array<string, BlockStateMapping>>
  */
-function loadUpgradeTable(string $file, bool $reverse) : array{
-	$contents = Filesystem::fileGetContents($file);
-	$data = (new NetworkNbtSerializer())->readMultiple($contents);
-
+function buildUpgradeTableFromData(array $oldNewStateList, bool $reverse) : array{
 	$result = [];
 
-	for($i = 0; isset($data[$i]); $i += 2){
-		$oldTag = $data[$i]->mustGetCompoundTag();
-		$newTag = $data[$i + 1]->mustGetCompoundTag();
+	for($i = 0; isset($oldNewStateList[$i]); $i += 2){
+		$oldTag = $oldNewStateList[$i]->mustGetCompoundTag();
+		$newTag = $oldNewStateList[$i + 1]->mustGetCompoundTag();
 		$old = BlockStateData::fromNbt($reverse ? $newTag : $oldTag);
 		$new = BlockStateData::fromNbt($reverse ? $oldTag : $newTag);
 
@@ -112,6 +113,17 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 	}
 
 	return $result;
+}
+
+/**
+ * @return BlockStateMapping[][]
+ * @phpstan-return array<string, array<string, BlockStateMapping>>
+ */
+function loadUpgradeTableFromFile(string $file, bool $reverse) : array{
+	$contents = Filesystem::fileGetContents($file);
+	$data = (new NetworkNbtSerializer())->readMultiple($contents);
+
+	return buildUpgradeTableFromData($data, $reverse);
 }
 
 /**
@@ -640,41 +652,100 @@ function testBlockStateUpgradeSchema(array $upgradeTable, BlockStateUpgradeSchem
 /**
  * @param string[] $argv
  */
-function main(array $argv) : int{
-	if(count($argv) !== 4 || ($argv[1] !== "generate" && $argv[1] !== "test")){
-		fwrite(STDERR, "Required arguments: <generate|test> <palette upgrade table file> <schema output file>\n");
-		return 1;
-	}
-
-	$mode = $argv[1];
+function cmdGenerate(array $argv) : int{
 	$upgradeTableFile = $argv[2];
 	$schemaFile = $argv[3];
 
-	$table = loadUpgradeTable($upgradeTableFile, false);
+	$table = loadUpgradeTableFromFile($upgradeTableFile, false);
 
 	ksort($table, SORT_STRING);
 
-	if($mode === "generate"){
-		$diff = generateBlockStateUpgradeSchema($table);
-		if($diff->isEmpty()){
-			\GlobalLogger::get()->warning("All states appear to be the same! No schema generated.");
-			return 0;
-		}
-		file_put_contents(
-			$schemaFile,
-			json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
-		);
-		\GlobalLogger::get()->info("Schema file $schemaFile generated successfully.");
-	}else{
-		$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($schemaFile), 0);
-		if(!testBlockStateUpgradeSchema($table, $schema)){
-			\GlobalLogger::get()->error("Schema $schemaFile does not produce the results predicted by $upgradeTableFile");
-			return 1;
-		}
-		\GlobalLogger::get()->info("Schema $schemaFile is valid according to $upgradeTableFile");
+	$diff = generateBlockStateUpgradeSchema($table);
+	if($diff->isEmpty()){
+		\GlobalLogger::get()->warning("All states appear to be the same! No schema generated.");
+		return 0;
 	}
+	file_put_contents(
+		$schemaFile,
+		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
+	);
+	\GlobalLogger::get()->info("Schema file $schemaFile generated successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function cmdTest(array $argv) : int{
+	$upgradeTableFile = $argv[2];
+	$schemaFile = $argv[3];
+
+	$table = loadUpgradeTableFromFile($upgradeTableFile, false);
+
+	ksort($table, SORT_STRING);
+
+	$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($schemaFile), 0);
+	if(!testBlockStateUpgradeSchema($table, $schema)){
+		\GlobalLogger::get()->error("Schema $schemaFile does not produce the results predicted by $upgradeTableFile");
+		return 1;
+	}
+	\GlobalLogger::get()->info("Schema $schemaFile is valid according to $upgradeTableFile");
 
 	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function cmdUpdate(array $argv) : int{
+	[, , $oldSchemaFile, $oldPaletteFile, $newSchemaFile] = $argv;
+
+	$palette = BlockStateDictionary::loadPaletteFromString(Filesystem::fileGetContents($oldPaletteFile));
+	$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($oldSchemaFile), 0);
+	//TODO: HACK!
+	//the upgrader won't apply the schema if it's the same version and there's only one schema with a matching version
+	//ID (for performance reasons), which is a problem for testing isolated schemas
+	//add a dummy schema to bypass this optimization
+	$dummySchema = new BlockStateUpgradeSchema($schema->maxVersionMajor, $schema->maxVersionMinor, $schema->maxVersionPatch, $schema->maxVersionRevision, $schema->getSchemaId() + 1);
+	$upgrader = new BlockStateUpgrader([$schema, $dummySchema]);
+
+	$tags = [];
+	foreach($palette as $stateData){
+		$tags[] = new TreeRoot($stateData->toNbt());
+		$tags[] = new TreeRoot($upgrader->upgrade($stateData)->toNbt());
+	}
+
+	$upgradeTable = buildUpgradeTableFromData($tags, false);
+	$newSchema = generateBlockStateUpgradeSchema($upgradeTable);
+	file_put_contents(
+		$newSchemaFile,
+		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($newSchema), JSON_PRETTY_PRINT) . "\n"
+	);
+	\GlobalLogger::get()->info("Schema file $newSchemaFile updated to new format (from $oldSchemaFile) successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function main(array $argv) : int{
+	$options = [
+		"generate" => [["palette upgrade table file", "schema output file"], cmdGenerate(...)],
+		"test" => [["palette upgrade table file", "schema output file"], cmdTest(...)],
+		"update" => [["schema input file", "old palette file", "updated schema output file"], cmdUpdate(...)]
+	];
+
+	$selected = $argv[1] ?? null;
+	if($selected === null || !isset($options[$selected])){
+		fwrite(STDERR, "Available commands:\n");
+		foreach($options as $command => [$args, $callback]){
+			fwrite(STDERR, " - $command " . implode(" ", array_map(fn(string $a) => "<$a>", $args)) . "\n");
+		}
+		return 1;
+	}
+
+	$callback = $options[$selected][1];
+	return $callback($argv);
 }
 
 exit(main($argv));
