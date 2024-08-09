@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tools\generate_blockstate_upgrade_schema;
+namespace pocketmine\tools\blockstate_upgrade_schema_utils;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
@@ -608,31 +609,70 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 }
 
 /**
+ * @param BlockStateMapping[][] $upgradeTable
+ * @phpstan-param array<string, array<string, BlockStateMapping>> $upgradeTable
+ */
+function testBlockStateUpgradeSchema(array $upgradeTable, BlockStateUpgradeSchema $schema) : bool{
+	//TODO: HACK!
+	//the upgrader won't apply the schema if it's the same version and there's only one schema with a matching version
+	//ID (for performance reasons), which is a problem for testing isolated schemas
+	//add a dummy schema to bypass this optimization
+	$dummySchema = new BlockStateUpgradeSchema($schema->maxVersionMajor, $schema->maxVersionMinor, $schema->maxVersionPatch, $schema->maxVersionRevision, $schema->getSchemaId() + 1);
+	$upgrader = new BlockStateUpgrader([$schema, $dummySchema]);
+
+	foreach($upgradeTable as $mappingsByOldName){
+		foreach($mappingsByOldName as $mapping){
+			$expectedNewState = $mapping->new;
+
+			$actualNewState = $upgrader->upgrade($mapping->old);
+
+			if(!$expectedNewState->equals($actualNewState)){
+				\GlobalLogger::get()->error("Expected: " . $expectedNewState->toNbt());
+				\GlobalLogger::get()->error("Actual: " . $actualNewState->toNbt());
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+/**
  * @param string[] $argv
  */
 function main(array $argv) : int{
-	if(count($argv) !== 3){
-		fwrite(STDERR, "Required arguments: input file path, output file path\n");
+	if(count($argv) !== 4 || ($argv[1] !== "generate" && $argv[1] !== "test")){
+		fwrite(STDERR, "Required arguments: <generate|test> <palette upgrade table file> <schema output file>\n");
 		return 1;
 	}
 
-	$input = $argv[1];
-	$output = $argv[2];
+	$mode = $argv[1];
+	$upgradeTableFile = $argv[2];
+	$schemaFile = $argv[3];
 
-	$table = loadUpgradeTable($input, false);
+	$table = loadUpgradeTable($upgradeTableFile, false);
 
 	ksort($table, SORT_STRING);
 
-	$diff = generateBlockStateUpgradeSchema($table);
-	if($diff->isEmpty()){
-		\GlobalLogger::get()->warning("All states appear to be the same! No schema generated.");
-		return 0;
+	if($mode === "generate"){
+		$diff = generateBlockStateUpgradeSchema($table);
+		if($diff->isEmpty()){
+			\GlobalLogger::get()->warning("All states appear to be the same! No schema generated.");
+			return 0;
+		}
+		file_put_contents(
+			$schemaFile,
+			json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
+		);
+		\GlobalLogger::get()->info("Schema file $schemaFile generated successfully.");
+	}else{
+		$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($schemaFile), 0);
+		if(!testBlockStateUpgradeSchema($table, $schema)){
+			\GlobalLogger::get()->error("Schema $schemaFile does not produce the results predicted by $upgradeTableFile");
+			return 1;
+		}
+		\GlobalLogger::get()->info("Schema $schemaFile is valid according to $upgradeTableFile");
 	}
-	file_put_contents(
-		$output,
-		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
-	);
-	\GlobalLogger::get()->info("Schema file $output generated successfully.");
 
 	return 0;
 }
