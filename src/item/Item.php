@@ -427,7 +427,7 @@ class Item implements \JsonSerializable{
 			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
 		}
 
-		if($this->repairCost){
+		if($this->repairCost > 0){
 			$tag->setInt(self::TAG_REPAIR_COST, $this->repairCost);
 		}else{
 			$tag->removeTag(self::TAG_REPAIR_COST);

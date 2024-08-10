@@ -51,6 +51,7 @@ enum ToolTier{
 
 	/**
 	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
+	 * @param int[] $repairMaterials The typeId of the items that can be used to repair this tool in the anvil.
 	 * @phpstan-return TMetadata
 	 */
 	private static function meta(int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency, int $enchantability, array $repairMaterials = []) : array{
@@ -112,7 +113,7 @@ enum ToolTier{
 	}
 
 	/**
-	 * Returns the list of items that can be used to repair this tool.
+	 * Returns the typeId of items that can be used to repair this tool in the anvil.
 	 *
 	 * @return int[]
 	 */

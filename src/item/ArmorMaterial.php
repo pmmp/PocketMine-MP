@@ -56,6 +56,8 @@ class ArmorMaterial{
 
 	/**
 	 * Returns the items that can be used to repair the armor
+	 *
+	 * @return int[]
 	 */
 	public function getRepairMaterials() : array{
 		return $this->repairMaterials;
