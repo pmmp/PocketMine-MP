@@ -35,7 +35,6 @@ use function count;
 class AnvilTransaction extends InventoryTransaction{
 	private ?Item $baseItem = null;
 	private ?Item $materialItem = null;
-	private ?Item $resultItem = null;
 
 	public function __construct(
 		Player $source,
@@ -59,13 +58,16 @@ class AnvilTransaction extends InventoryTransaction{
 
 	private function validateInputs(Item $base, Item $material, Item $expectedOutput) : ?AnvilResult {
 		$calculAttempt = AnvilHelper::calculateResult($this->source, $base, $material, $this->customName);
-		if($calculAttempt->getResult() === null || !$calculAttempt->getResult()->equalsExact($expectedOutput)){
+		if($calculAttempt === null){
+			return null;
+		}
+		$result = $calculAttempt->getResult();
+		if($result === null || !$result->equalsExact($expectedOutput)){
 			return null;
 		}
 
 		$this->baseItem = $base;
 		$this->materialItem = $material;
-		$this->resultItem = $expectedOutput;
 
 		return $calculAttempt;
 	}
@@ -120,7 +122,9 @@ class AnvilTransaction extends InventoryTransaction{
 			throw new AssumptionFailedError("Expected that baseItem are not null before executing the event");
 		}
 
-		$ev = new PlayerUseAnvilEvent($this->source, $this->baseItem, $this->materialItem, $this->expectedResult->getResult(), $this->customName, $this->expectedResult->getRepairCost());
+		$ev = new PlayerUseAnvilEvent($this->source, $this->baseItem, $this->materialItem, $this->expectedResult->getResult() ?? throw new \AssertionError(
+			"Expected that the expected result is not null"
+		), $this->customName, $this->expectedResult->getRepairCost());
 		$ev->call();
 		return !$ev->isCancelled();
 	}
