@@ -134,8 +134,6 @@ final class VanillaEnchantments{
 		self::register("AQUA_AFFINITY", new Enchantment(
 			KnownTranslationFactory::enchantment_waterWorker(),
 			Rarity::RARE,
-			0,
-			0,
 			1,
 			null,
 			40
