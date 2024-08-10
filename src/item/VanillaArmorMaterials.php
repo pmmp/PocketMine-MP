@@ -69,12 +69,12 @@ final class VanillaArmorMaterials{
 	}
 
 	protected static function setup() : void{
-		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound()));
+		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound(), [ItemTypeIds::LEATHER]));
 		self::register("chainmail", new ArmorMaterial(12, new ArmorEquipChainSound()));
-		self::register("iron", new ArmorMaterial(9, new ArmorEquipIronSound()));
-		self::register("turtle", new ArmorMaterial(9, new ArmorEquipGenericSound()));
-		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound()));
-		self::register("diamond", new ArmorMaterial(10, new ArmorEquipDiamondSound()));
-		self::register("netherite", new ArmorMaterial(15, new ArmorEquipNetheriteSound()));
+		self::register("iron", new ArmorMaterial(9, new ArmorEquipIronSound(), [ItemTypeIds::IRON_INGOT]));
+		self::register("turtle", new ArmorMaterial(9, new ArmorEquipGenericSound(), [ItemTypeIds::SCUTE]));
+		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound(), [ItemTypeIds::GOLD_INGOT]));
+		self::register("diamond", new ArmorMaterial(10, new ArmorEquipDiamondSound(), [ItemTypeIds::DIAMOND]));
+		self::register("netherite", new ArmorMaterial(15, new ArmorEquipNetheriteSound(), [ItemTypeIds::NETHERITE_INGOT]));
 	}
 }

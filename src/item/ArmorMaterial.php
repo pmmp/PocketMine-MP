@@ -27,9 +27,13 @@ use pocketmine\world\sound\Sound;
 
 class ArmorMaterial{
 
+	/**
+	 * @param int[] $repairMaterials
+	 */
 	public function __construct(
 		private readonly int $enchantability,
-		private readonly ?Sound $equipSound = null
+		private readonly ?Sound $equipSound = null,
+		private readonly array $repairMaterials = []
 	){
 	}
 
@@ -48,5 +52,12 @@ class ArmorMaterial{
 	 */
 	public function getEquipSound() : ?Sound{
 		return $this->equipSound;
+	}
+
+	/**
+	 * Returns the items that can be used to repair the armor
+	 */
+	public function getRepairMaterials() : array{
+		return $this->repairMaterials;
 	}
 }

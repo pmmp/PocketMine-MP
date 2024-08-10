@@ -118,6 +118,10 @@ abstract class Durable extends Item{
 		return $this->damage >= $this->getMaxDurability() || $this->isNull();
 	}
 
+	public function isValidRepairMaterial(Item $material) : bool {
+		return false;
+	}
+
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		parent::deserializeCompoundTag($tag);
 		$this->unbreakable = $tag->getByte("Unbreakable", 0) !== 0;

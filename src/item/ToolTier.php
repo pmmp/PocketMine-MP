@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
@@ -36,7 +37,7 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static ToolTier STONE()
  * @method static ToolTier WOOD()
  *
- * @phpstan-type TMetadata array{0: int, 1: int, 2: int, 3: int, 4: int}
+ * @phpstan-type TMetadata array{0: int, 1: int, 2: int, 3: int, 4: int, 5: int[]}
  */
 enum ToolTier{
 	use LegacyEnumShimTrait;
@@ -52,8 +53,8 @@ enum ToolTier{
 	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
 	 * @phpstan-return TMetadata
 	 */
-	private static function meta(int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency, int $enchantability) : array{
-		return [$harvestLevel, $maxDurability, $baseAttackPoints, $baseEfficiency, $enchantability];
+	private static function meta(int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency, int $enchantability, array $repairMaterials = []) : array{
+		return [$harvestLevel, $maxDurability, $baseAttackPoints, $baseEfficiency, $enchantability, $repairMaterials];
 	}
 
 	/**
@@ -61,12 +62,26 @@ enum ToolTier{
 	 */
 	private function getMetadata() : array{
 		return match($this){
-			self::WOOD => self::meta(1, 60, 5, 2, 15),
-			self::GOLD => self::meta(2, 33, 5, 12, 22),
-			self::STONE => self::meta(3, 132, 6, 4, 5),
-			self::IRON => self::meta(4, 251, 7, 6, 14),
-			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
-			self::NETHERITE => self::meta(6, 2032, 9, 9, 15)
+			self::WOOD => self::meta(1, 60, 5, 2, 15, [
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::OAK_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::SPRUCE_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::BIRCH_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::JUNGLE_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::ACACIA_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::DARK_OAK_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::CRIMSON_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::WARPED_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::CHERRY_PLANKS),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::MANGROVE_PLANKS)
+			]),
+			self::GOLD => self::meta(2, 33, 5, 12, 22, [ItemTypeIds::GOLD_INGOT]),
+			self::STONE => self::meta(3, 132, 6, 4, 5, [
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::COBBLESTONE),
+				ItemTypeIds::fromBlockTypeId(BlockTypeIds::COBBLED_DEEPSLATE)
+			]),
+			self::IRON => self::meta(4, 251, 7, 6, 14, [ItemTypeIds::IRON_INGOT]),
+			self::DIAMOND => self::meta(5, 1562, 8, 8, 10, [ItemTypeIds::DIAMOND]),
+			self::NETHERITE => self::meta(6, 2032, 9, 9, 15, [ItemTypeIds::NETHERITE_INGOT])
 		};
 	}
 
@@ -94,5 +109,14 @@ enum ToolTier{
 	 */
 	public function getEnchantability() : int{
 		return $this->getMetadata()[4];
+	}
+
+	/**
+	 * Returns the list of items that can be used to repair this tool.
+	 *
+	 * @return int[]
+	 */
+	public function getRepairMaterials() : array{
+		return $this->getMetadata()[5];
 	}
 }

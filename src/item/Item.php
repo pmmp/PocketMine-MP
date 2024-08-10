@@ -69,6 +69,7 @@ class Item implements \JsonSerializable{
 
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
+	public const TAG_REPAIR_COST = "RepairCost";
 
 	public const TAG_KEEP_ON_DEATH = "minecraft:keep_on_death";
 
@@ -84,6 +85,7 @@ class Item implements \JsonSerializable{
 	protected string $customName = "";
 	/** @var string[] */
 	protected array $lore = [];
+	protected int $repairCost = 0;
 	/** TODO: this needs to die in a fire */
 	protected ?CompoundTag $blockEntityTag = null;
 
@@ -283,6 +285,23 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns the repair cost of the item.
+	 */
+	public function getRepairCost() : int{
+		return $this->repairCost;
+	}
+
+	/**
+	 * Sets the repair cost of the item.
+	 *
+	 * @return $this
+	 */
+	public function setRepairCost(int $cost) : self{
+		$this->repairCost = $cost;
+		return $this;
+	}
+
+	/**
 	 * @throws NbtException
 	 */
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
@@ -338,6 +357,7 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
+		$this->repairCost = $tag->getInt(self::TAG_REPAIR_COST, 0);
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -405,6 +425,12 @@ class Item implements \JsonSerializable{
 			$tag->setByte(self::TAG_KEEP_ON_DEATH, 1);
 		}else{
 			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
+		}
+
+		if($this->repairCost){
+			$tag->setInt(self::TAG_REPAIR_COST, $this->repairCost);
+		}else{
+			$tag->removeTag(self::TAG_REPAIR_COST);
 		}
 	}
 
