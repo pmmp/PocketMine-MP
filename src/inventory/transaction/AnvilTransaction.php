@@ -25,12 +25,18 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\block\utils\AnvilHelper;
 use pocketmine\block\utils\AnvilResult;
+use pocketmine\event\player\PlayerUseAnvilEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use function count;
 
 class AnvilTransaction extends InventoryTransaction{
+	private ?Item $baseItem = null;
+	private ?Item $materialItem = null;
+	private ?Item $resultItem = null;
+
 	public function __construct(
 		Player $source,
 		private readonly AnvilResult $expectedResult,
@@ -56,6 +62,10 @@ class AnvilTransaction extends InventoryTransaction{
 		if($calculAttempt->getResult() === null || !$calculAttempt->getResult()->equalsExact($expectedOutput)){
 			return null;
 		}
+
+		$this->baseItem = $base;
+		$this->materialItem = $material;
+		$this->resultItem = $expectedOutput;
 
 		return $calculAttempt;
 	}
@@ -103,5 +113,15 @@ class AnvilTransaction extends InventoryTransaction{
 		if($this->source->hasFiniteResources()){
 			$this->source->getXpManager()->subtractXpLevels($this->expectedResult->getRepairCost());
 		}
+	}
+
+	protected function callExecuteEvent() : bool{
+		if($this->baseItem === null){
+			throw new AssumptionFailedError("Expected that baseItem are not null before executing the event");
+		}
+
+		$ev = new PlayerUseAnvilEvent($this->source, $this->baseItem, $this->materialItem, $this->expectedResult->getResult(), $this->customName, $this->expectedResult->getRepairCost());
+		$ev->call();
+		return !$ev->isCancelled();
 	}
 }
