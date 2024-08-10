@@ -83,6 +83,20 @@ class SubChunk{
 		$this->blockLayers[0]->set($x, $y, $z, $block);
 	}
 
+	public function getWaterStateId(int $x, int $y, int $z) : int{
+		if(count($this->blockLayers) < 2){
+			return $this->emptyBlockId;
+		}
+		return $this->blockLayers[1]->get($x, $y, $z);
+	}
+
+	public function setWaterStateId(int $x, int $y, int $z, int $block) : void{
+		if(count($this->blockLayers) < 2){
+			$this->blockLayers[1] = new PalettedBlockArray($this->emptyBlockId);
+		}
+		$this->blockLayers[1]->set($x, $y, $z, $block);
+	}
+
 	/**
 	 * @return PalettedBlockArray[]
 	 */

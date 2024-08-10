@@ -107,6 +107,15 @@ class Chunk{
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
+	public function getWaterStateId(int $x, int $y, int $z) : int{
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getWaterStateId($x, $y & SubChunk::COORD_MASK, $z);
+	}
+
+	public function setWaterStateId(int $x, int $y, int $z, ?int $block) : void{
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setWaterStateId($x, $y & SubChunk::COORD_MASK, $z, $block ?? Block::EMPTY_STATE_ID);
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
+	}
+
 	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *

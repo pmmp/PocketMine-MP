@@ -24,10 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\RuntimeBlockStateRegistry;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\utils\BlockChunkReader;
 
 class SimpleChunkManager implements ChunkManager{
 
@@ -41,14 +42,19 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
 		if($this->isInWorld($x, $y, $z) && ($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
-			return RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+			return BlockChunkReader::getBlock($chunk, $x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
 		}
 		return VanillaBlocks::AIR();
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
 		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
-			$chunk->setBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK, $block->getStateId());
+			$xMasked = $x & Chunk::COORD_MASK;
+			$zMasked = $z & Chunk::COORD_MASK;
+			$chunk->setBlockStateId($xMasked, $y, $zMasked, $block->getStateId());
+			if($block instanceof Waterloggable){
+				$chunk->setWaterStateId($xMasked, $y, $zMasked, $block->getWaterState()?->getStateId());
+			}
 		}else{
 			throw new \InvalidArgumentException("Cannot set block at coordinates x=$x,y=$y,z=$z, terrain is not loaded or out of bounds");
 		}
