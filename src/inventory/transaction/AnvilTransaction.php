@@ -23,14 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\block\Anvil;
+use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\utils\AnvilHelper;
 use pocketmine\block\utils\AnvilResult;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerUseAnvilEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\sound\AnvilBreakSound;
+use pocketmine\world\sound\AnvilUseSound;
 use function count;
+use function mt_rand;
 
 class AnvilTransaction extends InventoryTransaction{
 	private ?Item $baseItem = null;
@@ -114,6 +120,26 @@ class AnvilTransaction extends InventoryTransaction{
 
 		if($this->source->hasFiniteResources()){
 			$this->source->getXpManager()->subtractXpLevels($this->expectedResult->getRepairCost());
+		}
+
+		$inventory = $this->source->getCurrentWindow();
+		if($inventory instanceof AnvilInventory){
+			$world = $inventory->getHolder()->getWorld();
+			if(mt_rand(0, 12) === 0){
+				$anvilBlock = $world->getBlock($inventory->getHolder());
+				if($anvilBlock instanceof Anvil){
+					$newDamage = $anvilBlock->getDamage() + 1;
+					if($newDamage > Anvil::VERY_DAMAGED){
+						$newBlock = VanillaBlocks::AIR();
+						$world->addSound($inventory->getHolder(), new AnvilBreakSound());
+					}else{
+						$newBlock = $anvilBlock->setDamage($newDamage);
+					}
+					$world->setBlock($inventory->getHolder(), $newBlock);
+				}
+
+			}
+			$world->addSound($inventory->getHolder(), new AnvilUseSound());
 		}
 	}
 
