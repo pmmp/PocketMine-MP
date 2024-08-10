@@ -907,7 +907,7 @@ abstract class Living extends Entity{
 				break;
 			}
 		}
-		$properties->setLong(131, $effectsData); //TODO: Use the appropriate constant!
+		$properties->setLong(EntityMetadataProperties::VISIBLE_MOB_EFFECTS, $effectsData);
 
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
