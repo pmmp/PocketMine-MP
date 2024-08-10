@@ -168,8 +168,10 @@ class AnvilHelper{
 				$item->clearCustomName();
 			}
 		}else{
-			$resultCost += self::COST_RENAME;
-			$item->setCustomName($customName);
+			if($item->getCustomName() !== $customName){
+				$resultCost += self::COST_RENAME;
+				$item->setCustomName($customName);
+			}
 		}
 
 		return $resultCost;

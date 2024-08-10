@@ -23,17 +23,41 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\block\utils\AnvilHelper;
 use pocketmine\block\utils\AnvilResult;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use function count;
 
 class AnvilTransaction extends InventoryTransaction{
 	public function __construct(
 		Player $source,
-		private AnvilResult $anvilResult
+		private readonly AnvilResult $expectedResult,
+		private readonly ?string $customName
 	) {
 		parent::__construct($source);
+	}
+
+	private function validateFiniteResources(int $xpSpent) : void{
+		$expectedXpCost = $this->expectedResult->getRepairCost();
+		if($xpSpent !== $expectedXpCost){
+			throw new TransactionValidationException("Expected the amount of xp spent to be $expectedXpCost, but received $xpSpent");
+		}
+
+		$xpLevel = $this->source->getXpManager()->getXpLevel();
+		if($xpLevel < $expectedXpCost){
+			throw new TransactionValidationException("Player's XP level $xpLevel is less than the required XP level $expectedXpCost");
+		}
+	}
+
+	private function validateInputs(Item $base, Item $material, Item $expectedOutput) : ?AnvilResult {
+		$calculAttempt = AnvilHelper::calculateResult($this->source, $base, $material, $this->customName);
+		if($calculAttempt->getResult() === null || !$calculAttempt->getResult()->equalsExact($expectedOutput)){
+			return null;
+		}
+
+		return $calculAttempt;
 	}
 
 	public function validate() : void{
@@ -47,14 +71,37 @@ class AnvilTransaction extends InventoryTransaction{
 		$outputs = [];
 		$this->matchItems($outputs, $inputs);
 
-		//TODO
+		if(($outputCount = count($outputs)) !== 1){
+			throw new TransactionValidationException("Expected 1 output item, but received $outputCount");
+		}
+		$outputItem = $outputs[0];
+
+		if(($inputCount = count($inputs)) < 1){
+			throw new TransactionValidationException("Expected at least 1 input item, but received $inputCount");
+		}
+		if($inputCount > 2){
+			throw new TransactionValidationException("Expected at most 2 input items, but received $inputCount");
+		}
+
+		if(count($inputs) < 2){
+			$attempt = $this->validateInputs($inputs[0], VanillaItems::AIR(), $outputItem) ??
+				throw new TransactionValidationException("Inputs do not match expected result");
+		}else{
+			$attempt = $this->validateInputs($inputs[0], $inputs[1], $outputItem) ??
+				$this->validateInputs($inputs[1], $inputs[0], $outputItem) ??
+				throw new TransactionValidationException("Inputs do not match expected result");
+		}
+
+		if($this->source->hasFiniteResources()){
+			$this->validateFiniteResources($attempt->getRepairCost());
+		}
 	}
 
 	public function execute() : void{
 		parent::execute();
 
 		if($this->source->hasFiniteResources()){
-			$this->source->getXpManager()->subtractXpLevels($this->anvilResult->getRepairCost());
+			$this->source->getXpManager()->subtractXpLevels($this->expectedResult->getRepairCost());
 		}
 	}
 }
