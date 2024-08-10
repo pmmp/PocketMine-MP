@@ -26,10 +26,12 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function var_dump;
 
 class Bucket extends Item{
 
@@ -39,11 +41,15 @@ class Bucket extends Item{
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
-		if($blockClicked instanceof Liquid && $blockClicked->isSource()){
+		if($blockClicked instanceof Liquid && $blockClicked->isSource() || $blockClicked instanceof Waterloggable && $blockClicked->getWaterState() !== null){
 			$stack = clone $this;
 			$stack->pop();
 
-			$resultItem = match($blockClicked->getTypeId()){
+			$id = $blockClicked->getTypeId();
+			if($blockClicked instanceof Waterloggable){
+				$id = $blockClicked->getWaterState()->getTypeId();
+			}
+			$resultItem = match($id){
 				BlockTypeIds::LAVA => VanillaItems::LAVA_BUCKET(),
 				BlockTypeIds::WATER => VanillaItems::WATER_BUCKET(),
 				default => null
@@ -55,8 +61,16 @@ class Bucket extends Item{
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$player->getWorld()->setBlock($blockClicked->getPosition(), VanillaBlocks::AIR());
-				$player->getWorld()->addSound($blockClicked->getPosition()->add(0.5, 0.5, 0.5), $blockClicked->getBucketFillSound());
+				if($blockClicked instanceof Waterloggable){
+					var_dump("Setting water state", $blockClicked->__toString());
+					$sound = $blockClicked->getWaterState()->getBucketFillSound();
+					$blockClicked->setWaterState(null);
+					$player->getWorld()->setBlock($blockClicked->getPosition(), $blockClicked);
+				}else{
+					$sound = $blockClicked->getBucketFillSound();
+					$player->getWorld()->setBlock($blockClicked->getPosition(), VanillaBlocks::AIR());
+				}
+				$player->getWorld()->addSound($blockClicked->getPosition()->add(0.5, 0.5, 0.5), $sound);
 
 				$this->pop();
 				$returnedItems[] = $ev->getItem();

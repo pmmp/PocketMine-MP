@@ -26,9 +26,12 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\Water;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function var_dump;
 
 class LiquidBucket extends Item{
 	private Liquid $liquid;
@@ -55,7 +58,7 @@ class LiquidBucket extends Item{
 	}
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
-		if(!$blockReplace->canBeReplaced()){
+		if(!$blockReplace->canBeReplaced() && !($blockReplace instanceof Waterloggable)){
 			return ItemUseResult::NONE;
 		}
 
@@ -65,7 +68,14 @@ class LiquidBucket extends Item{
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
+			if($blockClicked instanceof Waterloggable && $resultBlock instanceof Water){
+				var_dump("Setting water state", $resultBlock->__toString());
+				$blockClicked->setWaterState($resultBlock);
+				$player->getWorld()->setBlock($blockClicked->getPosition(), $blockClicked);
+				$blockClicked->onNearbyBlockChange();
+			}else{
+				$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
+			}
 			$player->getWorld()->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 			$this->pop();

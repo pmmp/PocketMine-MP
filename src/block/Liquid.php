@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -144,6 +145,9 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
+		if($block instanceof Waterloggable){
+			$block = $block->getWaterState() ?? $block;
+		}
 		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return -1;
 		}
@@ -181,6 +185,9 @@ abstract class Liquid extends Transparent{
 			$sideZ = $z + $dz;
 
 			$sideBlock = $world->getBlockAt($sideX, $sideY, $sideZ);
+			if($sideBlock instanceof Waterloggable){
+				$sideBlock = $sideBlock->getWaterState() ?? $sideBlock;
+			}
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -292,14 +299,25 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
+				$actualBlock = $world->getBlockAt($x, $y, $z);
 				if(!$falling && $newDecay < 0){
-					$world->setBlockAt($x, $y, $z, VanillaBlocks::AIR());
+					if($actualBlock instanceof Waterloggable && $this instanceof Water){
+						$actualBlock->setWaterState(null);
+						$world->setBlockAt($x, $y, $z, $actualBlock);
+					}else{
+						$world->setBlockAt($x, $y, $z, VanillaBlocks::AIR());
+					}
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$world->setBlockAt($x, $y, $z, $this); //local block update will cause an update to be scheduled
+				if($actualBlock instanceof Waterloggable && $this instanceof Water){
+					$actualBlock->setWaterState($this);
+					$world->setBlockAt($x, $y, $z, $actualBlock);
+				}else{
+					$world->setBlockAt($x, $y, $z, $this); //local block update will cause an update to be scheduled
+				}
 			}
 		}
 
@@ -347,6 +365,9 @@ abstract class Liquid extends Transparent{
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
+		if($block instanceof Waterloggable){
+			$block = $block->getWaterState() ?? $block;
+		}
 		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return $decay;
 		}
@@ -374,6 +395,9 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function canFlowInto(Block $block) : bool{
+		if($block instanceof Waterloggable){
+			$block = $block->getWaterState() ?? $block;
+		}
 		return
 			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
 			$block->canBeFlowedInto() &&

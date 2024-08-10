@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;

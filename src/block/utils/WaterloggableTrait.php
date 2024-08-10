@@ -37,4 +37,16 @@ trait WaterloggableTrait{
 
 		return $this;
 	}
+
+	public function readStateFromWorld() : void{
+		$this->waterState?->readStateFromWorld();
+	}
+
+	public function onNearbyBlockChange() : void{
+		$this->waterState?->onNearbyBlockChange();
+	}
+
+	public function onScheduledUpdate() : void{
+		$this->waterState?->onScheduledUpdate();
+	}
 }

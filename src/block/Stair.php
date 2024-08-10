@@ -30,7 +30,6 @@ use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
-use pocketmine\item\LiquidBucket;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -40,7 +39,9 @@ use pocketmine\world\BlockTransaction;
 
 class Stair extends Transparent implements Waterloggable{
 	use HorizontalFacingTrait;
-	use WaterloggableTrait;
+	use WaterloggableTrait {
+		WaterloggableTrait::readStateFromWorld as private readWaterStateFromWorld;
+	}
 
 	protected bool $upsideDown = false;
 	protected StairShape $shape = StairShape::STRAIGHT;
@@ -52,6 +53,7 @@ class Stair extends Transparent implements Waterloggable{
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+		$this->readWaterStateFromWorld();
 
 		$this->collisionBoxes = null;
 
@@ -135,15 +137,19 @@ class Stair extends Transparent implements Waterloggable{
 			$this->facing = $player->getHorizontalFacing();
 		}
 		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
+		if($blockReplace instanceof Water && $blockReplace->isSource()){
+			$this->waterState = $blockReplace;
+		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof LiquidBucket && $item->getLiquid() instanceof Water){
-			$this->position->getWorld()->setBlock($this->position, $this->setWaterState($item->getLiquid()));
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
+		$ret = parent::onBreak($item, $player, $returnedItems);
+		if($this->waterState !== null){
+			$this->position->getWorld()->setBlock($this->position, $this->waterState);
 		}
 
-		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+		return $ret;
 	}
 }

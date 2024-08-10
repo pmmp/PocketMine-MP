@@ -623,6 +623,9 @@ class Block{
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->position = new Position($x, $y, $z, $world);
 		$this->collisionBoxes = null;
+		if($this instanceof Waterloggable){
+			$this->getWaterState()?->position($world, $x, $y, $z);
+		}
 	}
 
 	/**
