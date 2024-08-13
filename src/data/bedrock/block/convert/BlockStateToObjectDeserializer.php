@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\DoublePitcherCrop;
+use pocketmine\block\Opaque;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\Slab;
@@ -1471,7 +1472,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->mapSlab(Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB, fn() => Blocks::PURPUR_SLAB());
 		$this->mapStairs(Ids::PURPUR_STAIRS, fn() => Blocks::PURPUR_STAIRS());
-		$this->mapSimple(Ids::QUARTZ_BLOCK, function(Reader $in) : Block{
+		$this->map(Ids::QUARTZ_BLOCK, function(Reader $in) : Opaque{
 			$in->ignored(StateNames::PILLAR_AXIS);
 			return Blocks::QUARTZ();
 		});
