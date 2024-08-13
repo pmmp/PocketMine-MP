@@ -283,7 +283,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected string $locale = "en_US";
 
 	protected int $startAction = -1;
-	/** @var int[] ID => ticks map */
+
+	/**
+	 * @phpstan-var array<int|string, int>
+	 * @var int[] stateId|cooldownTag => ticks map
+	 */
 	protected array $usedItemsCooldown = [];
 
 	private int $lastEmoteTick = 0;
@@ -697,7 +701,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemCooldownExpiry(Item $item) : int{
 		$this->checkItemCooldowns();
-		return $this->usedItemsCooldown[$item->getStateId()] ?? 0;
+		return $this->usedItemsCooldown[$item->getCooldownTag() ?? $item->getStateId()] ?? 0;
 	}
 
 	/**
@@ -705,7 +709,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function hasItemCooldown(Item $item) : bool{
 		$this->checkItemCooldowns();
-		return isset($this->usedItemsCooldown[$item->getStateId()]);
+		return isset($this->usedItemsCooldown[$item->getCooldownTag() ?? $item->getStateId()]);
 	}
 
 	/**
@@ -714,7 +718,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function resetItemCooldown(Item $item, ?int $ticks = null) : void{
 		$ticks = $ticks ?? $item->getCooldownTicks();
 		if($ticks > 0){
-			$this->usedItemsCooldown[$item->getStateId()] = $this->server->getTick() + $ticks;
+			$this->usedItemsCooldown[$item->getCooldownTag() ?? $item->getStateId()] = $this->server->getTick() + $ticks;
 			$this->getNetworkSession()->onItemCooldownChanged($item, $ticks);
 		}
 	}

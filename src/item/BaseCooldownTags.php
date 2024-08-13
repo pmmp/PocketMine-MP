@@ -23,30 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Location;
-use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
-use pocketmine\entity\projectile\Throwable;
-use pocketmine\player\Player;
+/**
+ * Tags used by items to determine their cooldown group.
+ * @see Item::getCooldownTag()
+ */
+final class BaseCooldownTags{
 
-class EnderPearl extends ProjectileItem{
-
-	public function getMaxStackSize() : int{
-		return 16;
+	private function __construct(){
+		//NOOP
 	}
 
-	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new EnderPearlEntity($location, $thrower);
-	}
-
-	public function getThrowForce() : float{
-		return 1.5;
-	}
-
-	public function getCooldownTicks() : int{
-		return 20;
-	}
-
-	public function getCooldownTag() : ?string{
-		return BaseCooldownTags::ENDER_PEARL;
-	}
+	public const CHORUS_FRUIT = "chorus_fruit";
+	public const ENDER_PEARL = "ender_pearl";
+	public const SHIELD = "shield";
+	public const GOAT_HORN = "goat_horn";
 }
