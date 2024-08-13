@@ -91,7 +91,7 @@ class Anvil extends Transparent implements Fallable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
+			$this->facing = Facing::rotateY($player->getHorizontalFacing(), false);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
