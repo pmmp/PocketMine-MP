@@ -29,6 +29,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
@@ -131,7 +132,8 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getChestplate())),
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getLeggings())),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots()))
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet(VanillaItems::AIR()))
 		));
 	}
 
