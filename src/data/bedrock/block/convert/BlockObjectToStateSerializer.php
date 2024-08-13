@@ -562,6 +562,17 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL_BLOCK : Ids::TUBE_CORAL_BLOCK,
 			}
 		));
+
+		$this->map(Blocks::WALL_CORAL_FAN(), fn(WallCoralFan $block) => Writer::create(
+			match($block->getCoralType()){
+				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL_WALL_FAN : Ids::TUBE_CORAL_WALL_FAN,
+				CoralType::BRAIN => $block->isDead() ? Ids::DEAD_BRAIN_CORAL_WALL_FAN : Ids::BRAIN_CORAL_WALL_FAN,
+				CoralType::BUBBLE => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL_WALL_FAN : Ids::BUBBLE_CORAL_WALL_FAN,
+				CoralType::FIRE => $block->isDead() ? Ids::DEAD_FIRE_CORAL_WALL_FAN : Ids::FIRE_CORAL_WALL_FAN,
+				CoralType::HORN => $block->isDead() ? Ids::DEAD_HORN_CORAL_WALL_FAN : Ids::HORN_CORAL_WALL_FAN,
+			})
+			->writeCoralFacing($block->getFacing())
+		);
 	}
 
 	private function registerCauldronSerializers() : void{
@@ -805,7 +816,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::DANDELION(), Ids::DANDELION);
 		$this->mapSimple(Blocks::CUT_RED_SANDSTONE(), Ids::CUT_RED_SANDSTONE);
 		$this->mapSimple(Blocks::CUT_SANDSTONE(), Ids::CUT_SANDSTONE);
-		$this->mapSimple(Blocks::DANDELION(), Ids::DANDELION);
 		$this->mapSimple(Blocks::DARK_PRISMARINE(), Ids::DARK_PRISMARINE);
 		$this->mapSimple(Blocks::DEAD_BUSH(), Ids::DEADBUSH);
 		$this->mapSimple(Blocks::DEEPSLATE_BRICKS(), Ids::DEEPSLATE_BRICKS);
@@ -1216,7 +1226,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing())
 				->writeInt(StateNames::BOOKS_STORED, $flags);
 		});
-		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_CHISELED, $block->getAxis()));
+		$this->map(Blocks::CHISELED_QUARTZ(), fn(SimplePillar $block) => Helper::encodeQuartz($block->getAxis(), Writer::create(Ids::CHISELED_QUARTZ_BLOCK)));
 		$this->map(Blocks::CHORUS_FLOWER(), function(ChorusFlower $block) : Writer{
 			return Writer::create(Ids::CHORUS_FLOWER)
 				->writeInt(StateNames::AGE, $block->getAge());
@@ -1575,8 +1585,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->mapSlab(Blocks::PURPUR_SLAB(), Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::PURPUR_STAIRS(), Ids::PURPUR_STAIRS);
-		$this->map(Blocks::QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_DEFAULT, Axis::Y));
-		$this->map(Blocks::QUARTZ_PILLAR(), fn(SimplePillar $block) => Helper::encodeQuartz(StringValues::CHISEL_TYPE_LINES, $block->getAxis()));
+		$this->map(Blocks::QUARTZ(), fn() => Helper::encodeQuartz(Axis::Y, Writer::create(Ids::QUARTZ_BLOCK)));
+		$this->map(Blocks::QUARTZ_PILLAR(), fn(SimplePillar $block) => Helper::encodeQuartz($block->getAxis(), Writer::create(Ids::QUARTZ_PILLAR)));
 		$this->mapSlab(Blocks::QUARTZ_SLAB(), Ids::QUARTZ_SLAB, Ids::QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::QUARTZ_STAIRS(), Ids::QUARTZ_STAIRS);
 		$this->map(Blocks::RAIL(), function(Rail $block) : Writer{
@@ -1627,7 +1637,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
-		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(StringValues::CHISEL_TYPE_SMOOTH, Axis::Y));
+		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(Axis::Y, Writer::create(Ids::SMOOTH_QUARTZ)));
 		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), Ids::SMOOTH_QUARTZ_SLAB, Ids::SMOOTH_QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::SMOOTH_QUARTZ_STAIRS(), Ids::SMOOTH_QUARTZ_STAIRS);
 		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), Ids::SMOOTH_RED_SANDSTONE_SLAB, Ids::SMOOTH_RED_SANDSTONE_DOUBLE_SLAB);
@@ -1719,18 +1729,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::WALL_BANNER(), function(WallBanner $block) : Writer{
 			return Writer::create(Ids::WALL_BANNER)
 				->writeHorizontalFacing($block->getFacing());
-		});
-		$this->map(Blocks::WALL_CORAL_FAN(), function(WallCoralFan $block) : Writer{
-			$coralType = $block->getCoralType();
-			return Writer::create(match($coralType){
-				CoralType::TUBE => Ids::TUBE_CORAL_WALL_FAN,
-				CoralType::BRAIN => Ids::BRAIN_CORAL_WALL_FAN,
-				CoralType::BUBBLE => Ids::BUBBLE_CORAL_WALL_FAN,
-				CoralType::FIRE => Ids::FIRE_CORAL_WALL_FAN,
-				CoralType::HORN => Ids::HORN_CORAL_WALL_FAN,
-			})
-				->writeBool(StateNames::DEAD_BIT, $block->isDead())
-				->writeCoralFacing($block->getFacing());
 		});
 		$this->map(Blocks::WATER(), fn(Water $block) => Helper::encodeLiquid($block, Ids::WATER, Ids::FLOWING_WATER));
 		$this->map(Blocks::WEEPING_VINES(), function(NetherVines $block) : Writer{

@@ -160,9 +160,8 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::HUGE_MUSHROOM_BITS, MushroomBlockTypeIdMap::getInstance()->toId($block->getMushroomBlockType()));
 	}
 
-	public static function encodeQuartz(string $type, int $axis) : Writer{
-		return Writer::create(Ids::QUARTZ_BLOCK)
-			->writeString(BlockStateNames::CHISEL_TYPE, $type)
+	public static function encodeQuartz(int $axis, Writer $out) : Writer{
+		return $out
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
 	}
 
