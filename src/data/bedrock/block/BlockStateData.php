@@ -44,7 +44,7 @@ final class BlockStateData{
 	 */
 	public const CURRENT_VERSION =
 		(1 << 24) | //major
-		(22 << 16) | //minor
+		(21 << 16) | //minor
 		(20 << 8) | //patch
 		(0); //revision
 
