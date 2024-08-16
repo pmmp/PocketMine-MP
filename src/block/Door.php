@@ -175,6 +175,11 @@ class Door extends Transparent{
 				return;
 			}
 
+			// This is to avoid calling Door::onProjectileInteraction() twice due to two tiles.
+			if($this->top) {
+				return;
+			}
+
 			$this->toggle();
 		}
 	}

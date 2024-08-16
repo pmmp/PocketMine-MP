@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\Door;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -92,13 +91,6 @@ class WindCharge extends Throwable{
 			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
 				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
 					$block = $this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z));
-
-					// This is to avoid calling Door::onProjectileInteraction() twice due to two tiles.
-					if($block instanceof Door) {
-						if($block->isTop()) {
-							continue;
-						}
-					}
 
 					$block->onProjectileInteraction($this);
 				}

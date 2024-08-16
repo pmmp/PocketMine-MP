@@ -27,6 +27,7 @@ use pocketmine\block\utils\CandleTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -101,14 +102,16 @@ class Candle extends Transparent{
 	}
 
 	public function onProjectileInteraction(Projectile $projectile) : void{
-		if(!$this->lit) {
-			return;
-		}
+		if($projectile instanceof WindCharge) {
+			if(!$this->lit) {
+				return;
+			}
 
-		$newCandle = $this->setLit(false);
-		$world = $this->position->getWorld();
-		$world->setBlock($this->position, $newCandle);
-		$world->addSound($this->position, new FlintSteelSound());
+			$newCandle = $this->setLit(false);
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $newCandle);
+			$world->addSound($this->position, new FlintSteelSound());
+		}
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
