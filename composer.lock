@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5f03cc61eb1734a5c5b70988436c86dd",
+    "content-hash": "fab1e131dfd049da39a87d4e562f1870",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -153,16 +153,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "2.11.0+bedrock-1.21.0",
+            "version": "2.12.0+bedrock-1.21.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "cae40bde98081b388c4d3ab59d45b8d1cf5d8761"
+                "reference": "d4ee3d08964fa16fbbdd04af1fb52bbde540b665"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/cae40bde98081b388c4d3ab59d45b8d1cf5d8761",
-                "reference": "cae40bde98081b388c4d3ab59d45b8d1cf5d8761",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/d4ee3d08964fa16fbbdd04af1fb52bbde540b665",
+                "reference": "d4ee3d08964fa16fbbdd04af1fb52bbde540b665",
                 "shasum": ""
             },
             "type": "library",
@@ -173,9 +173,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.0"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.20"
             },
-            "time": "2024-06-13T17:17:55+00:00"
+            "time": "2024-08-15T12:50:26+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -205,16 +205,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "32.2.0+bedrock-1.21.2",
+            "version": "33.0.0+bedrock-1.21.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "229e5f3ae676a8601c576b7a57e56060b611d68d"
+                "reference": "e2264137c5cd0522de2c6ee4921a3a803818ea32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/229e5f3ae676a8601c576b7a57e56060b611d68d",
-                "reference": "229e5f3ae676a8601c576b7a57e56060b611d68d",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/e2264137c5cd0522de2c6ee4921a3a803818ea32",
+                "reference": "e2264137c5cd0522de2c6ee4921a3a803818ea32",
                 "shasum": ""
             },
             "require": {
