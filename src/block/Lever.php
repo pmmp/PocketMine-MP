@@ -103,19 +103,19 @@ class Lever extends Flowable{
 			$this->toggle();
 		}
 	}
-
-	private function canBeSupportedAt(Block $block, int $face) : bool{
-		return $block->getAdjacentSupportType($face)->hasCenterSupport();
-	}
-
+	
 	public function toggle() : void {
 		$this->activated = !$this->activated;
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
 		$world->addSound(
 			$this->position->add(0.5, 0.5, 0.5),
-			$this->isActivated() ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
+			$this->activated ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO
