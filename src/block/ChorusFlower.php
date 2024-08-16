@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -116,6 +117,12 @@ final class ChorusFlower extends Flowable{
 		}
 
 		return true;
+	}
+
+	public function onProjectileInteraction(Projectile $projectile) : void{
+		if($projectile instanceof WindCharge) {
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
 	}
 
 	private function canGrowUpwards(int $stemHeight, bool $endStoneBelow) : bool{
