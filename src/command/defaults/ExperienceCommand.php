@@ -31,7 +31,9 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function abs;
+use function count;
 use function max;
+use function min;
 use function str_ends_with;
 use function substr;
 
