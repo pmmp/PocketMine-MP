@@ -66,8 +66,8 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_EFFECT_SELF, l10n::pocketmine_permission_command_effect_self()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_ENCHANT_OTHER, l10n::pocketmine_permission_command_enchant_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_ENCHANT_SELF, l10n::pocketmine_permission_command_enchant_self()), [$operatorRoot]);
-		self::registerPermission(new Permission(Names::COMMAND_EXPERIENCE_OTHER, "Allows the user to give experience to other players"), [$operatorRoot]);
-		self::registerPermission(new Permission(Names::COMMAND_EXPERIENCE_SELF, "Allows the user to give himself experience"), [$operatorRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_EXPERIENCE_OTHER, "Allows the user to add or remove experience of other players"), [$operatorRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_EXPERIENCE_SELF, "Allows the user to add or remove their experience"), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_GAMEMODE_OTHER, l10n::pocketmine_permission_command_gamemode_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_GAMEMODE_SELF, l10n::pocketmine_permission_command_gamemode_self()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_GC, l10n::pocketmine_permission_command_gc()), [$operatorRoot]);
