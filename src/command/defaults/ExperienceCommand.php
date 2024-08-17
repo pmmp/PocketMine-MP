@@ -43,7 +43,7 @@ class ExperienceCommand extends VanillaCommand{
 		parent::__construct(
 			"xp",
 			"Adds or removes player experience",
-			"/xp <experience> [player]"
+			"/xp <experience[L]> [player]"
 		);
 		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_XP_SELF,
