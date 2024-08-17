@@ -38,6 +38,8 @@ final class DefaultPermissionNames{
 	public const COMMAND_EFFECT_SELF = "pocketmine.command.effect.self";
 	public const COMMAND_ENCHANT_OTHER = "pocketmine.command.enchant.other";
 	public const COMMAND_ENCHANT_SELF = "pocketmine.command.enchant.self";
+	public const COMMAND_EXPERIENCE_OTHER = "pocketmine.command.experience.other";
+	public const COMMAND_EXPERIENCE_SELF = "pocketmine.command.experience.self";
 	public const COMMAND_GAMEMODE_OTHER = "pocketmine.command.gamemode.other";
 	public const COMMAND_GAMEMODE_SELF = "pocketmine.command.gamemode.self";
 	public const COMMAND_GC = "pocketmine.command.gc";
