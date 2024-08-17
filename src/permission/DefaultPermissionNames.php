@@ -38,8 +38,6 @@ final class DefaultPermissionNames{
 	public const COMMAND_EFFECT_SELF = "pocketmine.command.effect.self";
 	public const COMMAND_ENCHANT_OTHER = "pocketmine.command.enchant.other";
 	public const COMMAND_ENCHANT_SELF = "pocketmine.command.enchant.self";
-	public const COMMAND_EXPERIENCE_OTHER = "pocketmine.command.experience.other";
-	public const COMMAND_EXPERIENCE_SELF = "pocketmine.command.experience.self";
 	public const COMMAND_GAMEMODE_OTHER = "pocketmine.command.gamemode.other";
 	public const COMMAND_GAMEMODE_SELF = "pocketmine.command.gamemode.self";
 	public const COMMAND_GC = "pocketmine.command.gc";
@@ -86,6 +84,8 @@ final class DefaultPermissionNames{
 	public const COMMAND_WHITELIST_LIST = "pocketmine.command.whitelist.list";
 	public const COMMAND_WHITELIST_RELOAD = "pocketmine.command.whitelist.reload";
 	public const COMMAND_WHITELIST_REMOVE = "pocketmine.command.whitelist.remove";
+	public const COMMAND_XP_OTHER = "pocketmine.command.xp.other";
+	public const COMMAND_XP_SELF = "pocketmine.command.xp.self";
 	public const GROUP_CONSOLE = "pocketmine.group.console";
 	public const GROUP_OPERATOR = "pocketmine.group.operator";
 	public const GROUP_USER = "pocketmine.group.user";

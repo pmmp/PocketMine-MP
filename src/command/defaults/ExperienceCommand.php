@@ -46,8 +46,8 @@ class ExperienceCommand extends VanillaCommand{
 			"/xp <experience> [player]"
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_EXPERIENCE_SELF,
-			DefaultPermissionNames::COMMAND_EXPERIENCE_OTHER
+			DefaultPermissionNames::COMMAND_XP_SELF,
+			DefaultPermissionNames::COMMAND_XP_OTHER
 		]);
 	}
 
@@ -55,7 +55,7 @@ class ExperienceCommand extends VanillaCommand{
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_EXPERIENCE_SELF, DefaultPermissionNames::COMMAND_EXPERIENCE_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
 		if($player === null){
 			return true;
 		}
