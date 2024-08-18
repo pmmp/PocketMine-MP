@@ -124,6 +124,7 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
 		$mapper->bEnforceMapType = false;
 
 		try{
@@ -167,6 +168,7 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnUndefinedProperty = false; //we only care about the properties we're using in this case
 		$mapper->bExceptionOnMissingData = true;
+		$mapper->bStrictObjectTypeChecking = true;
 		$mapper->bEnforceMapType = false;
 		$mapper->bRemoveUndefinedAttributes = true;
 		try{

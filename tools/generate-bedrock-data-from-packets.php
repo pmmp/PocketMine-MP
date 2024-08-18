@@ -34,6 +34,7 @@ use pocketmine\crafting\json\SmithingTransformRecipeData;
 use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -50,12 +51,12 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
 use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
@@ -170,16 +171,21 @@ class ParserPacketHandler extends PacketHandler{
 			$data->meta = $meta;
 		}
 
-		$nbt = $itemStack->getNbt();
-		if($nbt !== null && count($nbt) > 0){
-			$data->nbt = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
-		}
+		$rawExtraData = $itemStack->getRawExtraData();
+		if($rawExtraData !== ""){
+			$decoder = PacketSerializer::decoder($rawExtraData, 0);
+			$extraData = $itemStringId === ItemTypeNames::SHIELD ? ItemStackExtraDataShield::read($decoder) : ItemStackExtraData::read($decoder);
+			$nbt = $extraData->getNbt();
+			if($nbt !== null && count($nbt) > 0){
+				$data->nbt = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
+			}
 
-		if(count($itemStack->getCanPlaceOn()) > 0){
-			$data->can_place_on = $itemStack->getCanPlaceOn();
-		}
-		if(count($itemStack->getCanDestroy()) > 0){
-			$data->can_destroy = $itemStack->getCanDestroy();
+			if(count($extraData->getCanPlaceOn()) > 0){
+				$data->can_place_on = $extraData->getCanPlaceOn();
+			}
+			if(count($extraData->getCanDestroy()) > 0){
+				$data->can_destroy = $extraData->getCanDestroy();
+			}
 		}
 
 		return $data;
@@ -189,7 +195,7 @@ class ParserPacketHandler extends PacketHandler{
 	 * @return mixed[]
 	 */
 	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) $object;
+		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
 		ksort($result, SORT_STRING);
 
 		foreach($result as $property => $value){
@@ -329,21 +335,25 @@ class ParserPacketHandler extends PacketHandler{
 				}
 			}
 		}
+		$unlockingIngredients = $entry->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapedRecipeData(
 			array_map(fn(array $array) => implode('', $array), $shape),
 			$outputsByKey,
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $entry->getOutput()),
 			$entry->getBlockName(),
-			$entry->getPriority()
+			$entry->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 
 	private function shapelessRecipeToJson(ShapelessRecipe $recipe) : ShapelessRecipeData{
+		$unlockingIngredients = $recipe->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapelessRecipeData(
 			array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $recipe->getInputs()),
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $recipe->getOutputs()),
 			$recipe->getBlockName(),
-			$recipe->getPriority()
+			$recipe->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 
@@ -401,7 +411,13 @@ class ParserPacketHandler extends PacketHandler{
 			$mappedType = $typeMap[$entry->getTypeId()];
 
 			if($entry instanceof ShapedRecipe){
-				$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				//all known recipes are currently symmetric and I don't feel like attaching a `symmetric` field to
+				//every shaped recipe for this - split it into a separate category instead
+				if(!$entry->isSymmetric()){
+					$recipes[$mappedType . "_asymmetric"][] = $this->shapedRecipeToJson($entry);
+				}else{
+					$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				}
 			}elseif($entry instanceof ShapelessRecipe){
 				$recipes[$mappedType][] = $this->shapelessRecipeToJson($entry);
 			}elseif($entry instanceof MultiRecipe){
@@ -421,7 +437,7 @@ class ParserPacketHandler extends PacketHandler{
 			$recipes["potion_type"][] = new PotionTypeRecipeData(
 				$this->recipeIngredientToJson(new RecipeIngredient(new IntIdMetaItemDescriptor($recipe->getInputItemId(), $recipe->getInputItemMeta()), 1)),
 				$this->recipeIngredientToJson(new RecipeIngredient(new IntIdMetaItemDescriptor($recipe->getIngredientItemId(), $recipe->getIngredientItemMeta()), 1)),
-				$this->itemStackToJson(new ItemStack($recipe->getOutputItemId(), $recipe->getOutputItemMeta(), 1, 0, null, [], [], null)),
+				$this->itemStackToJson(new ItemStack($recipe->getOutputItemId(), $recipe->getOutputItemMeta(), 1, 0, "")),
 			);
 		}
 
@@ -571,10 +587,7 @@ function main(array $argv) : int{
 			fwrite(STDERR, "Unknown packet on line " . ($lineNum + 1) . ": " . $parts[1]);
 			continue;
 		}
-		$serializer = PacketSerializer::decoder($raw, 0, new PacketSerializerContext(
-				$handler->itemTypeDictionary ??
-				new ItemTypeDictionary([new ItemTypeEntry("minecraft:shield", 0, false)]))
-		);
+		$serializer = PacketSerializer::decoder($raw, 0);
 
 		$pk->decode($serializer);
 		$pk->handle($handler);

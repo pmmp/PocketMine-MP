@@ -24,10 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\block\utils\WoodType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
@@ -253,32 +251,6 @@ final class BlockStateWriter{
 			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_WEST,
 			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeLegacyWoodType(WoodType $treeType) : self{
-		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType){
-			WoodType::OAK => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK => StringValues::WOOD_TYPE_DARK_OAK,
-			default => throw new BlockStateSerializeException("Invalid legacy wood type " . $treeType->name)
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeCoralType(CoralType $coralType) : self{
-		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType){
-			CoralType::TUBE => StringValues::CORAL_COLOR_BLUE,
-			CoralType::BRAIN => StringValues::CORAL_COLOR_PINK,
-			CoralType::BUBBLE => StringValues::CORAL_COLOR_PURPLE,
-			CoralType::FIRE => StringValues::CORAL_COLOR_RED,
-			CoralType::HORN => StringValues::CORAL_COLOR_YELLOW,
 		});
 		return $this;
 	}

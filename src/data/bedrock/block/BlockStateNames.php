@@ -59,7 +59,6 @@ final class BlockStateNames{
 	public const COLOR_BIT = "color_bit";
 	public const COMPOSTER_FILL_LEVEL = "composter_fill_level";
 	public const CONDITIONAL_BIT = "conditional_bit";
-	public const CORAL_COLOR = "coral_color";
 	public const CORAL_DIRECTION = "coral_direction";
 	public const CORAL_FAN_DIRECTION = "coral_fan_direction";
 	public const CORAL_HANG_TYPE_BIT = "coral_hang_type_bit";
@@ -73,7 +72,6 @@ final class BlockStateNames{
 	public const DIRT_TYPE = "dirt_type";
 	public const DISARMED_BIT = "disarmed_bit";
 	public const DOOR_HINGE_BIT = "door_hinge_bit";
-	public const DOUBLE_PLANT_TYPE = "double_plant_type";
 	public const DRAG_DOWN = "drag_down";
 	public const DRIPSTONE_THICKNESS = "dripstone_thickness";
 	public const END_PORTAL_EYE_BIT = "end_portal_eye_bit";
@@ -81,7 +79,6 @@ final class BlockStateNames{
 	public const EXTINGUISHED = "extinguished";
 	public const FACING_DIRECTION = "facing_direction";
 	public const FILL_LEVEL = "fill_level";
-	public const FLOWER_TYPE = "flower_type";
 	public const GROUND_SIGN_DIRECTION = "ground_sign_direction";
 	public const GROWING_PLANT_AGE = "growing_plant_age";
 	public const GROWTH = "growth";
@@ -105,9 +102,8 @@ final class BlockStateNames{
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
-	public const NEW_LEAF_TYPE = "new_leaf_type";
 	public const OCCUPIED_BIT = "occupied_bit";
-	public const OLD_LEAF_TYPE = "old_leaf_type";
+	public const OMINOUS = "ominous";
 	public const OPEN_BIT = "open_bit";
 	public const ORIENTATION = "orientation";
 	public const OUTPUT_LIT_BIT = "output_lit_bit";
@@ -126,7 +122,6 @@ final class BlockStateNames{
 	public const ROTATION = "rotation";
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
-	public const SAPLING_TYPE = "sapling_type";
 	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const SPONGE_TYPE = "sponge_type";
@@ -141,7 +136,6 @@ final class BlockStateNames{
 	public const STRUCTURE_BLOCK_TYPE = "structure_block_type";
 	public const STRUCTURE_VOID_TYPE = "structure_void_type";
 	public const SUSPENDED_BIT = "suspended_bit";
-	public const TALL_GRASS_TYPE = "tall_grass_type";
 	public const TOGGLE_BIT = "toggle_bit";
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
 	public const TRIAL_SPAWNER_STATE = "trial_spawner_state";
@@ -151,6 +145,7 @@ final class BlockStateNames{
 	public const UPDATE_BIT = "update_bit";
 	public const UPPER_BLOCK_BIT = "upper_block_bit";
 	public const UPSIDE_DOWN_BIT = "upside_down_bit";
+	public const VAULT_STATE = "vault_state";
 	public const VINE_DIRECTION_BITS = "vine_direction_bits";
 	public const WALL_BLOCK_TYPE = "wall_block_type";
 	public const WALL_CONNECTION_TYPE_EAST = "wall_connection_type_east";
@@ -160,5 +155,4 @@ final class BlockStateNames{
 	public const WALL_POST_BIT = "wall_post_bit";
 	public const WEEPING_VINES_AGE = "weeping_vines_age";
 	public const WEIRDO_DIRECTION = "weirdo_direction";
-	public const WOOD_TYPE = "wood_type";
 }

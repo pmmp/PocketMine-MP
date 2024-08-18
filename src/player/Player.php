@@ -1393,7 +1393,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setMotion(Vector3 $motion) : bool{
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
-			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion));
+			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion, tick: 0));
 
 			return true;
 		}
@@ -2149,6 +2149,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		return true;
+	}
+
+	/**
+	 * Closes the current viewing form and forms in queue.
+	 */
+	public function closeAllForms() : void{
+		$this->getNetworkSession()->onCloseAllForms();
 	}
 
 	/**

@@ -55,6 +55,7 @@ class UpdateCheckTask extends AsyncTask{
 				}else{
 					$mapper = new \JsonMapper();
 					$mapper->bExceptionOnMissingData = true;
+					$mapper->bStrictObjectTypeChecking = true;
 					$mapper->bEnforceMapType = false;
 					try{
 						/** @var UpdateInfo $responseObj */

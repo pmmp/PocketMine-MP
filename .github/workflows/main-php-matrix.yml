@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -96,7 +96,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -128,7 +128,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@2.0.0
+        uses: pmmp/setup-php-action@3.1.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -147,17 +147,8 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction
 
-      - name: Regenerate registry annotations
-        run: php build/generate-registry-annotations.php src
-
-      - name: Regenerate KnownTranslation APIs
-        run: php build/generate-known-translation-apis.php
-
-      - name: Regenerate BedrockData available files constants
-        run: php build/generate-bedrockdata-path-consts.php
-
-      - name: Regenerate YmlServerProperties constants
-        run: php build/generate-pocketmine-yml-property-consts.php
+      - name: Update generated code
+        run: composer update-codegen
 
       - name: Verify code is unchanged
         run: |

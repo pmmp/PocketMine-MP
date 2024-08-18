@@ -59,7 +59,6 @@ use pocketmine\network\mcpe\EntityEventBroadcaster;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\mcpe\StandardEntityEventBroadcaster;
@@ -1187,12 +1186,11 @@ class Server{
 		bool $useQuery,
 		PacketBroadcaster $packetBroadcaster,
 		EntityEventBroadcaster $entityEventBroadcaster,
-		PacketSerializerContext $packetSerializerContext,
 		TypeConverter $typeConverter
 	) : bool{
 		$prettyIp = $ipV6 ? "[$ip]" : $ip;
 		try{
-			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter));
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6, $packetBroadcaster, $entityEventBroadcaster, $typeConverter));
 		}catch(NetworkInterfaceStartException $e){
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
 				$ip,
@@ -1219,15 +1217,14 @@ class Server{
 		$useQuery = $this->configGroup->getConfigBool(ServerProperties::ENABLE_QUERY, true);
 
 		$typeConverter = TypeConverter::getInstance();
-		$packetSerializerContext = new PacketSerializerContext($typeConverter->getItemTypeDictionary());
-		$packetBroadcaster = new StandardPacketBroadcaster($this, $packetSerializerContext);
+		$packetBroadcaster = new StandardPacketBroadcaster($this);
 		$entityEventBroadcaster = new StandardEntityEventBroadcaster($packetBroadcaster, $typeConverter);
 
 		if(
-			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter) ||
+			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $typeConverter) ||
 			(
 				$this->configGroup->getConfigBool(ServerProperties::ENABLE_IPV6, true) &&
-				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $packetSerializerContext, $typeConverter)
+				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $typeConverter)
 			)
 		){
 			return false;
@@ -1669,9 +1666,11 @@ class Server{
 		$this->isRunning = false;
 
 		//Force minimum uptime to be >= 120 seconds, to reduce the impact of spammy crash loops
-		$spacing = ((int) $this->startTime) - time() + 120;
+		$uptime = time() - ((int) $this->startTime);
+		$minUptime = 120;
+		$spacing = $minUptime - $uptime;
 		if($spacing > 0){
-			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
+			echo "--- Uptime {$uptime}s - waiting {$spacing}s to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
 		@Process::kill(Process::pid());
