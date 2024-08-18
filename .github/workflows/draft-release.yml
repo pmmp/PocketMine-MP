@@ -94,7 +94,6 @@ jobs:
           echo "Build number: $BUILD_NUMBER"
           echo BUILD_NUMBER=$BUILD_NUMBER >> $GITHUB_OUTPUT
 
-      - name: Check IS_DEVELOPMENT_BUILD flag
       - name: Minify BedrockData JSON files
         run: php vendor/pocketmine/bedrock-data/.minify_json.php
 
