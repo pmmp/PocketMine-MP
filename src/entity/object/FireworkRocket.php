@@ -146,7 +146,7 @@ class FireworkRocket extends Entity implements Explosive{
 		if(($expCount = count($this->explosions)) !== 0){
 			$this->broadcastAnimation(new FireworkParticlesAnimation($this));
 			foreach($this->explosions as $explosion){
-				$this->broadcastSound($explosion->getType()->getSound());
+				$this->broadcastSound($explosion->getType()->getExplosionSound());
 				if($explosion->willTwinkle()){
 					$this->broadcastSound(new FireworkCrackleSound());
 				}

@@ -23,46 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\EnumTrait;
 use pocketmine\world\sound\FireworkExplosionSound;
 use pocketmine\world\sound\FireworkLargeExplosionSound;
 use pocketmine\world\sound\Sound;
 
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static FireworkRocketType BURST()
- * @method static FireworkRocketType CREEPER()
- * @method static FireworkRocketType LARGE_BALL()
- * @method static FireworkRocketType SMALL_BALL()
- * @method static FireworkRocketType STAR()
- */
-final class FireworkRocketType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum FireworkRocketType{
+	case SMALL_BALL;
+	case LARGE_BALL;
+	case STAR;
+	case CREEPER;
+	case BURST;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("small_ball", new FireworkExplosionSound()),
-			new self("large_ball", new FireworkLargeExplosionSound()),
-			new self("star", new FireworkExplosionSound()),
-			new self("creeper", new FireworkExplosionSound()),
-			new self("burst", new FireworkExplosionSound()),
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private Sound $sound
-	){
-		$this->Enum___construct($enumName);
-	}
-
-	public function getSound() : Sound{
-		return $this->sound;
+	public function getExplosionSound() : Sound{
+		return match($this){
+			self::SMALL_BALL => new FireworkExplosionSound(),
+			self::LARGE_BALL => new FireworkLargeExplosionSound(),
+			self::STAR => new FireworkExplosionSound(),
+			self::CREEPER => new FireworkExplosionSound(),
+			self::BURST => new FireworkExplosionSound(),
+		};
 	}
 }
