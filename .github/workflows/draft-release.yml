@@ -1,13 +1,63 @@
 name: Draft release
 
 on:
-  push:
-    tags: "*"
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - stable
+      - minor-next
+      - major-next
+      - "legacy/*"
+    paths:
+      - "src/VersionInfo.php"
 
 jobs:
+  check-validity:
+    name: Check that this PR merge is a valid release target
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [8.2]
+
+    outputs:
+      valid: ${{ steps.validate.outputs.VALID_RELEASE }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.31.1
+        with:
+          php-version: ${{ matrix.php-version }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Check IS_DEVELOPMENT_BUILD flag
+        id: validate
+        run: |
+          echo VALID_RELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD ? "false" : "true";') >> $GITHUB_OUTPUT
+
+      #TODO: check this user is authorized to create a release PR in the first place
+
   draft:
     name: Create GitHub draft release
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
+    needs: [check-validity]
+    if: jobs.check-validity.outputs.valid == true
+
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -44,6 +94,7 @@ jobs:
           echo "Build number: $BUILD_NUMBER"
           echo BUILD_NUMBER=$BUILD_NUMBER >> $GITHUB_OUTPUT
 
+      - name: Check IS_DEVELOPMENT_BUILD flag
       - name: Minify BedrockData JSON files
         run: php vendor/pocketmine/bedrock-data/.minify_json.php
 
