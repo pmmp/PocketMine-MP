@@ -56,7 +56,7 @@ jobs:
   draft:
     name: Create GitHub draft release
     needs: [check-validity]
-    if: jobs.check-validity.outputs.valid == true
+    if: needs.check-validity.outputs.valid == true
 
     runs-on: ubuntu-20.04
     strategy:
