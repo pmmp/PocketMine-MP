@@ -93,11 +93,7 @@ class Trapdoor extends Transparent{
 	}
 
 	public function onProjectileInteraction(Projectile $projectile) : void{
-		if($projectile instanceof WindCharge){
-			if($this->getTypeId() === BlockTypeIds::IRON_TRAPDOOR) {
-				return;
-			}
-
+		if($projectile instanceof WindCharge && $this->getTypeId() !== BlockTypeIds::IRON_TRAPDOOR){
 			$this->toggle();
 		}
 	}
