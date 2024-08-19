@@ -21,11 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class CopperSlab extends Slab implements ICopper{
-	use CopperTrait;
+final class CampfireSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_CAMPFIRE_CRACKLE, $pos, false)];
+	}
 }

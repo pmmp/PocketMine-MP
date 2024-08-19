@@ -23,9 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
+use pocketmine\crafting\FurnaceType;
+use pocketmine\item\Item;
 
-class CopperSlab extends Slab implements ICopper{
-	use CopperTrait;
+class SoulCampfire extends Campfire{
+
+	public function getLightLevel() : int{
+		return $this->lit ? 10 : 0;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::SOUL_SOIL()->asItem()
+		];
+	}
+
+	protected function getEntityCollisionDamage() : int{
+		return 2;
+	}
+
+	protected function getFurnaceType() : FurnaceType{
+		return FurnaceType::SOUL_CAMPFIRE;
+	}
 }

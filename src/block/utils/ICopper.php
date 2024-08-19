@@ -21,11 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
+/**
+ * Represents copper blocks that have oxidized and waxed variations.
+ */
+interface ICopper{
 
-class CopperSlab extends Slab implements ICopper{
-	use CopperTrait;
+	public function getOxidation() : CopperOxidation;
+
+	public function setOxidation(CopperOxidation $oxidation) : ICopper;
+
+	public function isWaxed() : bool;
+
+	public function setWaxed(bool $waxed) : ICopper;
 }

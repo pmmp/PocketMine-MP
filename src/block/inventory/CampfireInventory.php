@@ -21,11 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\inventory;
 
-use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\world\Position;
 
-class CopperSlab extends Slab implements ICopper{
-	use CopperTrait;
+class CampfireInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
+
+	public function __construct(Position $holder){
+		$this->holder = $holder;
+		parent::__construct(4);
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
+	}
 }
