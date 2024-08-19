@@ -63,10 +63,7 @@ class CakeWithCandle extends BaseCake{
 	}
 
 	public function onProjectileInteraction(Projectile $projectile) : void{
-		if($projectile instanceof WindCharge) {
-			if(!$this->lit) {
-				return;
-			}
+		if($projectile instanceof WindCharge && $this->lit) {
 
 			$world = $this->position->getWorld();
 			$world->setBlock($this->position, $this->setLit(false));

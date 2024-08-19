@@ -102,10 +102,7 @@ class Candle extends Transparent{
 	}
 
 	public function onProjectileInteraction(Projectile $projectile) : void{
-		if($projectile instanceof WindCharge) {
-			if(!$this->lit) {
-				return;
-			}
+		if($projectile instanceof WindCharge && $this->lit) {
 
 			$newCandle = $this->setLit(false);
 			$world = $this->position->getWorld();
