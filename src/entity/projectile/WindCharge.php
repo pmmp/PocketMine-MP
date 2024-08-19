@@ -108,7 +108,7 @@ class WindCharge extends Throwable{
 				$exposure = 0.5;
 			}
 
-			$impact = (1 - $distance) * $exposure;
+			$impact = (1.3 - $distance) * $exposure;
 			if ($impact <= 0) {
 				continue;
 			}
