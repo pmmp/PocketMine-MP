@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 abstract class AnvilAction{
 	protected int $xpCost = 0;
 
-	public function __construct(
+	final public function __construct(
 		protected Item $base,
 		protected Item $material,
 		protected ?string $customName
