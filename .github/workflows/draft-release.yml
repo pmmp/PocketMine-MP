@@ -103,6 +103,7 @@ jobs:
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          skipIfReleaseExists: true #for release PRs, tags will be created on release publish and trigger the tag release workflow - don't create a second draft
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
