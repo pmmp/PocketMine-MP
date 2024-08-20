@@ -23,7 +23,10 @@ jobs:
         php-version: [8.2]
 
     outputs:
-      valid: ${{ steps.validate.outputs.VALID_RELEASE }}
+      valid: ${{ steps.validate.outputs.VALID_RELEASE == 'true' 
+          && steps.check-permission.outputs.require-result == 'true'
+          && steps.check-permission.outputs.check-result == 'false'
+        }}
 
     steps:
       - uses: actions/checkout@v4
@@ -46,12 +49,20 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
 
+      - name: Check if PR author has write access
+        id: check-permission
+        uses: actions-cool/check-user-permission@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          require: write
+          username: ${{ github.event.pull_request.user.login }}
+          #technically this would be fine for dependabot but generally bots don't count as team members
+          check-bot: true
+
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
         run: |
           echo VALID_RELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD ? "false" : "true";') >> $GITHUB_OUTPUT
-
-      #TODO: check this user is authorized to create a release PR in the first place
 
   draft:
     name: Create GitHub draft release
