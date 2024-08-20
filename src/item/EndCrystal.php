@@ -1,3 +1,4 @@
+
 <?php
 
 /*
@@ -44,8 +45,8 @@ class EndCrystal extends Item{
 				->extend(Facing::UP, 1);
 			if(
 				count($world->getNearbyEntities($bb)) === 0 &&
-				$world->getBlock($pos->up())->getTypeId() === BlockTypeIds::AIR &&
-				$world->getBlock($pos->up(2))->getTypeId() === BlockTypeIds::AIR
+				$blockClicked->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR &&
+				$blockClicked->getSide(Facing::UP, 2)->getTypeId() === BlockTypeIds::AIR
 			){
 				$crystal = new EntityEndCrystal(Location::fromObject($pos->add(0.5, 1, 0.5), $world));
 				$crystal->spawnToAll();
