@@ -27,7 +27,7 @@ namespace pocketmine\item;
  * Tags used by items to determine their cooldown group.
  * @see Item::getCooldownTag()
  */
-final class BaseCooldownTags{
+final class VanillaCooldownTags{
 
 	private function __construct(){
 		//NOOP

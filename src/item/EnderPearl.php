@@ -47,6 +47,6 @@ class EnderPearl extends ProjectileItem{
 	}
 
 	public function getCooldownTag() : ?string{
-		return BaseCooldownTags::ENDER_PEARL;
+		return VanillaCooldownTags::ENDER_PEARL;
 	}
 }

@@ -662,7 +662,7 @@ class Item implements \JsonSerializable{
 	 *
 	 * If tag is null, item state id will be used to store cooldown.
 	 *
-	 * @see BaseCooldownTags
+	 * @see VanillaCooldownTags
 	 */
 	public function getCooldownTag() : ?string{
 		return null;
