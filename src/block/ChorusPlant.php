@@ -51,7 +51,7 @@ final class ChorusPlant extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		$position = $block->getPosition();
+		$position = $block->position;
 		$world = $position->getWorld();
 
 		$down = $world->getBlock($position->down());

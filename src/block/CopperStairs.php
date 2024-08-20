@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
 
-class CopperStairs extends Stair{
+class CopperStairs extends Stair implements ICopper{
 	use CopperTrait;
 }

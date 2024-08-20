@@ -96,6 +96,7 @@ class InventoryManager{
 	private array $complexSlotToInventoryMap = [];
 
 	private int $lastInventoryNetworkId = ContainerIds::FIRST;
+	private int $currentWindowType = WindowTypes::CONTAINER;
 
 	private int $clientSelectedHotbarSlot = -1;
 
@@ -327,9 +328,15 @@ class InventoryManager{
 			foreach($this->containerOpenCallbacks as $callback){
 				$pks = $callback($windowId, $inventory);
 				if($pks !== null){
+					$windowType = null;
 					foreach($pks as $pk){
+						if($pk instanceof ContainerOpenPacket){
+							//workaround useless bullshit in 1.21 - ContainerClose requires a type now for some reason
+							$windowType = $pk->windowType;
+						}
 						$this->session->sendDataPacket($pk);
 					}
+					$this->currentWindowType = $windowType ?? WindowTypes::CONTAINER;
 					$this->syncContents($inventory);
 					return;
 				}
@@ -378,10 +385,11 @@ class InventoryManager{
 		$this->openWindowDeferred(function() : void{
 			$windowId = $this->getNewWindowId();
 			$this->associateIdWithInventory($windowId, $this->player->getInventory());
+			$this->currentWindowType = WindowTypes::INVENTORY;
 
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				$windowId,
-				WindowTypes::INVENTORY,
+				$this->currentWindowType,
 				$this->player->getId()
 			));
 		});
@@ -390,7 +398,7 @@ class InventoryManager{
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->networkIdToInventoryMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
-			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
+			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, $this->currentWindowType, true));
 			if($this->pendingCloseWindowId !== null){
 				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
 			}
@@ -411,7 +419,7 @@ class InventoryManager{
 
 		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
 		//initiated the close and expect an ack.
-		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
+		$this->session->sendDataPacket(ContainerClosePacket::create($id, $this->currentWindowType, false));
 
 		if($this->pendingCloseWindowId === $id){
 			$this->pendingCloseWindowId = null;
@@ -423,6 +431,41 @@ class InventoryManager{
 		}
 	}
 
+	/**
+	 * Compares itemstack extra data for equality. This is used to verify legacy InventoryTransaction slot predictions.
+	 *
+	 * TODO: It would be preferable if we didn't have to deserialize this, to improve performance and reduce attack
+	 * surface. However, the raw data may not match due to differences in ordering. Investigate whether the
+	 * client-provided NBT is consistently sorted.
+	 */
+	private function itemStackExtraDataEqual(ItemStack $left, ItemStack $right) : bool{
+		if($left->getRawExtraData() === $right->getRawExtraData()){
+			return true;
+		}
+
+		$typeConverter = $this->session->getTypeConverter();
+		$leftExtraData = $typeConverter->deserializeItemStackExtraData($left->getRawExtraData(), $left->getId());
+		$rightExtraData = $typeConverter->deserializeItemStackExtraData($right->getRawExtraData(), $right->getId());
+
+		$leftNbt = $leftExtraData->getNbt();
+		$rightNbt = $rightExtraData->getNbt();
+		return
+			$leftExtraData->getCanPlaceOn() === $rightExtraData->getCanPlaceOn() &&
+			$leftExtraData->getCanDestroy() === $rightExtraData->getCanDestroy() && (
+				$leftNbt === $rightNbt || //this covers null === null and fast object identity
+				($leftNbt !== null && $rightNbt !== null && $leftNbt->equals($rightNbt))
+			);
+	}
+
+	private function itemStacksEqual(ItemStack $left, ItemStack $right) : bool{
+		return
+			$left->getId() === $right->getId() &&
+			$left->getMeta() === $right->getMeta() &&
+			$left->getBlockRuntimeId() === $right->getBlockRuntimeId() &&
+			$left->getCount() === $right->getCount() &&
+			$this->itemStackExtraDataEqual($left, $right);
+	}
+
 	public function onSlotChange(Inventory $inventory, int $slot) : void{
 		$inventoryEntry = $this->inventories[spl_object_id($inventory)] ?? null;
 		if($inventoryEntry === null){
@@ -432,7 +475,7 @@ class InventoryManager{
 		}
 		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($inventory->getItem($slot));
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
-		if($clientSideItem === null || !$clientSideItem->equals($currentItem)){
+		if($clientSideItem === null || !$this->itemStacksEqual($currentItem, $clientSideItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
 			$this->trackItemStack($inventoryEntry, $slot, $currentItem, null);
 			$inventoryEntry->pendingSyncs[$slot] = $currentItem;
@@ -457,14 +500,16 @@ class InventoryManager{
 			$this->session->sendDataPacket(InventorySlotPacket::create(
 				$windowId,
 				$netSlot,
-				new ItemStackWrapper(0, ItemStack::null())
+				new ItemStackWrapper(0, ItemStack::null()),
+				0
 			));
 		}
 		//now send the real contents
 		$this->session->sendDataPacket(InventorySlotPacket::create(
 			$windowId,
 			$netSlot,
-			$itemStackWrapper
+			$itemStackWrapper,
+			0
 		));
 	}
 
@@ -482,10 +527,11 @@ class InventoryManager{
 		 */
 		$this->session->sendDataPacket(InventoryContentPacket::create(
 			$windowId,
-			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null()))
+			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null())),
+			0
 		));
 		//now send the real contents
-		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers));
+		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers, 0));
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot, ItemStack $itemStack) : void{
