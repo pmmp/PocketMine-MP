@@ -70,3 +70,15 @@ jobs:
     if: needs.check-validity.outputs.valid == 'true'
 
     uses: ./.github/workflows/draft-release.yml
+
+  post-draft-url-comment:
+    name: Post draft release URL as comment
+    needs: [draft]
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Post draft release URL on PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: "[Draft release ${{ needs.draft.outputs.version }}](${{ needs.draft.outputs.draft-url }}) has been created for commit ${{ github.sha }}. Please review and publish it."
