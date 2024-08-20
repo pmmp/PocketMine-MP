@@ -2,6 +2,9 @@ name: Draft release
 
 on:
   workflow_call:
+    outputs:
+      draft-url: ${{ jobs.draft.outputs.draft-url }}
+      version: ${{ jobs.draft.outputs.version }}
 
 jobs:
   draft:
