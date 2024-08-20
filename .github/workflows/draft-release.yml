@@ -3,8 +3,12 @@ name: Draft release
 on:
   workflow_call:
     outputs:
-      draft-url: ${{ jobs.draft.outputs.draft-url }}
-      version: ${{ jobs.draft.outputs.version }}
+      draft-url:
+        description: 'The URL of the draft release'
+        value: ${{ jobs.draft.outputs.draft-url }}
+      version:
+        description: 'PocketMine-MP version'
+        value: ${{ jobs.draft.outputs.version }}
 
 jobs:
   draft:
