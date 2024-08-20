@@ -7,6 +7,9 @@ while getopts "t:" OPTION 2> /dev/null; do
 		t)
 			PM_WORKERS="$OPTARG"
 			;;
+		\?)
+			break
+			;;
 	esac
 done
 
@@ -19,7 +22,7 @@ rm PocketMine-MP.phar 2> /dev/null
 mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 
-cd tests/plugins/DevTools
+cd tests/plugins/DevTools || { echo "Couldn't change directory to $DIR"; exit 1; }
 php -dphar.readonly=0 ./src/ConsoleScript.php --make ./ --relative ./ --out "$PLUGINS_DIR/DevTools.phar"
 cd ../../..
 composer make-server
@@ -45,7 +48,7 @@ if [ "$result" != "" ]; then
 	echo "$result"
 	echo Some tests did not complete successfully, changing build status to failed
 	exit 1
-elif [ $(grep -c "ERROR\|CRITICAL\|EMERGENCY" "$DATA_DIR/server.log") -ne 0 ]; then
+elif [ "$(grep -c "ERROR\|CRITICAL\|EMERGENCY" "$DATA_DIR/server.log")" -ne 0 ]; then
 	echo Server log contains error messages, changing build status to failed
 	exit 1
 else
