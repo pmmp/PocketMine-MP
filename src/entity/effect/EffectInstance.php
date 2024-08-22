@@ -36,7 +36,7 @@ class EffectInstance{
 	private Color $color;
 
 	/**
-	 * @param int|null   $duration Passing null will use the effect type's default duration
+	 * @param int|null $duration Passing null will use the effect type's default duration
 	 */
 	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;

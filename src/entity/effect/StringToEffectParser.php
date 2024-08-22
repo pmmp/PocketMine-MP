@@ -40,6 +40,7 @@ final class StringToEffectParser extends StringToTParser{
 		$result->register("absorption", fn() => VanillaEffects::ABSORPTION());
 		$result->register("blindness", fn() => VanillaEffects::BLINDNESS());
 		$result->register("conduit_power", fn() => VanillaEffects::CONDUIT_POWER());
+		$result->register("darkness", fn() => VanillaEffects::DARKNESS());
 		$result->register("fatal_poison", fn() => VanillaEffects::FATAL_POISON());
 		$result->register("fire_resistance", fn() => VanillaEffects::FIRE_RESISTANCE());
 		$result->register("haste", fn() => VanillaEffects::HASTE());

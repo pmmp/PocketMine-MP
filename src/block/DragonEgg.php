@@ -44,17 +44,13 @@ class DragonEgg extends Transparent implements Fallable{
 		return 1;
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->teleport();
 		return true;
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($player !== null && !$player->getGamemode()->equals(GameMode::CREATIVE())){
+		if($player !== null && $player->getGamemode() !== GameMode::CREATIVE){
 			$this->teleport();
 			return true;
 		}
@@ -86,6 +82,6 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

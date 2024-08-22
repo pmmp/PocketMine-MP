@@ -41,27 +41,25 @@ use function implode;
 
 class GiveCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"give",
 			KnownTranslationFactory::pocketmine_command_give_description(),
 			KnownTranslationFactory::pocketmine_command_give_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
+		$this->setPermissions([
+			DefaultPermissionNames::COMMAND_GIVE_SELF,
+			DefaultPermissionNames::COMMAND_GIVE_OTHER
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) < 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
 		if($player === null){
-			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 

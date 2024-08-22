@@ -44,9 +44,9 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"help",
 			KnownTranslationFactory::pocketmine_command_help_description(),
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]
@@ -55,10 +55,6 @@ class HelpCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$commandName = "";
 			$pageNumber = 1;
@@ -76,11 +72,10 @@ class HelpCommand extends VanillaCommand{
 		$pageHeight = $sender->getScreenLineHeight();
 
 		if($commandName === ""){
-			/** @var Command[][] $commands */
 			$commands = [];
 			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){
-					$commands[$command->getName()] = $command;
+					$commands[$command->getLabel()] = $command;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
@@ -95,7 +90,7 @@ class HelpCommand extends VanillaCommand{
 				foreach($commands[$pageNumber - 1] as $command){
 					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::RESET . $descriptionString);
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::RESET . $descriptionString);
 				}
 			}
 
@@ -106,7 +101,7 @@ class HelpCommand extends VanillaCommand{
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getName())
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
 						->prefix(TextFormat::GOLD));

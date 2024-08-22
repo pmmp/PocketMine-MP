@@ -36,6 +36,8 @@ class Villager extends Living implements Ageable{
 	public const PROFESSION_BLACKSMITH = 3;
 	public const PROFESSION_BUTCHER = 4;
 
+	private const TAG_PROFESSION = "Profession"; //TAG_Int
+
 	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
 	private bool $baby = false;
@@ -53,7 +55,7 @@ class Villager extends Living implements Ageable{
 		parent::initEntity($nbt);
 
 		/** @var int $profession */
-		$profession = $nbt->getInt("Profession", self::PROFESSION_FARMER);
+		$profession = $nbt->getInt(self::TAG_PROFESSION, self::PROFESSION_FARMER);
 
 		if($profession > 4 || $profession < 0){
 			$profession = self::PROFESSION_FARMER;
@@ -64,7 +66,7 @@ class Villager extends Living implements Ageable{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setInt("Profession", $this->getProfession());
+		$nbt->setInt(self::TAG_PROFESSION, $this->getProfession());
 
 		return $nbt;
 	}

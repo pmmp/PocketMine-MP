@@ -73,6 +73,12 @@ use function sprintf;
 use function strlen;
 use function trim;
 use const AF_INET;
+use const PREG_BACKTRACK_LIMIT_ERROR;
+use const PREG_BAD_UTF8_ERROR;
+use const PREG_BAD_UTF8_OFFSET_ERROR;
+use const PREG_INTERNAL_ERROR;
+use const PREG_JIT_STACKLIMIT_ERROR;
+use const PREG_RECURSION_LIMIT_ERROR;
 use const SO_RCVTIMEO;
 use const SOCK_DGRAM;
 use const SOCKET_ETIMEDOUT;
@@ -150,6 +156,7 @@ class UPnP{
 			throw new UPnPException("Failed to recognize the port number from the router's url: {$location}");
 		}
 		$urlPort = $url['port'];
+		$err = "";
 		$response = Internet::getURL($location, 3, [], $err);
 		if($response === null){
 			throw new UPnPException("Unable to access XML: {$err}");

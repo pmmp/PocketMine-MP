@@ -23,14 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColorInMetadataTrait;
-use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\ColoredTrait;
 
 final class StainedGlass extends Glass{
-	use ColorInMetadataTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
+	use ColoredTrait;
 }

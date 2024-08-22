@@ -30,13 +30,14 @@ use pocketmine\event\Event;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 
 class CraftItemEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Item[]              $inputs
-	 * @param Item[]              $outputs
+	 * @param Item[] $inputs
+	 * @param Item[] $outputs
 	 */
 	public function __construct(
 		private CraftingTransaction $transaction,
@@ -74,7 +75,7 @@ class CraftItemEvent extends Event implements Cancellable{
 	 * @return Item[]
 	 */
 	public function getInputs() : array{
-		return $this->inputs;
+		return Utils::cloneObjectArray($this->inputs);
 	}
 
 	/**
@@ -83,7 +84,7 @@ class CraftItemEvent extends Event implements Cancellable{
 	 * @return Item[]
 	 */
 	public function getOutputs() : array{
-		return $this->outputs;
+		return Utils::cloneObjectArray($this->outputs);
 	}
 
 	public function getPlayer() : Player{

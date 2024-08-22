@@ -23,19 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
 
 class Potion extends Item implements ConsumableItem{
 
-	private PotionType $potionType;
+	private PotionType $potionType = PotionType::WATER;
 
-	public function __construct(ItemIdentifier $identifier, string $name, PotionType $potionType){
-		parent::__construct($identifier, $name);
-		$this->potionType = $potionType;
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }
+
+	/**
+	 * @return $this
+	 */
+	public function setType(PotionType $type) : self{
+		$this->potionType = $type;
+		return $this;
+	}
 
 	public function getMaxStackSize() : int{
 		return 1;

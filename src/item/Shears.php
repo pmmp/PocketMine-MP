@@ -44,7 +44,7 @@ class Shears extends Tool{
 		return 15;
 	}
 
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		return $this->applyDamage(1);
 	}
 }

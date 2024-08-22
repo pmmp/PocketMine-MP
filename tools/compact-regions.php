@@ -43,6 +43,10 @@ use function rename;
 use function round;
 use function scandir;
 use function unlink;
+use const PATHINFO_EXTENSION;
+use const PHP_BINARY;
+use const SCANDIR_SORT_NONE;
+use const SORT_NUMERIC;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

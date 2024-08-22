@@ -66,6 +66,9 @@ BODY,
 		],
 		'indentation_type' => true,
 		'logical_operators' => true,
+		'native_constant_invocation' => [
+			'scope' => 'namespaced'
+		],
 		'native_function_invocation' => [
 			'scope' => 'namespaced',
 			'include' => ['@all'],
@@ -91,6 +94,12 @@ BODY,
 				'const',
 			],
 			'sort_algorithm' => 'alpha'
+		],
+		'phpdoc_align' => [
+			'align' => 'vertical',
+			'tags' => [
+				'param',
+			]
 		],
 		'phpdoc_line_span' => [
 			'property' => 'single',

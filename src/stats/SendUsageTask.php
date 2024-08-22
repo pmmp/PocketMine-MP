@@ -31,6 +31,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
+use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\Uuid;
 use function array_map;
 use function array_values;
@@ -49,17 +50,15 @@ class SendUsageTask extends AsyncTask{
 	public const TYPE_STATUS = 2;
 	public const TYPE_CLOSE = 3;
 
-	/** @var string */
-	public $endpoint;
-	/** @var string */
-	public $data;
+	public string $endpoint;
+	public string $data;
 
 	/**
 	 * @param string[] $playerList
 	 * @phpstan-param array<string, string> $playerList
 	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
-		$endpoint = "http://" . $server->getConfigGroup()->getPropertyString("anonymous-statistics.host", "stats.pocketmine.net") . "/";
+		$endpoint = "http://" . $server->getConfigGroup()->getPropertyString(YmlServerProperties::ANONYMOUS_STATISTICS_HOST, "stats.pocketmine.net") . "/";
 
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();

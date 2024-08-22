@@ -30,10 +30,7 @@ interface Container extends InventoryHolder{
 	public const TAG_ITEMS = "Items";
 	public const TAG_LOCK = "Lock";
 
-	/**
-	 * @return Inventory
-	 */
-	public function getRealInventory();
+	public function getRealInventory() : Inventory;
 
 	/**
 	 * Returns whether this container can be opened by an item with the given custom name.

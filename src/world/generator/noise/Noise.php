@@ -111,18 +111,11 @@ abstract class Noise{
 		);
 	}
 
-	/** @var float */
-	protected $persistence;
-	/** @var float */
-	protected $expansion;
-	/** @var int */
-	protected $octaves;
-
-	public function __construct(int $octaves, float $persistence, float $expansion){
-		$this->octaves = $octaves;
-		$this->persistence = $persistence;
-		$this->expansion = $expansion;
-	}
+	public function __construct(
+		protected int $octaves,
+		protected float $persistence,
+		protected float $expansion
+	){}
 
 	/**
 	 * @param float $x
@@ -215,6 +208,7 @@ abstract class Noise{
 			throw new \InvalidArgumentException("xSize % samplingRate must return 0");
 		}
 
+		/** @phpstan-var \SplFixedArray<float> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
@@ -224,7 +218,13 @@ abstract class Noise{
 		for($xx = 0; $xx < $xSize; ++$xx){
 			if($xx % $samplingRate !== 0){
 				$nx = (int) ($xx / $samplingRate) * $samplingRate;
-				$noiseArray[$xx] = self::linearLerp($xx, $nx, $nx + $samplingRate, $noiseArray[$nx], $noiseArray[$nx + $samplingRate]);
+				$noiseArray[$xx] = self::linearLerp(
+					x: $xx,
+					x1: $nx,
+					x2: $nx + $samplingRate,
+					q0: $noiseArray[$nx],
+					q1: $noiseArray[$nx + $samplingRate]
+				);
 			}
 		}
 
@@ -241,6 +241,7 @@ abstract class Noise{
 		assert($xSize % $samplingRate === 0, new \InvalidArgumentException("xSize % samplingRate must return 0"));
 		assert($zSize % $samplingRate === 0, new \InvalidArgumentException("zSize % samplingRate must return 0"));
 
+		/** @phpstan-var \SplFixedArray<\SplFixedArray<float>> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
@@ -260,9 +261,16 @@ abstract class Noise{
 					$nx = (int) ($xx / $samplingRate) * $samplingRate;
 					$nz = (int) ($zz / $samplingRate) * $samplingRate;
 					$noiseArray[$xx][$zz] = Noise::bilinearLerp(
-						$xx, $zz, $noiseArray[$nx][$nz], $noiseArray[$nx][$nz + $samplingRate],
-						$noiseArray[$nx + $samplingRate][$nz], $noiseArray[$nx + $samplingRate][$nz + $samplingRate],
-						$nx, $nx + $samplingRate, $nz, $nz + $samplingRate
+						x: $xx,
+						y: $zz,
+						q00: $noiseArray[$nx][$nz],
+						q01: $noiseArray[$nx][$nz + $samplingRate],
+						q10: $noiseArray[$nx + $samplingRate][$nz],
+						q11: $noiseArray[$nx + $samplingRate][$nz + $samplingRate],
+						x1: $nx,
+						x2: $nx + $samplingRate,
+						y1: $nz,
+						y2: $nz + $samplingRate
 					);
 				}
 			}

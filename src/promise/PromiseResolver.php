@@ -38,14 +38,13 @@ final class PromiseResolver{
 	}
 
 	/**
-	 * @param mixed $value
 	 * @phpstan-param TValue $value
 	 */
-	public function resolve($value) : void{
-		if($this->shared->resolved){
+	public function resolve(mixed $value) : void{
+		if($this->shared->state !== null){
 			throw new \LogicException("Promise has already been resolved/rejected");
 		}
-		$this->shared->resolved = true;
+		$this->shared->state = true;
 		$this->shared->result = $value;
 		foreach($this->shared->onSuccess as $c){
 			$c($value);
@@ -55,10 +54,10 @@ final class PromiseResolver{
 	}
 
 	public function reject() : void{
-		if($this->shared->resolved){
+		if($this->shared->state !== null){
 			throw new \LogicException("Promise has already been resolved/rejected");
 		}
-		$this->shared->resolved = true;
+		$this->shared->state = false;
 		foreach($this->shared->onFailure as $c){
 			$c();
 		}

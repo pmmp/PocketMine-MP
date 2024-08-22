@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Beetroot extends Crops{
 
@@ -33,7 +33,7 @@ class Beetroot extends Crops{
 		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::BEETROOT(),
-				VanillaItems::BEETROOT_SEEDS()->setCount(mt_rand(0, 3))
+				VanillaItems::BEETROOT_SEEDS()->setCount(FortuneDropHelper::binomial($item, 0))
 			];
 		}
 
@@ -42,7 +42,7 @@ class Beetroot extends Crops{
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::BEETROOT_SEEDS();
 	}
 }

@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\world\format\PalettedBlockArray;
 use function chr;
+use function ord;
 use function str_repeat;
+use function strlen;
 
 class ChunkUtils{
 
@@ -42,4 +45,23 @@ class ChunkUtils{
 		return $result;
 	}
 
+	/**
+	 * Converts 2D biomes into a 3D biome palette. This palette can then be cloned for every subchunk.
+	 */
+	public static function extrapolate3DBiomes(string $biomes2d) : PalettedBlockArray{
+		if(strlen($biomes2d) !== 256){
+			throw new \InvalidArgumentException("Biome array is expected to be exactly 256 bytes");
+		}
+		$biomePalette = new PalettedBlockArray(ord($biomes2d[0]));
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$biomeId = ord($biomes2d[($z << 4) | $x]);
+				for($y = 0; $y < 16; ++$y){
+					$biomePalette->set($x, $y, $z, $biomeId);
+				}
+			}
+		}
+
+		return $biomePalette;
+	}
 }
