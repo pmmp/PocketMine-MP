@@ -96,6 +96,7 @@ class InventoryManager{
 	private array $complexSlotToInventoryMap = [];
 
 	private int $lastInventoryNetworkId = ContainerIds::FIRST;
+	private int $currentWindowType = WindowTypes::CONTAINER;
 
 	private int $clientSelectedHotbarSlot = -1;
 
@@ -327,9 +328,15 @@ class InventoryManager{
 			foreach($this->containerOpenCallbacks as $callback){
 				$pks = $callback($windowId, $inventory);
 				if($pks !== null){
+					$windowType = null;
 					foreach($pks as $pk){
+						if($pk instanceof ContainerOpenPacket){
+							//workaround useless bullshit in 1.21 - ContainerClose requires a type now for some reason
+							$windowType = $pk->windowType;
+						}
 						$this->session->sendDataPacket($pk);
 					}
+					$this->currentWindowType = $windowType ?? WindowTypes::CONTAINER;
 					$this->syncContents($inventory);
 					return;
 				}
@@ -378,10 +385,11 @@ class InventoryManager{
 		$this->openWindowDeferred(function() : void{
 			$windowId = $this->getNewWindowId();
 			$this->associateIdWithInventory($windowId, $this->player->getInventory());
+			$this->currentWindowType = WindowTypes::INVENTORY;
 
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				$windowId,
-				WindowTypes::INVENTORY,
+				$this->currentWindowType,
 				$this->player->getId()
 			));
 		});
@@ -390,7 +398,7 @@ class InventoryManager{
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->networkIdToInventoryMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
-			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
+			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, $this->currentWindowType, true));
 			if($this->pendingCloseWindowId !== null){
 				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
 			}
@@ -411,7 +419,7 @@ class InventoryManager{
 
 		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
 		//initiated the close and expect an ack.
-		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
+		$this->session->sendDataPacket(ContainerClosePacket::create($id, $this->currentWindowType, false));
 
 		if($this->pendingCloseWindowId === $id){
 			$this->pendingCloseWindowId = null;
@@ -492,14 +500,16 @@ class InventoryManager{
 			$this->session->sendDataPacket(InventorySlotPacket::create(
 				$windowId,
 				$netSlot,
-				new ItemStackWrapper(0, ItemStack::null())
+				new ItemStackWrapper(0, ItemStack::null()),
+				0
 			));
 		}
 		//now send the real contents
 		$this->session->sendDataPacket(InventorySlotPacket::create(
 			$windowId,
 			$netSlot,
-			$itemStackWrapper
+			$itemStackWrapper,
+			0
 		));
 	}
 
@@ -517,10 +527,11 @@ class InventoryManager{
 		 */
 		$this->session->sendDataPacket(InventoryContentPacket::create(
 			$windowId,
-			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null()))
+			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null())),
+			0
 		));
 		//now send the real contents
-		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers));
+		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers, 0));
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot, ItemStack $itemStack) : void{

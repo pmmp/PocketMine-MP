@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -252,18 +251,6 @@ final class BlockStateWriter{
 			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_WEST,
 			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeCoralType(CoralType $coralType) : self{
-		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType){
-			CoralType::TUBE => StringValues::CORAL_COLOR_BLUE,
-			CoralType::BRAIN => StringValues::CORAL_COLOR_PINK,
-			CoralType::BUBBLE => StringValues::CORAL_COLOR_PURPLE,
-			CoralType::FIRE => StringValues::CORAL_COLOR_RED,
-			CoralType::HORN => StringValues::CORAL_COLOR_YELLOW,
 		});
 		return $this;
 	}

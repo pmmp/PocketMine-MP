@@ -59,7 +59,7 @@ class ChiseledBookshelf extends Tile implements Container{
 		$this->loadItems($nbt);
 	}
 
-	public function writeSaveData(CompoundTag $nbt) : void{
+	protected function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveItems($nbt);
 	}
 

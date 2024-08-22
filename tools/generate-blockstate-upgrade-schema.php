@@ -38,18 +38,23 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function array_key_first;
+use function array_key_last;
 use function array_keys;
 use function array_map;
 use function array_shift;
 use function array_values;
 use function count;
 use function dirname;
-use function explode;
 use function file_put_contents;
 use function fwrite;
 use function implode;
 use function json_encode;
 use function ksort;
+use function min;
+use function sort;
+use function strlen;
+use function strrev;
+use function substr;
 use function usort;
 use const JSON_PRETTY_PRINT;
 use const SORT_STRING;
@@ -276,6 +281,77 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
 }
 
 /**
+ * @param string[] $strings
+ */
+function findCommonPrefix(array $strings) : string{
+	sort($strings, SORT_STRING);
+
+	$first = $strings[array_key_first($strings)];
+	$last = $strings[array_key_last($strings)];
+
+	$maxLength = min(strlen($first), strlen($last));
+	for($i = 0; $i < $maxLength; ++$i){
+		if($first[$i] !== $last[$i]){
+			return substr($first, 0, $i);
+		}
+	}
+
+	return substr($first, 0, $maxLength);
+}
+
+/**
+ * @param string[] $strings
+ */
+function findCommonSuffix(array $strings) : string{
+	$reversed = array_map(strrev(...), $strings);
+
+	return strrev(findCommonPrefix($reversed));
+}
+
+/**
+ * @param string[][][] $candidateFlattenedValues
+ * @phpstan-param array<string, array<string, array<string, string>>> $candidateFlattenedValues
+ *
+ * @return BlockStateUpgradeSchemaFlattenedName[][]
+ * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenedName>>
+ */
+function buildFlattenPropertyRules(array $candidateFlattenedValues) : array{
+	$flattenPropertyRules = [];
+	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
+		foreach(Utils::stringifyKeys($filters) as $filter => $valueToId){
+			$ids = array_values($valueToId);
+
+			//TODO: this is a bit too enthusiastic. For example, when flattening the old "stone", it will see that
+			//"granite", "andesite", "stone" etc all have "e" as a common suffix, which works, but looks a bit daft.
+			//This also causes more remaps to be generated than necessary, since some of the values are already
+			//contained in the new ID.
+			$idPrefix = findCommonPrefix($ids);
+			$idSuffix = findCommonSuffix($ids);
+			if(strlen($idSuffix) < 2){
+				$idSuffix = "";
+			}
+
+			$valueMap = [];
+			foreach(Utils::stringifyKeys($valueToId) as $value => $newId){
+				$newValue = substr($newId, strlen($idPrefix), $idSuffix !== "" ? -strlen($idSuffix) : null);
+				if($newValue !== $value){
+					$valueMap[$value] = $newValue;
+				}
+			}
+
+			$flattenPropertyRules[$propertyName][$filter] = new BlockStateUpgradeSchemaFlattenedName(
+				$idPrefix,
+				$propertyName,
+				$idSuffix,
+				$valueMap
+			);
+		}
+	}
+	ksort($flattenPropertyRules, SORT_STRING);
+	return $flattenPropertyRules;
+}
+
+/**
  * Attempts to compress a list of remapped states by looking at which state properties were consistently unchanged.
  * This significantly reduces the output size during flattening when the flattened block has many permutations
  * (e.g. walls).
@@ -327,9 +403,9 @@ function processRemappedStates(array $upgradeTable) : array{
 		$unchangedStatesByNewName[$newName] = $unchangedStates;
 	}
 
-	$flattenedProperties = [];
 	$notFlattenedProperties = [];
-	$notFlattenedPropertyValues = [];
+
+	$candidateFlattenedValues = [];
 	foreach($upgradeTable as $pair){
 		foreach(Utils::stringifyKeys($pair->old->getStates()) as $propertyName => $propertyValue){
 			if(isset($notFlattenedProperties[$propertyName])){
@@ -344,37 +420,41 @@ function processRemappedStates(array $upgradeTable) : array{
 				$notFlattenedProperties[$propertyName] = true;
 				continue;
 			}
-			$parts = explode($rawValue, $pair->new->getName(), 2);
-			if(count($parts) !== 2){
-				//the new name does not contain the property value, but it may still be able to be flattened in other cases
-				$notFlattenedPropertyValues[$propertyName][$rawValue] = $rawValue;
-				continue;
-			}
-			[$prefix, $suffix] = $parts;
 
 			$filter = $pair->old->getStates();
 			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
 				unset($filter[$unchangedPropertyName]);
 			}
 			unset($filter[$propertyName]);
+
 			$rawFilter = encodeOrderedProperties($filter);
-			$flattenRule = new BlockStateUpgradeSchemaFlattenedName(
-				prefix: $prefix,
-				flattenedProperty: $propertyName,
-				suffix: $suffix
-			);
-			if(!isset($flattenedProperties[$propertyName][$rawFilter])){
-				$flattenedProperties[$propertyName][$rawFilter] = $flattenRule;
-			}elseif(!$flattenRule->equals($flattenedProperties[$propertyName][$rawFilter])){
-				$notFlattenedProperties[$propertyName] = true;
+			if(isset($candidateFlattenedValues[$propertyName][$rawFilter])){
+				$valuesToIds = $candidateFlattenedValues[$propertyName][$rawFilter];
+				$existingNewId = $valuesToIds[$rawValue] ?? null;
+				if($existingNewId !== null && $existingNewId !== $pair->new->getName()){
+					//this old value is associated with multiple new IDs - bad candidate for flattening
+					$notFlattenedProperties[$propertyName] = true;
+					continue;
+				}
+				foreach(Utils::stringifyKeys($valuesToIds) as $otherRawValue => $otherNewId){
+					if($otherRawValue === $rawValue){
+						continue;
+					}
+					if($otherNewId === $pair->new->getName()){
+						//this old value maps to the same new ID as another old value - bad candidate for flattening
+						$notFlattenedProperties[$propertyName] = true;
+						continue 2;
+					}
+				}
 			}
+			$candidateFlattenedValues[$propertyName][$rawFilter][$rawValue] = $pair->new->getName();
 		}
 	}
 	foreach(Utils::stringifyKeys($notFlattenedProperties) as $propertyName => $_){
-		unset($flattenedProperties[$propertyName]);
+		unset($candidateFlattenedValues[$propertyName]);
 	}
 
-	ksort($flattenedProperties, SORT_STRING);
+	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues);
 	$flattenProperty = array_key_first($flattenedProperties);
 
 	$list = [];
@@ -393,19 +473,15 @@ function processRemappedStates(array $upgradeTable) : array{
 		}
 		ksort($cleanedOldState);
 		ksort($cleanedNewState);
-		$flattened = false;
 		if($flattenProperty !== null){
 			$flattenedValue = $cleanedOldState[$flattenProperty] ?? null;
 			if(!$flattenedValue instanceof StringTag){
-				throw new AssumptionFailedError("This should always be a TAG_String");
+				throw new AssumptionFailedError("This should always be a TAG_String ($newName $flattenProperty)");
 			}
-			if(!isset($notFlattenedPropertyValues[$flattenProperty][$flattenedValue->getValue()])){
-				unset($cleanedOldState[$flattenProperty]);
-				$flattened = true;
-			}
+			unset($cleanedOldState[$flattenProperty]);
 		}
 		$rawOldState = encodeOrderedProperties($cleanedOldState);
-		$newNameRule = $flattenProperty !== null && $flattened ?
+		$newNameRule = $flattenProperty !== null ?
 			$flattenedProperties[$flattenProperty][$rawOldState] ?? throw new AssumptionFailedError("This should always be set") :
 			$newName;
 
