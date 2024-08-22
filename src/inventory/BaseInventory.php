@@ -37,9 +37,9 @@ use function spl_object_id;
 /**
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  *
- * @phpstan-import-type SlotValidators from SlotSafeInventory
+ * @phpstan-import-type SlotValidators from SlotValidatedInventory
  */
-abstract class BaseInventory implements Inventory, SlotSafeInventory{
+abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
 	protected array $viewers = [];

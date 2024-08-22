@@ -27,12 +27,12 @@ use pocketmine\inventory\transaction\action\validator\SlotValidator;
 use pocketmine\utils\ObjectSet;
 
 /**
- * A "slot safe inventory" has validators which may restrict items
- * from being placed in particular slots of the inventory.
+ * A "slot validated inventory" has validators which may restrict items
+ * from being placed in particular slots of the inventory when transactions are executed.
  *
  * @phpstan-type SlotValidators ObjectSet<SlotValidator>
  */
-interface SlotSafeInventory{
+interface SlotValidatedInventory{
 	/**
 	 * Returns a set of validators that will be used to determine whether an item can be placed in a particular slot.
 	 * All validators need to return null for the transaction to be allowed.
