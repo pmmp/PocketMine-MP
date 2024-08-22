@@ -79,7 +79,7 @@ class SlotChangeAction extends InventoryAction{
 			foreach($this->inventory->getSlotValidators() as $validator){
 				$ret = $validator->validate($this->inventory, $this->targetItem, $this->inventorySlot);
 				if($ret !== null){
-					throw new TransactionValidationException("Target item is not accepted by the inventory slot: " . $ret->getMessage(), 0, $ret);
+					throw new TransactionValidationException("Target item is not accepted by the inventory at slot #" . $this->inventorySlot . ": " . $ret->getMessage(), 0, $ret);
 				}
 			}
 		}
