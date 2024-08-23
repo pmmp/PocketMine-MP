@@ -72,7 +72,7 @@ class ExperienceCommand extends VanillaCommand{
 				$sender->sendMessage("Taken $xpLevels levels from " . $sender->getName());
 			}
 		}else{
-			$xp = $this->getInteger($sender, $args[0], Limits::INT32_MIN, Limits::INT32_MAX);
+			$xp = $this->getInteger($sender, $args[0], max: Limits::INT32_MAX);
 			if($xp < 0){
 				$sender->sendMessage(TextFormat::RED . "Cannot give player negative experience points");
 			}else{
