@@ -42,7 +42,7 @@ final class ContainerHelper{
 	 * @return Item[]|null
 	 * @phpstan-return array<int, Item>|null
 	 */
-	public static function deserializeContents(CompoundTag $tag): ?array{
+	public static function deserializeContents(CompoundTag $tag) : ?array{
 		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
 			$contents = [];
 			/** @var CompoundTag $itemNBT */
@@ -70,7 +70,7 @@ final class ContainerHelper{
 	 * @param Item[] $contents
 	 * @phpstan-param array<int, Item> $contents
 	 */
-	public static function serializeContents(CompoundTag $tag, array $contents, bool $includeEmpty = false): void{
+	public static function serializeContents(CompoundTag $tag, array $contents, bool $includeEmpty = false) : void{
 		$items = [];
 		foreach($contents as $slot => $item){
 			if($includeEmpty && $item->isNull()){
