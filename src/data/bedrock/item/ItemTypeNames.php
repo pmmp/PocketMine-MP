@@ -91,6 +91,7 @@ final class ItemTypeNames{
 	public const BROWN_DYE = "minecraft:brown_dye";
 	public const BRUSH = "minecraft:brush";
 	public const BUCKET = "minecraft:bucket";
+	public const BUNDLE = "minecraft:bundle";
 	public const BURN_POTTERY_SHERD = "minecraft:burn_pottery_sherd";
 	public const CAKE = "minecraft:cake";
 	public const CAMEL_SPAWN_EGG = "minecraft:camel_spawn_egg";
@@ -160,6 +161,7 @@ final class ItemTypeNames{
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
+	public const DEBUG_STICK = "minecraft:debug_stick";
 	public const DIAMOND = "minecraft:diamond";
 	public const DIAMOND_AXE = "minecraft:diamond_axe";
 	public const DIAMOND_BOOTS = "minecraft:diamond_boots";
@@ -175,6 +177,10 @@ final class ItemTypeNames{
 	public const DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
 	public const DONKEY_SPAWN_EGG = "minecraft:donkey_spawn_egg";
 	public const DOUBLE_PLANT = "minecraft:double_plant";
+	public const DOUBLE_STONE_BLOCK_SLAB = "minecraft:double_stone_block_slab";
+	public const DOUBLE_STONE_BLOCK_SLAB2 = "minecraft:double_stone_block_slab2";
+	public const DOUBLE_STONE_BLOCK_SLAB3 = "minecraft:double_stone_block_slab3";
+	public const DOUBLE_STONE_BLOCK_SLAB4 = "minecraft:double_stone_block_slab4";
 	public const DRAGON_BREATH = "minecraft:dragon_breath";
 	public const DRIED_KELP = "minecraft:dried_kelp";
 	public const DROWNED_SPAWN_EGG = "minecraft:drowned_spawn_egg";
@@ -299,6 +305,7 @@ final class ItemTypeNames{
 	public const LEATHER_LEGGINGS = "minecraft:leather_leggings";
 	public const LEAVES = "minecraft:leaves";
 	public const LEAVES2 = "minecraft:leaves2";
+	public const LIGHT_BLOCK = "minecraft:light_block";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 	public const LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
 	public const LIME_DYE = "minecraft:lime_dye";
@@ -323,6 +330,7 @@ final class ItemTypeNames{
 	public const MINECART = "minecraft:minecart";
 	public const MINER_POTTERY_SHERD = "minecraft:miner_pottery_sherd";
 	public const MOJANG_BANNER_PATTERN = "minecraft:mojang_banner_pattern";
+	public const MONSTER_EGG = "minecraft:monster_egg";
 	public const MOOSHROOM_SPAWN_EGG = "minecraft:mooshroom_spawn_egg";
 	public const MOURNER_POTTERY_SHERD = "minecraft:mourner_pottery_sherd";
 	public const MULE_SPAWN_EGG = "minecraft:mule_spawn_egg";
@@ -475,10 +483,14 @@ final class ItemTypeNames{
 	public const STICK = "minecraft:stick";
 	public const STONE_AXE = "minecraft:stone_axe";
 	public const STONE_BLOCK_SLAB = "minecraft:stone_block_slab";
+	public const STONE_BLOCK_SLAB2 = "minecraft:stone_block_slab2";
+	public const STONE_BLOCK_SLAB3 = "minecraft:stone_block_slab3";
+	public const STONE_BLOCK_SLAB4 = "minecraft:stone_block_slab4";
 	public const STONE_HOE = "minecraft:stone_hoe";
 	public const STONE_PICKAXE = "minecraft:stone_pickaxe";
 	public const STONE_SHOVEL = "minecraft:stone_shovel";
 	public const STONE_SWORD = "minecraft:stone_sword";
+	public const STONEBRICK = "minecraft:stonebrick";
 	public const STRAY_SPAWN_EGG = "minecraft:stray_spawn_egg";
 	public const STRIDER_SPAWN_EGG = "minecraft:strider_spawn_egg";
 	public const STRING = "minecraft:string";
