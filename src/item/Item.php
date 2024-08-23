@@ -30,10 +30,10 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\tile\Container;
+use pocketmine\block\tile\util\ContainerHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
@@ -364,20 +364,8 @@ class Item implements \JsonSerializable{
 
 		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
 
-		$this->containedItems = [];
-		$containedItems = $tag->getListTag(Container::TAG_ITEMS);
-		if($containedItems !== null && $containedItems->getTagType() === NBT::TAG_Compound){
-			/** @var CompoundTag $itemNBT */
-			foreach($containedItems as $itemNBT){
-				try{
-					$this->containedItems[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
-				}catch(SavedDataLoadingException $e){
-					//TODO: not the best solution
-					\GlobalLogger::get()->logException($e);
-					continue;
-				}
-			}
-		}
+		$contents = ContainerHelper::deserializeContents($tag);
+		$this->containedItems = $contents !== null ? $contents : [];
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -448,12 +436,7 @@ class Item implements \JsonSerializable{
 		}
 
 		if(count($this->containedItems) > 0){
-			$items = [];
-			foreach($this->containedItems as $slot => $item){
-				$items[] = $item->nbtSerialize($slot);
-			}
-
-			$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
+			ContainerHelper::serializeContents($tag, $this->containedItems);
 		}else{
 			$tag->removeTag(Container::TAG_ITEMS);
 		}
