@@ -33,6 +33,7 @@ use pocketmine\block\tile\Container;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
+use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
@@ -101,7 +102,10 @@ class Item implements \JsonSerializable{
 
 	protected bool $keepOnDeath = false;
 
-	/** @var Item[] $containedItems */
+	/**
+	 * @var Item[]
+	 * @phpsptan-var array<int, Item>
+	 */
 	protected array $containedItems = [];
 
 	/**
@@ -244,6 +248,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function getContainedItems() : array{
 		return $this->containedItems;
@@ -251,6 +256,7 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
 	 */
 	public function setContainedItems(array $items) : void{
 		Utils::validateArrayValueType($items, static function(Item $_) : void{});
@@ -363,7 +369,13 @@ class Item implements \JsonSerializable{
 		if($containedItems !== null && $containedItems->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $itemNBT */
 			foreach($containedItems as $itemNBT){
-				$this->containedItems[] = Item::nbtDeserialize($itemNBT);
+				try{
+					$this->containedItems[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
 			}
 		}
 	}
@@ -436,11 +448,12 @@ class Item implements \JsonSerializable{
 		}
 
 		if(count($this->containedItems) > 0){
-			$containedItems = new ListTag();
-			foreach($this->containedItems as $item){
-				$containedItems->push($item->nbtSerialize());
+			$items = [];
+			foreach($this->containedItems as $slot => $item){
+				$items[] = $item->nbtSerialize($slot);
 			}
-			$tag->setTag(Container::TAG_ITEMS, $containedItems);
+
+			$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
 		}else{
 			$tag->removeTag(Container::TAG_ITEMS);
 		}
