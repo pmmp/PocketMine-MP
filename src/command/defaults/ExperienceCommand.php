@@ -32,8 +32,6 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function abs;
 use function count;
-use function max;
-use function min;
 use function str_ends_with;
 use function substr;
 
@@ -61,25 +59,26 @@ class ExperienceCommand extends VanillaCommand{
 		}
 		$xpManager = $player->getXpManager();
 		if(str_ends_with($args[0], "L")){
-			$xpAttr = $player->getAttributeMap()->get(Attribute::EXPERIENCE_LEVEL) ?? throw new AssumptionFailedError();
-			$maxXp = (int) $xpAttr->getMaxValue();
-			$xp = $this->getInteger($sender, substr($args[0], 0, -1), -$maxXp, $maxXp);
-			if($xp >= 0){
-				$xpManager->setXpLevel(min($xpManager->getXpLevel() + $xp, $maxXp));
-				$sender->sendMessage("Gave $xp experience levels to " . $player->getName());
+			$xpLevelAttr = $player->getAttributeMap()->get(Attribute::EXPERIENCE_LEVEL) ?? throw new AssumptionFailedError();
+			$maxXpLevel = (int) $xpLevelAttr->getMaxValue();
+			$currentXpLevel = $xpManager->getXpLevel();
+			$xpLevels = $this->getInteger($sender, substr($args[0], 0, -1), -$currentXpLevel, $maxXpLevel - $currentXpLevel);
+			if($xpLevels >= 0){
+				$xpManager->addXpLevels($xpLevels, false);
+				$sender->sendMessage("Gave $xpLevels experience levels to " . $player->getName());
 			}else{
-				$xp = abs($xp);
-				$xpManager->setXpLevel(max($xpManager->getXpLevel() - $xp, 0));
-				$sender->sendMessage("Taken $xp levels from " . $sender->getName());
+				$xpLevels = abs($xpLevels);
+				$xpManager->subtractXpLevels($xpLevels);
+				$sender->sendMessage("Taken $xpLevels levels from " . $sender->getName());
 			}
-			return true;
-		}
-		$xp = $this->getInteger($sender, $args[0], Limits::INT32_MIN, Limits::INT32_MAX);
-		if($xp < 0){
-			$sender->sendMessage(TextFormat::RED . "Cannot give player negative experience points");
 		}else{
-			$xpManager->addXp($xp, false);
-			$sender->sendMessage("Gave $xp experience to " . $player->getName());
+			$xp = $this->getInteger($sender, $args[0], Limits::INT32_MIN, Limits::INT32_MAX);
+			if($xp < 0){
+				$sender->sendMessage(TextFormat::RED . "Cannot give player negative experience points");
+			}else{
+				$xpManager->addXp($xp, false);
+				$sender->sendMessage("Gave $xp experience to " . $player->getName());
+			}
 		}
 		return true;
 	}
