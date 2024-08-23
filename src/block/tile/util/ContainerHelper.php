@@ -68,7 +68,7 @@ final class ContainerHelper{
 	
 	/**
 	 * @param Item[] $contents
-	 * @phpstan-var array<int, Item> $contents
+	 * @phpstan-param array<int, Item> $contents
 	 */
 	public static function serializeContents(CompoundTag $tag, array $contents, bool $includeEmpty = false): void{
 		$items = [];
