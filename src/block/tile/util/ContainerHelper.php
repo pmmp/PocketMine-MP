@@ -65,7 +65,7 @@ final class ContainerHelper{
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @param Item[] $contents
 	 * @phpstan-param array<int, Item> $contents
