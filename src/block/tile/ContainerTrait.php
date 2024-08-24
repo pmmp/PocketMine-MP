@@ -25,6 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\tile\util\ContainerHelper;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\world\Position;
@@ -61,6 +62,30 @@ trait ContainerTrait{
 		if($this->lock !== null){
 			$tag->setString(Container::TAG_LOCK, $this->lock);
 		}
+	}
+
+	/**
+	 * @see Tile::getCleanedNBT()
+	 */
+	public function getCleanedNBT() : ?CompoundTag{
+		$tag = parent::getCleanedNBT();
+		if($tag !== null){
+			$tag->removeTag(Container::TAG_ITEMS);
+		}
+		return $tag;
+	}
+
+	/**
+	 * @see Tile::copyDataFromItem()
+	 */
+	public function copyContentsFromItem(Item $item) : void{
+		$inventory = $this->getRealInventory();
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
+
+		$inventory->setContents($item->getContainedItems());
+
+		$inventory->getListeners()->add(...$listeners);
 	}
 
 	/**

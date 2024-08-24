@@ -24,14 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\HopperInventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
 class Hopper extends Spawnable implements Container, Nameable{
 
+	use NameableTrait {
+		copyDataFromItem as copyNameFromItem;
+	}
 	use ContainerTrait;
-	use NameableTrait;
 
 	private const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
 
@@ -55,6 +58,11 @@ class Hopper extends Spawnable implements Container, Nameable{
 		$this->saveName($nbt);
 
 		$nbt->setInt(self::TAG_TRANSFER_COOLDOWN, $this->transferCooldown);
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		$this->copyNameFromItem($item);
+		$this->copyContentsFromItem($item);
 	}
 
 	public function close() : void{

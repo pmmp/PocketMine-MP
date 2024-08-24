@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
@@ -35,6 +36,7 @@ use pocketmine\player\Player;
 
 class Chest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
+	use ContainerTrait;
 
 	/**
 	 * @return AxisAlignedBB[]

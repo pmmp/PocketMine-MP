@@ -68,10 +68,7 @@ class ShulkerBox extends Opaque{
 	}
 
 	private function addDataFromTile(TileShulkerBox $tile, Item $item) : void{
-		$shulkerNBT = $tile->getCleanedNBT();
-		if($shulkerNBT !== null){
-			$item->setNamedTag($shulkerNBT);
-		}
+		$item->setContainedItems($tile->getRealInventory()->getContents());
 		if($tile->hasName()){
 			$item->setCustomName($tile->getName());
 		}

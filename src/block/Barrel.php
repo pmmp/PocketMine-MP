@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -35,6 +36,7 @@ use function abs;
 
 class Barrel extends Opaque{
 	use AnyFacingTrait;
+	use ContainerTrait;
 
 	protected bool $open = false;
 
