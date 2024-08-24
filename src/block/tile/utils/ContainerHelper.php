@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\tile\util;
+namespace pocketmine\block\tile\utils;
 
 use pocketmine\block\tile\Container;
 use pocketmine\data\bedrock\item\SavedItemStackData;

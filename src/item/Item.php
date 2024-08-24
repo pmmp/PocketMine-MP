@@ -30,7 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\tile\Container;
-use pocketmine\block\tile\util\ContainerHelper;
+use pocketmine\block\tile\utils\ContainerHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
