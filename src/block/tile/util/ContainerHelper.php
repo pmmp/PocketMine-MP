@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\tile\util;
 
 use pocketmine\block\tile\Container;
-use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
@@ -46,13 +45,9 @@ final class ContainerHelper{
 		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
 			$contents = [];
 			/** @var CompoundTag $itemNBT */
-			foreach($inventoryTag as $slot => $itemNBT){
+			foreach($inventoryTag as $itemNBT){
 				try{
-					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
-					if($count === 0){
-						continue;
-					}
-					$contents[$slot] = Item::nbtDeserialize($itemNBT);
+					$contents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
 				}catch(SavedDataLoadingException $e){
 					//TODO: not the best solution
 					\GlobalLogger::get()->logException($e);
@@ -70,18 +65,10 @@ final class ContainerHelper{
 	 * @param Item[] $contents
 	 * @phpstan-param array<int, Item> $contents
 	 */
-	public static function serializeContents(CompoundTag $tag, array $contents, bool $includeEmpty = false) : void{
+	public static function serializeContents(CompoundTag $tag, array $contents) : void{
 		$items = [];
 		foreach($contents as $slot => $item){
-			if($includeEmpty && $item->isNull()){
-				$items[$slot] = CompoundTag::create()
-					->setByte(SavedItemStackData::TAG_COUNT, 0)
-					->setShort(SavedItemData::TAG_DAMAGE, 0)
-					->setString(SavedItemData::TAG_NAME, "")
-					->setByte(SavedItemStackData::TAG_WAS_PICKED_UP, 0);
-			}else{
-				$items[$slot] = $item->nbtSerialize();
-			}
+			$items[] = $item->nbtSerialize($slot);
 		}
 
 		$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
