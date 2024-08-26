@@ -28,7 +28,7 @@ use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 
 /**
- * Validate a slot placement in an inventory.
+ * Validates a slot placement in an inventory.
  */
 interface SlotValidator{
 	/**

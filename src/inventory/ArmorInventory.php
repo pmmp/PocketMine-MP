@@ -84,14 +84,14 @@ class ArmorInventory extends SimpleInventory{
 	private function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
 		if($item instanceof Armor && $item->getArmorSlot() === $slot){
 			if($item->getArmorSlot() !== $slot){
-				return new TransactionValidationException("Armor item in wrong slot");
+				return new TransactionValidationException("Armor item is in wrong slot");
 			}
 		}else{
 			if(!($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
 					$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||
 					$item->getBlock()->getTypeId() === BlockTypeIds::MOB_HEAD
 				))){
-				return new TransactionValidationException("Item not accepted in an armor slot");
+				return new TransactionValidationException("Item is not accepted in an armor slot");
 			}
 		}
 		return null;
