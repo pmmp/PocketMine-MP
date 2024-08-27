@@ -35,6 +35,10 @@ class BlueIce extends Opaque{
 		return 0.99;
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
