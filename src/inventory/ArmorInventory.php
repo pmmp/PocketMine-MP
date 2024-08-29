@@ -82,7 +82,7 @@ class ArmorInventory extends SimpleInventory{
 	}
 
 	private function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
-		if($item instanceof Armor && $item->getArmorSlot() === $slot){
+		if($item instanceof Armor){
 			if($item->getArmorSlot() !== $slot){
 				return new TransactionValidationException("Armor item is in wrong slot");
 			}
