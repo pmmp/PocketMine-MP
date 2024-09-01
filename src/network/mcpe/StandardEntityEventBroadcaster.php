@@ -38,8 +38,8 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
-use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
+use pocketmine\network\mcpe\protocol\types\entity\UpdateAttribute;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -67,7 +67,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		if(count($attributes) > 0){
 			$this->sendDataPacket($recipients, UpdateAttributesPacket::create(
 				$entity->getId(),
-				array_map(fn(Attribute $attr) => new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []), $attributes),
+				array_map(fn(Attribute $attr) => new UpdateAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getDefaultValue(), []), $attributes),
 				0
 			));
 		}
@@ -141,7 +141,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		$this->sendDataPacket($recipients, TakeItemActorPacket::create($collector->getId(), $pickedUp->getId()));
 	}
 
-	public function onEmote(array $recipients, Human $from, string $emoteId) : void{
-		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
+	public function onEmote(array $recipients, Human $from, string $emoteId, int $emoteLengthTicks) : void{
+		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, $emoteLengthTicks, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
 	}
 }

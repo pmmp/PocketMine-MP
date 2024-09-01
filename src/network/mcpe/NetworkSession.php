@@ -784,10 +784,10 @@ class NetworkSession{
 	/**
 	 * Instructs the remote client to connect to a different server.
 	 */
-	public function transfer(string $ip, int $port, Translatable|string|null $reason = null) : void{
+	public function transfer(string $ip, int $port, Translatable|string|null $reason = null, bool $reloadWorld = false) : void{
 		$reason ??= KnownTranslationFactory::pocketmine_disconnect_transfer();
-		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
-			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
+		$this->tryDisconnect(function() use ($ip, $port, $reason, $reloadWorld) : void{
+			$this->sendDataPacket(TransferPacket::create($ip, $port, $reloadWorld), true);
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}

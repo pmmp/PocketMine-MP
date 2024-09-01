@@ -89,5 +89,5 @@ interface EntityEventBroadcaster{
 	/**
 	 * @param NetworkSession[] $recipients
 	 */
-	public function onEmote(array $recipients, Human $from, string $emoteId) : void;
+	public function onEmote(array $recipients, Human $from, string $emoteId, int $emoteLengthTicks) : void;
 }
