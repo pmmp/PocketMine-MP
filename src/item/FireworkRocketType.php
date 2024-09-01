@@ -36,11 +36,11 @@ enum FireworkRocketType{
 
 	public function getExplosionSound() : Sound{
 		return match($this){
-			self::SMALL_BALL => new FireworkExplosionSound(),
-			self::LARGE_BALL => new FireworkLargeExplosionSound(),
-			self::STAR => new FireworkExplosionSound(),
-			self::CREEPER => new FireworkExplosionSound(),
+			self::SMALL_BALL,
+			self::STAR,
+			self::CREEPER,
 			self::BURST => new FireworkExplosionSound(),
+			self::LARGE_BALL => new FireworkLargeExplosionSound(),
 		};
 	}
 }
