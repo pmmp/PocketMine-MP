@@ -112,14 +112,14 @@ class ChiseledBookshelf extends Opaque{
 	}
 
 	/**
-	 * Returns the last interacted slot by a player or null if no slot has been interacted with yet.
+	 * Returns the last slot interacted by a player or null if no slot has been interacted with yet.
 	 */
 	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{
 		return $this->lastInteractedSlot;
 	}
 
 	/**
-	 * Sets the last interacted slot by a player.
+	 * Sets the last slot interacted by a player.
 	 *
 	 * @return $this
 	 */
