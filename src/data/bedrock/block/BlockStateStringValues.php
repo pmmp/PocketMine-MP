@@ -66,14 +66,6 @@ final class BlockStateStringValues{
 	public const CRACKED_STATE_MAX_CRACKED = "max_cracked";
 	public const CRACKED_STATE_NO_CRACKS = "no_cracks";
 
-	public const DAMAGE_BROKEN = "broken";
-	public const DAMAGE_SLIGHTLY_DAMAGED = "slightly_damaged";
-	public const DAMAGE_UNDAMAGED = "undamaged";
-	public const DAMAGE_VERY_DAMAGED = "very_damaged";
-
-	public const DIRT_TYPE_COARSE = "coarse";
-	public const DIRT_TYPE_NORMAL = "normal";
-
 	public const DRIPSTONE_THICKNESS_BASE = "base";
 	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
 	public const DRIPSTONE_THICKNESS_MERGE = "merge";
@@ -111,13 +103,6 @@ final class BlockStateStringValues{
 	public const MC_VERTICAL_HALF_BOTTOM = "bottom";
 	public const MC_VERTICAL_HALF_TOP = "top";
 
-	public const MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK = "chiseled_stone_brick";
-	public const MONSTER_EGG_STONE_TYPE_COBBLESTONE = "cobblestone";
-	public const MONSTER_EGG_STONE_TYPE_CRACKED_STONE_BRICK = "cracked_stone_brick";
-	public const MONSTER_EGG_STONE_TYPE_MOSSY_STONE_BRICK = "mossy_stone_brick";
-	public const MONSTER_EGG_STONE_TYPE_STONE = "stone";
-	public const MONSTER_EGG_STONE_TYPE_STONE_BRICK = "stone_brick";
-
 	public const ORIENTATION_DOWN_EAST = "down_east";
 	public const ORIENTATION_DOWN_NORTH = "down_north";
 	public const ORIENTATION_DOWN_SOUTH = "down_south";
@@ -139,63 +124,12 @@ final class BlockStateStringValues{
 	public const PORTAL_AXIS_X = "x";
 	public const PORTAL_AXIS_Z = "z";
 
-	public const PRISMARINE_BLOCK_TYPE_BRICKS = "bricks";
-	public const PRISMARINE_BLOCK_TYPE_DARK = "dark";
-	public const PRISMARINE_BLOCK_TYPE_DEFAULT = "default";
-
-	public const SAND_STONE_TYPE_CUT = "cut";
-	public const SAND_STONE_TYPE_DEFAULT = "default";
-	public const SAND_STONE_TYPE_HEIROGLYPHS = "heiroglyphs";
-	public const SAND_STONE_TYPE_SMOOTH = "smooth";
-
-	public const SAND_TYPE_NORMAL = "normal";
-	public const SAND_TYPE_RED = "red";
-
 	public const SEA_GRASS_TYPE_DEFAULT = "default";
 	public const SEA_GRASS_TYPE_DOUBLE_BOT = "double_bot";
 	public const SEA_GRASS_TYPE_DOUBLE_TOP = "double_top";
 
 	public const SPONGE_TYPE_DRY = "dry";
 	public const SPONGE_TYPE_WET = "wet";
-
-	public const STONE_BRICK_TYPE_CHISELED = "chiseled";
-	public const STONE_BRICK_TYPE_CRACKED = "cracked";
-	public const STONE_BRICK_TYPE_DEFAULT = "default";
-	public const STONE_BRICK_TYPE_MOSSY = "mossy";
-	public const STONE_BRICK_TYPE_SMOOTH = "smooth";
-
-	public const STONE_SLAB_TYPE_BRICK = "brick";
-	public const STONE_SLAB_TYPE_COBBLESTONE = "cobblestone";
-	public const STONE_SLAB_TYPE_NETHER_BRICK = "nether_brick";
-	public const STONE_SLAB_TYPE_QUARTZ = "quartz";
-	public const STONE_SLAB_TYPE_SANDSTONE = "sandstone";
-	public const STONE_SLAB_TYPE_SMOOTH_STONE = "smooth_stone";
-	public const STONE_SLAB_TYPE_STONE_BRICK = "stone_brick";
-	public const STONE_SLAB_TYPE_WOOD = "wood";
-
-	public const STONE_SLAB_TYPE_2_MOSSY_COBBLESTONE = "mossy_cobblestone";
-	public const STONE_SLAB_TYPE_2_PRISMARINE_BRICK = "prismarine_brick";
-	public const STONE_SLAB_TYPE_2_PRISMARINE_DARK = "prismarine_dark";
-	public const STONE_SLAB_TYPE_2_PRISMARINE_ROUGH = "prismarine_rough";
-	public const STONE_SLAB_TYPE_2_PURPUR = "purpur";
-	public const STONE_SLAB_TYPE_2_RED_NETHER_BRICK = "red_nether_brick";
-	public const STONE_SLAB_TYPE_2_RED_SANDSTONE = "red_sandstone";
-	public const STONE_SLAB_TYPE_2_SMOOTH_SANDSTONE = "smooth_sandstone";
-
-	public const STONE_SLAB_TYPE_3_ANDESITE = "andesite";
-	public const STONE_SLAB_TYPE_3_DIORITE = "diorite";
-	public const STONE_SLAB_TYPE_3_END_STONE_BRICK = "end_stone_brick";
-	public const STONE_SLAB_TYPE_3_GRANITE = "granite";
-	public const STONE_SLAB_TYPE_3_POLISHED_ANDESITE = "polished_andesite";
-	public const STONE_SLAB_TYPE_3_POLISHED_DIORITE = "polished_diorite";
-	public const STONE_SLAB_TYPE_3_POLISHED_GRANITE = "polished_granite";
-	public const STONE_SLAB_TYPE_3_SMOOTH_RED_SANDSTONE = "smooth_red_sandstone";
-
-	public const STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE = "cut_red_sandstone";
-	public const STONE_SLAB_TYPE_4_CUT_SANDSTONE = "cut_sandstone";
-	public const STONE_SLAB_TYPE_4_MOSSY_STONE_BRICK = "mossy_stone_brick";
-	public const STONE_SLAB_TYPE_4_SMOOTH_QUARTZ = "smooth_quartz";
-	public const STONE_SLAB_TYPE_4_STONE = "stone";
 
 	public const STRUCTURE_BLOCK_TYPE_CORNER = "corner";
 	public const STRUCTURE_BLOCK_TYPE_DATA = "data";

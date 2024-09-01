@@ -1,0 +1,42 @@
+#Due to GitHub awkwardness, it's not easy to reduce the review requirement for collaborators.
+#Our policy is that 2 collaborators should be aware of every change.
+#For outside PRs, this means 2 collaborator reviews.
+#For PRs made by collaborators, this means 1 reviewer + the author.
+#We trust that collaborators don't need as much oversight.
+name: Auto approve collaborator PRs
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+
+permissions:
+  pull-requests: write
+
+jobs:
+  approve:
+    name: Auto approve
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if PR author has write access
+        id: check-permission
+        uses: actions-cool/check-user-permission@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          require: write
+          username: ${{ github.event.pull_request.user.login }}
+          #technically this would be fine for dependabot but generally bots don't count as team members
+          check-bot: true
+
+        #TODO: Some way to avoid unnecessary repeated reviews would be nice here
+
+      - name: Approve PR if authorized
+        if: steps.check-permission.outputs.require-result == 'true' && steps.check-permission.outputs.check-result == 'false'
+        uses: juliangruber/approve-pull-request-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.pull_request.number }}
