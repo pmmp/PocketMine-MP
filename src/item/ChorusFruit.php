@@ -90,6 +90,6 @@ class ChorusFruit extends Food{
 	}
 
 	public function getCooldownTag() : ?string{
-		return VanillaCooldownTags::CHORUS_FRUIT;
+		return ItemCooldownTags::CHORUS_FRUIT;
 	}
 }
