@@ -160,14 +160,9 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::HUGE_MUSHROOM_BITS, MushroomBlockTypeIdMap::getInstance()->toId($block->getMushroomBlockType()));
 	}
 
-	public static function encodeQuartz(string $type, int $axis) : Writer{
-		return Writer::create(Ids::QUARTZ_BLOCK)
-			->writeString(BlockStateNames::CHISEL_TYPE, $type)
+	public static function encodeQuartz(int $axis, Writer $out) : Writer{
+		return $out
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
-	}
-
-	public static function encodeSandstone(string $id, string $type) : Writer{
-		return Writer::create($id)->writeString(BlockStateNames::SAND_STONE_TYPE, $type);
 	}
 
 	public static function encodeSapling(Sapling $block, Writer $out) : Writer{
@@ -212,36 +207,6 @@ final class BlockStateSerializerHelper{
 		$facing = $block->getFacing();
 		return self::encodeCrops($block, $out)
 			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
-	}
-
-	public static function encodeStoneBricks(string $type) : Writer{
-		return Writer::create(Ids::STONEBRICK)
-			->writeString(BlockStateNames::STONE_BRICK_TYPE, $type);
-	}
-
-	private static function encodeStoneSlab(Slab $block, string $singleId, string $doubleId, string $typeKey, string $typeValue) : Writer{
-		return self::encodeSlab($block, $singleId, $doubleId)
-			->writeString($typeKey, $typeValue);
-	}
-
-	public static function encodeStoneSlab1(Slab $block, string $singleId, string $doubleTypeValue) : Writer{
-		//1.21 made this a mess by flattening single slab IDs but not double ones
-		return $block->getSlabType() === SlabType::DOUBLE ?
-			self::encodeDoubleSlab($block, Ids::DOUBLE_STONE_BLOCK_SLAB)
-				->writeString(BlockStateNames::STONE_SLAB_TYPE, $doubleTypeValue) :
-			self::encodeSingleSlab($block, $singleId);
-	}
-
-	public static function encodeStoneSlab2(Slab $block, string $typeValue) : Writer{
-		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB2, Ids::DOUBLE_STONE_BLOCK_SLAB2, BlockStateNames::STONE_SLAB_TYPE_2, $typeValue);
-	}
-
-	public static function encodeStoneSlab3(Slab $block, string $typeValue) : Writer{
-		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB3, Ids::DOUBLE_STONE_BLOCK_SLAB3, BlockStateNames::STONE_SLAB_TYPE_3, $typeValue);
-	}
-
-	public static function encodeStoneSlab4(Slab $block, string $typeValue) : Writer{
-		return self::encodeStoneSlab($block, Ids::STONE_BLOCK_SLAB4, Ids::DOUBLE_STONE_BLOCK_SLAB4, BlockStateNames::STONE_SLAB_TYPE_4, $typeValue);
 	}
 
 	public static function encodeTrapdoor(Trapdoor $block, Writer $out) : Writer{
