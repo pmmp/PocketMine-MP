@@ -25,6 +25,11 @@ namespace pocketmine\item;
 
 /**
  * Tags used by items to determine their cooldown group.
+ *
+ * These tag values are not related to Minecraft internal IDs.
+ * They only share a visual similarity because these are the most obvious values to use.
+ * Any arbitrary string can be used.
+ *
  * @see Item::getCooldownTag()
  */
 final class ItemCooldownTags{
@@ -33,11 +38,6 @@ final class ItemCooldownTags{
 		//NOOP
 	}
 
-	/**
-	 * These tag values are not related to Minecraft internal IDs.
-	 * They only share a visual similarity because these are the most obvious values to use.
-	 * Any arbitrary string can be used.
-	 */
 	public const CHORUS_FRUIT = "chorus_fruit";
 	public const ENDER_PEARL = "ender_pearl";
 	public const SHIELD = "shield";
