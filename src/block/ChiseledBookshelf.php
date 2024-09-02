@@ -59,6 +59,8 @@ class ChiseledBookshelf extends Opaque{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChiseledBookshelf){
 			$this->lastInteractedSlot = $tile->getLastInteractedSlot();
+		}else{
+			$this->lastInteractedSlot = null;
 		}
 		return $this;
 	}
