@@ -38,11 +38,11 @@ class Mace extends TieredTool{
 	public function getBlockToolHarvestLevel() : int{
 		return $this->tier->getHarvestLevel();
 	}
-
-	public function getMaxDurability(): int {
-        return self::MAX_DURABILITY;
+	
+	public function getMaxDurability() : int{
+		return self::MAX_DURABILITY;
 	}
-
+	
 	public function getAttackPoints() : int{
 		return $this->tier->getBaseAttackPoints() - 1;
 	}
