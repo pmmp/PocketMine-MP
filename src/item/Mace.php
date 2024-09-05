@@ -29,12 +29,18 @@ use pocketmine\entity\Entity;
 
 class Mace extends TieredTool{
 
+	public const MAX_DURABILITY = 501;
+
 	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
 	}
 
 	public function getBlockToolHarvestLevel() : int{
 		return $this->tier->getHarvestLevel();
+	}
+
+	public function getMaxDurability(): int {
+        return self::MAX_DURABILITY;
 	}
 
 	public function getAttackPoints() : int{
