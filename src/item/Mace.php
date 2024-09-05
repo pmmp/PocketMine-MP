@@ -49,6 +49,6 @@ class Mace extends TieredTool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		return $this->applyDamage(2);
+		return $this->applyDamage(5);
 	}
 }
