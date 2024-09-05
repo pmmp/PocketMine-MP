@@ -19,63 +19,36 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerInteractEvent;
-use pocketmine\event\Listener;
-use pocketmine\event\HandlerList;
-use pocketmine\player\Player;
-use pocketmine\event\level\LevelSoundEventPacket;
-use pocketmine\level\sound\LevelSoundEvent;
-use pocketmine\utils\TextFormat;
+use pocketmine\block\BlockToolType;
+use pocketmine\entity\Entity;
 
-class Mace extends Tool implements Listener {
+class Mace extends TieredTool{
 
-    private const MAX_DURABILITY = 501;
-    private const ATTACK_DAMAGE = 6;
+	public function getBlockToolType() : int{
+		return BlockToolType::NONE;
+	}
 
-    public function __construct(int $meta = 0, int $count = 1) {
-        parent::__construct(self::MACE, $meta, $count);
-        $this->setMaxDurability(self::MAX_DURABILITY);
-    }
+	public function getBlockToolHarvestLevel() : int{
+		return $this->tier->getHarvestLevel();
+	}
 
-    public function onUse(Player $player, Block $block): void {
-        parent::onUse($player, $block);
+	public function getAttackPoints() : int{
+		return $this->tier->getBaseAttackPoints() - 1;
+	}
 
-        $this->playSmashSound($player->getWorld(), $player);
-    }
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
+		if(!$block->getBreakInfo()->breaksInstantly()){
+			return $this->applyDamage(1);
+		}
+		return false;
+	}
 
-    public function getAttackDamage(): float {
-        return self::ATTACK_DAMAGE;
-    }
-
-    public function attackEntity(Living $entity): void {
-        $entity->setHealth($entity->getHealth() - $this->getAttackDamage());
-        $this->playAttackSound();
-    }
-
-    private function playAttackSound(): void {
-        $this->playSmashSound($this->getWorld(), $this->getOwner());
-    }
-
-    private function playSmashSound($world, $entity): void {
-        if ($world) {
-            $level = $world->getLevel();
-            if ($this->isGroundHit()) {
-                $level->broadcastLevelSoundEvent(new LevelSoundEventPacket(LevelSoundEvent::SOUND_BLOCK_ANVIL_PLACE, $entity));
-            } else {
-                $level->broadcastLevelSoundEvent(new LevelSoundEventPacket(LevelSoundEvent::SOUND_ENTITY_PLAYER_ATTACK, $entity));
-            }
-        }
-    }
-
-    public function getMaxDurability(): int {
-        return self::MAX_DURABILITY;
-    }
-
-    private function isGroundHit(): bool {
-        return true;
-    }
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		return $this->applyDamage(2);
+	}
 }
