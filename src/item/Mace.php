@@ -26,20 +26,23 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use pocketmine\world\sound\MaceSmashGroundSound;
+use pocketmine\world\sound\MaceSmashAirSound;
+use pocketmine\player\Player;
+use pocketmine\world\World;
 
-class Mace extends TieredTool {
+class Mace extends TieredTool{
 
 	public const MAX_DURABILITY = 501;
-
+	
 	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
 	}
 
+	public function getBlockToolHarvestLevel() : int{
+		return $this->tier->getHarvestLevel();
+	}
+	
 	public function getMaxDurability() : int{
 		return self::MAX_DURABILITY;
 	}
@@ -49,22 +52,21 @@ class Mace extends TieredTool {
 	}
 
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
-		if (!$block->getBreakInfo()->breaksInstantly()) {
+		$world = $block->getPosition()->getWorld();
+		$position = $block->getPosition();
+
+		if(!$block->getBreakInfo()->breaksInstantly()){
+			$world->addSound($position, new MaceSmashAirSound());
 			return $this->applyDamage(1);
 		}
 		return false;
 	}
 
-	public function onAttackEntity(Entity $victim, Player $attacker, array &$returnedItems) : bool{
-		$event = new EntityDamageByEntityEvent($attacker, $victim, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getAttackPoints());
-		$victim->attack($event);
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+		$world = $victim->getWorld();
+		$position = $victim->getPosition();
 
-		if ($event->isCancelled()) {
-			return 0;
-		}
-
-		$hitVector = new Vector3($victim->getPosition()->x, $victim->getPosition()->y, $victim->getPosition()->z);
-		$victim->getWorld()->addSound($hitVector, new MaceSmashGroundSound());
+		$world->addSound($position, new MaceSmashGroundSound());
 		return $this->applyDamage(5);
 	}
 }
