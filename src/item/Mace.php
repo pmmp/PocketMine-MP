@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\event\Event;
 use pocketmine\world\sound\MaceSmashGroundSound;
 
 class Mace extends TieredTool{
