@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\world\sound\MaceSmashGroundSound;
 
 class Mace extends TieredTool{
 
@@ -55,6 +56,7 @@ class Mace extends TieredTool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+        $this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new MaceSmashGroundSound());
 		return $this->applyDamage(5);
 	}
 }
