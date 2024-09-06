@@ -40,10 +40,6 @@ class Mace extends TieredTool {
 		return BlockToolType::NONE;
 	}
 
-	public function getBlockToolHarvestLevel() : int{
-		return $this->tier->getHarvest;
-	}
-
 	public function getMaxDurability() : int{
 		return self::MAX_DURABILITY;
 	}
