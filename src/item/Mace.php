@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
