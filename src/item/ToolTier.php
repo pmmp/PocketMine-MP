@@ -69,7 +69,7 @@ enum ToolTier{
 			self::IRON => self::meta(4, 251, 7, 6, 14),
 			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
 			self::NETHERITE => self::meta(6, 2032, 9, 9, 15),
-			self::MACE => self::meta(39, 28, 92, 12)
+			self::MACE => self::meta(39, 28, 92, 12, 40)
 		};
 	}
 
