@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\MaceSmashGroundSound;
 
-class Mace extends TieredTool{
+class Mace extends TieredTool {
 
     public const MAX_DURABILITY = 501;
 
@@ -69,9 +69,9 @@ class Mace extends TieredTool{
         $victim->attack($event);
         if ($event->isCancelled()) {
             return false;
-        }
+	    }
 
-        $hitVector = new Vector3($victim->getPosition()->x, $victim->getPosition()->y, $victim->getPosition()->z);
+	    $hitVector = new Vector3($victim->getPosition()->x, $victim->getPosition()->y, $victim->getPosition()->z);
         $victim->getWorld()->addSound($hitVector, new MaceSmashGroundSound());
         return $this->applyDamage(5);
     }
