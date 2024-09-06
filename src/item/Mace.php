@@ -56,7 +56,7 @@ class Mace extends TieredTool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-        $this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new MaceSmashGroundSound());
+		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new MaceSmashGroundSound());
 		return $this->applyDamage(5);
 	}
 }
