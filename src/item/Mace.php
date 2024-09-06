@@ -33,7 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\world\sound\MaceSmashGroundSound;
 
 class Mace extends TieredTool {
-	
+
 	public const MAX_DURABILITY = 501;
 
 	public function getBlockToolType() : int{
