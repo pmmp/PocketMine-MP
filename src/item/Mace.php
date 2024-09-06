@@ -16,7 +16,6 @@
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
  *
- *
  */
 
 declare(strict_types=1);
@@ -26,9 +25,9 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Vector3;
 use pocketmine\world\sound\MaceSmashGroundSound;
 use pocketmine\world\World;
 
@@ -60,7 +59,15 @@ class Mace extends TieredTool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		$this->getWorld()->addSound($event->getRayTraceResult()->getHitVector(), new MaceSmashGroundSound());
+		$event = new EntityDamageByEntityEvent($this->holder, $victim, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getAttackPoints());
+		$victim->attack($event);
+
+		if($event->isCancelled()){
+			return false;
+		}
+
+		$hitVector = new Vector3($victim->getPosition()->x, $victim->getPosition()->y, $victim->getPosition()->z);
+		$this->getWorld()->addSound($hitVector, new MaceSmashGroundSound());
 		return $this->applyDamage(5);
 	}
 }
