@@ -56,10 +56,6 @@ class Mace extends TieredTool {
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		if (!$holder instanceof Living) {
-			return false;
-		}
-
 		$event = new EntityDamageByEntityEvent($holder, $victim, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $this->getAttackPoints());
 		$victim->attack($event);
 		if ($event->isCancelled()) {
