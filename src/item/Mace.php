@@ -26,10 +26,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\world\sound\MaceSmashGroundSound;
 use pocketmine\world\sound\MaceSmashAirSound;
-use pocketmine\player\Player;
-use pocketmine\world\World;
+use pocketmine\world\sound\MaceSmashGroundSound;
 
 class Mace extends TieredTool{
 
@@ -42,7 +40,7 @@ class Mace extends TieredTool{
 	public function getBlockToolHarvestLevel() : int{
 		return $this->tier->getHarvestLevel();
 	}
-	
+
 	public function getMaxDurability() : int{
 		return self::MAX_DURABILITY;
 	}
