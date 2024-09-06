@@ -36,30 +36,30 @@ class Mace extends TieredTool {
 	
 	public const MAX_DURABILITY = 501;
 
-	public function getBlockToolType(): int{
+	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
 	}
 
-	public function getBlockToolHarvestLevel(): int{
+	public function getBlockToolHarvestLevel() : int{
 		return $this->tier->getHarvest;
 	}
 
-	public function getMaxDurability(): int{
+	public function getMaxDurability() : int{
 		return self::MAX_DURABILITY;
 	}
 
-	public function getAttackPoints(): int{
+	public function getAttackPoints() : int{
 		return $this->tier->getBaseAttackPoints() - 1;
 	}
 
-	public function onDestroyBlock(Block $block, array &$returnedItems): bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		if (!$block->getBreakInfo()->breaksInstantly()) {
 			return $this->applyDamage(1);
 		}
 		return false;
 	}
 
-	public function onAttackEntity(Entity $victim, array &$returnedItems): bool{
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
 		if (!$holder instanceof Living) {
 			return false;
 		}
