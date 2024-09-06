@@ -34,7 +34,7 @@ use pocketmine\world\World;
 class Mace extends TieredTool{
 
 	public const MAX_DURABILITY = 501;
-	
+
 	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
 	}
