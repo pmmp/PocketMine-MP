@@ -21,7 +21,7 @@ jobs:
       run: composer make-server
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.2.1
       with:
         name: Build
         path: PocketMine-MP.phar
