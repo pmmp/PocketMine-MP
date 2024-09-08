@@ -42,11 +42,11 @@ class Mace extends TieredTool{
 		return BlockToolType::NONE;
 	}
 
-	public function setHolder(Entity $entity): void {
+	public function setHolder(Entity $entity) : void {
 		$this->holder = $entity;
 	}
 
-	public function getHolder(): ?Entity {
+	public function getHolder() : ?Entity {
 		return $this->holder;
 	}
 
