@@ -20,8 +20,8 @@ jobs:
     - name: Build
       run: composer make-server
 
-    - name: Download a Build Artifact
-      uses: actions/download-artifact@v4.1.4
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v2
       with:
         name: Build
         path: PocketMine-MP.phar
