@@ -26,7 +26,10 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\particle\HugeExplodeParticle;
 use pocketmine\world\sound\MaceSmashAirSound;
 use pocketmine\world\sound\MaceSmashGroundSound;
 
@@ -82,13 +85,21 @@ class Mace extends TieredTool{
 			$fallDistance = $holder->getFallDistance();
 
 			if($fallDistance >= self::SMASH_ATTACK_FALL_HEIGHT){
+
+				$damage = self::SMASH_ATTACK_DAMAGE + (int)($fallDistance * 2);
 				$world->addSound($position, new MaceSmashGroundSound());
+				$world->addParticle($position, new HugeExplodeParticle());
 				$holder->resetFallDistance();
-				return $this->applyDamage(self::SMASH_ATTACK_DAMAGE);
+
+				foreach($victim->getWorld()->getNearbyEntities($victim->getBoundingBox()->expandedCopy(3, 3, 3)) as $nearbyEntity){
+					if($nearbyEntity instanceof Living && $nearbyEntity !== $holder){
+						$knockbackVector = $nearbyEntity->getPosition()->subtract($holder->getPosition())->normalize()->multiply(0.4);
+						$nearbyEntity->knockBack($knockbackVector->x, $knockbackVector->z, 0.4);
+					}
+				}
+				return $this->applyDamage(1);
 			}
 		}
-
-		$world->addSound($position, new MaceSmashGroundSound());
-		return $this->applyDamage(self::NORMAL_ATTACK_DAMAGE);
+		return $this->applyDamage(1);
 	}
 }
