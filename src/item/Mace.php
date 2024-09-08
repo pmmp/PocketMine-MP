@@ -16,6 +16,7 @@
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
  *
+ *
  */
 
 declare(strict_types=1);
@@ -31,52 +32,54 @@ use pocketmine\world\sound\MaceSmashGroundSound;
 
 class Mace extends TieredTool{
 
-    public const MAX_DURABILITY = 501;
-    private const NORMAL_ATTACK_DAMAGE = 5;
-    private const SMASH_ATTACK_DAMAGE = 10;
-    private const SMASH_ATTACK_FALL_HEIGHT = 1.5;
+	public const MAX_DURABILITY = 501;
+	private const NORMAL_ATTACK_DAMAGE = 6;
+	private const SMASH_ATTACK_DAMAGE = 10;
+	private const SMASH_ATTACK_FALL_HEIGHT = 1.5;
 
-    public function getBlockToolType() : int{
-        return BlockToolType::NONE;
-	}
+	public function getBlockToolType() : int{
+		return BlockToolType::NONE;
+    }
 
 	public function getBlockToolHarvestLevel() : int{
-        return $this->tier->getHarvestLevel();
-	}
+		return $this->tier->getHarvestLevel();
+    }
 
 	public function getMaxDurability() : int{
-        return self::MAX_DURABILITY;
-	}
+		return self::MAX_DURABILITY;
+    }
 
 	public function getAttackPoints() : int{
-        return $this->tier->getBaseAttackPoints() - 1;
-	}
+		return $this->tier->getBaseAttackPoints() - 1;
+    }
 
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
-        $world = $block->getPosition()->getWorld();
-        $position = $block->getPosition();
+		$world = $block->getPosition()->getWorld();
+		$position = $block->getPosition();
 
-        if(!$block->getBreakInfo()->breaksInstantly()){
-            $world->addSound($position, new MaceSmashAirSound());
-            return $this->applyDamage(1);
-        }
-        return false;
+		if(!$block->getBreakInfo()->breaksInstantly()){
+			$world->addSound($position, new MaceSmashAirSound());
+			return $this->applyDamage(1);
+		}
+		return false;
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-        $world = $victim->getWorld();
-        $position = $victim->getPosition();
-        $attacker = $this->getOwningEntity();
-        if($attacker instanceof Player){
-            $fallDistance = $attacker->getFallDistance();
-            if($fallDistance >= self::SMASH_ATTACK_FALL_HEIGHT){
-                $world->addSound($position, new MaceSmashGroundSound());
-                $attacker->resetFallDistance();
-                return $this->applyDamage(self::SMASH_ATTACK_DAMAGE);
-            }
-        }
+		$world = $victim->getWorld();
+		$position = $victim->getPosition();
+		$holder = $this->getHolder();
 
-        $world->addSound($position, new MaceSmashGroundSound());
-        return $this->applyDamage(self::NORMAL_ATTACK_DAMAGE);
+		if($holder instanceof Player){
+			$fallDistance = $holder->getFallDistance();
+
+			if($fallDistance >= self::SMASH_ATTACK_FALL_HEIGHT){
+				$world->addSound($position, new MaceSmashGroundSound());
+				$holder->resetFallDistance();
+				return $this->applyDamage(self::SMASH_ATTACK_DAMAGE);
+            }
+		}
+
+		$world->addSound($position, new MaceSmashGroundSound());
+		return $this->applyDamage(self::NORMAL_ATTACK_DAMAGE);
     }
 }
