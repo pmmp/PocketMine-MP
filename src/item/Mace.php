@@ -33,25 +33,34 @@ use pocketmine\world\sound\MaceSmashGroundSound;
 class Mace extends TieredTool{
 
 	public const MAX_DURABILITY = 501;
-	private const NORMAL_ATTACK_DAMAGE = 6;
+	private ?Entity $holder = null;
+	private const NORMAL_ATTACK_DAMAGE = 5;
 	private const SMASH_ATTACK_DAMAGE = 10;
 	private const SMASH_ATTACK_FALL_HEIGHT = 1.5;
 
 	public function getBlockToolType() : int{
 		return BlockToolType::NONE;
-    }
+	}
+
+	public function setHolder(Entity $entity): void {
+		$this->holder = $entity;
+	}
+
+	public function getHolder(): ?Entity {
+		return $this->holder;
+	}
 
 	public function getBlockToolHarvestLevel() : int{
 		return $this->tier->getHarvestLevel();
-    }
+	}
 
 	public function getMaxDurability() : int{
 		return self::MAX_DURABILITY;
-    }
+	}
 
 	public function getAttackPoints() : int{
 		return $this->tier->getBaseAttackPoints() - 1;
-    }
+	}
 
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		$world = $block->getPosition()->getWorld();
@@ -76,10 +85,10 @@ class Mace extends TieredTool{
 				$world->addSound($position, new MaceSmashGroundSound());
 				$holder->resetFallDistance();
 				return $this->applyDamage(self::SMASH_ATTACK_DAMAGE);
-            }
+			}
 		}
 
 		$world->addSound($position, new MaceSmashGroundSound());
 		return $this->applyDamage(self::NORMAL_ATTACK_DAMAGE);
-    }
+	}
 }
