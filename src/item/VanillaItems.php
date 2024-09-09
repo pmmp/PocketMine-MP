@@ -634,7 +634,7 @@ final class VanillaItems{
 		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
 		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
 		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
-		self::register("mace", new Mace (new IID(Ids::MACE), "Mace", ToolTier::MACE, [EnchantmentTags::MACE]));
+		self::register("mace", new Mace(new IID(Ids::MACE), "Mace", [EnchantmentTags::SWORD]));
 	}
 
 	private static function registerArmorItems() : void{
