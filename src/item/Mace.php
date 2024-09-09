@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityDemageEventByEntity;
+use pocketmine\event\entity\EntityDemageEventByEntityEvent;
 use pocketmine\math\Vector3;
 
 class Mace extends Tool{
