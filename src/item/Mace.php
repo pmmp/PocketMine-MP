@@ -67,7 +67,7 @@ class Mace extends Tool{
         return $this->damager ?? null;
 	}
 	
-	public function onAttackEntity(EntityDamageByEntityEvent $demager, Entity $victim, array &$returnedItems) : bool{
+	public function onAttackEntity(EntityDamageByEntityEvent $damager, Entity $victim, array &$returnedItems) : bool{
 		$damageEvent = $victim->getLastDamageCause();
 
 		if($damageEvent instanceof EntityDamageEvent && $damageEvent->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
