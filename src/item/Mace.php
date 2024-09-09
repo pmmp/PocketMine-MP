@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\particle\HugeExplodeParticle;
 use pocketmine\world\sound\MaceSmashAirSound;
@@ -89,7 +88,7 @@ class Mace extends TieredTool{
 				$world->addSound($position, new MaceSmashGroundSound());
 				$world->addParticle($position, new HugeExplodeParticle());
 				$holder->resetFallDistance();
-                
+
 				foreach($victim->getWorld()->getNearbyEntities($victim->getBoundingBox()->expandedCopy(3, 3, 3)) as $nearbyEntity){
 					if($nearbyEntity instanceof Living && $nearbyEntity !== $holder){
 						$knockbackVector = $nearbyEntity->getPosition()->subtract(
