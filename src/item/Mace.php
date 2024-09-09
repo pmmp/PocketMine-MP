@@ -32,9 +32,6 @@ use pocketmine\math\Vector3;
 
 class Mace extends Tool{
 
-	/** @var EntityDamageByEntityEvent */
-	private $demager;
-
 	public function getBlockToolType() : int{
 		return BlockToolType::SWORD;
 	}
@@ -66,7 +63,7 @@ class Mace extends Tool{
 		return false;
 	}
 
-	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
+	public function onAttackEntity(EntityDamageByEntityEvent $demager, Entity $victim, array &$returnedItems) : bool{
 		$damageEvent = $victim->getLastDamageCause();
 
 		if($damageEvent instanceof EntityDamageEvent && $damageEvent->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
