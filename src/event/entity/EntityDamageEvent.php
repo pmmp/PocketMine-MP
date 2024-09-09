@@ -73,15 +73,10 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	private array $originals;
 	private int $attackCooldown = 10;
 
-	/** @var Entity */
-	private $demager;
-	
-
 	/**
 	 * @param float[] $modifiers
 	 */
 	public function __construct(
-		Entity $demager,
 		Entity $entity,
 		private int $cause,
 		float $damage,
@@ -187,14 +182,5 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function setAttackCooldown(int $attackCooldown) : void{
 		$this->attackCooldown = $attackCooldown;
-	}
-
-	/**
-     * Returns the entity that caused the damage.
-	 * 
-     * @return Entity The entity that caused the damage.
-     */
-	public function getDamager(): Entity{
-		return $this->damager;
 	}
 }
