@@ -84,7 +84,7 @@ class Mace extends TieredTool{
 			$fallDistance = $holder->getFallDistance();
 
 			if($fallDistance >= self::SMASH_ATTACK_FALL_HEIGHT){
-				$damage = self::SMASH_ATTACK_DAMAGE + (int)($fallDistance * 2);
+				$damage = self::SMASH_ATTACK_DAMAGE + (int)( $fallDistance * 2);
 				$world->addSound($position, new MaceSmashGroundSound());
 				$world->addParticle($position, new HugeExplodeParticle());
 				$holder->resetFallDistance();
