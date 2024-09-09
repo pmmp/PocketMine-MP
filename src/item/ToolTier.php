@@ -32,7 +32,6 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static ToolTier DIAMOND()
  * @method static ToolTier GOLD()
  * @method static ToolTier IRON()
- * @method static ToolTier MACE()
  * @method static ToolTier NETHERITE()
  * @method static ToolTier STONE()
  * @method static ToolTier WOOD()
@@ -48,7 +47,6 @@ enum ToolTier{
 	case IRON;
 	case DIAMOND;
 	case NETHERITE;
-	case MACE;
 
 	/**
 	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
@@ -68,8 +66,7 @@ enum ToolTier{
 			self::STONE => self::meta(3, 132, 6, 4, 5),
 			self::IRON => self::meta(4, 251, 7, 6, 14),
 			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
-			self::NETHERITE => self::meta(6, 2032, 9, 9, 15),
-			self::MACE => self::meta(39, 28, 92, 12, 40)
+			self::NETHERITE => self::meta(6, 2032, 9, 9, 15)
 		};
 	}
 
