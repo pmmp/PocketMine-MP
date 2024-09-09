@@ -26,8 +26,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityDemageByEntityEvent;
 use pocketmine\math\Vector3;
 
 class Mace extends Tool{
@@ -63,10 +63,10 @@ class Mace extends Tool{
 		return false;
 	}
 
-	private function getDemager() : EntityDamageByEntityEvent{
-		return $this->demager;
+	private function getDamager() : ?EntityDamageByEntityEvent{
+        return $this->damager ?? null;
 	}
-
+	
 	public function onAttackEntity(EntityDamageByEntityEvent $demager, Entity $victim, array &$returnedItems) : bool{
 		$damageEvent = $victim->getLastDamageCause();
 
