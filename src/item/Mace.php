@@ -63,21 +63,26 @@ class Mace extends Tool{
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		if($victim->getLastDamageCause()->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
+		$damageEvent = $victim->getLastDamageCause();
 
-			/** @var Entity $user */
-			$user = $victim->getLastDamageCause()->getDamager();
-			$height = $user->getFallDistance();
+		if($damageEvent instanceof EntityDamageEvent && $damageEvent->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
 
-			if($height >= 2) {
-				// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
-				$damage = ($height - 1) * 5;
-				$victim->setHealth($victim->getHealth() - $damage);
+			/** @var Entity|null $user */
+			$user = $damageEvent->getDamager();
 
-				$motion = $user->getMotion();
-				$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+			if($user !== null){
+				$height = $user->getFallDistance();
 
-				$user->fallDistance = 0;
+				if($height >= 2) {
+					// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
+					$damage = ($height - 1) * 5;
+					$victim->setHealth($victim->getHealth() - $damage);
+
+					$motion = $user->getMotion();
+					$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+
+					$user->fallDistance = 0;
+				}
 			}
 		}
 
