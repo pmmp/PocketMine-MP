@@ -1,0 +1,27 @@
+name: PHP Composer
+
+on:
+  push:
+    branches: [ "mace" ]
+  pull_request:
+    branches: [ "mace" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build
+      run: composer make-server
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@3.2.1
+      with:
+        name: Build
+        path: PocketMine-MP.phar
