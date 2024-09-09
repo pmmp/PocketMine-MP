@@ -26,84 +26,63 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockToolType;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
-use pocketmine\player\Player;
-use pocketmine\world\particle\HugeExplodeParticle;
-use pocketmine\world\sound\MaceSmashAirSound;
-use pocketmine\world\sound\MaceSmashGroundSound;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\math\Vector3;
 
-class Mace extends TieredTool{
-
-	public const MAX_DURABILITY = 501;
-	private ?Entity $holder = null;
-	private const NORMAL_ATTACK_DAMAGE = 5;
-	private const SMASH_ATTACK_DAMAGE = 10;
-	private const SMASH_ATTACK_FALL_HEIGHT = 1.5;
+class Mace extends Tool{
 
 	public function getBlockToolType() : int{
-		return BlockToolType::NONE;
-	}
-
-	public function setHolder(Entity $entity) : void {
-		$this->holder = $entity;
-	}
-
-	public function getHolder() : ?Entity {
-		return $this->holder;
-	}
-
-	public function getBlockToolHarvestLevel() : int{
-		return $this->tier->getHarvestLevel();
+		return BlockToolType::SWORD;
 	}
 
 	public function getMaxDurability() : int{
-		return self::MAX_DURABILITY;
+		return 250;
 	}
 
 	public function getAttackPoints() : int{
-		return $this->tier->getBaseAttackPoints() - 1;
+		return 5;
+	}
+
+	public function getBlockToolHarvestLevel() : int{
+		return 1;
+	}
+
+	public function getMiningEfficiency(bool $isCorrectTool) : float{
+		return parent::getMiningEfficiency($isCorrectTool) * 1.5; //swords break any block 1.5x faster than hand
+	}
+
+	public function getBaseMiningEfficiency() : float{
+		return 10;
 	}
 
 	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
-		$world = $block->getPosition()->getWorld();
-		$position = $block->getPosition();
-
 		if(!$block->getBreakInfo()->breaksInstantly()){
-			$world->addSound($position, new MaceSmashAirSound());
-			return $this->applyDamage(1);
+			return $this->applyDamage(2);
 		}
 		return false;
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
-		$world = $victim->getWorld();
-		$position = $victim->getPosition();
-		$holder = $this->getHolder();
+		if($victim->getLastDamageCause()->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
 
-		if($holder instanceof Player){
-			$fallDistance = $holder->getFallDistance();
+			/** @var Entity $user */
+			$user = $victim->getLastDamageCause()->getDamager();
+			$height = $user->getFallDistance();
 
-			if($fallDistance >= self::SMASH_ATTACK_FALL_HEIGHT){
-				$damage = self::SMASH_ATTACK_DAMAGE + (int) ( $fallDistance * 2);
-				$world->addSound($position, new MaceSmashGroundSound());
-				$world->addParticle($position, new HugeExplodeParticle());
-				$holder->resetFallDistance();
+			if($height >= 2) {
+				// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
+				$damage = ($height - 1) * 5;
+				$victim->setHealth($victim->getHealth() - $damage);
 
-				foreach($victim->getWorld()->getNearbyEntities($victim->getBoundingBox()->expandedCopy(3, 3, 3)) as $nearbyEntity){
-					if($nearbyEntity instanceof Living && $nearbyEntity !== $holder){
-						$knockbackVector = $nearbyEntity->getPosition()->subtract(
-							$holder->getPosition()->getX(),
-							$holder->getPosition()->getY(),
-							$holder->getPosition()->getZ()
-						)->normalize()->multiply(0.4);
-						$nearbyEntity->knockBack($knockbackVector->x, $knockbackVector->z, 0.4);
-					}
-				}
-				return $this->applyDamage(1);
+				$motion = $user->getMotion();
+				$user->setMotion(new Vector3($motion->x, 0, $motion->z));
+
+				$user->fallDistance = 0;
 			}
 		}
 
-		$victim->setHealth($victim->getHealth() - self::NORMAL_ATTACK_DAMAGE);
-		return $this->applyDamage(1);
+		$this->applyDamage(2);
+
+		return true;
 	}
 }
