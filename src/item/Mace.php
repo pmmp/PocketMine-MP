@@ -32,6 +32,8 @@ use pocketmine\math\Vector3;
 
 class Mace extends Tool{
 
+	private EntityDamageByEntityEvent $demager;
+
 	public function getBlockToolType() : int{
 		return BlockToolType::SWORD;
 	}
