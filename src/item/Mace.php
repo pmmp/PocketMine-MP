@@ -63,6 +63,10 @@ class Mace extends Tool{
 		return false;
 	}
 
+	private function getDemager() : EntityDamageByEntityEvent{
+		return $this->demager;
+	}
+
 	public function onAttackEntity(EntityDamageByEntityEvent $demager, Entity $victim, array &$returnedItems) : bool{
 		$damageEvent = $victim->getLastDamageCause();
 
@@ -91,7 +95,4 @@ class Mace extends Tool{
 
 		return true;
 	}
-
-	private function getDemager() : EntityDamageByEntityEvent{
-		return $this->demager;
 }
