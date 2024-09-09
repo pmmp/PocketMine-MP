@@ -36,9 +36,6 @@ class Mace extends Tool{
 		return BlockToolType::SWORD;
 	}
 
-	private function getDemager() : EntityDamageByEntityEvent{
-		return $this->demager;
-
 	public function getMaxDurability() : int{
 		return 250;
 	}
@@ -94,4 +91,7 @@ class Mace extends Tool{
 
 		return true;
 	}
+
+	private function getDemager() : EntityDamageByEntityEvent{
+		return $this->demager;
 }
