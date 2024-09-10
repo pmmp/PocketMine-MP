@@ -49,7 +49,7 @@ class Mace extends Tool{
 	}
 
 	public function getMiningEfficiency(bool $isCorrectTool) : float{
-		return parent::getMiningEfficiency($isCorrectTool) * 1.5; //swords break any block 1.5x faster than hand
+		return parent::getMiningEfficiency($isCorrectTool) * 1.5;
 	}
 
 	public function getBaseMiningEfficiency() : float{
@@ -63,23 +63,17 @@ class Mace extends Tool{
 		return false;
 	}
 
-	private function getDamager() : ?EntityDamageByEntityEvent{
-        return $this->damager ?? null;
-	}
-	
 	public function onAttackEntity(EntityDamageByEntityEvent $damager, Entity $victim, array &$returnedItems) : bool{
 		$damageEvent = $victim->getLastDamageCause();
 
-		if($damageEvent instanceof EntityDamageEvent && $damageEvent->getCause() == EntityDamageEvent::CAUSE_ENTITY_ATTACK){
+		if($damageEvent instanceof EntityDamageByEntityEvent){
 
-			/** @var Entity|null $user */
 			$user = $damageEvent->getDamager();
 
 			if($user !== null){
 				$height = $user->getFallDistance();
 
 				if($height >= 2) {
-					// The damage dealt with the mace is boosted 5+ damage for every block fallen after the first.
 					$damage = ($height - 1) * 5;
 					$victim->setHealth($victim->getHealth() - $damage);
 
