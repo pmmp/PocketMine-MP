@@ -27,8 +27,8 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
-use pocketmine\world\sound\EndermanTeleportSound;
 use pocketmine\world\Position;
+use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
 	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_PEARL; }
