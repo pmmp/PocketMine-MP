@@ -1021,7 +1021,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleEmote(EmotePacket $packet) : bool{
-		$this->player->emote($packet->getEmoteId(), $packet->getEmoteLengthTicks());
+		$this->player->emote($packet->getEmoteId());
 		return true;
 	}
 }

@@ -141,7 +141,14 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		$this->sendDataPacket($recipients, TakeItemActorPacket::create($collector->getId(), $pickedUp->getId()));
 	}
 
-	public function onEmote(array $recipients, Human $from, string $emoteId, int $emoteLengthTicks) : void{
-		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, $emoteLengthTicks, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
+	public function onEmote(array $recipients, Human $from, string $emoteId) : void{
+		$this->sendDataPacket($recipients, EmotePacket::create(
+			$from->getId(),
+			$emoteId,
+			0, //seems to be irrelevant for the client, we cannot risk rebroadcasting random values received
+			"",
+			"",
+			EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT
+		));
 	}
 }
