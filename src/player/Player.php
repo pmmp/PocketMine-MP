@@ -2013,7 +2013,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function emote(string $emoteId, int $emoteLengthTicks) : void{
+	public function emote(string $emoteId, int $emoteLengthTicks = 0) : void{
 		$currentTick = $this->server->getTick();
 		if($currentTick - $this->lastEmoteTick > 5){
 			$this->lastEmoteTick = $currentTick;
