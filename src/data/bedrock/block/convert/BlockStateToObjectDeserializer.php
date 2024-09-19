@@ -1589,7 +1589,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::TNT, function(Reader $in) : Block{
 			return Blocks::TNT()
-				->setUnstable($in->readBool(StateNames::EXPLODE_BIT));
+				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
+				->setWorksUnderwater(false);
 		});
 		$this->map(Ids::TORCH, function(Reader $in) : Block{
 			return Blocks::TORCH()
