@@ -210,6 +210,7 @@ use function strtolower;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
+ * @method static Mace MACE()
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
@@ -633,6 +634,7 @@ final class VanillaItems{
 		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
 		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
 		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
+		self::register("mace", new Mace(new IID(Ids::MACE), "Mace", [EnchantmentTags::SWORD]));
 	}
 
 	private static function registerArmorItems() : void{

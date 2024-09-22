@@ -1372,7 +1372,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("leather_leggings", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_pants", fn() => Items::LEATHER_PANTS());
 		$result->register("leather_tunic", fn() => Items::LEATHER_TUNIC());
-		$result->register("magma_cream", fn() => Items::MAGMA_CREAM());
+		$result->register("mace", fn() => Items::MACE());
 		$result->register("melon", fn() => Items::MELON());
 		$result->register("melon_seeds", fn() => Items::MELON_SEEDS());
 		$result->register("melon_slice", fn() => Items::MELON());
