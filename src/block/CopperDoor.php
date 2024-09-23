@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class CopperDoor extends Door{
+class CopperDoor extends Door implements ICopper{
 	use CopperTrait{
 		onInteract as onInteractCopper;
 	}

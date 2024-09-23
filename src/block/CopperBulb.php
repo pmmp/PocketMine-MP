@@ -25,11 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
-class CopperBulb extends Opaque{
+class CopperBulb extends Opaque implements ICopper{
 	use CopperTrait;
 	use PoweredByRedstoneTrait;
 	use LightableTrait{
