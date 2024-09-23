@@ -21,21 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\inventory\transaction\action\validator;
 
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 
-class BlueIce extends Opaque{
-
-	public function getFrictionFactor() : float{
-		return 0.99;
+class CallbackSlotValidator implements SlotValidator{
+	/**
+	 * @phpstan-param \Closure(Inventory, Item, int) : ?TransactionValidationException $validate
+	 */
+	public function __construct(
+		private \Closure $validate
+	){
+		Utils::validateCallableSignature(function(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{ return null; }, $validate);
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
+	public function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
+		return ($this->validate)($inventory, $item, $slot);
 	}
 }
