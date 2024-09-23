@@ -33,10 +33,10 @@
       "composer-runtime-api": "^2.0",
       "adhocore/json-comment": "~1.2.0",
       "pocketmine/netresearch-jsonmapper": "~v4.4.999",
-      "pocketmine/bedrock-block-upgrade-schema": "~4.3.0+bedrock-1.21.20",
-      "pocketmine/bedrock-data": "~2.12.0+bedrock-1.21.20",
-      "pocketmine/bedrock-item-upgrade-schema": "~1.11.0+bedrock-1.21.20",
-      "pocketmine/bedrock-protocol": "~33.0.0+bedrock-1.21.20",
+      "pocketmine/bedrock-block-upgrade-schema": "~4.4.0+bedrock-1.21.30",
+      "pocketmine/bedrock-data": "~2.13.0+bedrock-1.21.30",
+      "pocketmine/bedrock-item-upgrade-schema": "~1.12.0+bedrock-1.21.30",
+      "pocketmine/bedrock-protocol": "~34.0.0+bedrock-1.21.30",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/color": "^0.3.0",
@@ -52,7 +52,7 @@
       "symfony/filesystem": "~6.4.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.11.10",
+      "phpstan/phpstan": "1.11.11",
       "phpstan/phpstan-phpunit": "^1.1.0",
       "phpstan/phpstan-strict-rules": "^1.2.0",
       "phpunit/phpunit": "^10.5.24"

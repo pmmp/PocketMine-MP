@@ -100,7 +100,7 @@ final class ItemStackResponseBuilder{
 
 		$responseContainerInfos = [];
 		foreach($responseInfosByContainer as $containerInterfaceId => $responseInfos){
-			$responseContainerInfos[] = new ItemStackResponseContainerInfo(new FullContainerName($containerInterfaceId, 0), $responseInfos);
+			$responseContainerInfos[] = new ItemStackResponseContainerInfo(new FullContainerName($containerInterfaceId), $responseInfos);
 		}
 
 		return new ItemStackResponse(ItemStackResponse::RESULT_OK, $this->requestId, $responseContainerInfos);
