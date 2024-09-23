@@ -21,21 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\Item;
+/**
+ * Represents copper blocks that have oxidized and waxed variations.
+ */
+interface ICopper{
 
-class BlueIce extends Opaque{
+	public function getOxidation() : CopperOxidation;
 
-	public function getFrictionFactor() : float{
-		return 0.99;
-	}
+	public function setOxidation(CopperOxidation $oxidation) : ICopper;
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
+	public function isWaxed() : bool;
 
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
+	public function setWaxed(bool $waxed) : ICopper;
 }

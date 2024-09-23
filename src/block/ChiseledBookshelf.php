@@ -48,9 +48,30 @@ class ChiseledBookshelf extends Opaque{
 	 */
 	private array $slots = [];
 
+	private ?ChiseledBookshelfSlot $lastInteractedSlot = null;
+
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->enumSet($this->slots, ChiseledBookshelfSlot::cases());
+	}
+
+	public function readStateFromWorld() : Block{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileChiseledBookshelf){
+			$this->lastInteractedSlot = $tile->getLastInteractedSlot();
+		}else{
+			$this->lastInteractedSlot = null;
+		}
+		return $this;
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileChiseledBookshelf){
+			$tile->setLastInteractedSlot($this->lastInteractedSlot);
+		}
 	}
 
 	/**
@@ -92,6 +113,23 @@ class ChiseledBookshelf extends Opaque{
 		return $this->slots;
 	}
 
+	/**
+	 * Returns the last slot interacted by a player or null if no slot has been interacted with yet.
+	 */
+	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{
+		return $this->lastInteractedSlot;
+	}
+
+	/**
+	 * Sets the last slot interacted by a player.
+	 *
+	 * @return $this
+	 */
+	public function setLastInteractedSlot(?ChiseledBookshelfSlot $lastInteractedSlot) : self{
+		$this->lastInteractedSlot = $lastInteractedSlot;
+		return $this;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($face !== $this->facing){
 			return false;
@@ -112,10 +150,12 @@ class ChiseledBookshelf extends Opaque{
 			$returnedItems[] = $inventory->getItem($slot->value);
 			$inventory->clear($slot->value);
 			$this->setSlot($slot, false);
+			$this->lastInteractedSlot = $slot;
 		}elseif($item instanceof WritableBookBase || $item instanceof Book || $item instanceof EnchantedBook){
 			//TODO: type tags like blocks would be better for this
 			$inventory->setItem($slot->value, $item->pop());
 			$this->setSlot($slot, true);
+			$this->lastInteractedSlot = $slot;
 		}else{
 			return true;
 		}
