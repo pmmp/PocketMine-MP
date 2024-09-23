@@ -50,11 +50,4 @@ class CopperDoor extends Door implements ICopper{
 
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
-
-	protected function isCompatibleForHinge(Block $other) : bool{
-		return parent::isCompatibleForHinge($other) &&
-			$other instanceof CopperDoor &&
-			$this->getOxidation() === $other->getOxidation() &&
-			$this->isWaxed() === $other->isWaxed();
-	}
 }
