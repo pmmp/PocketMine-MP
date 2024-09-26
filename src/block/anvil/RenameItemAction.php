@@ -21,25 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\anvil;
 
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\entity\Human;
-use pocketmine\entity\Living;
+use pocketmine\item\Item;
+use function strlen;
 
-class TurtleHelmet extends Armor{
+final class RenameItemAction extends AnvilAction{
+	private const COST = 1;
 
-	public function onTickWorn(Living $entity) : bool{
-		if($entity instanceof Human && !$entity->isUnderwater()){
-			$entity->getEffects()->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200, 0, false));
-			return true;
-		}
-
-		return false;
+	public function canBeApplied() : bool{
+		return true;
 	}
 
-	public function isValidRepairMaterial(Item $material) : bool{
-		return $material->getTypeId() === ItemTypeIds::SCUTE;
+	public function process(Item $resultItem) : void{
+		if($this->customName === null || strlen($this->customName) === 0){
+			if($this->base->hasCustomName()){
+				$this->xpCost += self::COST;
+				$resultItem->clearCustomName();
+			}
+		}else{
+			if($this->base->getCustomName() !== $this->customName){
+				$this->xpCost += self::COST;
+				$resultItem->setCustomName($this->customName);
+			}
+		}
 	}
 }
