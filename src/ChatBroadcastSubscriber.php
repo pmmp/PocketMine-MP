@@ -21,28 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine;
 
-use pocketmine\ChatBroadcastSubscriber;
-use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 
 /**
- * Forwards any messages it receives via sendMessage() to the given logger. Used for forwarding chat messages and
- * command audit log messages to the server log file.
+ * This interface can be implemented in order to receive messages from the server's global broadcast channels.
  */
-final class BroadcastLoggerForwarder implements ChatBroadcastSubscriber{
+interface ChatBroadcastSubscriber{
 
-	public function __construct(
-		private \Logger $logger,
-		private Language $language
-	){}
-
-	public function onBroadcast(string $channelId, Translatable|string $message) : void{
-		if($message instanceof Translatable){
-			$this->logger->info($this->language->translate($message));
-		}else{
-			$this->logger->info($message);
-		}
-	}
+	/**
+	 * Called when a message is broadcasted on any channel that this receiver is subscribed to.
+	 *
+	 * @see Server::subscribeToBroadcastChannel()
+	 */
+	public function onBroadcast(string $channelId, Translatable|string $message) : void;
 }
