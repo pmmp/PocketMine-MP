@@ -32,6 +32,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\EntityDataHelper as Helper;
+use pocketmine\entity\object\EndCrystal;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -91,6 +92,10 @@ final class EntityFactory{
 		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{
 			return new Egg(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['Egg', 'minecraft:egg']);
+
+		$this->register(EndCrystal::class, function(World $world, CompoundTag $nbt) : EndCrystal{
+			return new EndCrystal(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['EnderCrystal', 'minecraft:ender_crystal']);
 
 		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
 			return new EnderPearl(Helper::parseLocation($nbt, $world), null, $nbt);
