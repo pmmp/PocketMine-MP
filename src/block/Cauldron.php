@@ -27,6 +27,7 @@ use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\item\LingeringPotion;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
 use pocketmine\item\SplashPotion;
@@ -82,7 +83,7 @@ final class Cauldron extends Transparent{
 			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::LAVA_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item->getTypeId() === ItemTypeIds::POWDER_SNOW_BUCKET){
 			//TODO: powder snow cauldron
-		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
+		}elseif($item instanceof LingeringPotion || $item instanceof Potion || $item instanceof SplashPotion){
 			if($item->getType() === PotionType::WATER){
 				$this->fill(WaterCauldron::WATER_BOTTLE_FILL_AMOUNT, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{

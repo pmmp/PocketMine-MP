@@ -32,6 +32,7 @@ use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\item\LingeringPotion;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
 use pocketmine\item\SplashPotion;
@@ -122,7 +123,7 @@ final class WaterCauldron extends FillableCauldron{
 			$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
 
 			$item->pop();
-		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
+		}elseif($item instanceof LingeringPotion || $item instanceof Potion || $item instanceof SplashPotion){
 			if($item->getType() === PotionType::WATER){
 				$this->setCustomWaterColor(null)->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
