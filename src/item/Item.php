@@ -29,6 +29,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
+use pocketmine\block\tile\Container;
+use pocketmine\block\tile\utils\ContainerHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
@@ -99,6 +101,12 @@ class Item implements \JsonSerializable{
 	protected array $canDestroy = [];
 
 	protected bool $keepOnDeath = false;
+
+	/**
+	 * @var Item[]
+	 * @phpsptan-var array<int, Item>
+	 */
+	protected array $containedItems = [];
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -239,6 +247,23 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * @return Item[]
+	 * @phpstan-return array<int, Item>
+	 */
+	public function getContainedItems() : array{
+		return $this->containedItems;
+	}
+
+	/**
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	public function setContainedItems(array $items) : void{
+		Utils::validateArrayValueType($items, static function(Item $_) : void{});
+		$this->containedItems = $items;
+	}
+
+	/**
 	 * Returns whether this Item has a non-empty NBT.
 	 */
 	public function hasNamedTag() : bool{
@@ -338,6 +363,9 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->keepOnDeath = $tag->getByte(self::TAG_KEEP_ON_DEATH, 0) !== 0;
+
+		$contents = ContainerHelper::deserializeContents($tag);
+		$this->containedItems = $contents !== null ? $contents : [];
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -405,6 +433,12 @@ class Item implements \JsonSerializable{
 			$tag->setByte(self::TAG_KEEP_ON_DEATH, 1);
 		}else{
 			$tag->removeTag(self::TAG_KEEP_ON_DEATH);
+		}
+
+		if(count($this->containedItems) > 0){
+			ContainerHelper::serializeContents($tag, $this->containedItems);
+		}else{
+			$tag->removeTag(Container::TAG_ITEMS);
 		}
 	}
 

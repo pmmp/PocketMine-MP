@@ -24,12 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\BarrelInventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
 class Barrel extends Spawnable implements Container, Nameable{
-	use NameableTrait;
+	use NameableTrait {
+		copyDataFromItem as copyNameFromItem;
+	}
 	use ContainerTrait;
 
 	protected BarrelInventory $inventory;
@@ -47,6 +50,11 @@ class Barrel extends Spawnable implements Container, Nameable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveName($nbt);
 		$this->saveItems($nbt);
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		$this->copyNameFromItem($item);
+		$this->copyContentsFromItem($item);
 	}
 
 	public function close() : void{

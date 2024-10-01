@@ -23,13 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\data\bedrock\item\SavedItemStackData;
-use pocketmine\data\SavedDataLoadingException;
+use pocketmine\block\tile\utils\ContainerHelper;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\world\Position;
 
@@ -43,22 +40,12 @@ trait ContainerTrait{
 	abstract public function getRealInventory() : Inventory;
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+		$newContents = ContainerHelper::deserializeContents($tag);
+		if($newContents !== null){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
-			$newContents = [];
-			/** @var CompoundTag $itemNBT */
-			foreach($inventoryTag as $itemNBT){
-				try{
-					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
-				}catch(SavedDataLoadingException $e){
-					//TODO: not the best solution
-					\GlobalLogger::get()->logException($e);
-					continue;
-				}
-			}
 			$inventory->setContents($newContents);
 
 			$inventory->getListeners()->add(...$listeners);
@@ -70,16 +57,35 @@ trait ContainerTrait{
 	}
 
 	protected function saveItems(CompoundTag $tag) : void{
-		$items = [];
-		foreach($this->getRealInventory()->getContents() as $slot => $item){
-			$items[] = $item->nbtSerialize($slot);
-		}
-
-		$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
+		ContainerHelper::serializeContents($tag, $this->getRealInventory()->getContents());
 
 		if($this->lock !== null){
 			$tag->setString(Container::TAG_LOCK, $this->lock);
 		}
+	}
+
+	/**
+	 * @see Tile::getCleanedNBT()
+	 */
+	public function getCleanedNBT() : ?CompoundTag{
+		$tag = parent::getCleanedNBT();
+		if($tag !== null){
+			$tag->removeTag(Container::TAG_ITEMS);
+		}
+		return $tag;
+	}
+
+	/**
+	 * @see Tile::copyDataFromItem()
+	 */
+	public function copyContentsFromItem(Item $item) : void{
+		$inventory = $this->getRealInventory();
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
+
+		$inventory->setContents($item->getContainedItems());
+
+		$inventory->getListeners()->add(...$listeners);
 	}
 
 	/**

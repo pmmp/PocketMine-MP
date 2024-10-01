@@ -136,4 +136,9 @@ class ChiseledBookshelf extends Tile implements Container{
 			$tag->setString(Container::TAG_LOCK, $this->lock);
 		}
 	}
+
+	public function copyDataFromItem(Item $item) : void{
+		parent::copyDataFromItem($item);
+		$this->copyContentsFromItem($item);
+	}
 }

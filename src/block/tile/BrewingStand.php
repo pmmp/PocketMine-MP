@@ -43,6 +43,7 @@ use function count;
 class BrewingStand extends Spawnable implements Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
+		copyDataFromItem as copyNameFromItem;
 	}
 	use ContainerTrait;
 
@@ -90,6 +91,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		$nbt->setShort(self::TAG_BREW_TIME_PE, $this->brewTime);
 		$nbt->setShort(self::TAG_MAX_FUEL_TIME, $this->maxFuelTime);
 		$nbt->setShort(self::TAG_REMAINING_FUEL_TIME_PE, $this->remainingFuelTime);
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		$this->copyNameFromItem($item);
+		$this->copyContentsFromItem($item);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{

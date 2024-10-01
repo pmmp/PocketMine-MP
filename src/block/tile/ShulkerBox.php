@@ -34,7 +34,9 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
-	use ContainerTrait;
+	use ContainerTrait {
+		getCleanedNBT as getContainerNBT;
+	}
 
 	public const TAG_FACING = "facing";
 
@@ -60,7 +62,7 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 	}
 
 	public function copyDataFromItem(Item $item) : void{
-		$this->readSaveData($item->getNamedTag());
+		$this->copyContentsFromItem($item);
 		if($item->hasCustomName()){
 			$this->setName($item->getCustomName());
 		}
@@ -78,7 +80,7 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 	}
 
 	public function getCleanedNBT() : ?CompoundTag{
-		$nbt = parent::getCleanedNBT();
+		$nbt = $this->getContainerNBT();
 		if($nbt !== null){
 			$nbt->removeTag(self::TAG_FACING);
 		}
