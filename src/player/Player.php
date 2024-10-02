@@ -183,6 +183,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
 
+	public const DEFAULT_FLIGHT_SPEED = 0.05;
+
 	public const TAG_FIRST_PLAYED = "firstPlayed"; //TAG_Long
 	public const TAG_LAST_PLAYED = "lastPlayed"; //TAG_Long
 	private const TAG_GAME_MODE = "playerGameType"; //TAG_Int
@@ -277,6 +279,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+
+	protected float $flightSpeed = self::DEFAULT_FLIGHT_SPEED;
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
@@ -506,6 +510,39 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isFlying() : bool{
 		return $this->flying;
+	}
+
+	/**
+	 * Sets the player's speed when flying.
+	 *
+	 * The flight speed is calculated as `blocks per tick = flightSpeed * 10`. For example, setting the
+	 * flight speed to 0.05 means the player will fly at approximately 0.5 blocks per tick.
+	 *
+	 * If set to zero, the player will not be able to move in the xz plane when flying, and negative values
+	 * will invert the controls.
+	 *
+	 * Notes:
+	 * - The value of the movement speed attribute has no effect on the flight speed.
+	 * - When a player sprints while flying, their flight speed is doubled on the client-side.
+	 */
+	public function setFlightSpeed(float $flightSpeed) : void{
+		if($this->flightSpeed !== $flightSpeed){
+			$this->flightSpeed = $flightSpeed;
+			$this->getNetworkSession()->syncAbilities($this);
+		}
+	}
+
+	/**
+	 * Returns the player's speed when flying.
+	 *
+	 * The flight speed is calculated as `blocks per tick = flightSpeed * 10`. For example, if the
+	 * flight speed is set to 0.05, the player will fly at approximately 0.5 blocks per tick.
+	 *
+	 * If zero, the player is not be able to move in the xz plane when flying, and negative values
+	 * will invert the controls.
+	 */
+	public function getFlightSpeed() : float{
+		return $this->flightSpeed;
 	}
 
 	public function setAutoJump(bool $value) : void{
