@@ -25,6 +25,7 @@ namespace pocketmine\event;
 
 use pocketmine\plugin\Plugin;
 use function array_merge;
+use function array_merge_recursive;
 use function krsort;
 use function spl_object_id;
 use const SORT_NUMERIC;
@@ -37,7 +38,7 @@ class HandlerList{
 	private array $affectedHandlerCaches = [];
 
 	/**
-	 * @phpstan-param class-string<covariant Event> $class
+	 * @phpstan-param class-string<Event|AsyncEvent> $class
 	 */
 	public function __construct(
 		private string $class,
@@ -126,12 +127,23 @@ class HandlerList{
 			$handlerLists[] = $currentList;
 		}
 
-		$listenersByPriority = [];
+		$listeners = [];
+		$asyncListeners = [];
+		$exclusiveAsyncListeners = [];
 		foreach($handlerLists as $currentList){
-			foreach($currentList->handlerSlots as $priority => $listeners){
-				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $listeners);
+			foreach($currentList->handlerSlots as $priority => $listenersToSort){
+				foreach($listenersToSort as $listener){
+					if(!$listener instanceof RegisteredAsyncListener){
+						$listeners[$priority][] = $listener;
+					}elseif(!$listener->canBeCalledConcurrently()){
+						$asyncListeners[$priority][] = $listener;
+					}else{
+						$exclusiveAsyncListeners[$priority][] = $listener;
+					}
+				}
 			}
 		}
+		$listenersByPriority = array_merge_recursive($listeners, $asyncListeners, $exclusiveAsyncListeners);
 
 		//TODO: why on earth do the priorities have higher values for lower priority?
 		krsort($listenersByPriority, SORT_NUMERIC);

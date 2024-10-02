@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\event\AsyncEvent;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
@@ -31,11 +32,13 @@ use pocketmine\event\Listener;
 use pocketmine\event\ListenerMethodTags;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
+use pocketmine\event\RegisteredAsyncListener;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
+use pocketmine\promise\Promise;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
@@ -575,7 +578,7 @@ class PluginManager{
 		/** @phpstan-var class-string $paramClass */
 		$paramClass = $paramType->getName();
 		$eventClass = new \ReflectionClass($paramClass);
-		if(!$eventClass->isSubclassOf(Event::class)){
+		if(!$eventClass->isSubclassOf(Event::class) && !$eventClass->isSubclassOf(AsyncEvent::class)){
 			return null;
 		}
 
@@ -629,8 +632,33 @@ class PluginManager{
 						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
 				}
 			}
+			$exclusiveCall = false;
+			if(isset($tags[ListenerMethodTags::EXCLUSIVE_CALL])){
+				if(!is_a($eventClass, AsyncEvent::class, true)){
+					throw new PluginException(sprintf(
+						"Event handler %s() declares @%s for non-async event of type %s",
+						Utils::getNiceClosureName($handlerClosure),
+						ListenerMethodTags::EXCLUSIVE_CALL,
+						$eventClass
+					));
+				}
+				switch(strtolower($tags[ListenerMethodTags::EXCLUSIVE_CALL])){
+					case "true":
+					case "":
+						$exclusiveCall = true;
+						break;
+					case "false":
+						break;
+					default:
+						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::EXCLUSIVE_CALL . " value \"" . $tags[ListenerMethodTags::EXCLUSIVE_CALL] . "\"");
+				}
+			}
 
-			$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled);
+			if(is_subclass_of($eventClass, AsyncEvent::class) && $this->canHandleAsyncEvent($handlerClosure)){
+				$this->registerAsyncEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled, $exclusiveCall);
+			}else{
+				$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled);
+			}
 		}
 	}
 
@@ -664,5 +692,45 @@ class PluginManager{
 		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
 		HandlerListManager::global()->getListFor($event)->register($registeredListener);
 		return $registeredListener;
+	}
+
+	/**
+	 * @param string $event Class name that extends Event and AsyncEvent
+	 *
+	 * @phpstan-param class-string<AsyncEvent> $event
+	 * @phpstan-param \Closure(AsyncEvent) : Promise<null> $handler
+	 *
+	 * @throws \ReflectionException
+	 */
+	public function registerAsyncEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false, bool $exclusiveCall = false) : RegisteredAsyncListener{
+		if(!is_subclass_of($event, AsyncEvent::class)){
+			throw new PluginException($event . " is not an AsyncEvent");
+		}
+
+		$handlerName = Utils::getNiceClosureName($handler);
+
+		if(!$plugin->isEnabled()){
+			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");
+		}
+
+		$timings = Timings::getEventHandlerTimings($event, $handlerName, $plugin->getDescription()->getFullName());
+
+		$registeredListener = new RegisteredAsyncListener($handler, $priority, $plugin, $handleCancelled, $exclusiveCall, $timings);
+		HandlerListManager::global()->getListFor($event)->register($registeredListener);
+		return $registeredListener;
+	}
+
+	/**
+	 * Check if the given handler return type is async-compatible (equal to Promise)
+	 *
+	 * @phpstan-param \Closure(AsyncEvent) : Promise<null> $handler
+	 *
+	 * @throws \ReflectionException
+	 */
+	private function canHandleAsyncEvent(\Closure $handler) : bool{
+		$reflection = new \ReflectionFunction($handler);
+		$return = $reflection->getReturnType();
+
+		return $return instanceof \ReflectionNamedType && $return->getName() === Promise::class;
 	}
 }
