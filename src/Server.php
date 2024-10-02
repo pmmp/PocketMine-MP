@@ -342,6 +342,10 @@ class Server{
 		return $this->maxPlayers;
 	}
 
+	public function setMaxPlayers(int $maxPlayers) : void{
+		$this->maxPlayers = $maxPlayers;
+	}
+
 	/**
 	 * Returns whether the server requires that players be authenticated to Xbox Live. If true, connecting players who
 	 * are not logged into Xbox Live will be disconnected.
