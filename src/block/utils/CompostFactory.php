@@ -108,10 +108,10 @@ final class CompostFactory{
 		$this->register(VanillaBlocks::MELON()->asItem(), 65);
 		//Moss Block
 
-		$this->register(VanillaBLOCKS::BROWN_MUSHROOM()->asItem(), 65);
-		$this->register(VanillaBLOCKS::RED_MUSHROOM()->asItem(), 65);
-		$this->register(VanillaBLOCKS::BROWN_MUSHROOM_BLOCK()->asItem(), 65);
-		$this->register(VanillaBLOCKS::RED_MUSHROOM_BLOCK()->asItem(), 65);
+		$this->register(VanillaBlocks::BROWN_MUSHROOM()->asItem(), 65);
+		$this->register(VanillaBlocks::RED_MUSHROOM()->asItem(), 65);
+		$this->register(VanillaBlocks::BROWN_MUSHROOM_BLOCK()->asItem(), 65);
+		$this->register(VanillaBlocks::RED_MUSHROOM_BLOCK()->asItem(), 65);
 
 		$this->register(VanillaBlocks::NETHER_WART()->asItem(), 65);
 		$this->register(VanillaItems::POTATO(), 65);
