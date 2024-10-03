@@ -36,8 +36,10 @@ use function spl_object_id;
 
 /**
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
+ *
+ * @phpstan-import-type SlotValidators from SlotValidatedInventory
  */
-abstract class BaseInventory implements Inventory{
+abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
 	protected array $viewers = [];
@@ -46,9 +48,12 @@ abstract class BaseInventory implements Inventory{
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
 	protected ObjectSet $listeners;
+	/** @phpstan-var SlotValidators */
+	protected ObjectSet $validators;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();
+		$this->validators = new ObjectSet();
 	}
 
 	public function getMaxStackSize() : int{
@@ -397,5 +402,9 @@ abstract class BaseInventory implements Inventory{
 
 	public function getListeners() : ObjectSet{
 		return $this->listeners;
+	}
+
+	public function getSlotValidators() : ObjectSet{
+		return $this->validators;
 	}
 }

@@ -101,6 +101,15 @@ fwrite($file, <<<'DOC'
 DOC
 );
 fwrite($file, "final class YmlServerProperties{\n");
+fwrite($file, <<<'CONSTRUCTOR'
+
+	private function __construct(){
+		//NOOP
+	}
+
+
+CONSTRUCTOR
+);
 foreach(Utils::stringifyKeys($constants) as $constName => $propertyName){
 	fwrite($file, "\tpublic const $constName = '$propertyName';\n");
 }

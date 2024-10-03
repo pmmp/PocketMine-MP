@@ -1,24 +1,29 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/block/BaseBanner.php
+			path: ../../../src/block/CakeWithCandle.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/DoubleTallGrass.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CopperTrait.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CopperTrait.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Match arm comparison between 4 and 4 is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
-			message: "#^Match arm is unreachable because previous comparison is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
@@ -36,12 +41,22 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Static property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$threadLocalStorage \\(ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\) does not accept non\\-empty\\-array\\<int, non\\-empty\\-array\\<string, mixed\\>\\>\\|ArrayObject\\<int, array\\<string, mixed\\>\\>\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncTask.php
-
-		-
 			message: "#^Casting to int something that's already int\\.$#"
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with false will always evaluate to true\\.$#"
+			count: 1
+			path: ../../phpunit/promise/PromiseTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false and 'All promise should…' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../phpunit/promise/PromiseTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+			count: 2
+			path: ../../phpunit/promise/PromiseTest.php
 

@@ -27,6 +27,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\item\Durable;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
+use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseContainerInfo;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponseSlotInfo;
@@ -99,7 +100,7 @@ final class ItemStackResponseBuilder{
 
 		$responseContainerInfos = [];
 		foreach($responseInfosByContainer as $containerInterfaceId => $responseInfos){
-			$responseContainerInfos[] = new ItemStackResponseContainerInfo($containerInterfaceId, $responseInfos);
+			$responseContainerInfos[] = new ItemStackResponseContainerInfo(new FullContainerName($containerInterfaceId), $responseInfos);
 		}
 
 		return new ItemStackResponse(ItemStackResponse::RESULT_OK, $this->requestId, $responseContainerInfos);

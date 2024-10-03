@@ -29,6 +29,10 @@ namespace pocketmine;
  */
 final class ServerProperties{
 
+	private function __construct(){
+		//NOOP
+	}
+
 	public const AUTO_SAVE = "auto-save";
 	public const DEFAULT_WORLD_GENERATOR = "level-type";
 	public const DEFAULT_WORLD_GENERATOR_SETTINGS = "generator-settings";

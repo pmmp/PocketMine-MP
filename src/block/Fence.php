@@ -40,9 +40,11 @@ class Fence extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
@@ -98,6 +100,6 @@ class Fence extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER : SupportType::NONE;
 	}
 }

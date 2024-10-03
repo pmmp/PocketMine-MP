@@ -51,12 +51,12 @@ class ThreadSafeClassLoader extends ThreadSafe{
 	 * @var ThreadSafeArray|string[]
 	 * @phpstan-var ThreadSafeArray<int, string>
 	 */
-	private $fallbackLookup;
+	private ThreadSafeArray $fallbackLookup;
 	/**
 	 * @var ThreadSafeArray|string[][]
 	 * @phpstan-var ThreadSafeArray<string, ThreadSafeArray<int, string>>
 	 */
-	private $psr4Lookup;
+	private ThreadSafeArray $psr4Lookup;
 
 	public function __construct(){
 		$this->fallbackLookup = new ThreadSafeArray();

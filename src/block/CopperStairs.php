@@ -23,14 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
 
-class CopperStairs extends Stair{
+class CopperStairs extends Stair implements ICopper{
 	use CopperTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->oxidation = CopperOxidation::NONE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 }
