@@ -38,12 +38,15 @@ use function implode;
 final class BlockStateData{
 	/**
 	 * Bedrock version of the most recent backwards-incompatible change to blockstates.
+	 *
+	 * This is *not* the same as current game version. It should match the numbers in the
+	 * newest blockstate upgrade schema used in BedrockBlockUpgradeSchema.
 	 */
 	public const CURRENT_VERSION =
 		(1 << 24) | //major
-		(20 << 16) | //minor
-		(10 << 8) | //patch
-		(32); //revision
+		(21 << 16) | //minor
+		(30 << 8) | //patch
+		(7); //revision
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";

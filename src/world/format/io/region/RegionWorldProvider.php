@@ -147,7 +147,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ?LoadedChunkData;
+	abstract protected function deserializeChunk(string $data, \Logger $logger) : ?LoadedChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -200,7 +200,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 		$chunkData = $this->loadRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunkData !== null){
-			return $this->deserializeChunk($chunkData);
+			return $this->deserializeChunk($chunkData, new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ"));
 		}
 
 		return null;

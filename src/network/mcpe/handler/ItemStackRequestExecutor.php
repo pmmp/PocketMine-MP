@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
@@ -110,10 +112,10 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
+		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerName()->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
-			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerId() . ", slot ID: " . $info->getSlotId());
+			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerName()->getContainerId() . ", slot ID: " . $info->getSlotId());
 		}
 		[$inventory, $slot] = $windowAndSlot;
 		if(!$inventory->slotExists($slot)){
@@ -140,7 +142,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
-		if($slotInfo->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+		if($slotInfo->getContainerName()->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 			//special case for the "created item" output slot
 			//TODO: do we need to send a response for this slot info?
 			return $this->takeCreatedItem($count);
@@ -287,7 +289,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -333,7 +335,16 @@ class ItemStackRequestExecutor{
 
 			$this->setNextCreatedItem($item, true);
 		}elseif($action instanceof CraftRecipeStackRequestAction){
-			$this->beginCrafting($action->getRecipeId(), 1);
+			$window = $this->player->getCurrentWindow();
+			if($window instanceof EnchantInventory){
+				$optionId = $this->inventoryManager->getEnchantingTableOptionIndex($action->getRecipeId());
+				if($optionId !== null && ($option = $window->getOption($optionId)) !== null){
+					$this->specialTransaction = new EnchantingTransaction($this->player, $option, $optionId + 1);
+					$this->setNextCreatedItem($window->getOutput($optionId));
+				}
+			}else{
+				$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
+			}
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
@@ -380,7 +391,7 @@ class ItemStackRequestExecutor{
 	public function buildItemStackResponse() : ItemStackResponse{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
-			$builder->addSlot($requestInfo->getContainerId(), $requestInfo->getSlotId());
+			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
 		return $builder->build();

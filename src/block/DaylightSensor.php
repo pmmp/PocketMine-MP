@@ -42,7 +42,7 @@ class DaylightSensor extends Transparent{
 	protected bool $inverted = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, 15, $this->signalStrength);
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
 		$w->bool($this->inverted);
 	}
 
@@ -70,7 +70,7 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

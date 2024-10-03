@@ -24,19 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColoredTrait;
-use pocketmine\block\utils\DyeColor;
 
 class DyedCandle extends Candle{
 	use ColoredTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
 		$result = parent::getCandleIfCompatibleType($block);
 		//different coloured candles can't be combined in the same block
-		return $result instanceof DyedCandle && $result->color->equals($this->color) ? $result : null;
+		return $result instanceof DyedCandle && $result->color === $this->color ? $result : null;
 	}
 }

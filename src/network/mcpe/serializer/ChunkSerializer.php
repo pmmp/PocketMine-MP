@@ -30,7 +30,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\BlockTranslator;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
@@ -44,11 +44,33 @@ final class ChunkSerializer{
 	}
 
 	/**
+	 * Returns the min/max subchunk index expected in the protocol.
+	 * This has no relation to the world height supported by PM.
+	 *
+	 * @phpstan-param DimensionIds::* $dimensionId
+	 * @return int[]
+	 * @phpstan-return array{int, int}
+	 */
+	public static function getDimensionChunkBounds(int $dimensionId) : array{
+		return match($dimensionId){
+			DimensionIds::OVERWORLD => [-4, 19],
+			DimensionIds::NETHER => [0, 7],
+			DimensionIds::THE_END => [0, 15],
+			default => throw new \InvalidArgumentException("Unknown dimension ID $dimensionId"),
+		};
+	}
+
+	/**
 	 * Returns the number of subchunks that will be sent from the given chunk.
 	 * Chunks are sent in a stack, so every chunk below the top non-empty one must be sent.
+	 *
+	 * @phpstan-param DimensionIds::* $dimensionId
 	 */
-	public static function getSubChunkCount(Chunk $chunk) : int{
-		for($y = Chunk::MAX_SUBCHUNK_INDEX, $count = count($chunk->getSubChunks()); $y >= Chunk::MIN_SUBCHUNK_INDEX; --$y, --$count){
+	public static function getSubChunkCount(Chunk $chunk, int $dimensionId) : int{
+		//if the protocol world bounds ever exceed the PM supported bounds again in the future, we might need to
+		//polyfill some stuff here
+		[$minSubChunkIndex, $maxSubChunkIndex] = self::getDimensionChunkBounds($dimensionId);
+		for($y = $maxSubChunkIndex, $count = $maxSubChunkIndex - $minSubChunkIndex + 1; $y >= $minSubChunkIndex; --$y, --$count){
 			if($chunk->getSubChunk($y)->isEmptyFast()){
 				continue;
 			}
@@ -58,18 +80,23 @@ final class ChunkSerializer{
 		return 0;
 	}
 
-	public static function serializeFullChunk(Chunk $chunk, BlockTranslator $blockTranslator, PacketSerializerContext $encoderContext, ?string $tiles = null) : string{
-		$stream = PacketSerializer::encoder($encoderContext);
+	/**
+	 * @phpstan-param DimensionIds::* $dimensionId
+	 */
+	public static function serializeFullChunk(Chunk $chunk, int $dimensionId, BlockTranslator $blockTranslator, ?string $tiles = null) : string{
+		$stream = PacketSerializer::encoder();
 
-		$subChunkCount = self::getSubChunkCount($chunk);
+		$subChunkCount = self::getSubChunkCount($chunk, $dimensionId);
 		$writtenCount = 0;
-		for($y = Chunk::MIN_SUBCHUNK_INDEX; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
+
+		[$minSubChunkIndex, $maxSubChunkIndex] = self::getDimensionChunkBounds($dimensionId);
+		for($y = $minSubChunkIndex; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
 			self::serializeSubChunk($chunk->getSubChunk($y), $blockTranslator, $stream, false);
 		}
 
 		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
 		//all biomes must always be written :(
-		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
+		for($y = $minSubChunkIndex; $y <= $maxSubChunkIndex; ++$y){
 			self::serializeBiomePalette($chunk->getSubChunk($y)->getBiomeArray(), $biomeIdMap, $stream);
 		}
 
