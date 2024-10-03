@@ -33,6 +33,7 @@ use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\DumpMemoryCommand;
 use pocketmine\command\defaults\EffectCommand;
 use pocketmine\command\defaults\EnchantCommand;
+use pocketmine\command\defaults\ExperienceCommand;
 use pocketmine\command\defaults\GamemodeCommand;
 use pocketmine\command\defaults\GarbageCollectorCommand;
 use pocketmine\command\defaults\GiveCommand;
@@ -99,6 +100,7 @@ class SimpleCommandMap implements CommandMap{
 			new DumpMemoryCommand(),
 			new EffectCommand(),
 			new EnchantCommand(),
+			new ExperienceCommand(),
 			new GamemodeCommand(),
 			new GarbageCollectorCommand(),
 			new GiveCommand(),

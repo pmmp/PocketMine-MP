@@ -84,6 +84,8 @@ final class DefaultPermissionNames{
 	public const COMMAND_WHITELIST_LIST = "pocketmine.command.whitelist.list";
 	public const COMMAND_WHITELIST_RELOAD = "pocketmine.command.whitelist.reload";
 	public const COMMAND_WHITELIST_REMOVE = "pocketmine.command.whitelist.remove";
+	public const COMMAND_XP_OTHER = "pocketmine.command.xp.other";
+	public const COMMAND_XP_SELF = "pocketmine.command.xp.self";
 	public const GROUP_CONSOLE = "pocketmine.group.console";
 	public const GROUP_OPERATOR = "pocketmine.group.operator";
 	public const GROUP_USER = "pocketmine.group.user";
