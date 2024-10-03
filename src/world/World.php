@@ -520,7 +520,7 @@ class World implements ChunkManager{
 			$this->logger->warning("\"chunk-ticking.per-tick\" setting is deprecated, but you've used it to disable chunk ticking. Set \"chunk-ticking.tick-radius\" to 0 in \"pocketmine.yml\" instead.");
 			$this->chunkTickRadius = 0;
 		}
-		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
+		$this->initTickedBlocksPerSubchunkPerTick($cfg);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2);
 
 		$this->initRandomTickBlocksFromConfig($cfg);
@@ -3513,5 +3513,24 @@ class World implements ChunkManager{
 				}
 			}
 		}
+	}
+
+	private function initTickedBlocksPerSubchunkPerTick(ServerConfigGroup $cfg) : void {
+		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt(YmlServerProperties::CHUNK_TICKING_BLOCKS_PER_SUBCHUNK_PER_TICK, self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
+		$specificTick = $cfg->getPropertyInt("worlds." . $this->getFolderName() . ".blocks-per-subchunk-per-tick", -1);
+		if($specificTick >= 0){
+			$this->tickedBlocksPerSubchunkPerTick = $specificTick;
+		}
+	}
+
+	public function setTickedBlocksPerSubchunkPerTick(int $tickedBlocksPerSubchunkPerTick) : void{
+		if($tickedBlocksPerSubchunkPerTick < 0){
+			throw new \InvalidArgumentException("Ticked blocks per subchunk per tick must be non-negative");
+		}
+		$this->tickedBlocksPerSubchunkPerTick = $tickedBlocksPerSubchunkPerTick;
+	}
+
+	public function getTickedBlocksPerSubchunkPerTick() : int{
+		return $this->tickedBlocksPerSubchunkPerTick;
 	}
 }
