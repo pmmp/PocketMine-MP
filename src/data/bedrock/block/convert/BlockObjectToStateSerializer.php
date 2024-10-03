@@ -103,6 +103,7 @@ use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
+use pocketmine\block\Observer;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\Potato;
@@ -1514,6 +1515,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::NETHER_WART(), function(NetherWartPlant $block) : Writer{
 			return Writer::create(Ids::NETHER_WART)
 				->writeInt(StateNames::AGE, $block->getAge());
+		});
+		$this->map(Blocks::OBSERVER(), function(Observer $block) : Writer {
+			return Writer::create(Ids::OBSERVER)
+				->writeFacingDirectionString($block->getFacing())
+				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
 		});
 		$this->map(Blocks::PEONY(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::PEONY)));
 		$this->map(Blocks::PINK_PETALS(), function(PinkPetals $block) : Writer{

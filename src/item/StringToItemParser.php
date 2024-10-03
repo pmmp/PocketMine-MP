@@ -859,6 +859,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("oak_wood", fn() => Blocks::OAK_WOOD()->setStripped(false));
 		$result->registerBlock("oak_wood_stairs", fn() => Blocks::OAK_STAIRS());
 		$result->registerBlock("oak_wooden_stairs", fn() => Blocks::OAK_STAIRS());
+		$result->registerBlock("observer", fn() => Blocks::OBSERVER());
 		$result->registerBlock("obsidian", fn() => Blocks::OBSIDIAN());
 		$result->registerBlock("orange_tulip", fn() => Blocks::ORANGE_TULIP());
 		$result->registerBlock("oxeye_daisy", fn() => Blocks::OXEYE_DAISY());
