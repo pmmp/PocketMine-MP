@@ -1518,7 +1518,15 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::OBSERVER(), function(Observer $block) : Writer {
 			return Writer::create(Ids::OBSERVER)
-				->writeFacingDirectionString($block->getFacing())
+				->writeString(StateNames::MC_FACING_DIRECTION, match($block->getFacing()){
+					Facing::DOWN => StringValues::MC_BLOCK_FACE_DOWN,
+					Facing::UP => StringValues::MC_BLOCK_FACE_UP,
+					Facing::NORTH => StringValues::MC_BLOCK_FACE_NORTH,
+					Facing::SOUTH => StringValues::MC_BLOCK_FACE_SOUTH,
+					Facing::WEST => StringValues::MC_BLOCK_FACE_WEST,
+					Facing::EAST => StringValues::MC_BLOCK_FACE_EAST,
+					default => throw new BlockStateSerializeException("Invalid Facing " . $block->getFacing())
+				})
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
 		});
 		$this->map(Blocks::PEONY(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::PEONY)));
