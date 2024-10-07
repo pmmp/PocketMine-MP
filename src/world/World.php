@@ -2328,7 +2328,7 @@ class World implements ChunkManager{
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				foreach($this->getChunkEntities($x, $z) as $ent){
-					if($ent !== $entity && $ent->boundingBox->intersectsWith($bb)){
+					if($ent !== $entity && $ent->boundingBox->intersectsWith($bb, 0.01)){
 						$nearby[] = $ent;
 					}
 				}
