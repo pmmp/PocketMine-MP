@@ -59,6 +59,16 @@ abstract class Terminal{
 	public static string $COLOR_YELLOW = "";
 	public static string $COLOR_WHITE = "";
 	public static string $COLOR_MINECOIN_GOLD = "";
+	public static string $COLOR_MATERIAL_QUARTZ = "";
+	public static string $COLOR_MATERIAL_IRON = "";
+	public static string $COLOR_MATERIAL_NETHERITE = "";
+	public static string $COLOR_MATERIAL_REDSTONE = "";
+	public static string $COLOR_MATERIAL_COPPER = "";
+	public static string $COLOR_MATERIAL_GOLD = "";
+	public static string $COLOR_MATERIAL_EMERALD = "";
+	public static string $COLOR_MATERIAL_DIAMOND = "";
+	public static string $COLOR_MATERIAL_LAPIS = "";
+	public static string $COLOR_MATERIAL_AMETHYST = "";
 
 	private static ?bool $formattingCodes = null;
 
@@ -111,6 +121,16 @@ abstract class Terminal{
 		self::$COLOR_YELLOW = $color(227);
 		self::$COLOR_WHITE = $color(231);
 		self::$COLOR_MINECOIN_GOLD = $color(184);
+		self::$COLOR_MATERIAL_QUARTZ = $color(188);
+		self::$COLOR_MATERIAL_IRON = $color(251);
+		self::$COLOR_MATERIAL_NETHERITE = $color(237);
+		self::$COLOR_MATERIAL_REDSTONE = $color(88);
+		self::$COLOR_MATERIAL_COPPER = $color(131);
+		self::$COLOR_MATERIAL_GOLD = $color(178);
+		self::$COLOR_MATERIAL_EMERALD = $color(35);
+		self::$COLOR_MATERIAL_DIAMOND = $color(37);
+		self::$COLOR_MATERIAL_LAPIS = $color(24);
+		self::$COLOR_MATERIAL_AMETHYST = $color(98);
 	}
 
 	protected static function getEscapeCodes() : void{
@@ -144,15 +164,25 @@ abstract class Terminal{
 			self::$COLOR_YELLOW = $colors >= 256 ? $setaf(227) : $setaf(11);
 			self::$COLOR_WHITE = $colors >= 256 ? $setaf(231) : $setaf(15);
 			self::$COLOR_MINECOIN_GOLD = $colors >= 256 ? $setaf(184) : $setaf(11);
+			self::$COLOR_MATERIAL_QUARTZ = $colors >= 256 ? $setaf(188) : $setaf(7);
+			self::$COLOR_MATERIAL_IRON = $colors >= 256 ? $setaf(251) : $setaf(7);
+			self::$COLOR_MATERIAL_NETHERITE = $colors >= 256 ? $setaf(237) : $setaf(1);
+			self::$COLOR_MATERIAL_REDSTONE = $colors >= 256 ? $setaf(88) : $setaf(9);
+			self::$COLOR_MATERIAL_COPPER = $colors >= 256 ? $setaf(131) : $setaf(3);
+			self::$COLOR_MATERIAL_GOLD = $colors >= 256 ? $setaf(178) : $setaf(11);
+			self::$COLOR_MATERIAL_EMERALD = $colors >= 256 ? $setaf(35) : $setaf(2);
+			self::$COLOR_MATERIAL_DIAMOND = $colors >= 256 ? $setaf(37) : $setaf(14);
+			self::$COLOR_MATERIAL_LAPIS = $colors >= 256 ? $setaf(24) : $setaf(12);
+			self::$COLOR_MATERIAL_AMETHYST = $colors >= 256 ? $setaf(98) : $setaf(13);
 		}else{
-			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = $setaf(0);
-			self::$COLOR_RED = self::$COLOR_DARK_RED = $setaf(1);
-			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = $setaf(2);
-			self::$COLOR_YELLOW = self::$COLOR_GOLD = self::$COLOR_MINECOIN_GOLD = $setaf(3);
-			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = $setaf(4);
-			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = $setaf(5);
-			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = $setaf(6);
-			self::$COLOR_GRAY = self::$COLOR_WHITE = $setaf(7);
+			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = self::$COLOR_MATERIAL_NETHERITE = $setaf(0);
+			self::$COLOR_RED = self::$COLOR_DARK_RED = self::$COLOR_MATERIAL_REDSTONE = self::$COLOR_MATERIAL_COPPER = $setaf(1);
+			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = self::$COLOR_MATERIAL_EMERALD = $setaf(2);
+			self::$COLOR_YELLOW = self::$COLOR_GOLD = self::$COLOR_MINECOIN_GOLD = self::$COLOR_MATERIAL_GOLD = $setaf(3);
+			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = self::$COLOR_MATERIAL_LAPIS = $setaf(4);
+			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = self::$COLOR_MATERIAL_AMETHYST = $setaf(5);
+			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = self::$COLOR_MATERIAL_DIAMOND = $setaf(6);
+			self::$COLOR_GRAY = self::$COLOR_WHITE = self::$COLOR_MATERIAL_QUARTZ = self::$COLOR_MATERIAL_IRON = $setaf(7);
 		}
 	}
 
@@ -191,12 +221,10 @@ abstract class Terminal{
 	public static function toANSI(string $string) : string{
 		$newString = "";
 		foreach(TextFormat::tokenize($string) as $token){
-			$newString .= match($token){
+			$newString .= match ($token) {
 				TextFormat::BOLD => Terminal::$FORMAT_BOLD,
 				TextFormat::OBFUSCATED => Terminal::$FORMAT_OBFUSCATED,
 				TextFormat::ITALIC => Terminal::$FORMAT_ITALIC,
-				TextFormat::UNDERLINE => Terminal::$FORMAT_UNDERLINE,
-				TextFormat::STRIKETHROUGH => Terminal::$FORMAT_STRIKETHROUGH,
 				TextFormat::RESET => Terminal::$FORMAT_RESET,
 				TextFormat::BLACK => Terminal::$COLOR_BLACK,
 				TextFormat::DARK_BLUE => Terminal::$COLOR_DARK_BLUE,
@@ -215,6 +243,16 @@ abstract class Terminal{
 				TextFormat::YELLOW => Terminal::$COLOR_YELLOW,
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
 				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_MINECOIN_GOLD,
+				TextFormat::MATERIAL_QUARTZ => Terminal::$COLOR_MATERIAL_QUARTZ,
+				TextFormat::MATERIAL_IRON => Terminal::$COLOR_MATERIAL_IRON,
+				TextFormat::MATERIAL_NETHERITE => Terminal::$COLOR_MATERIAL_NETHERITE,
+				TextFormat::MATERIAL_REDSTONE => Terminal::$COLOR_MATERIAL_REDSTONE,
+				TextFormat::MATERIAL_COPPER => Terminal::$COLOR_MATERIAL_COPPER,
+				TextFormat::MATERIAL_GOLD => Terminal::$COLOR_MATERIAL_GOLD,
+				TextFormat::MATERIAL_EMERALD => Terminal::$COLOR_MATERIAL_EMERALD,
+				TextFormat::MATERIAL_DIAMOND => Terminal::$COLOR_MATERIAL_DIAMOND,
+				TextFormat::MATERIAL_LAPIS => Terminal::$COLOR_MATERIAL_LAPIS,
+				TextFormat::MATERIAL_AMETHYST => Terminal::$COLOR_MATERIAL_AMETHYST,
 				default => $token,
 			};
 		}
