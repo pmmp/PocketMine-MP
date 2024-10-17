@@ -61,6 +61,13 @@ class Cactus extends Transparent{
 		return true;
 	}
 
+	public function onEntityCollide(Entity $entity, int $face) : void{
+		if($face === Facing::UP){
+			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
+			$entity->attack($ev);
+		}
+	}
+
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
 		if(!$supportBlock->hasSameTypeId($this) && !$supportBlock->hasTypeTag(BlockTypeTags::SAND)){

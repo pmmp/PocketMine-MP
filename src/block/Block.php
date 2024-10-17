@@ -869,6 +869,13 @@ class Block{
 	}
 
 	/**
+	 * Called when an entity collide on this block
+	 */
+	public function onEntityCollide(Entity $entity, int $face) : void{
+		//NOOP
+	}
+
+	/**
 	 * Returns a direction vector describing which way an entity intersecting this block should be pushed.
 	 * This is used by liquids to push entities in liquid currents.
 	 *
