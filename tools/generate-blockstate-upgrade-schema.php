@@ -496,8 +496,35 @@ function processRemappedStates(array $upgradeTable) : array{
 		if($existing === null || $existing->equals($remap)){
 			$list[$rawOldState] = $remap;
 		}else{
-			//match criteria is borked
-			throw new AssumptionFailedError("Match criteria resulted in two ambiguous remaps");
+			//TODO: ambiguous filter - this is a bug in the unchanged states calculation
+			//this is a real pain to fix, so workaround this for now
+			//this arose in 1.20.40 with brown_mushroom_block when variants 10 and 15 were remapped to mushroom_stem
+			//while also keeping the huge_mushroom_bits property with the same value
+			//this causes huge_mushroom_bits to be considered an "unchanged" state, which is *technically* correct, but
+			//means it can't be deleted from the filter
+
+			//move stuff from newState to copiedState where possible, even if we can't delete it from the filter
+			$cleanedNewState2 = $newState;
+			$copiedState = [];
+			foreach(Utils::stringifyKeys($cleanedNewState2) as $newPropertyName => $newPropertyValue){
+				if(isset($oldState[$newPropertyName]) && $oldState[$newPropertyName]->equals($newPropertyValue)){
+					$copiedState[] = $newPropertyName;
+					unset($cleanedNewState2[$newPropertyName]);
+				}
+			}
+
+			$fallbackRawFilter = encodeOrderedProperties($oldState);
+			if(isset($list[$fallbackRawFilter])){
+				throw new AssumptionFailedError("Exact match filter collision for \"" . $pair->old->getName() . "\" - this should never happen");
+			}
+			$list[$fallbackRawFilter] = new BlockStateUpgradeSchemaBlockRemap(
+				$oldState,
+				$newName,
+				$cleanedNewState2,
+				$copiedState
+			);
+			\GlobalLogger::get()->warning("Couldn't calculate an unambiguous partial remappedStates filter for some states of \"" . $pair->old->getName() . "\" - falling back to exact match");
+			\GlobalLogger::get()->warning("The schema should still work, but may be larger than desired");
 		}
 	}
 

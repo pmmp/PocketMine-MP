@@ -11,6 +11,16 @@ parameters:
 			path: ../../../src/block/DoubleTallGrass.php
 
 		-
+			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CopperTrait.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/utils/CopperTrait.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
