@@ -513,7 +513,11 @@ function processRemappedStates(array $upgradeTable) : array{
 				}
 			}
 
-			$list[encodeOrderedProperties($oldState)] = new BlockStateUpgradeSchemaBlockRemap(
+			$fallbackRawFilter = encodeOrderedProperties($oldState);
+			if(isset($list[$fallbackRawFilter])){
+				throw new AssumptionFailedError("Exact match filter collision for \"" . $pair->old->getName() . "\" - this should never happen");
+			}
+			$list[$fallbackRawFilter] = new BlockStateUpgradeSchemaBlockRemap(
 				$oldState,
 				$newName,
 				$cleanedNewState2,
