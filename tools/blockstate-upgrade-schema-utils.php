@@ -21,18 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\tools\generate_blockstate_upgrade_schema;
+namespace pocketmine\tools\blockstate_upgrade_schema_utils;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
@@ -42,12 +46,16 @@ use function array_key_last;
 use function array_keys;
 use function array_map;
 use function array_shift;
+use function array_unique;
 use function array_values;
 use function count;
 use function dirname;
 use function file_put_contents;
 use function fwrite;
+use function get_class;
+use function get_debug_type;
 use function implode;
+use function is_numeric;
 use function json_encode;
 use function ksort;
 use function min;
@@ -83,18 +91,18 @@ function encodeProperty(Tag $tag) : string{
 }
 
 /**
+ * @param TreeRoot[] $oldNewStateList
+ * @phpstan-param list<TreeRoot> $oldNewStateList
+ *
  * @return BlockStateMapping[][]
  * @phpstan-return array<string, array<string, BlockStateMapping>>
  */
-function loadUpgradeTable(string $file, bool $reverse) : array{
-	$contents = Filesystem::fileGetContents($file);
-	$data = (new NetworkNbtSerializer())->readMultiple($contents);
-
+function buildUpgradeTableFromData(array $oldNewStateList, bool $reverse) : array{
 	$result = [];
 
-	for($i = 0; isset($data[$i]); $i += 2){
-		$oldTag = $data[$i]->mustGetCompoundTag();
-		$newTag = $data[$i + 1]->mustGetCompoundTag();
+	for($i = 0; isset($oldNewStateList[$i]); $i += 2){
+		$oldTag = $oldNewStateList[$i]->mustGetCompoundTag();
+		$newTag = $oldNewStateList[$i + 1]->mustGetCompoundTag();
 		$old = BlockStateData::fromNbt($reverse ? $newTag : $oldTag);
 		$new = BlockStateData::fromNbt($reverse ? $oldTag : $newTag);
 
@@ -105,6 +113,17 @@ function loadUpgradeTable(string $file, bool $reverse) : array{
 	}
 
 	return $result;
+}
+
+/**
+ * @return BlockStateMapping[][]
+ * @phpstan-return array<string, array<string, BlockStateMapping>>
+ */
+function loadUpgradeTableFromFile(string $file, bool $reverse) : array{
+	$contents = Filesystem::fileGetContents($file);
+	$data = (new NetworkNbtSerializer())->readMultiple($contents);
+
+	return buildUpgradeTableFromData($data, $reverse);
 }
 
 /**
@@ -311,11 +330,13 @@ function findCommonSuffix(array $strings) : string{
 /**
  * @param string[][][] $candidateFlattenedValues
  * @phpstan-param array<string, array<string, array<string, string>>> $candidateFlattenedValues
+ * @param string[] $candidateFlattenPropertyTypes
+ * @phpstan-param array<string, class-string<ByteTag|IntTag|StringTag>> $candidateFlattenPropertyTypes
  *
  * @return BlockStateUpgradeSchemaFlattenedName[][]
  * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenedName>>
  */
-function buildFlattenPropertyRules(array $candidateFlattenedValues) : array{
+function buildFlattenPropertyRules(array $candidateFlattenedValues, array $candidateFlattenPropertyTypes) : array{
 	$flattenPropertyRules = [];
 	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
 		foreach(Utils::stringifyKeys($filters) as $filter => $valueToId){
@@ -339,11 +360,26 @@ function buildFlattenPropertyRules(array $candidateFlattenedValues) : array{
 				}
 			}
 
+			$allNumeric = true;
+			if(count($valueMap) > 0){
+				foreach(Utils::stringifyKeys($valueMap) as $value => $newValue){
+					if(!is_numeric($value)){
+						$allNumeric = false;
+						break;
+					}
+				}
+				if($allNumeric){
+					//add a dummy key to force the JSON to be an object and not a list
+					$valueMap["dummy"] = "map_not_list";
+				}
+			}
+
 			$flattenPropertyRules[$propertyName][$filter] = new BlockStateUpgradeSchemaFlattenedName(
 				$idPrefix,
 				$propertyName,
 				$idSuffix,
-				$valueMap
+				$valueMap,
+				$candidateFlattenPropertyTypes[$propertyName],
 			);
 		}
 	}
@@ -406,16 +442,25 @@ function processRemappedStates(array $upgradeTable) : array{
 	$notFlattenedProperties = [];
 
 	$candidateFlattenedValues = [];
+	$candidateFlattenedPropertyTypes = [];
 	foreach($upgradeTable as $pair){
 		foreach(Utils::stringifyKeys($pair->old->getStates()) as $propertyName => $propertyValue){
 			if(isset($notFlattenedProperties[$propertyName])){
 				continue;
 			}
-			if(!$propertyValue instanceof StringTag){
+			if(!$propertyValue instanceof StringTag && !$propertyValue instanceof IntTag && !$propertyValue instanceof ByteTag){
 				$notFlattenedProperties[$propertyName] = true;
 				continue;
 			}
-			$rawValue = $propertyValue->getValue();
+			$previousType = $candidateFlattenedPropertyTypes[$propertyName] ?? null;
+			if($previousType !== null && $previousType !== get_class($propertyValue)){
+				//mismatched types for the same property name - this has never happened so far, but it's not impossible
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
+			}
+			$candidateFlattenedPropertyTypes[$propertyName] = get_class($propertyValue);
+
+			$rawValue = (string) $propertyValue->getValue();
 			if($rawValue === ""){
 				$notFlattenedProperties[$propertyName] = true;
 				continue;
@@ -423,6 +468,10 @@ function processRemappedStates(array $upgradeTable) : array{
 
 			$filter = $pair->old->getStates();
 			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
+				if($unchangedPropertyName === $propertyName){
+					$notFlattenedProperties[$propertyName] = true;
+					continue 2;
+				}
 				unset($filter[$unchangedPropertyName]);
 			}
 			unset($filter[$propertyName]);
@@ -436,26 +485,31 @@ function processRemappedStates(array $upgradeTable) : array{
 					$notFlattenedProperties[$propertyName] = true;
 					continue;
 				}
-				foreach(Utils::stringifyKeys($valuesToIds) as $otherRawValue => $otherNewId){
-					if($otherRawValue === $rawValue){
-						continue;
-					}
-					if($otherNewId === $pair->new->getName()){
-						//this old value maps to the same new ID as another old value - bad candidate for flattening
-						$notFlattenedProperties[$propertyName] = true;
-						continue 2;
-					}
-				}
 			}
 			$candidateFlattenedValues[$propertyName][$rawFilter][$rawValue] = $pair->new->getName();
+		}
+	}
+	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
+		foreach($filters as $valuesToIds){
+			if(count(array_unique($valuesToIds)) === 1){
+				//this property doesn't influence the new ID
+				$notFlattenedProperties[$propertyName] = true;
+				continue 2;
+			}
 		}
 	}
 	foreach(Utils::stringifyKeys($notFlattenedProperties) as $propertyName => $_){
 		unset($candidateFlattenedValues[$propertyName]);
 	}
 
-	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues);
+	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues, $candidateFlattenedPropertyTypes);
 	$flattenProperty = array_key_first($flattenedProperties);
+	//Properties with fewer rules take up less space for the same result
+	foreach(Utils::stringifyKeys($flattenedProperties) as $propertyName => $rules){
+		if(count($rules) < count($flattenedProperties[$flattenProperty])){
+			$flattenProperty = $propertyName;
+		}
+	}
 
 	$list = [];
 
@@ -475,8 +529,8 @@ function processRemappedStates(array $upgradeTable) : array{
 		ksort($cleanedNewState);
 		if($flattenProperty !== null){
 			$flattenedValue = $cleanedOldState[$flattenProperty] ?? null;
-			if(!$flattenedValue instanceof StringTag){
-				throw new AssumptionFailedError("This should always be a TAG_String ($newName $flattenProperty)");
+			if(!$flattenedValue instanceof StringTag && !$flattenedValue instanceof IntTag && !$flattenedValue instanceof ByteTag){
+				throw new AssumptionFailedError("Non-flattenable type of tag ($newName $flattenProperty) but have " . get_debug_type($flattenedValue));
 			}
 			unset($cleanedOldState[$flattenProperty]);
 		}
@@ -594,18 +648,42 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 }
 
 /**
- * @param string[] $argv
+ * @param BlockStateMapping[][] $upgradeTable
+ * @phpstan-param array<string, array<string, BlockStateMapping>> $upgradeTable
  */
-function main(array $argv) : int{
-	if(count($argv) !== 3){
-		fwrite(STDERR, "Required arguments: input file path, output file path\n");
-		return 1;
+function testBlockStateUpgradeSchema(array $upgradeTable, BlockStateUpgradeSchema $schema) : bool{
+	//TODO: HACK!
+	//the upgrader won't apply the schema if it's the same version and there's only one schema with a matching version
+	//ID (for performance reasons), which is a problem for testing isolated schemas
+	//add a dummy schema to bypass this optimization
+	$dummySchema = new BlockStateUpgradeSchema($schema->maxVersionMajor, $schema->maxVersionMinor, $schema->maxVersionPatch, $schema->maxVersionRevision, $schema->getSchemaId() + 1);
+	$upgrader = new BlockStateUpgrader([$schema, $dummySchema]);
+
+	foreach($upgradeTable as $mappingsByOldName){
+		foreach($mappingsByOldName as $mapping){
+			$expectedNewState = $mapping->new;
+
+			$actualNewState = $upgrader->upgrade($mapping->old);
+
+			if(!$expectedNewState->equals($actualNewState)){
+				\GlobalLogger::get()->error("Expected: " . $expectedNewState->toNbt());
+				\GlobalLogger::get()->error("Actual: " . $actualNewState->toNbt());
+				return false;
+			}
+		}
 	}
 
-	$input = $argv[1];
-	$output = $argv[2];
+	return true;
+}
 
-	$table = loadUpgradeTable($input, false);
+/**
+ * @param string[] $argv
+ */
+function cmdGenerate(array $argv) : int{
+	$upgradeTableFile = $argv[2];
+	$schemaFile = $argv[3];
+
+	$table = loadUpgradeTableFromFile($upgradeTableFile, false);
 
 	ksort($table, SORT_STRING);
 
@@ -615,12 +693,90 @@ function main(array $argv) : int{
 		return 0;
 	}
 	file_put_contents(
-		$output,
+		$schemaFile,
 		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
 	);
-	\GlobalLogger::get()->info("Schema file $output generated successfully.");
+	\GlobalLogger::get()->info("Schema file $schemaFile generated successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function cmdTest(array $argv) : int{
+	$upgradeTableFile = $argv[2];
+	$schemaFile = $argv[3];
+
+	$table = loadUpgradeTableFromFile($upgradeTableFile, false);
+
+	ksort($table, SORT_STRING);
+
+	$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($schemaFile), 0);
+	if(!testBlockStateUpgradeSchema($table, $schema)){
+		\GlobalLogger::get()->error("Schema $schemaFile does not produce the results predicted by $upgradeTableFile");
+		return 1;
+	}
+	\GlobalLogger::get()->info("Schema $schemaFile is valid according to $upgradeTableFile");
 
 	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function cmdUpdate(array $argv) : int{
+	[, , $oldSchemaFile, $oldPaletteFile, $newSchemaFile] = $argv;
+
+	$palette = BlockStateDictionary::loadPaletteFromString(Filesystem::fileGetContents($oldPaletteFile));
+	$schema = BlockStateUpgradeSchemaUtils::loadSchemaFromString(Filesystem::fileGetContents($oldSchemaFile), 0);
+	//TODO: HACK!
+	//the upgrader won't apply the schema if it's the same version and there's only one schema with a matching version
+	//ID (for performance reasons), which is a problem for testing isolated schemas
+	//add a dummy schema to bypass this optimization
+	$dummySchema = new BlockStateUpgradeSchema($schema->maxVersionMajor, $schema->maxVersionMinor, $schema->maxVersionPatch, $schema->maxVersionRevision, $schema->getSchemaId() + 1);
+	$upgrader = new BlockStateUpgrader([$schema, $dummySchema]);
+
+	$tags = [];
+	foreach($palette as $stateData){
+		$tags[] = new TreeRoot($stateData->toNbt());
+		$tags[] = new TreeRoot($upgrader->upgrade($stateData)->toNbt());
+	}
+
+	$upgradeTable = buildUpgradeTableFromData($tags, false);
+	$newSchema = generateBlockStateUpgradeSchema($upgradeTable);
+	file_put_contents(
+		$newSchemaFile,
+		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($newSchema), JSON_PRETTY_PRINT) . "\n"
+	);
+	\GlobalLogger::get()->info("Schema file $newSchemaFile updated to new format (from $oldSchemaFile) successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
+function main(array $argv) : int{
+	$options = [
+		"generate" => [["palette upgrade table file", "schema output file"], cmdGenerate(...)],
+		"test" => [["palette upgrade table file", "schema output file"], cmdTest(...)],
+		"update" => [["schema input file", "old palette file", "updated schema output file"], cmdUpdate(...)]
+	];
+
+	$selected = $argv[1] ?? null;
+	if($selected === null || !isset($options[$selected])){
+		fwrite(STDERR, "Available commands:\n");
+		foreach($options as $command => [$args, $callback]){
+			fwrite(STDERR, " - $command " . implode(" ", array_map(fn(string $a) => "<$a>", $args)) . "\n");
+		}
+		return 1;
+	}
+
+	$callback = $options[$selected][1];
+	if(count($argv) !== count($options[$selected][0]) + 2){
+		fwrite(STDERR, "Usage: {$argv[0]} $selected " . implode(" ", array_map(fn(string $a) => "<$a>", $options[$selected][0])) . "\n");
+		return 1;
+	}
+	return $callback($argv);
 }
 
 exit(main($argv));
