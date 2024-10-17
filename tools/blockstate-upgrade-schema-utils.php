@@ -745,6 +745,10 @@ function main(array $argv) : int{
 	}
 
 	$callback = $options[$selected][1];
+	if(count($argv) !== count($options[$selected][0]) + 2){
+		fwrite(STDERR, "Usage: {$argv[0]} $selected " . implode(" ", array_map(fn(string $a) => "<$a>", $options[$selected][0])) . "\n");
+		return 1;
+	}
 	return $callback($argv);
 }
 
