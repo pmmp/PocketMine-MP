@@ -109,6 +109,7 @@ final class ItemTypeNames{
 	public const CHAINMAIL_HELMET = "minecraft:chainmail_helmet";
 	public const CHAINMAIL_LEGGINGS = "minecraft:chainmail_leggings";
 	public const CHARCOAL = "minecraft:charcoal";
+	public const CHEMISTRY_TABLE = "minecraft:chemistry_table";
 	public const CHERRY_BOAT = "minecraft:cherry_boat";
 	public const CHERRY_CHEST_BOAT = "minecraft:cherry_chest_boat";
 	public const CHERRY_DOOR = "minecraft:cherry_door";
@@ -127,6 +128,8 @@ final class ItemTypeNames{
 	public const COD = "minecraft:cod";
 	public const COD_BUCKET = "minecraft:cod_bucket";
 	public const COD_SPAWN_EGG = "minecraft:cod_spawn_egg";
+	public const COLORED_TORCH_BP = "minecraft:colored_torch_bp";
+	public const COLORED_TORCH_RG = "minecraft:colored_torch_rg";
 	public const COMMAND_BLOCK_MINECART = "minecraft:command_block_minecart";
 	public const COMPARATOR = "minecraft:comparator";
 	public const COMPASS = "minecraft:compass";

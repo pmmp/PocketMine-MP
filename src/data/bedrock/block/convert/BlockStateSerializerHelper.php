@@ -68,9 +68,8 @@ final class BlockStateSerializerHelper{
 			->writeInt(StateNames::CANDLES, $block->getCount() - 1);
 	}
 
-	public static function encodeChemistryTable(ChemistryTable $block, string $chemistryTableType, Writer $out) : Writer{
+	public static function encodeChemistryTable(ChemistryTable $block, Writer $out) : Writer{
 		return $out
-			->writeString(BlockStateNames::CHEMISTRY_TABLE_TYPE, $chemistryTableType)
 			->writeLegacyHorizontalFacing(Facing::opposite($block->getFacing()));
 	}
 
@@ -78,9 +77,8 @@ final class BlockStateSerializerHelper{
 		return $out->writeInt(BlockStateNames::GROWTH, $block->getAge());
 	}
 
-	public static function encodeColoredTorch(Torch $block, bool $highBit, Writer $out) : Writer{
+	public static function encodeTorch(Torch $block, Writer $out) : Writer{
 		return $out
-			->writeBool(BlockStateNames::COLOR_BIT, $highBit)
 			->writeTorchFacing($block->getFacing());
 	}
 
@@ -223,11 +221,6 @@ final class BlockStateSerializerHelper{
 			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_NORTH, $block->getConnection(Facing::NORTH))
 			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH, $block->getConnection(Facing::SOUTH))
 			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_WEST, $block->getConnection(Facing::WEST));
-	}
-
-	public static function encodeLegacyWall(Wall $block, string $type) : Writer{
-		return self::encodeWall($block, Writer::create(Ids::COBBLESTONE_WALL))
-			->writeString(BlockStateNames::WALL_BLOCK_TYPE, $type);
 	}
 
 	public static function encodeWallSign(WallSign $block, Writer $out) : Writer{
