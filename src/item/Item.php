@@ -655,6 +655,20 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns a tag that identifies a group of items that should have cooldown at the same time
+	 * regardless of their state or type.
+	 * When cooldown starts, any other items with the same cooldown tag can't be used until the cooldown expires.
+	 * Such behaviour can be seen in goat horns and shields.
+	 *
+	 * If tag is null, item state id will be used to store cooldown.
+	 *
+	 * @see ItemCooldownTags
+	 */
+	public function getCooldownTag() : ?string{
+		return null;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param bool $checkDamage   @deprecated

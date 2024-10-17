@@ -58,8 +58,12 @@ use pocketmine\block\CocoaBlock;
 use pocketmine\block\Concrete;
 use pocketmine\block\ConcretePowder;
 use pocketmine\block\Copper;
+use pocketmine\block\CopperBulb;
+use pocketmine\block\CopperDoor;
+use pocketmine\block\CopperGrate;
 use pocketmine\block\CopperSlab;
 use pocketmine\block\CopperStairs;
+use pocketmine\block\CopperTrapdoor;
 use pocketmine\block\Coral;
 use pocketmine\block\CoralBlock;
 use pocketmine\block\DaylightSensor;
@@ -1255,6 +1259,40 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER)
 			);
 		});
+		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_CHISELED_COPPER,
+					Ids::WAXED_EXPOSED_CHISELED_COPPER,
+					Ids::WAXED_WEATHERED_CHISELED_COPPER,
+					Ids::WAXED_OXIDIZED_CHISELED_COPPER
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::CHISELED_COPPER,
+					Ids::EXPOSED_CHISELED_COPPER,
+					Ids::WEATHERED_CHISELED_COPPER,
+					Ids::OXIDIZED_CHISELED_COPPER
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_GRATE,
+					Ids::WAXED_EXPOSED_COPPER_GRATE,
+					Ids::WAXED_WEATHERED_COPPER_GRATE,
+					Ids::WAXED_OXIDIZED_COPPER_GRATE
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_GRATE,
+					Ids::EXPOSED_COPPER_GRATE,
+					Ids::WEATHERED_COPPER_GRATE,
+					Ids::OXIDIZED_COPPER_GRATE
+				)
+			);
+		});
 		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : Writer{
 			$oxidation = $block->getOxidation();
 			return new Writer($block->isWaxed() ?
@@ -1318,6 +1356,67 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 						Ids::EXPOSED_CUT_COPPER_STAIRS,
 						Ids::WEATHERED_CUT_COPPER_STAIRS,
 						Ids::OXIDIZED_CUT_COPPER_STAIRS
+					)
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_BULB(), function(CopperBulb $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Writer::create($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_BULB,
+					Ids::WAXED_EXPOSED_COPPER_BULB,
+					Ids::WAXED_WEATHERED_COPPER_BULB,
+					Ids::WAXED_OXIDIZED_COPPER_BULB) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_BULB,
+					Ids::EXPOSED_COPPER_BULB,
+					Ids::WEATHERED_COPPER_BULB,
+					Ids::OXIDIZED_COPPER_BULB
+				))
+				->writeBool(StateNames::LIT, $block->isLit())
+				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
+		});
+		$this->map(Blocks::COPPER_DOOR(), function(CopperDoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeDoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_DOOR,
+						Ids::WAXED_EXPOSED_COPPER_DOOR,
+						Ids::WAXED_WEATHERED_COPPER_DOOR,
+						Ids::WAXED_OXIDIZED_COPPER_DOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_DOOR,
+						Ids::EXPOSED_COPPER_DOOR,
+						Ids::WEATHERED_COPPER_DOOR,
+						Ids::OXIDIZED_COPPER_DOOR
+					)
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_TRAPDOOR(), function(CopperTrapdoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeTrapdoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_TRAPDOOR,
+						Ids::WAXED_EXPOSED_COPPER_TRAPDOOR,
+						Ids::WAXED_WEATHERED_COPPER_TRAPDOOR,
+						Ids::WAXED_OXIDIZED_COPPER_TRAPDOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_TRAPDOOR,
+						Ids::EXPOSED_COPPER_TRAPDOOR,
+						Ids::WEATHERED_COPPER_TRAPDOOR,
+						Ids::OXIDIZED_COPPER_TRAPDOOR
 					)
 				)
 			);

@@ -21,32 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\inventory\transaction\action\validator;
 
-use pocketmine\entity\Location;
-use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
-use pocketmine\entity\projectile\Throwable;
-use pocketmine\player\Player;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Item;
 
-class EnderPearl extends ProjectileItem{
-
-	public function getMaxStackSize() : int{
-		return 16;
-	}
-
-	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new EnderPearlEntity($location, $thrower);
-	}
-
-	public function getThrowForce() : float{
-		return 1.5;
-	}
-
-	public function getCooldownTicks() : int{
-		return 20;
-	}
-
-	public function getCooldownTag() : ?string{
-		return ItemCooldownTags::ENDER_PEARL;
-	}
+/**
+ * Validates a slot placement in an inventory.
+ */
+interface SlotValidator{
+	/**
+	 * Returns null if the slot placement is valid, or a TransactionValidationException if it is not.
+	 */
+	public function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException;
 }

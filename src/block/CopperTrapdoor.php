@@ -21,32 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\entity\Location;
-use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
-use pocketmine\entity\projectile\Throwable;
+use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class EnderPearl extends ProjectileItem{
-
-	public function getMaxStackSize() : int{
-		return 16;
+class CopperTrapdoor extends Trapdoor implements ICopper{
+	use CopperTrait{
+		onInteract as onInteractCopper;
 	}
 
-	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new EnderPearlEntity($location, $thrower);
-	}
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if ($player !== null && $player->isSneaking() && $this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems)) {
+			return true;
+		}
 
-	public function getThrowForce() : float{
-		return 1.5;
-	}
-
-	public function getCooldownTicks() : int{
-		return 20;
-	}
-
-	public function getCooldownTag() : ?string{
-		return ItemCooldownTags::ENDER_PEARL;
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 }

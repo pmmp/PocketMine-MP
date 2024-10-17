@@ -21,32 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block;
 
-use pocketmine\entity\Location;
-use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
-use pocketmine\entity\projectile\Throwable;
-use pocketmine\player\Player;
+use pocketmine\block\utils\CopperTrait;
+use pocketmine\block\utils\ICopper;
 
-class EnderPearl extends ProjectileItem{
+class CopperGrate extends Transparent implements ICopper{
+	use CopperTrait;
 
-	public function getMaxStackSize() : int{
-		return 16;
-	}
-
-	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new EnderPearlEntity($location, $thrower);
-	}
-
-	public function getThrowForce() : float{
-		return 1.5;
-	}
-
-	public function getCooldownTicks() : int{
-		return 20;
-	}
-
-	public function getCooldownTag() : ?string{
-		return ItemCooldownTags::ENDER_PEARL;
-	}
+	//TODO: waterlogging!
 }
