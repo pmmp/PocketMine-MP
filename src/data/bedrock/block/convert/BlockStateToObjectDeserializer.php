@@ -1187,6 +1187,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::COMPOUND_CREATOR, fn(Reader $in) => Blocks::COMPOUND_CREATOR()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
+		$this->map(Ids::COMPOSTER, function(Reader $in) : Block{
+			return Blocks::COMPOSTER()
+				->setFillLevel($in->readBoundedInt(StateNames::COMPOSTER_FILL_LEVEL, 0, 8));
+		});
 		$this->map(Ids::COPPER_BLOCK, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::NONE));
 		$this->map(Ids::COPPER_BULB, function(Reader $in) : Block{
 			return Helper::decodeCopper(Blocks::COPPER_BULB(), CopperOxidation::NONE)
