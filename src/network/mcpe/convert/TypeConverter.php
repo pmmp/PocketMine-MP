@@ -222,8 +222,8 @@ class TypeConverter{
 		}
 
 		$extraData = $id === $this->shieldRuntimeId ?
-			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
-			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
+			new ItemStackExtraDataShield($nbt, canPlaceOn: $itemStack->getCanPlaceOn(), canDestroy: $itemStack->getCanDestroy(), blockingTick: 0) :
+			new ItemStackExtraData($nbt, canPlaceOn: $itemStack->getCanPlaceOn(), canDestroy: $itemStack->getCanDestroy());
 		$extraDataSerializer = PacketSerializer::encoder();
 		$extraData->write($extraDataSerializer);
 
@@ -266,6 +266,8 @@ class TypeConverter{
 				throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
 			}
 		}
+		$itemResult->setCanPlaceOn($extraData->getCanPlaceOn());
+		$itemResult->setCanDestroy($extraData->getCanDestroy());
 
 		return $itemResult;
 	}
