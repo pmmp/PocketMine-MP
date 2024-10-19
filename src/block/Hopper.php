@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Hopper extends Transparent{
+class Hopper extends Transparent implements FacingInterface{
 	use PoweredByRedstoneTrait;
 
 	private int $facing = Facing::DOWN;

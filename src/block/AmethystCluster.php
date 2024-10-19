@@ -38,7 +38,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
-final class AmethystCluster extends Transparent{
+final class AmethystCluster extends Transparent implements FacingInterface{
 	use AmethystTrait;
 	use AnyFacingTrait;
 

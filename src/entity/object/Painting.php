@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\FacingInterface;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -40,7 +41,7 @@ use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\World;
 use function ceil;
 
-class Painting extends Entity{
+class Painting extends Entity implements FacingInterface{
 	public const TAG_TILE_X = "TileX"; //TAG_Int
 	public const TAG_TILE_Y = "TileY"; //TAG_Int
 	public const TAG_TILE_Z = "TileZ"; //TAG_Int
@@ -174,6 +175,11 @@ class Painting extends Entity{
 
 	public function getFacing() : int{
 		return $this->facing;
+	}
+
+	public function setFacing(int $facing) : self {
+		$this->facing = $facing;
+		return $this;
 	}
 
 	/**
