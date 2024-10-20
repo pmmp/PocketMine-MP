@@ -192,7 +192,9 @@ class Explosion{
 				}
 
 				$entity->attack($ev);
-				$entity->setMotion($entity->getMotion()->addVector($motion->multiply($impact)));
+				if(!$ev->isCancelled()) {
+					$entity->setMotion($entity->getMotion()->addVector($motion->multiply($impact)));
+				}
 			}
 		}
 
