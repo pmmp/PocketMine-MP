@@ -169,6 +169,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		]);
 	}
 
+	public function allowForceEating() : bool{
+		return false;
+	}
+
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
@@ -190,7 +194,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && (!$this->allowForceEating() && $consumable->requiresHunger() && !$this->getHungerManager()->isHungry())){
 			return false;
 		}
 
