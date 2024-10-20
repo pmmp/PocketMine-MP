@@ -331,6 +331,7 @@ use function strtolower;
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
+ * @method static Tool MACE()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
@@ -633,6 +634,7 @@ final class VanillaItems{
 		self::register("netherite_sword", new Sword(new IID(Ids::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
 		self::register("stone_sword", new Sword(new IID(Ids::STONE_SWORD), "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
 		self::register("wooden_sword", new Sword(new IID(Ids::WOODEN_SWORD), "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
+		self::register("mace", new Mace(new IID(Ids::MACE), "Mace", ToolTier::MACE, [EnchantmentTags::MACE]));
 	}
 
 	private static function registerArmorItems() : void{

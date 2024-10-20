@@ -69,6 +69,7 @@ final class ItemEnchantmentTagRegistry{
 			Tags::BOW,
 			Tags::CROSSBOW,
 			Tags::BLOCK_TOOLS,
+			Tags::MACE,
 		]);
 	}
 
