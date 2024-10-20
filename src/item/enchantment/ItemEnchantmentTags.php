@@ -54,4 +54,5 @@ final class ItemEnchantmentTags{
 	public const ELYTRA = "elytra";
 	public const BRUSH = "brush";
 	public const WEAPONS = "weapons";
+	public const MACE = "mace";
 }

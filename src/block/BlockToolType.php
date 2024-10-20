@@ -40,5 +40,6 @@ final class BlockToolType{
 	public const AXE = 1 << 3;
 	public const SHEARS = 1 << 4;
 	public const HOE = 1 << 5;
+	public const MACE = 1 << 6;
 
 }
