@@ -331,7 +331,7 @@ use function strtolower;
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
- * @method static Tool MACE()
+ * @method static Mace MACE()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
