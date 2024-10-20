@@ -210,6 +210,7 @@ use function strtolower;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
+ * @method static Mace MACE()
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
  * @method static ItemBlockWallOrFloor MANGROVE_SIGN()
@@ -331,7 +332,6 @@ use function strtolower;
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
- * @method static Mace MACE()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
