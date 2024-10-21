@@ -27,6 +27,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
+use pocketmine\world\Position;
 use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
@@ -38,9 +39,10 @@ class EnderPearl extends Throwable{
 			//TODO: check end gateways (when they are added)
 			//TODO: spawn endermites at origin
 
+			$target = $event->getRayTraceResult()->getHitVector();
 			$this->getWorld()->addParticle($origin = $owner->getPosition(), new EndermanTeleportParticle());
 			$this->getWorld()->addSound($origin, new EndermanTeleportSound());
-			$owner->teleport($target = $event->getRayTraceResult()->getHitVector());
+			$owner->teleport(Position::fromObject($target, $this->getWorld()));
 			$this->getWorld()->addSound($target, new EndermanTeleportSound());
 
 			$owner->attack(new EntityDamageEvent($owner, EntityDamageEvent::CAUSE_FALL, 5));
