@@ -26,13 +26,13 @@ namespace pocketmine\block\utils;
 /**
  * Represents copper blocks that have oxidized and waxed variations.
  */
-interface ICopper{
+interface CopperMaterial{
 
 	public function getOxidation() : CopperOxidation;
 
-	public function setOxidation(CopperOxidation $oxidation) : ICopper;
+	public function setOxidation(CopperOxidation $oxidation) : CopperMaterial;
 
 	public function isWaxed() : bool;
 
-	public function setWaxed(bool $waxed) : ICopper;
+	public function setWaxed(bool $waxed) : CopperMaterial;
 }
