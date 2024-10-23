@@ -56,8 +56,11 @@ class MonsterSpawner extends Spawnable{
 	public const DEFAULT_SPAWN_RANGE = 4; //blocks
 	public const DEFAULT_REQUIRED_PLAYER_RANGE = 16;
 
+	public const DEFAULT_ENTITY_TYPE_ID = "";
+	public const DEFAULT_LEGACY_ENTITY_TYPE_ID = ":";
+
 	/** TODO: replace this with a cached entity or something of that nature */
-	private string $entityTypeId = ":";
+	private string $entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
 	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
 	private ?ListTag $spawnPotentials = null;
 	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
@@ -78,11 +81,14 @@ class MonsterSpawner extends Spawnable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($legacyIdTag = $nbt->getTag(self::TAG_LEGACY_ENTITY_TYPE_ID)) instanceof IntTag){
 			//TODO: this will cause unexpected results when there's no mapping for the entity
-			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($legacyIdTag->getValue()) ?? ":";
+			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($legacyIdTag->getValue()) ?? self::DEFAULT_ENTITY_TYPE_ID;
 		}elseif(($idTag = $nbt->getTag(self::TAG_ENTITY_TYPE_ID)) instanceof StringTag){
 			$this->entityTypeId = $idTag->getValue();
+			if($this->entityTypeId === self::DEFAULT_LEGACY_ENTITY_TYPE_ID){
+				$this->entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
+			}
 		}else{
-			$this->entityTypeId = ":"; //default - TODO: replace this with a constant
+			$this->entityTypeId = self::DEFAULT_ENTITY_TYPE_ID;
 		}
 
 		$this->spawnData = $nbt->getCompoundTag(self::TAG_SPAWN_DATA);
@@ -129,5 +135,109 @@ class MonsterSpawner extends Spawnable{
 		//TODO: we can't set SpawnData here because it might crash the client if it's from a PC world (we need to implement full deserialization)
 
 		$nbt->setFloat(self::TAG_ENTITY_SCALE, $this->displayEntityScale);
+	}
+
+	public function getEntityTypeId() : string{
+		return $this->entityTypeId;
+	}
+
+	public function setEntityTypeId(string $entityTypeId) : void{
+		$this->entityTypeId = $entityTypeId;
+	}
+
+	public function getSpawnPotentials() : ?ListTag{
+		return $this->spawnPotentials;
+	}
+
+	public function setSpawnPotentials(?ListTag $spawnPotentials) : void{
+		$this->spawnPotentials = $spawnPotentials;
+	}
+
+	public function getSpawnData() : ?CompoundTag{
+		return $this->spawnData;
+	}
+
+	public function setSpawnData(?CompoundTag $spawnData) : void{
+		$this->spawnData = $spawnData;
+	}
+
+	public function getDisplayEntityHeight() : float{
+		return $this->displayEntityHeight;
+	}
+
+	public function setDisplayEntityHeight(float $displayEntityHeight) : void{
+		$this->displayEntityHeight = $displayEntityHeight;
+	}
+
+	public function getDisplayEntityWidth() : float{
+		return $this->displayEntityWidth;
+	}
+
+	public function setDisplayEntityWidth(float $displayEntityWidth) : void{
+		$this->displayEntityWidth = $displayEntityWidth;
+	}
+
+	public function getDisplayEntityScale() : float{
+		return $this->displayEntityScale;
+	}
+
+	public function setDisplayEntityScale(float $displayEntityScale) : void{
+		$this->displayEntityScale = $displayEntityScale;
+	}
+
+	public function getSpawnDelay() : int{
+		return $this->spawnDelay;
+	}
+
+	public function setSpawnDelay(int $spawnDelay) : void{
+		$this->spawnDelay = $spawnDelay;
+	}
+
+	public function getMinSpawnDelay() : int{
+		return $this->minSpawnDelay;
+	}
+
+	public function setMinSpawnDelay(int $minSpawnDelay) : void{
+		$this->minSpawnDelay = $minSpawnDelay;
+	}
+
+	public function getMaxSpawnDelay() : int{
+		return $this->maxSpawnDelay;
+	}
+
+	public function setMaxSpawnDelay(int $maxSpawnDelay) : void{
+		$this->maxSpawnDelay = $maxSpawnDelay;
+	}
+
+	public function getRequiredPlayerRange() : int{
+		return $this->requiredPlayerRange;
+	}
+
+	public function setRequiredPlayerRange(int $requiredPlayerRange) : void{
+		$this->requiredPlayerRange = $requiredPlayerRange;
+	}
+
+	public function getSpawnRange() : int{
+		return $this->spawnRange;
+	}
+
+	public function setSpawnRange(int $spawnRange) : void{
+		$this->spawnRange = $spawnRange;
+	}
+
+	public function getSpawnPerAttempt() : int{
+		return $this->spawnPerAttempt;
+	}
+
+	public function setSpawnPerAttempt(int $spawnPerAttempt) : void{
+		$this->spawnPerAttempt = $spawnPerAttempt;
+	}
+
+	public  function getMaxNearbyEntities() : int{
+		return $this->maxNearbyEntities;
+	}
+
+	public  function setMaxNearbyEntities(int $maxNearbyEntities) : void{
+		$this->maxNearbyEntities = $maxNearbyEntities;
 	}
 }
