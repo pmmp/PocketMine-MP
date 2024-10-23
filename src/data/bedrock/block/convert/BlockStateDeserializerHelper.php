@@ -45,8 +45,8 @@ use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
+use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperOxidation;
-use pocketmine\block\utils\ICopper;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
@@ -98,24 +98,24 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
-	 * @phpstan-template TBlock of ICopper
+	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
 	 * @phpstan-return TBlock
 	 */
-	public static function decodeCopper(ICopper $block, CopperOxidation $oxidation) : ICopper{
+	public static function decodeCopper(CopperMaterial $block, CopperOxidation $oxidation) : CopperMaterial{
 		$block->setOxidation($oxidation);
 		$block->setWaxed(false);
 		return $block;
 	}
 
 	/**
-	 * @phpstan-template TBlock of ICopper
+	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
 	 * @phpstan-return TBlock
 	 */
-	public static function decodeWaxedCopper(ICopper $block, CopperOxidation $oxidation) : ICopper{
+	public static function decodeWaxedCopper(CopperMaterial $block, CopperOxidation $oxidation) : CopperMaterial{
 		$block->setOxidation($oxidation);
 		$block->setWaxed(true);
 		return $block;
