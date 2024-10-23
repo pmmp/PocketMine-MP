@@ -23,11 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\EnchantInventory;
+use pocketmine\block\utils\AnvilHelper;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\AnvilTransaction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -39,6 +42,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeOptionalStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CreativeCreateStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DeprecatedCraftingResultsStackRequestAction;
@@ -289,7 +293,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction && !$this->specialTransaction instanceof AnvilTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -348,6 +352,19 @@ class ItemStackRequestExecutor{
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
+			$window = $this->player->getCurrentWindow();
+			if($window instanceof AnvilInventory && $this->specialTransaction === null){
+				$this->specialTransaction = new AnvilTransaction($this->player);
+
+				$input = $window->getItem(AnvilInventory::SLOT_INPUT);
+				$material = $window->getItem(AnvilInventory::SLOT_MATERIAL);
+				$result = AnvilHelper::createResult($this->player, $input, $material, $cost, $this->request->getFilterStrings()[0] ?? null);
+
+				if($result !== null && $this->player->getXpManager()->getXpLevel() >= $cost){
+					$this->player->getXpManager()->subtractXpLevels($cost);
+					$this->setNextCreatedItem($result);
+				}
+			}
 			$this->assertDoingCrafting();
 			$this->removeItemFromSlot($action->getSource(), $action->getCount()); //output discarded - we allow CraftingTransaction to verify the balance
 
@@ -360,6 +377,8 @@ class ItemStackRequestExecutor{
 			}
 			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
+			//no obvious use
+		}elseif($action instanceof CraftRecipeOptionalStackRequestAction){
 			//no obvious use
 		}else{
 			throw new ItemStackRequestProcessException("Unhandled item stack request action");
