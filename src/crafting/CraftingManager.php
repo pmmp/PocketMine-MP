@@ -29,11 +29,14 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
+use function count;
 use function spl_object_id;
 use function usort;
 
 class CraftingManager{
 	use DestructorCallbackTrait;
+
+	public const SMITHING_RECIPES_OFFSET = 200000;
 
 	/**
 	 * @var ShapedRecipe[][]
@@ -63,6 +66,12 @@ class CraftingManager{
 	 * @phpstan-var list<PotionTypeRecipe>
 	 */
 	protected array $potionTypeRecipes = [];
+
+	/**
+	 * @var SmithingRecipe[]
+	 * @phpstan-var list<SmithingRecipe>
+	 */
+	protected array $smithingRecipes = [];
 
 	/**
 	 * @var PotionContainerChangeRecipe[]
@@ -197,6 +206,21 @@ class CraftingManager{
 		return $this->potionContainerChangeRecipes;
 	}
 
+	/**
+	 * @return SmithingRecipe[]
+	 * @phpstan-return list<SmithingRecipe>
+	 */
+	public function getSmithingRecipes() : array{
+		return $this->smithingRecipes;
+	}
+
+	public function getSmithingRecipeFromIndex(int $index) : ?SmithingRecipe{
+		if($index < self::SMITHING_RECIPES_OFFSET || $index > (self::SMITHING_RECIPES_OFFSET + count($this->smithingRecipes))){
+			return null;
+		}
+		return $this->smithingRecipes[$index - self::SMITHING_RECIPES_OFFSET];
+	}
+
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
@@ -225,6 +249,14 @@ class CraftingManager{
 
 	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$this->potionContainerChangeRecipes[] = $recipe;
+
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
+	}
+
+	public function registerSmithingRecipe(SmithingRecipe $recipe) : void{
+		$this->smithingRecipes[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
