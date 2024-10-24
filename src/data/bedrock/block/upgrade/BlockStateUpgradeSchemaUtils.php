@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModel;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
-use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelFlattenedName;
+use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelFlattenInfo;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\block\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
 use pocketmine\nbt\tag\ByteTag;
@@ -155,20 +155,24 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 		}
 
+		foreach(Utils::stringifyKeys($model->flattenedProperties ?? []) as $blockName => $flattenRule){
+			$result->flattenedProperties[$blockName] = self::jsonModelToFlattenRule($flattenRule);
+		}
+
 		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){
-				if(isset($remap->newName) === isset($remap->newFlattenedName)){
+				if(isset($remap->newName)){
+					$remapName = $remap->newName;
+				}elseif(isset($remap->newFlattenedName)){
+					$flattenRule = $remap->newFlattenedName;
+					$remapName = self::jsonModelToFlattenRule($flattenRule);
+				}else{
 					throw new \UnexpectedValueException("Expected exactly one of 'newName' or 'newFlattenedName' properties to be set");
 				}
 
 				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState ?? []),
-					$remap->newName ?? new BlockStateUpgradeSchemaFlattenedName(
-						$remap->newFlattenedName->prefix,
-						$remap->newFlattenedName->flattenedProperty,
-						$remap->newFlattenedName->suffix,
-						$remap->newFlattenedName->flattenedValueRemaps ?? [],
-					),
+					$remapName,
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
 					$remap->copiedState ?? []
 				);
@@ -254,6 +258,36 @@ final class BlockStateUpgradeSchemaUtils{
 		$model->remappedPropertyValues = $modelDedupMapping;
 	}
 
+	private static function flattenRuleToJsonModel(BlockStateUpgradeSchemaFlattenInfo $flattenRule) : BlockStateUpgradeSchemaModelFlattenInfo{
+		return new BlockStateUpgradeSchemaModelFlattenInfo(
+			$flattenRule->prefix,
+			$flattenRule->flattenedProperty,
+			$flattenRule->suffix,
+			$flattenRule->flattenedValueRemaps,
+			match($flattenRule->flattenedPropertyType){
+				StringTag::class => null, //omit for TAG_String, as this is the common case
+				ByteTag::class => "byte",
+				IntTag::class => "int",
+				default => throw new \LogicException("Unexpected tag type " . $flattenRule->flattenedPropertyType . " in flattened property type")
+			}
+		);
+	}
+
+	private static function jsonModelToFlattenRule(BlockStateUpgradeSchemaModelFlattenInfo $flattenRule) : BlockStateUpgradeSchemaFlattenInfo{
+		return new BlockStateUpgradeSchemaFlattenInfo(
+			$flattenRule->prefix,
+			$flattenRule->flattenedProperty,
+			$flattenRule->suffix,
+			$flattenRule->flattenedValueRemaps ?? [],
+			match ($flattenRule->flattenedPropertyType) {
+				"string", null => StringTag::class,
+				"int" => IntTag::class,
+				"byte" => ByteTag::class,
+				default => throw new \UnexpectedValueException("Unexpected flattened property type $flattenRule->flattenedPropertyType, expected 'string', 'int' or 'byte'")
+			}
+		);
+	}
+
 	public static function toJsonModel(BlockStateUpgradeSchema $schema) : BlockStateUpgradeSchemaModel{
 		$result = new BlockStateUpgradeSchemaModel();
 		$result->maxVersionMajor = $schema->maxVersionMajor;
@@ -292,19 +326,19 @@ final class BlockStateUpgradeSchemaUtils{
 
 		self::buildRemappedValuesIndex($schema, $result);
 
+		foreach(Utils::stringifyKeys($schema->flattenedProperties) as $blockName => $flattenRule){
+			$result->flattenedProperties[$blockName] = self::flattenRuleToJsonModel($flattenRule);
+		}
+		if(isset($result->flattenedProperties)){
+			ksort($result->flattenedProperties);
+		}
+
 		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
 			$keyedRemaps = [];
 			foreach($remaps as $remap){
 				$modelRemap = new BlockStateUpgradeSchemaModelBlockRemap(
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
-					is_string($remap->newName) ?
-						$remap->newName :
-						new BlockStateUpgradeSchemaModelFlattenedName(
-							$remap->newName->prefix,
-							$remap->newName->flattenedProperty,
-							$remap->newName->suffix,
-							$remap->newName->flattenedValueRemaps
-						),
+					is_string($remap->newName) ? $remap->newName : self::flattenRuleToJsonModel($remap->newName),
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 					$remap->copiedState
 				);

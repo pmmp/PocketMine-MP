@@ -40,7 +40,7 @@ final class BlockStateUpgradeSchemaBlockRemap{
 	 */
 	public function __construct(
 		public array $oldState,
-		public string|BlockStateUpgradeSchemaFlattenedName $newName,
+		public string|BlockStateUpgradeSchemaFlattenInfo $newName,
 		public array $newState,
 		public array $copiedState
 	){}
@@ -48,8 +48,8 @@ final class BlockStateUpgradeSchemaBlockRemap{
 	public function equals(self $that) : bool{
 		$sameName = $this->newName === $that->newName ||
 			(
-				$this->newName instanceof BlockStateUpgradeSchemaFlattenedName &&
-				$that->newName instanceof BlockStateUpgradeSchemaFlattenedName &&
+				$this->newName instanceof BlockStateUpgradeSchemaFlattenInfo &&
+				$that->newName instanceof BlockStateUpgradeSchemaFlattenInfo &&
 				$this->newName->equals($that->newName)
 			);
 		if(!$sameName){
