@@ -21,25 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\utils;
 
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\entity\Human;
-use pocketmine\entity\Living;
+use pocketmine\item\Item;
 
-class TurtleHelmet extends Armor{
+class AnvilResult{
+	public function __construct(
+		private int $repairCost,
+		private ?Item $result,
+	){}
 
-	public function onTickWorn(Living $entity) : bool{
-		if($entity instanceof Human && !$entity->isUnderwater()){
-			$entity->getEffects()->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200, 0, false));
-			return true;
-		}
-
-		return false;
+	public function getRepairCost() : int{
+		return $this->repairCost;
 	}
 
-	public function isValidRepairMaterial(Item $material) : bool{
-		return $material->getTypeId() === ItemTypeIds::SCUTE;
+	public function getResult() : ?Item{
+		return $this->result;
 	}
 }

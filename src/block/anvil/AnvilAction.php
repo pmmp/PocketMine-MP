@@ -21,25 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\block\anvil;
 
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\entity\Human;
-use pocketmine\entity\Living;
+use pocketmine\item\Item;
 
-class TurtleHelmet extends Armor{
+abstract class AnvilAction{
+	protected int $xpCost = 0;
 
-	public function onTickWorn(Living $entity) : bool{
-		if($entity instanceof Human && !$entity->isUnderwater()){
-			$entity->getEffects()->add(new EffectInstance(VanillaEffects::WATER_BREATHING(), 200, 0, false));
-			return true;
-		}
+	final public function __construct(
+		protected Item $base,
+		protected Item $material,
+		protected ?string $customName
+	){ }
 
+	final public function getXpCost() : int{
+		return $this->xpCost;
+	}
+
+	/**
+	 * If only actions marked as free of repair cost is applied, the result item
+	 * will not have any repair cost increase.
+	 */
+	public function isFreeOfRepairCost() : bool {
 		return false;
 	}
 
-	public function isValidRepairMaterial(Item $material) : bool{
-		return $material->getTypeId() === ItemTypeIds::SCUTE;
-	}
+	abstract public function process(Item $resultItem) : void;
+
+	abstract public function canBeApplied() : bool;
 }
