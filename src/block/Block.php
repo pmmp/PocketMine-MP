@@ -982,4 +982,12 @@ class Block{
 
 		return $currentHit;
 	}
+
+	/**
+	 * Return items dropped by the block when it is broken by a player in gamemode creative
+	 * @return Item[]
+	 */
+	public function getCreativeDrops() : array{
+		return [];
+	}
 }
