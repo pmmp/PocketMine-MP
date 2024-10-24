@@ -54,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const JSON_UNESCAPED_UNICODE;
 use const YAML_UTF8_ENCODING;
 
 /**
@@ -84,7 +85,7 @@ class Config{
 
 	private string $file;
 	private int $type = Config::DETECT;
-	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING | JSON_UNESCAPED_UNICODE;
 
 	private bool $changed = false;
 
