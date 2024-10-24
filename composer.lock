@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "55a0d78afe634154e26fc9ce1496ee8b",
+    "content-hash": "16f41089f560ac18f47dab100ce53acf",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -153,16 +153,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "2.13.0+bedrock-1.21.30",
+            "version": "2.14.0+bedrock-1.21.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "23d9356b866654cbd2a62b31373118bedb4a2562"
+                "reference": "606d32ae426164b0615898b95d10e23293bed6ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/23d9356b866654cbd2a62b31373118bedb4a2562",
-                "reference": "23d9356b866654cbd2a62b31373118bedb4a2562",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/606d32ae426164b0615898b95d10e23293bed6ac",
+                "reference": "606d32ae426164b0615898b95d10e23293bed6ac",
                 "shasum": ""
             },
             "type": "library",
@@ -173,9 +173,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.30"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.40"
             },
-            "time": "2024-09-17T16:03:14+00:00"
+            "time": "2024-10-23T19:19:16+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",

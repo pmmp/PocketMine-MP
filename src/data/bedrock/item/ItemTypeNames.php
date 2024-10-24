@@ -66,12 +66,14 @@ final class ItemTypeNames{
 	public const BIRCH_DOOR = "minecraft:birch_door";
 	public const BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
 	public const BIRCH_SIGN = "minecraft:birch_sign";
+	public const BLACK_BUNDLE = "minecraft:black_bundle";
 	public const BLACK_DYE = "minecraft:black_dye";
 	public const BLADE_POTTERY_SHERD = "minecraft:blade_pottery_sherd";
 	public const BLAZE_POWDER = "minecraft:blaze_powder";
 	public const BLAZE_ROD = "minecraft:blaze_rod";
 	public const BLAZE_SPAWN_EGG = "minecraft:blaze_spawn_egg";
 	public const BLEACH = "minecraft:bleach";
+	public const BLUE_BUNDLE = "minecraft:blue_bundle";
 	public const BLUE_DYE = "minecraft:blue_dye";
 	public const BOAT = "minecraft:boat";
 	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
@@ -88,6 +90,7 @@ final class ItemTypeNames{
 	public const BREWER_POTTERY_SHERD = "minecraft:brewer_pottery_sherd";
 	public const BREWING_STAND = "minecraft:brewing_stand";
 	public const BRICK = "minecraft:brick";
+	public const BROWN_BUNDLE = "minecraft:brown_bundle";
 	public const BROWN_DYE = "minecraft:brown_dye";
 	public const BRUSH = "minecraft:brush";
 	public const BUCKET = "minecraft:bucket";
@@ -157,6 +160,7 @@ final class ItemTypeNames{
 	public const CRIMSON_HANGING_SIGN = "minecraft:crimson_hanging_sign";
 	public const CRIMSON_SIGN = "minecraft:crimson_sign";
 	public const CROSSBOW = "minecraft:crossbow";
+	public const CYAN_BUNDLE = "minecraft:cyan_bundle";
 	public const CYAN_DYE = "minecraft:cyan_dye";
 	public const DANGER_POTTERY_SHERD = "minecraft:danger_pottery_sherd";
 	public const DARK_OAK_BOAT = "minecraft:dark_oak_boat";
@@ -255,7 +259,9 @@ final class ItemTypeNames{
 	public const GOLDEN_PICKAXE = "minecraft:golden_pickaxe";
 	public const GOLDEN_SHOVEL = "minecraft:golden_shovel";
 	public const GOLDEN_SWORD = "minecraft:golden_sword";
+	public const GRAY_BUNDLE = "minecraft:gray_bundle";
 	public const GRAY_DYE = "minecraft:gray_dye";
+	public const GREEN_BUNDLE = "minecraft:green_bundle";
 	public const GREEN_DYE = "minecraft:green_dye";
 	public const GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
 	public const GUNPOWDER = "minecraft:gunpowder";
@@ -309,8 +315,11 @@ final class ItemTypeNames{
 	public const LEAVES = "minecraft:leaves";
 	public const LEAVES2 = "minecraft:leaves2";
 	public const LIGHT_BLOCK = "minecraft:light_block";
+	public const LIGHT_BLUE_BUNDLE = "minecraft:light_blue_bundle";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
+	public const LIGHT_GRAY_BUNDLE = "minecraft:light_gray_bundle";
 	public const LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+	public const LIME_BUNDLE = "minecraft:lime_bundle";
 	public const LIME_DYE = "minecraft:lime_dye";
 	public const LINGERING_POTION = "minecraft:lingering_potion";
 	public const LLAMA_SPAWN_EGG = "minecraft:llama_spawn_egg";
@@ -318,6 +327,7 @@ final class ItemTypeNames{
 	public const LOG = "minecraft:log";
 	public const LOG2 = "minecraft:log2";
 	public const MACE = "minecraft:mace";
+	public const MAGENTA_BUNDLE = "minecraft:magenta_bundle";
 	public const MAGENTA_DYE = "minecraft:magenta_dye";
 	public const MAGMA_CREAM = "minecraft:magma_cream";
 	public const MAGMA_CUBE_SPAWN_EGG = "minecraft:magma_cube_spawn_egg";
@@ -384,6 +394,7 @@ final class ItemTypeNames{
 	public const OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
 	public const OMINOUS_BOTTLE = "minecraft:ominous_bottle";
 	public const OMINOUS_TRIAL_KEY = "minecraft:ominous_trial_key";
+	public const ORANGE_BUNDLE = "minecraft:orange_bundle";
 	public const ORANGE_DYE = "minecraft:orange_dye";
 	public const OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 	public const PAINTING = "minecraft:painting";
@@ -397,6 +408,7 @@ final class ItemTypeNames{
 	public const PIGLIN_BRUTE_SPAWN_EGG = "minecraft:piglin_brute_spawn_egg";
 	public const PIGLIN_SPAWN_EGG = "minecraft:piglin_spawn_egg";
 	public const PILLAGER_SPAWN_EGG = "minecraft:pillager_spawn_egg";
+	public const PINK_BUNDLE = "minecraft:pink_bundle";
 	public const PINK_DYE = "minecraft:pink_dye";
 	public const PITCHER_POD = "minecraft:pitcher_pod";
 	public const PLANKS = "minecraft:planks";
@@ -416,6 +428,7 @@ final class ItemTypeNames{
 	public const PUFFERFISH_SPAWN_EGG = "minecraft:pufferfish_spawn_egg";
 	public const PUMPKIN_PIE = "minecraft:pumpkin_pie";
 	public const PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
+	public const PURPLE_BUNDLE = "minecraft:purple_bundle";
 	public const PURPLE_DYE = "minecraft:purple_dye";
 	public const QUARTZ = "minecraft:quartz";
 	public const RABBIT = "minecraft:rabbit";
@@ -430,6 +443,7 @@ final class ItemTypeNames{
 	public const RAW_GOLD = "minecraft:raw_gold";
 	public const RAW_IRON = "minecraft:raw_iron";
 	public const RECOVERY_COMPASS = "minecraft:recovery_compass";
+	public const RED_BUNDLE = "minecraft:red_bundle";
 	public const RED_DYE = "minecraft:red_dye";
 	public const RED_FLOWER = "minecraft:red_flower";
 	public const REDSTONE = "minecraft:redstone";
@@ -537,6 +551,7 @@ final class ItemTypeNames{
 	public const WEATHERED_COPPER_DOOR = "minecraft:weathered_copper_door";
 	public const WHEAT = "minecraft:wheat";
 	public const WHEAT_SEEDS = "minecraft:wheat_seeds";
+	public const WHITE_BUNDLE = "minecraft:white_bundle";
 	public const WHITE_DYE = "minecraft:white_dye";
 	public const WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
 	public const WIND_CHARGE = "minecraft:wind_charge";
@@ -556,6 +571,7 @@ final class ItemTypeNames{
 	public const WOOL = "minecraft:wool";
 	public const WRITABLE_BOOK = "minecraft:writable_book";
 	public const WRITTEN_BOOK = "minecraft:written_book";
+	public const YELLOW_BUNDLE = "minecraft:yellow_bundle";
 	public const YELLOW_DYE = "minecraft:yellow_dye";
 	public const ZOGLIN_SPAWN_EGG = "minecraft:zoglin_spawn_egg";
 	public const ZOMBIE_HORSE_SPAWN_EGG = "minecraft:zombie_horse_spawn_egg";
