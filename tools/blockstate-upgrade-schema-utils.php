@@ -692,6 +692,13 @@ function cmdGenerate(array $argv) : int{
 		\GlobalLogger::get()->warning("All states appear to be the same! No schema generated.");
 		return 0;
 	}
+
+	if(!testBlockStateUpgradeSchema($table, $diff)){
+		\GlobalLogger::get()->error("Generated schema does not produce the results expected by $upgradeTableFile");
+		\GlobalLogger::get()->error("This is probably a bug in the schema generation code. Please report this to the developers.");
+		return 1;
+	}
+
 	file_put_contents(
 		$schemaFile,
 		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($diff), JSON_PRETTY_PRINT) . "\n"
@@ -744,6 +751,13 @@ function cmdUpdate(array $argv) : int{
 
 	$upgradeTable = buildUpgradeTableFromData($tags, false);
 	$newSchema = generateBlockStateUpgradeSchema($upgradeTable);
+
+	if(!testBlockStateUpgradeSchema($upgradeTable, $newSchema)){
+		\GlobalLogger::get()->error("Updated schema does not produce the expected results!");
+		\GlobalLogger::get()->error("This is probably a bug in the schema generation code. Please report this to the developers.");
+		return 1;
+	}
+
 	file_put_contents(
 		$newSchemaFile,
 		json_encode(BlockStateUpgradeSchemaUtils::toJsonModel($newSchema), JSON_PRETTY_PRINT) . "\n"
