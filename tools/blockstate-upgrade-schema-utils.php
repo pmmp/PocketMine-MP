@@ -41,6 +41,7 @@ use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
 use function array_key_first;
 use function array_key_last;
 use function array_keys;
@@ -50,15 +51,19 @@ use function array_unique;
 use function array_values;
 use function count;
 use function dirname;
+use function file_exists;
 use function file_put_contents;
 use function fwrite;
 use function get_class;
 use function get_debug_type;
 use function implode;
+use function is_dir;
 use function is_numeric;
 use function json_encode;
 use function ksort;
 use function min;
+use function preg_match;
+use function scandir;
 use function sort;
 use function strlen;
 use function strrev;
@@ -769,11 +774,54 @@ function cmdUpdate(array $argv) : int{
 /**
  * @param string[] $argv
  */
+function cmdUpdateAll(array $argv) : int{
+	$oldPaletteFilenames = [
+		'1.9.0' => '1.09.0',
+		'1.19.50' => '1.19.50.23_beta',
+		'1.19.60' => '1.19.60.26_beta',
+		'1.19.70' => '1.19.70.26_beta',
+		'1.19.80' => '1.19.80.24_beta',
+	];
+	$schemaDir = $argv[2];
+	$paletteArchiveDir = $argv[3];
+
+	$schemaFileNames = scandir($schemaDir);
+	if($schemaFileNames === false){
+		\GlobalLogger::get()->error("Failed to read schema directory $schemaDir");
+		return 1;
+	}
+	foreach($schemaFileNames as $file){
+		$schemaFile = Path::join($schemaDir, $file);
+		if(!file_exists($schemaFile) || is_dir($schemaFile)){
+			continue;
+		}
+
+		if(preg_match('/^\d{4}_(.+?)_to_(.+?).json/', $file, $matches) !== 1){
+			continue;
+		}
+		$oldPaletteFile = Path::join($paletteArchiveDir, ($oldPaletteFilenames[$matches[1]] ?? $matches[1]) . '.nbt');
+
+		//a bit clunky but it avoids having to make yet another function
+		//TODO: perhaps in the future we should write the result to a tmpfile until all schemas are updated,
+		//and then copy the results into place at the end
+		if(cmdUpdate([$argv[0], "update", $schemaFile, $oldPaletteFile, $schemaFile]) !== 0){
+			return 1;
+		}
+	}
+
+	\GlobalLogger::get()->info("All schemas updated successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
 function main(array $argv) : int{
 	$options = [
 		"generate" => [["palette upgrade table file", "schema output file"], cmdGenerate(...)],
 		"test" => [["palette upgrade table file", "schema output file"], cmdTest(...)],
-		"update" => [["schema input file", "old palette file", "updated schema output file"], cmdUpdate(...)]
+		"update" => [["schema input file", "old palette file", "updated schema output file"], cmdUpdate(...)],
+		"update-all" => [["schema folder", "path to BlockPaletteArchive"], cmdUpdateAll(...)]
 	];
 
 	$selected = $argv[1] ?? null;
