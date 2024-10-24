@@ -27,7 +27,7 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchema;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaBlockRemap;
-use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenedName;
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenInfo;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaUtils;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -183,6 +183,11 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
 	$removedProperties = [];
 	$renamedProperties = [];
 
+	$uniqueNewIds = [];
+	foreach($upgradeTable as $pair){
+		$uniqueNewIds[$pair->new->getName()] = $pair->new->getName();
+	}
+
 	foreach(Utils::stringifyKeys($newProperties) as $newPropertyName => $newPropertyValues){
 		if(count($newPropertyValues) === 1){
 			$newPropertyValue = $newPropertyValues[array_key_first($newPropertyValues)];
@@ -278,6 +283,61 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
 		}
 	}
 
+	if(count($uniqueNewIds) > 1){
+		//detect possible flattening
+		$flattenedProperty = null;
+		$flattenedPropertyType = null;
+		$flattenedPropertyMap = [];
+		foreach($removedProperties as $removedProperty){
+			$valueMap = [];
+			foreach($upgradeTable as $pair){
+				$oldValue = $pair->old->getState($removedProperty);
+				if($oldValue === null){
+					throw new AssumptionFailedError("We already checked that all states had consistent old properties");
+				}
+				//TODO: lots of similar logic to the remappedStates builder below
+				if(!$oldValue instanceof ByteTag && !$oldValue instanceof IntTag && !$oldValue instanceof StringTag){
+					//unknown property type - bad candidate for flattening
+					continue 2;
+				}
+				if($flattenedPropertyType === null){
+					$flattenedPropertyType = get_class($oldValue);
+				}elseif(!$oldValue instanceof $flattenedPropertyType){
+					//property type mismatch - bad candidate for flattening
+					continue 2;
+				}
+
+				$rawValue = (string) $oldValue->getValue();
+				$existingNewId = $valueMap[$rawValue] ?? null;
+				if($existingNewId !== null && $existingNewId !== $pair->new->getName()){
+					//this property value is associated with multiple new IDs - bad candidate for flattening
+					continue 2;
+				}
+				$valueMap[$rawValue] = $pair->new->getName();
+			}
+
+			if($flattenedProperty !== null){
+				//found multiple candidates for flattening - fallback to remappedStates
+				return false;
+			}
+			//we found a suitable candidate
+			$flattenedProperty = $removedProperty;
+			$flattenedPropertyMap = $valueMap;
+			break;
+		}
+
+		if($flattenedProperty === null){
+			//can't figure out how the new IDs are related to the old states - fallback to remappedStates
+			return false;
+		}
+		if($flattenedPropertyType === null){
+			throw new AssumptionFailedError("This should never happen at this point");
+		}
+
+		$result->flattenedProperties[$oldName] = buildFlattenPropertyRule($flattenedPropertyMap, $flattenedProperty, $flattenedPropertyType);
+		unset($removedProperties[$flattenedProperty]);
+	}
+
 	//finally, write the results to the schema
 
 	if(count($remappedPropertyValues) !== 0){
@@ -333,59 +393,68 @@ function findCommonSuffix(array $strings) : string{
 }
 
 /**
+ * @param string[] $valueToId
+ * @phpstan-param array<string, string> $valueToId
+ * @phpstan-param class-string<ByteTag|IntTag|StringTag> $propertyType
+ */
+function buildFlattenPropertyRule(array $valueToId, string $propertyName, string $propertyType) : BlockStateUpgradeSchemaFlattenInfo{
+	$ids = array_values($valueToId);
+
+	//TODO: this is a bit too enthusiastic. For example, when flattening the old "stone", it will see that
+	//"granite", "andesite", "stone" etc all have "e" as a common suffix, which works, but looks a bit daft.
+	//This also causes more remaps to be generated than necessary, since some of the values are already
+	//contained in the new ID.
+	$idPrefix = findCommonPrefix($ids);
+	$idSuffix = findCommonSuffix($ids);
+	if(strlen($idSuffix) < 2){
+		$idSuffix = "";
+	}
+
+	$valueMap = [];
+	foreach(Utils::stringifyKeys($valueToId) as $value => $newId){
+		$newValue = substr($newId, strlen($idPrefix), $idSuffix !== "" ? -strlen($idSuffix) : null);
+		if($newValue !== $value){
+			$valueMap[$value] = $newValue;
+		}
+	}
+
+	$allNumeric = true;
+	if(count($valueMap) > 0){
+		foreach(Utils::stringifyKeys($valueMap) as $value => $newValue){
+			if(!is_numeric($value)){
+				$allNumeric = false;
+				break;
+			}
+		}
+		if($allNumeric){
+			//add a dummy key to force the JSON to be an object and not a list
+			$valueMap["dummy"] = "map_not_list";
+		}
+	}
+
+	return new BlockStateUpgradeSchemaFlattenInfo(
+		$idPrefix,
+		$propertyName,
+		$idSuffix,
+		$valueMap,
+		$propertyType,
+	);
+}
+
+/**
  * @param string[][][] $candidateFlattenedValues
  * @phpstan-param array<string, array<string, array<string, string>>> $candidateFlattenedValues
  * @param string[] $candidateFlattenPropertyTypes
  * @phpstan-param array<string, class-string<ByteTag|IntTag|StringTag>> $candidateFlattenPropertyTypes
  *
- * @return BlockStateUpgradeSchemaFlattenedName[][]
- * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenedName>>
+ * @return BlockStateUpgradeSchemaFlattenInfo[][]
+ * @phpstan-return array<string, array<string, BlockStateUpgradeSchemaFlattenInfo>>
  */
 function buildFlattenPropertyRules(array $candidateFlattenedValues, array $candidateFlattenPropertyTypes) : array{
 	$flattenPropertyRules = [];
 	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
 		foreach(Utils::stringifyKeys($filters) as $filter => $valueToId){
-			$ids = array_values($valueToId);
-
-			//TODO: this is a bit too enthusiastic. For example, when flattening the old "stone", it will see that
-			//"granite", "andesite", "stone" etc all have "e" as a common suffix, which works, but looks a bit daft.
-			//This also causes more remaps to be generated than necessary, since some of the values are already
-			//contained in the new ID.
-			$idPrefix = findCommonPrefix($ids);
-			$idSuffix = findCommonSuffix($ids);
-			if(strlen($idSuffix) < 2){
-				$idSuffix = "";
-			}
-
-			$valueMap = [];
-			foreach(Utils::stringifyKeys($valueToId) as $value => $newId){
-				$newValue = substr($newId, strlen($idPrefix), $idSuffix !== "" ? -strlen($idSuffix) : null);
-				if($newValue !== $value){
-					$valueMap[$value] = $newValue;
-				}
-			}
-
-			$allNumeric = true;
-			if(count($valueMap) > 0){
-				foreach(Utils::stringifyKeys($valueMap) as $value => $newValue){
-					if(!is_numeric($value)){
-						$allNumeric = false;
-						break;
-					}
-				}
-				if($allNumeric){
-					//add a dummy key to force the JSON to be an object and not a list
-					$valueMap["dummy"] = "map_not_list";
-				}
-			}
-
-			$flattenPropertyRules[$propertyName][$filter] = new BlockStateUpgradeSchemaFlattenedName(
-				$idPrefix,
-				$propertyName,
-				$idSuffix,
-				$valueMap,
-				$candidateFlattenPropertyTypes[$propertyName],
-			);
+			$flattenPropertyRules[$propertyName][$filter] = buildFlattenPropertyRule($valueToId, $propertyName, $candidateFlattenPropertyTypes[$propertyName]);
 		}
 	}
 	ksort($flattenPropertyRules, SORT_STRING);
@@ -642,10 +711,15 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 				throw new \RuntimeException("States with the same ID should be fully consistent");
 			}
 		}else{
-			//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
-			//even if some of the states stay under the same ID, the compression techniques used by this function
-			//implicitly rely on knowing the full set of old states and their new transformations
-			$result->remappedStates[$oldName] = processRemappedStates($blockStateMappings);
+			//try processing this as a regular state group first
+			//if a property was flattened into the ID, the remaining states will normally be consistent
+			//if not we fall back to remap states and state filters
+			if(!processStateGroup($oldName, $blockStateMappings, $result)){
+				//block mapped to multiple different new IDs; we can't guess these, so we just do a plain old remap
+				//even if some of the states stay under the same ID, the compression techniques used by this function
+				//implicitly rely on knowing the full set of old states and their new transformations
+				$result->remappedStates[$oldName] = processRemappedStates($blockStateMappings);
+			}
 		}
 	}
 

@@ -29,7 +29,7 @@ use pocketmine\nbt\tag\StringTag;
 use function ksort;
 use const SORT_STRING;
 
-final class BlockStateUpgradeSchemaFlattenedName{
+final class BlockStateUpgradeSchemaFlattenInfo{
 
 	/**
 	 * @param string[] $flattenedValueRemaps

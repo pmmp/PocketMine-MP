@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\upgrade\model;
 
 use function count;
 
-final class BlockStateUpgradeSchemaModelFlattenedName implements \JsonSerializable{
+final class BlockStateUpgradeSchemaModelFlattenInfo implements \JsonSerializable{
 
 	/** @required */
 	public string $prefix;
