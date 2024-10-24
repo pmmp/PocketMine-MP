@@ -295,25 +295,9 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
 				if($oldValue === null){
 					throw new AssumptionFailedError("We already checked that all states had consistent old properties");
 				}
-				//TODO: lots of similar logic to the remappedStates builder below
-				if(!$oldValue instanceof ByteTag && !$oldValue instanceof IntTag && !$oldValue instanceof StringTag){
-					//unknown property type - bad candidate for flattening
+				if(!checkFlattenPropertySuitability($oldValue, $flattenedPropertyType, $pair->new->getName(), $valueMap)){
 					continue 2;
 				}
-				if($flattenedPropertyType === null){
-					$flattenedPropertyType = get_class($oldValue);
-				}elseif(!$oldValue instanceof $flattenedPropertyType){
-					//property type mismatch - bad candidate for flattening
-					continue 2;
-				}
-
-				$rawValue = (string) $oldValue->getValue();
-				$existingNewId = $valueMap[$rawValue] ?? null;
-				if($existingNewId !== null && $existingNewId !== $pair->new->getName()){
-					//this property value is associated with multiple new IDs - bad candidate for flattening
-					continue 2;
-				}
-				$valueMap[$rawValue] = $pair->new->getName();
 			}
 
 			if($flattenedProperty !== null){
@@ -390,6 +374,37 @@ function findCommonSuffix(array $strings) : string{
 	$reversed = array_map(strrev(...), $strings);
 
 	return strrev(findCommonPrefix($reversed));
+}
+
+/**
+ * @param string[] $valueToIdMap
+ * @phpstan-param ?class-string<ByteTag|IntTag|StringTag> $expectedType
+ * @phpstan-param-out class-string<ByteTag|IntTag|StringTag> $expectedType
+ * @phpstan-param array<string, string> $valueToIdMap
+ * @phpstan-param-out array<string, string> $valueToIdMap
+ */
+function checkFlattenPropertySuitability(Tag $oldValue, ?string &$expectedType, string $actualNewId, array &$valueToIdMap) : bool{
+	//TODO: lots of similar logic to the remappedStates builder below
+	if(!$oldValue instanceof ByteTag && !$oldValue instanceof IntTag && !$oldValue instanceof StringTag){
+		//unknown property type - bad candidate for flattening
+		return false;
+	}
+	if($expectedType === null){
+		$expectedType = get_class($oldValue);
+	}elseif(!$oldValue instanceof $expectedType){
+		//property type mismatch - bad candidate for flattening
+		return false;
+	}
+
+	$rawValue = (string) $oldValue->getValue();
+	$existingNewId = $valueToIdMap[$rawValue] ?? null;
+	if($existingNewId !== null && $existingNewId !== $actualNewId){
+		//this property value is associated with multiple new IDs - bad candidate for flattening
+		return false;
+	}
+	$valueToIdMap[$rawValue] = $actualNewId;
+
+	return true;
 }
 
 /**
@@ -522,23 +537,6 @@ function processRemappedStates(array $upgradeTable) : array{
 			if(isset($notFlattenedProperties[$propertyName])){
 				continue;
 			}
-			if(!$propertyValue instanceof StringTag && !$propertyValue instanceof IntTag && !$propertyValue instanceof ByteTag){
-				$notFlattenedProperties[$propertyName] = true;
-				continue;
-			}
-			$previousType = $candidateFlattenedPropertyTypes[$propertyName] ?? null;
-			if($previousType !== null && $previousType !== get_class($propertyValue)){
-				//mismatched types for the same property name - this has never happened so far, but it's not impossible
-				$notFlattenedProperties[$propertyName] = true;
-				continue;
-			}
-			$candidateFlattenedPropertyTypes[$propertyName] = get_class($propertyValue);
-
-			$rawValue = (string) $propertyValue->getValue();
-			if($rawValue === ""){
-				$notFlattenedProperties[$propertyName] = true;
-				continue;
-			}
 
 			$filter = $pair->old->getStates();
 			foreach($unchangedStatesByNewName[$pair->new->getName()] as $unchangedPropertyName){
@@ -551,16 +549,13 @@ function processRemappedStates(array $upgradeTable) : array{
 			unset($filter[$propertyName]);
 
 			$rawFilter = encodeOrderedProperties($filter);
-			if(isset($candidateFlattenedValues[$propertyName][$rawFilter])){
-				$valuesToIds = $candidateFlattenedValues[$propertyName][$rawFilter];
-				$existingNewId = $valuesToIds[$rawValue] ?? null;
-				if($existingNewId !== null && $existingNewId !== $pair->new->getName()){
-					//this old value is associated with multiple new IDs - bad candidate for flattening
-					$notFlattenedProperties[$propertyName] = true;
-					continue;
-				}
+			$candidateFlattenedValues[$propertyName][$rawFilter] ??= [];
+			$expectedType = $candidateFlattenedPropertyTypes[$propertyName] ?? null;
+			if(!checkFlattenPropertySuitability($propertyValue, $expectedType, $pair->new->getName(), $candidateFlattenedValues[$propertyName][$rawFilter])){
+				$notFlattenedProperties[$propertyName] = true;
+				continue;
 			}
-			$candidateFlattenedValues[$propertyName][$rawFilter][$rawValue] = $pair->new->getName();
+			$candidateFlattenedPropertyTypes[$propertyName] = $expectedType;
 		}
 	}
 	foreach(Utils::stringifyKeys($candidateFlattenedValues) as $propertyName => $filters){
