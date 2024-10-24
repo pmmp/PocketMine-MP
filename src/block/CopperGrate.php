@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
 
-class CopperGrate extends Transparent implements ICopper{
+class CopperGrate extends Transparent implements CopperMaterial{
 	use CopperTrait;
 
 	//TODO: waterlogging!
