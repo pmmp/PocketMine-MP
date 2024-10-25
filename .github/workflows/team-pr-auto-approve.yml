@@ -32,11 +32,30 @@ jobs:
           #technically this would be fine for dependabot but generally bots don't count as team members
           check-bot: true
 
-        #TODO: Some way to avoid unnecessary repeated reviews would be nice here
+      - name: Cache previous approvals
+        uses: actions/cache@v3
+        with:
+          path: .github/approvals
+          key: ${{ github.event.pull_request.head.sha }}
+
+      - name: Check if PR has been approved before
+        id: check-approval
+        run: |
+          if [ -f ".github/approvals/${{ github.event.pull_request.head.sha }}" ]; then
+            echo "approved=true" >> $GITHUB_ENV
+          else
+            echo "approved=false" >> $GITHUB_ENV
+          fi
 
       - name: Approve PR if authorized
-        if: steps.check-permission.outputs.require-result == 'true' && steps.check-permission.outputs.check-result == 'false'
+        if: steps.check-permission.outputs.require-result == 'true' && steps.check-permission.outputs.check-result == 'false' && env.approved == 'false'
         uses: juliangruber/approve-pull-request-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           number: ${{ github.event.pull_request.number }}
+
+      - name: Save approval state
+        if: steps.check-permission.outputs.require-result == 'true' && steps.check-permission.outputs.check-result == 'false' && env.approved == 'false'
+        run: |
+          mkdir -p .github/approvals
+          touch .github/approvals/${{ github.event.pull_request.head.sha }}
