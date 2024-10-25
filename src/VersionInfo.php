@@ -103,4 +103,8 @@ final class VersionInfo{
 		}
 		return self::$fullVersion;
 	}
+
+	public static function BUILD_DATE() : int {
+		return time();
+	}
 }

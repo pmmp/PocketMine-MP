@@ -39,7 +39,7 @@ echo json_encode([
 	"channel" => VersionInfo::BUILD_CHANNEL,
 	"git_commit" => $argv[1],
 	"mcpe_version" => ProtocolInfo::MINECRAFT_VERSION_NETWORK,
-	"date" => time(), //TODO: maybe we should embed this in VersionInfo?
+	"date" => VersionInfo::BUILD_DATE(),
 	"details_url" => "https://github.com/$argv[3]/releases/tag/$argv[2]",
 	"download_url" => "https://github.com/$argv[3]/releases/download/$argv[2]/PocketMine-MP.phar",
 	"source_url" => "https://github.com/$argv[3]/tree/$argv[2]",
