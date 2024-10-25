@@ -58,6 +58,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_PLANKS,
 			WoodType::WARPED => Ids::WARPED_PLANKS,
 			WoodType::CHERRY => Ids::CHERRY_PLANKS,
+			WoodType::BAMBOO => Ids::BAMBOO_PLANKS,
 		});
 	}
 
@@ -73,6 +74,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_FENCE,
 			WoodType::WARPED => Ids::WARPED_FENCE,
 			WoodType::CHERRY => Ids::CHERRY_FENCE,
+			WoodType::BAMBOO => Ids::BAMBOO_FENCE,
 		});
 	}
 
@@ -88,9 +90,13 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_SLAB,
 			WoodType::WARPED => Ids::WARPED_SLAB,
 			WoodType::CHERRY => Ids::CHERRY_SLAB,
+			WoodType::BAMBOO => Ids::BAMBOO_SLAB,
 		});
 	}
 
+	/**
+	 * @throws \Exception
+	 */
 	public static function getLogIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_LOG,
@@ -103,6 +109,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_STEM,
 			WoodType::WARPED => Ids::WARPED_STEM,
 			WoodType::CHERRY => Ids::CHERRY_LOG,
+			WoodType::BAMBOO => 59000,
 		});
 	}
 
@@ -118,6 +125,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_HYPHAE,
 			WoodType::WARPED => Ids::WARPED_HYPHAE,
 			WoodType::CHERRY => Ids::CHERRY_WOOD,
+			WoodType::BAMBOO => 59001,
 		});
 	}
 
@@ -168,6 +176,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => $make(Ids::CRIMSON_SIGN, Ids::CRIMSON_WALL_SIGN, fn() => VanillaItems::CRIMSON_SIGN()),
 			WoodType::WARPED => $make(Ids::WARPED_SIGN, Ids::WARPED_WALL_SIGN, fn() => VanillaItems::WARPED_SIGN()),
 			WoodType::CHERRY => $make(Ids::CHERRY_SIGN, Ids::CHERRY_WALL_SIGN, fn() => VanillaItems::CHERRY_SIGN()),
+			WoodType::BAMBOO => $make(Ids::BAMBOO_SIGN, Ids::BAMBOO_WALL_SIGN, fn() => VanillaItems::BAMBOO_SIGN()),
 		};
 	}
 
@@ -183,6 +192,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_TRAPDOOR,
 			WoodType::WARPED => Ids::WARPED_TRAPDOOR,
 			WoodType::CHERRY => Ids::CHERRY_TRAPDOOR,
+			WoodType::BAMBOO => Ids::BAMBOO_TRAPDOOR,
 		});
 	}
 
@@ -198,6 +208,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_BUTTON,
 			WoodType::WARPED => Ids::WARPED_BUTTON,
 			WoodType::CHERRY => Ids::CHERRY_BUTTON,
+			WoodType::BAMBOO => Ids::BAMBOO_BUTTON,
 		});
 	}
 
@@ -213,6 +224,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_PRESSURE_PLATE,
 			WoodType::WARPED => Ids::WARPED_PRESSURE_PLATE,
 			WoodType::CHERRY => Ids::CHERRY_PRESSURE_PLATE,
+			WoodType::BAMBOO => Ids::BAMBOO_PRESSURE_PLATE,
 		});
 	}
 
@@ -228,6 +240,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_DOOR,
 			WoodType::WARPED => Ids::WARPED_DOOR,
 			WoodType::CHERRY => Ids::CHERRY_DOOR,
+			WoodType::BAMBOO => Ids::BAMBOO_DOOR,
 		});
 	}
 
@@ -243,6 +256,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_FENCE_GATE,
 			WoodType::WARPED => Ids::WARPED_FENCE_GATE,
 			WoodType::CHERRY => Ids::CHERRY_FENCE_GATE,
+			WoodType::BAMBOO => Ids::BAMBOO_FENCE_GATE,
 		});
 	}
 
@@ -258,6 +272,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_STAIRS,
 			WoodType::WARPED => Ids::WARPED_STAIRS,
 			WoodType::CHERRY => Ids::CHERRY_STAIRS,
+			WoodType::BAMBOO => Ids::BAMBOO_STAIRS,
 		});
 	}
 }

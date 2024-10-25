@@ -746,6 +746,18 @@ final class BlockTypeIds{
 	public const PITCHER_CROP = 10716;
 	public const DOUBLE_PITCHER_CROP = 10717;
 
+	public const BAMBOO_BUTTON = 10718;
+	public const BAMBOO_DOOR = 10719;
+	public const BAMBOO_FENCE = 10720;
+	public const BAMBOO_FENCE_GATE = 10721;
+	public const BAMBOO_PLANKS = 10722;
+	public const BAMBOO_PRESSURE_PLATE = 10723;
+	public const BAMBOO_SIGN = 10724;
+	public const BAMBOO_SLAB = 10725;
+	public const BAMBOO_STAIRS = 10726;
+	public const BAMBOO_TRAPDOOR = 10727;
+	public const BAMBOO_WALL_SIGN = 10728;
+
 	public const FIRST_UNUSED_BLOCK_ID = 10718;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;

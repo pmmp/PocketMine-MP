@@ -537,6 +537,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::STRIPPED_CHERRY_WOOD, fn(Reader $in) => Helper::decodeLog(Blocks::CHERRY_WOOD(), true, $in));
 
+		$this->map(Ids::BAMBOO_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::BAMBOO_BUTTON(), $in));
+		$this->map(Ids::BAMBOO_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::BAMBOO_DOOR(), $in));
+		$this->map(Ids::BAMBOO_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::BAMBOO_FENCE_GATE(), $in));
+		$this->map(Ids::BAMBOO_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::BAMBOO_PRESSURE_PLATE(), $in));
+		$this->map(Ids::BAMBOO_STANDING_SIGN, fn(Reader $in) => Helper::decodeFloorSign(Blocks::BAMBOO_SIGN(), $in));
+		$this->map(Ids::BAMBOO_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::BAMBOO_TRAPDOOR(), $in));
+		$this->map(Ids::BAMBOO_WALL_SIGN, fn(Reader $in) => Helper::decodeWallSign(Blocks::BAMBOO_WALL_SIGN(), $in));
+		$this->mapSimple(Ids::BAMBOO_FENCE, fn() => Blocks::BAMBOO_FENCE());
+		$this->mapSimple(Ids::BAMBOO_PLANKS, fn() => Blocks::BAMBOO_PLANKS());
+		$this->mapSlab(Ids::BAMBOO_SLAB, Ids::BAMBOO_DOUBLE_SLAB, fn() => Blocks::BAMBOO_SLAB());
+		$this->mapStairs(Ids::BAMBOO_STAIRS, fn() => Blocks::BAMBOO_STAIRS());
+
 		$this->map(Ids::CRIMSON_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::CRIMSON_BUTTON(), $in));
 		$this->map(Ids::CRIMSON_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::CRIMSON_DOOR(), $in));
 		$this->map(Ids::CRIMSON_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::CRIMSON_FENCE_GATE(), $in));

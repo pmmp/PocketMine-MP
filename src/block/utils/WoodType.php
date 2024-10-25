@@ -53,6 +53,7 @@ enum WoodType{
 	case CRIMSON;
 	case WARPED;
 	case CHERRY;
+	case BAMBOO;
 
 	public function getDisplayName() : string{
 		return match($this){
@@ -66,6 +67,7 @@ enum WoodType{
 			self::CRIMSON => "Crimson",
 			self::WARPED => "Warped",
 			self::CHERRY => "Cherry",
+			self::BAMBOO => "Bamboo",
 		};
 	}
 
