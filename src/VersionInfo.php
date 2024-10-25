@@ -28,6 +28,7 @@ use pocketmine\utils\VersionString;
 use function is_array;
 use function is_int;
 use function str_repeat;
+use function time;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
