@@ -154,7 +154,13 @@ final class ItemDataUpgrader{
 
 		//TODO: Dirty hack to load old skulls from disk: Put this into item upgrade schema's before Mojang makes something with a non 0 default state
 		if($blockStateData === null && ($blockId = $this->blockItemIdMap->lookupBlockId($newNameId)) !== null){
-			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($this->blockStateDictionary->lookupStateIdFromIdMeta($blockId, 0));
+			$networkRuntimeId = $this->blockStateDictionary->lookupStateIdFromIdMeta($blockId, 0);
+
+			if($networkRuntimeId === null){
+				throw new SavedDataLoadingException("Failed to find blockstate for blockitem $newNameId");
+			}
+
+			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId);
 		}
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?
