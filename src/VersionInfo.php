@@ -105,7 +105,7 @@ final class VersionInfo{
 		return self::$fullVersion;
 	}
 
-	//I don't know if it would really work 
+	//I don't know if it would really work
 	public static function BUILD_DATE() : int {
 		static $buildDate = null;
 		if ($buildDate === null) {
@@ -115,7 +115,7 @@ final class VersionInfo{
 				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
 				$meta = $phar->getMetadata();
 				if (isset($meta["date"])) {
-					$buildDate = $meta["date"];
+					$buildDate = (int) $meta["date"];
 				}
 			}
 		}
