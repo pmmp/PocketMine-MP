@@ -114,7 +114,6 @@ final class BlockStateNames{
 	public const SEA_GRASS_TYPE = "sea_grass_type";
 	public const STABILITY = "stability";
 	public const STABILITY_CHECK = "stability_check";
-	public const STRIPPED_BIT = "stripped_bit";
 	public const STRUCTURE_BLOCK_TYPE = "structure_block_type";
 	public const SUSPENDED_BIT = "suspended_bit";
 	public const TOGGLE_BIT = "toggle_bit";
