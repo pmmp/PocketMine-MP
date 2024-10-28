@@ -105,6 +105,7 @@ final class VersionInfo{
 		return self::$fullVersion;
 	}
 
+	//I don't know if it would really work 
 	public static function BUILD_DATE() : int {
 		static $buildDate = null;
 		if ($buildDate === null) {
