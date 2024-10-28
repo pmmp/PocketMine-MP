@@ -757,6 +757,8 @@ final class BlockTypeIds{
 	public const BAMBOO_STAIRS = 10726;
 	public const BAMBOO_TRAPDOOR = 10727;
 	public const BAMBOO_WALL_SIGN = 10728;
+	public const NO_BAMBOO_LOG = 10729;
+	public const NO_BAMBOO_WOOD = 10730;
 
 	public const FIRST_UNUSED_BLOCK_ID = 10718;
 

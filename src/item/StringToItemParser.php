@@ -146,13 +146,13 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("azalea_leaves", fn() => Blocks::AZALEA_LEAVES());
 		$result->registerBlock("azure_bluet", fn() => Blocks::AZURE_BLUET());
 		$result->registerBlock("bamboo", fn() => Blocks::BAMBOO());
-		$result->registerBlock("bamboo_sapling", fn() => Blocks::BAMBOO_SAPLING());
 		$result->registerBlock("bamboo_button", fn() => Blocks::BAMBOO_BUTTON());
 		$result->registerBlock("bamboo_door", fn() => Blocks::BAMBOO_DOOR());
 		$result->registerBlock("bamboo_fence", fn() => Blocks::BAMBOO_FENCE());
 		$result->registerBlock("bamboo_fence_gate", fn() => Blocks::BAMBOO_FENCE_GATE());
 		$result->registerBlock("bamboo_planks", fn() => Blocks::BAMBOO_PLANKS());
 		$result->registerBlock("bamboo_pressure_plate", fn() => Blocks::BAMBOO_PRESSURE_PLATE());
+		$result->registerBlock("bamboo_sapling", fn() => Blocks::BAMBOO_SAPLING());
 		$result->registerBlock("bamboo_sign", fn() => Blocks::BAMBOO_SIGN());
 		$result->registerBlock("bamboo_slab", fn() => Blocks::BAMBOO_SLAB());
 		$result->registerBlock("bamboo_stairs", fn() => Blocks::BAMBOO_STAIRS());

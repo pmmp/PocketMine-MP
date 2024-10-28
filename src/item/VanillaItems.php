@@ -54,6 +54,7 @@ use function strtolower;
  * @method static Arrow ARROW()
  * @method static BakedPotato BAKED_POTATO()
  * @method static Bamboo BAMBOO()
+ * @method static ItemBlockWallOrFloor BAMBOO_SIGN()
  * @method static Banner BANNER()
  * @method static Beetroot BEETROOT()
  * @method static BeetrootSeeds BEETROOT_SEEDS()
@@ -331,7 +332,6 @@ use function strtolower;
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
- * @method static ItemBlockWallOrFloor BAMBOO_SIGN()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
@@ -369,6 +369,7 @@ final class VanillaItems{
 		self::register("arrow", new Arrow(new IID(Ids::ARROW), "Arrow"));
 		self::register("baked_potato", new BakedPotato(new IID(Ids::BAKED_POTATO), "Baked Potato"));
 		self::register("bamboo", new Bamboo(new IID(Ids::BAMBOO), "Bamboo"));
+		self::register("bamboo_sign", new ItemBlockWallOrFloor(new IID(Ids::BAMBOO_SIGN), Blocks::BAMBOO_SIGN(), Blocks::BAMBOO_WALL_SIGN()));
 		self::register("banner", new Banner(new IID(Ids::BANNER), Blocks::BANNER(), Blocks::WALL_BANNER()));
 		self::register("beetroot", new Beetroot(new IID(Ids::BEETROOT), "Beetroot"));
 		self::register("beetroot_seeds", new BeetrootSeeds(new IID(Ids::BEETROOT_SEEDS), "Beetroot Seeds"));
@@ -388,7 +389,6 @@ final class VanillaItems{
 		self::register("carrot", new Carrot(new IID(Ids::CARROT), "Carrot"));
 		self::register("charcoal", new Coal(new IID(Ids::CHARCOAL), "Charcoal"));
 		self::register("cherry_sign", new ItemBlockWallOrFloor(new IID(Ids::CHERRY_SIGN), Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
-		self::register("bamboo_sign", new ItemBlockWallOrFloor(new IID(Ids::BAMBOO_SIGN), Blocks::BAMBOO_SIGN(), Blocks::BAMBOO_WALL_SIGN()));
 		self::register("chemical_aluminium_oxide", new Item(new IID(Ids::CHEMICAL_ALUMINIUM_OXIDE), "Aluminium Oxide"));
 		self::register("chemical_ammonia", new Item(new IID(Ids::CHEMICAL_AMMONIA), "Ammonia"));
 		self::register("chemical_barium_sulphate", new Item(new IID(Ids::CHEMICAL_BARIUM_SULPHATE), "Barium Sulphate"));

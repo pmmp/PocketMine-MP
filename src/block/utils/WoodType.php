@@ -39,6 +39,7 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static WoodType OAK()
  * @method static WoodType SPRUCE()
  * @method static WoodType WARPED()
+ * @method static WoodType BAMBOO()
  */
 enum WoodType{
 	use LegacyEnumShimTrait;

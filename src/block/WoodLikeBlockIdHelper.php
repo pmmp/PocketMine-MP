@@ -94,9 +94,6 @@ final class WoodLikeBlockIdHelper{
 		});
 	}
 
-	/**
-	 * @throws \Exception
-	 */
 	public static function getLogIdentifier(WoodType $treeType) : BID{
 		return new BID(match($treeType){
 			WoodType::OAK => Ids::OAK_LOG,
@@ -109,7 +106,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_STEM,
 			WoodType::WARPED => Ids::WARPED_STEM,
 			WoodType::CHERRY => Ids::CHERRY_LOG,
-			WoodType::BAMBOO => 59000,
+			WoodType::BAMBOO => Ids::NO_BAMBOO_LOG,
 		});
 	}
 
@@ -125,7 +122,7 @@ final class WoodLikeBlockIdHelper{
 			WoodType::CRIMSON => Ids::CRIMSON_HYPHAE,
 			WoodType::WARPED => Ids::WARPED_HYPHAE,
 			WoodType::CHERRY => Ids::CHERRY_WOOD,
-			WoodType::BAMBOO => 59001,
+			WoodType::BAMBOO => Ids::NO_BAMBOO_WOOD,
 		});
 	}
 
