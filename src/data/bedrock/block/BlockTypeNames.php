@@ -262,6 +262,7 @@ final class BlockTypeNames{
 	public const CRACKED_STONE_BRICKS = "minecraft:cracked_stone_bricks";
 	public const CRAFTER = "minecraft:crafter";
 	public const CRAFTING_TABLE = "minecraft:crafting_table";
+	public const CREEPER_HEAD = "minecraft:creeper_head";
 	public const CRIMSON_BUTTON = "minecraft:crimson_button";
 	public const CRIMSON_DOOR = "minecraft:crimson_door";
 	public const CRIMSON_DOUBLE_SLAB = "minecraft:crimson_double_slab";
@@ -384,6 +385,7 @@ final class BlockTypeNames{
 	public const DISPENSER = "minecraft:dispenser";
 	public const DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
 	public const DRAGON_EGG = "minecraft:dragon_egg";
+	public const DRAGON_HEAD = "minecraft:dragon_head";
 	public const DRIED_KELP_BLOCK = "minecraft:dried_kelp_block";
 	public const DRIPSTONE_BLOCK = "minecraft:dripstone_block";
 	public const DROPPER = "minecraft:dropper";
@@ -797,6 +799,7 @@ final class BlockTypeNames{
 	public const MUD_BRICK_WALL = "minecraft:mud_brick_wall";
 	public const MUD_BRICKS = "minecraft:mud_bricks";
 	public const MUDDY_MANGROVE_ROOTS = "minecraft:muddy_mangrove_roots";
+	public const MUSHROOM_STEM = "minecraft:mushroom_stem";
 	public const MYCELIUM = "minecraft:mycelium";
 	public const NETHER_BRICK = "minecraft:nether_brick";
 	public const NETHER_BRICK_DOUBLE_SLAB = "minecraft:nether_brick_double_slab";
@@ -857,6 +860,7 @@ final class BlockTypeNames{
 	public const PEONY = "minecraft:peony";
 	public const PETRIFIED_OAK_DOUBLE_SLAB = "minecraft:petrified_oak_double_slab";
 	public const PETRIFIED_OAK_SLAB = "minecraft:petrified_oak_slab";
+	public const PIGLIN_HEAD = "minecraft:piglin_head";
 	public const PINK_CANDLE = "minecraft:pink_candle";
 	public const PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
 	public const PINK_CARPET = "minecraft:pink_carpet";
@@ -874,6 +878,7 @@ final class BlockTypeNames{
 	public const PISTON_ARM_COLLISION = "minecraft:piston_arm_collision";
 	public const PITCHER_CROP = "minecraft:pitcher_crop";
 	public const PITCHER_PLANT = "minecraft:pitcher_plant";
+	public const PLAYER_HEAD = "minecraft:player_head";
 	public const PODZOL = "minecraft:podzol";
 	public const POINTED_DRIPSTONE = "minecraft:pointed_dripstone";
 	public const POLISHED_ANDESITE = "minecraft:polished_andesite";
@@ -1009,7 +1014,7 @@ final class BlockTypeNames{
 	public const SHORT_GRASS = "minecraft:short_grass";
 	public const SHROOMLIGHT = "minecraft:shroomlight";
 	public const SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
-	public const SKULL = "minecraft:skull";
+	public const SKELETON_SKULL = "minecraft:skeleton_skull";
 	public const SLIME = "minecraft:slime";
 	public const SMALL_AMETHYST_BUD = "minecraft:small_amethyst_bud";
 	public const SMALL_DRIPLEAF_BLOCK = "minecraft:small_dripleaf_block";
@@ -1229,6 +1234,7 @@ final class BlockTypeNames{
 	public const WHITE_TULIP = "minecraft:white_tulip";
 	public const WHITE_WOOL = "minecraft:white_wool";
 	public const WITHER_ROSE = "minecraft:wither_rose";
+	public const WITHER_SKELETON_SKULL = "minecraft:wither_skeleton_skull";
 	public const WOODEN_BUTTON = "minecraft:wooden_button";
 	public const WOODEN_DOOR = "minecraft:wooden_door";
 	public const WOODEN_PRESSURE_PLATE = "minecraft:wooden_pressure_plate";
@@ -1243,4 +1249,5 @@ final class BlockTypeNames{
 	public const YELLOW_STAINED_GLASS_PANE = "minecraft:yellow_stained_glass_pane";
 	public const YELLOW_TERRACOTTA = "minecraft:yellow_terracotta";
 	public const YELLOW_WOOL = "minecraft:yellow_wool";
+	public const ZOMBIE_HEAD = "minecraft:zombie_head";
 }
