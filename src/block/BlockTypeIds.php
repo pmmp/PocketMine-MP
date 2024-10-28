@@ -760,7 +760,7 @@ final class BlockTypeIds{
 	public const NO_BAMBOO_LOG = 10729;
 	public const NO_BAMBOO_WOOD = 10730;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10718;
+	public const FIRST_UNUSED_BLOCK_ID = 10731;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
