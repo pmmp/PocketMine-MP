@@ -106,6 +106,18 @@ final class VersionInfo{
 	}
 
 	public static function BUILD_DATE() : int {
-		return time();
+		static $buildDate = null;
+		if ($buildDate === null) {
+			$buildDate = time();
+			if (\Phar::running(true) !== "") {
+				$pharPath = \Phar::running(false);
+				$phar = \Phar::isValidPharFilename($pharPath) ? new \Phar($pharPath) : new \PharData($pharPath);
+				$meta = $phar->getMetadata();
+				if (isset($meta["date"])) {
+					$buildDate = $meta["date"];
+				}
+			}
+		}
+		return $buildDate;
 	}
 }
