@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 DIR="$(cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
-cd "$DIR"
+cd "$DIR" || { echo "Couldn't change directory to $DIR"; exit 1; }
 
 while getopts "p:f:l" OPTION 2> /dev/null; do
 	case ${OPTION} in
