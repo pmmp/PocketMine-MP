@@ -31,7 +31,7 @@ jobs:
         php-version: [8.2]
 
     outputs:
-      valid: ${{ steps.validate.outputs.VALID_RELEASE == 'true'
+      valid: ${{ steps.validate.outputs.DEV_BUILD == 'false'
         && steps.check-permission.outputs.require-result == 'true'
         && steps.check-permission.outputs.check-result == 'false'
         }}
@@ -70,7 +70,7 @@ jobs:
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
         run: |
-          echo VALID_RELEASE=$(php build/dump-version-info.php is_dev) >> $GITHUB_OUTPUT
+          echo DEV_BUILD=$(php build/dump-version-info.php is_dev) >> $GITHUB_OUTPUT
 
   check-validity:
     name: Check if PR complies with release rules
