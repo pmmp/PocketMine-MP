@@ -74,8 +74,9 @@ jobs:
 
   check-validity:
     name: Check if PR complies with release rules
+    needs: [check-intent]
     #don't do these checks if this isn't a release - we don't want to generate unnecessary failed statuses
-    if: needs.check-release-intent.outputs.valid == 'true'
+    if: needs.check-intent.outputs.valid == 'true'
 
     runs-on: ubuntu-20.04
 
