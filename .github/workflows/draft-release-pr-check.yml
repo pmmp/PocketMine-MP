@@ -14,7 +14,9 @@ on:
   #allow this workflow to be invoked on PR merge, prior to creating the release
   workflow_call:
     outputs:
-      valid: ${{ jobs.check-intent.outputs.valid && jobs.check-validity.result == 'success' }}
+      valid:
+        description: Whether this commit is valid for release
+        value: ${{ jobs.check-intent.outputs.valid && jobs.check-validity.result == 'success' }}
 
 permissions:
   contents: read #for user access check
