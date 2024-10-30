@@ -62,7 +62,7 @@ jobs:
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
         run: |
-          echo VALID_RELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD ? "false" : "true";') >> $GITHUB_OUTPUT
+          echo VALID_RELEASE=$(php build/dump-version-info.php is_dev) >> $GITHUB_OUTPUT
 
   draft:
     name: Create GitHub draft release
