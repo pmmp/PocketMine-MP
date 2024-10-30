@@ -53,7 +53,22 @@ $options = [
 		return $result . ".md";
 	},
 	"changelog_md_header" => fn() : string => str_replace(".", "", VersionInfo::BASE_VERSION),
-	"prerelease" => fn() : bool => VersionInfo::VERSION()->getSuffix() !== ""
+	"prerelease" => fn() : bool => VersionInfo::VERSION()->getSuffix() !== "",
+	"channel" => VersionInfo::BUILD_CHANNEL,
+	"suffix_valid" => function() : bool{
+		//TODO: maybe this should be put into its own script?
+		$suffix = VersionInfo::VERSION()->getSuffix();
+		if(VersionInfo::BUILD_CHANNEL === "stable"){
+			//stable builds may not have suffixes
+			return $suffix === "";
+		}
+		if(VersionInfo::BUILD_CHANNEL === "alpha" || VersionInfo::BUILD_CHANNEL === "beta"){
+			$upperChannel = strtoupper(VersionInfo::BUILD_CHANNEL);
+			$upperSuffix = strtoupper($suffix);
+			return str_starts_with($upperSuffix, $upperChannel) && is_numeric(substr($upperSuffix, strlen($upperChannel)));
+		}
+		return true;
+	}
 ];
 if(count($argv) !== 2 || !isset($options[$argv[1]])){
 	fwrite(STDERR, "Please provide an option (one of: " . implode(", ", array_keys($options)) . PHP_EOL);
