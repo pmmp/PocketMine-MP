@@ -40,8 +40,8 @@ class GrassNylium extends Opaque{
 
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
-		$lightAbove = $world->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
-		if($lightAbove < 4 && $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
+		$lightAbove = $world->getFullLightAt((int)$this->position->x, (int)$this->position->y + 1, (int)$this->position->z);
+		if($lightAbove < 4 && $world->getBlockAt((int)$this->position->x, (int)$this->position->y + 1, (int)$this->position->z)->getLightFilter() >= 2){
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
 	}
