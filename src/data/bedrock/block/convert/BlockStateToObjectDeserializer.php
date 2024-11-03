@@ -737,6 +737,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::CRACKED_POLISHED_BLACKSTONE_BRICKS, fn() => Blocks::CRACKED_POLISHED_BLACKSTONE_BRICKS());
 		$this->mapSimple(Ids::CRACKED_STONE_BRICKS, fn() => Blocks::CRACKED_STONE_BRICKS());
 		$this->mapSimple(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
+		$this->mapSimple(Ids::CRIMSON_NYLIUM, fn() => Blocks::CRIMSON_NYLIUM());
 		$this->mapSimple(Ids::CRIMSON_ROOTS, fn() => Blocks::CRIMSON_ROOTS());
 		$this->mapSimple(Ids::CRYING_OBSIDIAN, fn() => Blocks::CRYING_OBSIDIAN());
 		$this->mapSimple(Ids::CUT_RED_SANDSTONE, fn() => Blocks::CUT_RED_SANDSTONE());
@@ -983,6 +984,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
 		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
 		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
+		$this->mapSimple(Ids::WARPED_NYLIUM, fn() => Blocks::WARPED_NYLIUM());
 		$this->mapSimple(Ids::WARPED_ROOTS, fn() => Blocks::WARPED_ROOTS());
 		$this->mapSimple(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
 		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
