@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class RedMushroom extends Flowable{
+	use StaticSupportTrait;
 
 	public function ticksRandomly() : bool{
 		return true;
@@ -41,16 +39,11 @@ class RedMushroom extends Flowable{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		$position = $this->position;
 		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
-		$downId = $down->getTypeId();
-		//TODO: nylium support
-		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
+		$supportBlockId = $supportBlock->getTypeId();
+		return ($lightLevel <= 12 && !$supportBlock->isTransparent()) || $supportBlockId === BlockTypeIds::MYCELIUM || $supportBlockId === BlockTypeIds::WARPED_NYLIUM || $supportBlockId === BlockTypeIds::CRIMSON_NYLIUM || $supportBlockId === BlockTypeIds::PODZOL;
 	}
 }
