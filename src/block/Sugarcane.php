@@ -32,8 +32,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\Position;
 use pocketmine\world\particle\BlockBreakParticle;
+use pocketmine\world\Position;
 use pocketmine\world\sound\BlockBreakSound;
 
 class Sugarcane extends Flowable{
@@ -100,15 +100,14 @@ class Sugarcane extends Flowable{
 
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
-			if (!$this->isSupportedByWater()) {
+			if(!$this->isSupportedByWater()) {
 				$world = $this->position->getWorld();
-			
 				$world->addParticle($this->position, new BlockBreakParticle($this));
 				$world->addSound($this->position, new BlockBreakSound($this));
-			
 				$world->useBreakOn($this->position);
 				return;
 			}
+
 			if($this->age === self::MAX_AGE){
 				$this->grow($this->position);
 			}else{
