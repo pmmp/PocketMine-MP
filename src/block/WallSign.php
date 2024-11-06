@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 final class WallSign extends BaseSign{
 	use HorizontalFacingTrait;
 
-	protected function getSupportingFace() : int{
+	public function getSupportingFace() : int{
 		return Facing::opposite($this->facing);
 	}
 
