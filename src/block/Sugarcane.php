@@ -138,9 +138,11 @@ class Sugarcane extends Flowable{
 		 $down = $this->getSide(Facing::DOWN);
 		 foreach(Facing::HORIZONTAL as $side){
 			 $sideBlock = $down->getSide($side);
-			 if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
-				 return true;
-			 }
+			 $blockId = $sideBlock->getTypeId();
+
+			if ($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE) {
+				return true;
+			}
 		 }
 		 return false;
 	 }
