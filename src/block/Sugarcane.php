@@ -132,8 +132,7 @@ class Sugarcane extends Flowable{
 
 	private function isSupportedByWater() : bool{
 		$down = $this->getSide(Facing::DOWN);
-		foreach(Facing::HORIZONTAL as $side){
-			$sideBlock = $down->getSide($side);
+		foreach($down->getHorizontalSides() as $sideBlock){
 			$blockId = $sideBlock->getTypeId();
 
 			if ($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE) {
