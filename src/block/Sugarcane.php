@@ -147,7 +147,7 @@ class Sugarcane extends Flowable{
 		if (!$this->position->equals($bottom)) {
 			return;
 		}
-	
+
 		if (!$this->isSupportedByWater()) {
 			$world = $this->position->getWorld();
 			$world->useBreakOn($this->position, createParticles: true);
