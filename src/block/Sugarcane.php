@@ -141,7 +141,7 @@ class Sugarcane extends Flowable{
 		}
 		return false;
 	}
-	
+
 	public function onNearbyBlockChange() : void {
 		if(!$this->isSupportedByWater()) {
 			$world = $this->position->getWorld();
