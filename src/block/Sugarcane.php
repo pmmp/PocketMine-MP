@@ -147,5 +147,5 @@ class Sugarcane extends Flowable{
 			$world = $this->position->getWorld();
 			$world->useBreakOn($this->position, createParticles: true);
 		}
-    }
+	}
 }
