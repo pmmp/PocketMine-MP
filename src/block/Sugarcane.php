@@ -145,7 +145,7 @@ class Sugarcane extends Flowable{
 	public function onNearbyBlockChange() : void {
         if(!$this->isSupportedByWater()) {
             $world = $this->position->getWorld();
-			$world->useBreakOn($this->position, createParticles: true);
+            $world->useBreakOn($this->position, createParticles: true);
         }
     }
 }
