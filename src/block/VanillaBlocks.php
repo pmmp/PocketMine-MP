@@ -937,7 +937,7 @@ final class VanillaBlocks{
 
 		$nyliumBreakInfo = BreakInfo::pickaxe(0.4);
 		self::register("crimson_nylium", new NetherNylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", new Info($nyliumBreakInfo, [Tags::NYLIUM])));
-		self::register("warped_nylium", new NetherNylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", new Info($nyliumBreakInfo), [Tags::NYLIUM]));
+		self::register("warped_nylium", new NetherNylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", new Info($nyliumBreakInfo, [Tags::NYLIUM])));
 
 		self::register("gravel", new Gravel(new BID(Ids::GRAVEL), "Gravel", new Info(BreakInfo::shovel(0.6))));
 
