@@ -24,9 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\utils\Random;
+use pocketmine\world\generator\object\NetherGrass;
+use function mt_rand;
 
-class GrassNylium extends Opaque{
+class NetherNylium extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
@@ -38,10 +45,21 @@ class GrassNylium extends Opaque{
 		return true;
 	}
 
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
+		if($item instanceof Fertilizer){
+			$item->pop();
+			NetherGrass::growGrass($world, $this->position, new Random(mt_rand()), 8, 2);
+			return true;
+		}
+		return false;
+	}
+
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
-		$lightAbove = $world->getFullLightAt((int) $this->position->x, (int) $this->position->y + 1, (int) $this->position->z);
-		if($lightAbove < 4 && $world->getBlockAt((int) $this->position->x, (int) $this->position->y + 1, (int) $this->position->z)->getLightFilter() >= 2){
+		$blockAbove = $world->getBlock($this->position->getSide(Facing::UP));
+		$lightAbove = $world->getFullLight($blockAbove->getPosition());
+		if($lightAbove < 4 && $blockAbove->getLightFilter() >= 2){
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 		}
 	}
