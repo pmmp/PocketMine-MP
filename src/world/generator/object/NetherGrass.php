@@ -54,18 +54,20 @@ class NetherGrass{
 		}
 
 		$blocksCount = count($blocksToGrow) - 1;
-		for ($c = 0; $c < $count; ++$c) {
-			$x = $random->nextRange((int) ($pos->x - $radius), (int) ($pos->x + $radius));
-			$z = $random->nextRange((int) ($pos->z - $radius), (int) ($pos->z + $radius));
-			$blockBelow = $world->getBlockAt($x, (int) $pos->y, $z);
-			if ($world->getBlockAt($x, (int) ($pos->y + 1), $z)->getTypeId() === BlockTypeIds::AIR && $blockBelow->getTypeId() !== BlockTypeIds::AIR) {
-				$blockToGrow = $blocksToGrow[$random->nextRange(0, $blocksCount)];
-				if ($blockToGrow === VanillaBlocks::CRIMSON_ROOTS()) {
-					if ($random->nextFloat() < 0.1) { // 10% chance for rare blocks
-						$world->setBlockAt($x, (int) ($pos->y + 1), $z, $blockToGrow);
+		if ($blocksCount >= 0) {
+			for ($c = 0; $c < $count; ++$c) {
+				$x = $random->nextRange((int)($pos->x - $radius), (int)($pos->x + $radius));
+				$z = $random->nextRange((int)($pos->z - $radius), (int)($pos->z + $radius));
+				$blockBelow = $world->getBlockAt((int)$x, (int)$pos->y, (int)$z);
+				if ($world->getBlockAt((int)$x, (int)($pos->y + 1), (int)$z)->getTypeId() === BlockTypeIds::AIR && $blockBelow->getTypeId() !== BlockTypeIds::AIR) {
+					$blockToGrow = $blocksToGrow[$random->nextRange(0, $blocksCount)];
+					if ($blockToGrow === VanillaBlocks::CRIMSON_ROOTS()) {
+						if ($random->nextFloat() < 0.1) { // 10% chance for rare blocks
+							$world->setBlockAt((int)$x, (int)($pos->y + 1), (int)$z, $blockToGrow);
+						}
+					} else {
+						$world->setBlockAt((int)$x, (int)($pos->y + 1), (int)$z, $blockToGrow);
 					}
-				} else {
-					$world->setBlockAt($x, (int) ($pos->y + 1), $z, $blockToGrow);
 				}
 			}
 		}
