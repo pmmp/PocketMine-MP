@@ -35,7 +35,7 @@ final class NetherRoots extends Flowable{
 		return
 			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
 			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->getTypeId() === BlockTypeTags::NYLIUM ||
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
 			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
 	}
 }
