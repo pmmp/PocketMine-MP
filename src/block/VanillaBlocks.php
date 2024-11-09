@@ -230,7 +230,7 @@ use function strtolower;
  * @method static WoodenFence CRIMSON_FENCE()
  * @method static FenceGate CRIMSON_FENCE_GATE()
  * @method static Wood CRIMSON_HYPHAE()
- * @method static GrassNylium CRIMSON_NYLIUM()
+ * @method static NetherNylium CRIMSON_NYLIUM()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
  * @method static NetherRoots CRIMSON_ROOTS()
@@ -767,7 +767,7 @@ use function strtolower;
  * @method static WoodenFence WARPED_FENCE()
  * @method static FenceGate WARPED_FENCE_GATE()
  * @method static Wood WARPED_HYPHAE()
- * @method static GrassNylium WARPED_NYLIUM()
+ * @method static NetherNylium WARPED_NYLIUM()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
  * @method static NetherRoots WARPED_ROOTS()
@@ -934,8 +934,10 @@ final class VanillaBlocks{
 		$grassBreakInfo = BreakInfo::shovel(0.6);
 		self::register("grass", new Grass(new BID(Ids::GRASS), "Grass", new Info($grassBreakInfo, [Tags::DIRT])));
 		self::register("grass_path", new GrassPath(new BID(Ids::GRASS_PATH), "Grass Path", new Info($grassBreakInfo)));
-		self::register("crimson_nylium", new GrassNylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", new Info(BreakInfo::pickaxe(0.4))));
-		self::register("warped_nylium", new GrassNylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", new Info(BreakInfo::pickaxe(0.4))));
+
+		$nyliumBreakInfo = BreakInfo::pickaxe(0.4);
+		self::register("crimson_nylium", new NetherNylium(new BID(Ids::CRIMSON_NYLIUM), "Crimson Nylium", new Info($nyliumBreakInfo, [Tags::NYLIUM])));
+		self::register("warped_nylium", new NetherNylium(new BID(Ids::WARPED_NYLIUM), "Warped Nylium", new Info($nyliumBreakInfo), [Tags::NYLIUM]));
 
 		self::register("gravel", new Gravel(new BID(Ids::GRAVEL), "Gravel", new Info(BreakInfo::shovel(0.6))));
 
