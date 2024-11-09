@@ -32,7 +32,7 @@ use function count;
 
 class NetherGrass{
 	public static function growGrass(ChunkManager $world, Vector3 $pos, Random $random, int $count = 8, int $radius = 5) : void{
-		$nyliumType = $world->getBlockAt((int) $pos->x, (int) $pos->y, (int) $pos->z)->getTypeId();
+		$nyliumType = $world->getBlockAt($pos->x, $pos->y, $pos->z)->getTypeId();
 		$blocksToGrow = [];
 
 		//Todo: Add more blocks to grow on nether nylium
@@ -56,17 +56,17 @@ class NetherGrass{
 		$blocksCount = count($blocksToGrow) - 1;
 		if ($blocksCount >= 0) {
 			for ($c = 0; $c < $count; ++$c) {
-				$x = $random->nextRange((int)($pos->x - $radius), (int)($pos->x + $radius));
-				$z = $random->nextRange((int)($pos->z - $radius), (int)($pos->z + $radius));
-				$blockBelow = $world->getBlockAt((int)$x, (int)$pos->y, (int)$z);
-				if ($world->getBlockAt((int)$x, (int)($pos->y + 1), (int)$z)->getTypeId() === BlockTypeIds::AIR && $blockBelow->getTypeId() !== BlockTypeIds::AIR) {
+				$x = $random->nextRange($pos->x - $radius, $pos->x + $radius);
+				$z = $random->nextRange($pos->z - $radius, $pos->z + $radius);
+				$blockBelow = $world->getBlockAt($x, $pos->y, $z);
+				if ($world->getBlockAt($x, $pos->y + 1, $z)->getTypeId() === BlockTypeIds::AIR && $blockBelow->getTypeId() !== BlockTypeIds::AIR) {
 					$blockToGrow = $blocksToGrow[$random->nextRange(0, $blocksCount)];
 					if ($blockToGrow === VanillaBlocks::CRIMSON_ROOTS()) {
 						if ($random->nextFloat() < 0.1) { // 10% chance for rare blocks
-							$world->setBlockAt((int)$x, (int)($pos->y + 1), (int)$z, $blockToGrow);
+							$world->setBlockAt($x, $pos->y + 1, $z, $blockToGrow);
 						}
 					} else {
-						$world->setBlockAt((int)$x, (int)($pos->y + 1), (int)$z, $blockToGrow);
+						$world->setBlockAt($x, $pos->y + 1, $z, $blockToGrow);
 					}
 				}
 			}
