@@ -983,8 +983,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::TUFF, fn() => Blocks::TUFF());
 		$this->mapSimple(Ids::TUFF_BRICKS, fn() => Blocks::TUFF_BRICKS());
 		$this->mapSimple(Ids::UNDYED_SHULKER_BOX, fn() => Blocks::SHULKER_BOX());
-		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
 		$this->mapSimple(Ids::WARPED_NYLIUM, fn() => Blocks::WARPED_NYLIUM());
+		$this->mapSimple(Ids::WARPED_WART_BLOCK, fn() => Blocks::WARPED_WART_BLOCK());
 		$this->mapSimple(Ids::WARPED_ROOTS, fn() => Blocks::WARPED_ROOTS());
 		$this->mapSimple(Ids::WATERLILY, fn() => Blocks::LILY_PAD());
 		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
