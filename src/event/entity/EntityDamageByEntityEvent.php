@@ -57,7 +57,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 				$this->setModifier($this->getBaseDamage() * 0.3 * $strength->getEffectLevel(), self::MODIFIER_STRENGTH);
 			}
 
-			if(($weakness = $effects->get(VanillaEffects::WEAKNESS())) !== null){
+			if(($weakness = $effects->get(VanillaEffects::WEAKNESS())) !== null && $this->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK){
 				$this->setModifier(-($this->getBaseDamage() * 0.2 * $weakness->getEffectLevel()), self::MODIFIER_WEAKNESS);
 			}
 		}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade;
 
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenInfo as FlattenInfo;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;
 use function count;
@@ -59,6 +60,12 @@ final class BlockStateUpgradeSchema{
 	public array $remappedPropertyValues = [];
 
 	/**
+	 * @var FlattenInfo[]
+	 * @phpstan-var array<string, FlattenInfo>
+	 */
+	public array $flattenedProperties = [];
+
+	/**
 	 * @var BlockStateUpgradeSchemaBlockRemap[][]
 	 * @phpstan-var array<string, list<BlockStateUpgradeSchemaBlockRemap>>
 	 */
@@ -93,6 +100,7 @@ final class BlockStateUpgradeSchema{
 			$this->removedProperties,
 			$this->renamedProperties,
 			$this->remappedPropertyValues,
+			$this->flattenedProperties,
 			$this->remappedStates,
 		] as $list){
 			if(count($list) !== 0){
