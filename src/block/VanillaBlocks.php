@@ -181,6 +181,7 @@ use function strtolower;
  * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
  * @method static ChiseledBookshelf CHISELED_BOOKSHELF()
+ * @method static Copper CHISELED_COPPER()
  * @method static Opaque CHISELED_DEEPSLATE()
  * @method static Opaque CHISELED_NETHER_BRICKS()
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
@@ -209,7 +210,11 @@ use function strtolower;
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
  * @method static Copper COPPER()
+ * @method static CopperBulb COPPER_BULB()
+ * @method static CopperDoor COPPER_DOOR()
+ * @method static CopperGrate COPPER_GRATE()
  * @method static CopperOre COPPER_ORE()
+ * @method static CopperTrapdoor COPPER_TRAPDOOR()
  * @method static Coral CORAL()
  * @method static CoralBlock CORAL_BLOCK()
  * @method static FloorCoralFan CORAL_FAN()
@@ -1642,9 +1647,16 @@ final class VanillaBlocks{
 		self::register("lightning_rod", new LightningRod(new BID(Ids::LIGHTNING_ROD), "Lightning Rod", $copperBreakInfo));
 
 		self::register("copper", new Copper(new BID(Ids::COPPER), "Copper Block", $copperBreakInfo));
+		self::register("chiseled_copper", new Copper(new BID(Ids::CHISELED_COPPER), "Chiseled Copper", $copperBreakInfo));
+		self::register("copper_grate", new CopperGrate(new BID(Ids::COPPER_GRATE), "Copper Grate", $copperBreakInfo));
 		self::register("cut_copper", new Copper(new BID(Ids::CUT_COPPER), "Cut Copper Block", $copperBreakInfo));
 		self::register("cut_copper_slab", new CopperSlab(new BID(Ids::CUT_COPPER_SLAB), "Cut Copper Slab", $copperBreakInfo));
 		self::register("cut_copper_stairs", new CopperStairs(new BID(Ids::CUT_COPPER_STAIRS), "Cut Copper Stairs", $copperBreakInfo));
+		self::register("copper_bulb", new CopperBulb(new BID(Ids::COPPER_BULB), "Copper Bulb", $copperBreakInfo));
+
+		$copperDoorBreakInfo = new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE, 30.0));
+		self::register("copper_door", new CopperDoor(new BID(Ids::COPPER_DOOR), "Copper Door", $copperDoorBreakInfo));
+		self::register("copper_trapdoor", new CopperTrapdoor(new BID(Ids::COPPER_TRAPDOOR), "Copper Trapdoor", $copperDoorBreakInfo));
 
 		$candleBreakInfo = new Info(new BreakInfo(0.1));
 		self::register("candle", new Candle(new BID(Ids::CANDLE), "Candle", $candleBreakInfo));

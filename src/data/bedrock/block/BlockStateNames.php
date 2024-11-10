@@ -34,7 +34,6 @@ final class BlockStateNames{
 	public const ACTIVE = "active";
 	public const AGE = "age";
 	public const AGE_BIT = "age_bit";
-	public const ALLOW_UNDERWATER_BIT = "allow_underwater_bit";
 	public const ATTACHED_BIT = "attached_bit";
 	public const ATTACHMENT = "attachment";
 	public const BAMBOO_LEAF_SIZE = "bamboo_leaf_size";
@@ -52,10 +51,7 @@ final class BlockStateNames{
 	public const CAN_SUMMON = "can_summon";
 	public const CANDLES = "candles";
 	public const CAULDRON_LIQUID = "cauldron_liquid";
-	public const CHEMISTRY_TABLE_TYPE = "chemistry_table_type";
-	public const CHISEL_TYPE = "chisel_type";
 	public const CLUSTER_COUNT = "cluster_count";
-	public const COLOR_BIT = "color_bit";
 	public const COMPOSTER_FILL_LEVEL = "composter_fill_level";
 	public const CONDITIONAL_BIT = "conditional_bit";
 	public const CORAL_DIRECTION = "coral_direction";
@@ -116,12 +112,9 @@ final class BlockStateNames{
 	public const ROTATION = "rotation";
 	public const SCULK_SENSOR_PHASE = "sculk_sensor_phase";
 	public const SEA_GRASS_TYPE = "sea_grass_type";
-	public const SPONGE_TYPE = "sponge_type";
 	public const STABILITY = "stability";
 	public const STABILITY_CHECK = "stability_check";
-	public const STRIPPED_BIT = "stripped_bit";
 	public const STRUCTURE_BLOCK_TYPE = "structure_block_type";
-	public const STRUCTURE_VOID_TYPE = "structure_void_type";
 	public const SUSPENDED_BIT = "suspended_bit";
 	public const TOGGLE_BIT = "toggle_bit";
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
@@ -134,7 +127,6 @@ final class BlockStateNames{
 	public const UPSIDE_DOWN_BIT = "upside_down_bit";
 	public const VAULT_STATE = "vault_state";
 	public const VINE_DIRECTION_BITS = "vine_direction_bits";
-	public const WALL_BLOCK_TYPE = "wall_block_type";
 	public const WALL_CONNECTION_TYPE_EAST = "wall_connection_type_east";
 	public const WALL_CONNECTION_TYPE_NORTH = "wall_connection_type_north";
 	public const WALL_CONNECTION_TYPE_SOUTH = "wall_connection_type_south";

@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperTrait;
-use pocketmine\block\utils\ICopper;
 
-class CopperSlab extends Slab implements ICopper{
+class CopperSlab extends Slab implements CopperMaterial{
 	use CopperTrait;
 }
