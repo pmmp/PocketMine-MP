@@ -1,0 +1,111 @@
+name: Release PR checks
+
+on:
+  #do checks on every PR update
+  pull_request:
+    branches:
+      - stable
+      - minor-next
+      - major-next
+      - "legacy/*"
+    paths:
+      - "src/VersionInfo.php"
+
+  #allow this workflow to be invoked on PR merge, prior to creating the release
+  workflow_call:
+    outputs:
+      valid:
+        description: Whether this commit is valid for release
+        value: ${{ jobs.check-intent.outputs.valid && jobs.check-validity.result == 'success' }}
+
+permissions:
+  contents: read #for user access check
+
+jobs:
+  check-intent:
+    name: Check release trigger
+    runs-on: ubuntu-20.04
+
+    outputs:
+      valid: ${{ steps.validate.outputs.DEV_BUILD == 'false' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check IS_DEVELOPMENT_BUILD flag
+        id: validate
+        run: |
+          echo DEV_BUILD=$(sed -n "s/^\s*public const IS_DEVELOPMENT_BUILD = \(true\|false\);$/\1/p" src/VersionInfo.php) >> $GITHUB_OUTPUT
+
+  check-validity:
+    name: Validate release info
+    needs: [check-intent]
+    #don't do these checks if this isn't a release - we don't want to generate unnecessary failed statuses
+    if: needs.check-intent.outputs.valid == 'true'
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.31.1
+        with:
+          php-version: 8.2
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Check author permissions
+        id: check-permission
+        uses: actions-cool/check-user-permission@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          require: write
+          username: ${{ github.event.pull_request.user.login }}
+          #technically this would be fine for dependabot but generally bots don't count as team members
+          check-bot: true
+
+      - name: Abort if user permissions are insufficient
+        #user doesn't have permission or is a bot
+        if: steps.check-permission.outputs.require-result != 'true' || steps.check-permission.outputs.check-result != 'false'
+        run: |
+          echo "::error::This user is not authorized to trigger releases"
+          exit 1
+
+      - name: Check changelog file is present
+        id: file-presence
+        run: |
+          CHANGELOG_FILE="changelogs/$(php build/dump-version-info.php changelog_file_name)"
+          if [ ! -f "${{ github.workspace }}/$CHANGELOG_FILE" ]; then
+            echo "::error::$CHANGELOG_FILE does not exist"
+            exit 1
+          fi
+          echo FILE="$CHANGELOG_FILE" >> $GITHUB_OUTPUT
+
+      - name: Check header is present in changelog file
+        run: |
+          FILE="${{ steps.file-presence.outputs.FILE }}"
+          VERSION="$(php build/dump-version-info.php base_version)"
+          if ! grep -Fqx "# $VERSION" "${{ github.workspace }}/$FILE"; then
+            echo "::error::Header for $VERSION not found in $FILE"
+            exit 1
+          fi
+
+      - name: Check version is valid for the selected channel
+        run: |
+          CHANNEL="$(php build/dump-version-info.php channel)"
+          if [ "$(php build/dump-version-info.php suffix_valid)" != "true" ]; then
+            echo "::error::Version $(php build/dump-version-info.php base_version) is not allowed on the $CHANNEL channel"
+            exit 1
+          fi

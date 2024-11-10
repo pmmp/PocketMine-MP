@@ -68,6 +68,7 @@ use function atan2;
 use function ceil;
 use function count;
 use function floor;
+use function ksort;
 use function lcg_value;
 use function max;
 use function min;
@@ -76,6 +77,7 @@ use function mt_rand;
 use function round;
 use function sqrt;
 use const M_PI;
+use const SORT_NUMERIC;
 
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
@@ -883,8 +885,30 @@ abstract class Living extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$visibleEffects = [];
+		foreach ($this->effectManager->all() as $effect) {
+			if (!$effect->isVisible() || !$effect->getType()->hasBubbles()) {
+				continue;
+			}
+			$visibleEffects[EffectIdMap::getInstance()->toId($effect->getType())] = $effect->isAmbient();
+		}
+
+		//TODO: HACK! the client may not be able to identify effects if they are not sorted.
+		ksort($visibleEffects, SORT_NUMERIC);
+
+		$effectsData = 0;
+		$packedEffectsCount = 0;
+		foreach ($visibleEffects as $effectId => $isAmbient) {
+			$effectsData = ($effectsData << 7) |
+				(($effectId & 0x3f) << 1) | //Why not use 7 bits instead of only 6? mojang...
+				($isAmbient ? 1 : 0);
+
+			if (++$packedEffectsCount >= 8) {
+				break;
+			}
+		}
+		$properties->setLong(EntityMetadataProperties::VISIBLE_MOB_EFFECTS, $effectsData);
+
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 

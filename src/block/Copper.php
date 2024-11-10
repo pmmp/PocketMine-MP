@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperTrait;
 
-class Copper extends Opaque{
+class Copper extends Opaque implements CopperMaterial{
 	use CopperTrait;
 }

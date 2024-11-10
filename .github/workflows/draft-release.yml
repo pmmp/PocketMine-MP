@@ -1,18 +1,28 @@
 name: Draft release
 
 on:
-  push:
-    tags: "*"
+  workflow_call:
+    outputs:
+      draft-url:
+        description: 'The URL of the draft release'
+        value: ${{ jobs.draft.outputs.draft-url }}
+      version:
+        description: 'PocketMine-MP version'
+        value: ${{ jobs.draft.outputs.version }}
 
 jobs:
   draft:
     name: Create GitHub draft release
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
+
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
         php-version: [8.2]
+
+    outputs:
+      draft-url: ${{ steps.create-draft.outputs.html_url }}
+      version: ${{ steps.get-pm-version.outputs.PM_VERSION }}
 
     steps:
       - uses: actions/checkout@v4
@@ -20,7 +30,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.30.4
+        uses: shivammathur/setup-php@2.31.1
         with:
           php-version: ${{ matrix.php-version }}
 
@@ -53,12 +63,11 @@ jobs:
       - name: Get PocketMine-MP release version
         id: get-pm-version
         run: |
-          echo PM_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;') >> $GITHUB_OUTPUT
-          echo MCPE_VERSION=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;') >> $GITHUB_OUTPUT
-          echo PM_VERSION_SHORT=$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);') >> $GITHUB_OUTPUT
-          echo PM_VERSION_MD=$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);') >> $GITHUB_OUTPUT
-          echo CHANGELOG_SUFFIX=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "" : "-" . \pocketmine\VersionInfo::BUILD_CHANNEL;') >> $GITHUB_OUTPUT
-          echo PRERELEASE=$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BUILD_CHANNEL === "stable" ? "false" : "true";') >> $GITHUB_OUTPUT
+          echo PM_VERSION=$(php build/dump-version-info.php base_version) >> $GITHUB_OUTPUT
+          echo MCPE_VERSION=$(php build/dump-version-info.php mcpe_version) >> $GITHUB_OUTPUT
+          echo CHANGELOG_FILE_NAME=$(php build/dump-version-info.php changelog_file_name) >> $GITHUB_OUTPUT
+          echo CHANGELOG_MD_HEADER=$(php build/dump-version-info.php changelog_md_header) >> $GITHUB_OUTPUT
+          echo PRERELEASE=$(php build/dump-version-info.php prerelease) >> $GITHUB_OUTPUT
 
       - name: Generate PHP binary download URL
         id: php-binary-url
@@ -91,6 +100,7 @@ jobs:
 
       - name: Create draft release
         uses: ncipollo/release-action@v1.14.0
+        id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
           commit: ${{ github.sha }}
@@ -99,9 +109,10 @@ jobs:
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          skipIfReleaseExists: true #for release PRs, tags will be created on release publish and trigger the tag release workflow - don't create a second draft
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
-            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}${{ steps.get-pm-version.outputs.CHANGELOG_SUFFIX }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.CHANGELOG_FILE_NAME }}#${{ steps.get-pm-version.outputs.CHANGELOG_MD_HEADER }}) for details.
 
             :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
