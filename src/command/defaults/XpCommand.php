@@ -35,7 +35,7 @@ use function count;
 use function str_ends_with;
 use function substr;
 
-class ExperienceCommand extends VanillaCommand{
+class XpCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
