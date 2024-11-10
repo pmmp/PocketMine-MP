@@ -37,6 +37,7 @@ use function count;
  * Prevents placement if support isn't available and automatically destroys a block side if it's support is removed.
  */
 trait MultiSupportTrait{
+	use MultiFacingTrait;
 
 	/**
 	 * Returns a list of faces that block should already have when placed.
