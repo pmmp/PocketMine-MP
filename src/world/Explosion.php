@@ -41,9 +41,9 @@ use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
+use function array_flip;
 use function ceil;
 use function floor;
-use function in_array;
 use function min;
 use function mt_rand;
 use function sqrt;
@@ -58,15 +58,14 @@ class Explosion{
 
 	private SubChunkExplorer $subChunkExplorer;
 
-	/**
-	 * @param int[] $excludedBlockTypeIds
-	 * @phpstan-param array<int, int> $excludedBlockTypeIds
-	 */
+	/** @var int[] */
+	private array $excludedBlockTypeIds = [];
+
 	public function __construct(
 		public Position $source,
 		public float $radius,
 		private Entity|Block|null $what = null,
-		private array $excludedBlockTypeIds = []
+		array $excludedBlockTypeIds = []
 	){
 		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
@@ -77,6 +76,8 @@ class Explosion{
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $radius");
 		}
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
+
+		$this->excludedBlockTypeIds = array_flip($excludedBlockTypeIds);
 	}
 
 	/**
@@ -124,7 +125,7 @@ class Explosion{
 							}
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
-							if(in_array($blockFactory->fromStateId($state)->getTypeId(), $this->excludedBlockTypeIds, true)){
+							if(isset($this->excludedBlockTypeIds[$blockFactory->fromStateId($state)->getTypeId()])){
 								continue;
 							}
 
