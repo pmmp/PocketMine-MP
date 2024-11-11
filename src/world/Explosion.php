@@ -58,6 +58,10 @@ class Explosion{
 
 	private SubChunkExplorer $subChunkExplorer;
 
+	/**
+	 * @param int[] $excludedBlockTypeIds
+	 * @phpstan-param array<int, int> $excludedBlockTypeIds
+	 */
 	public function __construct(
 		public Position $source,
 		public float $radius,
