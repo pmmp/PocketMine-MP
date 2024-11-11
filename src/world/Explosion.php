@@ -43,6 +43,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function array_flip;
 use function ceil;
+use function count;
 use function floor;
 use function min;
 use function mt_rand;
@@ -129,7 +130,7 @@ class Explosion{
 							}
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
-							if(isset($this->excludedBlockTypeIds[$blockFactory->fromStateId($state)->getTypeId()])){
+							if(count($this->excludedBlockTypeIds) > 0 && isset($this->excludedBlockTypeIds[$blockFactory->fromStateId($state)->getTypeId()])){
 								continue;
 							}
 
