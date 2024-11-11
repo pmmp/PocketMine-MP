@@ -27,9 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\block\Water;
 use pocketmine\entity\Entity;
-use pocketmine\entity\object\PrimedTNT;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -45,6 +43,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function in_array;
 use function min;
 use function mt_rand;
 use function sqrt;
@@ -62,7 +61,8 @@ class Explosion{
 	public function __construct(
 		public Position $source,
 		public float $radius,
-		private Entity|Block|null $what = null
+		private Entity|Block|null $what = null,
+		private array $excludedBlockTypeIds = []
 	){
 		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
@@ -82,11 +82,6 @@ class Explosion{
 	public function explodeA() : bool{
 		if($this->radius < 0.1){
 			return false;
-		}
-
-		$worksUnderwater = false;
-		if($this->what instanceof PrimedTNT || $this->what instanceof TNT){
-			$worksUnderwater = $this->what->worksUnderwater();
 		}
 
 		$blockFactory = RuntimeBlockStateRegistry::getInstance();
@@ -125,20 +120,17 @@ class Explosion{
 							}
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							if(in_array($blockFactory->fromStateId($state)->getTypeId(), $this->excludedBlockTypeIds, true)){
+								continue;
+							}
 
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
-							if($worksUnderwater && $blockFactory->fromStateId($state) instanceof Water){
-								$blastResistance = 0;
-							}
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
-											if($_affectedBlock instanceof Water){
-												continue;
-											}
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
