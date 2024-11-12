@@ -34,7 +34,7 @@ jobs:
 
     steps:
       - name: Post draft release URL on PR
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@v3
         with:
           message: "[Draft release ${{ needs.draft.outputs.version }}](${{ needs.draft.outputs.draft-url }}) has been created for commit ${{ github.sha }}. Please review and publish it."
 
