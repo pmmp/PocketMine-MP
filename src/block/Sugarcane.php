@@ -99,7 +99,7 @@ class Sugarcane extends Flowable{
 	public function onRandomTick() : void{
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->hasSameTypeId($this)){
-			if(!$this->hasNearbyWater($down)) {
+			if(!$this->hasNearbyWater($down)){
 				$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
 				return;
 			}
@@ -133,7 +133,7 @@ class Sugarcane extends Flowable{
 	private function hasNearbyWater(Block $down) : bool{
 		foreach($down->getHorizontalSides() as $sideBlock){
 			$blockId = $sideBlock->getTypeId();
-			if($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE) {
+			if($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE){
 				return true;
 			}
 		}
