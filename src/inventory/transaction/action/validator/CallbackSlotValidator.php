@@ -21,19 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\upgrade;
+namespace pocketmine\inventory\transaction\action\validator;
 
-final class BlockStateUpgradeSchemaFlattenedName{
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 
+class CallbackSlotValidator implements SlotValidator{
+	/**
+	 * @phpstan-param \Closure(Inventory, Item, int) : ?TransactionValidationException $validate
+	 */
 	public function __construct(
-		public string $prefix,
-		public string $flattenedProperty,
-		public string $suffix
-	){}
+		private \Closure $validate
+	){
+		Utils::validateCallableSignature(function(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{ return null; }, $validate);
+	}
 
-	public function equals(self $that) : bool{
-		return $this->prefix === $that->prefix &&
-			$this->flattenedProperty === $that->flattenedProperty &&
-			$this->suffix === $that->suffix;
+	public function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
+		return ($this->validate)($inventory, $item, $slot);
 	}
 }

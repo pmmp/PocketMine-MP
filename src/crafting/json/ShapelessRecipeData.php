@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting\json;
 
-final class ShapelessRecipeData{
+use function count;
+
+final class ShapelessRecipeData implements \JsonSerializable{
 
 	/**
 	 * @required
@@ -45,17 +47,34 @@ final class ShapelessRecipeData{
 	/** @required */
 	public int $priority;
 
+	/** @var RecipeIngredientData[] */
+	public array $unlockingIngredients = [];
+
 	/**
 	 * @param RecipeIngredientData[] $input
 	 * @param ItemStackData[]        $output
+	 * @param RecipeIngredientData[] $unlockingIngredients
 	 *
 	 * @phpstan-param list<RecipeIngredientData> $input
 	 * @phpstan-param list<ItemStackData> $output
+	 * @phpstan-param list<RecipeIngredientData> $unlockingIngredients
 	 */
-	public function __construct(array $input, array $output, string $block, int $priority){
+	public function __construct(array $input, array $output, string $block, int $priority, array $unlockingIngredients = []){
 		$this->block = $block;
 		$this->priority = $priority;
 		$this->input = $input;
 		$this->output = $output;
+		$this->unlockingIngredients = $unlockingIngredients;
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	public function jsonSerialize() : array{
+		$result = (array) $this;
+		if(count($this->unlockingIngredients) === 0){
+			unset($result["unlockingIngredients"]);
+		}
+		return $result;
 	}
 }

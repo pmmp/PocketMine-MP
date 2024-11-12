@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -306,18 +305,6 @@ final class BlockStateReader{
 			StringValues::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
 			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::EAST,
 			default => throw $this->badValueException(BlockStateNames::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readCoralType() : CoralType{
-		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
-			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE,
-			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN,
-			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE,
-			StringValues::CORAL_COLOR_RED => CoralType::FIRE,
-			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN,
-			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
 		};
 	}
 

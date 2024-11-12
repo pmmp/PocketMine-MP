@@ -607,12 +607,12 @@ final class VanillaItems{
 			}
 		});
 		self::register("squid_spawn_egg", fn(IID $id) => new class($id, "Squid Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg{
-			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});

@@ -124,8 +124,8 @@ namespace pocketmine {
 		}
 
 		if(($pmmpthread_version = phpversion("pmmpthread")) !== false){
-			if(version_compare($pmmpthread_version, "6.0.7") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
-				$messages[] = "pmmpthread ^6.0.7 is required, while you have $pmmpthread_version.";
+			if(version_compare($pmmpthread_version, "6.1.0") < 0 || version_compare($pmmpthread_version, "7.0.0") >= 0){
+				$messages[] = "pmmpthread ^6.1.0 is required, while you have $pmmpthread_version.";
 			}
 		}
 
@@ -327,7 +327,7 @@ JIT_WARNING
 		}
 		$logFile = isset($opts[BootstrapOptions::NO_LOG_FILE]) ? null : Path::join($dataPath, "server.log");
 
-		$logger = new MainLogger($logFile, Path::join($dataPath, "log_archive"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger($logFile, Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()), false, Path::join($dataPath, "log_archive"));
 		if($logFile === null){
 			$logger->notice("Logging to file disabled. Ensure logs are collected by other means (e.g. Docker logs).");
 		}

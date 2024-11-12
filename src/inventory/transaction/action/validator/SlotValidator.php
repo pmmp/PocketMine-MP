@@ -21,20 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\upgrade\model;
+namespace pocketmine\inventory\transaction\action\validator;
 
-final class BlockStateUpgradeSchemaModelFlattenedName{
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Item;
 
-	/** @required */
-	public string $prefix;
-	/** @required */
-	public string $flattenedProperty;
-	/** @required */
-	public string $suffix;
-
-	public function __construct(string $prefix, string $flattenedProperty, string $suffix){
-		$this->prefix = $prefix;
-		$this->flattenedProperty = $flattenedProperty;
-		$this->suffix = $suffix;
-	}
+/**
+ * Validates a slot placement in an inventory.
+ */
+interface SlotValidator{
+	/**
+	 * Returns null if the slot placement is valid, or a TransactionValidationException if it is not.
+	 */
+	public function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException;
 }

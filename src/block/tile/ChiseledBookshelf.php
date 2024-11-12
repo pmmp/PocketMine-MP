@@ -40,7 +40,11 @@ use function count;
 class ChiseledBookshelf extends Tile implements Container{
 	use ContainerTrait;
 
+	private const TAG_LAST_INTERACTED_SLOT = "LastInteractedSlot"; //TAG_Int
+
 	private SimpleInventory $inventory;
+
+	private ?ChiseledBookshelfSlot $lastInteractedSlot = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -55,12 +59,30 @@ class ChiseledBookshelf extends Tile implements Container{
 		return $this->inventory;
 	}
 
-	public function readSaveData(CompoundTag $nbt) : void{
-		$this->loadItems($nbt);
+	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{
+		return $this->lastInteractedSlot;
 	}
 
-	public function writeSaveData(CompoundTag $nbt) : void{
+	public function setLastInteractedSlot(?ChiseledBookshelfSlot $lastInteractedSlot) : void{
+		$this->lastInteractedSlot = $lastInteractedSlot;
+	}
+
+	public function readSaveData(CompoundTag $nbt) : void{
+		$this->loadItems($nbt);
+
+		$lastInteractedSlot = $nbt->getInt(self::TAG_LAST_INTERACTED_SLOT, 0);
+		if($lastInteractedSlot !== 0){
+			$this->lastInteractedSlot = ChiseledBookshelfSlot::tryFrom($lastInteractedSlot - 1);
+		}
+	}
+
+	protected function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveItems($nbt);
+
+		$nbt->setInt(self::TAG_LAST_INTERACTED_SLOT, $this->lastInteractedSlot !== null ?
+			$this->lastInteractedSlot->value + 1 :
+			0
+		);
 	}
 
 	protected function loadItems(CompoundTag $tag) : void{

@@ -146,6 +146,10 @@ class Armor extends Durable{
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
 		$player->getInventory()->setItemInHand($existing);
+		$sound = $new->getMaterial()->getEquipSound();
+		if($sound !== null){
+			$player->broadcastSound($sound);
+		}
 		if(!$thisCopy->isNull()){
 			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
 			$returnedItems[] = $thisCopy;
