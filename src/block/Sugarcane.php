@@ -99,8 +99,7 @@ class Sugarcane extends Flowable{
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
 			if(!$this->isSupportedByWater()) {
-				$world = $this->position->getWorld();
-				$world->useBreakOn($this->position, createParticles: true);
+				$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
 				return;
 			}
 
@@ -134,7 +133,6 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		foreach($down->getHorizontalSides() as $sideBlock){
 			$blockId = $sideBlock->getTypeId();
-
 			if ($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE) {
 				return true;
 			}
@@ -143,14 +141,9 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void {
-		$bottom = $this->seekToBottom();
-		if (!$this->position->equals($bottom)) {
-			return;
-		}
-
-		if (!$this->isSupportedByWater()) {
-			$world = $this->position->getWorld();
-			$world->useBreakOn($this->position, createParticles: true);
+		$downBlock = $this->getSide(Facing::DOWN);
+		if (!$downBlock->hasSameTypeId($this) && !$this->isSupportedByWater()) {
+			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
 		}
 	}
 }
