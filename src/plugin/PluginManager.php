@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\console\ConsoleCommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
