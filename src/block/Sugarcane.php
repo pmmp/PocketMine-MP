@@ -146,7 +146,8 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->hasSameTypeId($this) && !$this->hasNearbyWater($down)){
 			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
+		}else{
+			$this->onSupportBlockChange();
 		}
-		$this->onSupportBlockChange();
 	}
 }
