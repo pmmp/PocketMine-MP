@@ -69,16 +69,17 @@ final class Promise{
 	 *
 	 * @phpstan-template TPromiseValue
 	 * @phpstan-template TKey of array-key
-	 * @phpstan-param non-empty-array<TKey, Promise<TPromiseValue>> $promises
+	 * @phpstan-param array<TKey, Promise<TPromiseValue>> $promises
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
 	 */
 	public static function all(array $promises) : Promise{
-		if(count($promises) === 0){
-			throw new \InvalidArgumentException("At least one promise must be provided");
-		}
 		/** @phpstan-var PromiseResolver<array<TKey, TPromiseValue>> $resolver */
 		$resolver = new PromiseResolver();
+		if(count($promises) === 0){
+			$resolver->resolve([]);
+			return $resolver->getPromise();
+		}
 		$values = [];
 		$toResolve = count($promises);
 		$continue = true;
