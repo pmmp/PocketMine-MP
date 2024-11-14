@@ -36,7 +36,9 @@ use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
 	use AgeableTrait;
-	use StaticSupportTrait;
+	use StaticSupportTrait {
+        onNearbyBlockChange as onNearbyBlockChangeTrait;
+    }
 
 	public const MAX_AGE = 15;
 
@@ -142,10 +144,9 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
-		}elseif(!$down->hasSameTypeId($this) && !$this->hasNearbyWater($down)){
+		if(!$down->hasSameTypeId($this) && !$this->hasNearbyWater($down)){
 			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
 		}
+        $this->onNearbyBlockChangeTrait();
 	}
 }
