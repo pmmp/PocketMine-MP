@@ -24,10 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function count;
+use function get_class;
 use function is_string;
 use function ksort;
 use function max;
@@ -79,6 +83,8 @@ final class BlockStateUpgrader{
 			 * version doesn't tell us which of the schemas have already been applied.
 			 * If there's only one schema for a version (the norm), we can safely assume it's already been applied if
 			 * the version is the same, and skip over it.
+			 * TODO: this causes issues when testing isolated schemas since there will only be one schema for a version.
+			 * The second check should be disabled for that case.
 			 */
 			if($version > $resultVersion || (count($schemaList) === 1 && $version === $resultVersion)){
 				continue;
@@ -104,10 +110,21 @@ final class BlockStateUpgrader{
 		}
 
 		$oldName = $blockStateData->getName();
-		$newName = $schema->renamedIds[$oldName] ?? null;
+		$states = $blockStateData->getStates();
+
+		if(isset($schema->renamedIds[$oldName]) && isset($schema->flattenedProperties[$oldName])){
+			//TODO: this probably ought to be validated when the schema is constructed
+			throw new AssumptionFailedError("Both renamedIds and flattenedProperties are set for the same block ID \"$oldName\" - don't know what to do");
+		}
+		if(isset($schema->renamedIds[$oldName])){
+			$newName = $schema->renamedIds[$oldName] ?? null;
+		}elseif(isset($schema->flattenedProperties[$oldName])){
+			[$newName, $states] = $this->applyPropertyFlattened($schema->flattenedProperties[$oldName], $oldName, $states);
+		}else{
+			$newName = null;
+		}
 
 		$stateChanges = 0;
-		$states = $blockStateData->getStates();
 
 		$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
 		$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
@@ -140,15 +157,8 @@ final class BlockStateUpgrader{
 				if(is_string($remap->newName)){
 					$newName = $remap->newName;
 				}else{
-					$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
-					if($flattenedValue instanceof StringTag){
-						$embedValue = $remap->newName->flattenedValueRemaps[$flattenedValue->getValue()] ?? $flattenedValue->getValue();
-						$newName = sprintf("%s%s%s", $remap->newName->prefix, $embedValue, $remap->newName->suffix);
-						unset($oldState[$remap->newName->flattenedProperty]);
-					}else{
-						//flattened property is not a TAG_String, so this transformation is not applicable
-						continue;
-					}
+					//discard flatten modifications to state - the remap newState and copiedState will take care of it
+					[$newName, ] = $this->applyPropertyFlattened($remap->newName, $oldName, $oldState);
 				}
 
 				$newState = $remap->newState;
@@ -265,5 +275,33 @@ final class BlockStateUpgrader{
 		}
 
 		return $states;
+	}
+
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return (string|Tag[])[]
+	 * @phpstan-return array{0: string, 1: array<string, Tag>}
+	 */
+	private function applyPropertyFlattened(BlockStateUpgradeSchemaFlattenInfo $flattenInfo, string $oldName, array $states) : array{
+		$flattenedValue = $states[$flattenInfo->flattenedProperty] ?? null;
+		$expectedType = $flattenInfo->flattenedPropertyType;
+		if(!$flattenedValue instanceof $expectedType){
+			//flattened property is not of the expected type, so this transformation is not applicable
+			return [$oldName, $states];
+		}
+		$embedKey = match(get_class($flattenedValue)){
+			StringTag::class => $flattenedValue->getValue(),
+			ByteTag::class => (string) $flattenedValue->getValue(),
+			IntTag::class => (string) $flattenedValue->getValue(),
+			//flattenedPropertyType is always one of these three types, but PHPStan doesn't know that
+			default => throw new AssumptionFailedError("flattenedPropertyType should be one of these three types, but have " . get_class($flattenedValue)),
+		};
+		$embedValue = $flattenInfo->flattenedValueRemaps[$embedKey] ?? $embedKey;
+		$newName = sprintf("%s%s%s", $flattenInfo->prefix, $embedValue, $flattenInfo->suffix);
+		unset($states[$flattenInfo->flattenedProperty]);
+
+		return [$newName, $states];
 	}
 }

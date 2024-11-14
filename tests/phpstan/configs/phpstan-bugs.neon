@@ -6,6 +6,16 @@ parameters:
 			path: ../../../src/block/CakeWithCandle.php
 
 		-
+			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/CopperDoor.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/CopperTrapdoor.php
+
+		-
 			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../src/block/DoubleTallGrass.php

@@ -581,11 +581,6 @@ parameters:
 			path: ../../../src/network/mcpe/ChunkRequestTask.php
 
 		-
-			message: "#^Match expression does not handle remaining values\\: pocketmine\\\\crafting\\\\FurnaceType\\:\\:CAMPFIRE\\|pocketmine\\\\crafting\\\\FurnaceType\\:\\:SOUL_CAMPFIRE$#"
-			count: 1
-			path: ../../../src/network/mcpe/InventoryManager.php
-
-		-
 			message: "#^Cannot call method doFirstSpawn\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -787,11 +782,6 @@ parameters:
 
 		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
@@ -1041,11 +1031,6 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
 			message: "#^Parameter \\#2 \\$size of function ftruncate expects int\\<0, max\\>, int given\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
@@ -1194,19 +1179,4 @@ parameters:
 			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMapColumn\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/block/regenerate_consistency_check.php
-
-		-
-			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/scheduler/AsyncPoolTest.php
 
