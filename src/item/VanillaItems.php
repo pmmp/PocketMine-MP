@@ -493,7 +493,7 @@ final class VanillaItems{
 		self::register("glow_berries", fn(IID $id) => new GlowBerries($id, "Glow Berries"));
 		self::register("glow_ink_sac", fn(IID $id) => new Item($id, "Glow Ink Sac"));
 		self::register("glowstone_dust", fn(IID $id) => new Item($id, "Glowstone Dust"));
-    self::register("goat_horn", fn(IID $id) => new GoatHorn($id, "Goat Horn"));
+		self::register("goat_horn", fn(IID $id) => new GoatHorn($id, "Goat Horn"));
 		self::register("gold_ingot", fn(IID $id) => new Item($id, "Gold Ingot"));
 		self::register("gold_nugget", fn(IID $id) => new Item($id, "Gold Nugget"));
 		self::register("golden_apple", fn(IID $id) => new GoldenApple($id, "Golden Apple"));
