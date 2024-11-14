@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -43,6 +43,10 @@ use function rename;
 use function round;
 use function scandir;
 use function unlink;
+use const PATHINFO_EXTENSION;
+use const PHP_BINARY;
+use const SCANDIR_SORT_NONE;
+use const SORT_NUMERIC;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -62,12 +66,12 @@ function find_regions_recursive(string $dir, array &$files) : void{
 		return;
 	}
 	foreach($dirFiles as $file){
-		if($file === "." or $file === ".."){
+		if($file === "." || $file === ".."){
 			continue;
 		}
 		$fullPath = $dir . "/" . $file;
 		if(
-			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) and
+			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) &&
 			is_file($fullPath)
 		){
 			$files[$fullPath] = filesize($fullPath);

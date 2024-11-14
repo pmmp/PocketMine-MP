@@ -10,3 +10,4 @@ resource_stack:
   # - natural.zip
   # - vanilla.zip
   #If you want to force clients to use vanilla resources, you must place a vanilla resource pack in your resources folder and add it to the stack here.
+  #To specify a resource encryption key, put the key in the <resource>.key file alongside the resource pack. Example: vanilla.zip.key

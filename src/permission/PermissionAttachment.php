@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,26 +29,23 @@ use function spl_object_id;
 
 class PermissionAttachment{
 	/** @var bool[] */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @var PermissibleInternal[]
 	 * @phpstan-var array<int, PermissibleInternal>
 	 */
-	private $subscribers = [];
-
-	/** @var Plugin */
-	private $plugin;
+	private array $subscribers = [];
 
 	/**
 	 * @throws PluginException
 	 */
-	public function __construct(Plugin $plugin){
+	public function __construct(
+		private Plugin $plugin
+	){
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
-
-		$this->plugin = $plugin;
 	}
 
 	public function getPlugin() : Plugin{
@@ -99,10 +96,7 @@ class PermissionAttachment{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @param string|Permission $name
-	 */
-	public function setPermission($name, bool $value) : void{
+	public function setPermission(Permission|string $name, bool $value) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			if($this->permissions[$name] === $value){
@@ -123,10 +117,7 @@ class PermissionAttachment{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @param string|Permission $name
-	 */
-	public function unsetPermission($name) : void{
+	public function unsetPermission(Permission|string $name) : void{
 		$name = $name instanceof Permission ? $name->getName() : $name;
 		if(isset($this->permissions[$name])){
 			unset($this->permissions[$name]);

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -56,7 +56,9 @@ class Main extends PluginBase implements Listener{
 			}
 		}), 10);
 
-		$this->waitingTests = [];
+		$this->waitingTests = [
+			new EventHandlerInheritanceTest($this),
+		];
 	}
 
 	public function onServerCommand(CommandEvent $event) : void{

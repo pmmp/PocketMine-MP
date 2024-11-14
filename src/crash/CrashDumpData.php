@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,6 +36,8 @@ final class CrashDumpData implements \JsonSerializable{
 
 	/** @var mixed[] */
 	public array $error;
+
+	public string $thread;
 
 	public string $plugin_involvement;
 
@@ -65,6 +67,8 @@ final class CrashDumpData implements \JsonSerializable{
 	 * @phpstan-var array<string, string>
 	 */
 	public array $extensions = [];
+
+	public ?int $jit_mode = null;
 
 	public string $phpinfo = "";
 

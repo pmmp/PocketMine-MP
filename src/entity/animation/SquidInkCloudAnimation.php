@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,12 +29,7 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class SquidInkCloudAnimation implements Animation{
 
-	/** @var Squid */
-	private $squid;
-
-	public function __construct(Squid $squid){
-		$this->squid = $squid;
-	}
+	public function __construct(private Squid $squid){}
 
 	public function encode() : array{
 		return [

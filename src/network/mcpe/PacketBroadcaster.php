@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 interface PacketBroadcaster{
 
 	/**
-	 * @param NetworkSession[] $recipients
+	 * @param NetworkSession[]    $recipients
 	 * @param ClientboundPacket[] $packets
 	 */
 	public function broadcastPackets(array $recipients, array $packets) : void;

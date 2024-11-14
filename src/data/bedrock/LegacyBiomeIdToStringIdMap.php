@@ -17,19 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
 
-final class LegacyBiomeIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyBiomeIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){
-		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_id_map.json'));
+		parent::__construct(BedrockDataFiles::BIOME_ID_MAP_JSON);
 	}
 }

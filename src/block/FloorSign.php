@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,18 +32,6 @@ use pocketmine\world\BlockTransaction;
 
 final class FloorSign extends BaseSign{
 	use SignLikeRotationTrait;
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotation = $stateMeta;
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->rotation;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
 
 	protected function getSupportingFace() : int{
 		return Facing::DOWN;

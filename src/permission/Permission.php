@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,21 +27,13 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\lang\Translatable;
+
 /**
  * Represents a permission
  */
 class Permission{
-	/** @var string */
-	private $name;
-
-	/** @var string */
-	private $description;
-
-	/**
-	 * @var bool[]
-	 * @phpstan-var array<string, bool>
-	 */
-	private $children;
+	private Translatable|string $description;
 
 	/**
 	 * Creates a new Permission object to be attached to Permissible objects
@@ -49,10 +41,12 @@ class Permission{
 	 * @param bool[] $children
 	 * @phpstan-param array<string, bool> $children
 	 */
-	public function __construct(string $name, ?string $description = null, array $children = []){
-		$this->name = $name;
-		$this->description = $description ?? "";
-		$this->children = $children;
+	public function __construct(
+		private string $name,
+		Translatable|string|null $description = null,
+		private array $children = []
+	){
+		$this->description = $description ?? ""; //TODO: wtf ????
 
 		$this->recalculatePermissibles();
 	}
@@ -69,11 +63,11 @@ class Permission{
 		return $this->children;
 	}
 
-	public function getDescription() : string{
+	public function getDescription() : Translatable|string{
 		return $this->description;
 	}
 
-	public function setDescription(string $value) : void{
+	public function setDescription(Translatable|string $value) : void{
 		$this->description = $value;
 	}
 

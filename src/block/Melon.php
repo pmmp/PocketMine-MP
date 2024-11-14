@@ -17,21 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
+use function min;
 
-class Melon extends Transparent{
+class Melon extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::MELON()->setCount(mt_rand(3, 7))
+			VanillaItems::MELON()->setCount(min(9, FortuneDropHelper::discrete($item, 3, 7)))
 		];
 	}
 

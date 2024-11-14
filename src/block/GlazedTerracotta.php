@@ -17,16 +17,16 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 
 class GlazedTerracotta extends Opaque{
+	use ColoredTrait;
 	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
 }

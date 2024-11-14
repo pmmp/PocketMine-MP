@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Jukebox as JukeboxTile;
 use pocketmine\item\Item;
 use pocketmine\item\Record;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\RecordSound;
@@ -39,12 +40,12 @@ class Jukebox extends Opaque{
 		return 300;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			if($this->record !== null){
 				$this->ejectRecord();
 			}elseif($item instanceof Record){
-				$player->sendJukeboxPopup("record.nowPlaying", [$player->getLanguage()->translate($item->getRecordType()->getTranslatableName())]);
+				$player->sendJukeboxPopup(KnownTranslationFactory::record_nowPlaying($item->getRecordType()->getTranslatableName()));
 				$this->insertRecord($item->pop());
 			}
 		}
@@ -60,7 +61,7 @@ class Jukebox extends Opaque{
 
 	public function ejectRecord() : void{
 		if($this->record !== null){
-			$this->getPosition()->getWorld()->dropItem($this->getPosition()->add(0.5, 1, 0.5), $this->record);
+			$this->position->getWorld()->dropItem($this->position->add(0.5, 1, 0.5), $this->record);
 			$this->record = null;
 			$this->stopSound();
 		}
@@ -75,17 +76,17 @@ class Jukebox extends Opaque{
 
 	public function startSound() : void{
 		if($this->record !== null){
-			$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordSound($this->record->getRecordType()));
+			$this->position->getWorld()->addSound($this->position, new RecordSound($this->record->getRecordType()));
 		}
 	}
 
 	public function stopSound() : void{
-		$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordStopSound());
+		$this->position->getWorld()->addSound($this->position, new RecordStopSound());
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
+	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->stopSound();
-		return parent::onBreak($item, $player);
+		return parent::onBreak($item, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -96,12 +97,14 @@ class Jukebox extends Opaque{
 		return $drops;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$this->record = $jukebox->getRecord();
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{

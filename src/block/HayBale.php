@@ -17,16 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
+use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\entity\Entity;
 
 class HayBale extends Opaque{
-	use PillarRotationInMetadataTrait;
+	use PillarRotationTrait;
 
 	public function getFlameEncouragement() : int{
 		return 60;
@@ -34,5 +35,10 @@ class HayBale extends Opaque{
 
 	public function getFlammability() : int{
 		return 20;
+	}
+
+	public function onEntityLand(Entity $entity) : ?float{
+		$entity->fallDistance *= 0.2;
+		return null;
 	}
 }

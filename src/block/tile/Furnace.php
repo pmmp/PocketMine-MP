@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,14 +48,10 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 	public const TAG_COOK_TIME = "CookTime";
 	public const TAG_MAX_TIME = "MaxTime";
 
-	/** @var FurnaceInventory */
-	protected $inventory;
-	/** @var int */
-	private $remainingFuelTime = 0;
-	/** @var int */
-	private $cookTime = 0;
-	/** @var int */
-	private $maxFuelTime = 0;
+	protected FurnaceInventory $inventory;
+	private int $remainingFuelTime = 0;
+	private int $cookTime = 0;
+	private int $maxFuelTime = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -108,17 +104,11 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		}
 	}
 
-	/**
-	 * @return FurnaceInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : FurnaceInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return FurnaceInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : FurnaceInventory{
 		return $this->getInventory();
 	}
 
@@ -132,14 +122,14 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$this->maxFuelTime = $this->remainingFuelTime = $ev->getBurnTime();
 		$this->onStartSmelting();
 
-		if($this->remainingFuelTime > 0 and $ev->isBurning()){
+		if($this->remainingFuelTime > 0 && $ev->isBurning()){
 			$this->inventory->setFuel($fuel->getFuelResidue());
 		}
 	}
 
 	protected function onStartSmelting() : void{
 		$block = $this->getBlock();
-		if($block instanceof BlockFurnace and !$block->isLit()){
+		if($block instanceof BlockFurnace && !$block->isLit()){
 			$block->setLit(true);
 			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
@@ -147,7 +137,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 
 	protected function onStopSmelting() : void{
 		$block = $this->getBlock();
-		if($block instanceof BlockFurnace and $block->isLit()){
+		if($block instanceof BlockFurnace && $block->isLit()){
 			$block->setLit(false);
 			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
@@ -175,16 +165,16 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 
 		$furnaceType = $this->getFurnaceType();
 		$smelt = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
-		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
+		$canSmelt = ($smelt instanceof FurnaceRecipe && $raw->getCount() > 0 && (($smelt->getResult()->canStackWith($product) && $product->getCount() < $product->getMaxStackSize()) || $product->isNull()));
 
-		if($this->remainingFuelTime <= 0 and $canSmelt and $fuel->getFuelTime() > 0 and $fuel->getCount() > 0){
+		if($this->remainingFuelTime <= 0 && $canSmelt && $fuel->getFuelTime() > 0 && $fuel->getCount() > 0){
 			$this->checkFuel($fuel);
 		}
 
 		if($this->remainingFuelTime > 0){
 			--$this->remainingFuelTime;
 
-			if($smelt instanceof FurnaceRecipe and $canSmelt){
+			if($smelt instanceof FurnaceRecipe && $canSmelt){
 				++$this->cookTime;
 
 				if($this->cookTime >= $furnaceType->getCookDurationTicks()){

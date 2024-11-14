@@ -17,32 +17,34 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 
 class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
+	use StaticSupportTrait;
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->signalStrength;
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		//TODO: check connections to nearby redstone components
+
+		return $this;
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::REDSTONE_DUST();
 	}
 }

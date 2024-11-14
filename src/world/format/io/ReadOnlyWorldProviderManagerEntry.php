@@ -17,25 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
 /**
- * @phpstan-type FromPath \Closure(string $path) : WorldProvider
+ * @phpstan-type FromPath \Closure(string $path, \Logger $logger) : WorldProvider
  */
 class ReadOnlyWorldProviderManagerEntry extends WorldProviderManagerEntry{
 
-	/** @phpstan-var FromPath */
-	private \Closure $fromPath;
-
 	/** @phpstan-param FromPath $fromPath */
-	public function __construct(\Closure $isValid, \Closure $fromPath){
+	public function __construct(
+		\Closure $isValid,
+		private \Closure $fromPath
+	){
 		parent::__construct($isValid);
-		$this->fromPath = $fromPath;
 	}
 
-	public function fromPath(string $path) : WorldProvider{ return ($this->fromPath)($path); }
+	public function fromPath(string $path, \Logger $logger) : WorldProvider{ return ($this->fromPath)($path, $logger); }
 }

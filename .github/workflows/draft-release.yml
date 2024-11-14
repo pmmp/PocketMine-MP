@@ -1,29 +1,41 @@
 name: Draft release
 
 on:
-  push:
-    tags: "*"
+  workflow_call:
+    outputs:
+      draft-url:
+        description: 'The URL of the draft release'
+        value: ${{ jobs.draft.outputs.draft-url }}
+      version:
+        description: 'PocketMine-MP version'
+        value: ${{ jobs.draft.outputs.version }}
 
 jobs:
   draft:
     name: Create GitHub draft release
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
+
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+      matrix:
+        php-version: [8.2]
+
+    outputs:
+      draft-url: ${{ steps.create-draft.outputs.html_url }}
+      version: ${{ steps.get-pm-version.outputs.PM_VERSION }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.12.0
+        uses: shivammathur/setup-php@2.31.1
         with:
-          php-version: 8.0
+          php-version: ${{ matrix.php-version }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files
@@ -40,7 +52,7 @@ jobs:
         run: |
           BUILD_NUMBER=$((2000+$GITHUB_RUN_NUMBER)) #to stay above jenkins
           echo "Build number: $BUILD_NUMBER"
-          echo ::set-output name=BUILD_NUMBER::$BUILD_NUMBER
+          echo BUILD_NUMBER=$BUILD_NUMBER >> $GITHUB_OUTPUT
 
       - name: Minify BedrockData JSON files
         run: php vendor/pocketmine/bedrock-data/.minify_json.php
@@ -51,33 +63,56 @@ jobs:
       - name: Get PocketMine-MP release version
         id: get-pm-version
         run: |
-          echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;')
-          echo ::set-output name=MCPE_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;')
-          echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);')
-          echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);')
+          echo PM_VERSION=$(php build/dump-version-info.php base_version) >> $GITHUB_OUTPUT
+          echo MCPE_VERSION=$(php build/dump-version-info.php mcpe_version) >> $GITHUB_OUTPUT
+          echo CHANGELOG_FILE_NAME=$(php build/dump-version-info.php changelog_file_name) >> $GITHUB_OUTPUT
+          echo CHANGELOG_MD_HEADER=$(php build/dump-version-info.php changelog_md_header) >> $GITHUB_OUTPUT
+          echo PRERELEASE=$(php build/dump-version-info.php prerelease) >> $GITHUB_OUTPUT
+
+      - name: Generate PHP binary download URL
+        id: php-binary-url
+        run: |
+          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/php-${{ matrix.php-version }}-latest" >> $GITHUB_OUTPUT
 
       - name: Generate build info
-        run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} > build_info.json
+        run: |
+          php build/generate-build-info-json.php \
+            ${{ github.sha }} \
+            ${{ steps.get-pm-version.outputs.PM_VERSION }} \
+            ${{ github.repository }} \
+            ${{ steps.build-number.outputs.BUILD_NUMBER }} \
+            ${{ github.run_id }} \
+            ${{ steps.php-binary-url.outputs.PHP_BINARY_URL }} \
+            > build_info.json
+
+      - name: Generate core permission doc for doc.pmmp.io
+        run: php tools/generate-permission-doc.php rst
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release_artifacts
           path: |
             ${{ github.workspace }}/PocketMine-MP.phar
             ${{ github.workspace }}/start.*
             ${{ github.workspace }}/build_info.json
+            ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.8.6
+        uses: ncipollo/release-action@v1.14.0
+        id: create-draft
         with:
-          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
+          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
           commit: ${{ github.sha }}
           draft: true
+          prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          skipIfReleaseExists: true #for release PRs, tags will be created on release publish and trigger the tag release workflow - don't create a second draft
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
-            Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+            Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.CHANGELOG_FILE_NAME }}#${{ steps.get-pm-version.outputs.CHANGELOG_MD_HEADER }}) for details.
+
+            :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).

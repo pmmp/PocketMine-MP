@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,11 +35,8 @@ class Hopper extends Spawnable implements Container, Nameable{
 
 	private const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
 
-	/** @var HopperInventory */
-	private $inventory;
-
-	/** @var int */
-	private $transferCooldown = 0;
+	private HopperInventory $inventory;
+	private int $transferCooldown = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -72,17 +69,11 @@ class Hopper extends Spawnable implements Container, Nameable{
 		return "Hopper";
 	}
 
-	/**
-	 * @return HopperInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : HopperInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return HopperInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : HopperInventory{
 		return $this->inventory;
 	}
 }

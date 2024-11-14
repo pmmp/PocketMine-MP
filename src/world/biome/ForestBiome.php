@@ -17,25 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
-use pocketmine\block\utils\TreeType;
+use pocketmine\world\generator\object\TreeType;
 use pocketmine\world\generator\populator\TallGrass;
 use pocketmine\world\generator\populator\Tree;
 
 class ForestBiome extends GrassyBiome{
-
-	/** @var TreeType */
-	private $type;
+	private TreeType $type;
 
 	public function __construct(?TreeType $type = null){
 		parent::__construct();
 
-		$this->type = $type ?? TreeType::OAK();
+		$this->type = $type ?? TreeType::OAK;
 
 		$trees = new Tree($type);
 		$trees->setBaseAmount(5);
@@ -48,7 +46,7 @@ class ForestBiome extends GrassyBiome{
 
 		$this->setElevation(63, 81);
 
-		if($this->type->equals(TreeType::BIRCH())){
+		if($this->type === TreeType::BIRCH){
 			$this->temperature = 0.6;
 			$this->rainfall = 0.5;
 		}else{

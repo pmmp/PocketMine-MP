@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,58 +29,35 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\player\Player;
-use pocketmine\utils\TextFormat;
 use function count;
-use function implode;
 
 class KillCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"kill",
 			KnownTranslationFactory::pocketmine_command_kill_description(),
 			KnownTranslationFactory::pocketmine_command_kill_usage(),
 			["suicide"]
 		);
-		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]));
+		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) >= 2){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		if(count($args) === 1){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_KILL_OTHER)){
-				return true;
-			}
-
-			$player = $sender->getServer()->getPlayerByPrefix($args[0]);
-
-			if($player instanceof Player){
-				$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kill_successful($player->getName()));
-			}else{
-				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
-			}
-
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
+		if($player === null){
 			return true;
 		}
 
-		if($sender instanceof Player){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_KILL_SELF)){
-				return true;
-			}
-
-			$sender->attack(new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
+		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, $player->getHealth()));
+		if($player === $sender){
 			$sender->sendMessage(KnownTranslationFactory::commands_kill_successful($sender->getName()));
 		}else{
-			throw new InvalidCommandSyntaxException();
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kill_successful($player->getName()));
 		}
 
 		return true;

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,10 +35,9 @@ class Effect{
 	use NotSerializable;
 
 	/**
-	 * @param Translatable|string $name Translation key used for effect name
-	 * @param Color               $color Color of bubbles given by this effect
-	 * @param bool                $bad Whether the effect is harmful
-	 * @param int                 $defaultDuration
+	 * @param Translatable|string $name       Translation key used for effect name
+	 * @param Color               $color      Color of bubbles given by this effect
+	 * @param bool                $bad        Whether the effect is harmful
 	 * @param bool                $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
 	public function __construct(

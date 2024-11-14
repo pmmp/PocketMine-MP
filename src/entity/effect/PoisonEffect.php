@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,9 +30,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\Translatable;
 
 class PoisonEffect extends Effect{
-
-	/** @var bool */
-	private $fatal;
+	private bool $fatal;
 
 	public function __construct(Translatable|string $name, Color $color, bool $isBad = false, int $defaultDuration = 600, bool $hasBubbles = true, bool $fatal = false){
 		parent::__construct($name, $color, $isBad, $defaultDuration, $hasBubbles);
@@ -47,7 +45,7 @@ class PoisonEffect extends Effect{
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
-		if($entity->getHealth() > 1 or $this->fatal){
+		if($entity->getHealth() > 1 || $this->fatal){
 			$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
 			$entity->attack($ev);
 		}

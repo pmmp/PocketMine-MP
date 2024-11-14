@@ -17,82 +17,45 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	use AgeableTrait;
+	use StaticSupportTrait;
 
-	protected int $age = 0;
+	public const MAX_AGE = 3;
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b11;
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > 3){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
-		}
-		$this->age = $age;
-		return $this;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SOUL_SAND){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SOUL_SAND){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SAND;
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::grow($this, $block, null);
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === 3 ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
 		];
 	}
 }

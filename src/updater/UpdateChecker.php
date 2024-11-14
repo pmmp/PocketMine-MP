@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,28 +27,24 @@ use pocketmine\event\server\UpdateNotifyEvent;
 use pocketmine\Server;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
+use pocketmine\YmlServerProperties;
 use function date;
 use function strtolower;
 use function ucfirst;
 
 class UpdateChecker{
 
-	/** @var Server */
-	protected $server;
-	/** @var string */
-	protected $endpoint;
-	/** @var UpdateInfo|null */
-	protected $updateInfo = null;
-
-	/** @var \Logger */
-	private $logger;
+	protected Server $server;
+	protected string $endpoint;
+	protected ?UpdateInfo $updateInfo = null;
+	private \Logger $logger;
 
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Update Checker");
 		$this->endpoint = "http://$endpoint/api/";
 
-		if($server->getConfigGroup()->getPropertyBool("auto-updater.enabled", true)){
+		if($server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_UPDATER_ENABLED, true)){
 			$this->doCheck();
 		}
 	}
@@ -64,13 +60,13 @@ class UpdateChecker{
 		$this->checkUpdate($updateInfo);
 		if($this->hasUpdate()){
 			(new UpdateNotifyEvent($this))->call();
-			if($this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-console", true)){
+			if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_UPDATER_ON_UPDATE_WARN_CONSOLE, true)){
 				$this->showConsoleUpdate();
 			}
 		}else{
-			if(!VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
+			if(!VersionInfo::IS_DEVELOPMENT_BUILD && $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
-			}elseif(VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
+			}elseif(VersionInfo::IS_DEVELOPMENT_BUILD && $this->getChannel() === "stable"){
 				$this->showChannelSuggestionBeta();
 			}
 		}
@@ -162,7 +158,7 @@ class UpdateChecker{
 	 * Returns the channel used for update checking (stable, beta, dev)
 	 */
 	public function getChannel() : string{
-		return strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
+		return strtolower($this->server->getConfigGroup()->getPropertyString(YmlServerProperties::AUTO_UPDATER_PREFERRED_CHANNEL, "stable"));
 	}
 
 	/**

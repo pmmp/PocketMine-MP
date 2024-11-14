@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,7 +32,7 @@ class Note extends Opaque{
 
 	private int $pitch = self::MIN_PITCH;
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileNote){
@@ -40,6 +40,8 @@ class Note extends Opaque{
 		}else{
 			$this->pitch = self::MIN_PITCH;
 		}
+
+		return $this;
 	}
 
 	public function writeStateToWorld() : void{
@@ -59,7 +61,7 @@ class Note extends Opaque{
 
 	/** @return $this */
 	public function setPitch(int $pitch) : self{
-		if($pitch < self::MIN_PITCH or $pitch > self::MAX_PITCH){
+		if($pitch < self::MIN_PITCH || $pitch > self::MAX_PITCH){
 			throw new \InvalidArgumentException("Pitch must be in range " . self::MIN_PITCH . " - " . self::MAX_PITCH);
 		}
 		$this->pitch = $pitch;

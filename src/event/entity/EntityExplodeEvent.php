@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,29 +31,30 @@ use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
- * Called when a entity explodes
+ * Called when an entity explodes, after the explosion's impact has been calculated.
+ * No changes have been made to the world at this stage.
+ *
+ * @see EntityPreExplodeEvent
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Position */
-	protected $position;
-
-	/** @var Block[] */
-	protected $blocks;
-
-	/** @var float */
-	protected $yield;
-
 	/**
-	 * @param Block[]  $blocks
+	 * @param Block[] $blocks
+	 * @param float   $yield  0-100
 	 */
-	public function __construct(Entity $entity, Position $position, array $blocks, float $yield){
+	public function __construct(
+		Entity $entity,
+		protected Position $position,
+		protected array $blocks,
+		protected float $yield
+	){
 		$this->entity = $entity;
-		$this->position = $position;
-		$this->blocks = $blocks;
-		$this->yield = $yield;
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 	}
 
 	public function getPosition() : Position{
@@ -61,6 +62,8 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
+	 * Returns a list of blocks destroyed by the explosion.
+	 *
 	 * @return Block[]
 	 */
 	public function getBlockList() : array{
@@ -68,6 +71,8 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
+	 * Sets the blocks destroyed by the explosion.
+	 *
 	 * @param Block[] $blocks
 	 */
 	public function setBlockList(array $blocks) : void{
@@ -75,11 +80,22 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		$this->blocks = $blocks;
 	}
 
+	/**
+	 * Returns the percentage chance of drops from each block destroyed by the explosion.
+	 * @return float 0-100
+	 */
 	public function getYield() : float{
 		return $this->yield;
 	}
 
+	/**
+	 * Sets the percentage chance of drops from each block destroyed by the explosion.
+	 * @param float $yield 0-100
+	 */
 	public function setYield(float $yield) : void{
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 		$this->yield = $yield;
 	}
 }

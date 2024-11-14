@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,6 +34,7 @@ use function extension_loaded;
 use function implode;
 use function in_array;
 use function phpversion;
+use function str_starts_with;
 use function stripos;
 use function strlen;
 use function substr;
@@ -47,7 +48,7 @@ final class PluginLoadabilityChecker{
 
 	public function check(PluginDescription $description) : Translatable|null{
 		$name = $description->getName();
-		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+		if(stripos($name, "pocketmine") !== false || stripos($name, "minecraft") !== false || stripos($name, "mojang") !== false){
 			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
 		}
 
@@ -66,7 +67,7 @@ final class PluginLoadabilityChecker{
 			return KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions));
 		}
 
-		if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+		if(count($description->getCompatibleOperatingSystems()) > 0 && !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
 			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
 		}
 
@@ -96,7 +97,7 @@ final class PluginLoadabilityChecker{
 				}
 				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
 					// warning: the > character should be quoted in YAML
-					if(substr($constr, 0, strlen($comparator)) === $comparator){
+					if(str_starts_with($constr, $comparator)){
 						$version = substr($constr, strlen($comparator));
 						if(!version_compare($gotVersion, $version, $comparator)){
 							return KnownTranslationFactory::pocketmine_plugin_incompatibleExtensionVersion(extensionName: $extensionName, extensionVersion: $gotVersion, pluginRequirement: $constr);

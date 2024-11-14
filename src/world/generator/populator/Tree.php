@@ -17,33 +17,30 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\generator\populator;
 
-use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\TreeFactory;
+use pocketmine\world\generator\object\TreeType;
 
 class Tree implements Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
-
-	/** @var TreeType */
-	private $type;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
+	private TreeType $type;
 
 	/**
 	 * @param TreeType|null $type default oak
 	 */
 	public function __construct(?TreeType $type = null){
-		$this->type = $type ?? TreeType::OAK();
+		$this->type = $type ?? TreeType::OAK;
 	}
 
 	public function setRandomAmount(int $amount) : void{
@@ -71,10 +68,10 @@ class Tree implements Populator{
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
-			$b = $world->getBlockAt($x, $y, $z)->getId();
-			if($b === BlockLegacyIds::DIRT or $b === BlockLegacyIds::GRASS){
+			$b = $world->getBlockAt($x, $y, $z);
+			if($b->hasTypeTag(BlockTypeTags::DIRT) || $b->hasTypeTag(BlockTypeTags::MUD)){
 				return $y + 1;
-			}elseif($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::SNOW_LAYER){
+			}elseif($b->getTypeId() !== BlockTypeIds::AIR && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){
 				return -1;
 			}
 		}

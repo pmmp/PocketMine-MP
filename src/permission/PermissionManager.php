@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,21 +27,20 @@ use function count;
 use function spl_object_id;
 
 class PermissionManager{
-	/** @var PermissionManager|null */
-	private static $instance = null;
+	private static ?self $instance = null;
 
 	public static function getInstance() : PermissionManager{
 		if(self::$instance === null){
-			self::$instance = new self;
+			self::$instance = new self();
 		}
 
 		return self::$instance;
 	}
 
 	/** @var Permission[] */
-	protected $permissions = [];
+	protected array $permissions = [];
 	/** @var PermissibleInternal[][] */
-	protected $permSubs = [];
+	protected array $permSubs = [];
 
 	public function getPermission(string $name) : ?Permission{
 		return $this->permissions[$name] ?? null;
@@ -57,10 +56,7 @@ class PermissionManager{
 		return false;
 	}
 
-	/**
-	 * @param string|Permission $permission
-	 */
-	public function removePermission($permission) : void{
+	public function removePermission(Permission|string $permission) : void{
 		if($permission instanceof Permission){
 			unset($this->permissions[$permission->getName()]);
 		}else{
@@ -76,19 +72,21 @@ class PermissionManager{
 	}
 
 	public function unsubscribeFromPermission(string $permission, PermissibleInternal $permissible) : void{
-		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_id($permissible)]);
-			if(count($this->permSubs[$permission]) === 0){
+		if(isset($this->permSubs[$permission][spl_object_id($permissible)])){
+			if(count($this->permSubs[$permission]) === 1){
 				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			}
 		}
 	}
 
 	public function unsubscribeFromAllPermissions(PermissibleInternal $permissible) : void{
-		foreach($this->permSubs as $permission => &$subs){
-			unset($subs[spl_object_id($permissible)]);
-			if(count($subs) === 0){
+		foreach($this->permSubs as $permission => $subs){
+			if(count($subs) === 1 && isset($subs[spl_object_id($permissible)])){
 				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			}
 		}
 	}

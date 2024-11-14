@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,12 +30,7 @@ use pocketmine\event\Event;
 use pocketmine\world\World;
 
 abstract class WorldEvent extends Event{
-	/** @var World */
-	private $world;
-
-	public function __construct(World $world){
-		$this->world = $world;
-	}
+	public function __construct(private World $world){}
 
 	public function getWorld() : World{
 		return $this->world;

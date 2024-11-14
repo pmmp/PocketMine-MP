@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,7 +29,7 @@ interface CraftingRecipe{
 	/**
 	 * Returns a list of items needed to craft this recipe. This MUST NOT include Air items or items with a zero count.
 	 *
-	 * @return Item[]
+	 * @return RecipeIngredient[]
 	 */
 	public function getIngredientList() : array;
 

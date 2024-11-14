@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,7 @@ namespace pocketmine\world\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\world\format\ChunkException;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use function bin2hex;
 use function clearstatcache;
 use function file_exists;
@@ -74,7 +74,7 @@ class RegionLoaderTest extends TestCase{
 	 * @return \Generator|int[][]
 	 * @phpstan-return \Generator<int, array{int,int}, void, void>
 	 */
-	public function outOfBoundsCoordsProvider() : \Generator{
+	public static function outOfBoundsCoordsProvider() : \Generator{
 		yield [-1, -1];
 		yield [32, 32];
 		yield [-1, 32];

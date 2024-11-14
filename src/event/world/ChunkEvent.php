@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,18 +30,13 @@ use pocketmine\world\World;
  * Chunk-related events
  */
 abstract class ChunkEvent extends WorldEvent{
-	/** @var Chunk */
-	private $chunk;
-	/** @var int */
-	private $chunkX;
-	/** @var int */
-	private $chunkZ;
-
-	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk){
+	public function __construct(
+		World $world,
+		private int $chunkX,
+		private int $chunkZ,
+		private Chunk $chunk
+	){
 		parent::__construct($world);
-		$this->chunk = $chunk;
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
 	}
 
 	public function getChunk() : Chunk{

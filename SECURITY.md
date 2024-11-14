@@ -7,10 +7,11 @@ GitHub is public and anyone can see the issues you post on the issue tracker, in
 
 **WARNING: You may put live servers at risk by reporting a vulnerability on the GitHub issue tracker.**
 
-**Contact us** by sending an email to [**team@pmmp.io**](mailto:team@pmmp.io?subject=Security%20Vulnerability%20in%20PocketMine-MP). Include the following information:
+**Contact us** by sending an email to [**security@pmmp.io**](mailto:security@pmmp.io). Include the following information:
 
 - Version of PocketMine-MP
 - Detailed description of the vulnerability (e.g. how to exploit it, what the effects are)
+- Your GitHub username, if you wish to be credited for reporting the problem in the security advisory
 
 Please note that we can't guarantee a reply to every email.
 

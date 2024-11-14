@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\EnderChestInventory;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -35,7 +35,6 @@ use pocketmine\player\Player;
 
 class EnderChest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
 
 	public function getLightLevel() : int{
 		return 7;
@@ -49,10 +48,14 @@ class EnderChest extends Transparent{
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$enderChest = $this->position->getWorld()->getTile($this->position);
-			if($enderChest instanceof TileEnderChest and $this->getSide(Facing::UP)->isTransparent()){
+			if($enderChest instanceof TileEnderChest && $this->getSide(Facing::UP)->isTransparent()){
 				$enderChest->setViewerCount($enderChest->getViewerCount() + 1);
 				$player->setCurrentWindow(new EnderChestInventory($this->position, $player->getEnderInventory()));
 			}
@@ -65,5 +68,9 @@ class EnderChest extends Transparent{
 		return [
 			VanillaBlocks::OBSIDIAN()->asItem()->setCount(8)
 		];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 }

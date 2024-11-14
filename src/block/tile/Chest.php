@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,15 +44,11 @@ class Chest extends Spawnable implements Container, Nameable{
 	public const TAG_PAIRZ = "pairz";
 	public const TAG_PAIR_LEAD = "pairlead";
 
-	/** @var ChestInventory */
-	protected $inventory;
-	/** @var DoubleChestInventory|null */
-	protected $doubleInventory = null;
+	protected ChestInventory $inventory;
+	protected ?DoubleChestInventory $doubleInventory = null;
 
-	/** @var int|null */
-	private $pairX;
-	/** @var int|null */
-	private $pairZ;
+	private ?int $pairX = null;
+	private ?int $pairZ = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -60,12 +56,12 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if(($pairXTag = $nbt->getTag(self::TAG_PAIRX)) instanceof IntTag and ($pairZTag = $nbt->getTag(self::TAG_PAIRZ)) instanceof IntTag){
+		if(($pairXTag = $nbt->getTag(self::TAG_PAIRX)) instanceof IntTag && ($pairZTag = $nbt->getTag(self::TAG_PAIRZ)) instanceof IntTag){
 			$pairX = $pairXTag->getValue();
 			$pairZ = $pairZTag->getValue();
 			if(
-				($this->position->x === $pairX and abs($this->position->z - $pairZ) === 1) or
-				($this->position->z === $pairZ and abs($this->position->x - $pairX) === 1)
+				($this->position->x === $pairX && abs($this->position->z - $pairZ) === 1) ||
+				($this->position->z === $pairZ && abs($this->position->x - $pairX) === 1)
 			){
 				$this->pairX = $pairX;
 				$this->pairZ = $pairZ;
@@ -100,7 +96,7 @@ class Chest extends Spawnable implements Container, Nameable{
 			$this->inventory->removeAllViewers();
 
 			if($this->doubleInventory !== null){
-				if($this->isPaired() and $this->position->getWorld()->isChunkLoaded($this->pairX >> Chunk::COORD_BIT_SIZE, $this->pairZ >> Chunk::COORD_BIT_SIZE)){
+				if($this->isPaired() && $this->position->getWorld()->isChunkLoaded($this->pairX >> Chunk::COORD_BIT_SIZE, $this->pairZ >> Chunk::COORD_BIT_SIZE)){
 					$this->doubleInventory->removeAllViewers();
 					if(($pair = $this->getPair()) !== null){
 						$pair->doubleInventory = null;
@@ -118,25 +114,19 @@ class Chest extends Spawnable implements Container, Nameable{
 		$this->containerTraitBlockDestroyedHook();
 	}
 
-	/**
-	 * @return ChestInventory|DoubleChestInventory
-	 */
-	public function getInventory(){
-		if($this->isPaired() and $this->doubleInventory === null){
+	public function getInventory() : ChestInventory|DoubleChestInventory{
+		if($this->isPaired() && $this->doubleInventory === null){
 			$this->checkPairing();
 		}
 		return $this->doubleInventory instanceof DoubleChestInventory ? $this->doubleInventory : $this->inventory;
 	}
 
-	/**
-	 * @return ChestInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : ChestInventory{
 		return $this->inventory;
 	}
 
 	protected function checkPairing() : void{
-		if($this->isPaired() and !$this->position->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->position->y, $this->pairZ))){
+		if($this->isPaired() && !$this->position->getWorld()->isInLoadedTerrain(new Vector3($this->pairX, $this->position->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
 
@@ -149,7 +139,7 @@ class Chest extends Spawnable implements Container, Nameable{
 				if($pair->doubleInventory !== null){
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
-					if(($pair->getPosition()->x + ($pair->getPosition()->z << 15)) > ($this->position->x + ($this->position->z << 15))){ //Order them correctly
+					if(($pair->position->x + ($pair->position->z << 15)) > ($this->position->x + ($this->position->z << 15))){ //Order them correctly
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair->inventory, $this->inventory);
 					}else{
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this->inventory, $pair->inventory);
@@ -167,7 +157,7 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	public function isPaired() : bool{
-		return $this->pairX !== null and $this->pairZ !== null;
+		return $this->pairX !== null && $this->pairZ !== null;
 	}
 
 	public function getPair() : ?Chest{
@@ -182,14 +172,14 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	public function pairWith(Chest $tile) : bool{
-		if($this->isPaired() or $tile->isPaired()){
+		if($this->isPaired() || $tile->isPaired()){
 			return false;
 		}
 
 		$this->createPair($tile);
 
-		$this->setDirty();
-		$tile->setDirty();
+		$this->clearSpawnCompoundCache();
+		$tile->clearSpawnCompoundCache();
 		$this->checkPairing();
 
 		return true;
@@ -211,12 +201,12 @@ class Chest extends Spawnable implements Container, Nameable{
 		$tile = $this->getPair();
 		$this->pairX = $this->pairZ = null;
 
-		$this->setDirty();
+		$this->clearSpawnCompoundCache();
 
 		if($tile instanceof Chest){
 			$tile->pairX = $tile->pairZ = null;
 			$tile->checkPairing();
-			$tile->setDirty();
+			$tile->clearSpawnCompoundCache();
 		}
 		$this->checkPairing();
 

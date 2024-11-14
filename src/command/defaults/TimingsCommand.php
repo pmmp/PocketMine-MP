@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,7 +35,8 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\utils\Utils;
-use Webmozart\PathUtil\Path;
+use pocketmine\YmlServerProperties;
+use Symfony\Component\Filesystem\Path;
 use function count;
 use function fclose;
 use function file_exists;
@@ -57,9 +58,9 @@ use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"timings",
 			KnownTranslationFactory::pocketmine_command_timings_description(),
 			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);
@@ -67,10 +68,6 @@ class TimingsCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -103,7 +100,7 @@ class TimingsCommand extends VanillaCommand{
 		if($mode === "reset"){
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
-		}elseif($mode === "merged" or $mode === "report" or $paste){
+		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$timings = "";
 			if($paste){
 				$fileTimings = Utils::assumeNotFalse(fopen("php://temp", "r+b"), "Opening php://temp should never fail");
@@ -134,7 +131,7 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$host = $sender->getServer()->getConfigGroup()->getPropertyString("timings.host", "timings.pmmp.io");
+				$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 
 				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
 					[new BulkCurlTaskOperation(
@@ -154,7 +151,7 @@ class TimingsCommand extends VanillaCommand{
 					)],
 					function(array $results) use ($sender, $host) : void{
 						/** @phpstan-var array<InternetRequestResult|InternetException> $results */
-						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
+						if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}
 						$result = $results[0];
@@ -167,6 +164,7 @@ class TimingsCommand extends VanillaCommand{
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
 								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
+							$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}

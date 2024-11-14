@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,10 +29,8 @@ use pocketmine\world\World;
 
 class Location extends Position{
 
-	/** @var float */
-	public $yaw;
-	/** @var float */
-	public $pitch;
+	public float $yaw;
+	public float $pitch;
 
 	public function __construct(float $x, float $y, float $z, ?World $world, float $yaw, float $pitch){
 		$this->yaw = $yaw;
@@ -68,7 +66,7 @@ class Location extends Position{
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Location){
-			return parent::equals($v) and $v->yaw == $this->yaw and $v->pitch == $this->pitch;
+			return parent::equals($v) && $v->yaw == $this->yaw && $v->pitch == $this->pitch;
 		}
 		return parent::equals($v);
 	}

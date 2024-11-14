@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,11 +36,11 @@ final class Git{
 	/**
 	 * Returns the git hash of the currently checked out head of the given repository, or null on failure.
 	 *
-	 * @param bool   $dirty reference parameter, set to whether the repo has local changes
+	 * @param bool $dirty reference parameter, set to whether the repo has local changes
 	 */
 	public static function getRepositoryState(string $dir, bool &$dirty) : ?string{
-		if(Process::execute("git -C \"$dir\" rev-parse HEAD", $out) === 0 and $out !== false and strlen($out = trim($out)) === 40){
-			if(Process::execute("git -C \"$dir\" diff --quiet") === 1 or Process::execute("git -C \"$dir\" diff --cached --quiet") === 1){ //Locally-modified
+		if(Process::execute("git -C \"$dir\" rev-parse HEAD", $out) === 0 && $out !== false && strlen($out = trim($out)) === 40){
+			if(Process::execute("git -C \"$dir\" diff --quiet") === 1 || Process::execute("git -C \"$dir\" diff --cached --quiet") === 1){ //Locally-modified
 				$dirty = true;
 			}
 			return $out;

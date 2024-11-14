@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,13 +30,7 @@ use function intdiv;
 use function min;
 
 class XpLevelUpSound implements Sound{
-
-	/** @var int */
-	private $xpLevel;
-
-	public function __construct(int $xpLevel){
-		$this->xpLevel = $xpLevel;
-	}
+	public function __construct(private int $xpLevel){}
 
 	public function getXpLevel() : int{
 		return $this->xpLevel;

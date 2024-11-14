@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,12 +30,7 @@ use pocketmine\event\Event;
 use pocketmine\plugin\Plugin;
 
 abstract class PluginEvent extends Event{
-	/** @var Plugin */
-	private $plugin;
-
-	public function __construct(Plugin $plugin){
-		$this->plugin = $plugin;
-	}
+	public function __construct(private Plugin $plugin){}
 
 	public function getPlugin() : Plugin{
 		return $this->plugin;

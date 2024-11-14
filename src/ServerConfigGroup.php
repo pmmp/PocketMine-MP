@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,29 +32,18 @@ use function is_string;
 use function strtolower;
 
 final class ServerConfigGroup{
-
-	/** @var Config */
-	private $pocketmineYml;
-	/** @var Config */
-	private $serverProperties;
-
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $propertyCache = [];
+	private array $propertyCache = [];
 
-	public function __construct(Config $pocketmineYml, Config $serverProperties){
-		$this->pocketmineYml = $pocketmineYml;
-		$this->serverProperties = $serverProperties;
-	}
+	public function __construct(
+		private Config $pocketmineYml,
+		private Config $serverProperties
+	){}
 
-	/**
-	 * @param mixed  $defaultValue
-	 *
-	 * @return mixed
-	 */
-	public function getProperty(string $variable, $defaultValue = null){
+	public function getProperty(string $variable, mixed $defaultValue = null) : mixed{
 		if(!array_key_exists($variable, $this->propertyCache)){
 			$v = getopt("", ["$variable::"]);
 			if(isset($v[$variable])){

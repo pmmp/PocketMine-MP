@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -39,6 +39,9 @@ class Cobweb extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+			return [$this->asItem()];
+		}
 		return [
 			VanillaItems::STRING()
 		];

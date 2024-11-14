@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -49,9 +49,13 @@ use function socket_strerror;
 use function strlen;
 use function time;
 use function trim;
+use const AF_INET;
 use const MSG_DONTROUTE;
 use const PHP_BINARY;
 use const PHP_INT_MAX;
+use const SOCK_DGRAM;
+use const SOL_UDP;
+use const STDIN;
 
 require_once 'vendor/autoload.php';
 
@@ -88,7 +92,7 @@ function ping_server(\Socket $socket, string $serverIp, int $serverPort, int $ti
 			\GlobalLogger::get()->error("Error reading from socket: " . socket_strerror(socket_last_error($socket)));
 			return false;
 		}
-		if($recvAddr === $serverIp and $recvPort === $serverPort and $recvBuffer !== "" and ord($recvBuffer[0]) === MessageIdentifiers::ID_UNCONNECTED_PONG){
+		if($recvAddr === $serverIp && $recvPort === $serverPort && $recvBuffer !== "" && ord($recvBuffer[0]) === MessageIdentifiers::ID_UNCONNECTED_PONG){
 			$pong = new UnconnectedPong();
 			$pong->decode(new PacketSerializer($recvBuffer));
 			\GlobalLogger::get()->info("--- Response received ---");

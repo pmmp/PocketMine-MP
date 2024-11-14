@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,13 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class LaunchSound implements Sound{
-
-	/** @var float */
-	private $pitch;
-
-	public function __construct(float $pitch = 0){
-		$this->pitch = $pitch;
-	}
+	public function __construct(private float $pitch = 0){}
 
 	public function getPitch() : float{
 		return $this->pitch;

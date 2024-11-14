@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,11 +33,11 @@ use pocketmine\event\CancellableTrait;
 abstract class BaseBlockChangeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	private Block $newState;
-
-	public function __construct(Block $block, Block $newState){
+	public function __construct(
+		Block $block,
+		private Block $newState
+	){
 		parent::__construct($block);
-		$this->newState = $newState;
 	}
 
 	public function getNewState() : Block{

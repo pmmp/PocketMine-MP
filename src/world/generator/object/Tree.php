@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,25 +33,16 @@ use pocketmine\world\ChunkManager;
 use function abs;
 
 abstract class Tree{
-	/** @var Block */
-	protected $trunkBlock;
-	/** @var Block */
-	protected $leafBlock;
-
-	/** @var int */
-	protected $treeHeight;
-
-	public function __construct(Block $trunkBlock, Block $leafBlock, int $treeHeight = 7){
-		$this->trunkBlock = $trunkBlock;
-		$this->leafBlock = $leafBlock;
-
-		$this->treeHeight = $treeHeight;
-	}
+	public function __construct(
+		protected Block $trunkBlock,
+		protected Block $leafBlock,
+		protected int $treeHeight = 7
+	){}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){
-			if($yy === 1 or $yy === $this->treeHeight){
+			if($yy === 1 || $yy === $this->treeHeight){
 				++$radiusToCheck;
 			}
 			for($xx = -$radiusToCheck; $xx < ($radiusToCheck + 1); ++$xx){
@@ -105,7 +96,7 @@ abstract class Tree{
 				$xOff = abs($xx - $x);
 				for($zz = $z - $mid; $zz <= $z + $mid; ++$zz){
 					$zOff = abs($zz - $z);
-					if($xOff === $mid and $zOff === $mid and ($yOff === 0 or $random->nextBoundedInt(2) === 0)){
+					if($xOff === $mid && $zOff === $mid && ($yOff === 0 || $random->nextBoundedInt(2) === 0)){
 						continue;
 					}
 					if(!$transaction->fetchBlockAt($xx, $yy, $zz)->isSolid()){
@@ -117,6 +108,6 @@ abstract class Tree{
 	}
 
 	protected function canOverride(Block $block) : bool{
-		return $block->canBeReplaced() or $block instanceof Sapling or $block instanceof Leaves;
+		return $block->canBeReplaced() || $block instanceof Sapling || $block instanceof Leaves;
 	}
 }

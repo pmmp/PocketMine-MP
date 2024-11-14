@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,6 +27,6 @@ use pocketmine\crafting\FurnaceType;
 
 class NormalFurnace extends Furnace{
 	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::FURNACE();
+		return FurnaceType::FURNACE;
 	}
 }
