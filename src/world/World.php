@@ -2183,7 +2183,7 @@ class World implements ChunkManager{
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if($ev->useBlock() and $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
+				if($ev->useBlock() && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 					return true;
 				}
 
