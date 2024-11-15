@@ -29,13 +29,13 @@ final class InfestedStone extends Opaque{
 
 	private int $imitated;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, Block $imitated){
-		parent::__construct($idInfo, $name, $breakInfo);
-		$this->imitated = $imitated->getFullId();
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, Block $imitated){
+		parent::__construct($idInfo, $name, $typeInfo);
+		$this->imitated = $imitated->getStateId();
 	}
 
 	public function getImitatedBlock() : Block{
-		return BlockFactory::getInstance()->fromFullBlock($this->imitated);
+		return RuntimeBlockStateRegistry::getInstance()->fromStateId($this->imitated);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

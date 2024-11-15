@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
-use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
@@ -50,7 +50,7 @@ use function is_array;
 class LoginPacketHandler extends PacketHandler{
 	/**
 	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
-	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void $authCallback
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void $authCallback
 	 */
 	public function __construct(
 		private Server $server,
@@ -63,7 +63,7 @@ class LoginPacketHandler extends PacketHandler{
 		$extraData = $this->fetchAuthData($packet->chainDataJwt);
 
 		if(!Player::isValidUserName($extraData->displayName)){
-			$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_INVALIDNAME);
+			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
 			return true;
 		}
@@ -71,10 +71,12 @@ class LoginPacketHandler extends PacketHandler{
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 
 		try{
-			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
+			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
-			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
-			$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_INVALIDSKIN);
+			$this->session->disconnectWithError(
+				reason: "Invalid skin: " . $e->getMessage(),
+				disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_invalidSkin()
+			);
 
 			return true;
 		}
@@ -83,6 +85,9 @@ class LoginPacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Invalid login UUID");
 		}
 		$uuid = Uuid::fromString($extraData->identity);
+		$arrClientData = (array) $clientData;
+		$arrClientData["TitleID"] = $extraData->titleId;
+
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
@@ -90,7 +95,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -98,7 +103,7 @@ class LoginPacketHandler extends PacketHandler{
 				$uuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				$arrClientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);
@@ -110,18 +115,27 @@ class LoginPacketHandler extends PacketHandler{
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL);
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_FULL, KnownTranslationFactory::disconnectionScreen_serverFull());
 		}
 		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_SERVER_WHITELISTED, KnownTranslationFactory::pocketmine_disconnect_whitelisted());
 		}
-		if($this->server->getNameBans()->isBanned($playerInfo->getUsername()) || $this->server->getIPBans()->isBanned($this->session->getIp())){
-			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
+
+		$banMessage = null;
+		if(($banEntry = $this->server->getNameBans()->getEntry($playerInfo->getUsername())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = $banReason === "" ? KnownTranslationFactory::pocketmine_disconnect_ban_noReason() : KnownTranslationFactory::pocketmine_disconnect_ban($banReason);
+		}elseif(($banEntry = $this->server->getIPBans()->getEntry($this->session->getIp())) !== null){
+			$banReason = $banEntry->getReason();
+			$banMessage = KnownTranslationFactory::pocketmine_disconnect_ban($banReason !== "" ? $banReason : KnownTranslationFactory::pocketmine_disconnect_ban_ip());
+		}
+		if($banMessage !== null){
+			$ev->setKickFlag(PlayerPreLoginEvent::KICK_FLAG_BANNED, $banMessage);
 		}
 
 		$ev->call();
 		if(!$ev->isAllowed()){
-			$this->session->disconnect($ev->getFinalKickMessage());
+			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
 			return true;
 		}
 
@@ -155,6 +169,7 @@ class LoginPacketHandler extends PacketHandler{
 				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
 				$mapper->bExceptionOnMissingData = true;
 				$mapper->bExceptionOnUndefinedProperty = true;
+				$mapper->bStrictObjectTypeChecking = true;
 				try{
 					/** @var AuthenticationData $extraData */
 					$extraData = $mapper->map($claims["extraData"], new AuthenticationData());
@@ -183,6 +198,7 @@ class LoginPacketHandler extends PacketHandler{
 		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
 		try{
 			$clientData = $mapper->map($clientDataClaims, new ClientData());
 		}catch(\JsonMapper_Exception $e){

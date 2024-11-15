@@ -24,19 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\format\io\SubChunkConverter;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 
 class Anvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
-	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkYZX(
+	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk{
+		return new SubChunk(Block::EMPTY_STATE_ID, [$this->palettizeLegacySubChunkYZX(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
-			self::readFixedSizeByteArray($subChunk, "Data", 2048)
-		)]);
+			self::readFixedSizeByteArray($subChunk, "Data", 2048),
+			$logger
+		)], $biomes3d);
 		//ignore legacy light information
 	}
 

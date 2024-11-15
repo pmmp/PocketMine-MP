@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
+use pocketmine\block\utils\PillarRotationTrait;
 
 class BoneBlock extends Opaque{
-	use PillarRotationInMetadataTrait;
+	use PillarRotationTrait;
 }

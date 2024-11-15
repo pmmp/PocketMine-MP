@@ -30,6 +30,7 @@ use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties as Yml;
 use Symfony\Component\Filesystem\Path;
 use function arsort;
 use function count;
@@ -109,7 +110,7 @@ class MemoryManager{
 	}
 
 	private function init(ServerConfigGroup $config) : void{
-		$this->memoryLimit = $config->getPropertyInt("memory.main-limit", 0) * 1024 * 1024;
+		$this->memoryLimit = $config->getPropertyInt(Yml::MEMORY_MAIN_LIMIT, 0) * 1024 * 1024;
 
 		$defaultMemory = 1024;
 
@@ -127,7 +128,7 @@ class MemoryManager{
 			}
 		}
 
-		$hardLimit = $config->getPropertyInt("memory.main-hard-limit", $defaultMemory);
+		$hardLimit = $config->getPropertyInt(Yml::MEMORY_MAIN_HARD_LIMIT, $defaultMemory);
 
 		if($hardLimit <= 0){
 			ini_set("memory_limit", '-1');
@@ -135,22 +136,22 @@ class MemoryManager{
 			ini_set("memory_limit", $hardLimit . "M");
 		}
 
-		$this->globalMemoryLimit = $config->getPropertyInt("memory.global-limit", 0) * 1024 * 1024;
-		$this->checkRate = $config->getPropertyInt("memory.check-rate", self::DEFAULT_CHECK_RATE);
-		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
+		$this->globalMemoryLimit = $config->getPropertyInt(Yml::MEMORY_GLOBAL_LIMIT, 0) * 1024 * 1024;
+		$this->checkRate = $config->getPropertyInt(Yml::MEMORY_CHECK_RATE, self::DEFAULT_CHECK_RATE);
+		$this->continuousTrigger = $config->getPropertyBool(Yml::MEMORY_CONTINUOUS_TRIGGER, true);
+		$this->continuousTriggerRate = $config->getPropertyInt(Yml::MEMORY_CONTINUOUS_TRIGGER_RATE, self::DEFAULT_CONTINUOUS_TRIGGER_RATE);
 
-		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", self::DEFAULT_TICKS_PER_GC);
-		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
-		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
+		$this->garbageCollectionPeriod = $config->getPropertyInt(Yml::MEMORY_GARBAGE_COLLECTION_PERIOD, self::DEFAULT_TICKS_PER_GC);
+		$this->garbageCollectionTrigger = $config->getPropertyBool(Yml::MEMORY_GARBAGE_COLLECTION_LOW_MEMORY_TRIGGER, true);
+		$this->garbageCollectionAsync = $config->getPropertyBool(Yml::MEMORY_GARBAGE_COLLECTION_COLLECT_ASYNC_WORKER, true);
 
-		$this->lowMemChunkRadiusOverride = $config->getPropertyInt("memory.max-chunks.chunk-radius", 4);
-		$this->lowMemChunkGC = $config->getPropertyBool("memory.max-chunks.trigger-chunk-collect", true);
+		$this->lowMemChunkRadiusOverride = $config->getPropertyInt(Yml::MEMORY_MAX_CHUNKS_CHUNK_RADIUS, 4);
+		$this->lowMemChunkGC = $config->getPropertyBool(Yml::MEMORY_MAX_CHUNKS_TRIGGER_CHUNK_COLLECT, true);
 
-		$this->lowMemDisableChunkCache = $config->getPropertyBool("memory.world-caches.disable-chunk-cache", true);
-		$this->lowMemClearWorldCache = $config->getPropertyBool("memory.world-caches.low-memory-trigger", true);
+		$this->lowMemDisableChunkCache = $config->getPropertyBool(Yml::MEMORY_WORLD_CACHES_DISABLE_CHUNK_CACHE, true);
+		$this->lowMemClearWorldCache = $config->getPropertyBool(Yml::MEMORY_WORLD_CACHES_LOW_MEMORY_TRIGGER, true);
 
-		$this->dumpWorkers = $config->getPropertyBool("memory.memory-dump.dump-async-worker", true);
+		$this->dumpWorkers = $config->getPropertyBool(Yml::MEMORY_MEMORY_DUMP_DUMP_ASYNC_WORKER, true);
 		gc_enable();
 	}
 
@@ -282,10 +283,8 @@ class MemoryManager{
 
 	/**
 	 * Static memory dumper accessible from any thread.
-	 *
-	 * @param mixed $startingObject
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
+	public static function dumpMemory(mixed $startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
@@ -316,9 +315,6 @@ class MemoryManager{
 					continue;
 				}
 
-				if(!$property->isPublic()){
-					$property->setAccessible(true);
-				}
 				if(!$property->isInitialized()){
 					continue;
 				}
@@ -364,7 +360,7 @@ class MemoryManager{
 			'_SESSION' => true
 		];
 
-		foreach(Utils::stringifyKeys($GLOBALS) as $varName => $value){
+		foreach($GLOBALS as $varName => $value){
 			if(isset($ignoredGlobals[$varName])){
 				continue;
 			}
@@ -442,9 +438,6 @@ class MemoryManager{
 									continue;
 								}
 							}
-							if(!$property->isPublic()){
-								$property->setAccessible(true);
-							}
 							if(!$property->isInitialized($object)){
 								continue;
 							}
@@ -476,7 +469,6 @@ class MemoryManager{
 	}
 
 	/**
-	 * @param mixed    $from
 	 * @param object[] $objects   reference parameter
 	 * @param int[]    $refCounts reference parameter
 	 *
@@ -484,10 +476,8 @@ class MemoryManager{
 	 * @phpstan-param array<string, int> $refCounts
 	 * @phpstan-param-out array<string, object> $objects
 	 * @phpstan-param-out array<string, int> $refCounts
-	 *
-	 * @return mixed
 	 */
-	private static function continueDump($from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize){
+	private static function continueDump(mixed $from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : mixed{
 		if($maxNesting <= 0){
 			return "(error) NESTING LIMIT REACHED";
 		}

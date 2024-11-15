@@ -37,9 +37,9 @@ use const SORT_STRING;
 
 class BanListCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"banlist",
 			KnownTranslationFactory::pocketmine_command_banlist_description(),
 			KnownTranslationFactory::commands_banlist_usage()
 		);
@@ -47,10 +47,6 @@ class BanListCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(isset($args[0])){
 			$args[0] = strtolower($args[0]);
 			if($args[0] === "ips"){

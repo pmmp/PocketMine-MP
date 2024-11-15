@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\SingletonTrait;
 
-final class LegacyEntityIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+final class LegacyEntityIdToStringIdMap extends LegacyToStringIdMap{
 	use SingletonTrait;
 
 	public function __construct(){

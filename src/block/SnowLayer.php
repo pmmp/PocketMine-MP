@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\event\block\BlockMeltEvent;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
@@ -46,16 +46,8 @@ class SnowLayer extends Flowable implements Fallable{
 
 	protected int $layers = self::MIN_LAYERS;
 
-	protected function writeStateToMeta() : int{
-		return $this->layers - 1;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->layers = BlockDataSerializer::readBoundedInt("layers", $stateMeta + 1, self::MIN_LAYERS, self::MAX_LAYERS);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
@@ -83,13 +75,13 @@ class SnowLayer extends Flowable implements Fallable{
 
 	public function getSupportType(int $facing) : SupportType{
 		if(!$this->canBeReplaced()){
-			return SupportType::FULL();
+			return SupportType::FULL;
 		}
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
-	private function canBeSupportedBy(Block $b) : bool{
-		return $b->getSupportType(Facing::UP)->equals(SupportType::FULL());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) === SupportType::FULL;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -99,7 +91,7 @@ class SnowLayer extends Flowable implements Fallable{
 			}
 			$this->layers = $blockReplace->layers + 1;
 		}
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+		if($this->canBeSupportedAt($blockReplace)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -113,16 +105,8 @@ class SnowLayer extends Flowable implements Fallable{
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
 		if($world->getBlockLightAt($this->position->x, $this->position->y, $this->position->z) >= 12){
-			$ev = new BlockMeltEvent($this, VanillaBlocks::AIR());
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::melt($this, VanillaBlocks::AIR());
 		}
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

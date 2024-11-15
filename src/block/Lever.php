@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -35,43 +36,12 @@ use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
 class Lever extends Flowable{
-	protected LeverFacing $facing;
+	protected LeverFacing $facing = LeverFacing::UP_AXIS_X;
 	protected bool $activated = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->facing = LeverFacing::UP_AXIS_X();
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	protected function writeStateToMeta() : int{
-		$rotationMeta = match($this->facing->id()){
-			LeverFacing::DOWN_AXIS_X()->id() => 0,
-			LeverFacing::EAST()->id() => 1,
-			LeverFacing::WEST()->id() => 2,
-			LeverFacing::SOUTH()->id() => 3,
-			LeverFacing::NORTH()->id() => 4,
-			LeverFacing::UP_AXIS_Z()->id() => 5,
-			LeverFacing::UP_AXIS_X()->id() => 6,
-			LeverFacing::DOWN_AXIS_Z()->id() => 7,
-			default => throw new AssumptionFailedError(),
-		};
-		return $rotationMeta | ($this->activated ? BlockLegacyMetadata::LEVER_FLAG_POWERED : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$rotationMeta = $stateMeta & 0x07;
-		$this->facing = match($rotationMeta){
-			0 => LeverFacing::DOWN_AXIS_X(),
-			1 => LeverFacing::EAST(),
-			2 => LeverFacing::WEST(),
-			3 => LeverFacing::SOUTH(),
-			4 => LeverFacing::NORTH(),
-			5 => LeverFacing::UP_AXIS_Z(),
-			6 => LeverFacing::UP_AXIS_X(),
-			7 => LeverFacing::DOWN_AXIS_Z(),
-		};
-
-		$this->activated = ($stateMeta & BlockLegacyMetadata::LEVER_FLAG_POWERED) !== 0;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->facing);
+		$w->bool($this->activated);
 	}
 
 	public function getFacing() : LeverFacing{ return $this->facing; }
@@ -90,12 +60,8 @@ class Lever extends Flowable{
 		return $this;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 
@@ -106,12 +72,12 @@ class Lever extends Flowable{
 			return $x;
 		};
 		$this->facing = match($face){
-			Facing::DOWN => $selectUpDownPos(LeverFacing::DOWN_AXIS_X(), LeverFacing::DOWN_AXIS_Z()),
-			Facing::UP => $selectUpDownPos(LeverFacing::UP_AXIS_X(), LeverFacing::UP_AXIS_Z()),
-			Facing::NORTH => LeverFacing::NORTH(),
-			Facing::SOUTH => LeverFacing::SOUTH(),
-			Facing::WEST => LeverFacing::WEST(),
-			Facing::EAST => LeverFacing::EAST(),
+			Facing::DOWN => $selectUpDownPos(LeverFacing::DOWN_AXIS_X, LeverFacing::DOWN_AXIS_Z),
+			Facing::UP => $selectUpDownPos(LeverFacing::UP_AXIS_X, LeverFacing::UP_AXIS_Z),
+			Facing::NORTH => LeverFacing::NORTH,
+			Facing::SOUTH => LeverFacing::SOUTH,
+			Facing::WEST => LeverFacing::WEST,
+			Facing::EAST => LeverFacing::EAST,
 			default => throw new AssumptionFailedError("Bad facing value"),
 		};
 
@@ -119,13 +85,12 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$facing = $this->facing->getFacing();
-		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($facing)), $facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->activated = !$this->activated;
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
@@ -136,8 +101,8 @@ class Lever extends Flowable{
 		return true;
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network;
 
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\NetworkSession;
 use function count;
 use function spl_object_id;
@@ -95,10 +96,13 @@ class NetworkSessionManager{
 
 	/**
 	 * Terminates all connected sessions with the given reason.
+	 *
+	 * @param Translatable|string      $reason                  Shown in the server log - this should be a short one-line message
+	 * @param Translatable|string|null $disconnectScreenMessage Shown on the player's disconnection screen (null will use the reason)
 	 */
-	public function close(string $reason = "") : void{
+	public function close(Translatable|string $reason = "", Translatable|string|null $disconnectScreenMessage = null) : void{
 		foreach($this->sessions as $session){
-			$session->disconnect($reason);
+			$session->disconnect($reason, $disconnectScreenMessage);
 		}
 		$this->sessions = [];
 	}

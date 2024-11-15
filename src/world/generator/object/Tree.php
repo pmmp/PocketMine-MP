@@ -33,20 +33,11 @@ use pocketmine\world\ChunkManager;
 use function abs;
 
 abstract class Tree{
-	/** @var Block */
-	protected $trunkBlock;
-	/** @var Block */
-	protected $leafBlock;
-
-	/** @var int */
-	protected $treeHeight;
-
-	public function __construct(Block $trunkBlock, Block $leafBlock, int $treeHeight = 7){
-		$this->trunkBlock = $trunkBlock;
-		$this->leafBlock = $leafBlock;
-
-		$this->treeHeight = $treeHeight;
-	}
+	public function __construct(
+		protected Block $trunkBlock,
+		protected Block $leafBlock,
+		protected int $treeHeight = 7
+	){}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;

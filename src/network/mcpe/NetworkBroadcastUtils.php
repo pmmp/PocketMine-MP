@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
@@ -56,13 +55,6 @@ final class NetworkBroadcastUtils{
 			if(count($sessions) === 0){
 				return false;
 			}
-
-			$ev = new DataPacketSendEvent($sessions, $packets);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
-			}
-			$sessions = $ev->getTargets();
 
 			/** @var PacketBroadcaster[] $uniqueBroadcasters */
 			$uniqueBroadcasters = [];

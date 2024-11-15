@@ -41,14 +41,14 @@ class Pickaxe extends TieredTool{
 		return $this->tier->getBaseAttackPoints() - 2;
 	}
 
-	public function onDestroyBlock(Block $block) : bool{
+	public function onDestroyBlock(Block $block, array &$returnedItems) : bool{
 		if(!$block->getBreakInfo()->breaksInstantly()){
 			return $this->applyDamage(1);
 		}
 		return false;
 	}
 
-	public function onAttackEntity(Entity $victim) : bool{
+	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{
 		return $this->applyDamage(2);
 	}
 }

@@ -24,67 +24,50 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
-use function file_get_contents;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
+use function implode;
 use function is_array;
+use function is_int;
+use function is_string;
 use function json_decode;
+use function log;
+use const JSON_THROW_ON_ERROR;
 
 class BlockTest extends TestCase{
 
-	/** @var BlockFactory */
+	/** @var RuntimeBlockStateRegistry */
 	private $blockFactory;
 
 	public function setUp() : void{
-		$this->blockFactory = new BlockFactory();
+		$this->blockFactory = new RuntimeBlockStateRegistry();
 	}
 
 	/**
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockTypeIds::COBBLESTONE), "Cobblestone", new BlockTypeInfo(BlockBreakInfo::instant()));
 		$this->expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register($block);
-	}
-
-	/**
-	 * Test registering a block deliberately overwriting another block works as expected
-	 */
-	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
-		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId(), 0));
 	}
 
 	/**
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		for($i = 0; $i < 256; ++$i){
-			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i, 0), "Strange New Block", BlockBreakInfo::instant());
-				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId(), 0));
-				return;
-			}
-		}
-
-		throw new \RuntimeException("Can't test registering new blocks because no unused spaces left");
-	}
-
-	/**
-	 * Verifies that blocks with IDs larger than 255 can't be registered
-	 */
-	public function testRegisterIdTooLarge() : void{
-		self::expectException(\RuntimeException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(25555, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
+		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$this->blockFactory->register($b);
+		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
 
 	/**
 	 * Verifies that blocks with IDs smaller than 0 can't be registered
 	 */
 	public function testRegisterIdTooSmall() : void{
-		self::expectException(\RuntimeException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
+		self::expectException(\InvalidArgumentException::class);
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", new BlockTypeInfo(BlockBreakInfo::instant())));
 	}
 
 	/**
@@ -93,41 +76,10 @@ class BlockTest extends TestCase{
 	 * instances which would hold position data and other things, so it's necessary to clone them to avoid astonishing behaviour.
 	 */
 	public function testBlockFactoryClone() : void{
-		for($i = 0; $i < 256; ++$i){
-			$b1 = $this->blockFactory->get($i, 0);
-			$b2 = $this->blockFactory->get($i, 0);
+		foreach($this->blockFactory->getAllKnownStates() as $k => $state){
+			$b1 = $this->blockFactory->fromStateId($k);
+			$b2 = $this->blockFactory->fromStateId($k);
 			self::assertNotSame($b1, $b2);
-		}
-	}
-
-	/**
-	 * @return int[][]
-	 * @phpstan-return list<array{int,int}>
-	 */
-	public function blockGetProvider() : array{
-		return [
-			[BlockLegacyIds::STONE, 5],
-			[BlockLegacyIds::GOLD_BLOCK, 0],
-			[BlockLegacyIds::WOODEN_PLANKS, 5],
-			[BlockLegacyIds::SAND, 0],
-			[BlockLegacyIds::GOLD_BLOCK, 0]
-		];
-	}
-
-	/**
-	 * @dataProvider blockGetProvider
-	 */
-	public function testBlockGet(int $id, int $meta) : void{
-		$block = $this->blockFactory->get($id, $meta);
-
-		self::assertEquals($id, $block->getId());
-		self::assertEquals($meta, $block->getMeta());
-	}
-
-	public function testBlockIds() : void{
-		for($i = 0; $i < 256; ++$i){
-			$b = $this->blockFactory->get($i, 0);
-			self::assertContains($i, $b->getIdInfo()->getAllBlockIds());
 		}
 	}
 
@@ -137,37 +89,96 @@ class BlockTest extends TestCase{
 	 */
 	public function testLightFiltersValid() : void{
 		foreach($this->blockFactory->lightFilter as $id => $value){
-			self::assertNotNull($value, "Light filter value missing for $id");
 			self::assertLessThanOrEqual(15, $value, "Light filter value for $id is larger than the expected 15");
 			self::assertGreaterThan(0, $value, "Light filter value for $id must be larger than 0");
 		}
 	}
 
-	public function testConsistency() : void{
-		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
-		if(!is_array($list)){
-			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
-		}
-		$knownStates = $list["knownStates"];
-		$remaps = $list["remaps"];
+	/**
+	 * @return int[]
+	 * @phpstan-return array<string, int>
+	 */
+	public static function computeConsistencyCheckTable(RuntimeBlockStateRegistry $blockStateRegistry) : array{
+		$newTable = [];
 
-		$states = $this->blockFactory->getAllKnownStates();
-		foreach($states as $k => $state){
-			if($state->getFullId() !== $k){
-				self::assertArrayHasKey($k, $remaps, "New remap of state $k (" . $state->getName() . ") - consistency check may need regenerating");
-				self::assertSame($state->getFullId(), $remaps[$k], "Mismatched full IDs of remapped state $k");
-			}else{
-				self::assertArrayHasKey($k, $knownStates, "New block state $k (" . $state->getName() . ") - consistency check may need regenerating");
-				self::assertSame($knownStates[$k], $state->getName());
+		$idNameLookup = [];
+		//if we ever split up block registration into multiple registries (e.g. separating chemistry blocks),
+		//we'll need to ensure those additional registries are also included here
+		foreach(Utils::stringifyKeys(VanillaBlocks::getAll()) as $name => $blockType){
+			$id = $blockType->getTypeId();
+			if(isset($idNameLookup[$id])){
+				throw new AssumptionFailedError("TypeID $name collides with " . $idNameLookup[$id]);
+			}
+			$idNameLookup[$id] = $name;
+		}
+
+		foreach($blockStateRegistry->getAllKnownStates() as $index => $block){
+			if($index !== $block->getStateId()){
+				throw new AssumptionFailedError("State index should always match state ID");
+			}
+			$idName = $idNameLookup[$block->getTypeId()];
+			$newTable[$idName] = ($newTable[$idName] ?? 0) + 1;
+		}
+
+		return $newTable;
+	}
+
+	/**
+	 * @phpstan-param array<string, int> $actual
+	 *
+	 * @return string[]
+	 */
+	public static function computeConsistencyCheckDiff(string $expectedFile, array $actual) : array{
+		$expected = json_decode(Filesystem::fileGetContents($expectedFile), true, 2, JSON_THROW_ON_ERROR);
+		if(!is_array($expected)){
+			throw new AssumptionFailedError("Old table should be array<string, int>");
+		}
+
+		$errors = [];
+		foreach($expected as $typeName => $numStates){
+			if(!is_string($typeName) || !is_int($numStates)){
+				throw new AssumptionFailedError("Old table should be array<string, int>");
+			}
+			if(!isset($actual[$typeName])){
+				$errors[] = "Removed block type $typeName ($numStates permutations)";
+			}elseif($actual[$typeName] !== $numStates){
+				$errors[] = "Block type $typeName permutation count changed: $numStates -> " . $actual[$typeName];
 			}
 		}
-		foreach($knownStates as $k => $name){
-			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k ($name)");
-			self::assertSame($name, $states[$k]->getName());
+		foreach(Utils::stringifyKeys($actual) as $typeName => $numStates){
+			if(!isset($expected[$typeName])){
+				$errors[] = "Added block type $typeName (" . $actual[$typeName] . " permutations)";
+			}
 		}
-		foreach($remaps as $origin => $destination){
-			self::assertArrayHasKey($origin, $states, "Missing previously-remapped state $origin");
-			self::assertSame($destination, $states[$origin]->getFullId());
-		}
+
+		return $errors;
+	}
+
+	public function testConsistency() : void{
+		$newTable = self::computeConsistencyCheckTable($this->blockFactory);
+		$errors = self::computeConsistencyCheckDiff(__DIR__ . '/block_factory_consistency_check.json', $newTable);
+
+		self::assertEmpty($errors, "Block factory consistency check failed:\n" . implode("\n", $errors));
+	}
+
+	public function testEmptyStateId() : void{
+		$block = $this->blockFactory->fromStateId(Block::EMPTY_STATE_ID);
+		self::assertInstanceOf(Air::class, $block);
+	}
+
+	public function testStateDataSizeNotTooLarge() : void{
+		$typeIdBitsMin = ((int) log(BlockTypeIds::FIRST_UNUSED_BLOCK_ID, 2)) + 1;
+
+		$typeIdBitsMin++; //for custom blocks
+
+		self::assertLessThanOrEqual(32, Block::INTERNAL_STATE_DATA_BITS + $typeIdBitsMin, "State data size cannot be larger than " . (32 - $typeIdBitsMin) . " bits (need at least $typeIdBitsMin bits for block type ID)");
+	}
+
+	public function testAsItemFromItem() : void{
+		$block = VanillaBlocks::FLOWER_POT();
+		$item = $block->asItem();
+		$defaultBlock = $item->getBlock();
+		$item2 = $defaultBlock->asItem();
+		self::assertTrue($item2->equalsExact($item));
 	}
 }

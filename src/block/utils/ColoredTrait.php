@@ -23,9 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+
 trait ColoredTrait{
 	/** @var DyeColor */
-	private $color;
+	private $color = DyeColor::WHITE;
+
+	/** @see Block::describeBlockItemState() */
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->color);
+	}
 
 	public function getColor() : DyeColor{ return $this->color; }
 

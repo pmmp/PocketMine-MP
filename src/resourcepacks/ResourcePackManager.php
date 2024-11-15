@@ -155,6 +155,13 @@ class ResourcePackManager{
 	}
 
 	/**
+	 * Sets whether players must accept resource packs in order to join.
+	 */
+	public function setResourcePacksRequired(bool $value) : void{
+		$this->serverForceResources = $value;
+	}
+
+	/**
 	 * Returns an array of resource packs in use, sorted in order of priority.
 	 * @return ResourcePack[]
 	 */

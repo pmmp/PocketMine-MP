@@ -26,11 +26,11 @@ namespace pocketmine\world\format\io\data;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
@@ -45,31 +45,47 @@ use const ZLIB_ENCODING_GZIP;
 
 class JavaWorldData extends BaseNbtWorldData{
 
+	private const TAG_DAY_TIME = "DayTime";
+	private const TAG_DIFFICULTY = "Difficulty";
+	private const TAG_FORMAT_VERSION = "version";
+	private const TAG_GAME_RULES = "GameRules";
+	private const TAG_GAME_TYPE = "GameType";
+	private const TAG_GENERATOR_VERSION = "generatorVersion";
+	private const TAG_HARDCORE = "hardcore";
+	private const TAG_INITIALIZED = "initialized";
+	private const TAG_LAST_PLAYED = "LastPlayed";
+	private const TAG_RAINING = "raining";
+	private const TAG_RAIN_TIME = "rainTime";
+	private const TAG_ROOT_DATA = "Data";
+	private const TAG_SIZE_ON_DISK = "SizeOnDisk";
+	private const TAG_THUNDERING = "thundering";
+	private const TAG_THUNDER_TIME = "thunderTime";
+
 	public static function generate(string $path, string $name, WorldCreationOptions $options, int $version = 19133) : void{
 		//TODO, add extra details
 
 		$worldData = CompoundTag::create()
-			->setByte("hardcore", 0)
-			->setByte("Difficulty", $options->getDifficulty())
-			->setByte("initialized", 1)
-			->setInt("GameType", 0)
-			->setInt("generatorVersion", 1) //2 in MCPE
-			->setInt("SpawnX", $options->getSpawnPosition()->getFloorX())
-			->setInt("SpawnY", $options->getSpawnPosition()->getFloorY())
-			->setInt("SpawnZ", $options->getSpawnPosition()->getFloorZ())
-			->setInt("version", $version)
-			->setInt("DayTime", 0)
-			->setLong("LastPlayed", (int) (microtime(true) * 1000))
-			->setLong("RandomSeed", $options->getSeed())
-			->setLong("SizeOnDisk", 0)
-			->setLong("Time", 0)
-			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($options->getGeneratorClass()))
-			->setString("generatorOptions", $options->getGeneratorOptions())
-			->setString("LevelName", $name)
-			->setTag("GameRules", new CompoundTag());
+			->setByte(self::TAG_HARDCORE, 0)
+			->setByte(self::TAG_DIFFICULTY, $options->getDifficulty())
+			->setByte(self::TAG_INITIALIZED, 1)
+			->setInt(self::TAG_GAME_TYPE, 0)
+			->setInt(self::TAG_GENERATOR_VERSION, 1) //2 in MCPE
+			->setInt(self::TAG_SPAWN_X, $options->getSpawnPosition()->getFloorX())
+			->setInt(self::TAG_SPAWN_Y, $options->getSpawnPosition()->getFloorY())
+			->setInt(self::TAG_SPAWN_Z, $options->getSpawnPosition()->getFloorZ())
+			->setInt(self::TAG_FORMAT_VERSION, $version)
+			->setInt(self::TAG_DAY_TIME, 0)
+			->setLong(self::TAG_LAST_PLAYED, (int) (microtime(true) * 1000))
+			->setLong(self::TAG_RANDOM_SEED, $options->getSeed())
+			->setLong(self::TAG_SIZE_ON_DISK, 0)
+			->setLong(self::TAG_TIME, 0)
+			->setString(self::TAG_GENERATOR_NAME, GeneratorManager::getInstance()->getGeneratorName($options->getGeneratorClass()))
+			->setString(self::TAG_GENERATOR_OPTIONS, $options->getGeneratorOptions())
+			->setString(self::TAG_LEVEL_NAME, $name)
+			->setTag(self::TAG_GAME_RULES, new CompoundTag());
 
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $worldData))), ZLIB_ENCODING_GZIP);
+		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag(self::TAG_ROOT_DATA, $worldData))), ZLIB_ENCODING_GZIP);
 		file_put_contents(Path::join($path, "level.dat"), $buffer);
 	}
 
@@ -90,79 +106,71 @@ class JavaWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 
-		$dataTag = $worldData->getTag("Data");
+		$dataTag = $worldData->getTag(self::TAG_ROOT_DATA);
 		if(!($dataTag instanceof CompoundTag)){
-			throw new CorruptedWorldException("Missing 'Data' key or wrong type");
+			throw new CorruptedWorldException("Missing '" . self::TAG_ROOT_DATA . "' key or wrong type");
 		}
 		return $dataTag;
 	}
 
 	protected function fix() : void{
-		$generatorNameTag = $this->compoundTag->getTag("generatorName");
+		$generatorNameTag = $this->compoundTag->getTag(self::TAG_GENERATOR_NAME);
 		if(!($generatorNameTag instanceof StringTag)){
-			$this->compoundTag->setString("generatorName", "default");
+			$this->compoundTag->setString(self::TAG_GENERATOR_NAME, "default");
 		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($generatorNameTag->getValue())) !== null){
-			$this->compoundTag->setString("generatorName", $generatorName);
+			$this->compoundTag->setString(self::TAG_GENERATOR_NAME, $generatorName);
 		}
 
-		if(!($this->compoundTag->getTag("generatorOptions") instanceof StringTag)){
-			$this->compoundTag->setString("generatorOptions", "");
+		if(!($this->compoundTag->getTag(self::TAG_GENERATOR_OPTIONS) instanceof StringTag)){
+			$this->compoundTag->setString(self::TAG_GENERATOR_OPTIONS, "");
 		}
 	}
 
 	public function save() : void{
+		$this->compoundTag->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
+
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP));
+		$buffer = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag(self::TAG_ROOT_DATA, $this->compoundTag))), ZLIB_ENCODING_GZIP));
 		Filesystem::safeFilePutContents($this->dataPath, $buffer);
 	}
 
 	public function getDifficulty() : int{
-		return $this->compoundTag->getByte("Difficulty", World::DIFFICULTY_NORMAL);
+		return $this->compoundTag->getByte(self::TAG_DIFFICULTY, World::DIFFICULTY_NORMAL);
 	}
 
 	public function setDifficulty(int $difficulty) : void{
-		$this->compoundTag->setByte("Difficulty", $difficulty);
+		$this->compoundTag->setByte(self::TAG_DIFFICULTY, $difficulty);
 	}
 
 	public function getRainTime() : int{
-		return $this->compoundTag->getInt("rainTime", 0);
+		return $this->compoundTag->getInt(self::TAG_RAIN_TIME, 0);
 	}
 
 	public function setRainTime(int $ticks) : void{
-		$this->compoundTag->setInt("rainTime", $ticks);
+		$this->compoundTag->setInt(self::TAG_RAIN_TIME, $ticks);
 	}
 
 	public function getRainLevel() : float{
-		if(($rainLevelTag = $this->compoundTag->getTag("rainLevel")) instanceof FloatTag){ //PocketMine/MCPE
-			return $rainLevelTag->getValue();
-		}
-
-		return (float) $this->compoundTag->getByte("raining", 0); //PC vanilla
+		return (float) $this->compoundTag->getByte(self::TAG_RAINING, 0);
 	}
 
 	public function setRainLevel(float $level) : void{
-		$this->compoundTag->setFloat("rainLevel", $level); //PocketMine/MCPE
-		$this->compoundTag->setByte("raining", (int) ceil($level)); //PC vanilla
+		$this->compoundTag->setByte(self::TAG_RAINING, (int) ceil($level));
 	}
 
 	public function getLightningTime() : int{
-		return $this->compoundTag->getInt("thunderTime", 0);
+		return $this->compoundTag->getInt(self::TAG_THUNDER_TIME, 0);
 	}
 
 	public function setLightningTime(int $ticks) : void{
-		$this->compoundTag->setInt("thunderTime", $ticks);
+		$this->compoundTag->setInt(self::TAG_THUNDER_TIME, $ticks);
 	}
 
 	public function getLightningLevel() : float{
-		if(($lightningLevelTag = $this->compoundTag->getTag("lightningLevel")) instanceof FloatTag){ //PocketMine/MCPE
-			return $lightningLevelTag->getValue();
-		}
-
-		return (float) $this->compoundTag->getByte("thundering", 0); //PC vanilla
+		return (float) $this->compoundTag->getByte(self::TAG_THUNDERING, 0);
 	}
 
 	public function setLightningLevel(float $level) : void{
-		$this->compoundTag->setFloat("lightningLevel", $level); //PocketMine/MCPE
-		$this->compoundTag->setByte("thundering", (int) ceil($level)); //PC vanilla
+		$this->compoundTag->setByte(self::TAG_THUNDERING, (int) ceil($level));
 	}
 }

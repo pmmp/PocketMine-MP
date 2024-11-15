@@ -59,7 +59,22 @@ abstract class StringToTParser{
 	}
 
 	/**
-	 * Tries to parse the specified string into an enchantment.
+	 * Registers a new alias for an existing known alias.
+	 */
+	public function registerAlias(string $existing, string $alias) : void{
+		$existingKey = $this->reprocess($existing);
+		if(!isset($this->callbackMap[$existingKey])){
+			throw new \InvalidArgumentException("Cannot register new alias for unknown existing alias \"$existing\"");
+		}
+		$newKey = $this->reprocess($alias);
+		if(isset($this->callbackMap[$newKey])){
+			throw new \InvalidArgumentException("Alias \"$newKey\" is already registered");
+		}
+		$this->callbackMap[$newKey] = $this->callbackMap[$existingKey];
+	}
+
+	/**
+	 * Tries to parse the specified string into a corresponding instance of T.
 	 * @phpstan-return T|null
 	 */
 	public function parse(string $input){

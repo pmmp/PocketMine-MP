@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.24.0
+        uses: shivammathur/setup-php@2.31.1
         with:
-          php-version: 8.0
+          php-version: 8.2
 
       - name: Restore Composer package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cache/composer/files

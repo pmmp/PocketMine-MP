@@ -41,15 +41,9 @@ use function preg_match;
 use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
-
-	/** @var string */
-	protected $path;
-
-	/** @var Manifest */
-	protected $manifest;
-
-	/** @var string|null */
-	protected $sha256 = null;
+	protected string $path;
+	protected Manifest $manifest;
+	protected ?string $sha256 = null;
 
 	/** @var resource */
 	protected $fileResource;
@@ -114,6 +108,7 @@ class ZippedResourcePack implements ResourcePack{
 
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
+		$mapper->bStrictObjectTypeChecking = true;
 
 		try{
 			/** @var Manifest $manifest */
@@ -159,6 +154,9 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getPackChunk(int $start, int $length) : string{
+		if($length < 1){
+			throw new \InvalidArgumentException("Pack length must be positive");
+		}
 		fseek($this->fileResource, $start);
 		if(feof($this->fileResource)){
 			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");

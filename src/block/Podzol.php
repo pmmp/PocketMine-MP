@@ -27,6 +27,10 @@ use pocketmine\item\Item;
 
 class Podzol extends Opaque{
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaBlocks::DIRT()->asItem()

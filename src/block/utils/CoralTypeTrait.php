@@ -23,10 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-trait CoralTypeTrait{
+use pocketmine\block\Block;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
-	protected CoralType $coralType;
+trait CoralTypeTrait{
+	protected CoralType $coralType = CoralType::TUBE;
 	protected bool $dead = false;
+
+	/** @see Block::describeBlockItemState() */
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->coralType);
+		$w->bool($this->dead);
+	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
 

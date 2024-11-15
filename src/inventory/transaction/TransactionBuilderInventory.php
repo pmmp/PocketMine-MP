@@ -50,6 +50,10 @@ final class TransactionBuilderInventory extends BaseInventory{
 		$this->changedSlots = new \SplFixedArray($this->actualInventory->getSize());
 	}
 
+	public function getActualInventory() : Inventory{
+		return $this->actualInventory;
+	}
+
 	protected function internalSetContents(array $items) : void{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			if(!isset($items[$i])){

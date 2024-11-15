@@ -33,9 +33,9 @@ use function inet_pton;
 
 class PardonIpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"pardon-ip",
 			KnownTranslationFactory::pocketmine_command_unban_ip_description(),
 			KnownTranslationFactory::commands_unbanip_usage(),
 			["unban-ip"]
@@ -44,10 +44,6 @@ class PardonIpCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}

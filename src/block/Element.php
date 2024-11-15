@@ -27,12 +27,12 @@ class Element extends Opaque{
 	public function __construct(
 		BlockIdentifier $idInfo,
 		string $name,
-		BlockBreakInfo $breakInfo,
+		BlockTypeInfo $typeInfo,
 		private string $symbol,
 		private int $atomicWeight,
 		private int $group
 	){
-		parent::__construct($idInfo, $name, $breakInfo);
+		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
 	public function getAtomicWeight() : int{

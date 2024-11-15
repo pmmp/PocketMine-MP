@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock;
 use pocketmine\block\utils\BannerPatternType;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
+use function spl_object_id;
 
 final class BannerPatternTypeIdMap{
 	use SingletonTrait;
@@ -42,49 +43,57 @@ final class BannerPatternTypeIdMap{
 	private array $enumToId = [];
 
 	public function __construct(){
-		$this->register("bo", BannerPatternType::BORDER());
-		$this->register("bri", BannerPatternType::BRICKS());
-		$this->register("mc", BannerPatternType::CIRCLE());
-		$this->register("cre", BannerPatternType::CREEPER());
-		$this->register("cr", BannerPatternType::CROSS());
-		$this->register("cbo", BannerPatternType::CURLY_BORDER());
-		$this->register("lud", BannerPatternType::DIAGONAL_LEFT());
-		$this->register("rd", BannerPatternType::DIAGONAL_RIGHT());
-		$this->register("ld", BannerPatternType::DIAGONAL_UP_LEFT());
-		$this->register("rud", BannerPatternType::DIAGONAL_UP_RIGHT());
-		$this->register("flo", BannerPatternType::FLOWER());
-		$this->register("gra", BannerPatternType::GRADIENT());
-		$this->register("gru", BannerPatternType::GRADIENT_UP());
-		$this->register("hh", BannerPatternType::HALF_HORIZONTAL());
-		$this->register("hhb", BannerPatternType::HALF_HORIZONTAL_BOTTOM());
-		$this->register("vh", BannerPatternType::HALF_VERTICAL());
-		$this->register("vhr", BannerPatternType::HALF_VERTICAL_RIGHT());
-		$this->register("moj", BannerPatternType::MOJANG());
-		$this->register("mr", BannerPatternType::RHOMBUS());
-		$this->register("sku", BannerPatternType::SKULL());
-		$this->register("ss", BannerPatternType::SMALL_STRIPES());
-		$this->register("bl", BannerPatternType::SQUARE_BOTTOM_LEFT());
-		$this->register("br", BannerPatternType::SQUARE_BOTTOM_RIGHT());
-		$this->register("tl", BannerPatternType::SQUARE_TOP_LEFT());
-		$this->register("tr", BannerPatternType::SQUARE_TOP_RIGHT());
-		$this->register("sc", BannerPatternType::STRAIGHT_CROSS());
-		$this->register("bs", BannerPatternType::STRIPE_BOTTOM());
-		$this->register("cs", BannerPatternType::STRIPE_CENTER());
-		$this->register("dls", BannerPatternType::STRIPE_DOWNLEFT());
-		$this->register("drs", BannerPatternType::STRIPE_DOWNRIGHT());
-		$this->register("ls", BannerPatternType::STRIPE_LEFT());
-		$this->register("ms", BannerPatternType::STRIPE_MIDDLE());
-		$this->register("rs", BannerPatternType::STRIPE_RIGHT());
-		$this->register("ts", BannerPatternType::STRIPE_TOP());
-		$this->register("bt", BannerPatternType::TRIANGLE_BOTTOM());
-		$this->register("tt", BannerPatternType::TRIANGLE_TOP());
-		$this->register("bts", BannerPatternType::TRIANGLES_BOTTOM());
-		$this->register("tts", BannerPatternType::TRIANGLES_TOP());
+		foreach(BannerPatternType::cases() as $case){
+			$this->register(match($case){
+				BannerPatternType::BORDER => "bo",
+				BannerPatternType::BRICKS => "bri",
+				BannerPatternType::CIRCLE => "mc",
+				BannerPatternType::CREEPER => "cre",
+				BannerPatternType::CROSS => "cr",
+				BannerPatternType::CURLY_BORDER => "cbo",
+				BannerPatternType::DIAGONAL_LEFT => "lud",
+				BannerPatternType::DIAGONAL_RIGHT => "rd",
+				BannerPatternType::DIAGONAL_UP_LEFT => "ld",
+				BannerPatternType::DIAGONAL_UP_RIGHT => "rud",
+				BannerPatternType::FLOWER => "flo",
+				BannerPatternType::FLOW => "flw",
+				BannerPatternType::GLOBE => "glb",
+				BannerPatternType::GRADIENT => "gra",
+				BannerPatternType::GRADIENT_UP => "gru",
+				BannerPatternType::GUSTER => "gus",
+				BannerPatternType::HALF_HORIZONTAL => "hh",
+				BannerPatternType::HALF_HORIZONTAL_BOTTOM => "hhb",
+				BannerPatternType::HALF_VERTICAL => "vh",
+				BannerPatternType::HALF_VERTICAL_RIGHT => "vhr",
+				BannerPatternType::MOJANG => "moj",
+				BannerPatternType::PIGLIN => "pig",
+				BannerPatternType::RHOMBUS => "mr",
+				BannerPatternType::SKULL => "sku",
+				BannerPatternType::SMALL_STRIPES => "ss",
+				BannerPatternType::SQUARE_BOTTOM_LEFT => "bl",
+				BannerPatternType::SQUARE_BOTTOM_RIGHT => "br",
+				BannerPatternType::SQUARE_TOP_LEFT => "tl",
+				BannerPatternType::SQUARE_TOP_RIGHT => "tr",
+				BannerPatternType::STRAIGHT_CROSS => "sc",
+				BannerPatternType::STRIPE_BOTTOM => "bs",
+				BannerPatternType::STRIPE_CENTER => "cs",
+				BannerPatternType::STRIPE_DOWNLEFT => "dls",
+				BannerPatternType::STRIPE_DOWNRIGHT => "drs",
+				BannerPatternType::STRIPE_LEFT => "ls",
+				BannerPatternType::STRIPE_MIDDLE => "ms",
+				BannerPatternType::STRIPE_RIGHT => "rs",
+				BannerPatternType::STRIPE_TOP => "ts",
+				BannerPatternType::TRIANGLE_BOTTOM => "bt",
+				BannerPatternType::TRIANGLE_TOP => "tt",
+				BannerPatternType::TRIANGLES_BOTTOM => "bts",
+				BannerPatternType::TRIANGLES_TOP => "tts",
+			}, $case);
+		}
 	}
 
 	public function register(string $stringId, BannerPatternType $type) : void{
 		$this->idToEnum[$stringId] = $type;
-		$this->enumToId[$type->id()] = $stringId;
+		$this->enumToId[spl_object_id($type)] = $stringId;
 	}
 
 	public function fromId(string $id) : ?BannerPatternType{
@@ -92,9 +101,10 @@ final class BannerPatternTypeIdMap{
 	}
 
 	public function toId(BannerPatternType $type) : string{
-		if(!array_key_exists($type->id(), $this->enumToId)){
-			throw new \InvalidArgumentException("Missing mapping for banner pattern type " . $type->name());
+		$k = spl_object_id($type);
+		if(!array_key_exists($k, $this->enumToId)){
+			throw new \InvalidArgumentException("Missing mapping for banner pattern type " . $type->name);
 		}
-		return $this->enumToId[$type->id()];
+		return $this->enumToId[$k];
 	}
 }

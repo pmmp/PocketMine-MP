@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
@@ -37,12 +37,13 @@ use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 use pocketmine\resourcepacks\ResourcePack;
-use pocketmine\resourcepacks\ResourcePackManager;
+use function array_keys;
 use function array_map;
 use function ceil;
 use function count;
 use function implode;
 use function strpos;
+use function strtolower;
 use function substr;
 
 /**
@@ -50,50 +51,89 @@ use function substr;
  * packs to the client.
  */
 class ResourcePacksPacketHandler extends PacketHandler{
-	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
+	private const PACK_CHUNK_SIZE = 256 * 1024; //256KB
+
+	/**
+	 * Larger values allow downloading more chunks at the same time, increasing download speed, but the client may choke
+	 * and cause the download speed to drop (due to ACKs taking too long to arrive).
+	 */
+	private const MAX_CONCURRENT_CHUNK_REQUESTS = 1;
+
+	/**
+	 * @var ResourcePack[]
+	 * @phpstan-var array<string, ResourcePack>
+	 */
+	private array $resourcePacksById = [];
 
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private array $downloadedChunks = [];
 
+	/** @phpstan-var \SplQueue<array{ResourcePack, int}> */
+	private \SplQueue $requestQueue;
+
+	private int $activeRequests = 0;
+
 	/**
-	 * @phpstan-param \Closure() : void $completionCallback
+	 * @param ResourcePack[] $resourcePackStack
+	 * @param string[]       $encryptionKeys    pack UUID => key, leave unset for any packs that are not encrypted
+	 *
+	 * @phpstan-param list<ResourcePack>    $resourcePackStack
+	 * @phpstan-param array<string, string> $encryptionKeys
+	 * @phpstan-param \Closure() : void     $completionCallback
 	 */
 	public function __construct(
 		private NetworkSession $session,
-		private ResourcePackManager $resourcePackManager,
+		private array $resourcePackStack,
+		private array $encryptionKeys,
+		private bool $mustAccept,
 		private \Closure $completionCallback
-	){}
+	){
+		$this->requestQueue = new \SplQueue();
+		foreach($resourcePackStack as $pack){
+			$this->resourcePacksById[$pack->getPackId()] = $pack;
+		}
+	}
+
+	private function getPackById(string $id) : ?ResourcePack{
+		return $this->resourcePacksById[strtolower($id)] ?? null;
+	}
 
 	public function setUp() : void{
 		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
 			//TODO: more stuff
-			$encryptionKey = $this->resourcePackManager->getPackEncryptionKey($pack->getPackId());
 
 			return new ResourcePackInfoEntry(
 				$pack->getPackId(),
 				$pack->getPackVersion(),
 				$pack->getPackSize(),
-				$encryptionKey ?? "",
+				$this->encryptionKeys[$pack->getPackId()] ?? "",
 				"",
 				$pack->getPackId(),
 				false
 			);
-		}, $this->resourcePackManager->getResourceStack());
+		}, $this->resourcePackStack);
 		//TODO: support forcing server packs
-		$this->session->sendDataPacket(ResourcePacksInfoPacket::create($resourcePackEntries, [], $this->resourcePackManager->resourcePacksRequired(), false, false));
+		$this->session->sendDataPacket(ResourcePacksInfoPacket::create(
+			resourcePackEntries: $resourcePackEntries,
+			mustAccept: $this->mustAccept,
+			hasAddons: false,
+			hasScripts: false
+		));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
 	private function disconnectWithError(string $error) : void{
-		$this->session->getLogger()->error("Error downloading resource packs: " . $error);
-		$this->session->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_RESOURCEPACK);
+		$this->session->disconnectWithError(
+			reason: "Error downloading resource packs: " . $error,
+			disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_resourcePack()
+		);
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
 		switch($packet->status){
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
-				$this->session->disconnect("You must accept resource packs to join this server.", true);
+				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
 				foreach($packet->packIds as $uuid){
@@ -102,11 +142,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 					if($splitPos !== false){
 						$uuid = substr($uuid, 0, $splitPos);
 					}
-					$pack = $this->resourcePackManager->getPackById($uuid);
+					$pack = $this->getPackById($uuid);
 
 					if(!($pack instanceof ResourcePack)){
 						//Client requested a resource pack but we don't have it available on the server
-						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
+						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 						return false;
 					}
 
@@ -126,7 +166,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
-				}, $this->resourcePackManager->getResourceStack());
+				}, $this->resourcePackStack);
 
 				//we support chemistry blocks by default, the client should already have this installed
 				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
@@ -134,7 +174,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
 				//the client remove its own non-server-supplied resource packs.
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false)));
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false), false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
@@ -149,9 +189,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	}
 
 	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
-		$pack = $this->resourcePackManager->getPackById($packet->packId);
+		$pack = $this->getPackById($packet->packId);
 		if(!($pack instanceof ResourcePack)){
-			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", $this->resourcePackManager->getPackIdList()));
+			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 			return false;
 		}
 
@@ -174,8 +214,37 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
 		}
 
-		$this->session->sendDataPacket(ResourcePackChunkDataPacket::create($packId, $packet->chunkIndex, $offset, $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE)));
+		$this->requestQueue->enqueue([$pack, $packet->chunkIndex]);
+		$this->processChunkRequestQueue();
 
 		return true;
+	}
+
+	private function processChunkRequestQueue() : void{
+		if($this->activeRequests >= self::MAX_CONCURRENT_CHUNK_REQUESTS || $this->requestQueue->isEmpty()){
+			return;
+		}
+		/**
+		 * @var ResourcePack $pack
+		 * @var int          $chunkIndex
+		 */
+		[$pack, $chunkIndex] = $this->requestQueue->dequeue();
+
+		$packId = $pack->getPackId();
+		$offset = $chunkIndex * self::PACK_CHUNK_SIZE;
+		$chunkData = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
+		$this->activeRequests++;
+		$this->session
+			->sendDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
+			->onCompletion(
+				function() : void{
+					$this->activeRequests--;
+					$this->processChunkRequestQueue();
+				},
+				function() : void{
+					//this may have been rejected because of a disconnection - this will do nothing in that case
+					$this->disconnectWithError("Plugin interrupted sending of resource packs");
+				}
+			);
 	}
 }

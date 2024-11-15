@@ -33,12 +33,14 @@ use pocketmine\utils\RegistryTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static Enchantment AQUA_AFFINITY()
  * @method static ProtectionEnchantment BLAST_PROTECTION()
  * @method static Enchantment EFFICIENCY()
  * @method static ProtectionEnchantment FEATHER_FALLING()
  * @method static FireAspectEnchantment FIRE_ASPECT()
  * @method static ProtectionEnchantment FIRE_PROTECTION()
  * @method static Enchantment FLAME()
+ * @method static Enchantment FORTUNE()
  * @method static Enchantment INFINITY()
  * @method static KnockbackEnchantment KNOCKBACK()
  * @method static Enchantment MENDING()
@@ -58,46 +60,233 @@ final class VanillaEnchantments{
 	use RegistryTrait;
 
 	protected static function setup() : void{
-		self::register("PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_all(), Rarity::COMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 0.75, null));
-		self::register("FIRE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fire(), Rarity::UNCOMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.25, [
-			EntityDamageEvent::CAUSE_FIRE,
-			EntityDamageEvent::CAUSE_FIRE_TICK,
-			EntityDamageEvent::CAUSE_LAVA
-			//TODO: check fireballs
-		]));
-		self::register("FEATHER_FALLING", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_fall(), Rarity::UNCOMMON, ItemFlags::FEET, ItemFlags::NONE, 4, 2.5, [
-			EntityDamageEvent::CAUSE_FALL
-		]));
-		self::register("BLAST_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_explosion(), Rarity::RARE, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.5, [
-			EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
-			EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
-		]));
-		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(KnownTranslationFactory::enchantment_protect_projectile(), Rarity::UNCOMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.5, [
-			EntityDamageEvent::CAUSE_PROJECTILE
-		]));
-		self::register("THORNS", new Enchantment(KnownTranslationFactory::enchantment_thorns(), Rarity::MYTHIC, ItemFlags::TORSO, ItemFlags::HEAD | ItemFlags::LEGS | ItemFlags::FEET, 3));
-		self::register("RESPIRATION", new Enchantment(KnownTranslationFactory::enchantment_oxygen(), Rarity::RARE, ItemFlags::HEAD, ItemFlags::NONE, 3));
+		self::register("PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_all(),
+			Rarity::COMMON,
+			0,
+			0,
+			4,
+			0.75,
+			null,
+			fn(int $level) : int => 11 * ($level - 1) + 1,
+			20
+		));
+		self::register("FIRE_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_fire(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			4,
+			1.25,
+			[
+				EntityDamageEvent::CAUSE_FIRE,
+				EntityDamageEvent::CAUSE_FIRE_TICK,
+				EntityDamageEvent::CAUSE_LAVA
+				//TODO: check fireballs
+			],
+			fn(int $level) : int => 8 * ($level - 1) + 10,
+			12
+		));
+		self::register("FEATHER_FALLING", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_fall(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			4,
+			2.5,
+			[
+				EntityDamageEvent::CAUSE_FALL
+			],
+			fn(int $level) : int => 6 * ($level - 1) + 5,
+			10
+		));
+		self::register("BLAST_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_explosion(),
+			Rarity::RARE,
+			0,
+			0,
+			4,
+			1.5,
+			[
+				EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
+				EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
+			],
+			fn(int $level) : int => 8 * ($level - 1) + 5,
+			12
+		));
+		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(
+			KnownTranslationFactory::enchantment_protect_projectile(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			4,
+			1.5,
+			[
+				EntityDamageEvent::CAUSE_PROJECTILE
+			],
+			fn(int $level) : int => 6 * ($level - 1) + 3,
+			15
+		));
+		self::register("THORNS", new Enchantment(
+			KnownTranslationFactory::enchantment_thorns(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 20 * ($level - 1) + 10,
+			50
+		));
+		self::register("RESPIRATION", new Enchantment(
+			KnownTranslationFactory::enchantment_oxygen(),
+			Rarity::RARE,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * $level,
+			30
+		));
+		self::register("AQUA_AFFINITY", new Enchantment(
+			KnownTranslationFactory::enchantment_waterWorker(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			null,
+			40
+		));
 
-		self::register("SHARPNESS", new SharpnessEnchantment(KnownTranslationFactory::enchantment_damage_all(), Rarity::COMMON, ItemFlags::SWORD, ItemFlags::AXE, 5));
-		//TODO: smite, bane of arthropods (these don't make sense now because their applicable mobs don't exist yet)
+		self::register("SHARPNESS", new SharpnessEnchantment(
+			KnownTranslationFactory::enchantment_damage_all(),
+			Rarity::COMMON,
+			0,
+			0,
+			5,
+			fn(int $level) : int => 11 * ($level - 1) + 1,
+			20
+		));
+		self::register("KNOCKBACK", new KnockbackEnchantment(
+			KnownTranslationFactory::enchantment_knockback(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			2,
+			fn(int $level) : int => 20 * ($level - 1) + 5,
+			50
+		));
+		self::register("FIRE_ASPECT", new FireAspectEnchantment(
+			KnownTranslationFactory::enchantment_fire(),
+			Rarity::RARE,
+			0,
+			0,
+			2,
+			fn(int $level) : int => 20 * ($level - 1) + 10,
+			50
+		));
+		//TODO: smite, bane of arthropods, looting (these don't make sense now because their applicable mobs don't exist yet)
 
-		self::register("KNOCKBACK", new KnockbackEnchantment(KnownTranslationFactory::enchantment_knockback(), Rarity::UNCOMMON, ItemFlags::SWORD, ItemFlags::NONE, 2));
-		self::register("FIRE_ASPECT", new FireAspectEnchantment(KnownTranslationFactory::enchantment_fire(), Rarity::RARE, ItemFlags::SWORD, ItemFlags::NONE, 2));
+		self::register("EFFICIENCY", new Enchantment(
+			KnownTranslationFactory::enchantment_digging(),
+			Rarity::COMMON,
+			0,
+			0,
+			5,
+			fn(int $level) : int => 10 * ($level - 1) + 1,
+			50
+		));
+		self::register("FORTUNE", new Enchantment(
+			KnownTranslationFactory::enchantment_lootBonusDigger(),
+			Rarity::RARE,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 9 * ($level - 1) + 15,
+			50
+		));
+		self::register("SILK_TOUCH", new Enchantment(
+			KnownTranslationFactory::enchantment_untouching(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 15,
+			50
+		));
+		self::register("UNBREAKING", new Enchantment(
+			KnownTranslationFactory::enchantment_durability(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 8 * ($level - 1) + 5,
+			50
+		));
 
-		self::register("EFFICIENCY", new Enchantment(KnownTranslationFactory::enchantment_digging(), Rarity::COMMON, ItemFlags::DIG, ItemFlags::SHEARS, 5));
-		self::register("SILK_TOUCH", new Enchantment(KnownTranslationFactory::enchantment_untouching(), Rarity::MYTHIC, ItemFlags::DIG, ItemFlags::SHEARS, 1));
-		self::register("UNBREAKING", new Enchantment(KnownTranslationFactory::enchantment_durability(), Rarity::UNCOMMON, ItemFlags::DIG | ItemFlags::ARMOR | ItemFlags::FISHING_ROD | ItemFlags::BOW, ItemFlags::TOOL | ItemFlags::CARROT_STICK | ItemFlags::ELYTRA, 3));
+		self::register("POWER", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowDamage(),
+			Rarity::COMMON,
+			0,
+			0,
+			5,
+			fn(int $level) : int => 10 * ($level - 1) + 1,
+			15
+		));
+		self::register("PUNCH", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowKnockback(),
+			Rarity::RARE,
+			0,
+			0,
+			2,
+			fn(int $level) : int => 20 * ($level - 1) + 12,
+			25
+		));
+		self::register("FLAME", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowFire(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 20,
+			30
+		));
+		self::register("INFINITY", new Enchantment(
+			KnownTranslationFactory::enchantment_arrowInfinite(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 20,
+			30
+		));
 
-		self::register("POWER", new Enchantment(KnownTranslationFactory::enchantment_arrowDamage(), Rarity::COMMON, ItemFlags::BOW, ItemFlags::NONE, 5));
-		self::register("PUNCH", new Enchantment(KnownTranslationFactory::enchantment_arrowKnockback(), Rarity::RARE, ItemFlags::BOW, ItemFlags::NONE, 2));
-		self::register("FLAME", new Enchantment(KnownTranslationFactory::enchantment_arrowFire(), Rarity::RARE, ItemFlags::BOW, ItemFlags::NONE, 1));
-		self::register("INFINITY", new Enchantment(KnownTranslationFactory::enchantment_arrowInfinite(), Rarity::MYTHIC, ItemFlags::BOW, ItemFlags::NONE, 1));
+		self::register("MENDING", new Enchantment(
+			KnownTranslationFactory::enchantment_mending(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 25,
+			50
+		));
 
-		self::register("MENDING", new Enchantment(KnownTranslationFactory::enchantment_mending(), Rarity::RARE, ItemFlags::NONE, ItemFlags::ALL, 1));
+		self::register("VANISHING", new Enchantment(
+			KnownTranslationFactory::enchantment_curse_vanishing(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 25,
+			25
+		));
 
-		self::register("VANISHING", new Enchantment(KnownTranslationFactory::enchantment_curse_vanishing(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::ALL, 1));
-
-		self::register("SWIFT_SNEAK", new Enchantment(KnownTranslationFactory::enchantment_swift_sneak(), Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::LEGS, 3));
+		self::register("SWIFT_SNEAK", new Enchantment(
+			KnownTranslationFactory::enchantment_swift_sneak(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * $level,
+			5
+		));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{

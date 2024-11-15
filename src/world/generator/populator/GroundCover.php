@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\populator;
 
-use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\utils\Random;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
@@ -36,12 +36,12 @@ use function min;
 class GroundCover implements Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
-		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$factory = BlockFactory::getInstance();
+		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
+		$factory = RuntimeBlockStateRegistry::getInstance();
 		$biomeRegistry = BiomeRegistry::getInstance();
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
-				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, $z));
+				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, 0, $z));
 				$cover = $biome->getGroundCover();
 				if(count($cover) > 0){
 					$diffY = 0;
@@ -51,7 +51,7 @@ class GroundCover implements Populator{
 
 					$startY = 127;
 					for(; $startY > 0; --$startY){
-						if(!$factory->fromFullBlock($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
+						if(!$factory->fromStateId($chunk->getBlockStateId($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
@@ -59,15 +59,15 @@ class GroundCover implements Populator{
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
-						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
-						if($id->getId() === BlockLegacyIds::AIR && $b->isSolid()){
+						$id = $factory->fromStateId($chunk->getBlockStateId($x, $y, $z));
+						if($id->getTypeId() === BlockTypeIds::AIR && $b->isSolid()){
 							break;
 						}
 						if($b->canBeFlowedInto() && $id instanceof Liquid){
 							continue;
 						}
 
-						$chunk->setFullBlock($x, $y, $z, $b->getFullId());
+						$chunk->setBlockStateId($x, $y, $z, $b->getStateId());
 					}
 				}
 			}

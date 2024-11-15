@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -35,27 +34,6 @@ use pocketmine\world\BlockTransaction;
 
 class EndRod extends Flowable{
 	use AnyFacingTrait;
-
-	protected function writeStateToMeta() : int{
-		$result = BlockDataSerializer::writeFacing($this->facing);
-		if(Facing::axis($this->facing) !== Axis::Y){
-			$result ^= 1; //TODO: in PC this is always the same as facing, just PE is stupid
-		}
-
-		return $result;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($stateMeta !== 0 && $stateMeta !== 1){
-			$stateMeta ^= 1;
-		}
-
-		$this->facing = BlockDataSerializer::readFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face;

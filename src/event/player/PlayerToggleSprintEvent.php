@@ -30,12 +30,11 @@ use pocketmine\player\Player;
 class PlayerToggleSprintEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var bool */
-	protected $isSprinting;
-
-	public function __construct(Player $player, bool $isSprinting){
+	public function __construct(
+		Player $player,
+		protected bool $isSprinting
+	){
 		$this->player = $player;
-		$this->isSprinting = $isSprinting;
 	}
 
 	public function isSprinting() : bool{

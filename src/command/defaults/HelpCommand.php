@@ -44,9 +44,9 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"help",
 			KnownTranslationFactory::pocketmine_command_help_description(),
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]
@@ -55,10 +55,6 @@ class HelpCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$commandName = "";
 			$pageNumber = 1;

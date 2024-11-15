@@ -1,18 +1,18 @@
 includes:
 	- tests/phpstan/analyse-for-current-php-version.neon.php
 	- tests/phpstan/configs/actual-problems.neon
-	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/impossible-generics.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
-	- tests/phpstan/configs/runtime-type-checks.neon
 	- tests/phpstan/configs/spl-fixed-array-sucks.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
+	- pocketmine\phpstan\rules\DeprecatedLegacyEnumAccessRule
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
@@ -40,16 +40,14 @@ parameters:
 			- build/php
 	dynamicConstantNames:
 		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
+		- pocketmine\VersionInfo::BUILD_CHANNEL
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
-		- tests/phpstan/stubs/phpasn1.stub
-		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/pmmpthread.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
-	staticReflectionClassNamePatterns:
-		- "#^COM$#"
 	typeAliases:
 		#variadics don't work for this - mixed probably shouldn't work either, but for now it does
 		#what we actually need is something that accepts an infinite number of parameters, but in the absence of that,

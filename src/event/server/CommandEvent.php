@@ -44,16 +44,10 @@ use pocketmine\event\CancellableTrait;
 class CommandEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $command;
-
-	/** @var CommandSender */
-	protected $sender;
-
-	public function __construct(CommandSender $sender, string $command){
-		$this->sender = $sender;
-		$this->command = $command;
-	}
+	public function __construct(
+		protected CommandSender $sender,
+		protected string $command
+	){}
 
 	public function getSender() : CommandSender{
 		return $this->sender;

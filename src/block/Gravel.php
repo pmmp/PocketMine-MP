@@ -25,15 +25,15 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if(mt_rand(1, 10) === 1){
+		if(FortuneDropHelper::bonusChanceDivisor($item, 10, 3)){
 			return [
 				VanillaItems::FLINT()
 			];
@@ -44,9 +44,5 @@ class Gravel extends Opaque implements Fallable{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
 	}
 }

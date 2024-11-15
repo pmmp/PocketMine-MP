@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\bedrock\item\SavedItemStackData;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
@@ -38,10 +40,7 @@ trait ContainerTrait{
 	/** @var string|null */
 	private $lock = null;
 
-	/**
-	 * @return Inventory
-	 */
-	abstract public function getRealInventory();
+	abstract public function getRealInventory() : Inventory;
 
 	protected function loadItems(CompoundTag $tag) : void{
 		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
@@ -52,7 +51,13 @@ trait ContainerTrait{
 			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$newContents[$itemNBT->getByte(Item::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
+				try{
+					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
 			}
 			$inventory->setContents($newContents);
 

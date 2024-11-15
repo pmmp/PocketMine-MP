@@ -111,7 +111,7 @@ class PluginDescription{
 	/**
 	 * @param string|mixed[] $yamlString
 	 */
-	public function __construct($yamlString){
+	public function __construct(array|string $yamlString){
 		if(is_string($yamlString)){
 			$map = yaml_parse($yamlString);
 			if($map === false){
@@ -203,7 +203,7 @@ class PluginDescription{
 			}
 			$this->order = $order;
 		}else{
-			$this->order = PluginEnableOrder::POSTWORLD();
+			$this->order = PluginEnableOrder::POSTWORLD;
 		}
 
 		$this->authors = [];

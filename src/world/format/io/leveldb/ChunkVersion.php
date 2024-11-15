@@ -70,4 +70,6 @@ final class ChunkVersion{
 	public const v1_18_0_24_beta = 37;
 	public const v1_18_0_24_unused = 38;
 	public const v1_18_0_25_beta = 39;
+	public const v1_18_30 = 40;
+	public const v1_21_40 = 41;
 }

@@ -24,60 +24,73 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\utils\SingletonTrait;
+use function spl_object_id;
 
 final class DyeColorIdMap{
 	use SingletonTrait;
+	/** @phpstan-use IntSaveIdMapTrait<DyeColor> */
+	use IntSaveIdMapTrait {
+		register as registerInt;
+	}
 
 	/**
 	 * @var DyeColor[]
-	 * @phpstan-var array<int, DyeColor>
+	 * @phpstan-var array<string, DyeColor>
 	 */
-	private array $idToEnum = [];
+	private array $itemIdToEnum = [];
 
 	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @var string[]
+	 * @phpstan-var array<int, string>
 	 */
-	private array $enumToId = [];
+	private array $enumToItemId = [];
 
 	private function __construct(){
-		$this->register(0, DyeColor::WHITE());
-		$this->register(1, DyeColor::ORANGE());
-		$this->register(2, DyeColor::MAGENTA());
-		$this->register(3, DyeColor::LIGHT_BLUE());
-		$this->register(4, DyeColor::YELLOW());
-		$this->register(5, DyeColor::LIME());
-		$this->register(6, DyeColor::PINK());
-		$this->register(7, DyeColor::GRAY());
-		$this->register(8, DyeColor::LIGHT_GRAY());
-		$this->register(9, DyeColor::CYAN());
-		$this->register(10, DyeColor::PURPLE());
-		$this->register(11, DyeColor::BLUE());
-		$this->register(12, DyeColor::BROWN());
-		$this->register(13, DyeColor::GREEN());
-		$this->register(14, DyeColor::RED());
-		$this->register(15, DyeColor::BLACK());
+		foreach(DyeColor::cases() as $case){
+			[$colorId, $dyeItemId] = match($case){
+				DyeColor::WHITE => [0, ItemTypeNames::WHITE_DYE],
+				DyeColor::ORANGE => [1, ItemTypeNames::ORANGE_DYE],
+				DyeColor::MAGENTA => [2, ItemTypeNames::MAGENTA_DYE],
+				DyeColor::LIGHT_BLUE => [3, ItemTypeNames::LIGHT_BLUE_DYE],
+				DyeColor::YELLOW => [4, ItemTypeNames::YELLOW_DYE],
+				DyeColor::LIME => [5, ItemTypeNames::LIME_DYE],
+				DyeColor::PINK => [6, ItemTypeNames::PINK_DYE],
+				DyeColor::GRAY => [7, ItemTypeNames::GRAY_DYE],
+				DyeColor::LIGHT_GRAY => [8, ItemTypeNames::LIGHT_GRAY_DYE],
+				DyeColor::CYAN => [9, ItemTypeNames::CYAN_DYE],
+				DyeColor::PURPLE => [10, ItemTypeNames::PURPLE_DYE],
+				DyeColor::BLUE => [11, ItemTypeNames::BLUE_DYE],
+				DyeColor::BROWN => [12, ItemTypeNames::BROWN_DYE],
+				DyeColor::GREEN => [13, ItemTypeNames::GREEN_DYE],
+				DyeColor::RED => [14, ItemTypeNames::RED_DYE],
+				DyeColor::BLACK => [15, ItemTypeNames::BLACK_DYE],
+			};
+
+			$this->register($colorId, $dyeItemId, $case);
+		}
 	}
 
-	private function register(int $id, DyeColor $color) : void{
-		$this->idToEnum[$id] = $color;
-		$this->enumToId[$color->id()] = $id;
-	}
-
-	public function toId(DyeColor $color) : int{
-		return $this->enumToId[$color->id()]; //TODO: is it possible for this to be missing?
+	private function register(int $id, string $itemId, DyeColor $color) : void{
+		$this->registerInt($id, $color);
+		$this->itemIdToEnum[$itemId] = $color;
+		$this->enumToItemId[spl_object_id($color)] = $itemId;
 	}
 
 	public function toInvertedId(DyeColor $color) : int{
 		return ~$this->toId($color) & 0xf;
 	}
 
-	public function fromId(int $id) : ?DyeColor{
-		return $this->idToEnum[$id] ?? null;
+	public function toItemId(DyeColor $color) : string{
+		return $this->enumToItemId[spl_object_id($color)];
 	}
 
 	public function fromInvertedId(int $id) : ?DyeColor{
 		return $this->fromId(~$id & 0xf);
+	}
+
+	public function fromItemId(string $itemId) : ?DyeColor{
+		return $this->itemIdToEnum[$itemId] ?? null;
 	}
 }

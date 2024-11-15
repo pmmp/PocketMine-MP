@@ -33,7 +33,7 @@ use function in_array;
 
 class Pumpkin extends Opaque{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Shears && in_array($face, Facing::HORIZONTAL, true)){
 			$item->applyDamage(1);
 			$world = $this->position->getWorld();

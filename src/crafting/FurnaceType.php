@@ -23,40 +23,51 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 use pocketmine\world\sound\BlastFurnaceSound;
+use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
 use pocketmine\world\sound\Sound;
+use function spl_object_id;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static FurnaceType BLAST_FURNACE()
+ * @method static FurnaceType CAMPFIRE()
  * @method static FurnaceType FURNACE()
  * @method static FurnaceType SMOKER()
+ * @method static FurnaceType SOUL_CAMPFIRE()
+ *
+ * @phpstan-type TMetadata array{0: int, 1: Sound}
  */
-final class FurnaceType{
-	use EnumTrait {
-		__construct as Enum___construct;
+enum FurnaceType{
+	use LegacyEnumShimTrait;
+
+	case FURNACE;
+	case BLAST_FURNACE;
+	case SMOKER;
+	case CAMPFIRE;
+	case SOUL_CAMPFIRE;
+
+	/**
+	 * @phpstan-return TMetadata
+	 */
+	private function getMetadata() : array{
+		/** @phpstan-var array<int, TMetadata> $cache */
+		static $cache = [];
+
+		return $cache[spl_object_id($this)] ??= match($this){
+			self::FURNACE => [200, new FurnaceSound()],
+			self::BLAST_FURNACE => [100, new BlastFurnaceSound()],
+			self::SMOKER => [100, new SmokerSound()],
+			self::CAMPFIRE, self::SOUL_CAMPFIRE => [600, new CampfireSound()]
+		};
 	}
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("furnace", 200, new FurnaceSound()),
-			new self("blast_furnace", 100, new BlastFurnaceSound()),
-			new self("smoker", 100, new SmokerSound()),
-		);
-	}
+	public function getCookDurationTicks() : int{ return $this->getMetadata()[0]; }
 
-	private function __construct(string $enumName, private int $cookDurationTicks, private Sound $cookSound){
-		$this->Enum___construct($enumName);
-	}
-
-	public function getCookDurationTicks() : int{ return $this->cookDurationTicks; }
-
-	public function getCookSound() : Sound{ return $this->cookSound; }
+	public function getCookSound() : Sound{ return $this->getMetadata()[1]; }
 }

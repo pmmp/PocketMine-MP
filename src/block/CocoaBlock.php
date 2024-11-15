@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\TreeType;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\WoodType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -39,35 +39,15 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Transparent{
+class CocoaBlock extends Flowable{
 	use HorizontalFacingTrait;
+	use AgeableTrait;
 
 	public const MAX_AGE = 2;
 
-	protected int $age = 0;
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, self::MAX_AGE);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
 	/**
@@ -84,12 +64,8 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 	private function canAttachTo(Block $block) : bool{
-		return $block instanceof Wood && $block->getTreeType()->equals(TreeType::JUNGLE());
+		return $block instanceof Wood && $block->getWoodType() === WoodType::JUNGLE;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -101,8 +77,8 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer && $this->grow()){
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -118,7 +94,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{
@@ -127,16 +103,11 @@ class CocoaBlock extends Transparent{
 		}
 	}
 
-	private function grow() : bool{
+	private function grow(?Player $player = null) : bool{
 		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
-			$ev = new BlockGrowEvent($this, $block);
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
-				return true;
-			}
+			return BlockEventHelper::grow($this, $block, $player);
 		}
 		return false;
 	}
@@ -147,7 +118,7 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::COCOA_BEANS();
 	}
 }

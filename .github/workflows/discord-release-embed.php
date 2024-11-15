@@ -18,7 +18,12 @@ require dirname(__DIR__, 2) . '/vendor/autoload.php';
 /**
  * @phpstan-return array<string, mixed>
  */
-function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl, int $newsPingRoleId) : array{
+function generateDiscordEmbed(string $version, string $channel, string $description, string $detailsUrl, string $sourceUrl, string $pharDownloadUrl, string $buildLogUrl, int $newsPingRoleId, ?string $phpDownloadUrl) : array{
+	if($phpDownloadUrl !== null){
+		$phpEmbedLink = " | [PHP Binaries]($phpDownloadUrl)";
+	}else{
+		$phpEmbedLink = "";
+	}
 	return [
 		"content" => "<@&$newsPingRoleId> New PocketMine-MP release: $version ($channel)",
 		"embeds" => [
@@ -27,7 +32,7 @@ function generateDiscordEmbed(string $version, string $channel, string $descript
 				"description" => <<<DESCRIPTION
 $description
 
-[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Build Log]($buildLogUrl) | [Download]($pharDownloadUrl)
+[Details]($detailsUrl) | [Source Code]($sourceUrl) | [Build Log]($buildLogUrl) | [Download]($pharDownloadUrl)$phpEmbedLink
 DESCRIPTION,
 				"url" => $detailsUrl,
 				"color" => $channel === "stable" ? 0x57ab5a : 0xc69026
@@ -84,10 +89,21 @@ $detailsUrl = $buildInfoJson["details_url"];
 $sourceUrl = $buildInfoJson["source_url"];
 $pharDownloadUrl = $buildInfoJson["download_url"];
 $buildLogUrl = $buildInfoJson["build_log_url"];
+$phpBinaryUrl = $buildInfoJson["php_download_url"] ?? null;
 
 $description = $releaseInfoJson["body"];
 
-$discordPayload = generateDiscordEmbed($buildInfoJson["base_version"], $buildInfoJson["channel"], $description, $detailsUrl, $sourceUrl, $pharDownloadUrl, $buildLogUrl, (int) $newsPingRoleId);
+$discordPayload = generateDiscordEmbed(
+	$buildInfoJson["base_version"],
+	$buildInfoJson["channel"],
+	$description,
+	$detailsUrl,
+	$sourceUrl,
+	$pharDownloadUrl,
+	$buildLogUrl,
+	(int) $newsPingRoleId,
+	$phpBinaryUrl
+);
 
 $response = Internet::postURL(
 	$hookURL,

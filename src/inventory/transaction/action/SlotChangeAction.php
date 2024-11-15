@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\SlotValidatedInventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
@@ -33,15 +34,13 @@ use pocketmine\player\Player;
  * Represents an action causing a change in an inventory slot.
  */
 class SlotChangeAction extends InventoryAction{
-
-	/** @var Inventory */
-	protected $inventory;
-	private int $inventorySlot;
-
-	public function __construct(Inventory $inventory, int $inventorySlot, Item $sourceItem, Item $targetItem){
+	public function __construct(
+		protected Inventory $inventory,
+		private int $inventorySlot,
+		Item $sourceItem,
+		Item $targetItem
+	){
 		parent::__construct($sourceItem, $targetItem);
-		$this->inventory = $inventory;
-		$this->inventorySlot = $inventorySlot;
 	}
 
 	/**
@@ -75,6 +74,14 @@ class SlotChangeAction extends InventoryAction{
 		}
 		if($this->targetItem->getCount() > $this->inventory->getMaxStackSize()){
 			throw new TransactionValidationException("Target item exceeds inventory max stack size");
+		}
+		if($this->inventory instanceof SlotValidatedInventory && !$this->targetItem->isNull()){
+			foreach($this->inventory->getSlotValidators() as $validator){
+				$ret = $validator->validate($this->inventory, $this->targetItem, $this->inventorySlot);
+				if($ret !== null){
+					throw new TransactionValidationException("Target item is not accepted by the inventory at slot #" . $this->inventorySlot . ": " . $ret->getMessage(), 0, $ret);
+				}
+			}
 		}
 	}
 

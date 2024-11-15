@@ -34,19 +34,15 @@ use function round;
 
 class GarbageCollectorCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
+			"gc",
 			KnownTranslationFactory::pocketmine_command_gc_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GC);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$chunksCollected = 0;
 		$entitiesCollected = 0;
 

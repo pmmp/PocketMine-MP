@@ -54,31 +54,43 @@ class Lava extends Liquid{
 		return 2; //TODO: this is 1 in the nether
 	}
 
-	protected function checkForHarden() : bool{
-		if($this->falling){
-			return false;
-		}
-		$colliding = null;
+	/**
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	private function getAdjacentBlocksExceptDown() : \Generator{
 		foreach(Facing::ALL as $side){
 			if($side === Facing::DOWN){
 				continue;
 			}
-			$blockSide = $this->getSide($side);
-			if($blockSide instanceof Water){
-				$colliding = $blockSide;
-				break;
+			yield $this->getSide($side);
+		}
+	}
+
+	protected function checkForHarden() : bool{
+		if($this->falling){
+			return false;
+		}
+		foreach($this->getAdjacentBlocksExceptDown() as $colliding){
+			if($colliding instanceof Water){
+				if($this->decay === 0){
+					$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
+					return true;
+				}elseif($this->decay <= 4){
+					$this->liquidCollide($colliding, VanillaBlocks::COBBLESTONE());
+					return true;
+				}
 			}
 		}
 
-		if($colliding !== null){
-			if($this->decay === 0){
-				$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
-				return true;
-			}elseif($this->decay <= 4){
-				$this->liquidCollide($colliding, VanillaBlocks::COBBLESTONE());
-				return true;
+		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SOIL){
+			foreach($this->getAdjacentBlocksExceptDown() as $colliding){
+				if($colliding->getTypeId() === BlockTypeIds::BLUE_ICE){
+					$this->liquidCollide($colliding, VanillaBlocks::BASALT());
+					return true;
+				}
 			}
 		}
+
 		return false;
 	}
 

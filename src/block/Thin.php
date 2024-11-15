@@ -36,17 +36,21 @@ class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
 	protected array $connections = [];
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			if($side instanceof Thin || $side instanceof Wall || $side->isFullCube()){
+			if($side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
 			}
 		}
+
+		return $this;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -88,6 +92,6 @@ class Thin extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

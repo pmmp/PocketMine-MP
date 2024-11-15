@@ -29,14 +29,8 @@ use function lcg_value;
 use function min;
 
 abstract class Durable extends Item{
-
-	/** @var int */
-	protected $damage = 0;
+	protected int $damage = 0;
 	private bool $unbreakable = false;
-
-	public function getMeta() : int{
-		return $this->damage;
-	}
 
 	/**
 	 * Returns whether this item will take damage when used.
@@ -127,10 +121,17 @@ abstract class Durable extends Item{
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		parent::deserializeCompoundTag($tag);
 		$this->unbreakable = $tag->getByte("Unbreakable", 0) !== 0;
+
+		$damage = $tag->getInt("Damage", $this->damage);
+		if($damage !== $this->damage && $damage >= 0 && $damage <= $this->getMaxDurability()){
+			//TODO: out-of-bounds damage should be an error
+			$this->setDamage($damage);
+		}
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
 		parent::serializeCompoundTag($tag);
 		$this->unbreakable ? $tag->setByte("Unbreakable", 1) : $tag->removeTag("Unbreakable");
+		$this->damage !== 0 ? $tag->setInt("Damage", $this->damage) : $tag->removeTag("Damage");
 	}
 }

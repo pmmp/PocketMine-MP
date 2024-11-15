@@ -25,7 +25,6 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -44,6 +43,17 @@ final class FastChunkSerializer{
 
 	private function __construct(){
 		//NOOP
+	}
+
+	private static function serializePalettedArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+		$wordArray = $array->getWordArray();
+		$palette = $array->getPalette();
+
+		$stream->putByte($array->getBitsPerBlock());
+		$stream->put($wordArray);
+		$serialPalette = pack("L*", ...$palette);
+		$stream->putInt(strlen($serialPalette));
+		$stream->put($serialPalette);
 	}
 
 	/**
@@ -67,21 +77,23 @@ final class FastChunkSerializer{
 			$layers = $subChunk->getBlockLayers();
 			$stream->putByte(count($layers));
 			foreach($layers as $blocks){
-				$wordArray = $blocks->getWordArray();
-				$palette = $blocks->getPalette();
-
-				$stream->putByte($blocks->getBitsPerBlock());
-				$stream->put($wordArray);
-				$serialPalette = pack("L*", ...$palette);
-				$stream->putInt(strlen($serialPalette));
-				$stream->put($serialPalette);
+				self::serializePalettedArray($stream, $blocks);
 			}
+			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
+
 		}
 
-		//biomes
-		$stream->put($chunk->getBiomeIdArray());
-
 		return $stream->getBuffer();
+	}
+
+	private static function deserializePalettedArray(BinaryStream $stream) : PalettedBlockArray{
+		$bitsPerBlock = $stream->getByte();
+		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+		/** @var int[] $unpackedPalette */
+		$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
+		$palette = array_values($unpackedPalette);
+
+		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
 	/**
@@ -103,19 +115,12 @@ final class FastChunkSerializer{
 			/** @var PalettedBlockArray[] $layers */
 			$layers = [];
 			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-				$bitsPerBlock = $stream->getByte();
-				$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-				/** @var int[] $unpackedPalette */
-				$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
-				$palette = array_values($unpackedPalette);
-
-				$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
+				$layers[] = self::deserializePalettedArray($stream);
 			}
-			$subChunks[$y] = new SubChunk($airBlockId, $layers);
+			$biomeArray = self::deserializePalettedArray($stream);
+			$subChunks[$y] = new SubChunk($airBlockId, $layers, $biomeArray);
 		}
 
-		$biomeIds = new BiomeArray($stream->get(256));
-
-		return new Chunk($subChunks, $biomeIds, $terrainPopulated);
+		return new Chunk($subChunks, $terrainPopulated);
 	}
 }

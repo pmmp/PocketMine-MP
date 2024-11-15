@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 abstract class TieredTool extends Tool{
+	protected ToolTier $tier;
 
-	/** @var ToolTier */
-	protected $tier;
-
-	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier){
-		parent::__construct($identifier, $name);
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ToolTier $tier, array $enchantmentTags = []){
+		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->tier = $tier;
 	}
 
@@ -45,11 +46,19 @@ abstract class TieredTool extends Tool{
 		return $this->tier->getBaseEfficiency();
 	}
 
+	public function getEnchantability() : int{
+		return $this->tier->getEnchantability();
+	}
+
 	public function getFuelTime() : int{
-		if($this->tier->equals(ToolTier::WOOD())){
+		if($this->tier === ToolTier::WOOD){
 			return 200;
 		}
 
 		return 0;
+	}
+
+	public function isFireProof() : bool{
+		return $this->tier === ToolTier::NETHERITE;
 	}
 }

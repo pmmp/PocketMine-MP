@@ -23,11 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use function floor;
 
 trait SignLikeRotationTrait{
 	/** @var int */
 	private $rotation = 0;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, 15, $this->rotation);
+	}
 
 	public function getRotation() : int{ return $this->rotation; }
 

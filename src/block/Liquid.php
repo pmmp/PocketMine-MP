@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -40,8 +40,6 @@ use function lcg_value;
 abstract class Liquid extends Transparent{
 	public const MAX_DECAY = 7;
 
-	protected BlockIdentifierFlattened $idInfoFlattened;
-
 	public int $adjacentSources = 0;
 
 	protected ?Vector3 $flowVector = null;
@@ -50,27 +48,10 @@ abstract class Liquid extends Transparent{
 	protected int $decay = 0; //PC "level" property
 	protected bool $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		$this->idInfoFlattened = $idInfo;
-		parent::__construct($idInfo, $name, $breakInfo);
-	}
-
-	public function getId() : int{
-		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->decay | ($this->falling ? BlockLegacyMetadata::LIQUID_FLAG_FALLING : 0);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, self::MAX_DECAY);
-		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfoFlattened->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, self::MAX_DECAY, $this->decay);
+		$w->bool($this->falling);
+		$w->bool($this->still);
 	}
 
 	public function isFalling() : bool{ return $this->falling; }
@@ -116,7 +97,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
@@ -163,16 +144,18 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) || !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return -1;
 		}
 
 		return $block->falling ? 0 : $block->decay;
 	}
 
-	public function readStateFromWorld() : void{
+	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 		$this->flowVector = null;
+
+		return $this;
 	}
 
 	public function getFlowVector() : Vector3{
@@ -182,23 +165,22 @@ abstract class Liquid extends Transparent{
 
 		$vX = $vY = $vZ = 0;
 
+		$x = $this->position->getFloorX();
+		$y = $this->position->getFloorY();
+		$z = $this->position->getFloorZ();
+
 		$decay = $this->getEffectiveFlowDecay($this);
 
 		$world = $this->position->getWorld();
 
 		foreach(Facing::HORIZONTAL as $j){
-			$x = $this->position->x;
-			$y = $this->position->y;
-			$z = $this->position->z;
+			[$dx, $dy, $dz] = Facing::OFFSET[$j];
 
-			match($j){
-				Facing::WEST => --$x,
-				Facing::EAST => ++$x,
-				Facing::NORTH => --$z,
-				Facing::SOUTH => ++$z
-			};
+			$sideX = $x + $dx;
+			$sideY = $y + $dy;
+			$sideZ = $z + $dz;
 
-			$sideBlock = $world->getBlockAt($x, $y, $z);
+			$sideBlock = $world->getBlockAt($sideX, $sideY, $sideZ);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -206,21 +188,21 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($world->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($world->getBlockAt($sideX, $sideY - 1, $sideZ));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
-					$vX += ($x - $this->position->x) * $realDecay;
-					$vY += ($y - $this->position->y) * $realDecay;
-					$vZ += ($z - $this->position->z) * $realDecay;
+					$vX += $dx * $realDecay;
+					$vY += $dy * $realDecay;
+					$vZ += $dz * $realDecay;
 				}
 
 				continue;
 			}else{
 				$realDecay = $blockDecay - $decay;
-				$vX += ($x - $this->position->x) * $realDecay;
-				$vY += ($y - $this->position->y) * $realDecay;
-				$vZ += ($z - $this->position->z) * $realDecay;
+				$vX += $dx * $realDecay;
+				$vY += $dy * $realDecay;
+				$vZ += $dz * $realDecay;
 			}
 		}
 
@@ -228,10 +210,10 @@ abstract class Liquid extends Transparent{
 
 		if($this->falling){
 			foreach(Facing::HORIZONTAL as $facing){
-				$pos = $this->position->getSide($facing);
+				[$dx, $dy, $dz] = Facing::OFFSET[$facing];
 				if(
-					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y, $pos->z)) ||
-					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y + 1, $pos->z))
+					!$this->canFlowInto($world->getBlockAt($x + $dx, $y + $dy, $z + $dz)) ||
+					!$this->canFlowInto($world->getBlockAt($x + $dx, $y + $dy + 1, $z + $dz))
 				){
 					$vector = $vector->normalize()->add(0, -6, 0);
 					break;
@@ -277,13 +259,17 @@ abstract class Liquid extends Transparent{
 
 		$world = $this->position->getWorld();
 
+		$x = $this->position->getFloorX();
+		$y = $this->position->getFloorY();
+		$z = $this->position->getFloorZ();
+
 		if(!$this->isSource()){
 			$smallestFlowDecay = -100;
 			$this->adjacentSources = 0;
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x, $this->position->y, $this->position->z - 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x, $this->position->y, $this->position->z + 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x - 1, $this->position->y, $this->position->z), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($this->position->x + 1, $this->position->y, $this->position->z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z - 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z + 1), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x - 1, $y, $z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x + 1, $y, $z), $smallestFlowDecay);
 
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
@@ -292,14 +278,14 @@ abstract class Liquid extends Transparent{
 				$newDecay = -1;
 			}
 
-			if($this->getEffectiveFlowDecay($world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)) >= 0){
+			if($this->getEffectiveFlowDecay($world->getBlockAt($x, $y + 1, $z)) >= 0){
 				$falling = true;
 			}
 
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
-				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->isSameType($this) && $bottomBlock->isSource())){
+				$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
+				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
@@ -307,17 +293,17 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
 				if(!$falling && $newDecay < 0){
-					$world->setBlock($this->position, VanillaBlocks::AIR());
+					$world->setBlockAt($x, $y, $z, VanillaBlocks::AIR());
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$world->setBlock($this->position, $this); //local block update will cause an update to be scheduled
+				$world->setBlockAt($x, $y, $z, $this); //local block update will cause an update to be scheduled
 			}
 		}
 
-		$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
+		$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
@@ -329,9 +315,10 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay <= self::MAX_DECAY){
-				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
-				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
-					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
+				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
+				foreach($calculator->getOptimalFlowDirections($x, $y, $z) as $facing){
+					[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+					$this->flowIntoBlock($world->getBlockAt($x + $dx, $y + $dy, $z + $dz), $adjacentDecay, false);
 				}
 			}
 		}
@@ -349,7 +336,7 @@ abstract class Liquid extends Transparent{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
-				if($block->getId() !== BlockLegacyIds::AIR){
+				if($block->getTypeId() !== BlockTypeIds::AIR){
 					$world->useBreakOn($block->position);
 				}
 
@@ -360,7 +347,7 @@ abstract class Liquid extends Transparent{
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) || !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return $decay;
 		}
 
@@ -380,12 +367,8 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
-		$ev = new BlockFormEvent($this, $result);
-		$ev->call();
-		if(!$ev->isCancelled()){
-			$world = $this->position->getWorld();
-			$world->setBlock($this->position, $ev->getNewState());
-			$world->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
+		if(BlockEventHelper::form($this, $result, $cause)){
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (lcg_value() - lcg_value()) * 0.8));
 		}
 		return true;
 	}

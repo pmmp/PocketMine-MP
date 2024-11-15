@@ -37,16 +37,12 @@ use pocketmine\player\Player;
  * @see PlayerKickEvent
  */
 class PlayerQuitEvent extends PlayerEvent{
-
-	/** @var Translatable|string */
-	protected $quitMessage;
-	/** @var string */
-	protected $quitReason;
-
-	public function __construct(Player $player, Translatable|string $quitMessage, string $quitReason){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $quitMessage,
+		protected Translatable|string $quitReason
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->quitReason = $quitReason;
 	}
 
 	/**
@@ -66,7 +62,7 @@ class PlayerQuitEvent extends PlayerEvent{
 	/**
 	 * Returns the disconnect reason shown in the server log and on the console.
 	 */
-	public function getQuitReason() : string{
+	public function getQuitReason() : Translatable|string{
 		return $this->quitReason;
 	}
 }

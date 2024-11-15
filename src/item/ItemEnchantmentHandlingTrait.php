@@ -34,7 +34,7 @@ use function spl_object_id;
  */
 trait ItemEnchantmentHandlingTrait{
 	/** @var EnchantmentInstance[] */
-	protected $enchantments = [];
+	protected array $enchantments = [];
 
 	public function hasEnchantments() : bool{
 		return count($this->enchantments) > 0;

@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static BannerPatternType BORDER()
  * @method static BannerPatternType BRICKS()
@@ -70,49 +68,49 @@ use pocketmine\utils\EnumTrait;
  * @method static BannerPatternType TRIANGLE_BOTTOM()
  * @method static BannerPatternType TRIANGLE_TOP()
  */
-final class BannerPatternType{
-	use EnumTrait;
+enum BannerPatternType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("border"),
-			new self("bricks"),
-			new self("circle"),
-			new self("creeper"),
-			new self("cross"),
-			new self("curly_border"),
-			new self("diagonal_left"),
-			new self("diagonal_right"),
-			new self("diagonal_up_left"),
-			new self("diagonal_up_right"),
-			new self("flower"),
-			new self("gradient"),
-			new self("gradient_up"),
-			new self("half_horizontal"),
-			new self("half_horizontal_bottom"),
-			new self("half_vertical"),
-			new self("half_vertical_right"),
-			new self("mojang"),
-			new self("rhombus"),
-			new self("skull"),
-			new self("small_stripes"),
-			new self("square_bottom_left"),
-			new self("square_bottom_right"),
-			new self("square_top_left"),
-			new self("square_top_right"),
-			new self("straight_cross"),
-			new self("stripe_bottom"),
-			new self("stripe_center"),
-			new self("stripe_downleft"),
-			new self("stripe_downright"),
-			new self("stripe_left"),
-			new self("stripe_middle"),
-			new self("stripe_right"),
-			new self("stripe_top"),
-			new self("triangle_bottom"),
-			new self("triangle_top"),
-			new self("triangles_bottom"),
-			new self("triangles_top")
-		);
-	}
+	case BORDER;
+	case BRICKS;
+	case CIRCLE;
+	case CREEPER;
+	case CROSS;
+	case CURLY_BORDER;
+	case DIAGONAL_LEFT;
+	case DIAGONAL_RIGHT;
+	case DIAGONAL_UP_LEFT;
+	case DIAGONAL_UP_RIGHT;
+	case FLOW;
+	case FLOWER;
+	case GLOBE;
+	case GRADIENT;
+	case GRADIENT_UP;
+	case GUSTER;
+	case HALF_HORIZONTAL;
+	case HALF_HORIZONTAL_BOTTOM;
+	case HALF_VERTICAL;
+	case HALF_VERTICAL_RIGHT;
+	case MOJANG;
+	case PIGLIN;
+	case RHOMBUS;
+	case SKULL;
+	case SMALL_STRIPES;
+	case SQUARE_BOTTOM_LEFT;
+	case SQUARE_BOTTOM_RIGHT;
+	case SQUARE_TOP_LEFT;
+	case SQUARE_TOP_RIGHT;
+	case STRAIGHT_CROSS;
+	case STRIPE_BOTTOM;
+	case STRIPE_CENTER;
+	case STRIPE_DOWNLEFT;
+	case STRIPE_DOWNRIGHT;
+	case STRIPE_LEFT;
+	case STRIPE_MIDDLE;
+	case STRIPE_RIGHT;
+	case STRIPE_TOP;
+	case TRIANGLE_BOTTOM;
+	case TRIANGLE_TOP;
+	case TRIANGLES_BOTTOM;
+	case TRIANGLES_TOP;
 }

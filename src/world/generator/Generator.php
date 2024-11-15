@@ -48,17 +48,12 @@ abstract class Generator{
 		return $convertedSeed;
 	}
 
-	/** @var int */
-	protected $seed;
+	protected Random $random;
 
-	protected string $preset;
-
-	/** @var Random */
-	protected $random;
-
-	public function __construct(int $seed, string $preset){
-		$this->seed = $seed;
-		$this->preset = $preset;
+	public function __construct(
+		protected int $seed,
+		protected string $preset
+	){
 		$this->random = new Random($seed);
 	}
 
