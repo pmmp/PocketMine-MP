@@ -362,6 +362,8 @@ class Block{
 	 *
 	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
 	 * data from a block entity).
+	 *
+	 * @phpstan-impure
 	 */
 	public function readStateFromWorld() : Block{
 		return $this;
