@@ -89,6 +89,11 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 
 	public function straightOnlyRailShape(int &$railShape) : void;
 
+	/**
+	 * @phpstan-template T of \UnitEnum
+	 * @phpstan-param T &$case
+	 * @phpstan-param-out T $case
+	 */
 	public function enum(\UnitEnum &$case) : void;
 
 	/**
