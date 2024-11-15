@@ -1563,7 +1563,7 @@ abstract class Entity{
 	 * Returns the item that players will equip when middle-clicking on this entity.
 	 */
 	public function getPickedItem() : ?Item{
-		return VanillaItems::AIR();
+		return null;
 	}
 
 	/**
