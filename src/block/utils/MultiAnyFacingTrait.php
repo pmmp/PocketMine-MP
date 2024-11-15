@@ -29,7 +29,7 @@ use pocketmine\math\Facing;
 /**
  * Used by blocks that can have multiple target faces in the area of one solid block, such as covering three sides of a corner.
  */
-trait MultiFacingTrait{
+trait MultiAnyFacingTrait{
 
 	/** @var int[] */
 	protected array $faces = [];
