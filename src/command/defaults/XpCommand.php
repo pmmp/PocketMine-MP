@@ -54,10 +54,12 @@ class XpCommand extends VanillaCommand{
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}
+
 		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
 		if($player === null){
 			return true;
 		}
+
 		$xpManager = $player->getXpManager();
 		if(str_ends_with($args[0], "L")){
 			$xpLevelAttr = $player->getAttributeMap()->get(Attribute::EXPERIENCE_LEVEL) ?? throw new AssumptionFailedError();
@@ -81,6 +83,7 @@ class XpCommand extends VanillaCommand{
 				$sender->sendMessage(KnownTranslationFactory::commands_xp_success((string) $xp, $player->getName()));
 			}
 		}
+
 		return true;
 	}
 }
