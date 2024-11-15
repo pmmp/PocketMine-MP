@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Attribute;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
@@ -40,8 +41,8 @@ class XpCommand extends VanillaCommand{
 	public function __construct(){
 		parent::__construct(
 			"xp",
-			"Adds or removes player experience",
-			"/xp <experience[L]> [player]"
+			KnownTranslationFactory::pocketmine_command_xp_description(),
+			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);
 		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_XP_SELF,
@@ -65,19 +66,19 @@ class XpCommand extends VanillaCommand{
 			$xpLevels = $this->getInteger($sender, substr($args[0], 0, -1), -$currentXpLevel, $maxXpLevel - $currentXpLevel);
 			if($xpLevels >= 0){
 				$xpManager->addXpLevels($xpLevels, false);
-				$sender->sendMessage("Gave $xpLevels experience levels to " . $player->getName());
+				$sender->sendMessage(KnownTranslationFactory::commands_xp_success_levels((string) $xpLevels, $player->getName()));
 			}else{
 				$xpLevels = abs($xpLevels);
 				$xpManager->subtractXpLevels($xpLevels);
-				$sender->sendMessage("Taken $xpLevels levels from " . $sender->getName());
+				$sender->sendMessage(KnownTranslationFactory::commands_xp_success_negative_levels((string) $xpLevels, $player->getName()));
 			}
 		}else{
 			$xp = $this->getInteger($sender, $args[0], max: Limits::INT32_MAX);
 			if($xp < 0){
-				$sender->sendMessage(TextFormat::RED . "Cannot give player negative experience points");
+				$sender->sendMessage(KnownTranslationFactory::commands_xp_failure_widthdrawXp()->prefix(TextFormat::RED));
 			}else{
 				$xpManager->addXp($xp, false);
-				$sender->sendMessage("Gave $xp experience to " . $player->getName());
+				$sender->sendMessage(KnownTranslationFactory::commands_xp_success((string) $xp, $player->getName()));
 			}
 		}
 		return true;
