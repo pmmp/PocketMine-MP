@@ -86,7 +86,8 @@ function systemWrapper(string $command, string $errorMessage) : void{
 
 function main() : void{
 	$filteredOpts = [];
-	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help"])) as $optName => $optValue){
+	$postCommitOnly = false;
+	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help", "post"])) as $optName => $optValue){
 		if($optName === "help"){
 			fwrite(STDOUT, "Options:\n");
 
@@ -95,6 +96,10 @@ function main() : void{
 				fwrite(STDOUT, str_pad("--$acceptedName", $maxLength + 4, " ", STR_PAD_LEFT) . ": $description\n");
 			}
 			exit(0);
+		}
+		if($optName === "post"){
+			$postCommitOnly = true;
+			continue;
 		}
 		if(!is_string($optValue)){
 			fwrite(STDERR, "--$optName expects exactly 1 value\n");
@@ -141,20 +146,25 @@ function main() : void{
 		$channel ??= "stable";
 	}
 
-	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
-	echo "$currentVer will be published on release channel \"$channel\".\n";
-	echo "please add appropriate notes to the changelog and press enter...";
-	fgets(STDIN);
-	systemWrapper('git add "' . dirname(__DIR__) . '/changelogs"', "failed to stage changelog changes");
-	system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
-	if($result === 0){
-		echo "error: no changelog changes detected; aborting\n";
-		exit(1);
-	}
 	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
-	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
-	systemWrapper('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"', "failed to create release commit");
-	systemWrapper('git tag ' . $currentVer->getBaseVersion(), "failed to create release tag");
+
+	if($postCommitOnly){
+		echo "Skipping release commit & tag. Bumping to next version $nextVer directly.\n";
+	}else{
+		echo "About to tag version $currentVer. Next version will be $nextVer.\n";
+		echo "$currentVer will be published on release channel \"$channel\".\n";
+		echo "please add appropriate notes to the changelog and press enter...";
+		fgets(STDIN);
+		systemWrapper('git add "' . dirname(__DIR__) . '/changelogs"', "failed to stage changelog changes");
+		system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
+		if($result === 0){
+			echo "error: no changelog changes detected; aborting\n";
+			exit(1);
+		}
+		replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
+		systemWrapper('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"', "failed to create release commit");
+		systemWrapper('git tag ' . $currentVer->getBaseVersion(), "failed to create release tag");
+	}
 
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
 	systemWrapper('git add "' . $versionInfoPath . '"', "failed to stage changes for post-release commit");

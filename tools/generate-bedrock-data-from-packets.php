@@ -399,7 +399,7 @@ class ParserPacketHandler extends PacketHandler{
 				CraftingDataPacket::ENTRY_FURNACE => "smelting",
 				CraftingDataPacket::ENTRY_FURNACE_DATA => "smelting",
 				CraftingDataPacket::ENTRY_MULTI => "special_hardcoded",
-				CraftingDataPacket::ENTRY_SHULKER_BOX => "shapeless_shulker_box",
+				CraftingDataPacket::ENTRY_USER_DATA_SHAPELESS => "shapeless_shulker_box",
 				CraftingDataPacket::ENTRY_SHAPELESS_CHEMISTRY => "shapeless_chemistry",
 				CraftingDataPacket::ENTRY_SHAPED_CHEMISTRY => "shaped_chemistry",
 				CraftingDataPacket::ENTRY_SMITHING_TRANSFORM => "smithing",

@@ -6,9 +6,69 @@ parameters:
 			path: ../../../src/block/CakeWithCandle.php
 
 		-
+			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/CopperDoor.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/CopperTrapdoor.php
+
+		-
 			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: ../../../src/block/DoubleTallGrass.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:ACACIA_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:BIRCH_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CHERRY_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CRIMSON_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:DARK_OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:JUNGLE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:MANGROVE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:SPRUCE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:WARPED_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
