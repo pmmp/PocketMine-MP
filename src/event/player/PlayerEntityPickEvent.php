@@ -30,7 +30,7 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 
 /**
- * Called when a player middle-clicks on a entity to get an item in creative mode.
+ * Called when a player middle-clicks on an entity to get an item in creative mode.
  */
 class PlayerEntityPickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
