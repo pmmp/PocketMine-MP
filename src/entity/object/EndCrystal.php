@@ -28,6 +28,8 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityPreExplodeEvent;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -58,6 +60,10 @@ class EndCrystal extends Entity implements Explosive{
 
 	public function isFireProof() : bool{
 		return true;
+	}
+
+	public function getPickedItem() : ?Item{
+		return VanillaItems::END_CRYSTAL();
 	}
 
 	public function showBase() : bool{
