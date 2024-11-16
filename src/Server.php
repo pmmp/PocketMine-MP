@@ -1059,7 +1059,6 @@ class Server{
 			$forwarder = new BroadcastLoggerForwarder($this->logger, $this->language);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
 			//TODO: move console parts to a separate component
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
@@ -1248,17 +1247,6 @@ class Server{
 		return true;
 	}
 
-	private function getBroadcastChannel(string $channelId) : ?MessageChannel{
-		return $this->broadcastChannels[$channelId] ?? null;
-	}
-
-	public function createBroadcastChannel(string $channelId, ?string $permission) : void{
-		if(isset($this->broadcastChannels[$channelId])){
-			throw new \InvalidArgumentException("Channel \"$channelId\" already exists");
-		}
-		$this->broadcastChannels[$channelId] = new MessageChannel($permission);
-	}
-
 	/**
 	 * Subscribes to a particular message broadcast channel.
 	 * The channel ID can be any arbitrary string.
@@ -1304,7 +1292,7 @@ class Server{
 	 * @param MessageBroadcastSubscriber[]|null $recipients
 	 */
 	public function broadcastMessage(CommandSender $source, Translatable|string $message, string $channelId = self::BROADCAST_CHANNEL_USERS, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->getBroadcastChannel($channelId)?->getPermittedSubscribers() ?? [];
+		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers($channelId);
 
 		foreach($recipients as $recipient){
 			$recipient->onMessage($source, $message, $channelId);

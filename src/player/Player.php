@@ -895,7 +895,6 @@ class Player extends Human implements MinecraftMessageBroadcastSubscriber, Comma
 			return;
 		}
 		$this->spawned = true;
-
 		$this->recheckBroadcastPermissions();
 		$this->getPermissionRecalculationCallbacks()->add(function(array $changedPermissionsOldValues) : void{
 			if(isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_ADMINISTRATIVE]) || isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_USERS])){
