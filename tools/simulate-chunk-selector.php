@@ -24,12 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\tools\simulate_chunk_selector;
 
 use pocketmine\player\ChunkSelector;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use Symfony\Component\Filesystem\Path;
-use function assert;
 use function count;
 use function dirname;
 use function fwrite;
@@ -128,7 +126,12 @@ if(count(getopt("", ["help"])) !== 0){
 	exit(0);
 }
 
-foreach(Utils::stringifyKeys(getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:"])) as $name => $value){
+$opts = getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:", "output:"]);
+foreach(["radius", "baseX", "baseZ", "scale", "chunksPerStep"] as $name){
+	$value = $opts[$name] ?? null;
+	if($value === null){
+		continue;
+	}
 	if(!is_string($value) || (string) ((int) $value) !== $value){
 		fwrite(STDERR, "Value for --$name must be an integer\n");
 		exit(1);
@@ -139,8 +142,7 @@ foreach(Utils::stringifyKeys(getopt("", ["radius:", "baseX:", "baseZ:", "scale:"
 		"baseX" => ($baseX = $value),
 		"baseZ" => ($baseZ = $value),
 		"scale" => ($scale = $value),
-		"chunksPerStep" => ($nChunksPerStep = $value),
-		default => throw new AssumptionFailedError("getopt() returned unknown option")
+		"chunksPerStep" => ($nChunksPerStep = $value)
 	};
 }
 if($radius === null){
@@ -149,10 +151,10 @@ if($radius === null){
 }
 
 $outputDirectory = null;
-foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
-	assert($name === "output");
+if(isset($opts["output"])){
+	$value = $opts["output"];
 	if(!is_string($value)){
-		fwrite(STDERR, "Value for --$name must be a string\n");
+		fwrite(STDERR, "Value for --output be a string\n");
 		exit(1);
 	}
 	if(!@mkdir($value) && !is_dir($value)){

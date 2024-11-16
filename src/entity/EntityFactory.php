@@ -26,7 +26,7 @@ namespace pocketmine\entity;
 use DaveRandom\CallbackValidator\CallbackType;
 use DaveRandom\CallbackValidator\ParameterType;
 use DaveRandom\CallbackValidator\ReturnType;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\data\bedrock\LegacyEntityIdToStringIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
@@ -112,7 +112,7 @@ final class EntityFactory{
 		}, ['XPOrb', 'minecraft:xp_orb']);
 
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
-			return new FallingBlock(Helper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(BlockFactory::getInstance(), $nbt), $nbt);
+			return new FallingBlock(Helper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(RuntimeBlockStateRegistry::getInstance(), $nbt), $nbt);
 		}, ['FallingSand', 'minecraft:falling_block']);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{

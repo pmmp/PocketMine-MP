@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 /**
- * Enum of all the item runtime IDs used by PocketMine-MP. These IDs are specific to PocketMine-MP and have no
- * relevance to any Minecraft vanilla things.
+ * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
+ * identify and compare item types efficiently using {@link Item::getTypeId()}.
  *
- * WARNING: DO NOT STORE THESE IDS. They can and will change without warning.
- * They should ONLY be used to IDENTIFY items at runtime.
+ * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
+ * configs or databases. They will change without warning.
  */
 final class ItemTypeIds{
 
@@ -300,8 +300,33 @@ final class ItemTypeIds{
 	public const SUSPICIOUS_STEW = 20261;
 	public const TURTLE_HELMET = 20262;
 	public const MEDICINE = 20263;
+	public const MANGROVE_BOAT = 20264;
+	public const GLOW_BERRIES = 20265;
+	public const CHERRY_SIGN = 20266;
+	public const ENCHANTED_BOOK = 20267;
+	public const TORCHFLOWER_SEEDS = 20268;
+	public const NETHERITE_UPGRADE_SMITHING_TEMPLATE = 20269;
+	public const SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = 20270;
+	public const VEX_ARMOR_TRIM_SMITHING_TEMPLATE = 20271;
+	public const WILD_ARMOR_TRIM_SMITHING_TEMPLATE = 20272;
+	public const COAST_ARMOR_TRIM_SMITHING_TEMPLATE = 20273;
+	public const DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = 20274;
+	public const WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = 20275;
+	public const RAISER_ARMOR_TRIM_SMITHING_TEMPLATE = 20276;
+	public const SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = 20277;
+	public const HOST_ARMOR_TRIM_SMITHING_TEMPLATE = 20278;
+	public const WARD_ARMOR_TRIM_SMITHING_TEMPLATE = 20279;
+	public const SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE = 20280;
+	public const TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = 20281;
+	public const SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = 20282;
+	public const RIB_ARMOR_TRIM_SMITHING_TEMPLATE = 20283;
+	public const EYE_ARMOR_TRIM_SMITHING_TEMPLATE = 20284;
+	public const SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 20285;
+	public const PITCHER_POD = 20286;
+	public const NAME_TAG = 20287;
+	public const GOAT_HORN = 20288;
 
-	public const FIRST_UNUSED_ITEM_ID = 20264;
+	public const FIRST_UNUSED_ITEM_ID = 20289;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
@@ -310,5 +335,20 @@ final class ItemTypeIds{
 	 */
 	public static function newId() : int{
 		return self::$nextDynamicId++;
+	}
+
+	public static function fromBlockTypeId(int $blockTypeId) : int{
+		if($blockTypeId < 0){
+			throw new \InvalidArgumentException("Block type IDs cannot be negative");
+		}
+		//negative item type IDs are treated as block IDs
+		return -$blockTypeId;
+	}
+
+	public static function toBlockTypeId(int $itemTypeId) : ?int{
+		if($itemTypeId > 0){ //not a blockitem
+			return null;
+		}
+		return -$itemTypeId;
 	}
 }

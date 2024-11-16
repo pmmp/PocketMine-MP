@@ -31,7 +31,6 @@ use pocketmine\item\Armor;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
-use pocketmine\item\ItemBlock;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
@@ -109,21 +108,22 @@ final class WaterCauldron extends FillableCauldron{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(($newColor = match($item->getTypeId()){
-				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE()->getRgbValue(),
-				ItemTypeIds::INK_SAC => DyeColor::BLACK()->getRgbValue(),
-				ItemTypeIds::COCOA_BEANS => DyeColor::BROWN()->getRgbValue(),
-				ItemTypeIds::BONE_MEAL => DyeColor::WHITE()->getRgbValue(),
-				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor()->getRgbValue() : null,
+		$world = $this->position->getWorld();
+		if(($dyeColor = match($item->getTypeId()){
+				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE,
+				ItemTypeIds::INK_SAC => DyeColor::BLACK,
+				ItemTypeIds::COCOA_BEANS => DyeColor::BROWN,
+				ItemTypeIds::BONE_MEAL => DyeColor::WHITE,
+				ItemTypeIds::DYE => $item instanceof Dye ? $item->getColor() : null,
 				default => null
-			}) !== null && $newColor->toRGBA() !== $this->customWaterColor?->toRGBA()
+			}) !== null && ($newColor = $dyeColor->getRgbValue())->toRGBA() !== $this->customWaterColor?->toRGBA()
 		){
-			$this->position->getWorld()->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
+			$world->setBlock($this->position, $this->setCustomWaterColor($this->customWaterColor === null ? $newColor : Color::mix($this->customWaterColor, $newColor)));
+			$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
 
 			$item->pop();
 		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
-			if($item->getType()->equals(PotionType::WATER())){
+			if($item->getType() === PotionType::WATER){
 				$this->setCustomWaterColor(null)->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{
 				$this->mix($item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
@@ -138,13 +138,13 @@ final class WaterCauldron extends FillableCauldron{
 					default => false
 				} && $item->getCustomColor()?->toRGBA() !== $this->customWaterColor->toRGBA()){
 					$item->setCustomColor($this->customWaterColor);
-					$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
-					$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
+					$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::DYE_ARMOR_USE_AMOUNT));
+					$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronDyeItemSound());
 				}
 			}elseif($item->getCustomColor() !== null){
 				$item->clearCustomColor();
-				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
-				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
+				$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_ARMOR_USE_AMOUNT));
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
 		}elseif($item instanceof Banner){
 			$patterns = $item->getPatterns();
@@ -152,10 +152,10 @@ final class WaterCauldron extends FillableCauldron{
 				array_pop($patterns);
 				$item->setPatterns($patterns);
 
-				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_BANNER_USE_AMOUNT));
-				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
+				$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_BANNER_USE_AMOUNT));
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
-		}elseif($item instanceof ItemBlock && $item->getBlock()->getTypeId() === BlockTypeIds::DYED_SHULKER_BOX){
+		}elseif(ItemTypeIds::toBlockTypeId($item->getTypeId()) === BlockTypeIds::DYED_SHULKER_BOX){
 			if($this->customWaterColor === null){
 				$newItem = VanillaBlocks::SHULKER_BOX()->asItem();
 				$newItem->setNamedTag($item->getNamedTag());
@@ -163,14 +163,14 @@ final class WaterCauldron extends FillableCauldron{
 				$item->pop();
 				$returnedItems[] = $newItem;
 
-				$this->position->getWorld()->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_SHULKER_BOX_USE_AMOUNT));
-				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
+				$world->setBlock($this->position, $this->withFillLevel($this->getFillLevel() - self::CLEAN_SHULKER_BOX_USE_AMOUNT));
+				$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronCleanItemSound());
 			}
 		}else{
 			match($item->getTypeId()){
 				ItemTypeIds::WATER_BUCKET => $this->setCustomWaterColor(null)->addFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::BUCKET(), $returnedItems),
 				ItemTypeIds::BUCKET => $this->removeFillLevels(self::MAX_FILL_LEVEL, $item, VanillaItems::WATER_BUCKET(), $returnedItems),
-				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::POTION()->setType(PotionType::WATER()), $returnedItems),
+				ItemTypeIds::GLASS_BOTTLE => $this->removeFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::POTION()->setType(PotionType::WATER), $returnedItems),
 				ItemTypeIds::LAVA_BUCKET, ItemTypeIds::POWDER_SNOW_BUCKET => $this->mix($item, VanillaItems::BUCKET(), $returnedItems),
 				default => null
 			};

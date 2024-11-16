@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io;
 
 /**
- * @phpstan-type FromPath \Closure(string $path) : WorldProvider
+ * @phpstan-type FromPath \Closure(string $path, \Logger $logger) : WorldProvider
  */
 class ReadOnlyWorldProviderManagerEntry extends WorldProviderManagerEntry{
 
@@ -36,5 +36,5 @@ class ReadOnlyWorldProviderManagerEntry extends WorldProviderManagerEntry{
 		parent::__construct($isValid);
 	}
 
-	public function fromPath(string $path) : WorldProvider{ return ($this->fromPath)($path); }
+	public function fromPath(string $path, \Logger $logger) : WorldProvider{ return ($this->fromPath)($path, $logger); }
 }

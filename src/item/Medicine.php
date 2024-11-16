@@ -23,22 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
 
 class Medicine extends Item implements ConsumableItem{
 
-	private MedicineType $medicineType;
+	private MedicineType $medicineType = MedicineType::EYE_DROPS;
 
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->medicineType = MedicineType::EYE_DROPS();
-		parent::__construct($identifier, $name);
-	}
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->medicineType($this->medicineType);
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$w->enum($this->medicineType);
 	}
 
 	public function getType() : MedicineType{ return $this->medicineType; }

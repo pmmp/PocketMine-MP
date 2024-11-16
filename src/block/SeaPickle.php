@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -39,10 +38,8 @@ class SeaPickle extends Transparent{
 	protected int $count = self::MIN_COUNT;
 	protected bool $underwater = false;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 		$w->bool($this->underwater);
 	}
 
@@ -81,7 +78,7 @@ class SeaPickle extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

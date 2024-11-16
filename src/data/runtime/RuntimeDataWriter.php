@@ -27,11 +27,12 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 use function array_flip;
+use function log;
+use function spl_object_id;
 
-final class RuntimeDataWriter{
-	use RuntimeEnumSerializerTrait;
+final class RuntimeDataWriter implements RuntimeDataDescriber{
+	use LegacyRuntimeEnumDescriberTrait;
 
 	private int $value = 0;
 	private int $offset = 0;
@@ -40,7 +41,7 @@ final class RuntimeDataWriter{
 		private int $maxBits
 	){}
 
-	public function int(int $bits, int $value) : void{
+	public function writeInt(int $bits, int $value) : void{
 		if($this->offset + $bits > $this->maxBits){
 			throw new \InvalidArgumentException("Bit buffer cannot be larger than $this->maxBits bits (already have $this->offset bits)");
 		}
@@ -52,19 +53,44 @@ final class RuntimeDataWriter{
 		$this->offset += $bits;
 	}
 
-	public function boundedInt(int $bits, int $min, int $max, int $value) : void{
+	public function int(int $bits, int &$value) : void{
+		$this->writeInt($bits, $value);
+	}
+
+	/**
+	 * @deprecated Use {@link self::boundedIntAuto()} instead.
+	 */
+	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
+		$offset = $this->offset;
+		$this->writeBoundedIntAuto($min, $max, $value);
+		$actualBits = $this->offset - $offset;
+		if($actualBits !== $bits){
+			throw new \InvalidArgumentException("Bits should be $actualBits for the given bounds, but received $bits. Use boundedIntAuto() for automatic bits calculation.");
+		}
+	}
+
+	private function writeBoundedIntAuto(int $min, int $max, int $value) : void{
 		if($value < $min || $value > $max){
 			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
 		}
-		$this->int($bits, $value - $min);
+		$bits = ((int) log($max - $min, 2)) + 1;
+		$this->writeInt($bits, $value - $min);
 	}
 
-	public function bool(bool $value) : void{
-		$this->int(1, $value ? 1 : 0);
+	public function boundedIntAuto(int $min, int $max, int &$value) : void{
+		$this->writeBoundedIntAuto($min, $max, $value);
 	}
 
-	public function horizontalFacing(int $facing) : void{
-		$this->int(2, match($facing){
+	protected function writeBool(bool $value) : void{
+		$this->writeInt(1, $value ? 1 : 0);
+	}
+
+	public function bool(bool &$value) : void{
+		$this->writeBool($value);
+	}
+
+	public function horizontalFacing(int &$facing) : void{
+		$this->writeInt(2, match($facing){
 			Facing::NORTH => 0,
 			Facing::EAST => 1,
 			Facing::SOUTH => 2,
@@ -76,15 +102,25 @@ final class RuntimeDataWriter{
 	/**
 	 * @param int[] $faces
 	 */
-	public function horizontalFacingFlags(array $faces) : void{
+	public function facingFlags(array &$faces) : void{
 		$uniqueFaces = array_flip($faces);
-		foreach(Facing::HORIZONTAL as $facing){
-			$this->bool(isset($uniqueFaces[$facing]));
+		foreach(Facing::ALL as $facing){
+			$this->writeBool(isset($uniqueFaces[$facing]));
 		}
 	}
 
-	public function facing(int $facing) : void{
-		$this->int(3, match($facing){
+	/**
+	 * @param int[] $faces
+	 */
+	public function horizontalFacingFlags(array &$faces) : void{
+		$uniqueFaces = array_flip($faces);
+		foreach(Facing::HORIZONTAL as $facing){
+			$this->writeBool(isset($uniqueFaces[$facing]));
+		}
+	}
+
+	public function facing(int &$facing) : void{
+		$this->writeInt(3, match($facing){
 			0 => Facing::DOWN,
 			1 => Facing::UP,
 			2 => Facing::NORTH,
@@ -95,12 +131,12 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function facingExcept(int $facing, int $except) : void{
+	public function facingExcept(int &$facing, int $except) : void{
 		$this->facing($facing);
 	}
 
-	public function axis(int $axis) : void{
-		$this->int(2, match($axis){
+	public function axis(int &$axis) : void{
+		$this->writeInt(2, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			Axis::Y => 2,
@@ -108,8 +144,8 @@ final class RuntimeDataWriter{
 		});
 	}
 
-	public function horizontalAxis(int $axis) : void{
-		$this->int(1, match($axis){
+	public function horizontalAxis(int &$axis) : void{
+		$this->writeInt(1, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
 			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis")
@@ -120,38 +156,47 @@ final class RuntimeDataWriter{
 	 * @param WallConnectionType[] $connections
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
 	 */
-	public function wallConnections(array $connections) : void{
-		//TODO: we can pack this into 7 bits instead of 8
+	public function wallConnections(array &$connections) : void{
+		$packed = 0;
+		$offset = 0;
 		foreach(Facing::HORIZONTAL as $facing){
-			$this->boundedInt(2, 0, 2, match($connections[$facing] ?? null){
+			$packed += match($connections[$facing] ?? null){
 				null => 0,
-				WallConnectionType::SHORT() => 1,
-				WallConnectionType::TALL() => 2,
-				default => throw new AssumptionFailedError("Unreachable")
-			});
+				WallConnectionType::SHORT => 1,
+				WallConnectionType::TALL => 2,
+			} * (3 ** $offset);
+			$offset++;
 		}
+		$this->writeBoundedIntAuto(0, (3 ** 4) - 1, $packed);
 	}
 
 	/**
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param array<int, BrewingStandSlot> $slots
+	 *
+	 * @deprecated Use {@link enumSet()} instead.
 	 */
-	public function brewingStandSlots(array $slots) : void{
-		foreach([
-			BrewingStandSlot::EAST(),
-			BrewingStandSlot::NORTHWEST(),
-			BrewingStandSlot::SOUTHWEST(),
-		] as $member){
-			$this->bool(isset($slots[$member->id()]));
-		}
+	public function brewingStandSlots(array &$slots) : void{
+		$this->enumSet($slots, BrewingStandSlot::cases());
 	}
 
-	public function railShape(int $railShape) : void{
+	public function railShape(int &$railShape) : void{
 		$this->int(4, $railShape);
 	}
 
-	public function straightOnlyRailShape(int $railShape) : void{
+	public function straightOnlyRailShape(int &$railShape) : void{
 		$this->int(3, $railShape);
+	}
+
+	public function enum(\UnitEnum &$case) : void{
+		$metadata = RuntimeEnumMetadata::from($case);
+		$this->writeInt($metadata->bits, $metadata->enumToInt($case));
+	}
+
+	public function enumSet(array &$set, array $allCases) : void{
+		foreach($allCases as $case){
+			$this->writeBool(isset($set[spl_object_id($case)]));
+		}
 	}
 
 	public function getValue() : int{ return $this->value; }

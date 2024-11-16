@@ -32,6 +32,6 @@ final class SmithingTableInventory extends SimpleInventory implements BlockInven
 
 	public function __construct(Position $holder){
 		$this->holder = $holder;
-		parent::__construct(2);
+		parent::__construct(3);
 	}
 }

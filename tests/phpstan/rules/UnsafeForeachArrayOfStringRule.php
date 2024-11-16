@@ -78,7 +78,7 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 			return $type;
 		});
 		if($hasCastableKeyTypes && !$expectsIntKeyTypes){
-			$func = \Closure::fromCallable([Utils::class, 'stringifyKeys']);
+			$func = Utils::stringifyKeys(...);
 			return [
 				RuleErrorBuilder::message(sprintf(
 					"Unsafe foreach on array with key type %s (they might be casted to int).",

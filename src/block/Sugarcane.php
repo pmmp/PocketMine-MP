@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -35,26 +35,23 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
-	public const MAX_AGE = 15;
-
-	protected int $age = 0;
-
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->boundedInt(4, 0, self::MAX_AGE, $this->age);
+	use AgeableTrait;
+	use StaticSupportTrait {
+		onNearbyBlockChange as onSupportBlockChange;
 	}
+
+	public const MAX_AGE = 15;
 
 	private function seekToBottom() : Position{
 		$world = $this->position->getWorld();
 		$bottom = $this->position;
-		while(($next = $world->getBlock($bottom->down()))->isSameType($this)){
+		while(($next = $world->getBlock($bottom->down()))->hasSameTypeId($this)){
 			$bottom = $next->position;
 		}
 		return $bottom;
 	}
 
-	private function grow(Position $pos) : bool{
+	private function grow(Position $pos, ?Player $player = null) : bool{
 		$grew = false;
 		$world = $pos->getWorld();
 		for($y = 1; $y < 3; ++$y){
@@ -63,14 +60,12 @@ class Sugarcane extends Flowable{
 			}
 			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
 			if($b->getTypeId() === BlockTypeIds::AIR){
-				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
-				$ev->call();
-				if($ev->isCancelled()){
+				if(BlockEventHelper::grow($b, VanillaBlocks::SUGARCANE(), $player)){
+					$grew = true;
+				}else{
 					break;
 				}
-				$world->setBlock($b->position, $ev->getNewState());
-				$grew = true;
-			}elseif(!$b->isSameType($this)){
+			}elseif(!$b->hasSameTypeId($this)){
 				break;
 			}
 		}
@@ -79,20 +74,9 @@ class Sugarcane extends Flowable{
 		return $grew;
 	}
 
-	public function getAge() : int{ return $this->age; }
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
-			if($this->grow($this->seekToBottom())){
+			if($this->grow($this->seekToBottom(), $player)){
 				$item->pop();
 			}
 
@@ -102,18 +86,12 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return
-			$block->hasTypeTag(BlockTypeTags::MUD) ||
-			$block->hasTypeTag(BlockTypeTags::DIRT) ||
-			$block->hasTypeTag(BlockTypeTags::SAND);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isSameType($this) && !$this->canBeSupportedBy($down)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return $supportBlock->hasSameTypeId($this) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function ticksRandomly() : bool{
@@ -121,7 +99,13 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->hasSameTypeId($this)){
+			if(!$this->hasNearbyWater($down)){
+				$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
+				return;
+			}
+
 			if($this->age === self::MAX_AGE){
 				$this->grow($this->position);
 			}else{
@@ -132,18 +116,38 @@ class Sugarcane extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->isSameType($this)){
+		$down = $blockReplace->getSide(Facing::DOWN);
+		if($down->hasSameTypeId($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($this->canBeSupportedBy($down)){
-			foreach(Facing::HORIZONTAL as $side){
-				$sideBlock = $down->getSide($side);
-				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
-					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-				}
+		}
+
+		//support criteria are checked by FixedSupportTrait, but this part applies to placement only
+		foreach(Facing::HORIZONTAL as $side){
+			$sideBlock = $down->getSide($side);
+			if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
+				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 
 		return false;
+	}
+
+	private function hasNearbyWater(Block $down) : bool{
+		foreach($down->getHorizontalSides() as $sideBlock){
+			$blockId = $sideBlock->getTypeId();
+			if($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->hasSameTypeId($this) && !$this->hasNearbyWater($down)){
+			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
+		}else{
+			$this->onSupportBlockChange();
+		}
 	}
 }

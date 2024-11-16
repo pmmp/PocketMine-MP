@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -36,10 +35,11 @@ use pocketmine\world\format\SubChunk;
 class PMAnvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
-	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d) : SubChunk{
-		return new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [$this->palettizeLegacySubChunkXZY(
+	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk{
+		return new SubChunk(Block::EMPTY_STATE_ID, [$this->palettizeLegacySubChunkXZY(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
-			self::readFixedSizeByteArray($subChunk, "Data", 2048)
+			self::readFixedSizeByteArray($subChunk, "Data", 2048),
+			$logger
 		)], $biomes3d);
 	}
 

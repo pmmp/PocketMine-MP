@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
@@ -126,6 +127,8 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function save() : void{
+		$this->compoundTag->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
+
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag(self::TAG_ROOT_DATA, $this->compoundTag))), ZLIB_ENCODING_GZIP));
 		Filesystem::safeFilePutContents($this->dataPath, $buffer);

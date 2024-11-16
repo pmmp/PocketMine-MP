@@ -24,10 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
-use pocketmine\block\VanillaBlocks;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\block\BlockTypeIds;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -36,47 +34,37 @@ use pocketmine\data\runtime\RuntimeDataWriter;
  * just place wheat crops when used on the ground).
  */
 final class ItemBlock extends Item{
-	private int $blockTypeId;
-	private int $blockTypeData;
-
-	private int $fuelTime;
-	private bool $fireProof;
-	private int $maxStackSize;
-
-	public function __construct(Block $block){
-		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName());
-		$this->blockTypeId = $block->getTypeId();
-		$this->blockTypeData = $block->computeTypeData();
-
-		$this->fuelTime = $block->getFuelTime();
-		$this->fireProof = $block->isFireProofAsItem();
-		$this->maxStackSize = $block->getMaxStackSize();
+	public function __construct(
+		private Block $block
+	){
+		parent::__construct(ItemIdentifier::fromBlock($block), $block->getName(), $block->getEnchantmentTags());
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->int(Block::INTERNAL_STATE_DATA_BITS, $this->blockTypeData);
+	protected function describeState(RuntimeDataDescriber $w) : void{
+		$this->block->describeBlockItemState($w);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		//TODO: HACKY MESS, CLEAN IT UP
-		$factory = BlockFactory::getInstance();
-		if(!$factory->isRegistered($this->blockTypeId)){
-			return VanillaBlocks::AIR();
-		}
-		$blockType = $factory->fromTypeId($this->blockTypeId);
-		$blockType->decodeTypeData($this->blockTypeData);
-		return $blockType;
+		return clone $this->block;
 	}
 
 	public function getFuelTime() : int{
-		return $this->fuelTime;
+		return $this->block->getFuelTime();
 	}
 
 	public function isFireProof() : bool{
-		return $this->fireProof;
+		return $this->block->isFireProofAsItem();
 	}
 
 	public function getMaxStackSize() : int{
-		return $this->maxStackSize;
+		return $this->block->getMaxStackSize();
+	}
+
+	public function isNull() : bool{
+		//TODO: we really shouldn't need to treat air as a special case here
+		//this is needed because the "null" empty slot item is represented by an air block, but there's no real reason
+		//why air should be needed at all. A separate special item type (or actual null) should be used instead, but
+		//this would cause a lot of BC breaks, so we can't do it yet.
+		return parent::isNull() || $this->block->getTypeId() === BlockTypeIds::AIR;
 	}
 }

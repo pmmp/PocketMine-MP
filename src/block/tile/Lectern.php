@@ -26,7 +26,7 @@ namespace pocketmine\block\tile;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use function count;
 
 /**
@@ -81,7 +81,7 @@ class Lectern extends Spawnable{
 		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
 		if($this->book !== null){
-			$nbt->setTag(self::TAG_BOOK, ItemTranslator::getInstance()->toNetworkNbt($this->book));
+			$nbt->setTag(self::TAG_BOOK, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->book));
 			$nbt->setInt(self::TAG_TOTAL_PAGES, count($this->book->getPages()));
 		}
 	}

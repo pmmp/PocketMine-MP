@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\handler\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\(string, bool\\=\\)\\: mixed\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$isValidFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: bool\\) does not accept Closure\\|null\\.$#"
 			count: 1
-			path: ../../phpunit/network/mcpe/handler/StupidJsonDecodeTest.php
+			path: ../../phpunit/event/HandlerListManagerTest.php
+
+		-
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: \\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\)\\) does not accept Closure\\|null\\.$#"
+			count: 1
+			path: ../../phpunit/event/HandlerListManagerTest.php

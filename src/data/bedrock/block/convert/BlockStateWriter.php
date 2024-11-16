@@ -24,11 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\block\utils\WoodType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
@@ -39,6 +37,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 
 final class BlockStateWriter{
 
@@ -86,6 +85,42 @@ final class BlockStateWriter{
 			default => throw new BlockStateSerializeException("Invalid Facing $value")
 		});
 		return $this;
+	}
+
+	/** @return $this */
+	public function writeBlockFace(int $value) : self{
+		$this->writeString(BlockStateNames::MC_BLOCK_FACE, match($value){
+			Facing::DOWN => StringValues::MC_BLOCK_FACE_DOWN,
+			Facing::UP => StringValues::MC_BLOCK_FACE_UP,
+			Facing::NORTH => StringValues::MC_BLOCK_FACE_NORTH,
+			Facing::SOUTH => StringValues::MC_BLOCK_FACE_SOUTH,
+			Facing::WEST => StringValues::MC_BLOCK_FACE_WEST,
+			Facing::EAST => StringValues::MC_BLOCK_FACE_EAST,
+			default => throw new BlockStateSerializeException("Invalid Facing $value")
+		});
+		return $this;
+	}
+
+	/**
+	 * @param int[] $faces
+	 * @phpstan-param array<int, int> $faces
+	 * @return $this
+	 */
+	public function writeFacingFlags(array $faces) : self{
+		$result = 0;
+		foreach($faces as $face){
+			$result |= match($face){
+				Facing::DOWN => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN,
+				Facing::UP => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP,
+				Facing::NORTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH,
+				Facing::SOUTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH,
+				Facing::WEST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST,
+				Facing::EAST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST,
+				default => throw new AssumptionFailedError("Unhandled face $face")
+			};
+		}
+
+		return $this->writeInt(BlockStateNames::MULTI_FACE_DIRECTION_BITS, $result);
 	}
 
 	/** @return $this */
@@ -141,28 +176,18 @@ final class BlockStateWriter{
 		});
 	}
 
-	/** @return $this */
-	public function writeColor(DyeColor $color) : self{
-		$this->writeString(BlockStateNames::COLOR, match($color->id()){
-			DyeColor::BLACK()->id() => StringValues::COLOR_BLACK,
-			DyeColor::BLUE()->id() => StringValues::COLOR_BLUE,
-			DyeColor::BROWN()->id() => StringValues::COLOR_BROWN,
-			DyeColor::CYAN()->id() => StringValues::COLOR_CYAN,
-			DyeColor::GRAY()->id() => StringValues::COLOR_GRAY,
-			DyeColor::GREEN()->id() => StringValues::COLOR_GREEN,
-			DyeColor::LIGHT_BLUE()->id() => StringValues::COLOR_LIGHT_BLUE,
-			DyeColor::LIGHT_GRAY()->id() => StringValues::COLOR_SILVER,
-			DyeColor::LIME()->id() => StringValues::COLOR_LIME,
-			DyeColor::MAGENTA()->id() => StringValues::COLOR_MAGENTA,
-			DyeColor::ORANGE()->id() => StringValues::COLOR_ORANGE,
-			DyeColor::PINK()->id() => StringValues::COLOR_PINK,
-			DyeColor::PURPLE()->id() => StringValues::COLOR_PURPLE,
-			DyeColor::RED()->id() => StringValues::COLOR_RED,
-			DyeColor::WHITE()->id() => StringValues::COLOR_WHITE,
-			DyeColor::YELLOW()->id() => StringValues::COLOR_YELLOW,
-			default => throw new BlockStateSerializeException("Invalid Color " . $color->name())
+	/**
+	 * Used by pumpkins as of 1.20.0.23 beta
+	 * @return $this
+	 */
+	public function writeCardinalHorizontalFacing(int $value) : self{
+		return $this->writeString(BlockStateNames::MC_CARDINAL_DIRECTION, match($value){
+			Facing::SOUTH => StringValues::MC_CARDINAL_DIRECTION_SOUTH,
+			Facing::WEST => StringValues::MC_CARDINAL_DIRECTION_WEST,
+			Facing::NORTH => StringValues::MC_CARDINAL_DIRECTION_NORTH,
+			Facing::EAST => StringValues::MC_CARDINAL_DIRECTION_EAST,
+			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
 		});
-		return $this;
 	}
 
 	/** @return $this */
@@ -208,10 +233,10 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeSlabPosition(SlabType $slabType) : self{
-		$this->writeBool(BlockStateNames::TOP_SLOT_BIT, match($slabType->id()){
-			SlabType::TOP()->id() => true,
-			SlabType::BOTTOM()->id() => false,
-			default => throw new BlockStateSerializeException("Invalid slab type " . $slabType->name())
+		$this->writeString(BlockStateNames::MC_VERTICAL_HALF, match($slabType){
+			SlabType::TOP => StringValues::MC_VERTICAL_HALF_TOP,
+			SlabType::BOTTOM => StringValues::MC_VERTICAL_HALF_BOTTOM,
+			default => throw new BlockStateSerializeException("Invalid slab type " . $slabType->name)
 		});
 		return $this;
 	}
@@ -231,40 +256,12 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeLegacyWoodType(WoodType $treeType) : self{
-		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType->id()){
-			WoodType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
-			WoodType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
-			WoodType::BIRCH()->id() => StringValues::WOOD_TYPE_BIRCH,
-			WoodType::JUNGLE()->id() => StringValues::WOOD_TYPE_JUNGLE,
-			WoodType::ACACIA()->id() => StringValues::WOOD_TYPE_ACACIA,
-			WoodType::DARK_OAK()->id() => StringValues::WOOD_TYPE_DARK_OAK,
-			default => throw new BlockStateSerializeException("Invalid Wood type " . $treeType->name())
-		});
-		return $this;
-	}
-
-	/** @return $this */
-	public function writeCoralType(CoralType $coralType) : self{
-		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType->id()){
-			CoralType::TUBE()->id() => StringValues::CORAL_COLOR_BLUE,
-			CoralType::BRAIN()->id() => StringValues::CORAL_COLOR_PINK,
-			CoralType::BUBBLE()->id() => StringValues::CORAL_COLOR_PURPLE,
-			CoralType::FIRE()->id() => StringValues::CORAL_COLOR_RED,
-			CoralType::HORN()->id() => StringValues::CORAL_COLOR_YELLOW,
-			default => throw new BlockStateSerializeException("Invalid Coral type " . $coralType->name())
-		});
-		return $this;
-	}
-
-	/** @return $this */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
-		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType->id()){
-			BellAttachmentType::FLOOR()->id() => StringValues::ATTACHMENT_STANDING,
-			BellAttachmentType::CEILING()->id() => StringValues::ATTACHMENT_HANGING,
-			BellAttachmentType::ONE_WALL()->id() => StringValues::ATTACHMENT_SIDE,
-			BellAttachmentType::TWO_WALLS()->id() => StringValues::ATTACHMENT_MULTIPLE,
-			default => throw new BlockStateSerializeException("Invalid Bell attachment type " . $attachmentType->name())
+		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType){
+			BellAttachmentType::FLOOR => StringValues::ATTACHMENT_STANDING,
+			BellAttachmentType::CEILING => StringValues::ATTACHMENT_HANGING,
+			BellAttachmentType::ONE_WALL => StringValues::ATTACHMENT_SIDE,
+			BellAttachmentType::TWO_WALLS => StringValues::ATTACHMENT_MULTIPLE,
 		});
 		return $this;
 	}
@@ -273,14 +270,13 @@ final class BlockStateWriter{
 	public function writeWallConnectionType(string $name, ?WallConnectionType $wallConnectionType) : self{
 		$this->writeString($name, match($wallConnectionType){
 			null => StringValues::WALL_CONNECTION_TYPE_EAST_NONE,
-			WallConnectionType::SHORT() => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
-			WallConnectionType::TALL() => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
-			default => throw new BlockStateSerializeException("Invalid Wall connection type " . $wallConnectionType->name())
+			WallConnectionType::SHORT => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
+			WallConnectionType::TALL => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
 		});
 		return $this;
 	}
 
 	public function getBlockStateData() : BlockStateData{
-		return new BlockStateData($this->id, $this->states, BlockStateData::CURRENT_VERSION);
+		return BlockStateData::current($this->id, $this->states);
 	}
 }

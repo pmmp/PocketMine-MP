@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\thread\ThreadSafeClassLoader;
 use function is_file;
 use function str_ends_with;
 
@@ -31,7 +32,7 @@ use function str_ends_with;
  */
 class PharPluginLoader implements PluginLoader{
 	public function __construct(
-		private \DynamicClassLoader $loader
+		private ThreadSafeClassLoader $loader
 	){}
 
 	public function canLoadPlugin(string $path) : bool{

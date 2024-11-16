@@ -23,23 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
+	use StaticSupportTrait;
+
 	private bool $ready = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->ready);
 	}
 
@@ -51,19 +52,13 @@ final class BambooSapling extends Flowable{
 		return $this;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
 		return
-			$block->getTypeId() === BlockTypeIds::GRAVEL ||
-			$block->hasTypeTag(BlockTypeTags::DIRT) ||
-			$block->hasTypeTag(BlockTypeTags::MUD) ||
-			$block->hasTypeTag(BlockTypeTags::SAND);
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->position->getWorld()->getBlock($blockReplace->position->down()))){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+			$supportBlock->getTypeId() === BlockTypeIds::GRAVEL ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -74,13 +69,6 @@ final class BambooSapling extends Flowable{
 			}
 		}
 		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($world->getBlock($this->position->down()))){
-			$world->useBreakOn($this->position);
-		}
 	}
 
 	private function grow(?Player $player) : bool{

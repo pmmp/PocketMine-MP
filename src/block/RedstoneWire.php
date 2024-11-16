@@ -24,22 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-		return false;
-	}
+	use StaticSupportTrait;
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
@@ -48,14 +40,8 @@ class RedstoneWire extends Flowable{
 		return $this;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
 	}
 
 	public function asItem() : Item{

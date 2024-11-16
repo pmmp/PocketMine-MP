@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+/**
+ * @deprecated
+ */
 class WeightedPressurePlateHeavy extends WeightedPressurePlate{
 
 }

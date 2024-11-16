@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
-use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -43,7 +42,7 @@ class CreateItemAction extends InventoryAction{
 		if($source->hasFiniteResources()){
 			throw new TransactionValidationException("Player has finite resources, cannot create items");
 		}
-		if(!CreativeInventory::getInstance()->contains($this->sourceItem)){
+		if(!$source->getCreativeInventory()->contains($this->sourceItem)){
 			throw new TransactionValidationException("Creative inventory does not contain requested item");
 		}
 	}

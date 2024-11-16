@@ -35,6 +35,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
 use function count;
 use function fclose;
@@ -130,7 +131,7 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$host = $sender->getServer()->getConfigGroup()->getPropertyString("timings.host", "timings.pmmp.io");
+				$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 
 				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
 					[new BulkCurlTaskOperation(
@@ -163,6 +164,7 @@ class TimingsCommand extends VanillaCommand{
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
 								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
+							$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
 							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}

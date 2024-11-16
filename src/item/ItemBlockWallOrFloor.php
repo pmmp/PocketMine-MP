@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
@@ -40,9 +40,9 @@ class ItemBlockWallOrFloor extends Item{
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		if($clickedFace !== null && Facing::axis($clickedFace) !== Axis::Y){
-			return BlockFactory::getInstance()->fromStateId($this->wallVariant);
+			return RuntimeBlockStateRegistry::getInstance()->fromStateId($this->wallVariant);
 		}
-		return BlockFactory::getInstance()->fromStateId($this->floorVariant);
+		return RuntimeBlockStateRegistry::getInstance()->fromStateId($this->floorVariant);
 	}
 
 	public function getFuelTime() : int{

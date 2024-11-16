@@ -36,11 +36,12 @@ use function fwrite;
 use function getopt;
 use function is_string;
 use function max;
+use function preg_match;
 use function preg_replace;
-use function sleep;
 use function sprintf;
 use function str_pad;
 use function strlen;
+use function strtolower;
 use function system;
 use const STDERR;
 use const STDIN;
@@ -85,7 +86,8 @@ function systemWrapper(string $command, string $errorMessage) : void{
 
 function main() : void{
 	$filteredOpts = [];
-	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help"])) as $optName => $optValue){
+	$postCommitOnly = false;
+	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help", "post"])) as $optName => $optValue){
 		if($optName === "help"){
 			fwrite(STDOUT, "Options:\n");
 
@@ -95,6 +97,10 @@ function main() : void{
 			}
 			exit(0);
 		}
+		if($optName === "post"){
+			$postCommitOnly = true;
+			continue;
+		}
 		if(!is_string($optValue)){
 			fwrite(STDERR, "--$optName expects exactly 1 value\n");
 			exit(1);
@@ -102,44 +108,67 @@ function main() : void{
 		$filteredOpts[$optName] = $optValue;
 	}
 
+	$channel = $filteredOpts["channel"] ?? null;
 	if(isset($filteredOpts["current"])){
 		$currentVer = new VersionString($filteredOpts["current"]);
 	}else{
 		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
-	if(isset($filteredOpts["next"])){
-		$nextVer = new VersionString($filteredOpts["next"]);
+
+	$nextVer = isset($filteredOpts["next"]) ? new VersionString($filteredOpts["next"]) : null;
+
+	$suffix = $currentVer->getSuffix();
+	if($suffix !== ""){
+		if($channel === "stable"){
+			fwrite(STDERR, "error: cannot release a suffixed build into the stable channel\n");
+			exit(1);
+		}
+		if(preg_match('/^([A-Za-z]+)(\d+)$/', $suffix, $matches) !== 1){
+			echo "error: invalid current version suffix \"$suffix\"; aborting\n";
+			exit(1);
+		}
+		$nextVer ??= new VersionString(sprintf(
+			"%u.%u.%u-%s%u",
+			$currentVer->getMajor(),
+			$currentVer->getMinor(),
+			$currentVer->getPatch(),
+			$matches[1],
+			((int) $matches[2]) + 1
+		));
+		$channel ??= strtolower($matches[1]);
 	}else{
-		$nextVer = new VersionString(sprintf(
+		$nextVer ??= new VersionString(sprintf(
 			"%u.%u.%u",
 			$currentVer->getMajor(),
 			$currentVer->getMinor(),
 			$currentVer->getPatch() + 1
 		));
+		$channel ??= "stable";
 	}
-	$channel = $filteredOpts["channel"] ?? VersionInfo::BUILD_CHANNEL;
 
-	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
-	echo "$currentVer will be published on release channel \"$channel\".\n";
-	echo "please add appropriate notes to the changelog and press enter...";
-	fgets(STDIN);
-	systemWrapper('git add "' . dirname(__DIR__) . '/changelogs"', "failed to stage changelog changes");
-	system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
-	if($result === 0){
-		echo "error: no changelog changes detected; aborting\n";
-		exit(1);
-	}
 	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
-	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
-	systemWrapper('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"', "failed to create release commit");
-	systemWrapper('git tag ' . $currentVer->getBaseVersion(), "failed to create release tag");
+
+	if($postCommitOnly){
+		echo "Skipping release commit & tag. Bumping to next version $nextVer directly.\n";
+	}else{
+		echo "About to tag version $currentVer. Next version will be $nextVer.\n";
+		echo "$currentVer will be published on release channel \"$channel\".\n";
+		echo "please add appropriate notes to the changelog and press enter...";
+		fgets(STDIN);
+		systemWrapper('git add "' . dirname(__DIR__) . '/changelogs"', "failed to stage changelog changes");
+		system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
+		if($result === 0){
+			echo "error: no changelog changes detected; aborting\n";
+			exit(1);
+		}
+		replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
+		systemWrapper('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"', "failed to create release commit");
+		systemWrapper('git tag ' . $currentVer->getBaseVersion(), "failed to create release tag");
+	}
 
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
 	systemWrapper('git add "' . $versionInfoPath . '"', "failed to stage changes for post-release commit");
 	systemWrapper('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"', "failed to create post-release commit");
-	echo "pushing changes in 5 seconds\n";
-	sleep(5);
-	systemWrapper('git push origin HEAD ' . $currentVer->getBaseVersion(), "failed to push changes to remote");
 }
 
 main();

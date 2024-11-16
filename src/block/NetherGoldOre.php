@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 final class NetherGoldOre extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [VanillaItems::GOLD_NUGGET()->setCount(mt_rand(2, 6))];
+		return [VanillaItems::GOLD_NUGGET()->setCount(FortuneDropHelper::weighted($item, min: 2, maxBase: 6))];
 	}
 
 	public function isAffectedBySilkTouch() : bool{ return true; }

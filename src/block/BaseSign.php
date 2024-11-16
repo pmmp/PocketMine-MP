@@ -49,6 +49,8 @@ abstract class BaseSign extends Transparent{
 	use WoodTypeTrait;
 
 	protected SignText $text;
+	private bool $waxed = false;
+
 	protected ?int $editorEntityRuntimeId = null;
 
 	/** @var \Closure() : Item */
@@ -69,6 +71,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
+			$this->waxed = $tile->isWaxed();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
 
@@ -80,6 +83,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
+		$tile->setWaxed($this->waxed);
 		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
 	}
 
@@ -99,7 +103,7 @@ abstract class BaseSign extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	abstract protected function getSupportingFace() : int;
@@ -115,6 +119,15 @@ abstract class BaseSign extends Transparent{
 			$this->editorEntityRuntimeId = $player->getId();
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function onPostPlace() : void{
+		$player = $this->editorEntityRuntimeId !== null ?
+			$this->position->getWorld()->getEntity($this->editorEntityRuntimeId) :
+			null;
+		if($player instanceof Player){
+			$player->openSignEditor($this->position);
+		}
 	}
 
 	private function doSignChange(SignText $newText, Player $player, Item $item) : bool{
@@ -138,32 +151,53 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
+	private function wax(Player $player, Item $item) : bool{
+		if($this->waxed){
+			return false;
+		}
+
+		$this->waxed = true;
+		$this->position->getWorld()->setBlock($this->position, $this);
+		$item->pop();
+
+		return true;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player === null){
 			return false;
 		}
+		if($this->waxed){
+			return true;
+		}
+
 		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
-			ItemTypeIds::BONE_MEAL => DyeColor::WHITE(),
-			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE(),
-			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN(),
+			ItemTypeIds::BONE_MEAL => DyeColor::WHITE,
+			ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE,
+			ItemTypeIds::COCOA_BEANS => DyeColor::BROWN,
 			default => null
 		};
 		if($dyeColor !== null){
-			$color = $dyeColor->equals(DyeColor::BLACK()) ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
-			if($color->toARGB() === $this->text->getBaseColor()->toARGB()){
-				return false;
-			}
-
-			if($this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)){
+			$color = $dyeColor === DyeColor::BLACK ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
+			if(
+				$color->toARGB() !== $this->text->getBaseColor()->toARGB() &&
+				$this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)
+			){
 				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
 				return true;
 			}
-		}elseif($item->getTypeId() === ItemTypeIds::INK_SAC){
-			return $this->changeSignGlowingState(false, $player, $item);
-		}elseif($item->getTypeId() === ItemTypeIds::GLOW_INK_SAC){
-			return $this->changeSignGlowingState(true, $player, $item);
+		}elseif(match($item->getTypeId()){
+			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item),
+			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item),
+			ItemTypeIds::HONEYCOMB => $this->wax($player, $item),
+			default => false
+		}){
+			return true;
 		}
-		return false;
+
+		$player->openSignEditor($this->position);
+
+		return true;
 	}
 
 	/**
@@ -176,6 +210,30 @@ abstract class BaseSign extends Transparent{
 	/** @return $this */
 	public function setText(SignText $text) : self{
 		$this->text = $text;
+		return $this;
+	}
+
+	/**
+	 * Returns whether the sign has been waxed using a honeycomb. If true, the sign cannot be edited by a player.
+	 */
+	public function isWaxed() : bool{ return $this->waxed; }
+
+	/** @return $this */
+	public function setWaxed(bool $waxed) : self{
+		$this->waxed = $waxed;
+		return $this;
+	}
+
+	/**
+	 * Sets the runtime entity ID of the player editing this sign. Only this player will be able to edit the sign.
+	 * This is used to prevent multiple players from editing the same sign at the same time, and to prevent players
+	 * from editing signs they didn't place.
+	 */
+	public function getEditorEntityRuntimeId() : ?int{ return $this->editorEntityRuntimeId; }
+
+	/** @return $this */
+	public function setEditorEntityRuntimeId(?int $editorEntityRuntimeId) : self{
+		$this->editorEntityRuntimeId = $editorEntityRuntimeId;
 		return $this;
 	}
 
@@ -195,13 +253,14 @@ abstract class BaseSign extends Transparent{
 		}
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
-		}, $text->getLines())));
-		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
+		}, $text->getLines()), $this->text->getBaseColor(), $this->text->isGlowing()));
+		if($this->waxed || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());
+			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
@@ -211,5 +270,9 @@ abstract class BaseSign extends Transparent{
 
 	public function asItem() : Item{
 		return ($this->asItemCallback)();
+	}
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 200 : 0;
 	}
 }

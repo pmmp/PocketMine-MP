@@ -32,7 +32,7 @@ class LegacyStringToItemParserTest extends TestCase{
 	 * @return mixed[][]
 	 * @phpstan-return list<array{string,Item}>
 	 */
-	public function itemFromStringProvider() : array{
+	public static function itemFromStringProvider() : array{
 		return [
 			["dye:4", VanillaItems::LAPIS_LAZULI()],
 			["351", VanillaItems::INK_SAC()],

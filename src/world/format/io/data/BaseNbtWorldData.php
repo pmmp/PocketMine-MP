@@ -116,6 +116,10 @@ abstract class BaseNbtWorldData implements WorldData{
 		return $this->compoundTag->getString(self::TAG_LEVEL_NAME);
 	}
 
+	public function setName(string $value) : void{
+		$this->compoundTag->setString(self::TAG_LEVEL_NAME, $value);
+	}
+
 	public function getGenerator() : string{
 		return $this->compoundTag->getString(self::TAG_GENERATOR_NAME, "DEFAULT");
 	}

@@ -26,8 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -40,16 +39,9 @@ class Stair extends Transparent{
 	use HorizontalFacingTrait;
 
 	protected bool $upsideDown = false;
-	protected StairShape $shape;
+	protected StairShape $shape = StairShape::STRAIGHT;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->shape = StairShape::STRAIGHT();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
-
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->upsideDown);
 	}
@@ -57,13 +49,15 @@ class Stair extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		$clockwise = Facing::rotateY($this->facing, true);
 		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
-			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT() : StairShape::OUTER_LEFT();
+			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT : StairShape::OUTER_LEFT;
 		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
-			$this->shape = $frontFacing === $clockwise ? StairShape::INNER_RIGHT() : StairShape::INNER_LEFT();
+			$this->shape = $frontFacing === $clockwise ? StairShape::INNER_RIGHT : StairShape::INNER_LEFT;
 		}else{
-			$this->shape = StairShape::STRAIGHT();
+			$this->shape = StairShape::STRAIGHT;
 		}
 
 		return $this;
@@ -95,14 +89,14 @@ class Stair extends Transparent{
 			->trim(Facing::opposite($topStepFace), 0.5)
 			->trim(Facing::opposite($this->facing), 0.5);
 
-		if($this->shape->equals(StairShape::OUTER_LEFT()) || $this->shape->equals(StairShape::OUTER_RIGHT())){
-			$topStep->trim(Facing::rotateY($this->facing, $this->shape->equals(StairShape::OUTER_LEFT())), 0.5);
-		}elseif($this->shape->equals(StairShape::INNER_LEFT()) || $this->shape->equals(StairShape::INNER_RIGHT())){
+		if($this->shape === StairShape::OUTER_LEFT || $this->shape === StairShape::OUTER_RIGHT){
+			$topStep->trim(Facing::rotateY($this->facing, $this->shape === StairShape::OUTER_LEFT), 0.5);
+		}elseif($this->shape === StairShape::INNER_LEFT || $this->shape === StairShape::INNER_RIGHT){
 			//add an extra cube
 			$bbs[] = AxisAlignedBB::one()
 				->trim(Facing::opposite($topStepFace), 0.5)
 				->trim($this->facing, 0.5) //avoid overlapping with main step
-				->trim(Facing::rotateY($this->facing, $this->shape->equals(StairShape::INNER_LEFT())), 0.5);
+				->trim(Facing::rotateY($this->facing, $this->shape === StairShape::INNER_LEFT), 0.5);
 		}
 
 		$bbs[] = $topStep;
@@ -112,15 +106,15 @@ class Stair extends Transparent{
 
 	public function getSupportType(int $facing) : SupportType{
 		if(
-			$facing === Facing::UP && $this->isUpsideDown() ||
-			$facing === Facing::DOWN && !$this->isUpsideDown() ||
-			($facing === $this->facing && !$this->shape->equals(StairShape::OUTER_LEFT()) && !$this->shape->equals(StairShape::OUTER_RIGHT())) ||
-			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape->equals(StairShape::INNER_LEFT())) ||
-			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape->equals(StairShape::INNER_RIGHT()))
+			$facing === Facing::UP && $this->upsideDown ||
+			$facing === Facing::DOWN && !$this->upsideDown ||
+			($facing === $this->facing && $this->shape !== StairShape::OUTER_LEFT && $this->shape !== StairShape::OUTER_RIGHT) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape === StairShape::INNER_LEFT) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape === StairShape::INNER_RIGHT)
 		){
-			return SupportType::FULL();
+			return SupportType::FULL;
 		}
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{

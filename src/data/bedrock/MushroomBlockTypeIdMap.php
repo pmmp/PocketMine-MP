@@ -26,49 +26,27 @@ namespace pocketmine\data\bedrock;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata as LegacyMeta;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
 
 final class MushroomBlockTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var MushroomBlockType[]
-	 * @phpstan-var array<int, MushroomBlockType>
-	 */
-	private array $idToEnum = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<MushroomBlockType> */
+	use IntSaveIdMapTrait;
 
 	public function __construct(){
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_ALL_PORES, MushroomBlockType::PORES());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER, MushroomBlockType::CAP_NORTHWEST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_NORTH_SIDE, MushroomBlockType::CAP_NORTH());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER, MushroomBlockType::CAP_NORTHEAST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_WEST_SIDE, MushroomBlockType::CAP_WEST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_TOP_ONLY, MushroomBlockType::CAP_MIDDLE());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_EAST_SIDE, MushroomBlockType::CAP_EAST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER, MushroomBlockType::CAP_SOUTHWEST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE, MushroomBlockType::CAP_SOUTH());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER, MushroomBlockType::CAP_SOUTHEAST());
-		$this->register(LegacyMeta::MUSHROOM_BLOCK_ALL_CAP, MushroomBlockType::ALL_CAP());
-	}
-
-	public function register(int $id, MushroomBlockType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?MushroomBlockType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(MushroomBlockType $type) : int{
-		if(!array_key_exists($type->id(), $this->enumToId)){
-			throw new \InvalidArgumentException("Mushroom block type does not have a mapped ID"); //this should never happen
+		foreach(MushroomBlockType::cases() as $case){
+			$this->register(match($case){
+				MushroomBlockType::PORES => LegacyMeta::MUSHROOM_BLOCK_ALL_PORES,
+				MushroomBlockType::CAP_NORTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
+				MushroomBlockType::CAP_NORTH => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
+				MushroomBlockType::CAP_NORTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
+				MushroomBlockType::CAP_WEST => LegacyMeta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
+				MushroomBlockType::CAP_MIDDLE => LegacyMeta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
+				MushroomBlockType::CAP_EAST => LegacyMeta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
+				MushroomBlockType::CAP_SOUTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
+				MushroomBlockType::CAP_SOUTH => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
+				MushroomBlockType::CAP_SOUTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
+				MushroomBlockType::ALL_CAP => LegacyMeta::MUSHROOM_BLOCK_ALL_CAP,
+			}, $case);
 		}
-		return $this->enumToId[$type->id()];
 	}
 }

@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\populator;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\utils\Random;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
@@ -36,8 +36,8 @@ use function min;
 class GroundCover implements Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
-		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$factory = BlockFactory::getInstance();
+		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
+		$factory = RuntimeBlockStateRegistry::getInstance();
 		$biomeRegistry = BiomeRegistry::getInstance();
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
@@ -51,7 +51,7 @@ class GroundCover implements Populator{
 
 					$startY = 127;
 					for(; $startY > 0; --$startY){
-						if(!$factory->fromStateId($chunk->getFullBlock($x, $startY, $z))->isTransparent()){
+						if(!$factory->fromStateId($chunk->getBlockStateId($x, $startY, $z))->isTransparent()){
 							break;
 						}
 					}
@@ -59,7 +59,7 @@ class GroundCover implements Populator{
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
-						$id = $factory->fromStateId($chunk->getFullBlock($x, $y, $z));
+						$id = $factory->fromStateId($chunk->getBlockStateId($x, $y, $z));
 						if($id->getTypeId() === BlockTypeIds::AIR && $b->isSolid()){
 							break;
 						}
@@ -67,7 +67,7 @@ class GroundCover implements Populator{
 							continue;
 						}
 
-						$chunk->setFullBlock($x, $y, $z, $b->getStateId());
+						$chunk->setBlockStateId($x, $y, $z, $b->getStateId());
 					}
 				}
 			}

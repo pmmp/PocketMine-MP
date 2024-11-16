@@ -42,6 +42,9 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 
 	protected Vector3 $touchVector;
 
+	protected bool $useItem = true;
+	protected bool $useBlock = true;
+
 	public function __construct(
 		Player $player,
 		protected Item $item,
@@ -51,7 +54,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 		protected int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK
 	){
 		$this->player = $player;
-		$this->touchVector = $touchVector ?? new Vector3(0, 0, 0);
+		$this->touchVector = $touchVector ?? Vector3::zero();
 	}
 
 	public function getAction() : int{
@@ -73,4 +76,28 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public function getFace() : int{
 		return $this->blockFace;
 	}
+
+	/**
+	 * Returns whether the item may react to the interaction. If disabled, items such as spawn eggs will not activate.
+	 * This does NOT prevent blocks from being placed - it makes the item behave as if the player is sneaking.
+	 */
+	public function useItem() : bool{ return $this->useItem; }
+
+	/**
+	 * Sets whether the used item may react to the interaction. If false, items such as spawn eggs will not activate.
+	 * This does NOT prevent blocks from being placed - it makes the item behave as if the player is sneaking.
+	 */
+	public function setUseItem(bool $useItem) : void{ $this->useItem = $useItem; }
+
+	/**
+	 * Returns whether the block may react to the interaction. If false, doors, fence gates and trapdoors will not
+	 * respond, containers will not open, etc.
+	 */
+	public function useBlock() : bool{ return $this->useBlock; }
+
+	/**
+	 * Sets whether the block may react to the interaction. If false, doors, fence gates and trapdoors will not
+	 * respond, containers will not open, etc.
+	 */
+	public function setUseBlock(bool $useBlock) : void{ $this->useBlock = $useBlock; }
 }

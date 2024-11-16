@@ -80,7 +80,7 @@ final class EntityDataHelper{
 	public static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
 		$pos = $nbt->getTag($tagName);
 		if($pos === null && $optional){
-			return new Vector3(0, 0, 0);
+			return Vector3::zero();
 		}
 		if(!($pos instanceof ListTag) || ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
 			throw new SavedDataLoadingException("'$tagName' should be a List<Double> or List<Float>");

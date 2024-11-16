@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,9 +41,7 @@ class Door extends Transparent{
 	protected bool $hingeRight = false;
 	protected bool $open = false;
 
-	public function getRequiredStateDataBits() : int{ return 5; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->top);
 		$w->bool($this->hingeRight);
@@ -54,9 +51,11 @@ class Door extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door && $other->isSameType($this)){
+		if($other instanceof Door && $other->hasSameTypeId($this)){
 			if($this->top){
 				$this->facing = $other->facing;
 				$this->open = $other->open;
@@ -105,11 +104,11 @@ class Door extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+		if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
@@ -117,8 +116,7 @@ class Door extends Transparent{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
-			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedAt($blockReplace)){
 				return false;
 			}
 
@@ -129,7 +127,7 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->isSameType($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
+			if($next->hasSameTypeId($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
@@ -148,7 +146,7 @@ class Door extends Transparent{
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		$world = $this->position->getWorld();
-		if($other instanceof Door && $other->isSameType($this)){
+		if($other instanceof Door && $other->hasSameTypeId($this)){
 			$other->open = $this->open;
 			$world->setBlock($other->position, $other);
 		}
@@ -169,13 +167,13 @@ class Door extends Transparent{
 
 	public function getAffectedBlocks() : array{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other->isSameType($this)){
+		if($other->hasSameTypeId($this)){
 			return [$this, $other];
 		}
 		return parent::getAffectedBlocks();
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport();
 	}
 }

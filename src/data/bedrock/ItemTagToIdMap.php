@@ -27,14 +27,12 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
-use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function gettype;
 use function is_array;
 use function is_string;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
-use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
  * Tracks Minecraft Bedrock item tags, and the item IDs which belong to them
@@ -45,7 +43,7 @@ final class ItemTagToIdMap{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$map = json_decode(Filesystem::fileGetContents(Path::join(BEDROCK_DATA_PATH, 'item_tags.json')), true, flags: JSON_THROW_ON_ERROR);
+		$map = json_decode(Filesystem::fileGetContents(BedrockDataFiles::ITEM_TAGS_JSON), true, flags: JSON_THROW_ON_ERROR);
 		if(!is_array($map)){
 			throw new AssumptionFailedError("Invalid item tag map, expected array");
 		}

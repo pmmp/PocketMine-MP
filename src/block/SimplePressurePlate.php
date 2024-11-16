@@ -23,15 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use function count;
 
 abstract class SimplePressurePlate extends PressurePlate{
 	protected bool $pressed = false;
 
-	public function getRequiredStateDataBits() : int{ return 1; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->pressed);
 	}
 
@@ -41,5 +39,20 @@ abstract class SimplePressurePlate extends PressurePlate{
 	public function setPressed(bool $pressed) : self{
 		$this->pressed = $pressed;
 		return $this;
+	}
+
+	protected function hasOutputSignal() : bool{
+		return $this->pressed;
+	}
+
+	protected function calculatePlateState(array $entities) : array{
+		$newPressed = count($entities) > 0;
+		if($newPressed === $this->pressed){
+			return [$this, null];
+		}
+		return [
+			(clone $this)->setPressed($newPressed),
+			$newPressed
+		];
 	}
 }

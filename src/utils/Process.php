@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use pocketmine\thread\ThreadManager;
+use pocketmine\thread\Thread;
 use function count;
 use function exec;
 use function fclose;
@@ -122,10 +122,13 @@ final class Process{
 
 		//TODO: more OS
 
-		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
+		return Thread::getRunningCount() + 1; //pmmpthread doesn't count the main thread
 	}
 
-	public static function kill(int $pid, bool $subprocesses) : void{
+	/**
+	 * @param bool $subprocesses @deprecated
+	 */
+	public static function kill(int $pid, bool $subprocesses = false) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
 			$logger->syncFlushBuffer();

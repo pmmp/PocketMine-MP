@@ -40,6 +40,7 @@ use function get_class;
 use function json_encode;
 use function ksort;
 use const JSON_PRETTY_PRINT;
+use const SORT_NATURAL;
 use const SORT_STRING;
 use const STDERR;
 
@@ -82,7 +83,7 @@ foreach($states as $state){
 
 foreach(Utils::stringifyKeys($reportMap) as $blockName => $propertyList){
 	foreach(Utils::stringifyKeys($propertyList) as $propertyName => $propertyValues){
-		ksort($reportMap[$blockName][$propertyName]);
+		ksort($propertyValues, SORT_NATURAL);
 		$reportMap[$blockName][$propertyName] = array_values($propertyValues);
 	}
 }

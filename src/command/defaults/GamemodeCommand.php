@@ -30,7 +30,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use function count;
-use function implode;
 
 class GamemodeCommand extends VanillaCommand{
 
@@ -40,10 +39,10 @@ class GamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_gamemode_description(),
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
-		$this->setPermission(implode(";", [
+		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_GAMEMODE_SELF,
 			DefaultPermissionNames::COMMAND_GAMEMODE_OTHER
-		]));
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -62,13 +61,13 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		if($target->getGamemode()->equals($gameMode)){
+		if($target->getGamemode() === $gameMode){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
 			return true;
 		}
 
 		$target->setGamemode($gameMode);
-		if(!$gameMode->equals($target->getGamemode())){
+		if($gameMode !== $target->getGamemode()){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
 		}else{
 			if($target === $sender){

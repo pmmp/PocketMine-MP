@@ -40,7 +40,7 @@ final class GeneratorManager{
 	private array $list = [];
 
 	public function __construct(){
-		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{
+		$this->addGenerator(Flat::class, "flat", function(string $preset) : ?InvalidGeneratorOptionsException{
 			if($preset === ""){
 				return null;
 			}
@@ -50,11 +50,11 @@ final class GeneratorManager{
 			}catch(InvalidGeneratorOptionsException $e){
 				return $e;
 			}
-		}));
+		});
 		$this->addGenerator(Normal::class, "normal", fn() => null);
-		$this->addGenerator(Normal::class, "default", fn() => null);
-		$this->addGenerator(Nether::class, "hell", fn() => null);
+		$this->addAlias("normal", "default");
 		$this->addGenerator(Nether::class, "nether", fn() => null);
+		$this->addAlias("nether", "hell");
 	}
 
 	/**
@@ -78,6 +78,22 @@ final class GeneratorManager{
 		}
 
 		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator);
+	}
+
+	/**
+	 * Aliases an already-registered generator name to another name. Useful if you want to map a generator name to an
+	 * existing generator without having to replicate the parameters.
+	 */
+	public function addAlias(string $name, string $alias) : void{
+		$name = strtolower($name);
+		$alias = strtolower($alias);
+		if(!isset($this->list[$name])){
+			throw new \InvalidArgumentException("Alias \"$name\" is not assigned");
+		}
+		if(isset($this->list[$alias])){
+			throw new \InvalidArgumentException("Alias \"$alias\" is already assigned");
+		}
+		$this->list[$alias] = $this->list[$name];
 	}
 
 	/**

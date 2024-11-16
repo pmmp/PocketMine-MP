@@ -56,15 +56,17 @@ class ChorusFruit extends Food{
 		$maxY = $minY + 16;
 		$maxZ = $minZ + 16;
 
+		$worldMinY = $world->getMinY();
+
 		for($attempts = 0; $attempts < 16; ++$attempts){
 			$x = mt_rand($minX, $maxX);
 			$y = mt_rand($minY, $maxY);
 			$z = mt_rand($minZ, $maxZ);
 
-			while($y >= 0 && !$world->getBlockAt($x, $y, $z)->isSolid()){
+			while($y >= $worldMinY && !$world->getBlockAt($x, $y, $z)->isSolid()){
 				$y--;
 			}
-			if($y < 0){
+			if($y < $worldMinY){
 				continue;
 			}
 
@@ -85,5 +87,9 @@ class ChorusFruit extends Food{
 
 	public function getCooldownTicks() : int{
 		return 20;
+	}
+
+	public function getCooldownTag() : ?string{
+		return ItemCooldownTags::CHORUS_FRUIT;
 	}
 }

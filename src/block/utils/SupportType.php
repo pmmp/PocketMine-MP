@@ -23,36 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static SupportType CENTER()
  * @method static SupportType EDGE()
  * @method static SupportType FULL()
  * @method static SupportType NONE()
  */
-final class SupportType{
-	use EnumTrait;
+enum SupportType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("full"),
-			new self("center"),
-			new self("edge"),
-			new self("none")
-		);
-	}
+	case FULL;
+	case CENTER;
+	case EDGE;
+	case NONE;
 
 	public function hasEdgeSupport() : bool{
-		return $this->equals(self::EDGE()) || $this->equals(self::FULL());
+		return $this === self::EDGE || $this === self::FULL;
 	}
 
 	public function hasCenterSupport() : bool{
-		return $this->equals(self::CENTER()) || $this->equals(self::FULL());
+		return $this === self::CENTER || $this === self::FULL;
 	}
 }

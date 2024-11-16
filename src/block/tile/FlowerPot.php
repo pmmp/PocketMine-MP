@@ -25,7 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\Air;
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\SavedDataLoadingException;
@@ -33,7 +33,7 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 
 /**
@@ -52,7 +52,11 @@ class FlowerPot extends Spawnable{
 
 		$blockDataUpgrader = GlobalBlockStateHandlers::getUpgrader();
 		if(($itemIdTag = $nbt->getTag(self::TAG_ITEM)) instanceof ShortTag && ($itemMetaTag = $nbt->getTag(self::TAG_ITEM_DATA)) instanceof IntTag){
-			$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($itemIdTag->getValue(), $itemMetaTag->getValue());
+			try{
+				$blockStateData = $blockDataUpgrader->upgradeIntIdMeta($itemIdTag->getValue(), $itemMetaTag->getValue());
+			}catch(BlockStateDeserializeException $e){
+				throw new SavedDataLoadingException("Error loading legacy flower pot item data: " . $e->getMessage(), 0, $e);
+			}
 		}elseif(($plantBlockTag = $nbt->getCompoundTag(self::TAG_PLANT_BLOCK)) !== null){
 			try{
 				$blockStateData = $blockDataUpgrader->upgradeBlockStateNbt($plantBlockTag);
@@ -67,7 +71,7 @@ class FlowerPot extends Spawnable{
 			}catch(BlockStateDeserializeException $e){
 				throw new SavedDataLoadingException("Error deserializing plant for flower pot: " . $e->getMessage(), 0, $e);
 			}
-			$this->setPlant(BlockFactory::getInstance()->fromStateId($blockStateId));
+			$this->setPlant(RuntimeBlockStateRegistry::getInstance()->fromStateId($blockStateId));
 		}
 	}
 
@@ -91,7 +95,7 @@ class FlowerPot extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		if($this->plant !== null){
-			$nbt->setTag(self::TAG_PLANT_BLOCK, RuntimeBlockMapping::getInstance()->toStateData($this->plant->getStateId())->toNbt());
+			$nbt->setTag(self::TAG_PLANT_BLOCK, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkStateData($this->plant->getStateId())->toNbt());
 		}
 	}
 

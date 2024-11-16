@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -38,6 +39,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	protected Player $player;
 
 	private Translatable|string $deathMessage;
+	private Translatable|string $deathScreenMessage;
 	private bool $keepInventory = false;
 	private bool $keepXp = false;
 
@@ -49,6 +51,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		parent::__construct($entity, $drops, $xp);
 		$this->player = $entity;
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
+		$this->deathScreenMessage = $this->deathMessage;
 	}
 
 	/**
@@ -68,6 +71,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setDeathMessage(Translatable|string $deathMessage) : void{
 		$this->deathMessage = $deathMessage;
+	}
+
+	public function getDeathScreenMessage() : Translatable|string{
+		return $this->deathScreenMessage;
+	}
+
+	public function setDeathScreenMessage(Translatable|string $deathScreenMessage) : void{
+		$this->deathScreenMessage = $deathScreenMessage;
 	}
 
 	public function getKeepInventory() : bool{
@@ -154,6 +165,19 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 			case EntityDamageEvent::CAUSE_MAGIC:
 				return KnownTranslationFactory::death_attack_magic($name);
+
+			case EntityDamageEvent::CAUSE_FALLING_BLOCK:
+				if($deathCause instanceof EntityDamageByEntityEvent){
+					$e = $deathCause->getDamager();
+					if($e instanceof FallingBlock){
+						if($e->getBlock()->getTypeId() === BlockTypeIds::ANVIL){
+							return KnownTranslationFactory::death_attack_anvil($name);
+						}else{
+							return KnownTranslationFactory::death_attack_fallingBlock($name);
+						}
+					}
+				}
+				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
 				break;

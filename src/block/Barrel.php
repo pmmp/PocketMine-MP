@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -39,9 +38,7 @@ class Barrel extends Opaque{
 
 	protected bool $open = false;
 
-	public function getRequiredStateDataBits() : int{ return 4; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facing($this->facing);
 		$w->bool($this->open);
 	}
@@ -58,12 +55,12 @@ class Barrel extends Opaque{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			if(abs($player->getPosition()->getX() - $this->position->getX()) < 2 && abs($player->getPosition()->getZ() - $this->position->getZ()) < 2){
-				$y = $player->getEyePos()->getY();
+			if(abs($player->getPosition()->x - $this->position->x) < 2 && abs($player->getPosition()->z - $this->position->z) < 2){
+				$y = $player->getEyePos()->y;
 
-				if($y - $this->position->getY() > 2){
+				if($y - $this->position->y > 2){
 					$this->facing = Facing::UP;
-				}elseif($this->position->getY() - $y > 0){
+				}elseif($this->position->y - $y > 0){
 					$this->facing = Facing::DOWN;
 				}else{
 					$this->facing = Facing::opposite($player->getHorizontalFacing());

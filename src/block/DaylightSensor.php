@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,10 +41,8 @@ class DaylightSensor extends Transparent{
 
 	protected bool $inverted = false;
 
-	public function getRequiredStateDataBits() : int{ return 5; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->boundedInt(4, 0, 15, $this->signalStrength);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
 		$w->bool($this->inverted);
 	}
 
@@ -73,7 +70,7 @@ class DaylightSensor extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

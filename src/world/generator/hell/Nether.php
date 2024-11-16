@@ -71,7 +71,8 @@ class Nether extends Generator{
 
 		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
 
-		$chunk = $world->getChunk($chunkX, $chunkZ);
+		//TODO: why don't we just create and set the chunk here directly?
+		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
 
 		$bedrock = VanillaBlocks::BEDROCK()->getStateId();
 		$netherrack = VanillaBlocks::NETHERRACK()->getStateId();
@@ -85,16 +86,16 @@ class Nether extends Generator{
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 || $y === 127){
-						$chunk->setFullBlock($x, $y, $z, $bedrock);
+						$chunk->setBlockStateId($x, $y, $z, $bedrock);
 						continue;
 					}
 					$noiseValue = (abs($this->emptyHeight - $y) / $this->emptyHeight) * $this->emptyAmplitude - $noise[$x][$z][$y];
 					$noiseValue -= 1 - $this->density;
 
 					if($noiseValue > 0){
-						$chunk->setFullBlock($x, $y, $z, $netherrack);
+						$chunk->setBlockStateId($x, $y, $z, $netherrack);
 					}elseif($y <= $this->waterHeight){
-						$chunk->setFullBlock($x, $y, $z, $stillLava);
+						$chunk->setBlockStateId($x, $y, $z, $stillLava);
 					}
 				}
 			}

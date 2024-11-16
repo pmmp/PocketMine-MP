@@ -39,10 +39,10 @@ class TitleCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_title_description(),
 			KnownTranslationFactory::commands_title_usage()
 		);
-		$this->setPermission(implode(";", [
+		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_TITLE_SELF,
 			DefaultPermissionNames::COMMAND_TITLE_OTHER
-		]));
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

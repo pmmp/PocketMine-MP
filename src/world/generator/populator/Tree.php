@@ -25,11 +25,11 @@ namespace pocketmine\world\generator\populator;
 
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\BlockTypeTags;
-use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\TreeFactory;
+use pocketmine\world\generator\object\TreeType;
 
 class Tree implements Populator{
 	private int $randomAmount = 1;
@@ -40,7 +40,7 @@ class Tree implements Populator{
 	 * @param TreeType|null $type default oak
 	 */
 	public function __construct(?TreeType $type = null){
-		$this->type = $type ?? TreeType::OAK();
+		$this->type = $type ?? TreeType::OAK;
 	}
 
 	public function setRandomAmount(int $amount) : void{

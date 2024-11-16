@@ -28,8 +28,7 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -52,15 +51,11 @@ class Anvil extends Transparent implements Fallable{
 
 	private int $damage = self::UNDAMAGED;
 
-	public function getRequiredTypeDataBits() : int{ return 2; }
-
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->boundedInt(2, self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	public function getRequiredStateDataBits() : int{ return 2; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 	}
 
@@ -83,7 +78,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -96,7 +91,7 @@ class Anvil extends Transparent implements Fallable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
+			$this->facing = Facing::rotateY($player->getHorizontalFacing(), false);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -110,6 +105,14 @@ class Anvil extends Transparent implements Fallable{
 			}
 		}
 		return true;
+	}
+
+	public function getFallDamagePerBlock() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
 	}
 
 	public function getLandSound() : ?Sound{

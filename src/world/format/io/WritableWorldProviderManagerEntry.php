@@ -26,7 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\world\WorldCreationOptions;
 
 /**
- * @phpstan-type FromPath \Closure(string $path) : WritableWorldProvider
+ * @phpstan-type FromPath \Closure(string $path, \Logger $logger) : WritableWorldProvider
  * @phpstan-type Generate \Closure(string $path, string $name, WorldCreationOptions $options) : void
  */
 final class WritableWorldProviderManagerEntry extends WorldProviderManagerEntry{
@@ -43,8 +43,8 @@ final class WritableWorldProviderManagerEntry extends WorldProviderManagerEntry{
 		parent::__construct($isValid);
 	}
 
-	public function fromPath(string $path) : WritableWorldProvider{
-		return ($this->fromPath)($path);
+	public function fromPath(string $path, \Logger $logger) : WritableWorldProvider{
+		return ($this->fromPath)($path, $logger);
 	}
 
 	/**

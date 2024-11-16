@@ -30,7 +30,6 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use function count;
-use function implode;
 
 class KillCommand extends VanillaCommand{
 
@@ -41,7 +40,7 @@ class KillCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_kill_usage(),
 			["suicide"]
 		);
-		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]));
+		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -54,7 +53,7 @@ class KillCommand extends VanillaCommand{
 			return true;
 		}
 
-		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
+		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, $player->getHealth()));
 		if($player === $sender){
 			$sender->sendMessage(KnownTranslationFactory::commands_kill_successful($sender->getName()));
 		}else{

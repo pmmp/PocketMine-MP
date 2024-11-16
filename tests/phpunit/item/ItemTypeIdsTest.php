@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\utils\Utils;
 use function array_unique;
 use function max;
 
@@ -42,5 +43,19 @@ class ItemTypeIdsTest extends TestCase{
 		$idTable = (new \ReflectionClass(ItemTypeIds::class))->getConstants();
 
 		self::assertSameSize($idTable, array_unique($idTable), "Every ItemTypeID must be unique");
+	}
+
+	public function testVanillaItemsParity() : void{
+		$reflect = new \ReflectionClass(ItemTypeIds::class);
+
+		foreach(Utils::stringifyKeys(VanillaItems::getAll()) as $name => $item){
+			if($item instanceof ItemBlock){
+				continue;
+			}
+			$expected = $item->getTypeId();
+			$actual = $reflect->getConstant($name);
+			self::assertNotFalse($actual, "VanillaItems::$name() does not have an ItemTypeIds constant");
+			self::assertSame($expected, $actual, "VanillaItems::$name() type ID does not match ItemTypeIds::$name");
+		}
 	}
 }

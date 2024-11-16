@@ -35,7 +35,7 @@ final class InfestedStone extends Opaque{
 	}
 
 	public function getImitatedBlock() : Block{
-		return BlockFactory::getInstance()->fromStateId($this->imitated);
+		return RuntimeBlockStateRegistry::getInstance()->fromStateId($this->imitated);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

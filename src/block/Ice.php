@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\event\block\BlockMeltEvent;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -53,11 +53,7 @@ class Ice extends Transparent{
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
 		if($world->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
-			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
-			$ev->call();
-			if(!$ev->isCancelled()){
-				$world->setBlock($this->position, $ev->getNewState());
-			}
+			BlockEventHelper::melt($this, VanillaBlocks::WATER());
 		}
 	}
 

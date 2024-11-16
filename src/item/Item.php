@@ -32,7 +32,7 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
-use pocketmine\data\runtime\RuntimeDataReader;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
@@ -55,6 +55,7 @@ use function count;
 use function gettype;
 use function hex2bin;
 use function is_string;
+use function morton2d_encode;
 
 class Item implements \JsonSerializable{
 	use ItemEnchantmentHandlingTrait;
@@ -106,10 +107,13 @@ class Item implements \JsonSerializable{
 	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use VanillaItems for that
 	 * purpose.
 	 * @see VanillaItems
+	 *
+	 * @param string[] $enchantmentTags
 	 */
 	public function __construct(
 		private ItemIdentifier $identifier,
-		protected string $name = "Unknown"
+		protected string $name = "Unknown",
+		private array $enchantmentTags = []
 	){
 		$this->nbt = new CompoundTag();
 	}
@@ -337,30 +341,35 @@ class Item implements \JsonSerializable{
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
-		$display = $tag->getCompoundTag(self::TAG_DISPLAY) ?? new CompoundTag();
+		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 
-		$this->hasCustomName() ?
-			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
-			$display->removeTag(self::TAG_DISPLAY_NAME);
+		if($this->customName !== ""){
+			$display ??= new CompoundTag();
+			$display->setString(self::TAG_DISPLAY_NAME, $this->customName);
+		}else{
+			$display?->removeTag(self::TAG_DISPLAY_NAME);
+		}
 
 		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
 			foreach($this->lore as $line){
 				$loreTag->push(new StringTag($line));
 			}
+			$display ??= new CompoundTag();
 			$display->setTag(self::TAG_DISPLAY_LORE, $loreTag);
 		}else{
-			$display->removeTag(self::TAG_DISPLAY_LORE);
+			$display?->removeTag(self::TAG_DISPLAY_LORE);
 		}
-		$display->count() > 0 ?
+		$display !== null && $display->count() > 0 ?
 			$tag->setTag(self::TAG_DISPLAY, $display) :
 			$tag->removeTag(self::TAG_DISPLAY);
 
-		if($this->hasEnchantments()){
+		if(count($this->enchantments) > 0){
 			$ench = new ListTag();
-			foreach($this->getEnchantments() as $enchantmentInstance){
+			$enchantmentIdMap = EnchantmentIdMap::getInstance();
+			foreach($this->enchantments as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort(self::TAG_ENCH_ID, EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
+					->setShort(self::TAG_ENCH_ID, $enchantmentIdMap->toId($enchantmentInstance->getType()))
 					->setShort(self::TAG_ENCH_LVL, $enchantmentInstance->getLevel())
 				);
 			}
@@ -369,8 +378,8 @@ class Item implements \JsonSerializable{
 			$tag->removeTag(self::TAG_ENCH);
 		}
 
-		($blockData = $this->getCustomBlockData()) !== null ?
-			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
+		$this->blockEntityTag !== null ?
+			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $this->blockEntityTag) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		if(count($this->canPlaceOn) > 0){
@@ -449,6 +458,29 @@ class Item implements \JsonSerializable{
 		return $this->name;
 	}
 
+	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to this item during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->enchantmentTags;
+	}
+
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return 1;
+	}
+
 	final public function canBePlaced() : bool{
 		return $this->getBlock()->canBePlaced();
 	}
@@ -464,13 +496,21 @@ class Item implements \JsonSerializable{
 		return $this->identifier->getTypeId();
 	}
 
-	final public function computeTypeData() : int{
+	final public function getStateId() : int{
+		return morton2d_encode($this->identifier->getTypeId(), $this->computeStateData());
+	}
+
+	private function computeStateData() : int{
 		$writer = new RuntimeDataWriter(16); //TODO: max bits should be a constant instead of being hardcoded all over the place
-		$this->describeType($writer);
+		$this->describeState($writer);
 		return $writer->getValue();
 	}
 
-	protected function describeType(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	/**
+	 * Describes state properties of the item, such as colour, skull type, etc.
+	 * This allows associating basic extra data with the item at runtime in a more efficient format than NBT.
+	 */
+	protected function describeState(RuntimeDataDescriber $w) : void{
 		//NOOP
 	}
 
@@ -548,7 +588,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -558,7 +598,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -568,7 +608,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -615,14 +655,27 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns a tag that identifies a group of items that should have cooldown at the same time
+	 * regardless of their state or type.
+	 * When cooldown starts, any other items with the same cooldown tag can't be used until the cooldown expires.
+	 * Such behaviour can be seen in goat horns and shields.
+	 *
+	 * If tag is null, item state id will be used to store cooldown.
+	 *
+	 * @see ItemCooldownTags
+	 */
+	public function getCooldownTag() : ?string{
+		return null;
+	}
+
+	/**
 	 * Compares an Item to this Item and check if they match.
 	 *
 	 * @param bool $checkDamage   @deprecated
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->getTypeId() === $item->getTypeId() &&
-			$this->computeTypeData() === $item->computeTypeData() &&
+		return $this->getStateId() === $item->getStateId() &&
 			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
@@ -637,11 +690,11 @@ class Item implements \JsonSerializable{
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
 	 */
 	final public function equalsExact(Item $other) : bool{
-		return $this->equals($other, true, true) && $this->count === $other->count;
+		return $this->canStackWith($other) && $this->count === $other->count;
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeTypeData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getTypeId() . ":" . $this->computeStateData() . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**

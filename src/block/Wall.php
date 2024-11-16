@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WallConnectionType;
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -43,9 +42,7 @@ class Wall extends Transparent{
 	protected array $connections = [];
 	protected bool $post = false;
 
-	public function getRequiredStateDataBits() : int{ return 9; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->wallConnections($this->connections);
 		$w->bool($this->post);
 	}
@@ -104,9 +101,9 @@ class Wall extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static || $block instanceof FenceGate || $block instanceof Thin || ($block->isSolid() && !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || $block instanceof Thin || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
 				if(!isset($this->connections[$facing])){
-					$this->connections[$facing] = WallConnectionType::SHORT();
+					$this->connections[$facing] = WallConnectionType::SHORT;
 					$changed++;
 				}
 			}elseif(isset($this->connections[$facing])){
@@ -155,6 +152,6 @@ class Wall extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER : SupportType::NONE;
 	}
 }

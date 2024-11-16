@@ -163,7 +163,8 @@ abstract class Projectile extends Entity{
 	protected function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
-		Timings::$entityMove->startTiming();
+		Timings::$projectileMove->startTiming();
+		Timings::$projectileMoveRayTrace->startTiming();
 
 		$start = $this->location->asVector3();
 		$end = $start->add($dx, $dy, $dz);
@@ -172,8 +173,9 @@ abstract class Projectile extends Entity{
 		$entityHit = null;
 		$hitResult = null;
 
+		$world = $this->getWorld();
 		foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+			$block = $world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 
 			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
 			if($blockHitResult !== null){
@@ -187,7 +189,7 @@ abstract class Projectile extends Entity{
 		$entityDistance = PHP_INT_MAX;
 
 		$newDiff = $end->subtractVector($start);
-		foreach($this->getWorld()->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
+		foreach($world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() && $this->ticksLived < 5){
 				continue;
 			}
@@ -208,6 +210,8 @@ abstract class Projectile extends Entity{
 				$end = $entityHitResult->hitVector;
 			}
 		}
+
+		Timings::$projectileMoveRayTrace->stopTiming();
 
 		$this->location = Location::fromObject(
 			$end,
@@ -240,7 +244,7 @@ abstract class Projectile extends Entity{
 			}
 
 			$this->isCollided = $this->onGround = true;
-			$this->motion = new Vector3(0, 0, 0);
+			$this->motion = Vector3::zero();
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = null;
@@ -253,10 +257,10 @@ abstract class Projectile extends Entity{
 			);
 		}
 
-		$this->getWorld()->onEntityMoved($this);
+		$world->onEntityMoved($this);
 		$this->checkBlockIntersections();
 
-		Timings::$entityMove->stopTiming();
+		Timings::$projectileMove->stopTiming();
 	}
 
 	/**

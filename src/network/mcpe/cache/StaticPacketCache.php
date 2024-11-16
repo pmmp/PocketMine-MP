@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
-use Symfony\Component\Filesystem\Path;
 
 class StaticPacketCache{
 	use SingletonTrait;
@@ -43,8 +43,8 @@ class StaticPacketCache{
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_definitions.nbt'))),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_identifiers.nbt')))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(BedrockDataFiles::BIOME_DEFINITIONS_NBT)),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(BedrockDataFiles::ENTITY_IDENTIFIERS_NBT))
 		);
 	}
 

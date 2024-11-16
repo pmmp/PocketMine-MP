@@ -44,6 +44,7 @@ use function fwrite;
 use function is_string;
 use function ksort;
 use function mb_strtoupper;
+use function preg_replace;
 use function sort;
 use function strrpos;
 use function strtoupper;
@@ -101,6 +102,25 @@ function generateClassHeader(string $className) : string{
 	return <<<HEADER
 <?php
 
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
 declare(strict_types=1);
 
 namespace $namespace;
@@ -138,7 +158,7 @@ function generateBlockStateNames(BlockPaletteReport $data) : void{
 
 	fwrite($output, generateClassHeader(BlockStateNames::class));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $state => $values){
-		$constName = mb_strtoupper($state, 'US-ASCII');
+		$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $state) ?? throw new AssumptionFailedError("This regex is not invalid"), 'US-ASCII');
 		fwrite($output, "\tpublic const $constName = \"$state\";\n");
 	}
 
@@ -158,7 +178,7 @@ function generateBlockStringValues(BlockPaletteReport $data) : void{
 				continue;
 			}
 			$anyWritten = true;
-			$constName = mb_strtoupper($stateName . "_" . $value, 'US-ASCII');
+			$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $stateName) . "_" . $value, 'US-ASCII');
 			fwrite($output, "\tpublic const $constName = \"$value\";\n");
 		}
 		if($anyWritten){

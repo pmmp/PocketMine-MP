@@ -28,6 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
+use pocketmine\ServerProperties;
 use function count;
 
 class DefaultGamemodeCommand extends VanillaCommand{
@@ -52,7 +53,8 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->getConfigGroup()->setConfigString("gamemode", $gameMode->name());
+		//TODO: this probably shouldn't use the enum name directly
+		$sender->getServer()->getConfigGroup()->setConfigString(ServerProperties::GAME_MODE, $gameMode->name);
 		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslatableName()));
 		return true;
 	}

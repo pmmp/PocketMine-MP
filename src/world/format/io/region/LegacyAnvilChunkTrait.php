@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -36,6 +35,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
+use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function strlen;
@@ -54,7 +54,7 @@ trait LegacyAnvilChunkTrait{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ?ChunkData{
+	protected function deserializeChunk(string $data, \Logger $logger) : ?LoadedChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -90,25 +90,28 @@ trait LegacyAnvilChunkTrait{
 		$subChunksTag = $chunk->getListTag("Sections") ?? [];
 		foreach($subChunksTag as $subChunk){
 			if($subChunk instanceof CompoundTag){
-				$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk, clone $biomes3d);
+				$y = $subChunk->getByte("Y");
+				$subChunks[$y] = $this->deserializeSubChunk($subChunk, clone $biomes3d, new \PrefixedLogger($logger, "Subchunk y=$y"));
 			}
 		}
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 			if(!isset($subChunks[$y])){
-				$subChunks[$y] = new SubChunk(BlockTypeIds::AIR << Block::INTERNAL_STATE_DATA_BITS, [], clone $biomes3d);
+				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomes3d);
 			}
 		}
 
-		return new ChunkData(
-			new Chunk(
+		return new LoadedChunkData(
+			data: new ChunkData(
 				$subChunks,
-				$chunk->getByte("TerrainPopulated", 0) !== 0
+				$chunk->getByte("TerrainPopulated", 0) !== 0,
+				($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+				($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			),
-			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
-			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
+			upgraded: true,
+			fixerFlags: LoadedChunkData::FIXER_FLAG_ALL
 		);
 	}
 
-	abstract protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d) : SubChunk;
+	abstract protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk;
 
 }

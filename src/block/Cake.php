@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\data\runtime\RuntimeDataReader;
-use pocketmine\data\runtime\RuntimeDataWriter;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\math\AxisAlignedBB;
@@ -37,10 +36,8 @@ class Cake extends BaseCake{
 
 	protected int $bites = 0;
 
-	public function getRequiredStateDataBits() : int{ return 3; }
-
-	protected function describeState(RuntimeDataReader|RuntimeDataWriter $w) : void{
-		$w->boundedInt(3, 0, self::MAX_BITES, $this->bites);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, self::MAX_BITES, $this->bites);
 	}
 
 	/**
@@ -67,7 +64,7 @@ class Cake extends BaseCake{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof ItemBlock){
+		if($this->bites === 0 && $item instanceof ItemBlock){
 			$block = $item->getBlock();
 			$resultBlock = null;
 			if($block->getTypeId() === BlockTypeIds::CANDLE){
@@ -84,6 +81,10 @@ class Cake extends BaseCake{
 		}
 
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [];
 	}
 
 	public function getResidue() : Block{

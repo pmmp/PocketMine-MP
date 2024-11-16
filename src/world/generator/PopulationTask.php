@@ -79,7 +79,14 @@ class PopulationTask extends AsyncTask{
 		/** @var string[] $serialChunks */
 		$serialChunks = igbinary_unserialize($this->adjacentChunks);
 		$chunks = array_map(
-			fn(?string $serialized) => $serialized !== null ? FastChunkSerializer::deserializeTerrain($serialized) : null,
+			function(?string $serialized) : ?Chunk{
+				if($serialized === null){
+					return null;
+				}
+				$chunk = FastChunkSerializer::deserializeTerrain($serialized);
+				$chunk->clearTerrainDirtyFlags(); //this allows us to avoid sending existing chunks back to the main thread if they haven't changed during generation
+				return $chunk;
+			},
 			$serialChunks
 		);
 
@@ -117,8 +124,6 @@ class PopulationTask extends AsyncTask{
 			if($chunk === null){
 				throw new AssumptionFailedError("We just set this chunk, so it must exist");
 			}
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS, true);
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
 		return $chunk;
 	}

@@ -69,14 +69,14 @@ class SubChunk{
 	 */
 	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
 
-	public function getFullBlock(int $x, int $y, int $z) : int{
+	public function getBlockStateId(int $x, int $y, int $z) : int{
 		if(count($this->blockLayers) === 0){
 			return $this->emptyBlockId;
 		}
 		return $this->blockLayers[0]->get($x, $y, $z);
 	}
 
-	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
+	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
 		if(count($this->blockLayers) === 0){
 			$this->blockLayers[] = new PalettedBlockArray($this->emptyBlockId);
 		}
