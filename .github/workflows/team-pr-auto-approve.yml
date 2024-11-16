@@ -13,30 +13,25 @@ on:
       - reopened
       - ready_for_review
 
-permissions:
-  pull-requests: write
-
 jobs:
-  approve:
-    name: Auto approve
+  dispatch:
+    name: Request approval
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if PR author has write access
-        id: check-permission
-        uses: actions-cool/check-user-permission@v2
+      - name: Generate access token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          require: write
-          username: ${{ github.event.pull_request.user.login }}
-          #technically this would be fine for dependabot but generally bots don't count as team members
-          check-bot: true
+          app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
+          private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: RestrictedActions
 
-        #TODO: Some way to avoid unnecessary repeated reviews would be nice here
-
-      - name: Approve PR if authorized
-        if: steps.check-permission.outputs.require-result == 'true' && steps.check-permission.outputs.check-result == 'false'
-        uses: juliangruber/approve-pull-request-action@v2
+      - name: Dispatch restricted action
+        uses: peter-evans/repository-dispatch@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          number: ${{ github.event.pull_request.number }}
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: ${{ github.repository_owner }}/RestrictedActions
+          event-type: auto_approve_collaborator_pr
+          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}" }'

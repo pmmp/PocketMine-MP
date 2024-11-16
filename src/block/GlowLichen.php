@@ -24,60 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\MultiAnySupportTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
-use function array_key_first;
 use function count;
 use function shuffle;
 
 class GlowLichen extends Transparent{
-
-	/** @var int[] */
-	protected array $faces = [];
-
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->facingFlags($this->faces);
-	}
-
-	/** @return int[] */
-	public function getFaces() : array{ return $this->faces; }
-
-	public function hasFace(int $face) : bool{
-		return isset($this->faces[$face]);
-	}
-
-	/**
-	 * @param int[] $faces
-	 * @return $this
-	 */
-	public function setFaces(array $faces) : self{
-		$uniqueFaces = [];
-		foreach($faces as $face){
-			Facing::validate($face);
-			$uniqueFaces[$face] = $face;
-		}
-		$this->faces = $uniqueFaces;
-		return $this;
-	}
-
-	/** @return $this */
-	public function setFace(int $face, bool $value) : self{
-		Facing::validate($face);
-		if($value){
-			$this->faces[$face] = $face;
-		}else{
-			unset($this->faces[$face]);
-		}
-		return $this;
-	}
+	use MultiAnySupportTrait;
 
 	public function getLightLevel() : int{
 		return 7;
@@ -102,39 +62,11 @@ class GlowLichen extends Transparent{
 		return true;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$this->faces = $blockReplace instanceof GlowLichen ? $blockReplace->faces : [];
-		$availableFaces = $this->getAvailableFaces();
-
-		if(count($availableFaces) === 0){
-			return false;
-		}
-
-		$opposite = Facing::opposite($face);
-		$placedFace = isset($availableFaces[$opposite]) ? $opposite : array_key_first($availableFaces);
-		$this->faces[$placedFace] = $placedFace;
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$changed = false;
-
-		foreach($this->faces as $face){
-			if($this->getAdjacentSupportType($face) !== SupportType::FULL){
-				unset($this->faces[$face]);
-				$changed = true;
-			}
-		}
-
-		if($changed){
-			$world = $this->position->getWorld();
-			if(count($this->faces) === 0){
-				$world->useBreakOn($this->position);
-			}else{
-				$world->setBlock($this->position, $this);
-			}
-		}
+	/**
+	 * @return int[]
+	 */
+	protected function getInitialPlaceFaces(Block $blockReplace) : array{
+		return $blockReplace instanceof GlowLichen ? $blockReplace->faces : [];
 	}
 
 	private function getSpreadBlock(Block $replace, int $spreadFace) : ?Block{
@@ -260,18 +192,5 @@ class GlowLichen extends Transparent{
 
 	public function getFlammability() : int{
 		return 100;
-	}
-
-	/**
-	 * @return array<int, int> $faces
-	 */
-	private function getAvailableFaces() : array{
-		$faces = [];
-		foreach(Facing::ALL as $face){
-			if(!$this->hasFace($face) && $this->getAdjacentSupportType($face) === SupportType::FULL){
-				$faces[$face] = $face;
-			}
-		}
-		return $faces;
 	}
 }

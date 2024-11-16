@@ -21,6 +21,56 @@ parameters:
 			path: ../../../src/block/DoubleTallGrass.php
 
 		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:ACACIA_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:BIRCH_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CHERRY_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CRIMSON_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:DARK_OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:JUNGLE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:MANGROVE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:SPRUCE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:WARPED_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
