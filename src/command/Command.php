@@ -230,10 +230,7 @@ abstract class Command{
 		}
 
 		foreach($subscribers as $user){
-			//TODO: this check is flaky, since the sender might have broadcast subscribers that we don't know about
-			if($user !== $source){
-				$user->onBroadcast(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $broadcast);
-			}
+			$user->onMessage(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $source, $broadcast);
 		}
 	}
 

@@ -29,7 +29,6 @@ use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\ChatBroadcastSubscriber;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
@@ -105,6 +104,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
+use pocketmine\MinecraftMessageChannelSubscriber;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\NetworkSession;
@@ -116,8 +116,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\permission\Permissible;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\player\chat\StandardChatFormatter;
@@ -168,7 +168,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements ChatBroadcastSubscriber, CommandSender, ChunkListener, IPlayer{
+class Player extends Human implements MinecraftMessageChannelSubscriber, CommandSender, ChunkListener, IPlayer{
 	use PermissibleDelegateTrait;
 
 	private const MOVES_PER_TICK = 2;
@@ -872,19 +872,6 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 		Timings::$playerChunkSend->stopTiming();
 	}
 
-	private function recheckBroadcastPermissions() : void{
-		foreach([
-			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
-			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
-		] as $permission => $channel){
-			if($this->hasPermission($permission)){
-				$this->server->subscribeToBroadcastChannel($channel, $this);
-			}else{
-				$this->server->unsubscribeFromBroadcastChannel($channel, $this);
-			}
-		}
-	}
-
 	/**
 	 * Called by the network system when the pre-spawn sequence is completed (e.g. after sending spawn chunks).
 	 * This fires join events and broadcasts join messages to other online players.
@@ -894,19 +881,18 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 			return;
 		}
 		$this->spawned = true;
-		$this->recheckBroadcastPermissions();
-		$this->getPermissionRecalculationCallbacks()->add(function(array $changedPermissionsOldValues) : void{
-			if(isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_ADMINISTRATIVE]) || isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_USERS])){
-				$this->recheckBroadcastPermissions();
-			}
-		});
+
+		//subscribing will only send us messages if we have the correct permissions
+		$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_CHAT, $this);
+		$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_GAME_EVENTS, $this);
 
 		$ev = new PlayerJoinEvent($this,
 			KnownTranslationFactory::multiplayer_player_joined($this->getDisplayName())->prefix(TextFormat::YELLOW)
 		);
 		$ev->call();
 		if($ev->getJoinMessage() !== ""){
-			$this->server->broadcastMessage($ev->getJoinMessage());
+			$this->server->broadcastMessage(Server::BROADCAST_CHANNEL_GAME_EVENTS, $ev->getJoinMessage(), $this);
 		}
 
 		$this->noDamageTicks = 60;
@@ -1528,10 +1514,15 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 					$this->server->dispatchCommand($this, substr($messagePart, 1));
 					Timings::$playerCommand->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS), new StandardChatFormatter());
+					$ev = new PlayerChatEvent($this, $messagePart, $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_CHAT), new StandardChatFormatter());
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->server->broadcastMessage($ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()), $ev->getRecipients());
+						$this->server->broadcastMessage(
+							Server::BROADCAST_CHANNEL_CHAT,
+							$ev->getFormatter()->format($ev->getPlayer()->getDisplayName(), $ev->getMessage()),
+							$ev->getPlayer(),
+							$ev->getRecipients()
+						);
 					}
 				}
 			}
@@ -2131,8 +2122,11 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 		}
 	}
 
-	public function onBroadcast(string $channelId, Translatable|string $message) : void{
+	public function onMessage(string $channelId, CommandSender $source, Translatable|string $message) : void{
 		if($channelId === Server::BROADCAST_CHANNEL_ADMINISTRATIVE){
+			if($source === $this){
+				return;
+			}
 			if($message instanceof Translatable){
 				$message = $message->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 			}else{
@@ -2140,6 +2134,24 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 			}
 		}
 		$this->sendMessage($message);
+	}
+
+	public function onTip(string $channelId, CommandSender $source, Translatable|string $message) : void{
+		//TODO: support translations in the proper plugin methods
+		$this->sendTip($message instanceof Translatable ? $this->getLanguage()->translate($message) : $message);
+	}
+
+	public function onPopup(string $channelId, CommandSender $source, Translatable|string $message) : void{
+		//TODO: support translations in the proper plugin methods
+		$this->sendPopup($message instanceof Translatable ? $this->getLanguage()->translate($message) : $message);
+	}
+
+	public function onTitle(string $channelId, CommandSender $source, string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void{
+		$this->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
+	}
+
+	public function getPermissible() : ?Permissible{
+		return $this;
 	}
 
 	/**
@@ -2299,7 +2311,7 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
 		if(($quitMessage = $ev->getQuitMessage()) != ""){
-			$this->server->broadcastMessage($quitMessage);
+			$this->server->broadcastMessage(Server::BROADCAST_CHANNEL_GAME_EVENTS, $quitMessage, $this);
 		}
 		$this->save();
 
@@ -2430,7 +2442,7 @@ class Player extends Human implements ChatBroadcastSubscriber, CommandSender, Ch
 		}
 
 		if($ev->getDeathMessage() != ""){
-			$this->server->broadcastMessage($ev->getDeathMessage());
+			$this->server->broadcastMessage(Server::BROADCAST_CHANNEL_GAME_EVENTS, $ev->getDeathMessage(), $this);
 		}
 
 		$this->startDeathAnimation();

@@ -29,6 +29,7 @@ use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use function count;
 use function implode;
@@ -49,10 +50,14 @@ class SayCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_announcement(
-			$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
-			implode(" ", $args)
-		)->prefix(TextFormat::LIGHT_PURPLE));
+		$sender->getServer()->broadcastMessage(
+			Server::BROADCAST_CHANNEL_CHAT,
+			KnownTranslationFactory::chat_type_announcement(
+				$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
+				implode(" ", $args)
+			)->prefix(TextFormat::LIGHT_PURPLE),
+			$sender
+		);
 		return true;
 	}
 }

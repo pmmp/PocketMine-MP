@@ -23,17 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+use pocketmine\command\CommandSender;
 use pocketmine\lang\Translatable;
+use pocketmine\permission\Permissible;
 
 /**
  * This interface can be implemented in order to receive messages from the server's global broadcast channels.
  */
-interface ChatBroadcastSubscriber{
+interface MessageChannelSubscriber{
 
 	/**
 	 * Called when a message is broadcasted on any channel that this receiver is subscribed to.
 	 *
 	 * @see Server::subscribeToBroadcastChannel()
 	 */
-	public function onBroadcast(string $channelId, Translatable|string $message) : void;
+	public function onMessage(string $channelId, CommandSender $source, Translatable|string $message) : void;
+
+	/**
+	 * Used to check if the subscriber is allowed to receive messages from channels with permission restrictions.
+	 * If this function returns null, the subscriber will receive all messages regardless of permissions.
+	 */
+	public function getPermissible() : ?Permissible;
 }
