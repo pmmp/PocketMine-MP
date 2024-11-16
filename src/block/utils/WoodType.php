@@ -23,26 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static WoodType ACACIA()
- * @method static WoodType BIRCH()
- * @method static WoodType CHERRY()
- * @method static WoodType CRIMSON()
- * @method static WoodType DARK_OAK()
- * @method static WoodType JUNGLE()
- * @method static WoodType MANGROVE()
- * @method static WoodType OAK()
- * @method static WoodType SPRUCE()
- * @method static WoodType WARPED()
- */
 enum WoodType{
-	use LegacyEnumShimTrait;
-
 	case OAK;
 	case SPRUCE;
 	case BIRCH;

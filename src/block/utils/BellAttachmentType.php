@@ -23,20 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static BellAttachmentType CEILING()
- * @method static BellAttachmentType FLOOR()
- * @method static BellAttachmentType ONE_WALL()
- * @method static BellAttachmentType TWO_WALLS()
- */
 enum BellAttachmentType{
-	use LegacyEnumShimTrait;
-
 	case CEILING;
 	case FLOOR;
 	case ONE_WALL;

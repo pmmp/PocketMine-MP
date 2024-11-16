@@ -32,8 +32,6 @@ use function log;
 use function spl_object_id;
 
 final class RuntimeDataWriter implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $value = 0;
 	private int $offset = 0;
 

@@ -85,13 +85,6 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
-	 * @deprecated
-	 */
-	public function isCrashed() : bool{
-		return $this->isTerminated();
-	}
-
-	/**
 	 * Returns whether this task has finished executing, whether successfully or not. This differs from isRunning()
 	 * because it is not true prior to task execution.
 	 */
@@ -115,20 +108,6 @@ abstract class AsyncTask extends Runnable{
 
 	public function setResult(mixed $result) : void{
 		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function cancelRun() : void{
-		//NOOP
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function hasCancelledRun() : bool{
-		return false;
 	}
 
 	public function setSubmitted() : void{
@@ -187,13 +166,6 @@ abstract class AsyncTask extends Runnable{
 	 *                        and then unserialize()'ed, as if it has been cloned.
 	 */
 	public function onProgressUpdate($progress) : void{
-
-	}
-
-	/**
-	 * @deprecated No longer used
-	 */
-	public function onError() : void{
 
 	}
 

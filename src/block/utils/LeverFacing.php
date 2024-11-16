@@ -24,24 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\math\Facing;
-use pocketmine\utils\LegacyEnumShimTrait;
 
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static LeverFacing DOWN_AXIS_X()
- * @method static LeverFacing DOWN_AXIS_Z()
- * @method static LeverFacing EAST()
- * @method static LeverFacing NORTH()
- * @method static LeverFacing SOUTH()
- * @method static LeverFacing UP_AXIS_X()
- * @method static LeverFacing UP_AXIS_Z()
- * @method static LeverFacing WEST()
- */
 enum LeverFacing{
-	use LegacyEnumShimTrait;
-
 	case UP_AXIS_X;
 	case UP_AXIS_Z;
 	case DOWN_AXIS_X;

@@ -37,17 +37,20 @@ use function copy;
 use function count;
 use function dirname;
 use function file_exists;
+use function fopen;
+use function is_dir;
 use function mkdir;
 use function rtrim;
 use function str_contains;
+use function str_replace;
+use function strlen;
 use function strtolower;
+use function substr;
 use function trim;
 use const DIRECTORY_SEPARATOR;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
 	private bool $isEnabled = false;
-
-	private string $resourceFolder;
 
 	private ?Config $config = null;
 	private string $configFile;
@@ -61,12 +64,12 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		private PluginDescription $description,
 		private string $dataFolder,
 		private string $file,
-		private ResourceProvider $resourceProvider
+		private string $resourceFolder,
 	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
-		$this->resourceFolder = Path::join($this->file, "resources") . "/";
+		$this->resourceFolder = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $resourceFolder), "/") . "/";
 
 		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
@@ -228,19 +231,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
-	 * @deprecated Prefer using standard PHP functions with {@link PluginBase::getResourcePath()}, like
-	 * file_get_contents() or fopen().
-	 *
-	 * Gets an embedded resource on the plugin file.
-	 * WARNING: You must close the resource given using fclose()
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename){
-		return $this->resourceProvider->getResource($filename);
-	}
-
-	/**
 	 * Saves an embedded resource to its relative location in the data folder
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
@@ -271,7 +261,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * @return \SplFileInfo[]
 	 */
 	public function getResources() : array{
-		return $this->resourceProvider->getResources();
+		$resources = [];
+		if(is_dir($this->resourceFolder)){
+			/** @var \SplFileInfo $resource */
+			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->resourceFolder)) as $resource){
+				if($resource->isFile()){
+					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->resourceFolder)));
+					$resources[$path] = $resource;
+				}
+			}
+		}
+
+		return $resources;
 	}
 
 	public function getConfig() : Config{

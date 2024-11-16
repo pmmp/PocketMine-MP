@@ -37,7 +37,7 @@ use function sqrt;
 
 class ExperienceOrb extends Entity{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::XP_ORB; }
+	public function getNetworkTypeId() : string{ return EntityIds::XP_ORB; }
 
 	public const TAG_VALUE_PC = "Value"; //short
 	public const TAG_VALUE_PE = "experience value"; //int (WTF?)

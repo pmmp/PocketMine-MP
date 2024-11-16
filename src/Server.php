@@ -79,6 +79,7 @@ use pocketmine\player\PlayerDataLoadException;
 use pocketmine\player\PlayerDataProvider;
 use pocketmine\player\PlayerDataSaveException;
 use pocketmine\player\PlayerInfo;
+use pocketmine\plugin\FolderPluginLoader;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
@@ -991,6 +992,7 @@ class Server{
 			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool(Yml::PLUGINS_LEGACY_DATA_DIR, true) ? null : Path::join($this->dataPath, "plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
+			$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
 
 			$providerManager = new WorldProviderManager();
 			if(

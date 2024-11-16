@@ -29,8 +29,6 @@ use function count;
 use function log;
 
 final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $bits = 0;
 
 	protected function addBits(int $bits) : void{
