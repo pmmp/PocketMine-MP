@@ -70,7 +70,6 @@ use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnPNetworkInterface;
 use pocketmine\permission\BanList;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\DatFilePlayerDataProvider;
 use pocketmine\player\GameMode;
@@ -104,7 +103,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
-use pocketmine\utils\MessageLoggerForwarder;
+use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
@@ -157,6 +156,7 @@ use function register_shutdown_function;
 use function rename;
 use function round;
 use function sleep;
+use function spl_object_id;
 use function sprintf;
 use function str_repeat;
 use function str_replace;
@@ -181,8 +181,7 @@ class Server{
 	use NotSerializable;
 
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
-	public const BROADCAST_CHANNEL_CHAT = "pocketmine.broadcast.chat";
-	public const BROADCAST_CHANNEL_GAME_EVENTS = "pocketmine.broadcast.gameEvents";
+	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
 	public const DEFAULT_SERVER_NAME = VersionInfo::NAME . " Server";
 	public const DEFAULT_MAX_PLAYERS = 20;
@@ -299,10 +298,10 @@ class Server{
 	private SignalHandler $signalHandler;
 
 	/**
-	 * @var MessageChannel[]
-	 * @phpstan-var array<string, MessageChannel>
+	 * @var MessageBroadcastSubscriber[][]
+	 * @phpstan-var array<string, array<int, MessageBroadcastSubscriber>>
 	 */
-	private array $broadcastChannels = [];
+	private array $broadcastSubscribers = [];
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -978,12 +977,6 @@ class Server{
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
-			$this->broadcastChannels = [
-				self::BROADCAST_CHANNEL_ADMINISTRATIVE => new MessageChannel(DefaultPermissionNames::BROADCAST_ADMIN),
-				self::BROADCAST_CHANNEL_CHAT => new MessageChannel(DefaultPermissionNames::BROADCAST_USER),
-				self::BROADCAST_CHANNEL_GAME_EVENTS => new MessageChannel(DefaultPermissionNames::BROADCAST_USER),
-			];
-
 			$pluginGraylist = null;
 			$graylistFile = Path::join($this->dataPath, "plugin_list.yml");
 			if(!file_exists($graylistFile)){
@@ -1063,10 +1056,10 @@ class Server{
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
-			$forwarder = new MessageLoggerForwarder($this->logger, $this->language);
+			$forwarder = new BroadcastLoggerForwarder($this->logger, $this->language);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_CHAT, $forwarder);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_GAME_EVENTS, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $forwarder);
 
 			//TODO: move console parts to a separate component
 			if($this->configGroup->getPropertyBool(Yml::CONSOLE_ENABLE_INPUT, true)){
@@ -1270,24 +1263,29 @@ class Server{
 	 * Subscribes to a particular message broadcast channel.
 	 * The channel ID can be any arbitrary string.
 	 */
-	public function subscribeToBroadcastChannel(string $channelId, MessageChannelSubscriber $subscriber) : void{
-		$channel = $this->getBroadcastChannel($channelId) ?? throw new \InvalidArgumentException("Channel \"$channelId\" does not exist");
-		$channel->subscribe($subscriber);
+	public function subscribeToBroadcastChannel(string $channelId, MessageBroadcastSubscriber $subscriber) : void{
+		$this->broadcastSubscribers[$channelId][spl_object_id($subscriber)] = $subscriber;
 	}
 
 	/**
 	 * Unsubscribes from a particular message broadcast channel.
 	 */
-	public function unsubscribeFromBroadcastChannel(string $channelId, MessageChannelSubscriber $subscriber) : void{
-		$this->getBroadcastChannel($channelId)?->unsubscribe($subscriber);
+	public function unsubscribeFromBroadcastChannel(string $channelId, MessageBroadcastSubscriber $subscriber) : void{
+		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
+			if(count($this->broadcastSubscribers[$channelId]) === 1){
+				unset($this->broadcastSubscribers[$channelId]);
+			}else{
+				unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
+			}
+		}
 	}
 
 	/**
 	 * Unsubscribes from all broadcast channels.
 	 */
-	public function unsubscribeFromAllBroadcastChannels(MessageChannelSubscriber $subscriber) : void{
-		foreach(Utils::stringifyKeys($this->broadcastChannels) as $channelId => $channel){
-			$channel->unsubscribe($subscriber);
+	public function unsubscribeFromAllBroadcastChannels(MessageBroadcastSubscriber $subscriber) : void{
+		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
+			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
 	}
 
@@ -1295,63 +1293,86 @@ class Server{
 	 * Returns a list of all the broadcast subscribers subscribed to the given broadcast channel with permission to
 	 * receive messages from it.
 	 *
-	 * @return MessageChannelSubscriber[]
-	 * @phpstan-return array<int, MessageChannelSubscriber>
+	 * @return MessageBroadcastSubscriber[]
+	 * @phpstan-return array<int, MessageBroadcastSubscriber>
 	 */
 	public function getBroadcastChannelSubscribers(string $channelId) : array{
-		return $this->getBroadcastChannel($channelId)?->getPermittedSubscribers() ?? [];
+		return $this->broadcastSubscribers[$channelId] ?? [];
 	}
 
 	/**
-	 * @param MessageChannelSubscriber[]|null $recipients
+	 * @param MessageBroadcastSubscriber[]|null $recipients
 	 */
-	public function broadcastMessage(string $channelId, Translatable|string $message, CommandSender $cause, ?array $recipients = null) : int{
+	public function broadcastMessage(CommandSender $source, Translatable|string $message, string $channelId = self::BROADCAST_CHANNEL_USERS, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannel($channelId)?->getPermittedSubscribers() ?? [];
 
 		foreach($recipients as $recipient){
-			$recipient->onMessage($channelId, $cause, $message);
+			$recipient->onMessage($source, $message, $channelId);
 		}
 
 		return count($recipients);
 	}
 
 	/**
-	 * @param MinecraftMessageChannelSubscriber[]|null $recipients
+	 * @return MinecraftMessageBroadcastSubscriber[]
 	 */
-	public function broadcastTip(string $channelId, string $tip, CommandSender $source, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->getBroadcastChannel($channelId)?->getMinecraftPermittedSubscribers() ?? [];
+	private function getMinecraftBroadcastSubscribers(string $channelId) : array{
+		/** @var Player[] $players */
+		$players = [];
+		foreach($this->broadcastSubscribers[$channelId] ?? [] as $subscriber){
+			if($subscriber instanceof MinecraftMessageBroadcastSubscriber){
+				$players[spl_object_id($subscriber)] = $subscriber;
+			}
+		}
+		return $players;
+	}
+
+	/**
+	 * @param MinecraftMessageBroadcastSubscriber[]|null $recipients
+	 */
+	public function broadcastTip(CommandSender $source, string $tip, string $channelId = self::BROADCAST_CHANNEL_USERS, ?array $recipients = null) : int{
+		$recipients = $recipients ?? $this->getMinecraftBroadcastSubscribers($channelId);
 
 		foreach($recipients as $recipient){
-			$recipient->onTip($channelId, $source, $tip);
+			$recipient->onTip($source, $tip, $channelId);
 		}
 
 		return count($recipients);
 	}
 
 	/**
-	 * @param MinecraftMessageChannelSubscriber[]|null $recipients
+	 * @param MinecraftMessageBroadcastSubscriber[]|null $recipients
 	 */
-	public function broadcastPopup(string $channelId, string $popup, CommandSender $source, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->getBroadcastChannel($channelId)?->getMinecraftPermittedSubscribers() ?? [];
+	public function broadcastPopup(CommandSender $source, string $popup, string $channelId = self::BROADCAST_CHANNEL_USERS, ?array $recipients = null) : int{
+		$recipients = $recipients ?? $this->getMinecraftBroadcastSubscribers($channelId);
 
 		foreach($recipients as $recipient){
-			$recipient->onPopup($channelId, $source, $popup);
+			$recipient->onPopup($source, $popup, $channelId);
 		}
 
 		return count($recipients);
 	}
 
 	/**
-	 * @param int                                      $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int                                      $stay       Duration in ticks to stay on screen for
-	 * @param int                                      $fadeOut    Duration in ticks for fade-out.
-	 * @param MinecraftMessageChannelSubscriber[]|null $recipients
+	 * @param int                                        $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int                                        $stay       Duration in ticks to stay on screen for
+	 * @param int                                        $fadeOut    Duration in ticks for fade-out.
+	 * @param MinecraftMessageBroadcastSubscriber[]|null $recipients
 	 */
-	public function broadcastTitle(string $channelId, string $title, CommandSender $source, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->getBroadcastChannel($channelId)?->getMinecraftPermittedSubscribers() ?? [];
+	public function broadcastTitle(
+		CommandSender $source,
+		string $title,
+		string $subtitle = "",
+		int $fadeIn = -1,
+		int $stay = -1,
+		int $fadeOut = -1,
+		string $channelId = self::BROADCAST_CHANNEL_USERS,
+		?array $recipients = null
+	) : int{
+		$recipients = $recipients ?? $this->getMinecraftBroadcastSubscribers($channelId);
 
 		foreach($recipients as $recipient){
-			$recipient->onTitle($channelId, $source, $title, $subtitle, $fadeIn, $stay, $fadeOut);
+			$recipient->onTitle($source, $title, $subtitle, $fadeIn, $stay, $fadeOut, $channelId);
 		}
 
 		return count($recipients);

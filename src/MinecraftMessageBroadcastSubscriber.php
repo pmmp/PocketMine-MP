@@ -26,11 +26,11 @@ namespace pocketmine;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\Translatable;
 
-interface MinecraftMessageChannelSubscriber extends MessageChannelSubscriber{
+interface MinecraftMessageBroadcastSubscriber extends MessageBroadcastSubscriber{
 
-	public function onTip(string $channelId, CommandSender $source, Translatable|string $message) : void;
+	public function onTip(CommandSender $source, Translatable|string $message, string $channelId) : void;
 
-	public function onPopup(string $channelId, CommandSender $source, Translatable|string $message) : void;
+	public function onPopup(CommandSender $source, Translatable|string $message, string $channelId) : void;
 
-	public function onTitle(string $channelId, CommandSender $source, string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void;
+	public function onTitle(CommandSender $source, string $title, string $subtitle, int $fadeIn, int $stay, int $fadeOut, string $channelId) : void;
 }

@@ -26,29 +26,24 @@ namespace pocketmine\utils;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
-use pocketmine\MessageChannelSubscriber;
-use pocketmine\permission\Permissible;
+use pocketmine\MessageBroadcastSubscriber;
 
 /**
  * Forwards any messages it receives via sendMessage() to the given logger. Used for forwarding chat messages and
  * command audit log messages to the server log file.
  */
-final class MessageLoggerForwarder implements MessageChannelSubscriber{
+final class BroadcastLoggerForwarder implements MessageBroadcastSubscriber{
 
 	public function __construct(
 		private \Logger $logger,
 		private Language $language
 	){}
 
-	public function onMessage(string $channelId, CommandSender $source, Translatable|string $message) : void{
+	public function onMessage(CommandSender $source, Translatable|string $message, string $channelId) : void{
 		if($message instanceof Translatable){
 			$this->logger->info($this->language->translate($message));
 		}else{
 			$this->logger->info($message);
 		}
-	}
-
-	public function getPermissible() : ?Permissible{
-		return null; //we don't care about channel permissions - we just want to receive everything
 	}
 }

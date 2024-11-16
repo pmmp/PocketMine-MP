@@ -222,16 +222,13 @@ abstract class Command{
 	}
 
 	public static function broadcastCommandMessage(CommandSender $source, Translatable|string $message, bool $sendToSource = true) : void{
-		$subscribers = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		$broadcast = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 
 		if($sendToSource){
 			$source->sendMessage($message);
 		}
 
-		foreach($subscribers as $user){
-			$user->onMessage(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $source, $broadcast);
-		}
+		$source->getServer()->broadcastMessage($source, $broadcast, Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 	}
 
 	public function __toString() : string{
