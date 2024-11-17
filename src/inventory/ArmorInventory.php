@@ -42,7 +42,7 @@ class ArmorInventory extends SimpleInventory{
 	){
 		parent::__construct(4);
 
-		$this->validators->add(new CallbackSlotValidator($this->validate(...)));
+		$this->validators->add(new CallbackSlotValidator(self::validate(...)));
 	}
 
 	public function getHolder() : Living{
@@ -81,7 +81,7 @@ class ArmorInventory extends SimpleInventory{
 		$this->setItem(self::SLOT_FEET, $boots);
 	}
 
-	private function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
+	private static function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
 		if($item instanceof Armor){
 			if($item->getArmorSlot() !== $slot){
 				return new TransactionValidationException("Armor item is in wrong slot");

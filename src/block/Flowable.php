@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 
 /**
  * "Flowable" blocks are destroyed if water flows into the same space as the block. These blocks usually don't have any
@@ -38,6 +39,11 @@ abstract class Flowable extends Transparent{
 
 	public function isSolid() : bool{
 		return false;
+	}
+
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+		return (!$this->canBeFlowedInto() || !$blockReplace instanceof Liquid) &&
+			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	/**
