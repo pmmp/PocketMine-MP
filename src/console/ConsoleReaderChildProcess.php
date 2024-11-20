@@ -30,7 +30,6 @@ use function cli_set_process_title;
 use function count;
 use function dirname;
 use function fwrite;
-use function hash;
 use function is_numeric;
 use const PHP_EOL;
 use const STDOUT;
