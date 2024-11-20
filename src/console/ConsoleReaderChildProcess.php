@@ -81,13 +81,7 @@ while(true){
 		}
 		return $channel->shift();
 	});
-	if($line !== null){
-		$commandToken = hash('xxh3', $line, options: ['seed' => $commandTokenSeed]);
-		$commandTokenSeed++;
-		$message = $line . ":" . $commandToken;
-	}else{
-		$message = "";
-	}
+	$message = $line !== null ? ConsoleReaderChildProcessUtils::createMessage($line, $commandTokenSeed) : "";
 	if(@fwrite(STDOUT, $message . "\n") === false){
 		//Always send even if there's no line, to check if the parent is alive
 		//If the parent process was terminated forcibly, it won't close the connection properly, so feof() will return

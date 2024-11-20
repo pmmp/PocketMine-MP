@@ -27,11 +27,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function base64_encode;
-use function count;
-use function explode;
 use function fgets;
 use function fopen;
-use function hash;
 use function mt_rand;
 use function preg_replace;
 use function proc_close;
@@ -58,6 +55,9 @@ use const PHP_BINARY;
  * communication.
  */
 final class ConsoleReaderChildProcessDaemon{
+	public const TOKEN_DELIMITER = ":";
+	public const TOKEN_HASH_ALGO = "xxh3";
+
 	private \PrefixedLogger $logger;
 	/** @var resource */
 	private $subprocess;
@@ -122,17 +122,7 @@ final class ConsoleReaderChildProcessDaemon{
 				return null;
 			}
 
-			$command = null;
-
-			$parts = explode(":", $line, 2);
-			if(count($parts) === 2){
-				$expectedToken = hash('xxh3', $parts[0], options: ['seed' => $this->commandTokenSeed]);
-
-				if($expectedToken === $parts[1]){
-					$command = $parts[0];
-					$this->commandTokenSeed++;
-				}
-			}
+			$command = ConsoleReaderChildProcessUtils::parseMessage($line, $this->commandTokenSeed);
 			if($command === null){
 				//this is not a command - it may be some kind of error output from the subprocess
 				//write it directly to the console
