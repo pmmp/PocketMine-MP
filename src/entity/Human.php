@@ -169,7 +169,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		]);
 	}
 
-	public function allowForceEating() : bool{
+	public function canEatWithoutHunger() : bool{
 		return false;
 	}
 
