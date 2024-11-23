@@ -29,6 +29,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
+use function spl_object_id;
 use function usort;
 
 class CraftingManager{
@@ -80,8 +81,8 @@ class CraftingManager{
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
-		foreach(FurnaceType::getAll() as $furnaceType){
-			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
+		foreach(FurnaceType::cases() as $furnaceType){
+			$this->furnaceRecipeManagers[spl_object_id($furnaceType)] = new FurnaceRecipeManager();
 		}
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
@@ -177,7 +178,7 @@ class CraftingManager{
 	}
 
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
-		return $this->furnaceRecipeManagers[$furnaceType->id()];
+		return $this->furnaceRecipeManagers[spl_object_id($furnaceType)];
 	}
 
 	/**

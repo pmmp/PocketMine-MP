@@ -41,8 +41,8 @@ final class PromiseSharedData{
 	 */
 	public array $onFailure = [];
 
-	public bool $resolved = false;
+	public ?bool $state = null;
 
-	/** @phpstan-var TValue|null */
-	public mixed $result = null;
+	/** @phpstan-var TValue */
+	public mixed $result;
 }

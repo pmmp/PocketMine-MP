@@ -26,18 +26,14 @@ namespace pocketmine\item;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
+use pocketmine\world\sound\BottleEmptySound;
 
 class Potion extends Item implements ConsumableItem{
 
-	private PotionType $potionType;
-
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->potionType = PotionType::WATER();
-		parent::__construct($identifier, $name);
-	}
+	private PotionType $potionType = PotionType::WATER;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->potionType($this->potionType);
+		$w->enum($this->potionType);
 	}
 
 	public function getType() : PotionType{ return $this->potionType; }
@@ -55,7 +51,7 @@ class Potion extends Item implements ConsumableItem{
 	}
 
 	public function onConsume(Living $consumer) : void{
-
+		$consumer->broadcastSound(new BottleEmptySound());
 	}
 
 	public function getAdditionalEffects() : array{

@@ -3,7 +3,7 @@ updates:
 - package-ecosystem: composer
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
     time: "10:00"
   open-pull-requests-limit: 10
   ignore:
@@ -12,6 +12,22 @@ updates:
       update-types:
         - "version-update:semver-major"
         - "version-update:semver-minor"
+  groups:
+    production-patch-updates:
+      dependency-type: production
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+    development-patch-updates:
+      dependency-type: development
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+    phpstan:
+      patterns:
+        - "phpstan/*"
 
 - package-ecosystem: gitsubmodule
   directory: "/"
@@ -21,4 +37,4 @@ updates:
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly

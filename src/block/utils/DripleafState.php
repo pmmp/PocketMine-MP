@@ -23,43 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static DripleafState FULL_TILT()
  * @method static DripleafState PARTIAL_TILT()
  * @method static DripleafState STABLE()
  * @method static DripleafState UNSTABLE()
  */
-final class DripleafState{
-	use EnumTrait {
-		register as Enum_register;
-		__construct as Enum___construct;
-	}
+enum DripleafState{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("stable", null),
-			new self("unstable", 10),
-			new self("partial_tilt", 10),
-			new self("full_tilt", 100)
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private ?int $scheduledUpdateDelayTicks
-	){
-		$this->Enum___construct($enumName);
-	}
+	case STABLE;
+	case UNSTABLE;
+	case PARTIAL_TILT;
+	case FULL_TILT;
 
 	public function getScheduledUpdateDelayTicks() : ?int{
-		return $this->scheduledUpdateDelayTicks;
+		return match($this){
+			self::STABLE => null,
+			self::UNSTABLE, self::PARTIAL_TILT => 10,
+			self::FULL_TILT => 100,
+		};
 	}
-
 }

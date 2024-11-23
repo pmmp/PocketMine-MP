@@ -36,7 +36,7 @@ final class BannerTest extends TestCase{
 		$item = VanillaBlocks::BANNER()->asItem();
 		assert($item instanceof Banner);
 		$item->setPatterns([
-			new BannerPatternLayer(BannerPatternType::FLOWER(), DyeColor::RED())
+			new BannerPatternLayer(BannerPatternType::FLOWER, DyeColor::RED)
 		]);
 		$data = $item->nbtSerialize();
 
@@ -45,6 +45,6 @@ final class BannerTest extends TestCase{
 		self::assertInstanceOf(Banner::class, $item2);
 		$patterns = $item2->getPatterns();
 		self::assertCount(1, $patterns);
-		self::assertTrue(BannerPatternType::FLOWER()->equals($patterns[0]->getType()));
+		self::assertTrue(BannerPatternType::FLOWER === $patterns[0]->getType());
 	}
 }

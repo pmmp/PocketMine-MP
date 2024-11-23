@@ -23,28 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static ShapelessRecipeType CARTOGRAPHY()
  * @method static ShapelessRecipeType CRAFTING()
  * @method static ShapelessRecipeType SMITHING()
  * @method static ShapelessRecipeType STONECUTTER()
  */
-final class ShapelessRecipeType{
-	use EnumTrait;
+enum ShapelessRecipeType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("crafting"),
-			new self("stonecutter"),
-			new self("smithing"),
-			new self("cartography")
-		);
-	}
+	case CRAFTING;
+	case STONECUTTER;
+	case SMITHING;
+	case CARTOGRAPHY;
 }

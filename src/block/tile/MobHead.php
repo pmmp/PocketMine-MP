@@ -26,10 +26,8 @@ namespace pocketmine\block\tile;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\data\bedrock\MobHeadTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\World;
 
 /**
  * @deprecated
@@ -42,13 +40,8 @@ class MobHead extends Spawnable{
 	private const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
 	private const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
-	private MobHeadType $mobHeadType;
+	private MobHeadType $mobHeadType = MobHeadType::SKELETON;
 	private int $rotation = 0;
-
-	public function __construct(World $world, Vector3 $pos){
-		$this->mobHeadType = MobHeadType::SKELETON();
-		parent::__construct($world, $pos);
-	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($skullTypeTag = $nbt->getTag(self::TAG_SKULL_TYPE)) instanceof ByteTag){

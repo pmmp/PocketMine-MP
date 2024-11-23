@@ -38,9 +38,10 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
-use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\PropertySyncData;
+use pocketmine\network\mcpe\protocol\types\entity\UpdateAttribute;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use function array_map;
@@ -66,7 +67,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 		if(count($attributes) > 0){
 			$this->sendDataPacket($recipients, UpdateAttributesPacket::create(
 				$entity->getId(),
-				array_map(fn(Attribute $attr) => new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue(), []), $attributes),
+				array_map(fn(Attribute $attr) => new UpdateAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getDefaultValue(), []), $attributes),
 				0
 			));
 		}
@@ -87,12 +88,13 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			EffectIdMap::getInstance()->toId($effect->getType()),
 			$effect->getAmplifier(),
 			$effect->isVisible(),
-			$effect->getDuration()
+			$effect->getDuration(),
+			tick: 0
 		));
 	}
 
 	public function onEntityEffectRemoved(array $recipients, Living $entity, EffectInstance $effect) : void{
-		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType())));
+		$this->sendDataPacket($recipients, MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType()), tick: 0));
 	}
 
 	public function onEntityRemoved(array $recipients, Entity $entity) : void{
@@ -130,7 +132,8 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getChestplate())),
 			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getLeggings())),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots()))
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots())),
+			new ItemStackWrapper(0, ItemStack::null())
 		));
 	}
 
@@ -139,6 +142,13 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 	}
 
 	public function onEmote(array $recipients, Human $from, string $emoteId) : void{
-		$this->sendDataPacket($recipients, EmotePacket::create($from->getId(), $emoteId, "", "", EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT));
+		$this->sendDataPacket($recipients, EmotePacket::create(
+			$from->getId(),
+			$emoteId,
+			0, //seems to be irrelevant for the client, we cannot risk rebroadcasting random values received
+			"",
+			"",
+			EmotePacket::FLAG_SERVER | EmotePacket::FLAG_MUTE_ANNOUNCEMENT
+		));
 	}
 }

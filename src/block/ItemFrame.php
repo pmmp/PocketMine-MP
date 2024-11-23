@@ -164,7 +164,7 @@ class ItemFrame extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block, int $face) : bool{
-		return !$block->getAdjacentSupportType($face)->equals(SupportType::NONE());
+		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
 	}
 
 	public function onNearbyBlockChange() : void{

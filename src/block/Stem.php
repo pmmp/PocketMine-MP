@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -58,8 +59,12 @@ abstract class Stem extends Crops{
 		parent::onNearbyBlockChange();
 	}
 
+	public function ticksRandomly() : bool{
+		return $this->age < self::MAX_AGE || $this->facing === Facing::UP;
+	}
+
 	public function onRandomTick() : void{
-		if($this->facing === Facing::UP && mt_rand(0, 2) === 1){
+		if($this->facing === Facing::UP && CropGrowthHelper::canGrow($this)){
 			$world = $this->position->getWorld();
 			if($this->age < self::MAX_AGE){
 				$block = clone $this;
@@ -76,7 +81,9 @@ abstract class Stem extends Crops{
 				$facing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
 				$side = $this->getSide($facing);
 				if($side->getTypeId() === BlockTypeIds::AIR && $side->getSide(Facing::DOWN)->hasTypeTag(BlockTypeTags::DIRT)){
-					BlockEventHelper::grow($side, $grow, null);
+					if(BlockEventHelper::grow($side, $grow, null)){
+						$this->position->getWorld()->setBlock($this->position, $this->setFacing($facing));
+					}
 				}
 			}
 		}

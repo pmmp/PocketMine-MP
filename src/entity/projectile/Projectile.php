@@ -28,6 +28,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\object\EndCrystal;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -96,7 +97,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
-		return $entity instanceof Living && !$this->onGround;
+		return ($entity instanceof Living || $entity instanceof EndCrystal) && !$this->onGround;
 	}
 
 	public function canBeCollidedWith() : bool{
@@ -173,8 +174,9 @@ abstract class Projectile extends Entity{
 		$entityHit = null;
 		$hitResult = null;
 
+		$world = $this->getWorld();
 		foreach(VoxelRayTrace::betweenPoints($start, $end) as $vector3){
-			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
+			$block = $world->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 
 			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
 			if($blockHitResult !== null){
@@ -188,7 +190,7 @@ abstract class Projectile extends Entity{
 		$entityDistance = PHP_INT_MAX;
 
 		$newDiff = $end->subtractVector($start);
-		foreach($this->getWorld()->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
+		foreach($world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() && $this->ticksLived < 5){
 				continue;
 			}
@@ -256,7 +258,7 @@ abstract class Projectile extends Entity{
 			);
 		}
 
-		$this->getWorld()->onEntityMoved($this);
+		$world->onEntityMoved($this);
 		$this->checkBlockIntersections();
 
 		Timings::$projectileMove->stopTiming();

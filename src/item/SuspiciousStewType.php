@@ -25,13 +25,11 @@ namespace pocketmine\item;
 
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static SuspiciousStewType ALLIUM()
  * @method static SuspiciousStewType AZURE_BLUET()
@@ -44,61 +42,36 @@ use pocketmine\utils\EnumTrait;
  * @method static SuspiciousStewType TULIP()
  * @method static SuspiciousStewType WITHER_ROSE()
  */
-final class SuspiciousStewType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum SuspiciousStewType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("poppy", fn() => [
-				new EffectInstance(VanillaEffects::NIGHT_VISION(), 80)
-			]),
-			new self("cornflower", fn() => [
-				new EffectInstance(VanillaEffects::JUMP_BOOST(), 80)
-			]),
-			new self("tulip", fn() => [
-				new EffectInstance(VanillaEffects::WEAKNESS(), 140)
-			]),
-			new self("azure_bluet", fn() => [
-				new EffectInstance(VanillaEffects::BLINDNESS(), 120)
-			]),
-			new self("lily_of_the_valley", fn() => [
-				new EffectInstance(VanillaEffects::POISON(), 200)
-			]),
-			new self("dandelion", fn() => [
-				new EffectInstance(VanillaEffects::SATURATION(), 6)
-			]),
-			new self("blue_orchid", fn() => [
-				new EffectInstance(VanillaEffects::SATURATION(), 6)
-			]),
-			new self("allium", fn() => [
-				new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 40)
-			]),
-			new self("oxeye_daisy", fn() => [
-				new EffectInstance(VanillaEffects::REGENERATION(), 120)
-			]),
-			new self("wither_rose", fn() => [
-				new EffectInstance(VanillaEffects::WITHER(), 120)
-			])
-		);
-	}
-
-	/**
-	 * @phpstan-param \Closure() : list<EffectInstance> $effectsGetter
-	 */
-	private function __construct(
-		string $enumName,
-		private \Closure $effectsGetter
-	){
-		$this->Enum___construct($enumName);
-	}
+	case POPPY;
+	case CORNFLOWER;
+	case TULIP;
+	case AZURE_BLUET;
+	case LILY_OF_THE_VALLEY;
+	case DANDELION;
+	case BLUE_ORCHID;
+	case ALLIUM;
+	case OXEYE_DAISY;
+	case WITHER_ROSE;
 
 	/**
 	 * @return EffectInstance[]
 	 * @phpstan-return list<EffectInstance>
 	 */
 	public function getEffects() : array{
-		return ($this->effectsGetter)();
+		return match($this){
+			self::POPPY => [new EffectInstance(VanillaEffects::NIGHT_VISION(), 80)],
+			self::CORNFLOWER => [new EffectInstance(VanillaEffects::JUMP_BOOST(), 80)],
+			self::TULIP => [new EffectInstance(VanillaEffects::WEAKNESS(), 140)],
+			self::AZURE_BLUET => [new EffectInstance(VanillaEffects::BLINDNESS(), 120)],
+			self::LILY_OF_THE_VALLEY => [new EffectInstance(VanillaEffects::POISON(), 200)],
+			self::DANDELION,
+			self::BLUE_ORCHID => [new EffectInstance(VanillaEffects::SATURATION(), 6)],
+			self::ALLIUM => [new EffectInstance(VanillaEffects::FIRE_RESISTANCE(), 40)],
+			self::OXEYE_DAISY => [new EffectInstance(VanillaEffects::REGENERATION(), 120)],
+			self::WITHER_ROSE => [new EffectInstance(VanillaEffects::WITHER(), 120)]
+		};
 	}
 }

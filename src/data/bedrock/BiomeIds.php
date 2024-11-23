@@ -111,4 +111,15 @@ final class BiomeIds{
 	public const CRIMSON_FOREST = 179;
 	public const WARPED_FOREST = 180;
 	public const BASALT_DELTAS = 181;
+	public const JAGGED_PEAKS = 182;
+	public const FROZEN_PEAKS = 183;
+	public const SNOWY_SLOPES = 184;
+	public const GROVE = 185;
+	public const MEADOW = 186;
+	public const LUSH_CAVES = 187;
+	public const DRIPSTONE_CAVES = 188;
+	public const STONY_PEAKS = 189;
+	public const DEEP_DARK = 190;
+	public const MANGROVE_SWAMP = 191;
+	public const CHERRY_GROVE = 192;
 }

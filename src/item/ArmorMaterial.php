@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\world\sound\Sound;
+
 class ArmorMaterial{
 
 	public function __construct(
-		private readonly int $enchantability
+		private readonly int $enchantability,
+		private readonly ?Sound $equipSound = null
 	){
 	}
 
@@ -38,5 +41,12 @@ class ArmorMaterial{
 	 */
 	public function getEnchantability() : int{
 		return $this->enchantability;
+	}
+
+	/**
+	 * Returns the sound that plays when equipping the armor
+	 */
+	public function getEquipSound() : ?Sound{
+		return $this->equipSound;
 	}
 }

@@ -120,7 +120,7 @@ class TimingsHandler{
 	public function __construct(
 		private string $name,
 		private ?TimingsHandler $parent = null,
-		private string $group = "Minecraft"
+		private string $group = Timings::GROUP_MINECRAFT
 	){}
 
 	public function getName() : string{ return $this->name; }

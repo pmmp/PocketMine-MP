@@ -39,7 +39,7 @@ class PaintingItem extends Item{
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if(Facing::axis($face) === Axis::Y){
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		$motives = [];
@@ -67,7 +67,7 @@ class PaintingItem extends Item{
 		}
 
 		if(count($motives) === 0){ //No space available
-			return ItemUseResult::NONE();
+			return ItemUseResult::NONE;
 		}
 
 		/** @var PaintingMotive $motive */
@@ -81,6 +81,6 @@ class PaintingItem extends Item{
 		$entity->spawnToAll();
 
 		$player->getWorld()->addSound($replacePos->add(0.5, 0.5, 0.5), new PaintingPlaceSound());
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 }

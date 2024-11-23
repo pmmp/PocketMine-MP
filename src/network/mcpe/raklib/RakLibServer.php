@@ -96,7 +96,8 @@ class RakLibServer extends Thread{
 			new SimpleProtocolAcceptor($this->protocolVersion),
 			new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
 			new RakLibToUserThreadMessageSender(new SnoozeAwarePthreadsChannelWriter($this->threadToMainBuffer, $this->sleeperEntry->createNotifier())),
-			new ExceptionTraceCleaner($this->mainPath)
+			new ExceptionTraceCleaner($this->mainPath),
+			recvMaxSplitParts: 512
 		);
 		$this->synchronized(function() : void{
 			$this->ready = true;

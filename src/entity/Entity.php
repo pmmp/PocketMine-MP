@@ -35,6 +35,7 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
@@ -250,6 +251,14 @@ abstract class Entity{
 
 	public function isNameTagAlwaysVisible() : bool{
 		return $this->alwaysShowNameTag;
+	}
+
+	/**
+	 * Returns whether players can rename this entity using a name tag.
+	 * Note that plugins can still name entities using setNameTag().
+	 */
+	public function canBeRenamed() : bool{
+		return false;
 	}
 
 	public function setNameTag(string $name) : void{
@@ -792,7 +801,7 @@ abstract class Entity{
 	}
 
 	protected function broadcastMotion() : void{
-		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
+		NetworkBroadcastUtils::broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion(), tick: 0)]);
 	}
 
 	public function getGravity() : float{
@@ -842,7 +851,7 @@ abstract class Entity{
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
 		$world = $this->getWorld();
-		if(count($world->getCollisionBoxes($this, $this->getBoundingBox(), false)) === 0){
+		if(count($world->getBlockCollisionBoxes($this->boundingBox)) === 0){
 			return false;
 		}
 
@@ -1144,7 +1153,7 @@ abstract class Entity{
 
 			assert(abs($dx) <= 20 && abs($dy) <= 20 && abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
-			$list = $this->getWorld()->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
+			$list = $this->getWorld()->getBlockCollisionBoxes($moveBB->addCoord($dx, $dy, $dz));
 
 			foreach($list as $bb){
 				$dy = $bb->calculateYOffset($moveBB, $dy);
@@ -1176,7 +1185,7 @@ abstract class Entity{
 
 				$stepBB = clone $this->boundingBox;
 
-				$list = $this->getWorld()->getCollisionBoxes($this, $stepBB->addCoord($dx, $dy, $dz), false);
+				$list = $this->getWorld()->getBlockCollisionBoxes($stepBB->addCoord($dx, $dy, $dz));
 				foreach($list as $bb){
 					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
@@ -1553,6 +1562,13 @@ abstract class Entity{
 	}
 
 	/**
+	 * Returns the item that players will equip when middle-clicking on this entity.
+	 */
+	public function getPickedItem() : ?Item{
+		return null;
+	}
+
+	/**
 	 * Flags the entity to be removed from the world on the next tick.
 	 */
 	public function flagForDespawn() : void{
@@ -1686,7 +1702,7 @@ abstract class Entity{
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
 		if(!$this->silent){
-			NetworkBroadcastUtils::broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+			$this->getWorld()->addSound($this->location->asVector3(), $sound, $targets ?? $this->getViewers());
 		}
 	}
 

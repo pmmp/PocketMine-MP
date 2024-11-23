@@ -27,15 +27,10 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
 class Dye extends Item{
-	private DyeColor $color;
-
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->color = DyeColor::BLACK();
-		parent::__construct($identifier, $name);
-	}
+	private DyeColor $color = DyeColor::BLACK;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->dyeColor($this->color);
+		$w->enum($this->color);
 	}
 
 	public function getColor() : DyeColor{

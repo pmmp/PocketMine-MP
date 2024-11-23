@@ -27,6 +27,6 @@ use pocketmine\crafting\FurnaceType;
 
 class NormalFurnace extends Furnace{
 	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::FURNACE();
+		return FurnaceType::FURNACE;
 	}
 }

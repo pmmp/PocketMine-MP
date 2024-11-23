@@ -27,6 +27,6 @@ use pocketmine\crafting\FurnaceType;
 
 class BlastFurnace extends Furnace{
 	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::BLAST_FURNACE();
+		return FurnaceType::BLAST_FURNACE;
 	}
 }

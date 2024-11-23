@@ -30,7 +30,7 @@ class CakeWithDyedCandle extends CakeWithCandle{
 	use ColoredTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->color = DyeColor::WHITE();
+		$this->color = DyeColor::WHITE;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 

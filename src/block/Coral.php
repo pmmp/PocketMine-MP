@@ -23,29 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 final class Coral extends BaseCoral{
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($blockReplace)){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedAt($this)){
-			$world->useBreakOn($this->position);
-		}else{
-			parent::onNearbyBlockChange();
-		}
-	}
+	use StaticSupportTrait;
 
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();

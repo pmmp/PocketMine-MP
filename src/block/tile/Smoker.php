@@ -27,6 +27,6 @@ use pocketmine\crafting\FurnaceType;
 
 class Smoker extends Furnace{
 	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::SMOKER();
+		return FurnaceType::SMOKER;
 	}
 }

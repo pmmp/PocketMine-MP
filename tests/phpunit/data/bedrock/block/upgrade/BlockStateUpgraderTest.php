@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use const PHP_INT_MAX;
 
 class BlockStateUpgraderTest extends TestCase{
@@ -47,11 +49,11 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	private function getNewSchema() : BlockStateUpgradeSchema{
-		return $this->getNewSchemaVersion(PHP_INT_MAX);
+		return $this->getNewSchemaVersion(PHP_INT_MAX, 0);
 	}
 
-	private function getNewSchemaVersion(int $versionId) : BlockStateUpgradeSchema{
-		$schema = new BlockStateUpgradeSchema(($versionId >> 24) & 0xff, ($versionId >> 16) & 0xff, ($versionId >> 8) & 0xff, $versionId & 0xff, 0);
+	private function getNewSchemaVersion(int $versionId, int $schemaId) : BlockStateUpgradeSchema{
+		$schema = new BlockStateUpgradeSchema(($versionId >> 24) & 0xff, ($versionId >> 16) & 0xff, ($versionId >> 8) & 0xff, $versionId & 0xff, $schemaId);
 		$this->upgrader->addSchema($schema);
 		return $schema;
 	}
@@ -210,21 +212,41 @@ class BlockStateUpgraderTest extends TestCase{
 		self::assertSame($upgradedStateData->getState(self::TEST_PROPERTY_2)?->getValue(), $valueAfter);
 	}
 
+	public function testFlattenProperty() : void{
+		$schema = $this->getNewSchema();
+		$schema->flattenedProperties[self::TEST_BLOCK] = new BlockStateUpgradeSchemaFlattenInfo(
+			"minecraft:",
+			"test",
+			"_suffix",
+			[],
+			StringTag::class
+		);
+
+		$stateData = new BlockStateData(self::TEST_BLOCK, ["test" => new StringTag("value1")], 0);
+		$upgradedStateData = $this->upgrade($stateData, fn() => $stateData);
+
+		self::assertSame("minecraft:value1_suffix", $upgradedStateData->getName());
+		self::assertEmpty($upgradedStateData->getStates());
+	}
+
 	/**
-	 * @phpstan-return \Generator<int, array{int, int, bool}, void, void>
+	 * @phpstan-return \Generator<int, array{int, int, bool, int}, void, void>
 	 */
 	public static function upgraderVersionCompatibilityProvider() : \Generator{
-		yield [0x1_00_00_00, 0x1_00_00_00, true]; //Same version: must be altered - this may be a backwards-compatible change that Mojang didn't bother to bump for
-		yield [0x1_00_01_00, 0x1_00_00_00, true]; //Schema newer than block: must be altered
-		yield [0x1_00_00_00, 0x1_00_01_00, false]; //Block newer than schema: block must NOT be altered
+		yield [0x1_00_00_00, 0x1_00_00_00, true, 2]; //Same version, multiple schemas targeting version - must be altered, we don't know which schemas are applicable
+		yield [0x1_00_00_00, 0x1_00_00_00, false, 1]; //Same version, one schema targeting version - do not change
+		yield [0x1_00_01_00, 0x1_00_00_00, true, 1]; //Schema newer than block: must be altered
+		yield [0x1_00_00_00, 0x1_00_01_00, false, 1]; //Block newer than schema: block must NOT be altered
 	}
 
 	/**
 	 * @dataProvider upgraderVersionCompatibilityProvider
 	 */
-	public function testUpgraderVersionCompatibility(int $schemaVersion, int $stateVersion, bool $shouldChange) : void{
-		$schema = $this->getNewSchemaVersion($schemaVersion);
-		$schema->renamedIds[self::TEST_BLOCK] = self::TEST_BLOCK_2;
+	public function testUpgraderVersionCompatibility(int $schemaVersion, int $stateVersion, bool $shouldChange, int $schemaCount) : void{
+		for($i = 0; $i < $schemaCount; $i++){
+			$schema = $this->getNewSchemaVersion($schemaVersion, $i);
+			$schema->renamedIds[self::TEST_BLOCK] = self::TEST_BLOCK_2;
+		}
 
 		$getStateData = fn() => new BlockStateData(
 			self::TEST_BLOCK,

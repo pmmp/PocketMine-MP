@@ -588,7 +588,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -598,7 +598,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -608,7 +608,7 @@ class Item implements \JsonSerializable{
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 
 	/**
@@ -652,6 +652,20 @@ class Item implements \JsonSerializable{
 	 */
 	public function getCooldownTicks() : int{
 		return 0;
+	}
+
+	/**
+	 * Returns a tag that identifies a group of items that should have cooldown at the same time
+	 * regardless of their state or type.
+	 * When cooldown starts, any other items with the same cooldown tag can't be used until the cooldown expires.
+	 * Such behaviour can be seen in goat horns and shields.
+	 *
+	 * If tag is null, item state id will be used to store cooldown.
+	 *
+	 * @see ItemCooldownTags
+	 */
+	public function getCooldownTag() : ?string{
+		return null;
 	}
 
 	/**

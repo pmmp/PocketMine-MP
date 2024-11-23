@@ -23,18 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
-use pocketmine\world\Position;
 use function mt_rand;
 
 final class ChorusPlant extends Flowable{
+	use StaticSupportTrait;
 
 	protected function recalculateCollisionBoxes() : array{
 		$bb = AxisAlignedBB::one();
@@ -52,7 +50,8 @@ final class ChorusPlant extends Flowable{
 		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
 	}
 
-	private function canStay(Position $position) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$position = $block->position;
 		$world = $position->getWorld();
 
 		$down = $world->getBlock($position->down());
@@ -72,24 +71,7 @@ final class ChorusPlant extends Flowable{
 			}
 		}
 
-		if($this->canBeSupportedBy($down)){
-			return true;
-		}
-
-		return false;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canStay($blockReplace->getPosition())){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canStay($this->position)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+		return $this->canBeSupportedBy($down);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

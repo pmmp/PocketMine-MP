@@ -113,6 +113,6 @@ class ShulkerBox extends Opaque{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

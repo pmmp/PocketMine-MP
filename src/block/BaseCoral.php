@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
@@ -32,11 +31,6 @@ use function mt_rand;
 
 abstract class BaseCoral extends Transparent{
 	use CoralTypeTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->coralType = CoralType::TUBE();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
@@ -78,6 +72,6 @@ abstract class BaseCoral extends Transparent{
 	protected function recalculateCollisionBoxes() : array{ return []; }
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

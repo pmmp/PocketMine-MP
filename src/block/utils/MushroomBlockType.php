@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static MushroomBlockType ALL_CAP()
  * @method static MushroomBlockType CAP_EAST()
@@ -43,22 +41,18 @@ use pocketmine\utils\EnumTrait;
  * @method static MushroomBlockType CAP_WEST()
  * @method static MushroomBlockType PORES()
  */
-final class MushroomBlockType{
-	use EnumTrait;
+enum MushroomBlockType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("PORES"),
-			new self("CAP_NORTHWEST"),
-			new self("CAP_NORTH"),
-			new self("CAP_NORTHEAST"),
-			new self("CAP_WEST"),
-			new self("CAP_MIDDLE"),
-			new self("CAP_EAST"),
-			new self("CAP_SOUTHWEST"),
-			new self("CAP_SOUTH"),
-			new self("CAP_SOUTHEAST"),
-			new self("ALL_CAP")
-		);
-	}
+	case PORES;
+	case CAP_NORTHWEST;
+	case CAP_NORTH;
+	case CAP_NORTHEAST;
+	case CAP_WEST;
+	case CAP_MIDDLE;
+	case CAP_EAST;
+	case CAP_SOUTHWEST;
+	case CAP_SOUTH;
+	case CAP_SOUTHEAST;
+	case ALL_CAP;
 }

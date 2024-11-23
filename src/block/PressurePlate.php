@@ -23,21 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\PressurePlateUpdateEvent;
-use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\PressurePlateActivateSound;
 use pocketmine\world\sound\PressurePlateDeactivateSound;
 use function count;
 
 abstract class PressurePlate extends Transparent{
+	use StaticSupportTrait;
 
 	private readonly int $deactivationDelayTicks;
 
@@ -60,24 +58,11 @@ abstract class PressurePlate extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedAt($blockReplace)){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-		return false;
+		return SupportType::NONE;
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return !$block->getAdjacentSupportType(Facing::DOWN)->equals(SupportType::NONE());
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	public function hasEntityCollision() : bool{

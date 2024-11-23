@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -38,14 +40,16 @@ use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
 class CaveVines extends Flowable{
+	use AgeableTrait;
+	use StaticSupportTrait;
+
 	public const MAX_AGE = 25;
 
-	protected int $age = 0;
 	protected bool $berries = false;
 	protected bool $head = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 		$w->bool($this->berries);
 		$w->bool($this->head);
 	}
@@ -66,19 +70,6 @@ class CaveVines extends Flowable{
 		return $this;
 	}
 
-	public function getAge() : int{
-		return $this->age;
-	}
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0-" . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
-
 	public function canClimb() : bool{
 		return true;
 	}
@@ -89,19 +80,10 @@ class CaveVines extends Flowable{
 
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::UP);
-		return $supportBlock->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $supportBlock->hasSameTypeId($this);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedAt($this)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+		return $supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL || $supportBlock->hasSameTypeId($this);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedAt($blockReplace)){
-			return false;
-		}
 		$this->age = mt_rand(0, self::MAX_AGE);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -177,6 +159,6 @@ class CaveVines extends Flowable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

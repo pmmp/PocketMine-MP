@@ -139,7 +139,7 @@ class Chest extends Spawnable implements Container, Nameable{
 				if($pair->doubleInventory !== null){
 					$this->doubleInventory = $pair->doubleInventory;
 				}else{
-					if(($pair->getPosition()->x + ($pair->getPosition()->z << 15)) > ($this->position->x + ($this->position->z << 15))){ //Order them correctly
+					if(($pair->position->x + ($pair->position->z << 15)) > ($this->position->x + ($this->position->z << 15))){ //Order them correctly
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($pair->inventory, $this->inventory);
 					}else{
 						$this->doubleInventory = $pair->doubleInventory = new DoubleChestInventory($this->inventory, $pair->inventory);

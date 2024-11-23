@@ -34,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_key_exists;
+use function spl_object_id;
 
 class BrewingStand extends Transparent{
 
@@ -44,7 +45,7 @@ class BrewingStand extends Transparent{
 	protected array $slots = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->brewingStandSlots($this->slots);
+		$w->enumSet($this->slots, BrewingStandSlot::cases());
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -61,18 +62,18 @@ class BrewingStand extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 
 	public function hasSlot(BrewingStandSlot $slot) : bool{
-		return array_key_exists($slot->id(), $this->slots);
+		return array_key_exists(spl_object_id($slot), $this->slots);
 	}
 
 	public function setSlot(BrewingStandSlot $slot, bool $occupied) : self{
 		if($occupied){
-			$this->slots[$slot->id()] = $slot;
+			$this->slots[spl_object_id($slot)] = $slot;
 		}else{
-			unset($this->slots[$slot->id()]);
+			unset($this->slots[spl_object_id($slot)]);
 		}
 		return $this;
 	}
@@ -89,7 +90,7 @@ class BrewingStand extends Transparent{
 	public function setSlots(array $slots) : self{
 		$this->slots = [];
 		foreach($slots as $slot){
-			$this->slots[$slot->id()] = $slot;
+			$this->slots[spl_object_id($slot)] = $slot;
 		}
 		return $this;
 	}
@@ -114,7 +115,7 @@ class BrewingStand extends Transparent{
 			}
 
 			$changed = false;
-			foreach(BrewingStandSlot::getAll() as $slot){
+			foreach(BrewingStandSlot::cases() as $slot){
 				$occupied = !$brewing->getInventory()->isSlotEmpty($slot->getSlotNumber());
 				if($occupied !== $this->hasSlot($slot)){
 					$this->setSlot($slot, $occupied);

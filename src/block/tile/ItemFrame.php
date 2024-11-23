@@ -27,6 +27,7 @@ use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
@@ -52,13 +53,17 @@ class ItemFrame extends Spawnable{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
 			$this->item = Item::nbtDeserialize($itemTag);
 		}
-		$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		if($nbt->getTag(self::TAG_ITEM_ROTATION) instanceof FloatTag){
+			$this->itemRotation = (int) ($nbt->getFloat(self::TAG_ITEM_ROTATION, $this->itemRotation * 45) / 45);
+		} else {
+			$this->itemRotation = $nbt->getByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		}
 		$this->itemDropChance = $nbt->getFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
-		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		$nbt->setFloat(self::TAG_ITEM_ROTATION, $this->itemRotation * 45);
 		if(!$this->item->isNull()){
 			$nbt->setTag(self::TAG_ITEM, $this->item->nbtSerialize());
 		}
@@ -98,7 +103,7 @@ class ItemFrame extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setFloat(self::TAG_ITEM_DROP_CHANCE, $this->itemDropChance);
-		$nbt->setByte(self::TAG_ITEM_ROTATION, $this->itemRotation);
+		$nbt->setFloat(self::TAG_ITEM_ROTATION, $this->itemRotation * 45);
 		if(!$this->item->isNull()){
 			$nbt->setTag(self::TAG_ITEM, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->item));
 		}

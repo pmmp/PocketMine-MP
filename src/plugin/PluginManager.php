@@ -510,9 +510,12 @@ class PluginManager{
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
 			foreach(Utils::stringifyKeys($this->pluginDependents) as $dependency => $dependentList){
-				unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
-				if(count($this->pluginDependents[$dependency]) === 0){
-					unset($this->pluginDependents[$dependency]);
+				if(isset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()])){
+					if(count($this->pluginDependents[$dependency]) === 1){
+						unset($this->pluginDependents[$dependency]);
+					}else{
+						unset($this->pluginDependents[$dependency][$plugin->getDescription()->getName()]);
+					}
 				}
 			}
 
@@ -646,6 +649,11 @@ class PluginManager{
 		}
 
 		$handlerName = Utils::getNiceClosureName($handler);
+
+		$reflect = new \ReflectionFunction($handler);
+		if($reflect->isGenerator()){
+			throw new PluginException("Generator function $handlerName cannot be used as an event handler");
+		}
 
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin attempted to register event handler " . $handlerName . "() to event " . $event . " while not enabled");

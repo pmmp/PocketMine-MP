@@ -129,10 +129,6 @@ class WorldManager{
 		}
 
 		$ev = new WorldUnloadEvent($world);
-		if($world === $this->defaultWorld && !$forceUnload){
-			$ev->cancel();
-		}
-
 		$ev->call();
 
 		if(!$forceUnload && $ev->isCancelled()){
