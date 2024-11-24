@@ -74,7 +74,6 @@ use function deg2rad;
 use function floor;
 use function fmod;
 use function get_class;
-use function lcg_value;
 use function sin;
 use function spl_object_id;
 use const M_PI_2;
@@ -906,7 +905,7 @@ abstract class Entity{
 				return false;
 			}
 
-			$force = lcg_value() * 0.2 + 0.1;
+			$force = Utils::getRandomFloat(0.1, 0.2);
 
 			$this->motion = match($direction){
 				Facing::WEST => $this->motion->withComponents(-$force, null, null),

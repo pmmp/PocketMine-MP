@@ -25,7 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
-use function lcg_value;
+use pocketmine\utils\Utils;
 use function min;
 
 abstract class Durable extends Item{
@@ -87,7 +87,7 @@ abstract class Durable extends Item{
 
 			$chance = 1 / ($unbreakingLevel + 1);
 			for($i = 0; $i < $amount; ++$i){
-				if(lcg_value() > $chance){
+				if(Utils::getRandomFloat() > $chance){
 					$negated++;
 				}
 			}

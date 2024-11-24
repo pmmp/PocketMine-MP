@@ -67,6 +67,8 @@ use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
+use function mt_rand;
+use function mt_getrandmax;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
@@ -674,5 +676,13 @@ final class Utils{
 
 		//jit not available
 		return null;
+	}
+
+	public static function getRandomFloat(float $min = 0.0, float $max = 1.0) : float{
+		if($min > $max){
+			throw new \InvalidArgumentException("Minimum value cannot be greater than maximum value");
+		}
+		
+		return $min + (mt_rand() / mt_getrandmax()) * ($max - $min);
 	}
 }
