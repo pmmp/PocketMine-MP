@@ -905,7 +905,7 @@ abstract class Entity{
 				return false;
 			}
 
-			$force = Utils::getRandomFloat(0.1, 0.2);
+			$force = Utils::getRandomFloat(0.1, 0.3);
 
 			$this->motion = match($direction){
 				Facing::WEST => $this->motion->withComponents(-$force, null, null),
