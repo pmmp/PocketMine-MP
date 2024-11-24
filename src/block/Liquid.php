@@ -368,7 +368,7 @@ abstract class Liquid extends Transparent{
 
 	protected function liquidCollide(Block $cause, Block $result) : bool{
 		if(BlockEventHelper::form($this, $result, $cause)){
-			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + Utils::getRandomFloat(-0.8, 0.8)));
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (Utils::getRandomFloat() - Utils::getRandomFloat()) * 0.8));
 		}
 		return true;
 	}

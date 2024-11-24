@@ -1998,10 +1998,10 @@ class World implements ChunkManager{
 			return null;
 		}
 
-		$itemEntity = new ItemEntity(Location::fromObject($source, $this, Utils::getRandomFloat(0.0, 360.0), 0), $item);
+		$itemEntity = new ItemEntity(Location::fromObject($source, $this, Utils::getRandomFloat() * 360, 0), $item);
 
 		$itemEntity->setPickupDelay($delay);
-		$itemEntity->setMotion($motion ?? new Vector3(Utils::getRandomFloat(-0.1, 0.1), 0.2, Utils::getRandomFloat(-0.1, 0.1)));
+		$itemEntity->setMotion($motion ?? new Vector3(Utils::getRandomFloat() * 0.2 - 0.1, 0.2, Utils::getRandomFloat() * 0.2 - 0.1));
 		$itemEntity->spawnToAll();
 
 		return $itemEntity;
@@ -2018,9 +2018,9 @@ class World implements ChunkManager{
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
-			$orb = new ExperienceOrb(Location::fromObject($pos, $this, Utils::getRandomFloat(0.0, 360.0), 0), $split);
+			$orb = new ExperienceOrb(Location::fromObject($pos, $this, Utils::getRandomFloat() * 360, 0), $split);
 
-			$orb->setMotion(new Vector3(Utils::getRandomFloat(-0.2, 0.2), Utils::getRandomFloat(0.0, 0.4), Utils::getRandomFloat(-0.2, 0.2)));
+			$orb->setMotion(new Vector3((Utils::getRandomFloat() * 0.2 - 0.1) * 2, Utils::getRandomFloat() * 0.4, (Utils::getRandomFloat() * 0.2 - 0.1) * 2));
 			$orb->spawnToAll();
 
 			$orbs[] = $orb;

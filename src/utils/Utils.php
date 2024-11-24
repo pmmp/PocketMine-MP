@@ -678,10 +678,10 @@ final class Utils{
 		return null;
 	}
 
-	public static function getRandomFloat(float $min = 0.0, float $max = 1.0) : float{
-		if($min > $max){
-			throw new \InvalidArgumentException("Minimum value cannot be greater than maximum value");
-		}
-		return $min + (mt_rand() / mt_getrandmax()) * ($max - $min);
+	/**
+	 * Returns a random float between 0.0 and 1.0
+	 */
+	public static function getRandomFloat() : float{
+		return mt_rand() / mt_getrandmax();
 	}
 }
