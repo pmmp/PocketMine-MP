@@ -490,7 +490,7 @@ abstract class Living extends Entity{
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
-					$this->damageItem($helmet, (int) round($finalDamage * 4 + Utils::getRandomFloat() * $finalDamage * 2));
+					$this->damageItem($helmet, (int) round($finalDamage * (4 + Utils::getRandomFloat(0.0, 2.0))));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}

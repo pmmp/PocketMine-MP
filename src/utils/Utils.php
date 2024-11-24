@@ -682,7 +682,6 @@ final class Utils{
 		if($min > $max){
 			throw new \InvalidArgumentException("Minimum value cannot be greater than maximum value");
 		}
-		
 		return $min + (mt_rand() / mt_getrandmax()) * ($max - $min);
 	}
 }
