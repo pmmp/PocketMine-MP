@@ -592,7 +592,6 @@ class InventoryManager{
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
 			}
-			$clearSlotWrapper = new ItemStackWrapper(0, ItemStack::null());
 			if($entry->complexSlotMap !== null){
 				foreach($contents as $slotId => $info){
 					$packetSlot = $entry->complexSlotMap->mapCoreToNet($slotId) ?? null;
@@ -696,6 +695,7 @@ class InventoryManager{
 
 	/**
 	 * @param EnchantingOption[] $options
+	 * @phpstan-param list<EnchantingOption> $options
 	 */
 	public function syncEnchantingTableOptions(array $options) : void{
 		$protocolOptions = [];

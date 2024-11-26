@@ -72,7 +72,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
-	/** @var RegionLoader[] */
+	/**
+	 * @var RegionLoader[]
+	 * @phpstan-var array<int, RegionLoader>
+	 */
 	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{

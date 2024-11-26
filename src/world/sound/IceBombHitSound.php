@@ -21,8 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\world\sound;
 
-class TestConcreteExtendsAllowHandleEvent extends TestAbstractAllowHandleEvent{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
+final class IceBombHitSound implements Sound{
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ICEBOMB_HIT, $pos, false)];
+	}
 }

@@ -801,7 +801,7 @@ parameters:
 			path: ../../../src/scheduler/BulkCurlTask.php
 
 		-
-			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
+			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\.$#"
 			count: 1
 			path: ../../../src/scheduler/TaskScheduler.php
 
@@ -837,11 +837,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 

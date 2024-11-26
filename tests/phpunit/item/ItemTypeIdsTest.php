@@ -54,6 +54,7 @@ class ItemTypeIdsTest extends TestCase{
 			}
 			$expected = $item->getTypeId();
 			$actual = $reflect->getConstant($name);
+			self::assertNotFalse($actual, "VanillaItems::$name() does not have an ItemTypeIds constant");
 			self::assertSame($expected, $actual, "VanillaItems::$name() type ID does not match ItemTypeIds::$name");
 		}
 	}

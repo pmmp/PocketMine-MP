@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\utils\Utils;
 use function array_flip;
 use function is_array;
 use function is_float;
@@ -77,7 +78,7 @@ class PluginGraylist{
 			if(!is_array($array["plugins"])){
 				throw new \InvalidArgumentException("\"plugins\" must be an array");
 			}
-			foreach($array["plugins"] as $k => $v){
+			foreach(Utils::promoteKeys($array["plugins"]) as $k => $v){
 				if(!is_string($v) && !is_int($v) && !is_float($v)){
 					throw new \InvalidArgumentException("\"plugins\" contains invalid element at position $k");
 				}

@@ -21,8 +21,33 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin\event;
+namespace pocketmine\event\player;
 
-class ParentEvent extends \pocketmine\event\Event{
+use pocketmine\entity\Entity;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\item\Item;
+use pocketmine\player\Player;
 
+/**
+ * Called when a player middle-clicks on an entity to get an item in creative mode.
+ */
+class PlayerEntityPickEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
+	public function __construct(
+		Player $player,
+		private Entity $entityClicked,
+		private Item $resultItem
+	){
+		$this->player = $player;
+	}
+
+	public function getEntity() : Entity{
+		return $this->entityClicked;
+	}
+
+	public function getResultItem() : Item{
+		return $this->resultItem;
+	}
 }

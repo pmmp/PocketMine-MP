@@ -2173,19 +2173,25 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			if($player->isSneaking()){
+				$ev->setUseItem(false);
+				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
+			}
 			if($player->isSpectator()){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this
 			}
 
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if((!$player->isSneaking() || $item->isNull()) && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
+				if($ev->useBlock() && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 					return true;
 				}
 
-				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector, $returnedItems);
-				if($result !== ItemUseResult::NONE){
-					return $result === ItemUseResult::SUCCESS;
+				if($ev->useItem()){
+					$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector, $returnedItems);
+					if($result !== ItemUseResult::NONE){
+						return $result === ItemUseResult::SUCCESS;
+					}
 				}
 			}else{
 				return false;

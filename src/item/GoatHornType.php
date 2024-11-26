@@ -21,8 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\item;
 
-class TestConcreteExtendsConcreteEvent extends TestConcreteEvent{
+enum GoatHornType{
 
+	case PONDER;
+	case SING;
+	case SEEK;
+	case FEEL;
+	case ADMIRE;
+	case CALL;
+	case YEARN;
+	case DREAM;
 }

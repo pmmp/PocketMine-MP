@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\promise;
 
+use pocketmine\utils\Utils;
 use function count;
 use function spl_object_id;
 
@@ -69,21 +70,22 @@ final class Promise{
 	 *
 	 * @phpstan-template TPromiseValue
 	 * @phpstan-template TKey of array-key
-	 * @phpstan-param non-empty-array<TKey, Promise<TPromiseValue>> $promises
+	 * @phpstan-param array<TKey, Promise<TPromiseValue>> $promises
 	 *
 	 * @phpstan-return Promise<array<TKey, TPromiseValue>>
 	 */
 	public static function all(array $promises) : Promise{
-		if(count($promises) === 0){
-			throw new \InvalidArgumentException("At least one promise must be provided");
-		}
 		/** @phpstan-var PromiseResolver<array<TKey, TPromiseValue>> $resolver */
 		$resolver = new PromiseResolver();
+		if(count($promises) === 0){
+			$resolver->resolve([]);
+			return $resolver->getPromise();
+		}
 		$values = [];
 		$toResolve = count($promises);
 		$continue = true;
 
-		foreach($promises as $key => $promise){
+		foreach(Utils::promoteKeys($promises) as $key => $promise){
 			$promise->onCompletion(
 				function(mixed $value) use ($resolver, $key, $toResolve, &$values) : void{
 					$values[$key] = $value;

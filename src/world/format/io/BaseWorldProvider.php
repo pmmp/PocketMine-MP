@@ -65,6 +65,8 @@ abstract class BaseWorldProvider implements WorldProvider{
 	abstract protected function loadLevelData() : WorldData;
 
 	private function translatePalette(PalettedBlockArray $blockArray, \Logger $logger) : PalettedBlockArray{
+		//TODO: missing type info in stubs
+		/** @phpstan-var list<int> $palette */
 		$palette = $blockArray->getPalette();
 
 		$newPalette = [];

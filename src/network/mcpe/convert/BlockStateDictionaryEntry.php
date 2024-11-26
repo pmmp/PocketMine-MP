@@ -28,6 +28,7 @@ use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\Utils;
 use function count;
 use function ksort;
 use const SORT_STRING;
@@ -43,6 +44,7 @@ final class BlockStateDictionaryEntry{
 
 	/**
 	 * @param Tag[] $stateProperties
+	 * @phpstan-param array<string, Tag> $stateProperties
 	 */
 	public function __construct(
 		private string $stateName,
@@ -79,6 +81,7 @@ final class BlockStateDictionaryEntry{
 
 	/**
 	 * @param Tag[] $properties
+	 * @phpstan-param array<string, Tag> $properties
 	 */
 	public static function encodeStateProperties(array $properties) : string{
 		if(count($properties) === 0){
@@ -87,7 +90,7 @@ final class BlockStateDictionaryEntry{
 		//TODO: make a more efficient encoding - NBT will do for now, but it's not very compact
 		ksort($properties, SORT_STRING);
 		$tag = new CompoundTag();
-		foreach($properties as $k => $v){
+		foreach(Utils::stringifyKeys($properties) as $k => $v){
 			$tag->setTag($k, $v);
 		}
 		return (new LittleEndianNbtSerializer())->write(new TreeRoot($tag));

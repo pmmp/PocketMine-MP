@@ -56,7 +56,7 @@ final class R12ItemIdToBlockIdMap{
 		}
 
 		$builtMap = [];
-		foreach($map as $itemId => $blockId){
+		foreach(Utils::promoteKeys($map) as $itemId => $blockId){
 			if(!is_string($itemId)){
 				throw new AssumptionFailedError("Invalid blockitem ID mapping table, expected string as key");
 			}
