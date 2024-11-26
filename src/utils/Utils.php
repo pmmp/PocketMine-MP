@@ -693,6 +693,7 @@ final class Utils{
 
 	/**
 	 * Returns a random float between 0.0 and 1.0
+	 * Drop-in replacement for lcg_value()
 	 */
 	public static function getRandomFloat() : float{
 		return mt_rand() / mt_getrandmax();
