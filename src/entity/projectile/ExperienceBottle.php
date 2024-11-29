@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,9 +30,9 @@ use pocketmine\world\sound\PotionSplashSound;
 use function mt_rand;
 
 class ExperienceBottle extends Throwable{
-	public static function getNetworkTypeId() : string{ return EntityIds::XP_BOTTLE; }
+	public function getNetworkTypeId() : string{ return EntityIds::XP_BOTTLE; }
 
-	protected $gravity = 0.07;
+	protected function getInitialGravity() : float{ return 0.07; }
 
 	public function getResultDamage() : int{
 		return -1;
@@ -40,7 +40,7 @@ class ExperienceBottle extends Throwable{
 
 	public function onHit(ProjectileHitEvent $event) : void{
 		$this->getWorld()->addParticle($this->location, new PotionSplashParticle(PotionSplashParticle::DEFAULT_COLOR()));
-		$this->getWorld()->addSound($this->location, new PotionSplashSound());
+		$this->broadcastSound(new PotionSplashSound());
 
 		$this->getWorld()->dropExperience($this->location, mt_rand(3, 11));
 	}

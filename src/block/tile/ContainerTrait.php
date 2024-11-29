@@ -17,12 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\bedrock\item\SavedItemStackData;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
@@ -38,21 +40,27 @@ trait ContainerTrait{
 	/** @var string|null */
 	private $lock = null;
 
-	/**
-	 * @return Inventory
-	 */
-	abstract public function getRealInventory();
+	abstract public function getRealInventory() : Inventory;
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag){
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
-			$inventory->clearAll();
+
+			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
+				try{
+					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
+				}catch(SavedDataLoadingException $e){
+					//TODO: not the best solution
+					\GlobalLogger::get()->logException($e);
+					continue;
+				}
 			}
+			$inventory->setContents($newContents);
+
 			$inventory->getListeners()->add(...$listeners);
 		}
 
@@ -78,23 +86,25 @@ trait ContainerTrait{
 	 * @see Container::canOpenWith()
 	 */
 	public function canOpenWith(string $key) : bool{
-		return $this->lock === null or $this->lock === $key;
+		return $this->lock === null || $this->lock === $key;
 	}
 
 	/**
 	 * @see Position::asPosition()
 	 */
-	abstract protected function getPos() : Position;
+	abstract protected function getPosition() : Position;
 
 	/**
 	 * @see Tile::onBlockDestroyedHook()
 	 */
 	protected function onBlockDestroyedHook() : void{
 		$inv = $this->getRealInventory();
-		$pos = $this->getPos();
+		$pos = $this->getPosition();
 
+		$world = $pos->getWorld();
+		$dropPos = $pos->add(0.5, 0.5, 0.5);
 		foreach($inv->getContents() as $k => $item){
-			$pos->getWorld()->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$world->dropItem($dropPos, $item);
 		}
 		$inv->clearAll();
 	}

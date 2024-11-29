@@ -17,15 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class WoodenDoor extends Door{
+use pocketmine\block\utils\WoodTypeTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::AXE));
+class WoodenDoor extends Door{
+	use WoodTypeTrait;
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 200 : 0;
 	}
 }

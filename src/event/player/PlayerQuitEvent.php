@@ -17,49 +17,52 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
- * Called when a player leaves the server
+ * Called when a player disconnects from the server for any reason.
+ *
+ * Some possible reasons include:
+ * - being kicked by an operator
+ * - disconnecting from the game
+ * - timeout due to network connectivity issues
+ *
+ * @see PlayerKickEvent
  */
 class PlayerQuitEvent extends PlayerEvent{
-
-	/** @var TranslationContainer|string */
-	protected $quitMessage;
-	/** @var string */
-	protected $quitReason;
-
-	/**
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function __construct(Player $player, $quitMessage, string $quitReason){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $quitMessage,
+		protected Translatable|string $quitReason
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->quitReason = $quitReason;
 	}
 
 	/**
-	 * @param TranslationContainer|string $quitMessage
+	 * Sets the quit message broadcasted to other players.
 	 */
-	public function setQuitMessage($quitMessage) : void{
+	public function setQuitMessage(Translatable|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
 	/**
-	 * @return TranslationContainer|string
+	 * Returns the quit message broadcasted to other players, e.g. "Steve left the game".
 	 */
-	public function getQuitMessage(){
+	public function getQuitMessage() : Translatable|string{
 		return $this->quitMessage;
 	}
 
-	public function getQuitReason() : string{
+	/**
+	 * Returns the disconnect reason shown in the server log and on the console.
+	 */
+	public function getQuitReason() : Translatable|string{
 		return $this->quitReason;
 	}
 }

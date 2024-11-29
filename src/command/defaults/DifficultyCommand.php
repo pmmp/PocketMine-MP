@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,26 +26,24 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\ServerProperties;
 use pocketmine\world\World;
 use function count;
 
 class DifficultyCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.difficulty.description",
-			"%commands.difficulty.usage"
+			"difficulty",
+			KnownTranslationFactory::pocketmine_command_difficulty_description(),
+			KnownTranslationFactory::commands_difficulty_usage()
 		);
-		$this->setPermission("pocketmine.command.difficulty");
+		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) !== 1){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -57,14 +55,14 @@ class DifficultyCommand extends VanillaCommand{
 		}
 
 		if($difficulty !== -1){
-			$sender->getServer()->getConfigGroup()->setConfigInt("difficulty", $difficulty);
+			$sender->getServer()->getConfigGroup()->setConfigInt(ServerProperties::DIFFICULTY, $difficulty);
 
 			//TODO: add per-world support
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
 				$world->setDifficulty($difficulty);
 			}
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.difficulty.success", [$difficulty]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_difficulty_success((string) $difficulty));
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,22 +35,19 @@ use pocketmine\player\Player;
 class PlayerItemUseEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $item;
-	/** @var Vector3 */
-	private $directionVector;
-
-	public function __construct(Player $player, Item $item, Vector3 $directionVector){
+	public function __construct(
+		Player $player,
+		private Item $item,
+		private Vector3 $directionVector
+	){
 		$this->player = $player;
-		$this->item = $item;
-		$this->directionVector = $directionVector;
 	}
 
 	/**
 	 * Returns the item used.
 	 */
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	/**

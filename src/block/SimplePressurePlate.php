@@ -17,26 +17,42 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use function count;
+
 abstract class SimplePressurePlate extends PressurePlate{
+	protected bool $pressed = false;
 
-	/** @var bool */
-	protected $powered = false;
-
-	protected function writeStateToMeta() : int{
-		return $this->powered ? BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED : 0;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->pressed);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = ($stateMeta & BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED) !== 0;
+	public function isPressed() : bool{ return $this->pressed; }
+
+	/** @return $this */
+	public function setPressed(bool $pressed) : self{
+		$this->pressed = $pressed;
+		return $this;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function hasOutputSignal() : bool{
+		return $this->pressed;
+	}
+
+	protected function calculatePlateState(array $entities) : array{
+		$newPressed = count($entities) > 0;
+		if($newPressed === $this->pressed){
+			return [$this, null];
+		}
+		return [
+			(clone $this)->setPressed($newPressed),
+			$newPressed
+		];
 	}
 }

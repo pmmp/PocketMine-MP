@@ -17,30 +17,33 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\ObjectSet;
 
 trait PermissibleDelegateTrait{
 
-	/** @var PermissibleBase */
+	/** @var Permissible */
 	private $perm;
 
-	/**
-	 * @param Permission|string $name
-	 */
-	public function isPermissionSet($name) : bool{
+	public function setBasePermission(Permission|string $name, bool $grant) : void{
+		$this->perm->setBasePermission($name, $grant);
+	}
+
+	public function unsetBasePermission(Permission|string $name) : void{
+		$this->perm->unsetBasePermission($name);
+	}
+
+	public function isPermissionSet(Permission|string $name) : bool{
 		return $this->perm->isPermissionSet($name);
 	}
 
-	/**
-	 * @param Permission|string $name
-	 */
-	public function hasPermission($name) : bool{
+	public function hasPermission(Permission|string $name) : bool{
 		return $this->perm->hasPermission($name);
 	}
 
@@ -52,8 +55,16 @@ trait PermissibleDelegateTrait{
 		$this->perm->removeAttachment($attachment);
 	}
 
-	public function recalculatePermissions() : void{
-		$this->perm->recalculatePermissions();
+	public function recalculatePermissions() : array{
+		return $this->perm->recalculatePermissions();
+	}
+
+	/**
+	 * @return ObjectSet|\Closure[]
+	 * @phpstan-return ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
+	 */
+	public function getPermissionRecalculationCallbacks() : ObjectSet{
+		return $this->perm->getPermissionRecalculationCallbacks();
 	}
 
 	/**

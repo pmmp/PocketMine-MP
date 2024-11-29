@@ -17,15 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\player\Player;
+
 /**
  * Interface implemented by objects that can be used.
  */
 interface Releasable{
+
+	public function canStartUsingItem(Player $player) : bool;
 
 }

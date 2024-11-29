@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,28 +30,16 @@ use function preg_match;
  * Manages PocketMine-MP version strings, and compares them
  */
 class VersionString{
-	/** @var string */
-	private $baseVersion;
-	/** @var string */
-	private $suffix;
+	private int $major;
+	private int $minor;
+	private int $patch;
+	private string $suffix;
 
-	/** @var int */
-	private $major;
-	/** @var int */
-	private $minor;
-	/** @var int */
-	private $patch;
-
-	/** @var int */
-	private $build;
-	/** @var bool */
-	private $development = false;
-
-	public function __construct(string $baseVersion, bool $isDevBuild = false, int $buildNumber = 0){
-		$this->baseVersion = $baseVersion;
-		$this->development = $isDevBuild;
-		$this->build = $buildNumber;
-
+	public function __construct(
+		private string $baseVersion,
+		private bool $isDevBuild = false,
+		private int $buildNumber = 0
+	){
 		preg_match('/^(\d+)\.(\d+)\.(\d+)(?:-(.*))?$/', $this->baseVersion, $matches);
 		if(count($matches) < 4){
 			throw new \InvalidArgumentException("Invalid base version \"$baseVersion\", should contain at least 3 version digits");
@@ -63,8 +51,12 @@ class VersionString{
 		$this->suffix = $matches[4] ?? "";
 	}
 
+	public static function isValidBaseVersion(string $baseVersion) : bool{
+		return preg_match('/^\d+\.\d+\.\d+(?:-(.*))?$/', $baseVersion, $matches) === 1;
+	}
+
 	public function getNumber() : int{
-		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
+		return (($this->major * 1_000_000) + ($this->minor * 1_000) + $this->patch);
 	}
 
 	public function getBaseVersion() : string{
@@ -73,10 +65,10 @@ class VersionString{
 
 	public function getFullVersion(bool $build = false) : string{
 		$retval = $this->baseVersion;
-		if($this->development){
+		if($this->isDevBuild){
 			$retval .= "+dev";
-			if($build and $this->build > 0){
-				$retval .= "." . $this->build;
+			if($build && $this->buildNumber > 0){
+				$retval .= "." . $this->buildNumber;
 			}
 		}
 
@@ -100,11 +92,11 @@ class VersionString{
 	}
 
 	public function getBuild() : int{
-		return $this->build;
+		return $this->buildNumber;
 	}
 
 	public function isDev() : bool{
-		return $this->development;
+		return $this->isDevBuild;
 	}
 
 	public function __toString() : string{
@@ -117,18 +109,16 @@ class VersionString{
 		if($diff){
 			return $tNumber - $number;
 		}
-		if($number > $tNumber){
-			return -1; //Target is older
-		}elseif($number < $tNumber){
-			return 1; //Target is newer
-		}elseif($target->isDev() and !$this->isDev()){
-			return -1; //Dev builds of the same version are always considered older than a release
-		}elseif($target->getBuild() > $this->getBuild()){
-			return 1;
-		}elseif($target->getBuild() < $this->getBuild()){
-			return -1;
-		}else{
-			return 0; //Same version
+
+		if(($result = $tNumber <=> $number) !== 0){
+			return $result;
 		}
+		if($target->isDev() !== $this->isDev()){
+			return $this->isDev() ? 1 : -1; //Dev builds of the same version are always considered older than a release
+		}
+		if(($target->getSuffix() === "") !== ($this->suffix === "")){
+			return $this->suffix !== "" ? 1 : -1; //alpha/beta/whatever releases are always considered older than a non-suffixed version
+		}
+		return $target->getBuild() <=> $this->getBuild();
 	}
 }

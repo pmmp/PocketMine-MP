@@ -17,93 +17,32 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use DateTimeImmutable;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\Server;
 
 class OfflinePlayer implements IPlayer{
-
-	/** @var string */
-	private $name;
-	/** @var Server */
-	private $server;
-	/** @var CompoundTag|null */
-	private $namedtag = null;
-
-	public function __construct(Server $server, string $name){
-		$this->server = $server;
-		$this->name = $name;
-		$this->namedtag = $this->server->getOfflinePlayerData($this->name);
-	}
-
-	public function isOnline() : bool{
-		return $this->getPlayer() !== null;
-	}
+	public function __construct(
+		private string $name,
+		private ?CompoundTag $namedtag
+	){}
 
 	public function getName() : string{
 		return $this->name;
 	}
 
-	public function getServer() : Server{
-		return $this->server;
+	public function getFirstPlayed() : ?DateTimeImmutable{
+		return ($this->namedtag !== null && ($firstPlayedTag = $this->namedtag->getTag(Player::TAG_FIRST_PLAYED)) instanceof LongTag) ? new DateTimeImmutable('@' . $firstPlayedTag->getValue() / 1000) : null;
 	}
 
-	public function isOp() : bool{
-		return $this->server->isOp($this->name);
-	}
-
-	public function setOp(bool $value) : void{
-		if($value === $this->isOp()){
-			return;
-		}
-
-		if($value){
-			$this->server->addOp($this->name);
-		}else{
-			$this->server->removeOp($this->name);
-		}
-	}
-
-	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->name);
-	}
-
-	public function setBanned(bool $banned) : void{
-		if($banned){
-			$this->server->getNameBans()->addBan($this->name, null, null, null);
-		}else{
-			$this->server->getNameBans()->remove($this->name);
-		}
-	}
-
-	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted($this->name);
-	}
-
-	public function setWhitelisted(bool $value) : void{
-		if($value){
-			$this->server->addWhitelist($this->name);
-		}else{
-			$this->server->removeWhitelist($this->name);
-		}
-	}
-
-	public function getPlayer() : ?Player{
-		return $this->server->getPlayerExact($this->name);
-	}
-
-	public function getFirstPlayed() : ?int{
-		return ($this->namedtag !== null and ($firstPlayedTag = $this->namedtag->getTag("firstPlayed")) instanceof LongTag) ? $firstPlayedTag->getValue() : null;
-	}
-
-	public function getLastPlayed() : ?int{
-		return ($this->namedtag !== null and ($lastPlayedTag = $this->namedtag->getTag("lastPlayed")) instanceof LongTag) ? $lastPlayedTag->getValue() : null;
+	public function getLastPlayed() : ?DateTimeImmutable{
+		return ($this->namedtag !== null && ($lastPlayedTag = $this->namedtag->getTag(Player::TAG_LAST_PLAYED)) instanceof LongTag) ? new DateTimeImmutable('@' . $lastPlayedTag->getValue() / 1000) : null;
 	}
 
 	public function hasPlayedBefore() : bool{

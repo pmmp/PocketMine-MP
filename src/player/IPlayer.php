@@ -17,31 +17,21 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\player;
 
-use pocketmine\permission\ServerOperator;
+use DateTimeImmutable;
 
-interface IPlayer extends ServerOperator{
-
-	public function isOnline() : bool;
+interface IPlayer{
 
 	public function getName() : string;
 
-	public function isBanned() : bool;
+	public function getFirstPlayed() : ?DateTimeImmutable;
 
-	public function setBanned(bool $banned) : void;
-
-	public function isWhitelisted() : bool;
-
-	public function setWhitelisted(bool $value) : void;
-
-	public function getFirstPlayed() : ?int;
-
-	public function getLastPlayed() : ?int;
+	public function getLastPlayed() : ?DateTimeImmutable;
 
 	public function hasPlayedBefore() : bool;
 

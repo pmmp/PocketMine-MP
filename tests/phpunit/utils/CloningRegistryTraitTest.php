@@ -17,21 +17,20 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\VanillaBlocks;
 
 final class CloningRegistryTraitTest extends TestCase{
 
 	/**
 	 * @phpstan-return \Generator<int, array{\Closure() : \stdClass}, void, void>
 	 */
-	public function cloningRegistryMembersProvider() : \Generator{
+	public static function cloningRegistryMembersProvider() : \Generator{
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST1(); }];
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST2(); }];
 		yield [function() : \stdClass{ return TestCloningRegistry::TEST3(); }];
@@ -48,7 +47,7 @@ final class CloningRegistryTraitTest extends TestCase{
 	public function testGetAllClone() : void{
 		$list1 = TestCloningRegistry::getAll();
 		$list2 = TestCloningRegistry::getAll();
-		foreach($list1 as $k => $member){
+		foreach(Utils::promoteKeys($list1) as $k => $member){
 			self::assertNotSame($member, $list2[$k], "VanillaBlocks ought to clone its members");
 		}
 	}

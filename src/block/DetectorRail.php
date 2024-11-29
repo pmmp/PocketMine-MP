@@ -17,13 +17,28 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class DetectorRail extends RedstoneRail{
+use pocketmine\data\runtime\RuntimeDataDescriber;
 
+class DetectorRail extends StraightOnlyRail{
+	protected bool $activated = false;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		parent::describeBlockOnlyState($w);
+		$w->bool($this->activated);
+	}
+
+	public function isActivated() : bool{ return $this->activated; }
+
+	/** @return $this */
+	public function setActivated(bool $activated) : self{
+		$this->activated = $activated;
+		return $this;
+	}
 	//TODO
 }

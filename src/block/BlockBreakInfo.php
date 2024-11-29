@@ -17,34 +17,56 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\ToolTier;
 use function get_class;
 
 class BlockBreakInfo{
+	/**
+	 * If the tool is the correct type and high enough harvest level (tool tier), base break time is hardness multiplied
+	 * by this value.
+	 */
+	public const COMPATIBLE_TOOL_MULTIPLIER = 1.5;
+	/**
+	 * If the tool is an incorrect type or too low harvest level (tool tier), base break time is hardness multiplied by
+	 * this value.
+	 */
+	public const INCOMPATIBLE_TOOL_MULTIPLIER = 5.0;
 
-	/** @var float */
-	private $hardness;
-	/** @var float */
-	private $blastResistance;
-	/** @var int */
-	private $toolType;
-	/** @var int */
-	private $toolHarvestLevel;
+	private float $blastResistance;
 
 	/**
 	 * @param float|null $blastResistance default 5x hardness
 	 */
-	public function __construct(float $hardness, int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0, ?float $blastResistance = null){
-		$this->hardness = $hardness;
-		$this->toolType = $toolType;
-		$this->toolHarvestLevel = $toolHarvestLevel;
+	public function __construct(
+		private float $hardness,
+		private int $toolType = BlockToolType::NONE,
+		private int $toolHarvestLevel = 0,
+		?float $blastResistance = null
+	){
 		$this->blastResistance = $blastResistance ?? $hardness * 5;
+	}
+
+	public static function tier(float $hardness, int $toolType, ToolTier $toolTier, ?float $blastResistance = null) : self{
+		return new self($hardness, $toolType, $toolTier->getHarvestLevel(), $blastResistance);
+	}
+
+	public static function pickaxe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::PICKAXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function shovel(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::SHOVEL, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
+	}
+
+	public static function axe(float $hardness, ?ToolTier $toolTier = null, ?float $blastResistance = null) : self{
+		return new self($hardness, BlockToolType::AXE, $toolTier?->getHarvestLevel() ?? 0, $blastResistance);
 	}
 
 	public static function instant(int $toolType = BlockToolType::NONE, int $toolHarvestLevel = 0) : self{
@@ -113,8 +135,8 @@ class BlockBreakInfo{
 			return false;
 		}
 
-		return $this->toolType === BlockToolType::NONE or $this->toolHarvestLevel === 0 or (
-				($this->toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $this->toolHarvestLevel);
+		return $this->toolType === BlockToolType::NONE || $this->toolHarvestLevel === 0 || (
+				($this->toolType & $tool->getBlockToolType()) !== 0 && $tool->getBlockToolHarvestLevel() >= $this->toolHarvestLevel);
 	}
 
 	/**
@@ -125,9 +147,9 @@ class BlockBreakInfo{
 	public function getBreakTime(Item $item) : float{
 		$base = $this->hardness;
 		if($this->isToolCompatible($item)){
-			$base *= 1.5;
+			$base *= self::COMPATIBLE_TOOL_MULTIPLIER;
 		}else{
-			$base *= 5;
+			$base *= self::INCOMPATIBLE_TOOL_MULTIPLIER;
 		}
 
 		$efficiency = $item->getMiningEfficiency(($this->toolType & $item->getBlockToolType()) !== 0);

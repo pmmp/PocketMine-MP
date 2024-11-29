@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -31,7 +31,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 /**
- * Called when a player interacts or touches a block (including air?)
+ * Called when a player interacts or touches a block.
+ * This is called for both left click (start break) and right click (use).
  */
 class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
@@ -39,28 +40,21 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public const LEFT_CLICK_BLOCK = 0;
 	public const RIGHT_CLICK_BLOCK = 1;
 
-	/** @var Block */
-	protected $blockTouched;
+	protected Vector3 $touchVector;
 
-	/** @var Vector3 */
-	protected $touchVector;
+	protected bool $useItem = true;
+	protected bool $useBlock = true;
 
-	/** @var int */
-	protected $blockFace;
-
-	/** @var Item */
-	protected $item;
-
-	/** @var int */
-	protected $action;
-
-	public function __construct(Player $player, Item $item, Block $block, ?Vector3 $touchVector, int $face, int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK){
+	public function __construct(
+		Player $player,
+		protected Item $item,
+		protected Block $blockTouched,
+		?Vector3 $touchVector,
+		protected int $blockFace,
+		protected int $action = PlayerInteractEvent::RIGHT_CLICK_BLOCK
+	){
 		$this->player = $player;
-		$this->item = $item;
-		$this->blockTouched = $block;
-		$this->touchVector = $touchVector ?? new Vector3(0, 0, 0);
-		$this->blockFace = $face;
-		$this->action = $action;
+		$this->touchVector = $touchVector ?? Vector3::zero();
 	}
 
 	public function getAction() : int{
@@ -68,7 +62,7 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	}
 
 	public function getItem() : Item{
-		return $this->item;
+		return clone $this->item;
 	}
 
 	public function getBlock() : Block{
@@ -82,4 +76,28 @@ class PlayerInteractEvent extends PlayerEvent implements Cancellable{
 	public function getFace() : int{
 		return $this->blockFace;
 	}
+
+	/**
+	 * Returns whether the item may react to the interaction. If disabled, items such as spawn eggs will not activate.
+	 * This does NOT prevent blocks from being placed - it makes the item behave as if the player is sneaking.
+	 */
+	public function useItem() : bool{ return $this->useItem; }
+
+	/**
+	 * Sets whether the used item may react to the interaction. If false, items such as spawn eggs will not activate.
+	 * This does NOT prevent blocks from being placed - it makes the item behave as if the player is sneaking.
+	 */
+	public function setUseItem(bool $useItem) : void{ $this->useItem = $useItem; }
+
+	/**
+	 * Returns whether the block may react to the interaction. If false, doors, fence gates and trapdoors will not
+	 * respond, containers will not open, etc.
+	 */
+	public function useBlock() : bool{ return $this->useBlock; }
+
+	/**
+	 * Sets whether the block may react to the interaction. If false, doors, fence gates and trapdoors will not
+	 * respond, containers will not open, etc.
+	 */
+	public function setUseBlock(bool $useBlock) : void{ $this->useBlock = $useBlock; }
 }

@@ -17,14 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,35 +37,29 @@ use pocketmine\world\BlockTransaction;
 
 class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
+	use PoweredByRedstoneTrait;
+	use StaticSupportTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	public const MIN_DELAY = 1;
+	public const MAX_DELAY = 4;
 
-	/** @var bool */
-	protected $powered = false;
-	/** @var int */
-	protected $delay = 1;
+	protected int $delay = self::MIN_DELAY;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedIntAuto(self::MIN_DELAY, self::MAX_DELAY, $this->delay);
+		$w->bool($this->powered);
 	}
 
-	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
-	}
+	public function getDelay() : int{ return $this->delay; }
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, 1, 4);
-		$this->powered = $id === $this->idInfo->getSecondId();
-	}
-
-	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | (($this->delay - 1) << 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	/** @return $this */
+	public function setDelay(int $delay) : self{
+		if($delay < self::MIN_DELAY || $delay > self::MAX_DELAY){
+			throw new \InvalidArgumentException("Delay must be in range " . self::MIN_DELAY . " ... " . self::MAX_DELAY);
+		}
+		$this->delay = $delay;
+		return $this;
 	}
 
 	/**
@@ -72,42 +69,24 @@ class RedstoneRepeater extends Flowable{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
 	}
 
-	public function isPowered() : bool{
-		return $this->powered;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setPowered(bool $powered = true) : self{
-		$this->powered = $powered;
-		return $this;
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
-			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
-			}
-
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(++$this->delay > 4){
-			$this->delay = 1;
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if(++$this->delay > self::MAX_DELAY){
+			$this->delay = self::MIN_DELAY;
 		}
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	//TODO: redstone functionality

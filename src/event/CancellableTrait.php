@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -42,8 +42,7 @@ trait CancellableTrait{
 		return $this->isCancelled;
 	}
 
-	public function setCancelled() : void{
-		assert(func_num_args() === 0, get_class($this) . "::setCancelled() no longer supports uncancelling");
+	public function cancel() : void{
 		$this->isCancelled = true;
 	}
 }

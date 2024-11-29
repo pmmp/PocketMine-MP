@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,26 +26,30 @@ namespace pocketmine\item;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use function count;
+use function spl_object_id;
 
 /**
  * This trait encapsulates all enchantment handling needed for itemstacks.
  * The primary purpose of this trait is providing scope isolation for the methods it contains.
  */
 trait ItemEnchantmentHandlingTrait{
-	/** @var EnchantmentInstance[] */
-	protected $enchantments = [];
+	/**
+	 * @var EnchantmentInstance[]
+	 * @phpstan-var array<int, EnchantmentInstance>
+	 */
+	protected array $enchantments = [];
 
 	public function hasEnchantments() : bool{
 		return count($this->enchantments) > 0;
 	}
 
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
-		$id = $enchantment->getId();
-		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
+		$id = spl_object_id($enchantment);
+		return isset($this->enchantments[$id]) && ($level === -1 || $this->enchantments[$id]->getLevel() === $level);
 	}
 
 	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
-		return $this->enchantments[$enchantment->getId()] ?? null;
+		return $this->enchantments[spl_object_id($enchantment)] ?? null;
 	}
 
 	/**
@@ -53,8 +57,8 @@ trait ItemEnchantmentHandlingTrait{
 	 */
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : self{
 		$instance = $this->getEnchantment($enchantment);
-		if($instance !== null and ($level === -1 or $instance->getLevel() === $level)){
-			unset($this->enchantments[$enchantment->getId()]);
+		if($instance !== null && ($level === -1 || $instance->getLevel() === $level)){
+			unset($this->enchantments[spl_object_id($enchantment)]);
 		}
 
 		return $this;
@@ -72,12 +76,13 @@ trait ItemEnchantmentHandlingTrait{
 	 * @return $this
 	 */
 	public function addEnchantment(EnchantmentInstance $enchantment) : self{
-		$this->enchantments[$enchantment->getId()] = $enchantment;
+		$this->enchantments[spl_object_id($enchantment->getType())] = $enchantment;
 		return $this;
 	}
 
 	/**
 	 * @return EnchantmentInstance[]
+	 * @phpstan-return array<int, EnchantmentInstance>
 	 */
 	public function getEnchantments() : array{
 		return $this->enchantments;

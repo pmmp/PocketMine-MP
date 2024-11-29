@@ -17,22 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use function mt_rand;
 
 class Zombie extends Living{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
+	public function getNetworkTypeId() : string{ return EntityIds::ZOMBIE; }
 
-	public $width = 0.6;
-	public $height = 1.8;
+	protected function getInitialSizeInfo() : EntitySizeInfo{
+		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height ??
+	}
 
 	public function getName() : string{
 		return "Zombie";
@@ -63,5 +65,9 @@ class Zombie extends Living{
 	public function getXpDropAmount() : int{
 		//TODO: check for equipment and whether it's a baby
 		return 5;
+	}
+
+	public function getPickedItem() : ?Item{
+		return VanillaItems::ZOMBIE_SPAWN_EGG();
 	}
 }

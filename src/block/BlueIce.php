@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,19 +27,15 @@ use pocketmine\item\Item;
 
 class BlueIce extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.8, BlockToolType::PICKAXE));
-	}
-
-	public function getLightLevel() : int{
-		return 1;
-	}
-
 	public function getFrictionFactor() : float{
 		return 0.99;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 }

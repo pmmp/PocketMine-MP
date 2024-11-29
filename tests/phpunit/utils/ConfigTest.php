@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
+use function yaml_parse;
 
 class ConfigTest extends TestCase{
 
@@ -31,7 +32,7 @@ class ConfigTest extends TestCase{
 	 * @return \Generator|mixed[][]
 	 * @phpstan-return \Generator<int, array{string, mixed[]}, void, void>
 	 */
-	public function fixYamlIndexesProvider() : \Generator{
+	public static function fixYamlIndexesProvider() : \Generator{
 		yield ["x: 1\ny: 2\nz: 3\n", [
 			"x" => 1,
 			"y" => 2,
@@ -61,7 +62,6 @@ class ConfigTest extends TestCase{
 	/**
 	 * @dataProvider fixYamlIndexesProvider
 	 *
-	 * @param string  $test
 	 * @param mixed[] $expected
 	 */
 	public function testFixYamlIndexes(string $test, array $expected) : void{

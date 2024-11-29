@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,11 +26,9 @@ namespace pocketmine\event\player;
 use pocketmine\command\CommandSender;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\permission\PermissionManager;
+use pocketmine\player\chat\ChatFormatter;
 use pocketmine\player\Player;
-use pocketmine\Server;
 use pocketmine\utils\Utils;
-use function spl_object_id;
 
 /**
  * Called when a player chats something
@@ -38,33 +36,16 @@ use function spl_object_id;
 class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $message;
-
-	/** @var string */
-	protected $format;
-
-	/** @var CommandSender[] */
-	protected $recipients = [];
-
 	/**
 	 * @param CommandSender[] $recipients
 	 */
-	public function __construct(Player $player, string $message, string $format = "chat.type.text", ?array $recipients = null){
+	public function __construct(
+		Player $player,
+		protected string $message,
+		protected array $recipients,
+		protected ChatFormatter $formatter
+	){
 		$this->player = $player;
-		$this->message = $message;
-
-		$this->format = $format;
-
-		if($recipients === null){
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_USERS) as $permissible){
-				if($permissible instanceof CommandSender){
-					$this->recipients[spl_object_id($permissible)] = $permissible;
-				}
-			}
-		}else{
-			$this->recipients = $recipients;
-		}
 	}
 
 	public function getMessage() : string{
@@ -82,12 +63,12 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
-	public function getFormat() : string{
-		return $this->format;
+	public function getFormatter() : ChatFormatter{
+		return $this->formatter;
 	}
 
-	public function setFormat(string $format) : void{
-		$this->format = $format;
+	public function setFormatter(ChatFormatter $formatter) : void{
+		$this->formatter = $formatter;
 	}
 
 	/**

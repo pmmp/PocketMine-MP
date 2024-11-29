@@ -1,0 +1,156 @@
+name: CI (all supported PHP versions)
+
+on:
+  workflow_call:
+    inputs:
+      php:
+        description: 'PHP version in X.Y format'
+        required: true
+        type: string
+
+      #these are parameterized to ease updating
+      pm-version-major:
+        description: 'PocketMine-MP major version'
+        default: 5
+        type: number
+      image:
+        description: 'Runner image to use'
+        default: 'ubuntu-20.04'
+        type: string
+
+jobs:
+  phpstan:
+    name: PHPStan analysis
+    runs-on: ${{ inputs.image }}
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@3.2.0
+        with:
+          php-version: ${{ inputs.php }}
+          install-path: "./bin"
+          pm-version-major: ${{ inputs.pm-version-major }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ inputs.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
+
+  phpunit:
+    name: PHPUnit tests
+    runs-on: ${{ inputs.image }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@3.2.0
+        with:
+          php-version: ${{ inputs.php }}
+          install-path: "./bin"
+          pm-version-major: ${{ inputs.pm-version-major }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ inputs.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
+
+  integration:
+    name: Integration tests
+    runs-on: ${{ inputs.image }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@3.2.0
+        with:
+          php-version: ${{ inputs.php }}
+          install-path: "./bin"
+          pm-version-major: ${{ inputs.pm-version-major }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ inputs.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction
+
+      - name: Run integration tests
+        run: ./tests/travis.sh -t4
+
+  codegen:
+    name: Generated Code consistency checks
+    runs-on: ${{ inputs.image }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@3.2.0
+        with:
+          php-version: ${{ inputs.php }}
+          install-path: "./bin"
+          pm-version-major: ${{ inputs.pm-version-major }}
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ inputs.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction
+
+      - name: Update generated code
+        run: composer update-codegen
+
+      - name: Verify code is unchanged
+        run: |
+          git diff
+          git diff --quiet

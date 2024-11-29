@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,47 +25,31 @@ namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
 use pocketmine\utils\TextFormat;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * Encapsulates data needed to create a player.
  */
 class PlayerInfo{
-
-	/** @var string */
-	private $username;
-	/** @var UUID */
-	private $uuid;
-	/** @var Skin */
-	private $skin;
-	/** @var string */
-	private $locale;
-	/** @var string */
-	private $xuid;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	private $extraData;
-
 	/**
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, array $extraData = []){
+	public function __construct(
+		private string $username,
+		private UuidInterface $uuid,
+		private Skin $skin,
+		private string $locale,
+		private array $extraData = []
+	){
 		$this->username = TextFormat::clean($username);
-		$this->uuid = $uuid;
-		$this->skin = $skin;
-		$this->locale = $locale;
-		$this->xuid = $xuid;
-		$this->extraData = $extraData;
 	}
 
 	public function getUsername() : string{
 		return $this->username;
 	}
 
-	public function getUuid() : UUID{
+	public function getUuid() : UuidInterface{
 		return $this->uuid;
 	}
 
@@ -75,10 +59,6 @@ class PlayerInfo{
 
 	public function getLocale() : string{
 		return $this->locale;
-	}
-
-	public function getXuid() : string{
-		return $this->xuid;
 	}
 
 	/**

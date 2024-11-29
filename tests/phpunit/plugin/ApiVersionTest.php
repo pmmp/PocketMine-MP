@@ -17,13 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
 use PHPUnit\Framework\TestCase;
+use function sort;
 
 class ApiVersionTest extends TestCase{
 
@@ -31,7 +32,7 @@ class ApiVersionTest extends TestCase{
 	 * @return \Generator|mixed[][]
 	 * @phpstan-return \Generator<int, array{string, string, bool}, void, void>
 	 */
-	public function compatibleApiProvider() : \Generator{
+	public static function compatibleApiProvider() : \Generator{
 		yield ["3.0.0", "3.0.0", true];
 		yield ["3.1.0", "3.0.0", true];
 		yield ["3.0.0", "3.1.0", false];
@@ -40,18 +41,14 @@ class ApiVersionTest extends TestCase{
 		yield ["4.0.0", "3.0.0", false];
 		yield ["3.0.0", "3.0.1", false]; //bug fix patch required
 		yield ["3.0.1", "3.0.0", true];
-		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA2", false];
-		yield ["3.0.0-ALPHA2", "3.0.0-ALPHA1", false];
+		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA2", true];
+		yield ["3.0.0-ALPHA2", "3.0.0-ALPHA1", true]; //at the time these weren't actually compatible, but these are just test samples.
 		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA1", true];
 		yield ["3.0.0-ALPHA1", "4.0.0-ALPHA1", false];
 	}
 
 	/**
 	 * @dataProvider compatibleApiProvider
-	 *
-	 * @param string $myVersion
-	 * @param string $wantVersion
-	 * @param bool   $expected
 	 */
 	public function testCompatibleApi(string $myVersion, string $wantVersion, bool $expected) : void{
 		self::assertSame($expected, ApiVersion::isCompatible($myVersion, [$wantVersion]), "my version: $myVersion, their version: $wantVersion, expect " . ($expected ? "yes" : "no"));
@@ -61,7 +58,7 @@ class ApiVersionTest extends TestCase{
 	 * @return mixed[][][]
 	 * @phpstan-return \Generator<int, array{list<string>, list<string>}, void, void>
 	 */
-	public function ambiguousVersionsProvider() : \Generator{
+	public static function ambiguousVersionsProvider() : \Generator{
 		yield [["3.0.0"], []];
 		yield [["3.0.0", "3.0.1"], ["3.0.0", "3.0.1"]];
 		yield [["3.0.0", "3.1.0", "4.0.0"], ["3.0.0", "3.1.0"]];

@@ -17,44 +17,47 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Opaque implements Fallable{
+	use ColoredTrait;
 	use FallableTrait {
 		onNearbyBlockChange as protected startFalling;
 	}
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));
-	}
-
 	public function onNearbyBlockChange() : void{
-		if(($block = $this->checkAdjacentWater()) !== null){
-			$this->pos->getWorld()->setBlock($this->pos, $block);
+		if(($water = $this->getAdjacentWater()) !== null){
+			BlockEventHelper::form($this, VanillaBlocks::CONCRETE()->setColor($this->color), $water);
 		}else{
 			$this->startFalling();
 		}
 	}
 
 	public function tickFalling() : ?Block{
-		return $this->checkAdjacentWater();
+		if($this->getAdjacentWater() === null){
+			return null;
+		}
+		return VanillaBlocks::CONCRETE()->setColor($this->color);
 	}
 
-	private function checkAdjacentWater() : ?Block{
+	private function getAdjacentWater() : ?Water{
 		foreach(Facing::ALL as $i){
 			if($i === Facing::DOWN){
 				continue;
 			}
-			if($this->getSide($i) instanceof Water){
-				return BlockFactory::getInstance()->get(BlockLegacyIds::CONCRETE, $this->idInfo->getVariant());
+			$block = $this->getSide($i);
+			if($block instanceof Water){
+				return $block;
 			}
 		}
 

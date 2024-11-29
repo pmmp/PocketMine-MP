@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,19 +32,19 @@ use pocketmine\world\format\Chunk;
  */
 trait ChunkListenerNoOpTrait/* implements ChunkListener*/{
 
-	public function onChunkChanged(Chunk $chunk) : void{
+	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		//NOOP
 	}
 
-	public function onChunkLoaded(Chunk $chunk) : void{
+	public function onChunkLoaded(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		//NOOP
 	}
 
-	public function onChunkUnloaded(Chunk $chunk) : void{
+	public function onChunkUnloaded(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		//NOOP
 	}
 
-	public function onChunkPopulated(Chunk $chunk) : void{
+	public function onChunkPopulated(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		//NOOP
 	}
 

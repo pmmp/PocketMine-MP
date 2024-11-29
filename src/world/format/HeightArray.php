@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use function array_fill;
 use function count;
 
 final class HeightArray{
@@ -31,7 +32,7 @@ final class HeightArray{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	private $array;
+	private \SplFixedArray $array;
 
 	/**
 	 * @param int[] $values ZZZZXXXX key bit order
@@ -44,8 +45,12 @@ final class HeightArray{
 		$this->array = \SplFixedArray::fromArray($values);
 	}
 
+	public static function fill(int $value) : self{
+		return new self(array_fill(0, 256, $value));
+	}
+
 	private static function idx(int $x, int $z) : int{
-		if($x < 0 or $x >= 16 or $z < 0 or $z >= 16){
+		if($x < 0 || $x >= 16 || $z < 0 || $z >= 16){
 			throw new \InvalidArgumentException("x and z must be in the range 0-15");
 		}
 		return ($z << 4) | $x;

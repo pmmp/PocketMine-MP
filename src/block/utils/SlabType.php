@@ -17,31 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
- *
- * @method static self BOTTOM()
- * @method static self TOP()
- * @method static self DOUBLE()
- */
-final class SlabType{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("bottom"),
-			new self("top"),
-			new self("double")
-		);
-	}
+enum SlabType{
+	case BOTTOM;
+	case TOP;
+	case DOUBLE;
 }

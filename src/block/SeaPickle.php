@@ -17,12 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -30,26 +32,34 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class SeaPickle extends Transparent{
-	/** @var int */
-	protected $count = 1;
-	/** @var bool */
-	protected $underwater = false;
+	public const MIN_COUNT = 1;
+	public const MAX_COUNT = 4;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	protected int $count = self::MIN_COUNT;
+	protected bool $underwater = false;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->bool($this->underwater);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->count = ($stateMeta & 0x03) + 1;
-		$this->underwater = ($stateMeta & BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER) === 0;
+	public function getCount() : int{ return $this->count; }
+
+	/** @return $this */
+	public function setCount(int $count) : self{
+		if($count < self::MIN_COUNT || $count > self::MAX_COUNT){
+			throw new \InvalidArgumentException("Count must be in range " . self::MIN_COUNT . " ... " . self::MAX_COUNT);
+		}
+		$this->count = $count;
+		return $this;
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->count - 1) | ($this->underwater ? 0 : BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER);
-	}
+	public function isUnderwater() : bool{ return $this->underwater; }
 
-	public function getStateBitmask() : int{
-		return 0b111;
+	/** @return $this */
+	public function setUnderwater(bool $underwater) : self{
+		$this->underwater = $underwater;
+		return $this;
 	}
 
 	public function isSolid() : bool{
@@ -67,23 +77,27 @@ class SeaPickle extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		//TODO: proper placement logic (needs a supporting face below)
-		return ($blockReplace instanceof SeaPickle and $blockReplace->count < 4) or parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return ($blockReplace instanceof SeaPickle && $blockReplace->count < self::MAX_COUNT) || parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->underwater = false; //TODO: implement this once we have new water logic in place
-		if($blockReplace instanceof SeaPickle and $blockReplace->count < 4){
+		if($blockReplace instanceof SeaPickle && $blockReplace->count < self::MAX_COUNT){
 			$this->count = $blockReplace->count + 1;
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		//TODO: bonemeal logic (requires coral)
-		return parent::onInteract($item, $face, $clickVector, $player);
+		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

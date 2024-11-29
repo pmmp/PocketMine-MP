@@ -17,35 +17,35 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
+
+use pocketmine\block\BlockTest;
+use pocketmine\block\RuntimeBlockStateRegistry;
 
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
-$factory = new \pocketmine\block\BlockFactory();
+$newTable = BlockTest::computeConsistencyCheckTable(RuntimeBlockStateRegistry::getInstance());
 
-$old = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
-$new = array_map(
-	function(\pocketmine\block\Block $block) : string{
-		return $block->getName();
-	},
-	$factory->getAllKnownStates()
-);
-foreach($old as $k => $name){
-	if(!isset($new[$k])){
-		echo "Removed state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+$oldTablePath = __DIR__ . '/block_factory_consistency_check.json';
+if(file_exists($oldTablePath)){
+	$errors = BlockTest::computeConsistencyCheckDiff($oldTablePath, $newTable);
+
+	if(count($errors) > 0){
+		echo count($errors) . " changes detected:\n";
+		foreach($errors as $error){
+			echo $error . "\n";
+		}
+	}else{
+		echo "No changes detected\n";
 	}
+}else{
+	echo "WARNING: Unable to calculate diff, no previous consistency check file found\n";
 }
-foreach($new as $k => $name){
-	if(!isset($old[$k])){
-		echo "Added state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
-	}elseif($old[$k] !== $name){
-		echo "Name changed (" . ($k >> 4) . ":" . ($k & 0xf) . "): " . $old[$k] . " -> " . $name . "\n";
-	}
-}
-file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(
-	$new
-));
+
+ksort($newTable, SORT_STRING);
+
+file_put_contents($oldTablePath, json_encode($newTable, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));

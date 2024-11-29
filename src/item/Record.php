@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,9 +26,9 @@ namespace pocketmine\item;
 use pocketmine\block\utils\RecordType;
 
 class Record extends Item{
-	/** @var RecordType */
-	private $recordType;
+	private RecordType $recordType;
 
+	//TODO: inconsistent parameter order
 	public function __construct(ItemIdentifier $identifier, RecordType $recordType, string $name){
 		$this->recordType = $recordType;
 		parent::__construct($identifier, $name);

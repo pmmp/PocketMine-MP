@@ -1,0 +1,38 @@
+#Due to GitHub awkwardness, it's not easy to reduce the review requirement for collaborators.
+#Our policy is that 2 collaborators should be aware of every change.
+#For outside PRs, this means 2 collaborator reviews.
+#For PRs made by collaborators, this means 1 reviewer + the author.
+#We trust that collaborators don't need as much oversight.
+name: Auto approve collaborator PRs
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - synchronize
+
+jobs:
+  dispatch:
+    name: Request approval
+    runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
+
+    steps:
+      - name: Generate access token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
+          private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: RestrictedActions
+
+      - name: Dispatch restricted action
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: ${{ github.repository_owner }}/RestrictedActions
+          event-type: auto_approve_collaborator_pr
+          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}", "reviewer_id": "0" }'

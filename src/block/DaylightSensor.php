@@ -17,13 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -35,34 +37,13 @@ use function round;
 use const M_PI;
 
 class DaylightSensor extends Transparent{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	use AnalogRedstoneSignalEmitterTrait;
 
-	/** @var int */
-	protected $power = 0;
+	protected bool $inverted = false;
 
-	/** @var bool */
-	protected $inverted = false;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
-	}
-
-	public function getId() : int{
-		return $this->inverted ? $this->idInfo->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return $this->power;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
-		$this->inverted = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
+		$w->bool($this->inverted);
 	}
 
 	public function isInverted() : bool{
@@ -88,29 +69,35 @@ class DaylightSensor extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->inverted = !$this->inverted;
-		$this->power = $this->recalculatePower();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->signalStrength = $this->recalculateSignalStrength();
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
 	public function onScheduledUpdate() : void{
-		$newPower = $this->recalculatePower();
-		if($this->power !== $newPower){
-			$this->power = $newPower;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+		$world = $this->position->getWorld();
+		$signalStrength = $this->recalculateSignalStrength();
+		if($this->signalStrength !== $signalStrength){
+			$this->signalStrength = $signalStrength;
+			$world->setBlock($this->position, $this);
 		}
-		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
+		$world->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
-	private function recalculatePower() : int{
-		$lightLevel = $this->pos->getWorld()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
+	private function recalculateSignalStrength() : int{
+		$world = $this->position->getWorld();
+		$lightLevel = $world->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->pos->getWorld()->getSunAnglePercentage();
+		$sunAngle = $world->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

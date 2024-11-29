@@ -17,38 +17,38 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
-use function lcg_value;
+use pocketmine\utils\Utils;
 use function mt_rand;
 
 class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
-	/** @var ArmorTypeInfo */
-	private $armorInfo;
+	private ArmorTypeInfo $armorInfo;
 
-	/** @var Color|null */
-	protected $customColor = null;
+	protected ?Color $customColor = null;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info){
-		parent::__construct($identifier, $name);
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = []){
+		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->armorInfo = $info;
 	}
 
@@ -71,6 +71,18 @@ class Armor extends Durable{
 		return 1;
 	}
 
+	public function isFireProof() : bool{
+		return $this->armorInfo->isFireProof();
+	}
+
+	public function getMaterial() : ArmorMaterial{
+		return $this->armorInfo->getMaterial();
+	}
+
+	public function getEnchantability() : int{
+		return $this->armorInfo->getMaterial()->getEnchantability();
+	}
+
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */
@@ -88,6 +100,12 @@ class Armor extends Durable{
 		return $this;
 	}
 
+	/** @return $this */
+	public function clearCustomColor() : self{
+		$this->customColor = null;
+		return $this;
+	}
+
 	/**
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.
@@ -97,7 +115,7 @@ class Armor extends Durable{
 
 		foreach($this->getEnchantments() as $enchantment){
 			$type = $enchantment->getType();
-			if($type instanceof ProtectionEnchantment and $type->isApplicable($event)){
+			if($type instanceof ProtectionEnchantment && $type->isApplicable($event)){
 				$epf += $type->getProtectionFactor($enchantment->getLevel());
 			}
 		}
@@ -106,12 +124,12 @@ class Armor extends Durable{
 	}
 
 	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING())) > 0){
+		if(($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0){
 			$negated = 0;
 
 			$chance = 1 / ($unbreakingLevel + 1);
 			for($i = 0; $i < $amount; ++$i){
-				if(mt_rand(1, 100) > 60 and lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
+				if(mt_rand(1, 100) > 60 && Utils::getRandomFloat() > $chance){ //unbreaking only applies to armor 40% of the time at best
 					$negated++;
 				}
 			}
@@ -122,13 +140,21 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
-		if(!$existing->isNull()){
-			return ItemUseResult::FAIL();
+		$thisCopy = clone $this;
+		$new = $thisCopy->pop();
+		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
+		$player->getInventory()->setItemInHand($existing);
+		$sound = $new->getMaterial()->getEquipSound();
+		if($sound !== null){
+			$player->broadcastSound($sound);
 		}
-		$player->getArmorInventory()->setItem($this->getArmorSlot(), $this->pop());
-		return ItemUseResult::SUCCESS();
+		if(!$thisCopy->isNull()){
+			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
+			$returnedItems[] = $thisCopy;
+		}
+		return ItemUseResult::SUCCESS;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{

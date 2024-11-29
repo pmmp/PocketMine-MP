@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,13 +25,15 @@ namespace pocketmine\world\format\io\region;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryDataException;
+use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use function assert;
 use function ceil;
 use function chr;
+use function clearstatcache;
 use function fclose;
-use function feof;
 use function file_exists;
 use function filesize;
 use function fopen;
@@ -42,13 +44,11 @@ use function fwrite;
 use function is_resource;
 use function ksort;
 use function max;
-use function ord;
 use function str_pad;
 use function str_repeat;
 use function stream_set_read_buffer;
 use function stream_set_write_buffer;
 use function strlen;
-use function substr;
 use function time;
 use function touch;
 use function unpack;
@@ -64,50 +64,60 @@ class RegionLoader{
 
 	public const FIRST_SECTOR = 2; //location table occupies 0 and 1
 
-	/** @var int */
-	public static $COMPRESSION_LEVEL = 7;
-
-	/** @var string */
-	protected $filePath;
 	/** @var resource */
 	protected $filePointer;
-	/** @var int */
-	protected $nextSector = self::FIRST_SECTOR;
-	/** @var RegionLocationTableEntry[]|null[] */
-	protected $locationTable = [];
-	/** @var RegionGarbageMap */
-	protected $garbageTable;
-	/** @var int */
-	public $lastUsed = 0;
-
-	public function __construct(string $filePath){
-		$this->filePath = $filePath;
-		$this->garbageTable = new RegionGarbageMap([]);
-	}
+	protected int $nextSector = self::FIRST_SECTOR;
+	/**
+	 * @var RegionLocationTableEntry[]|null[]
+	 * @phpstan-var list<RegionLocationTableEntry|null>
+	 */
+	protected array $locationTable = [];
+	protected RegionGarbageMap $garbageTable;
+	public int $lastUsed;
 
 	/**
 	 * @throws CorruptedRegionException
 	 */
-	public function open() : void{
-		$exists = file_exists($this->filePath);
-		if(!$exists){
-			touch($this->filePath);
-		}elseif(filesize($this->filePath) % 4096 !== 0){
-			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
-		}
+	private function __construct(
+		protected string $filePath
+	){
+		$this->garbageTable = new RegionGarbageMap([]);
+		$this->lastUsed = time();
 
 		$filePointer = fopen($this->filePath, "r+b");
 		if($filePointer === false) throw new AssumptionFailedError("fopen() should not fail here");
 		$this->filePointer = $filePointer;
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
-		if(!$exists){
-			$this->createBlank();
-		}else{
-			$this->loadLocationTable();
+	}
+
+	/**
+	 * @throws CorruptedRegionException
+	 */
+	public static function loadExisting(string $filePath) : self{
+		clearstatcache(false, $filePath);
+		if(!file_exists($filePath)){
+			throw new \RuntimeException("File $filePath does not exist");
+		}
+		if(filesize($filePath) % 4096 !== 0){
+			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
 		}
 
-		$this->lastUsed = time();
+		$result = new self($filePath);
+		$result->loadLocationTable();
+		return $result;
+	}
+
+	public static function createNew(string $filePath) : self{
+		clearstatcache(false, $filePath);
+		if(file_exists($filePath)){
+			throw new \RuntimeException("Region file $filePath already exists");
+		}
+		touch($filePath);
+
+		$result = new self($filePath);
+		$result->createBlank();
+		return $result;
 	}
 
 	public function __destruct(){
@@ -135,37 +145,34 @@ class RegionLoader{
 
 		fseek($this->filePointer, $this->locationTable[$index]->getFirstSector() << 12);
 
-		$prefix = fread($this->filePointer, 4);
-		if($prefix === false or strlen($prefix) !== 4){
-			throw new CorruptedChunkException("Corrupted chunk header detected (unexpected end of file reading length prefix)");
-		}
-		$length = Binary::readInt($prefix);
+		/*
+		 * this might cause us to read some junk, but under normal circumstances it won't be any more than 4096 bytes wasted.
+		 * doing this in a single call is faster than making two seeks and reads to fetch the chunk.
+		 * this relies on the assumption that the end of the file is always padded to a multiple of 4096 bytes.
+		 */
+		$bytesToRead = $this->locationTable[$index]->getSectorCount() << 12;
+		$payload = fread($this->filePointer, $bytesToRead);
 
-		if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
-			return null;
+		if($payload === false || strlen($payload) !== $bytesToRead){
+			throw new CorruptedChunkException("Corrupted chunk detected (unexpected EOF, truncated or non-padded chunk found)");
 		}
-		if($length > self::MAX_SECTOR_LENGTH){ //corrupted
-			throw new CorruptedChunkException("Length for chunk x=$x,z=$z ($length) is larger than maximum " . self::MAX_SECTOR_LENGTH);
-		}
+		$stream = new BinaryStream($payload);
 
-		if($length > ($this->locationTable[$index]->getSectorCount() << 12)){ //Invalid chunk, bigger than defined number of sectors
-			\GlobalLogger::get()->error("Chunk x=$x,z=$z length mismatch (expected " . ($this->locationTable[$index]->getSectorCount() << 12) . " sectors, got $length sectors)");
-			$old = $this->locationTable[$index];
-			$this->locationTable[$index] = new RegionLocationTableEntry($old->getFirstSector(), $length >> 12, time());
-			$this->writeLocationIndex($index);
-		}
+		try{
+			$length = $stream->getInt();
+			if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
+				return null;
+			}
 
-		$chunkData = fread($this->filePointer, $length);
-		if($chunkData === false or strlen($chunkData) !== $length){
-			throw new CorruptedChunkException("Corrupted chunk detected (unexpected end of file reading chunk data)");
-		}
+			$compression = $stream->getByte();
+			if($compression !== self::COMPRESSION_ZLIB && $compression !== self::COMPRESSION_GZIP){
+				throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
+			}
 
-		$compression = ord($chunkData[0]);
-		if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
-			throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
+			return $stream->get($length - 1); //length prefix includes the compression byte
+		}catch(BinaryDataException $e){
+			throw new CorruptedChunkException("Corrupted chunk detected: " . $e->getMessage(), 0, $e);
 		}
-
-		return substr($chunkData, 1);
 	}
 
 	/**
@@ -173,6 +180,23 @@ class RegionLoader{
 	 */
 	public function chunkExists(int $x, int $z) : bool{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
+	}
+
+	private function disposeGarbageArea(RegionLocationTableEntry $oldLocation) : void{
+		/* release the area containing the old copy to the garbage pool */
+		$this->garbageTable->add($oldLocation);
+
+		$endGarbage = $this->garbageTable->end();
+		$nextSector = $this->nextSector;
+		for(; $endGarbage !== null && $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
+			$nextSector = $endGarbage->getFirstSector();
+			$this->garbageTable->remove($endGarbage);
+		}
+
+		if($nextSector !== $this->nextSector){
+			$this->nextSector = $nextSector;
+			ftruncate($this->filePointer, $this->nextSector << 12);
+		}
 	}
 
 	/**
@@ -218,20 +242,7 @@ class RegionLoader{
 		$this->writeLocationIndex($index);
 
 		if($oldLocation !== null){
-			/* release the area containing the old copy to the garbage pool */
-			$this->garbageTable->add($oldLocation);
-
-			$endGarbage = $this->garbageTable->end();
-			$nextSector = $this->nextSector;
-			for(; $endGarbage !== null and $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
-				$nextSector = $endGarbage->getFirstSector();
-				$this->garbageTable->remove($endGarbage);
-			}
-
-			if($nextSector !== $this->nextSector){
-				$this->nextSector = $nextSector;
-				ftruncate($this->filePointer, $this->nextSector << 12);
-			}
+			$this->disposeGarbageArea($oldLocation);
 		}
 	}
 
@@ -240,15 +251,19 @@ class RegionLoader{
 	 */
 	public function removeChunk(int $x, int $z) : void{
 		$index = self::getChunkOffset($x, $z);
+		$oldLocation = $this->locationTable[$index];
 		$this->locationTable[$index] = null;
 		$this->writeLocationIndex($index);
+		if($oldLocation !== null){
+			$this->disposeGarbageArea($oldLocation);
+		}
 	}
 
 	/**
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
-		if($x < 0 or $x > 31 or $z < 0 or $z > 31){
+		if($x < 0 || $x > 31 || $z < 0 || $z > 31){
 			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
 		}
 		return $x | ($z << 5);
@@ -257,6 +272,8 @@ class RegionLoader{
 	/**
 	 * @param int $x reference parameter
 	 * @param int $z reference parameter
+	 * @phpstan-param-out int $x
+	 * @phpstan-param-out int $z
 	 */
 	protected static function getChunkCoords(int $offset, ?int &$x, ?int &$z) : void{
 		$x = $offset & 0x1f;
@@ -279,10 +296,11 @@ class RegionLoader{
 		fseek($this->filePointer, 0);
 
 		$headerRaw = fread($this->filePointer, self::REGION_HEADER_LENGTH);
-		if($headerRaw === false or strlen($headerRaw) !== self::REGION_HEADER_LENGTH){
+		if($headerRaw === false || strlen($headerRaw) !== self::REGION_HEADER_LENGTH){
 			throw new CorruptedRegionException("Corrupted region header (unexpected end of file)");
 		}
 
+		/** @var int[] $data */
 		$data = unpack("N*", $headerRaw);
 
 		for($i = 0; $i < 1024; ++$i){
@@ -291,7 +309,7 @@ class RegionLoader{
 			$sectorCount = $index & 0xff;
 			$timestamp = $data[$i + 1025];
 
-			if($offset === 0 or $sectorCount === 0){
+			if($offset === 0 || $sectorCount === 0){
 				$this->locationTable[$i] = null;
 			}elseif($offset >= self::FIRST_SECTOR){
 				$this->bumpNextFreeSector($this->locationTable[$i] = new RegionLocationTableEntry($offset, $sectorCount, $timestamp));
@@ -312,9 +330,10 @@ class RegionLoader{
 	 * @throws CorruptedRegionException
 	 */
 	private function checkLocationTableValidity() : void{
-		/** @var int[] $usedOffsets */
 		$usedOffsets = [];
 
+		$fileSize = filesize($this->filePath);
+		if($fileSize === false) throw new AssumptionFailedError("filesize() should not return false here");
 		for($i = 0; $i < 1024; ++$i){
 			$entry = $this->locationTable[$i];
 			if($entry === null){
@@ -327,8 +346,7 @@ class RegionLoader{
 
 			//TODO: more validity checks
 
-			fseek($this->filePointer, $fileOffset);
-			if(feof($this->filePointer)){
+			if($fileOffset >= $fileSize){
 				throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 			}
 			if(isset($usedOffsets[$offset])){
@@ -339,7 +357,7 @@ class RegionLoader{
 		}
 		ksort($usedOffsets, SORT_NUMERIC);
 		$prevLocationIndex = null;
-		foreach($usedOffsets as $startOffset => $locationTableIndex){
+		foreach($usedOffsets as $locationTableIndex){
 			if($this->locationTable[$locationTableIndex] === null){
 				continue;
 			}
@@ -361,6 +379,7 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? $entry->getTimestamp() : 0), 4);
+		clearstatcache(false, $this->filePath);
 	}
 
 	protected function createBlank() : void{

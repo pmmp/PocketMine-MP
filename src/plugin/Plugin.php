@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -34,7 +34,7 @@ use pocketmine\Server;
  */
 interface Plugin{
 
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider);
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, string $resourceFolder);
 
 	public function isEnabled() : bool;
 
@@ -47,8 +47,6 @@ interface Plugin{
 	 */
 	public function onEnableStateChange(bool $enabled) : void;
 
-	public function isDisabled() : bool;
-
 	/**
 	 * Gets the plugin's data folder to save files and configuration.
 	 * This directory name has a trailing slash.
@@ -56,8 +54,6 @@ interface Plugin{
 	public function getDataFolder() : string;
 
 	public function getDescription() : PluginDescription;
-
-	public function getServer() : Server;
 
 	public function getName() : string;
 

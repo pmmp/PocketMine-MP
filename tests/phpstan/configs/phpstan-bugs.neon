@@ -1,24 +1,74 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#1 \\$class of method pocketmine\\\\world\\\\format\\\\io\\\\WorldProviderManager\\:\\:setDefault\\(\\) expects class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\>, class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\> given\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/Server.php
+			path: ../../../src/block/CakeWithCandle.php
 
 		-
-			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/block/Liquid.php
+			path: ../../../src/block/CopperDoor.php
 
 		-
-			message: "#^If condition is always false\\.$#"
+			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
 			count: 1
-			path: ../../../src/block/Liquid.php
+			path: ../../../src/block/CopperTrapdoor.php
 
 		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 3
-			path: ../../../src/command/CommandReader.php
+			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: ../../../src/block/DoubleTallGrass.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:ACACIA_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:BIRCH_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CHERRY_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CRIMSON_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:DARK_OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:JUNGLE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:MANGROVE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:SPRUCE_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:WARPED_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -26,22 +76,42 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
-			path: ../../../src/utils/Utils.php
+			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
 
 		-
-			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\SnoozeAwarePthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
-			path: ../../../src/utils/Utils.php
+			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
 
 		-
-			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
+
+		-
+			message: "#^Casting to int something that's already int\\.$#"
+			count: 1
+			path: ../../../src/world/generator/normal/Normal.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with false will always evaluate to true\\.$#"
+			count: 1
+			path: ../../phpunit/promise/PromiseTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false and 'All promise should…' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../phpunit/promise/PromiseTest.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
 			count: 2
-			path: ../../../src/world/format/io/region/RegionLoader.php
+			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			message: "#^Strict comparison using \\=\\=\\= between 0 and 0 will always evaluate to true\\.$#"
 			count: 1
-			path: ../../phpunit/block/BlockTest.php
+			path: ../rules/UnsafeForeachArrayOfStringRule.php
 

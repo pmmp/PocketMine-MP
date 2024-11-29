@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -45,7 +45,7 @@ final class ApiVersion{
 			//Format: majorVersion.minorVersion.patch (3.0.0)
 			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
 			if($version->getBaseVersion() !== $myVersion->getBaseVersion()){
-				if($version->getMajor() !== $myVersion->getMajor() or $version->getSuffix() !== $myVersion->getSuffix()){
+				if($version->getMajor() !== $myVersion->getMajor()){
 					continue;
 				}
 
@@ -53,7 +53,7 @@ final class ApiVersion{
 					continue;
 				}
 
-				if($version->getMinor() === $myVersion->getMinor() and $version->getPatch() > $myVersion->getPatch()){ //If the plugin requires bug fixes in patches, being backwards compatible
+				if($version->getMinor() === $myVersion->getMinor() && $version->getPatch() > $myVersion->getPatch()){ //If the plugin requires bug fixes in patches, being backwards compatible
 					continue;
 				}
 			}
@@ -70,7 +70,6 @@ final class ApiVersion{
 	 * @return string[]
 	 */
 	public static function checkAmbiguousVersions(array $versions) : array{
-		/** @var VersionString[][] $indexedVersions */
 		$indexedVersions = [];
 
 		foreach($versions as $str){
@@ -85,9 +84,8 @@ final class ApiVersion{
 			}
 		}
 
-		/** @var VersionString[] $result */
 		$result = [];
-		foreach($indexedVersions as $major => $list){
+		foreach($indexedVersions as $list){
 			if(count($list) > 1){
 				array_push($result, ...$list);
 			}

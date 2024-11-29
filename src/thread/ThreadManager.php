@@ -17,18 +17,19 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
 use function spl_object_id;
 
-class ThreadManager extends \Volatile{
+class ThreadManager extends ThreadSafe{
 
-	/** @var ThreadManager|null */
-	private static $instance = null;
+	private static ?self $instance = null;
 
 	public static function init() : void{
 		self::$instance = new ThreadManager();
@@ -41,22 +42,19 @@ class ThreadManager extends \Volatile{
 		return self::$instance;
 	}
 
-	/**
-	 * @param Worker|Thread $thread
-	 */
-	public function add($thread) : void{
-		if($thread instanceof Thread or $thread instanceof Worker){
-			$this[spl_object_id($thread)] = $thread;
-		}
+	/** @phpstan-var ThreadSafeArray<int, Thread|Worker> */
+	private ThreadSafeArray $threads;
+
+	private function __construct(){
+		$this->threads = new ThreadSafeArray();
 	}
 
-	/**
-	 * @param Worker|Thread $thread
-	 */
-	public function remove($thread) : void{
-		if($thread instanceof Thread or $thread instanceof Worker){
-			unset($this[spl_object_id($thread)]);
-		}
+	public function add(Worker|Thread $thread) : void{
+		$this->threads[spl_object_id($thread)] = $thread;
+	}
+
+	public function remove(Worker|Thread $thread) : void{
+		unset($this->threads[spl_object_id($thread)]);
 	}
 
 	/**
@@ -64,7 +62,10 @@ class ThreadManager extends \Volatile{
 	 */
 	public function getAll() : array{
 		$array = [];
-		foreach($this as $key => $thread){
+		/**
+		 * @var Worker|Thread $thread
+		 */
+		foreach($this->threads as $key => $thread){
 			$array[$key] = $thread;
 		}
 

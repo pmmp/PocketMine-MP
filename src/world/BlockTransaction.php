@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,21 +28,20 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Utils;
 
 class BlockTransaction{
-	/** @var ChunkManager */
-	private $world;
-
-	/** @var Block[][][] */
-	private $blocks = [];
+	/**
+	 * @var Block[][][]
+	 * @phpstan-var array<int, array<int, array<int, Block>>>
+	 */
+	private array $blocks = [];
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(ChunkManager $world, int $x, int $y, int $z) : bool)[]
 	 */
-	private $validators = [];
+	private array $validators = [];
 
-	public function __construct(ChunkManager $world){
-		$this->world = $world;
-		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z) : bool{
+	public function __construct(private ChunkManager $world){
+		$this->addValidator(static function(ChunkManager $world, int $x, int $y, int $z) : bool{
 			return $world->isInWorld($x, $y, $z);
 		});
 	}
@@ -95,14 +94,20 @@ class BlockTransaction{
 				}
 			}
 		}
+		$changedBlocks = 0;
 		foreach($this->getBlocks() as [$x, $y, $z, $block]){
-			$this->world->setBlockAt($x, $y, $z, $block);
+			$oldBlock = $this->world->getBlockAt($x, $y, $z);
+			if(!$oldBlock->isSameState($block)){
+				$this->world->setBlockAt($x, $y, $z, $block);
+				$changedBlocks++;
+			}
 		}
-		return true;
+		return $changedBlocks !== 0;
 	}
 
 	/**
 	 * @return \Generator|mixed[] [int $x, int $y, int $z, Block $block]
+	 * @phpstan-return \Generator<int, array{int, int, int, Block}, void, void>
 	 */
 	public function getBlocks() : \Generator{
 		foreach($this->blocks as $x => $yLine){

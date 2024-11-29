@@ -17,23 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
 
 class Wheat extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= 7){
+		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::WHEAT(),
-				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(0, 3))
+				VanillaItems::WHEAT_SEEDS()->setCount(FortuneDropHelper::binomial($item, 0))
 			];
 		}else{
 			return [
@@ -42,7 +42,7 @@ class Wheat extends Crops{
 		}
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::WHEAT_SEEDS();
 	}
 }

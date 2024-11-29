@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,7 +29,8 @@ interface CraftingRecipe{
 	/**
 	 * Returns a list of items needed to craft this recipe. This MUST NOT include Air items or items with a zero count.
 	 *
-	 * @return Item[]
+	 * @return RecipeIngredient[]
+	 * @phpstan-return list<RecipeIngredient>
 	 */
 	public function getIngredientList() : array;
 
@@ -37,6 +38,7 @@ interface CraftingRecipe{
 	 * Returns a list of results this recipe will produce when the inputs in the given crafting grid are consumed.
 	 *
 	 * @return Item[]
+	 * @phpstan-return list<Item>
 	 */
 	public function getResultsFor(CraftingGrid $grid) : array;
 

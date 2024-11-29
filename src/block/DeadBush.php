@@ -17,48 +17,25 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class DeadBush extends Flowable{
+	use StaticSupportTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->getSide(Facing::DOWN)->isTransparent()){
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
-	}
-
-	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
-		}
-	}
-
-	public function getDrops(Item $item) : array{
-		if(!$this->breakInfo->isToolCompatible($item)){
-			return [
-				VanillaItems::STICK()->setCount(mt_rand(0, 2))
-			];
-		}
-
-		return parent::getDrops($item);
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [
+			VanillaItems::STICK()->setCount(mt_rand(0, 2))
+		];
 	}
 
 	public function isAffectedBySilkTouch() : bool{
@@ -71,5 +48,23 @@ class DeadBush extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			match($supportBlock->getTypeId()){
+				//can't use DIRT tag here because it includes farmland
+				BlockTypeIds::PODZOL,
+				BlockTypeIds::MYCELIUM,
+				BlockTypeIds::DIRT,
+				BlockTypeIds::GRASS,
+				BlockTypeIds::HARDENED_CLAY,
+				BlockTypeIds::STAINED_CLAY => true,
+				//TODO: moss block
+				default => false,
+			};
 	}
 }

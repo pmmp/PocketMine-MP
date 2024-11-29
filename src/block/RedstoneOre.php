@@ -17,58 +17,31 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
-	/** @var bool */
-	protected $lit = false;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel()));
-	}
-
-	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfo->getSecondId();
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
-	}
+	use LightableTrait;
 
 	public function getLightLevel() : int{
 		return $this->lit ? 9 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this); //no return here - this shouldn't prevent block placement
+			$this->position->getWorld()->setBlock($this->position, $this); //no return here - this shouldn't prevent block placement
 		}
 		return false;
 	}
@@ -76,24 +49,24 @@ class RedstoneOre extends Opaque{
 	public function onNearbyBlockChange() : void{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->lit;
 	}
 
 	public function onRandomTick() : void{
 		if($this->lit){
 			$this->lit = false;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::REDSTONE_DUST()->setCount(mt_rand(4, 5))
+			VanillaItems::REDSTONE_DUST()->setCount(FortuneDropHelper::discrete($item, 4, 5))
 		];
 	}
 

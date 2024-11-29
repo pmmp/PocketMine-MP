@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,17 +32,14 @@ use function json_decode;
 class UpdateCheckTask extends AsyncTask{
 	private const TLS_KEY_UPDATER = "updater";
 
-	/** @var string */
-	private $endpoint;
-	/** @var string */
-	private $channel;
-	/** @var string */
-	private $error = "Unknown error";
+	private string $error = "Unknown error";
 
-	public function __construct(AutoUpdater $updater, string $endpoint, string $channel){
+	public function __construct(
+		UpdateChecker $updater,
+		private string $endpoint,
+		private string $channel
+	){
 		$this->storeLocal(self::TLS_KEY_UPDATER, $updater);
-		$this->endpoint = $endpoint;
-		$this->channel = $channel;
 	}
 
 	public function onRun() : void{
@@ -50,14 +47,15 @@ class UpdateCheckTask extends AsyncTask{
 		$response = Internet::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $error);
 		$this->error = $error;
 
-		if($response !== false){
-			$response = json_decode($response, true);
+		if($response !== null){
+			$response = json_decode($response->getBody(), true);
 			if(is_array($response)){
-				if(isset($response["error"]) and is_string($response["error"])){
+				if(isset($response["error"]) && is_string($response["error"])){
 					$this->error = $response["error"];
 				}else{
 					$mapper = new \JsonMapper();
 					$mapper->bExceptionOnMissingData = true;
+					$mapper->bStrictObjectTypeChecking = true;
 					$mapper->bEnforceMapType = false;
 					try{
 						/** @var UpdateInfo $responseObj */
@@ -74,7 +72,7 @@ class UpdateCheckTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var AutoUpdater $updater */
+		/** @var UpdateChecker $updater */
 		$updater = $this->fetchLocal(self::TLS_KEY_UPDATER);
 		if($this->hasResult()){
 			/** @var UpdateInfo $response */

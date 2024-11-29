@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -30,9 +30,11 @@ namespace pocketmine\block\tile;
 use pocketmine\block\Block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\VersionInfo;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function get_class;
@@ -44,20 +46,18 @@ abstract class Tile{
 	public const TAG_Y = "y";
 	public const TAG_Z = "z";
 
-	/** @var Position */
-	protected $pos;
-	/** @var bool */
-	public $closed = false;
-	/** @var TimingsHandler */
-	protected $timings;
+	protected Position $position;
+	public bool $closed = false;
+	protected TimingsHandler $timings;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->pos = Position::fromObject($pos, $world);
+		$this->position = Position::fromObject($pos, $world);
 		$this->timings = Timings::getTileEntityTimings($this);
 	}
 
 	/**
 	 * @internal
+	 * @throws NbtDataException
 	 * Reads additional data from the CompoundTag on tile creation.
 	 */
 	abstract public function readSaveData(CompoundTag $nbt) : void;
@@ -70,9 +70,10 @@ abstract class Tile{
 	public function saveNBT() : CompoundTag{
 		$nbt = CompoundTag::create()
 			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this)))
-			->setInt(self::TAG_X, $this->pos->getFloorX())
-			->setInt(self::TAG_Y, $this->pos->getFloorY())
-			->setInt(self::TAG_Z, $this->pos->getFloorZ());
+			->setInt(self::TAG_X, $this->position->getFloorX())
+			->setInt(self::TAG_Y, $this->position->getFloorY())
+			->setInt(self::TAG_Z, $this->position->getFloorZ())
+			->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 		$this->writeSaveData($nbt);
 
 		return $nbt;
@@ -95,11 +96,11 @@ abstract class Tile{
 	}
 
 	public function getBlock() : Block{
-		return $this->pos->getWorld()->getBlock($this->pos);
+		return $this->position->getWorld()->getBlock($this->position);
 	}
 
-	public function getPos() : Position{
-		return $this->pos;
+	public function getPosition() : Position{
+		return $this->position;
 	}
 
 	public function isClosed() : bool{
@@ -129,10 +130,9 @@ abstract class Tile{
 		if(!$this->closed){
 			$this->closed = true;
 
-			if($this->pos->isValid()){
-				$this->pos->getWorld()->removeTile($this);
+			if($this->position->isValid()){
+				$this->position->getWorld()->removeTile($this);
 			}
-			$this->pos = null;
 		}
 	}
 }

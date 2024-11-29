@@ -17,56 +17,32 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Tile;
+use pocketmine\utils\Utils;
 
 class BlockIdentifier{
-
-	/** @var int */
-	private $blockId;
-	/** @var int */
-	private $variant;
-	/** @var int|null */
-	private $itemId;
-	/**
-	 * @var string|null
-	 * @phpstan-var class-string<Tile>|null
-	 */
-	private $tileClass;
-
 	/**
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
-	public function __construct(int $blockId, int $variant = 0, ?int $itemId = null, ?string $tileClass = null){
-		$this->blockId = $blockId;
-		$this->variant = $variant;
-		$this->itemId = $itemId;
-		$this->tileClass = $tileClass;
+	public function __construct(
+		private int $blockTypeId,
+		private ?string $tileClass = null
+	){
+		if($blockTypeId < 0){
+			throw new \InvalidArgumentException("Block type ID may not be negative");
+		}
+		if($tileClass !== null){
+			Utils::testValidInstance($tileClass, Tile::class);
+		}
 	}
 
-	public function getBlockId() : int{
-		return $this->blockId;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	public function getAllBlockIds() : array{
-		return [$this->blockId];
-	}
-
-	public function getVariant() : int{
-		return $this->variant;
-	}
-
-	public function getItemId() : int{
-		return $this->itemId ?? ($this->blockId > 255 ? 255 - $this->blockId : $this->blockId);
-	}
+	public function getBlockTypeId() : int{ return $this->blockTypeId; }
 
 	/**
 	 * @phpstan-return class-string<Tile>|null

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -36,12 +36,13 @@ interface PluginLoader{
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void;
+	public function loadPlugin(string $path) : void;
 
 	/**
 	 * Gets the PluginDescription from the file
+	 * @throws PluginDescriptionParseException
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription;
+	public function getPluginDescription(string $path) : ?PluginDescription;
 
 	/**
 	 * Returns the protocol prefix used to access files in this plugin, e.g. file://, phar://

@@ -17,24 +17,26 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
-use pocketmine\player\Player;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\world\Position;
 use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
-use function count;
 
-class ChestInventory extends BlockInventory{
+class ChestInventory extends SimpleInventory implements BlockInventory{
+	use AnimatedBlockInventoryTrait;
 
 	public function __construct(Position $holder){
-		parent::__construct($holder, 27);
+		$this->holder = $holder;
+		parent::__construct(27);
 	}
 
 	protected function getOpenSound() : Sound{
@@ -45,29 +47,10 @@ class ChestInventory extends BlockInventory{
 		return new ChestCloseSound();
 	}
 
-	public function onOpen(Player $who) : void{
-		parent::onOpen($who);
-
-		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
-			//TODO: this crap really shouldn't be managed by the inventory
-			$this->broadcastBlockEventPacket(true);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
-		}
-	}
-
-	public function onClose(Player $who) : void{
-		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
-			//TODO: this crap really shouldn't be managed by the inventory
-			$this->broadcastBlockEventPacket(false);
-			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
-		}
-		parent::onClose($who);
-	}
-
-	protected function broadcastBlockEventPacket(bool $isOpen) : void{
+	public function animateBlock(bool $isOpen) : void{
 		$holder = $this->getHolder();
 
 		//event ID is always 1 for a chest
-		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
+		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(BlockPosition::fromVector3($holder), 1, $isOpen ? 1 : 0));
 	}
 }

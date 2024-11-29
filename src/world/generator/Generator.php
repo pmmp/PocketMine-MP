@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -48,33 +48,16 @@ abstract class Generator{
 		return $convertedSeed;
 	}
 
-	/** @var ChunkManager */
-	protected $world;
-	/** @var int */
-	protected $seed;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	protected $options;
+	protected Random $random;
 
-	/** @var Random */
-	protected $random;
-
-	/**
-	 * @throws InvalidGeneratorOptionsException
-	 *
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 */
-	public function __construct(ChunkManager $world, int $seed, array $options = []){
-		$this->world = $world;
-		$this->seed = $seed;
-		$this->options = $options;
+	public function __construct(
+		protected int $seed,
+		protected string $preset
+	){
 		$this->random = new Random($seed);
 	}
 
-	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void;
 
-	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void;
 }

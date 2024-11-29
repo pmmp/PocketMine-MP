@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Skin;
-use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 
 /**
  * Used to convert new skin data to the skin entity or old skin entity to skin data.

@@ -17,77 +17,87 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world;
 
-use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
 
-	/** @var TimingsHandler */
-	public $setBlock;
-	/** @var TimingsHandler */
-	public $doBlockLightUpdates;
-	/** @var TimingsHandler */
-	public $doBlockSkyLightUpdates;
+	public TimingsHandler $setBlock;
+	public TimingsHandler $doBlockLightUpdates;
+	public TimingsHandler $doBlockSkyLightUpdates;
 
-	/** @var TimingsHandler */
-	public $doChunkUnload;
-	/** @var TimingsHandler */
-	public $doTickPending;
-	/** @var TimingsHandler */
-	public $doTickTiles;
-	/** @var TimingsHandler */
-	public $doChunkGC;
-	/** @var TimingsHandler */
-	public $entityTick;
-	/** @var TimingsHandler */
-	public $doTick;
+	public TimingsHandler $doChunkUnload;
+	public TimingsHandler $scheduledBlockUpdates;
+	public TimingsHandler $neighbourBlockUpdates;
+	public TimingsHandler $randomChunkUpdates;
+	public TimingsHandler $randomChunkUpdatesChunkSelection;
+	public TimingsHandler $doChunkGC;
+	public TimingsHandler $entityTick;
+	public TimingsHandler $tileTick;
+	public TimingsHandler $doTick;
 
-	/** @var TimingsHandler */
-	public $syncChunkSendTimer;
-	/** @var TimingsHandler */
-	public $syncChunkSendPrepareTimer;
+	public TimingsHandler $syncChunkSend;
+	public TimingsHandler $syncChunkSendPrepare;
 
-	/** @var TimingsHandler */
-	public $syncChunkLoadTimer;
-	/** @var TimingsHandler */
-	public $syncChunkLoadDataTimer;
-	/** @var TimingsHandler */
-	public $syncChunkLoadEntitiesTimer;
-	/** @var TimingsHandler */
-	public $syncChunkLoadTileEntitiesTimer;
-	/** @var TimingsHandler */
-	public $syncChunkSaveTimer;
+	public TimingsHandler $syncChunkLoad;
+	public TimingsHandler $syncChunkLoadData;
+	public TimingsHandler $syncChunkLoadFixInvalidBlocks;
+	public TimingsHandler $syncChunkLoadEntities;
+	public TimingsHandler $syncChunkLoadTileEntities;
+
+	public TimingsHandler $syncDataSave;
+	public TimingsHandler $syncChunkSave;
+
+	public TimingsHandler $chunkPopulationOrder;
+	public TimingsHandler $chunkPopulationCompletion;
+
+	/**
+	 * @var TimingsHandler[]
+	 * @phpstan-var array<string, TimingsHandler>
+	 */
+	private static array $aggregators = [];
+
+	private static function newTimer(string $worldName, string $timerName) : TimingsHandler{
+		$aggregator = self::$aggregators[$timerName] ??= new TimingsHandler("Worlds - $timerName"); //displayed in Minecraft primary table
+
+		return new TimingsHandler("$worldName - $timerName", $aggregator);
+	}
 
 	public function __construct(World $world){
-		$name = $world->getFolderName() . " - ";
+		$name = $world->getFolderName();
 
-		$this->setBlock = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "setBlock");
-		$this->doBlockLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doBlockLightUpdates");
-		$this->doBlockSkyLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doBlockSkyLightUpdates");
+		$this->setBlock = self::newTimer($name, "Set Blocks");
+		$this->doBlockLightUpdates = self::newTimer($name, "Block Light Updates");
+		$this->doBlockSkyLightUpdates = self::newTimer($name, "Sky Light Updates");
 
-		$this->doChunkUnload = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doChunkUnload");
-		$this->doTickPending = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doTickPending");
-		$this->doTickTiles = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doTickTiles");
-		$this->doChunkGC = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doChunkGC");
-		$this->entityTick = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "entityTick");
+		$this->doChunkUnload = self::newTimer($name, "Unload Chunks");
+		$this->scheduledBlockUpdates = self::newTimer($name, "Scheduled Block Updates");
+		$this->neighbourBlockUpdates = self::newTimer($name, "Neighbour Block Updates");
+		$this->randomChunkUpdates = self::newTimer($name, "Random Chunk Updates");
+		$this->randomChunkUpdatesChunkSelection = self::newTimer($name, "Random Chunk Updates - Chunk Selection");
+		$this->doChunkGC = self::newTimer($name, "Garbage Collection");
+		$this->entityTick = self::newTimer($name, "Entity Tick");
+		$this->tileTick = self::newTimer($name, "Block Entity Tick");
+		$this->doTick = self::newTimer($name, "World Tick");
 
-		$this->syncChunkSendTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSend");
-		$this->syncChunkSendPrepareTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSendPrepare");
+		$this->syncChunkSend = self::newTimer($name, "Player Send Chunks");
+		$this->syncChunkSendPrepare = self::newTimer($name, "Player Send Chunk Prepare");
 
-		$this->syncChunkLoadTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad");
-		$this->syncChunkLoadDataTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Data");
-		$this->syncChunkLoadEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Entities");
-		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - TileEntities");
+		$this->syncChunkLoad = self::newTimer($name, "Chunk Load");
+		$this->syncChunkLoadData = self::newTimer($name, "Chunk Load - Data");
+		$this->syncChunkLoadFixInvalidBlocks = self::newTimer($name, "Chunk Load - Fix Invalid Blocks");
+		$this->syncChunkLoadEntities = self::newTimer($name, "Chunk Load - Entities");
+		$this->syncChunkLoadTileEntities = self::newTimer($name, "Chunk Load - Block Entities");
 
-		Timings::init(); //make sure the timer we want is available
-		$this->syncChunkSaveTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSave", Timings::$worldSaveTimer);
+		$this->syncDataSave = self::newTimer($name, "Data Save");
+		$this->syncChunkSave = self::newTimer($name, "Chunk Save");
 
-		$this->doTick = new TimingsHandler($name . "doTick");
+		$this->chunkPopulationOrder = self::newTimer($name, "Chunk Population - Order");
+		$this->chunkPopulationCompletion = self::newTimer($name, "Chunk Population - Completion");
 	}
 }

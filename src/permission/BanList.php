@@ -17,12 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\Utils;
 use function fclose;
 use function fgets;
 use function fopen;
@@ -32,19 +33,17 @@ use function strtolower;
 use function trim;
 
 class BanList{
+	/**
+	 * @var BanEntry[]
+	 * @phpstan-var array<string, BanEntry>
+	 */
+	private array $list = [];
 
-	/** @var BanEntry[] */
-	private $list = [];
+	private bool $enabled = true;
 
-	/** @var string */
-	private $file;
-
-	/** @var bool */
-	private $enabled = true;
-
-	public function __construct(string $file){
-		$this->file = $file;
-	}
+	public function __construct(
+		private string $file
+	){}
 
 	public function isEnabled() : bool{
 		return $this->enabled;
@@ -106,7 +105,7 @@ class BanList{
 	}
 
 	public function removeExpired() : void{
-		foreach($this->list as $name => $entry){
+		foreach(Utils::promoteKeys($this->list) as $name => $entry){
 			if($entry->hasExpired()){
 				unset($this->list[$name]);
 			}

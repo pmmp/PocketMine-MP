@@ -17,18 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
-use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\HeightArray;
-use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function array_values;
@@ -42,116 +39,88 @@ use function unpack;
  * The serialization format **is not intended for permanent storage** and may change without warning.
  */
 final class FastChunkSerializer{
-	private const FLAG_GENERATED = 1 << 0;
 	private const FLAG_POPULATED = 1 << 1;
-	private const FLAG_HAS_LIGHT = 1 << 2;
 
 	private function __construct(){
 		//NOOP
 	}
 
-	public static function serializeWithoutLight(Chunk $chunk) : string{
-		return self::serialize($chunk, false);
+	private static function serializePalettedArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+		$wordArray = $array->getWordArray();
+		$palette = $array->getPalette();
+
+		$stream->putByte($array->getBitsPerBlock());
+		$stream->put($wordArray);
+		$serialPalette = pack("L*", ...$palette);
+		$stream->putInt(strlen($serialPalette));
+		$stream->put($serialPalette);
 	}
 
 	/**
 	 * Fast-serializes the chunk for passing between threads
 	 * TODO: tiles and entities
 	 */
-	public static function serialize(Chunk $chunk, bool $includeLight = true) : string{
-		$includeLight = $includeLight && $chunk->isLightPopulated();
-
+	public static function serializeTerrain(Chunk $chunk) : string{
 		$stream = new BinaryStream();
-		$stream->putInt($chunk->getX());
-		$stream->putInt($chunk->getZ());
 		$stream->putByte(
-			($includeLight ? self::FLAG_HAS_LIGHT : 0) |
-			($chunk->isPopulated() ? self::FLAG_POPULATED : 0) |
-			($chunk->isGenerated() ? self::FLAG_GENERATED : 0)
+			($chunk->isPopulated() ? self::FLAG_POPULATED : 0)
 		);
-		if($chunk->isGenerated()){
-			//subchunks
-			$subChunks = $chunk->getSubChunks();
-			$count = $subChunks->count();
-			$stream->putByte($count);
 
-			foreach($subChunks as $y => $subChunk){
-				$stream->putByte($y);
-				$layers = $subChunk->getBlockLayers();
-				$stream->putByte(count($layers));
-				foreach($layers as $blocks){
-					$wordArray = $blocks->getWordArray();
-					$palette = $blocks->getPalette();
+		//subchunks
+		$subChunks = $chunk->getSubChunks();
+		$count = count($subChunks);
+		$stream->putByte($count);
 
-					$stream->putByte($blocks->getBitsPerBlock());
-					$stream->put($wordArray);
-					$serialPalette = pack("L*", ...$palette);
-					$stream->putInt(strlen($serialPalette));
-					$stream->put($serialPalette);
-				}
-
-				if($includeLight){
-					$stream->put($subChunk->getBlockSkyLightArray()->getData());
-					$stream->put($subChunk->getBlockLightArray()->getData());
-				}
+		foreach($subChunks as $y => $subChunk){
+			$stream->putByte($y);
+			$stream->putInt($subChunk->getEmptyBlockId());
+			$layers = $subChunk->getBlockLayers();
+			$stream->putByte(count($layers));
+			foreach($layers as $blocks){
+				self::serializePalettedArray($stream, $blocks);
 			}
+			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
 
-			//biomes
-			$stream->put($chunk->getBiomeIdArray());
-			if($includeLight){
-				$stream->put(pack("S*", ...$chunk->getHeightMapArray()));
-			}
 		}
 
 		return $stream->getBuffer();
 	}
 
+	private static function deserializePalettedArray(BinaryStream $stream) : PalettedBlockArray{
+		$bitsPerBlock = $stream->getByte();
+		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+		/** @var int[] $unpackedPalette */
+		$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
+		$palette = array_values($unpackedPalette);
+
+		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
+	}
+
 	/**
 	 * Deserializes a fast-serialized chunk
 	 */
-	public static function deserialize(string $data) : Chunk{
+	public static function deserializeTerrain(string $data) : Chunk{
 		$stream = new BinaryStream($data);
 
-		$x = $stream->getInt();
-		$z = $stream->getInt();
 		$flags = $stream->getByte();
-		$lightPopulated = (bool) ($flags & self::FLAG_HAS_LIGHT);
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
-		$terrainGenerated = (bool) ($flags & self::FLAG_GENERATED);
 
 		$subChunks = [];
-		$biomeIds = null;
-		$heightMap = null;
-		if($terrainGenerated){
-			$count = $stream->getByte();
-			for($subCount = 0; $subCount < $count; ++$subCount){
-				$y = $stream->getByte();
 
-				/** @var PalettedBlockArray[] $layers */
-				$layers = [];
-				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-					$bitsPerBlock = $stream->getByte();
-					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
+		$count = $stream->getByte();
+		for($subCount = 0; $subCount < $count; ++$subCount){
+			$y = Binary::signByte($stream->getByte());
+			$airBlockId = $stream->getInt();
 
-					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
-				}
-				$subChunks[$y] = new SubChunk(
-					BlockLegacyIds::AIR << 4, $layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
-				);
+			/** @var PalettedBlockArray[] $layers */
+			$layers = [];
+			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
+				$layers[] = self::deserializePalettedArray($stream);
 			}
-
-			$biomeIds = new BiomeArray($stream->get(256));
-			if($lightPopulated){
-				$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
-			}
+			$biomeArray = self::deserializePalettedArray($stream);
+			$subChunks[$y] = new SubChunk($airBlockId, $layers, $biomeArray);
 		}
 
-		$chunk = new Chunk($x, $z, $subChunks, null, null, $biomeIds, $heightMap);
-		$chunk->setGenerated($terrainGenerated);
-		$chunk->setPopulated($terrainPopulated);
-		$chunk->setLightPopulated($lightPopulated);
-
-		return $chunk;
+		return new Chunk($subChunks, $terrainPopulated);
 	}
 }

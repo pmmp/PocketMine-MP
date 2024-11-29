@@ -17,40 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class Chest extends Transparent{
-	use HorizontalFacingTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
-	}
+	use FacesOppositePlacingPlayerTrait;
 
 	/**
 	 * @return AxisAlignedBB[]
@@ -60,42 +44,42 @@ class Chest extends Transparent{
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
 	}
 
 	public function onPostPlace() : void{
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$world = $this->position->getWorld();
+		$tile = $world->getTile($this->position);
 		if($tile instanceof TileChest){
-			foreach([
-				Facing::rotateY($this->facing, true),
-				Facing::rotateY($this->facing, false)
-			] as $side){
+			foreach([false, true] as $clockwise){
+				$side = Facing::rotateY($this->facing, $clockwise);
 				$c = $this->getSide($side);
-				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-					$pair = $this->pos->getWorld()->getTile($c->pos);
-					if($pair instanceof TileChest and !$pair->isPaired()){
-						$pair->pairWith($tile);
-						$tile->pairWith($pair);
-						break;
+				if($c instanceof Chest && $c->hasSameTypeId($this) && $c->facing === $this->facing){
+					$pair = $world->getTile($c->position);
+					if($pair instanceof TileChest && !$pair->isPaired()){
+						[$left, $right] = $clockwise ? [$c, $this] : [$this, $c];
+						$ev = new ChestPairEvent($left, $right);
+						$ev->call();
+						if(!$ev->isCancelled() && $world->getBlock($this->position)->hasSameTypeId($this) && $world->getBlock($c->position)->hasSameTypeId($c)){
+							$pair->pairWith($tile);
+							$tile->pairWith($pair);
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 
-			$chest = $this->pos->getWorld()->getTile($this->pos);
+			$chest = $this->position->getWorld()->getTile($this->position);
 			if($chest instanceof TileChest){
 				if(
-					!$this->getSide(Facing::UP)->isTransparent() or
-					(($pair = $chest->getPair()) !== null and !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) or
+					!$this->getSide(Facing::UP)->isTransparent() ||
+					(($pair = $chest->getPair()) !== null && !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) ||
 					!$chest->canOpenWith($item->getCustomName())
 				){
 					return true;

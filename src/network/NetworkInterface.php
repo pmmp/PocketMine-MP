@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -33,6 +33,7 @@ interface NetworkInterface{
 
 	/**
 	 * Performs actions needed to start the interface after it is registered.
+	 * @throws NetworkInterfaceStartException
 	 */
 	public function start() : void;
 

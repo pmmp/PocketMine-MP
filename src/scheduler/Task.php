@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,14 +26,13 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\Utils;
 
 abstract class Task{
-
-	/** @var TaskHandler|null */
-	private $taskHandler = null;
+	/** @phpstan-var TaskHandler<static>|null  */
+	private ?TaskHandler $taskHandler = null;
 
 	/**
-	 * @return TaskHandler|null
+	 * @phpstan-return TaskHandler<static>|null
 	 */
-	final public function getHandler(){
+	final public function getHandler() : ?TaskHandler{
 		return $this->taskHandler;
 	}
 
@@ -41,14 +40,19 @@ abstract class Task{
 		return Utils::getNiceClassName($this);
 	}
 
+	/**
+	 * @phpstan-param TaskHandler<static>|null $taskHandler
+	 */
 	final public function setHandler(?TaskHandler $taskHandler) : void{
-		if($this->taskHandler === null or $taskHandler === null){
+		if($this->taskHandler === null || $taskHandler === null){
 			$this->taskHandler = $taskHandler;
 		}
 	}
 
 	/**
 	 * Actions to execute when run
+	 *
+	 * @throws CancelTaskException
 	 */
 	abstract public function onRun() : void;
 

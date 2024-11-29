@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,7 +25,9 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_chunk;
 use function array_pop;
@@ -35,27 +37,24 @@ use function implode;
 use function is_numeric;
 use function ksort;
 use function min;
+use function sort;
 use function strtolower;
 use const SORT_FLAG_CASE;
 use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.help.description",
-			"%commands.help.usage",
+			"help",
+			KnownTranslationFactory::pocketmine_command_help_description(),
+			KnownTranslationFactory::commands_help_usage(),
 			["?"]
 		);
-		$this->setPermission("pocketmine.command.help");
+		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			$commandName = "";
 			$pageNumber = 1;
@@ -73,11 +72,10 @@ class HelpCommand extends VanillaCommand{
 		$pageHeight = $sender->getScreenLineHeight();
 
 		if($commandName === ""){
-			/** @var Command[][] $commands */
 			$commands = [];
 			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
 				if($command->testPermissionSilent($sender)){
-					$commands[$command->getName()] = $command;
+					$commands[$command->getLabel()] = $command;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
@@ -86,10 +84,13 @@ class HelpCommand extends VanillaCommand{
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
-			$sender->sendMessage(new TranslationContainer("commands.help.header", [$pageNumber, count($commands)]));
+			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
+			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription());
+					$description = $command->getDescription();
+					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::RESET . $descriptionString);
 				}
 			}
 
@@ -97,15 +98,28 @@ class HelpCommand extends VanillaCommand{
 		}else{
 			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
-					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $cmd->getDescription() . "\n";
-					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $cmd->getUsage())) . "\n";
-					$sender->sendMessage($message);
+					$lang = $sender->getLanguage();
+					$description = $cmd->getDescription();
+					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
+						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
+						->prefix(TextFormat::GOLD));
+
+					$usage = $cmd->getUsage();
+					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString)))
+						->prefix(TextFormat::GOLD));
+
+					$aliases = $cmd->getAliases();
+					sort($aliases, SORT_NATURAL);
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::RESET . implode(", ", $aliases))
+						->prefix(TextFormat::GOLD));
 
 					return true;
 				}
 			}
-			$sender->sendMessage(TextFormat::RED . "No help for " . strtolower($commandName));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/help")->prefix(TextFormat::RED));
 
 			return true;
 		}

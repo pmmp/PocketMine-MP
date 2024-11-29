@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,7 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -34,20 +35,16 @@ use function count;
 
 class OpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.op.description",
-			"%commands.op.usage"
+			"op",
+			KnownTranslationFactory::pocketmine_command_op_description(),
+			KnownTranslationFactory::commands_op_usage()
 		);
-		$this->setPermission("pocketmine.command.op.give");
+		$this->setPermission(DefaultPermissionNames::COMMAND_OP_GIVE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		if(count($args) === 0){
 			throw new InvalidCommandSyntaxException();
 		}
@@ -57,12 +54,11 @@ class OpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getOfflinePlayer($name);
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$player->getName()]));
-		if($player instanceof Player){
-			$player->sendMessage(TextFormat::GRAY . "You are now op!");
+		$sender->getServer()->addOp($name);
+		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
+			$player->sendMessage(KnownTranslationFactory::commands_op_message()->prefix(TextFormat::GRAY));
 		}
-		$player->setOp(true);
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_op_success($name));
 		return true;
 	}
 }

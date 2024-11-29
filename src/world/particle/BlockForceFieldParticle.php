@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -28,15 +28,10 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class BlockForceFieldParticle implements Particle{
+	//TODO: proper encode/decode of data
+	public function __construct(private int $data = 0){}
 
-	/** @var int */
-	private $data;
-
-	public function __construct(int $data = 0){
-		$this->data = $data; //TODO: proper encode/decode of data
-	}
-
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::BLOCK_FORCE_FIELD, $this->data, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::BLOCK_FORCE_FIELD, $this->data, $pos)];
 	}
 }

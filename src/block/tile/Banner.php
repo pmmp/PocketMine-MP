@@ -17,25 +17,23 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use Ds\Deque;
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\world\World;
 
 /**
  * @deprecated
- * @see \pocketmine\block\Banner
+ * @see \pocketmine\block\BaseBanner
  */
 class Banner extends Spawnable{
 
@@ -44,43 +42,49 @@ class Banner extends Spawnable{
 	public const TAG_PATTERN_COLOR = "Color";
 	public const TAG_PATTERN_NAME = "Pattern";
 
-	/** @var DyeColor */
-	private $baseColor;
+	private DyeColor $baseColor = DyeColor::BLACK;
 
 	/**
-	 * @var BannerPattern[]|Deque
-	 * @phpstan-var Deque<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	private $patterns;
-
-	public function __construct(World $world, Vector3 $pos){
-		$this->baseColor = DyeColor::BLACK();
-		$this->patterns = new Deque();
-		parent::__construct($world, $pos);
-	}
+	private array $patterns = [];
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
-		if(($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag){
-			$this->baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue());
+		if(
+			($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag &&
+			($baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue())) !== null
+		){
+			$this->baseColor = $baseColor;
+		}else{
+			$this->baseColor = DyeColor::BLACK; //TODO: this should be an error
 		}
+
+		$patternTypeIdMap = BannerPatternTypeIdMap::getInstance();
 
 		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
 		if($patterns !== null){
 			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
-				$this->patterns[] = new BannerPattern($pattern->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)));
+				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
+				$patternType = $patternTypeIdMap->fromId($pattern->getString(self::TAG_PATTERN_NAME));
+				if($patternType === null){
+					continue; //TODO: this should be an error, but right now we don't have the setup to deal with it
+				}
+				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
+		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setString(self::TAG_PATTERN_NAME, $patternIdMap->toId($pattern->getType()))
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
@@ -89,11 +93,12 @@ class Banner extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
+		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setString(self::TAG_PATTERN_NAME, $patternIdMap->toId($pattern->getType()))
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
@@ -115,18 +120,19 @@ class Banner extends Spawnable{
 	}
 
 	/**
-	 * @return BannerPattern[]|Deque
-	 * @phpstan-return Deque<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
-	public function getPatterns() : Deque{
+	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[]|Deque $patterns
-	 * @phpstan-param Deque<BannerPattern> $patterns
+	 * @param BannerPatternLayer[] $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 */
-	public function setPatterns(Deque $patterns) : void{
+	public function setPatterns(array $patterns) : void{
 		$this->patterns = $patterns;
 	}
 

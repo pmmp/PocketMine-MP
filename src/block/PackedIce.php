@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -26,10 +26,6 @@ namespace pocketmine\block;
 use pocketmine\item\Item;
 
 class PackedIce extends Opaque{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE));
-	}
 
 	public function getFrictionFactor() : float{
 		return 0.98;

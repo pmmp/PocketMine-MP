@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,8 +27,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\player\IPlayer;
-use pocketmine\Server;
+use pocketmine\player\Player;
 
 /**
  * Called when a player's data is about to be saved to disk.
@@ -36,15 +35,11 @@ use pocketmine\Server;
 class PlayerDataSaveEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var CompoundTag */
-	protected $data;
-	/** @var string */
-	protected $playerName;
-
-	public function __construct(CompoundTag $nbt, string $playerName){
-		$this->data = $nbt;
-		$this->playerName = $playerName;
-	}
+	public function __construct(
+		protected CompoundTag $data,
+		protected string $playerName,
+		private ?Player $player
+	){}
 
 	/**
 	 * Returns the data to be written to disk as a CompoundTag
@@ -65,10 +60,10 @@ class PlayerDataSaveEvent extends Event implements Cancellable{
 	}
 
 	/**
-	 * Returns the player whose data is being saved. This may be a Player or an OfflinePlayer.
-	 * @return IPlayer (Player or OfflinePlayer)
+	 * Returns the player whose data is being saved, if online.
+	 * If null, this data is for an offline player (possibly just disconnected).
 	 */
-	public function getPlayer() : IPlayer{
-		return Server::getInstance()->getOfflinePlayer($this->playerName);
+	public function getPlayer() : ?Player{
+		return $this->player;
 	}
 }

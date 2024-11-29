@@ -17,14 +17,14 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world;
 
 /**
- * If you want to keep chunks loaded, implement this interface and register it into World. This will also tick chunks.
+ * If you want to keep chunks loaded, implement this interface and register it into World.
  *
  * @see World::registerChunkLoader()
  * @see World::unregisterChunkLoader()
@@ -34,13 +34,4 @@ namespace pocketmine\world;
  */
 interface ChunkLoader{
 
-	/**
-	 * @return float
-	 */
-	public function getX();
-
-	/**
-	 * @return float
-	 */
-	public function getZ();
 }

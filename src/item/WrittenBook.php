@@ -17,14 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
+use function sprintf;
+use function strlen;
 
 class WrittenBook extends WritableBookBase{
 
@@ -37,12 +40,9 @@ class WrittenBook extends WritableBookBase{
 	public const TAG_AUTHOR = "author"; //TAG_String
 	public const TAG_TITLE = "title"; //TAG_String
 
-	/** @var int */
-	private $generation = self::GENERATION_ORIGINAL;
-	/** @var string */
-	private $author = "";
-	/** @var string */
-	private $title = "";
+	private int $generation = self::GENERATION_ORIGINAL;
+	private string $author = "";
+	private string $title = "";
 
 	public function getMaxStackSize() : int{
 		return 16;
@@ -62,7 +62,7 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setGeneration(int $generation) : self{
-		if($generation < 0 or $generation > 3){
+		if($generation < 0 || $generation > 3){
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
 
@@ -85,6 +85,9 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setAuthor(string $authorName) : self{
+		if(strlen($authorName) > Limits::INT16_MAX){
+			throw new \InvalidArgumentException(sprintf("Author must be at most %d bytes, but have %d bytes", Limits::INT16_MAX, strlen($authorName)));
+		}
 		Utils::checkUTF8($authorName);
 		$this->author = $authorName;
 		return $this;
@@ -103,6 +106,9 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setTitle(string $title) : self{
+		if(strlen($title) > Limits::INT16_MAX){
+			throw new \InvalidArgumentException(sprintf("Title must be at most %d bytes, but have %d bytes", Limits::INT16_MAX, strlen($title)));
+		}
 		Utils::checkUTF8($title);
 		$this->title = $title;
 		return $this;

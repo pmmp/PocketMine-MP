@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -111,18 +111,11 @@ abstract class Noise{
 		);
 	}
 
-	/** @var float */
-	protected $persistence;
-	/** @var float */
-	protected $expansion;
-	/** @var int */
-	protected $octaves;
-
-	public function __construct(int $octaves, float $persistence, float $expansion){
-		$this->octaves = $octaves;
-		$this->persistence = $persistence;
-		$this->expansion = $expansion;
-	}
+	public function __construct(
+		protected int $octaves,
+		protected float $persistence,
+		protected float $expansion
+	){}
 
 	/**
 	 * @param float $x
@@ -215,6 +208,7 @@ abstract class Noise{
 			throw new \InvalidArgumentException("xSize % samplingRate must return 0");
 		}
 
+		/** @phpstan-var \SplFixedArray<float> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
@@ -224,7 +218,13 @@ abstract class Noise{
 		for($xx = 0; $xx < $xSize; ++$xx){
 			if($xx % $samplingRate !== 0){
 				$nx = (int) ($xx / $samplingRate) * $samplingRate;
-				$noiseArray[$xx] = self::linearLerp($xx, $nx, $nx + $samplingRate, $noiseArray[$nx], $noiseArray[$nx + $samplingRate]);
+				$noiseArray[$xx] = self::linearLerp(
+					x: $xx,
+					x1: $nx,
+					x2: $nx + $samplingRate,
+					q0: $noiseArray[$nx],
+					q1: $noiseArray[$nx + $samplingRate]
+				);
 			}
 		}
 
@@ -241,6 +241,7 @@ abstract class Noise{
 		assert($xSize % $samplingRate === 0, new \InvalidArgumentException("xSize % samplingRate must return 0"));
 		assert($zSize % $samplingRate === 0, new \InvalidArgumentException("zSize % samplingRate must return 0"));
 
+		/** @phpstan-var \SplFixedArray<\SplFixedArray<float>> $noiseArray */
 		$noiseArray = new \SplFixedArray($xSize + 1);
 
 		for($xx = 0; $xx <= $xSize; $xx += $samplingRate){
@@ -256,13 +257,20 @@ abstract class Noise{
 			}
 
 			for($zz = 0; $zz < $zSize; ++$zz){
-				if($xx % $samplingRate !== 0 or $zz % $samplingRate !== 0){
+				if($xx % $samplingRate !== 0 || $zz % $samplingRate !== 0){
 					$nx = (int) ($xx / $samplingRate) * $samplingRate;
 					$nz = (int) ($zz / $samplingRate) * $samplingRate;
 					$noiseArray[$xx][$zz] = Noise::bilinearLerp(
-						$xx, $zz, $noiseArray[$nx][$nz], $noiseArray[$nx][$nz + $samplingRate],
-						$noiseArray[$nx + $samplingRate][$nz], $noiseArray[$nx + $samplingRate][$nz + $samplingRate],
-						$nx, $nx + $samplingRate, $nz, $nz + $samplingRate
+						x: $xx,
+						y: $zz,
+						q00: $noiseArray[$nx][$nz],
+						q01: $noiseArray[$nx][$nz + $samplingRate],
+						q10: $noiseArray[$nx + $samplingRate][$nz],
+						q11: $noiseArray[$nx + $samplingRate][$nz + $samplingRate],
+						x1: $nx,
+						x2: $nx + $samplingRate,
+						y1: $nz,
+						y2: $nz + $samplingRate
 					);
 				}
 			}
@@ -294,34 +302,46 @@ abstract class Noise{
 			}
 		}
 
+		/**
+		 * The following code originally called trilinearLerp() in a loop, but it was later inlined to elide function
+		 * call overhead.
+		 * Later, it became apparent that some of the logic was being repeated unnecessarily in the inner loop, so the
+		 * code was changed further to avoid this, which produced visible performance improvements.
+		 *
+		 * In any language with a compiler, a compiler would most likely have noticed that these optimisations could be
+		 * made and made these changes automatically, but in PHP we don't have a compiler, so the task falls to us.
+		 *
+		 * @see Noise::trilinearLerp()
+		 */
 		for($xx = 0; $xx < $xSize; ++$xx){
+			$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
+			$nnx = $nx + $xSamplingRate;
+
+			$dx1 = (($nnx - $xx) / ($nnx - $nx));
+			$dx2 = (($xx - $nx) / ($nnx - $nx));
+
 			for($zz = 0; $zz < $zSize; ++$zz){
+				$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
+				$nnz = $nz + $zSamplingRate;
+
+				$dz1 = ($nnz - $zz) / ($nnz - $nz);
+				$dz2 = ($zz - $nz) / ($nnz - $nz);
+
 				for($yy = 0; $yy < $ySize; ++$yy){
-					if($xx % $xSamplingRate !== 0 or $zz % $zSamplingRate !== 0 or $yy % $ySamplingRate !== 0){
-						$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
+					if($xx % $xSamplingRate !== 0 || $zz % $zSamplingRate !== 0 || $yy % $ySamplingRate !== 0){
 						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
-						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
-
-						$nnx = $nx + $xSamplingRate;
 						$nny = $ny + $ySamplingRate;
-						$nnz = $nz + $zSamplingRate;
 
-						/**
-						 * This code has been manually inlined.
-						 * @see Noise::trilinearLerp()
-						 */
-						$dx1 = (($nnx - $xx) / ($nnx - $nx));
-						$dx2 = (($xx - $nx) / ($nnx - $nx));
 						$dy1 = (($nny - $yy) / ($nny - $ny));
 						$dy2 = (($yy - $ny) / ($nny - $ny));
 
-						$noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
+						$noiseArray[$xx][$zz][$yy] = $dz1 * (
 								$dy1 * (
 									$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
 								) + $dy2 * (
 									$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
 								)
-							) + (($zz - $nz) / ($nnz - $nz)) * (
+							) + $dz2 * (
 								$dy1 * (
 									$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
 								) + $dy2 * (

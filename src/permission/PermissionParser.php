@@ -17,145 +17,86 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use function count;
-use function is_array;
+use pocketmine\utils\Utils;
 use function is_bool;
-use function ksort;
 use function strtolower;
 
 class PermissionParser{
 
+	public const DEFAULT_OP = "op";
+	public const DEFAULT_NOT_OP = "notop";
+	public const DEFAULT_TRUE = "true";
+	public const DEFAULT_FALSE = "false";
+
 	public const DEFAULT_STRING_MAP = [
-		"op" => Permission::DEFAULT_OP,
-		"isop" => Permission::DEFAULT_OP,
-		"operator" => Permission::DEFAULT_OP,
-		"isoperator" => Permission::DEFAULT_OP,
-		"admin" => Permission::DEFAULT_OP,
-		"isadmin" => Permission::DEFAULT_OP,
+		"op" => self::DEFAULT_OP,
+		"isop" => self::DEFAULT_OP,
+		"operator" => self::DEFAULT_OP,
+		"isoperator" => self::DEFAULT_OP,
+		"admin" => self::DEFAULT_OP,
+		"isadmin" => self::DEFAULT_OP,
 
-		"!op" => Permission::DEFAULT_NOT_OP,
-		"notop" => Permission::DEFAULT_NOT_OP,
-		"!operator" => Permission::DEFAULT_NOT_OP,
-		"notoperator" => Permission::DEFAULT_NOT_OP,
-		"!admin" => Permission::DEFAULT_NOT_OP,
-		"notadmin" => Permission::DEFAULT_NOT_OP,
+		"!op" => self::DEFAULT_NOT_OP,
+		"notop" => self::DEFAULT_NOT_OP,
+		"!operator" => self::DEFAULT_NOT_OP,
+		"notoperator" => self::DEFAULT_NOT_OP,
+		"!admin" => self::DEFAULT_NOT_OP,
+		"notadmin" => self::DEFAULT_NOT_OP,
 
-		"true" => Permission::DEFAULT_TRUE,
-		"false" => Permission::DEFAULT_FALSE,
+		"true" => self::DEFAULT_TRUE,
+		"false" => self::DEFAULT_FALSE,
 	];
 
+	private const KEY_DEFAULT = "default";
+	private const KEY_CHILDREN = "children";
+	private const KEY_DESCRIPTION = "description";
+
 	/**
-	 * @param bool|string $value
-	 *
-	 * @throws \InvalidArgumentException
+	 * @throws PermissionParserException
 	 */
-	public static function defaultFromString($value) : string{
+	public static function defaultFromString(bool|string $value) : string{
 		if(is_bool($value)){
-			if($value){
-				return "true";
-			}else{
-				return "false";
-			}
+			return $value ? self::DEFAULT_TRUE : self::DEFAULT_FALSE;
 		}
 		$lower = strtolower($value);
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
 			return self::DEFAULT_STRING_MAP[$lower];
 		}
 
-		throw new \InvalidArgumentException("Unknown permission default name \"$value\"");
+		throw new PermissionParserException("Unknown permission default name \"$value\"");
 	}
 
 	/**
 	 * @param mixed[][] $data
 	 * @phpstan-param array<string, array<string, mixed>> $data
 	 *
-	 * @return Permission[]
+	 * @return Permission[][]
+	 * @phpstan-return array<string, list<Permission>>
+	 * @throws PermissionParserException
 	 */
-	public static function loadPermissions(array $data, string $default = Permission::DEFAULT_OP) : array{
+	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $key => $entry){
-			$result[] = self::loadPermission($key, $entry, $default, $result);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param mixed[]      $data
-	 * @param Permission[] $output reference parameter
-	 * @phpstan-param array<string, mixed> $data
-	 *
-	 * @throws \Exception
-	 */
-	public static function loadPermission(string $name, array $data, string $default = Permission::DEFAULT_OP, array &$output = []) : Permission{
-		$desc = null;
-		$children = [];
-		if(isset($data["default"])){
-			$default = PermissionParser::defaultFromString($data["default"]);
-		}
-
-		if(isset($data["children"])){
-			if(is_array($data["children"])){
-				foreach($data["children"] as $k => $v){
-					if(is_array($v)){
-						$output[] = self::loadPermission($k, $v, $default, $output);
-					}
-					$children[$k] = true;
-				}
-			}else{
-				throw new \InvalidStateException("'children' key is of wrong type");
+		foreach(Utils::stringifyKeys($data) as $name => $entry){
+			$desc = null;
+			if(isset($entry[self::KEY_DEFAULT])){
+				$default = PermissionParser::defaultFromString($entry[self::KEY_DEFAULT]);
 			}
-		}
 
-		if(isset($data["description"])){
-			$desc = $data["description"];
-		}
-
-		return new Permission($name, $desc, $default, $children);
-	}
-
-	/**
-	 * @param Permission[] $permissions
-	 *
-	 * @return mixed[]
-	 * @phpstan-return array<string, array<string, mixed>>
-	 */
-	public static function emitPermissions(array $permissions) : array{
-		$result = [];
-		foreach($permissions as $permission){
-			$result[$permission->getName()] = self::emitPermission($permission);
-		}
-		ksort($result);
-		return $result;
-	}
-
-	/**
-	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
-	 */
-	private static function emitPermission(Permission $permission) : array{
-		$result = [
-			"description" => $permission->getDescription(),
-			"default" => $permission->getDefault()
-		];
-		$children = [];
-		foreach($permission->getChildren() as $name => $bool){
-			//TODO: really? wtf??? this system is so overengineered it makes my head hurt...
-			$child = PermissionManager::getInstance()->getPermission($name);
-			if($child === null){
-				throw new \UnexpectedValueException("Permission child should be a registered permission");
+			if(isset($entry[self::KEY_CHILDREN])){
+				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
 			}
-			$children[$name] = self::emitPermission($child);
-		}
-		if(count($children) > 0){
-			ksort($children);
-			$result["children"] = $children;
+
+			if(isset($entry[self::KEY_DESCRIPTION])){
+				$desc = $entry[self::KEY_DESCRIPTION];
+			}
+
+			$result[$default][] = new Permission($name, $desc);
 		}
 		return $result;
 	}

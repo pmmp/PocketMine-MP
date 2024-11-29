@@ -17,63 +17,68 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 
 class Sugarcane extends Flowable{
-
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	use AgeableTrait;
+	use StaticSupportTrait {
+		onNearbyBlockChange as onSupportBlockChange;
 	}
 
-	protected function writeStateToMeta() : int{
-		return $this->age;
+	public const MAX_AGE = 15;
+
+	private function seekToBottom() : Position{
+		$world = $this->position->getWorld();
+		$bottom = $this->position;
+		while(($next = $world->getBlock($bottom->down()))->hasSameTypeId($this)){
+			$bottom = $next->position;
+		}
+		return $bottom;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 15);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-				for($y = 1; $y < 3; ++$y){
-					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
-					if($b->getId() === BlockLegacyIds::AIR){
-						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
-						$ev->call();
-						if($ev->isCancelled()){
-							break;
-						}
-						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
-					}else{
-						break;
-					}
-				}
-				$this->age = 0;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+	private function grow(Position $pos, ?Player $player = null) : bool{
+		$grew = false;
+		$world = $pos->getWorld();
+		for($y = 1; $y < 3; ++$y){
+			if(!$world->isInWorld($pos->x, $pos->y + $y, $pos->z)){
+				break;
 			}
+			$b = $world->getBlockAt($pos->x, $pos->y + $y, $pos->z);
+			if($b->getTypeId() === BlockTypeIds::AIR){
+				if(BlockEventHelper::grow($b, VanillaBlocks::SUGARCANE(), $player)){
+					$grew = true;
+				}else{
+					break;
+				}
+			}elseif(!$b->hasSameTypeId($this)){
+				break;
+			}
+		}
+		$this->age = 0;
+		$world->setBlock($pos, $this);
+		return $grew;
+	}
 
-			$item->pop();
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof Fertilizer){
+			if($this->grow($this->seekToBottom(), $player)){
+				$item->pop();
+			}
 
 			return true;
 		}
@@ -81,11 +86,12 @@ class Sugarcane extends Flowable{
 		return false;
 	}
 
-	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() and !$down->isSameType($this)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return $supportBlock->hasSameTypeId($this) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::SAND);
 	}
 
 	public function ticksRandomly() : bool{
@@ -93,41 +99,55 @@ class Sugarcane extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-			if($this->age === 15){
-				for($y = 1; $y < 3; ++$y){
-					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
-					if($b->getId() === BlockLegacyIds::AIR){
-						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
-						$ev->call();
-						if($ev->isCancelled()){
-							break;
-						}
-						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
-						break;
-					}
-				}
-				$this->age = 0;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->hasSameTypeId($this)){
+			if(!$this->hasNearbyWater($down)){
+				$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
+				return;
+			}
+
+			if($this->age === self::MAX_AGE){
+				$this->grow($this->position);
 			}else{
 				++$this->age;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->isSameType($this)){
+		$down = $blockReplace->getSide(Facing::DOWN);
+		if($down->hasSameTypeId($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND){
-			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water){
-					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-				}
+		}
+
+		//support criteria are checked by FixedSupportTrait, but this part applies to placement only
+		foreach(Facing::HORIZONTAL as $side){
+			$sideBlock = $down->getSide($side);
+			if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
+				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
 
 		return false;
+	}
+
+	private function hasNearbyWater(Block $down) : bool{
+		foreach($down->getHorizontalSides() as $sideBlock){
+			$blockId = $sideBlock->getTypeId();
+			if($blockId === BlockTypeIds::WATER || $blockId === BlockTypeIds::FROSTED_ICE){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->hasSameTypeId($this) && !$this->hasNearbyWater($down)){
+			$this->position->getWorld()->useBreakOn($this->position, createParticles: true);
+		}else{
+			$this->onSupportBlockChange();
+		}
 	}
 }

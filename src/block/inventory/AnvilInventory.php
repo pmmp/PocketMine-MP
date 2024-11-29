@@ -17,27 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\player\Player;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\TemporaryInventory;
 use pocketmine\world\Position;
 
-class AnvilInventory extends BlockInventory{
+class AnvilInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
+	use BlockInventoryTrait;
+
+	public const SLOT_INPUT = 0;
+	public const SLOT_MATERIAL = 1;
 
 	public function __construct(Position $holder){
-		parent::__construct($holder, 2);
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
+		$this->holder = $holder;
+		parent::__construct(2);
 	}
 }

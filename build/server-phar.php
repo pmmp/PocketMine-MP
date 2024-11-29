@@ -17,22 +17,24 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\build\server_phar;
 
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Git;
+use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
-use function defined;
 use function dirname;
 use function file_exists;
 use function getcwd;
 use function getopt;
 use function implode;
 use function ini_get;
+use function is_string;
 use function microtime;
 use function preg_quote;
 use function realpath;
@@ -41,11 +43,13 @@ use function rtrim;
 use function sprintf;
 use function str_replace;
 use function unlink;
+use const DIRECTORY_SEPARATOR;
+use const PHP_EOL;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
- * @param string[]    $strings
+ * @param string[] $strings
  *
  * @return string[]
  */
@@ -129,16 +133,34 @@ function main() : void{
 		echo "Set phar.readonly to 0 with -dphar.readonly=0" . PHP_EOL;
 		exit(1);
 	}
+	if(file_exists(dirname(__DIR__) . '/vendor/phpunit')){
+		echo "Remove Composer dev dependencies before building (composer install --no-dev)" . PHP_EOL;
+		exit(1);
+	}
 
-	$opts = getopt("", ["out:", "git:"]);
+	$opts = getopt("", ["out:", "git:", "build:"]);
 	if(isset($opts["git"])){
 		$gitHash = $opts["git"];
 	}else{
 		$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
 		echo "Git hash detected as $gitHash" . PHP_EOL;
 	}
+	if(isset($opts["build"])){
+		$build = (int) $opts["build"];
+	}else{
+		$build = 0;
+	}
+	if(isset($opts["out"])){
+		if(!is_string($opts["out"])){
+			echo "--out cannot be specified multiple times" . PHP_EOL;
+			exit(1);
+		}
+		$pharPath = $opts["out"];
+	}else{
+		$pharPath = getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar";
+	}
 	foreach(buildPhar(
-		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
+		$pharPath,
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
 		[
 			'resources',
@@ -146,23 +168,10 @@ function main() : void{
 			'vendor'
 		],
 		[
-			'git' => $gitHash
+			'git' => $gitHash,
+			'build' => $build
 		],
-		<<<'STUB'
-<?php
-
-$tmpDir = sys_get_temp_dir();
-if(!is_readable($tmpDir) or !is_writable($tmpDir)){
-	echo "ERROR: tmpdir $tmpDir is not accessible." . PHP_EOL;
-	echo "Check that the directory exists, and that the current user has read/write permissions for it." . PHP_EOL;
-	echo "Alternatively, set 'sys_temp_dir' to a different directory in your php.ini file." . PHP_EOL;
-	exit(1);
-}
-
-require("phar://" . __FILE__ . "/src/PocketMine.php");
-__HALT_COMPILER();
-STUB
-,
+		Filesystem::fileGetContents(Path::join(__DIR__, 'server-phar-stub.php')) . "\n__HALT_COMPILER();",
 		\Phar::SHA1,
 		\Phar::GZ
 	) as $line){
@@ -170,6 +179,4 @@ STUB
 	}
 }
 
-if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-	main();
-}
+main();

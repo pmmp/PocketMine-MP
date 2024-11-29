@@ -17,13 +17,13 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 
 abstract class Tool extends Durable{
 
@@ -35,7 +35,7 @@ abstract class Tool extends Durable{
 		$efficiency = 1;
 		if($isCorrectTool){
 			$efficiency = $this->getBaseMiningEfficiency();
-			if(($enchantmentLevel = $this->getEnchantmentLevel(Enchantment::EFFICIENCY())) > 0){
+			if(($enchantmentLevel = $this->getEnchantmentLevel(VanillaEnchantments::EFFICIENCY())) > 0){
 				$efficiency += ($enchantmentLevel ** 2 + 1);
 			}
 		}

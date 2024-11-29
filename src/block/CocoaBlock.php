@@ -17,15 +17,17 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\TreeType;
+use pocketmine\block\utils\WoodType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -37,27 +39,15 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Transparent{
+class CocoaBlock extends Flowable{
 	use HorizontalFacingTrait;
+	use AgeableTrait;
 
-	/** @var int */
-	protected $age = 0;
+	public const MAX_AGE = 2;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE, 0, 15.0));
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, 2);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
 	/**
@@ -74,8 +64,12 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
+	private function canAttachTo(Block $block) : bool{
+		return $block instanceof Wood && $block->getWoodType() === WoodType::JUNGLE;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) !== Axis::Y and $blockClicked instanceof Wood and $blockClicked->getTreeType()->equals(TreeType::JUNGLE())){
+		if(Facing::axis($face) !== Axis::Y && $this->canAttachTo($blockClicked)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -83,11 +77,8 @@ class CocoaBlock extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 2 and $item instanceof Fertilizer){
-			$this->age++;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
-
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -97,30 +88,37 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$side = $this->getSide(Facing::opposite($this->facing));
-		if(!($side instanceof Wood) or !$side->getTreeType()->equals(TreeType::JUNGLE())){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canAttachTo($this->getSide(Facing::opposite($this->facing)))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function ticksRandomly() : bool{
-		return true;
+		return $this->age < self::MAX_AGE;
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 2 and mt_rand(1, 5) === 1){
-			$this->age++;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+		if(mt_rand(1, 5) === 1){
+			$this->grow();
 		}
+	}
+
+	private function grow(?Player $player = null) : bool{
+		if($this->age < self::MAX_AGE){
+			$block = clone $this;
+			$block->age++;
+			return BlockEventHelper::grow($this, $block, $player);
+		}
+		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::COCOA_BEANS()->setCount($this->age === 2 ? mt_rand(2, 3) : 1)
+			VanillaItems::COCOA_BEANS()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 3) : 1)
 		];
 	}
 
-	public function getPickedItem(bool $addUserData = false) : Item{
+	public function asItem() : Item{
 		return VanillaItems::COCOA_BEANS();
 	}
 }

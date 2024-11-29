@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,7 @@ namespace pocketmine\entity\utils;
 
 use pocketmine\math\Math;
 use pocketmine\utils\AssumptionFailedError;
+use function count;
 use function max;
 
 abstract class ExperienceUtils{

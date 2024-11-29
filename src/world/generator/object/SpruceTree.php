@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -35,13 +35,13 @@ class SpruceTree extends Tree{
 		parent::__construct(VanillaBlocks::SPRUCE_LOG(), VanillaBlocks::SPRUCE_LEAVES(), 10);
 	}
 
-	protected function generateChunkHeight(Random $random) : int{
+	protected function generateTrunkHeight(Random $random) : int{
 		return $this->treeHeight - $random->nextBoundedInt(3);
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
 		$this->treeHeight = $random->nextBoundedInt(4) + 6;
-		parent::placeObject($world, $x, $y, $z, $random);
+		return parent::getBlockTransaction($world, $x, $y, $z, $random);
 	}
 
 	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
@@ -58,7 +58,7 @@ class SpruceTree extends Tree{
 				$xOff = abs($xx - $x);
 				for($zz = $z - $radius; $zz <= $z + $radius; ++$zz){
 					$zOff = abs($zz - $z);
-					if($xOff === $radius and $zOff === $radius and $radius > 0){
+					if($xOff === $radius && $zOff === $radius && $radius > 0){
 						continue;
 					}
 

@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,19 +25,15 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Living;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class DeathAnimation implements Animation{
 
-	/** @var Living */
-	private $entity;
-
-	public function __construct(Living $entity){
-		$this->entity = $entity;
-	}
+	public function __construct(private Living $entity){}
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEventPacket::DEATH_ANIMATION, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::DEATH_ANIMATION, 0)
 		];
 	}
 }

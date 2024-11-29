@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -44,5 +44,9 @@ class EnderPearl extends ProjectileItem{
 
 	public function getCooldownTicks() : int{
 		return 20;
+	}
+
+	public function getCooldownTag() : ?string{
+		return ItemCooldownTags::ENDER_PEARL;
 	}
 }

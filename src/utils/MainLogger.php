@@ -17,65 +17,45 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use LogLevel;
-use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pmmp\thread\Thread as NativeThread;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\thread\log\ThreadSafeLoggerAttachment;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
-use function fclose;
-use function fopen;
-use function fwrite;
-use function get_class;
-use function is_resource;
-use function preg_replace;
+use function implode;
 use function sprintf;
-use function touch;
-use function trim;
 use const PHP_EOL;
-use const PTHREADS_INHERIT_NONE;
 
-class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
+class MainLogger extends AttachableThreadSafeLogger implements \BufferedLogger{
+	protected bool $logDebug;
 
-	/** @var string */
-	protected $logFile;
-	/** @var \Threaded */
-	protected $logStream;
-	/** @var bool */
-	protected $shutdown = false;
-	/** @var bool */
-	protected $logDebug;
-	/** @var bool */
-	private $syncFlush = false;
-
-	/** @var string */
-	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
-
-	/** @var bool */
-	private $mainThreadHasFormattingCodes = false;
-
-	/** @var string */
-	private $timezone;
+	private string $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
+	private bool $useFormattingCodes = false;
+	private string $mainThreadName;
+	private string $timezone;
+	private ?MainLoggerThread $logWriterThread = null;
 
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $logDebug = false){
+	public function __construct(?string $logFile, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false, ?string $logArchiveDir = null){
 		parent::__construct();
-		touch($logFile);
-		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
-		$this->logStream = new \Threaded;
 
-		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
-		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
-		$this->timezone = Timezone::get();
+		$this->useFormattingCodes = $useFormattingCodes;
+		$this->mainThreadName = $mainThreadName;
+		$this->timezone = $timezone->getName();
 
-		$this->start(PTHREADS_INHERIT_NONE);
+		if($logFile !== null){
+			$this->logWriterThread = new MainLoggerThread($logFile, $logArchiveDir);
+			$this->logWriterThread->start(NativeThread::INHERIT_NONE);
+		}
 	}
 
 	/**
@@ -129,7 +109,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	}
 
 	public function debug($message, bool $force = false){
-		if(!$this->logDebug and !$force){
+		if(!$this->logDebug && !$force){
 			return;
 		}
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
@@ -146,66 +126,35 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
-		if($trace === null){
-			$trace = $e->getTrace();
-		}
-
-		$this->buffer(function() use ($e, $trace) : void{
-			$this->critical(self::printExceptionMessage($e));
-			foreach(Utils::printableTrace($trace) as $line){
-				$this->critical($line);
-			}
-			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
-				$this->critical("Previous: " . self::printExceptionMessage($prev));
-				foreach(Utils::printableTrace($prev->getTrace()) as $line){
-					$this->critical("  " . $line);
-				}
-			}
-		});
+		$this->critical(implode("\n", Utils::printableExceptionInfo($e, $trace)));
 
 		$this->syncFlushBuffer();
 	}
 
-	private static function printExceptionMessage(\Throwable $e) : string{
-		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
-
-		$errno = $e->getCode();
-		try{
-			$errno = ErrorTypeToStringMap::get($errno);
-		}catch(\InvalidArgumentException $ex){
-			//pass
-		}
-
-		$errfile = Filesystem::cleanPath($e->getFile());
-		$errline = $e->getLine();
-
-		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
-	}
-
 	public function log($level, $message){
 		switch($level){
-			case LogLevel::EMERGENCY:
+			case \LogLevel::EMERGENCY:
 				$this->emergency($message);
 				break;
-			case LogLevel::ALERT:
+			case \LogLevel::ALERT:
 				$this->alert($message);
 				break;
-			case LogLevel::CRITICAL:
+			case \LogLevel::CRITICAL:
 				$this->critical($message);
 				break;
-			case LogLevel::ERROR:
+			case \LogLevel::ERROR:
 				$this->error($message);
 				break;
-			case LogLevel::WARNING:
+			case \LogLevel::WARNING:
 				$this->warning($message);
 				break;
-			case LogLevel::NOTICE:
+			case \LogLevel::NOTICE:
 				$this->notice($message);
 				break;
-			case LogLevel::INFO:
+			case \LogLevel::INFO:
 				$this->info($message);
 				break;
-			case LogLevel::DEBUG:
+			case \LogLevel::DEBUG:
 				$this->debug($message);
 				break;
 		}
@@ -218,87 +167,56 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$this->synchronized($c);
 	}
 
-	public function shutdown() : void{
-		$this->shutdown = true;
-		$this->notify();
+	public function shutdownLogWriterThread() : void{
+		if($this->logWriterThread !== null){
+			if(NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+				$this->logWriterThread->shutdown();
+			}else{
+				throw new \LogicException("Only the creator thread can shutdown the logger thread");
+			}
+		}
 	}
 
-	/**
-	 * @param string $message
-	 * @param string $level
-	 * @param string $prefix
-	 * @param string $color
-	 */
-	protected function send($message, $level, $prefix, $color) : void{
+	protected function send(string $message, string $level, string $prefix, string $color) : void{
 		$time = new \DateTime('now', new \DateTimeZone($this->timezone));
 
-		$thread = \Thread::getCurrentThread();
+		$thread = NativeThread::getCurrentThread();
 		if($thread === null){
-			$threadName = "Server thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
+			$threadName = $this->mainThreadName . " thread";
+		}elseif($thread instanceof Thread || $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
 		}else{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
 		}
 
-		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::clean($message, false));
+		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::addBase($color, TextFormat::clean($message, false)));
 
 		if(!Terminal::isInit()){
-			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
+			Terminal::init($this->useFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
 		}
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
 			Terminal::writeLine($message);
-
-			foreach($this->attachments as $attachment){
-				$attachment->call($level, $message);
+			if($this->logWriterThread !== null){
+				$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 			}
 
-			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
+			/**
+			 * @var ThreadSafeLoggerAttachment $attachment
+			 */
+			foreach($this->attachments as $attachment){
+				$attachment->log($level, $message);
+			}
 		});
 	}
 
 	public function syncFlushBuffer() : void{
-		$this->syncFlush = true;
-		$this->synchronized(function() : void{
-			$this->notify(); //write immediately
-
-			while($this->syncFlush){
-				$this->wait(); //block until it's all been written to disk
-			}
-		});
+		$this->logWriterThread?->syncFlushBuffer();
 	}
 
-	/**
-	 * @param resource $logResource
-	 */
-	private function writeLogStream($logResource) : void{
-		while($this->logStream->count() > 0){
-			$chunk = $this->logStream->shift();
-			fwrite($logResource, $chunk);
+	public function __destruct(){
+		if($this->logWriterThread !== null && !$this->logWriterThread->isJoined() && NativeThread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+			$this->shutdownLogWriterThread();
 		}
-
-		if($this->syncFlush){
-			$this->syncFlush = false;
-			$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
-		}
-	}
-
-	public function run() : void{
-		$logResource = fopen($this->logFile, "ab");
-		if(!is_resource($logResource)){
-			throw new \RuntimeException("Couldn't open log file");
-		}
-
-		while(!$this->shutdown){
-			$this->writeLogStream($logResource);
-			$this->synchronized(function() : void{
-				$this->wait(25000);
-			});
-		}
-
-		$this->writeLogStream($logResource);
-
-		fclose($logResource);
 	}
 }

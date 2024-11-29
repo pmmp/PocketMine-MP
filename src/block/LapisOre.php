@@ -17,26 +17,22 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
 
 class LapisOre extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel()));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::LAPIS_LAZULI()->setCount(mt_rand(4, 8))
+			VanillaItems::LAPIS_LAZULI()->setCount(FortuneDropHelper::weighted($item, min: 4, maxBase: 9))
 		];
 	}
 

@@ -17,42 +17,62 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
+
 class Tripwire extends Flowable{
+	protected bool $triggered = false;
+	protected bool $suspended = false; //unclear usage, makes hitbox bigger if set
+	protected bool $connected = false;
+	protected bool $disarmed = false;
 
-	/** @var bool */
-	protected $triggered = false;
-	/** @var bool */
-	protected $suspended = false; //unclear usage, makes hitbox bigger if set
-	/** @var bool */
-	protected $connected = false;
-	/** @var bool */
-	protected $disarmed = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->bool($this->triggered);
+		$w->bool($this->suspended);
+		$w->bool($this->connected);
+		$w->bool($this->disarmed);
 	}
 
-	protected function writeStateToMeta() : int{
-		return ($this->triggered ? BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED : 0) |
-			($this->suspended ? BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED : 0) |
-			($this->connected ? BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED : 0) |
-			($this->disarmed ? BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED : 0);
+	public function isTriggered() : bool{ return $this->triggered; }
+
+	/** @return $this */
+	public function setTriggered(bool $triggered) : self{
+		$this->triggered = $triggered;
+		return $this;
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->triggered = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED) !== 0;
-		$this->suspended = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_SUSPENDED) !== 0;
-		$this->connected = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_CONNECTED) !== 0;
-		$this->disarmed = ($stateMeta & BlockLegacyMetadata::TRIPWIRE_FLAG_DISARMED) !== 0;
+	public function isSuspended() : bool{ return $this->suspended; }
+
+	/** @return $this */
+	public function setSuspended(bool $suspended) : self{
+		$this->suspended = $suspended;
+		return $this;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	public function isConnected() : bool{ return $this->connected; }
+
+	/** @return $this */
+	public function setConnected(bool $connected) : self{
+		$this->connected = $connected;
+		return $this;
+	}
+
+	public function isDisarmed() : bool{ return $this->disarmed; }
+
+	/** @return $this */
+	public function setDisarmed(bool $disarmed) : self{
+		$this->disarmed = $disarmed;
+		return $this;
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::STRING();
 	}
 }

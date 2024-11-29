@@ -17,43 +17,57 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
+use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilFallSound;
+use pocketmine\world\sound\Sound;
+use function round;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0));
+	public const UNDAMAGED = 0;
+	public const SLIGHTLY_DAMAGED = 1;
+	public const VERY_DAMAGED = 2;
+
+	private int $damage = self::UNDAMAGED;
+
+	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
+		$w->boundedIntAuto(self::UNDAMAGED, self::VERY_DAMAGED, $this->damage);
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->horizontalFacing($this->facing);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta);
-	}
+	public function getDamage() : int{ return $this->damage; }
 
-	public function getStateBitmask() : int{
-		return 0b11;
+	/** @return $this */
+	public function setDamage(int $damage) : self{
+		if($damage < self::UNDAMAGED || $damage > self::VERY_DAMAGED){
+			throw new \InvalidArgumentException("Damage must be in range " . self::UNDAMAGED . " ... " . self::VERY_DAMAGED);
+		}
+		$this->damage = $damage;
+		return $this;
 	}
 
 	/**
@@ -63,9 +77,13 @@ class Anvil extends Transparent implements Fallable{
 		return [AxisAlignedBB::one()->squash(Facing::axis(Facing::rotateY($this->facing, false)), 1 / 8)];
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
-			$player->setCurrentWindow(new AnvilInventory($this->pos));
+			$player->setCurrentWindow(new AnvilInventory($this->position));
 		}
 
 		return true;
@@ -73,12 +91,31 @@ class Anvil extends Transparent implements Fallable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Facing::rotateY($player->getHorizontalFacing(), true);
+			$this->facing = Facing::rotateY($player->getHorizontalFacing(), false);
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function tickFalling() : ?Block{
-		return null;
+	public function onHitGround(FallingBlock $blockEntity) : bool{
+		if(Utils::getRandomFloat() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
+			if($this->damage !== self::VERY_DAMAGED){
+				$this->damage = $this->damage + 1;
+			}else{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public function getFallDamagePerBlock() : float{
+		return 2.0;
+	}
+
+	public function getMaxFallDamage() : float{
+		return 40.0;
+	}
+
+	public function getLandSound() : ?Sound{
+		return new AnvilFallSound();
 	}
 }

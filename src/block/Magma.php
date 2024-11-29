@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -27,13 +27,8 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\item\ToolTier;
 
 class Magma extends Opaque{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
 
 	public function getLightLevel() : int{
 		return 3;
@@ -43,11 +38,12 @@ class Magma extends Opaque{
 		return true;
 	}
 
-	public function onEntityInside(Entity $entity) : void{
-		if($entity instanceof Living and !$entity->isSneaking()){
+	public function onEntityInside(Entity $entity) : bool{
+		if($entity instanceof Living && !$entity->isSneaking()){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 			$entity->attack($ev);
 		}
+		return true;
 	}
 
 	public function burnsForever() : bool{

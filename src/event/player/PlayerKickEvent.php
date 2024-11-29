@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,51 +25,36 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
- * Called when a player leaves the server
+ * Called when a player is kicked (forcibly disconnected) from the server, e.g. if an operator used /kick.
  */
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
+	use PlayerDisconnectEventTrait;
 
-	/** @var TranslationContainer|string */
-	protected $quitMessage;
-
-	/** @var string */
-	protected $reason;
-
-	/**
-	 * PlayerKickEvent constructor.
-	 *
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function __construct(Player $player, string $reason, $quitMessage){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $disconnectReason,
+		protected Translatable|string $quitMessage,
+		protected Translatable|string|null $disconnectScreenMessage
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->reason = $reason;
-	}
-
-	public function setReason(string $reason) : void{
-		$this->reason = $reason;
-	}
-
-	public function getReason() : string{
-		return $this->reason;
 	}
 
 	/**
-	 * @param TranslationContainer|string $quitMessage
+	 * Sets the quit message broadcasted to other players.
 	 */
-	public function setQuitMessage($quitMessage) : void{
+	public function setQuitMessage(Translatable|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
 	/**
-	 * @return TranslationContainer|string
+	 * Returns the quit message broadcasted to other players, e.g. "Steve left the game".
 	 */
-	public function getQuitMessage(){
+	public function getQuitMessage() : Translatable|string{
 		return $this->quitMessage;
 	}
 }

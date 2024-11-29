@@ -20,8 +20,9 @@ assignees: ''
 <!-- try the `version` command | LATEST IS NOT A VALID VERSION -->
 * PocketMine-MP:
 * PHP:
+* Using JIT: yes/no (delete as appropriate) <!-- look for the giant yellow warning in the log that says you're using JIT -->
 * Server OS:
-* Game version: PE/Win10 (delete as appropriate)
+* Game version: Android/iOS/Win10/Xbox/PS4/Switch (delete as appropriate)
 
 ### Plugins
 <!--- use the `plugins` command and paste the output below -->

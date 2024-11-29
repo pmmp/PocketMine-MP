@@ -17,31 +17,15 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\player;
 
-use pocketmine\utils\EnumTrait;
-
-/**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
- *
- * @method static self NEEDED()
- * @method static self REQUESTED()
- * @method static self SENT()
- */
-final class UsedChunkStatus{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("NEEDED"),
-			new self("REQUESTED"),
-			new self("SENT")
-		);
-	}
+enum UsedChunkStatus{
+	case NEEDED;
+	case REQUESTED_GENERATION;
+	case REQUESTED_SENDING;
+	case SENT;
 }

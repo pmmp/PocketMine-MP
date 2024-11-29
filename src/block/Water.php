@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -46,10 +46,15 @@ class Water extends Liquid{
 		return 5;
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function getMinAdjacentSourcesToFormSource() : ?int{
+		return 2;
+	}
+
+	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
 		if($entity->isOnFire()){
 			$entity->extinguish();
 		}
+		return true;
 	}
 }

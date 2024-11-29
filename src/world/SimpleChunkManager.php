@@ -17,64 +17,48 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\utils\SubChunkIteratorManager;
 
 class SimpleChunkManager implements ChunkManager{
 
 	/** @var Chunk[] */
-	protected $chunks = [];
+	protected array $chunks = [];
 
-	/** @var int */
-	protected $worldHeight;
-
-	/** @var SubChunkIteratorManager */
-	protected $terrainPointer;
-
-	/**
-	 * SimpleChunkManager constructor.
-	 */
-	public function __construct(int $worldHeight = World::Y_MAX){
-		$this->worldHeight = $worldHeight;
-		$this->terrainPointer = new SubChunkIteratorManager($this);
-	}
+	public function __construct(
+		private int $minY,
+		private int $maxY
+	){}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			return BlockFactory::getInstance()->fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
+		if($this->isInWorld($x, $y, $z) && ($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
+			return RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 		}
 		return VanillaBlocks::AIR();
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, true)){
-			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
-			$this->terrainPointer->currentChunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
+			$chunk->setBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK, $block->getStateId());
 		}else{
 			throw new \InvalidArgumentException("Cannot set block at coordinates x=$x,y=$y,z=$z, terrain is not loaded or out of bounds");
 		}
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		return $this->chunks[$hash] ?? ($create ? $this->chunks[$hash] = new Chunk($chunkX, $chunkZ) : null);
+	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		return $this->chunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
-	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void{
-		if($chunk === null){
-			unset($this->chunks[World::chunkHash($chunkX, $chunkZ)]);
-			return;
-		}
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$this->chunks[World::chunkHash($chunkX, $chunkZ)] = $chunk;
 	}
 
@@ -82,15 +66,19 @@ class SimpleChunkManager implements ChunkManager{
 		$this->chunks = [];
 	}
 
-	public function getWorldHeight() : int{
-		return $this->worldHeight;
+	public function getMinY() : int{
+		return $this->minY;
+	}
+
+	public function getMaxY() : int{
+		return $this->maxY;
 	}
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
-			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
-			$y < $this->worldHeight and $y >= 0 and
-			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
+			$x <= Limits::INT32_MAX && $x >= Limits::INT32_MIN &&
+			$y < $this->maxY && $y >= $this->minY &&
+			$z <= Limits::INT32_MAX && $z >= Limits::INT32_MIN
 		);
 	}
 }

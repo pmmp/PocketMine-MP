@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,7 +29,9 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use function array_keys;
+use function array_values;
 use function assert;
 use function count;
 use function get_class;
@@ -54,22 +56,27 @@ use function spl_object_id;
  * @see InventoryAction
  */
 class InventoryTransaction{
-	/** @var bool */
-	protected $hasExecuted = false;
-	/** @var Player */
-	protected $source;
+	protected bool $hasExecuted = false;
 
-	/** @var Inventory[] */
-	protected $inventories = [];
+	/**
+	 * @var Inventory[]
+	 * @phpstan-var array<int, Inventory>
+	 */
+	protected array $inventories = [];
 
-	/** @var InventoryAction[] */
-	protected $actions = [];
+	/**
+	 * @var InventoryAction[]
+	 * @phpstan-var array<int, InventoryAction>
+	 */
+	protected array $actions = [];
 
 	/**
 	 * @param InventoryAction[] $actions
 	 */
-	public function __construct(Player $source, array $actions = []){
-		$this->source = $source;
+	public function __construct(
+		protected Player $source,
+		array $actions = []
+	){
 		foreach($actions as $action){
 			$this->addAction($action);
 		}
@@ -81,6 +88,7 @@ class InventoryTransaction{
 
 	/**
 	 * @return Inventory[]
+	 * @phpstan-return array<int, Inventory>
 	 */
 	public function getInventories() : array{
 		return $this->inventories;
@@ -93,6 +101,7 @@ class InventoryTransaction{
 	 * significance and should not be relied on.
 	 *
 	 * @return InventoryAction[]
+	 * @phpstan-return array<int, InventoryAction>
 	 */
 	public function getActions() : array{
 		return $this->actions;
@@ -102,6 +111,9 @@ class InventoryTransaction{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
+			if($action instanceof SlotChangeAction && !isset($this->inventories[$inventoryId = spl_object_id($action->getInventory())])){
+				$this->inventories[$inventoryId] = $action->getInventory();
+			}
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
@@ -121,18 +133,10 @@ class InventoryTransaction{
 	}
 
 	/**
-	 * @internal This method should not be used by plugins, it's used to add tracked inventories for InventoryActions
-	 * involving inventories.
-	 */
-	public function addInventory(Inventory $inventory) : void{
-		if(!isset($this->inventories[$hash = spl_object_id($inventory)])){
-			$this->inventories[$hash] = $inventory;
-		}
-	}
-
-	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
+	 * @phpstan-param-out list<Item> $needItems
+	 * @phpstan-param-out list<Item> $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
@@ -147,7 +151,7 @@ class InventoryTransaction{
 			try{
 				$action->validate($this->source);
 			}catch(TransactionValidationException $e){
-				throw new TransactionValidationException(get_class($action) . ": " . $e->getMessage(), 0, $e);
+				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
 			if(!$action->getSourceItem()->isNull()){
@@ -157,7 +161,7 @@ class InventoryTransaction{
 
 		foreach($needItems as $i => $needItem){
 			foreach($haveItems as $j => $haveItem){
-				if($needItem->equals($haveItem)){
+				if($needItem->canStackWith($haveItem)){
 					$amount = min($needItem->getCount(), $haveItem->getCount());
 					$needItem->setCount($needItem->getCount() - $amount);
 					$haveItem->setCount($haveItem->getCount() - $amount);
@@ -171,6 +175,8 @@ class InventoryTransaction{
 				}
 			}
 		}
+		$needItems = array_values($needItems);
+		$haveItems = array_values($haveItems);
 	}
 
 	/**
@@ -184,11 +190,8 @@ class InventoryTransaction{
 	 * wrong order), so this method also tries to chain them into order.
 	 */
 	protected function squashDuplicateSlotChanges() : void{
-		/** @var SlotChangeAction[][] $slotChanges */
 		$slotChanges = [];
-		/** @var Inventory[] $inventories */
 		$inventories = [];
-		/** @var int[] $slots */
 		$slots = [];
 
 		foreach($this->actions as $key => $action){
@@ -199,7 +202,7 @@ class InventoryTransaction{
 			}
 		}
 
-		foreach($slotChanges as $hash => $list){
+		foreach(Utils::stringifyKeys($slotChanges) as $hash => $list){
 			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
 				continue;
 			}
@@ -229,25 +232,39 @@ class InventoryTransaction{
 
 	/**
 	 * @param SlotChangeAction[] $possibleActions
+	 * @phpstan-param list<SlotChangeAction> $possibleActions
 	 */
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
 		assert(count($possibleActions) > 0);
 
+		$candidate = null;
+		$newList = $possibleActions;
 		foreach($possibleActions as $i => $action){
 			if($action->getSourceItem()->equalsExact($needOrigin)){
-				$newList = $possibleActions;
+				if($candidate !== null){
+					/*
+					 * we found multiple possible actions that match the origin action
+					 * this means that there are multiple ways that this chain could play out
+					 * if we cared so much about this, we could build all the possible chains in parallel and see which
+					 * variation managed to complete the chain, but this has an extremely high complexity which is not
+					 * worth the trouble for this scenario (we don't usually expect to see chains longer than a couple
+					 * of actions in here anyway), and might still result in multiple possible results.
+					 */
+					return null;
+				}
+				$candidate = $action;
 				unset($newList[$i]);
-				if(count($newList) === 0){
-					return $action->getTargetItem();
-				}
-				$result = $this->findResultItem($action->getTargetItem(), $newList);
-				if($result !== null){
-					return $result;
-				}
 			}
 		}
+		if($candidate === null){
+			//chaining is not possible with this origin, none of the actions are valid
+			return null;
+		}
 
-		return null;
+		if(count($newList) === 0){
+			return $candidate->getTargetItem();
+		}
+		return $this->findResultItem($candidate->getTargetItem(), $newList);
 	}
 
 	/**

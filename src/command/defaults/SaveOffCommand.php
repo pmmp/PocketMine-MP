@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,27 +25,23 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOffCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(){
 		parent::__construct(
-			$name,
-			"%pocketmine.command.saveoff.description",
-			"%commands.save-off.usage"
+			"save-off",
+			KnownTranslationFactory::pocketmine_command_saveoff_description()
 		);
-		$this->setPermission("pocketmine.command.save.disable");
+		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$sender->getServer()->getWorldManager()->setAutoSave(false);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.save.disabled"));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_disabled());
 
 		return true;
 	}

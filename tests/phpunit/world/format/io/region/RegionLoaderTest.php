@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,6 +25,9 @@ namespace pocketmine\world\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\world\format\ChunkException;
+use Symfony\Component\Filesystem\Path;
+use function bin2hex;
+use function clearstatcache;
 use function file_exists;
 use function random_bytes;
 use function str_repeat;
@@ -39,12 +42,11 @@ class RegionLoaderTest extends TestCase{
 	private $region;
 
 	public function setUp() : void{
-		$this->regionPath = sys_get_temp_dir() . '/test.testregion';
+		$this->regionPath = Path::join(sys_get_temp_dir(), 'test.testregion');
 		if(file_exists($this->regionPath)){
 			unlink($this->regionPath);
 		}
-		$this->region = new RegionLoader($this->regionPath);
-		$this->region->open();
+		$this->region = RegionLoader::createNew($this->regionPath);
 	}
 
 	public function tearDown() : void{
@@ -64,8 +66,7 @@ class RegionLoaderTest extends TestCase{
 		$this->region->writeChunk(0, 0, $data);
 		$this->region->close();
 
-		$r = new RegionLoader($this->regionPath);
-		$r->open();
+		$r = RegionLoader::loadExisting($this->regionPath);
 		self::assertSame($data, $r->readChunk(0, 0));
 	}
 
@@ -73,7 +74,7 @@ class RegionLoaderTest extends TestCase{
 	 * @return \Generator|int[][]
 	 * @phpstan-return \Generator<int, array{int,int}, void, void>
 	 */
-	public function outOfBoundsCoordsProvider() : \Generator{
+	public static function outOfBoundsCoordsProvider() : \Generator{
 		yield [-1, -1];
 		yield [32, 32];
 		yield [-1, 32];
@@ -82,8 +83,6 @@ class RegionLoaderTest extends TestCase{
 
 	/**
 	 * @dataProvider outOfBoundsCoordsProvider
-	 * @param int $x
-	 * @param int $z
 	 *
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
@@ -110,14 +109,40 @@ class RegionLoaderTest extends TestCase{
 	/**
 	 * @dataProvider outOfBoundsCoordsProvider
 	 *
-	 * @param int $x
-	 * @param int $z
-	 *
 	 * @throws \InvalidArgumentException
 	 * @throws \pocketmine\world\format\io\exception\CorruptedChunkException
 	 */
 	public function testReadChunkOutOfBounds(int $x, int $z) : void{
 		$this->expectException(\InvalidArgumentException::class);
 		$this->region->readChunk($x, $z);
+	}
+
+	/**
+	 * Test that cached filesize() values don't break validation of region headers
+	 */
+	public function testRegionHeaderCachedFilesizeRegression() : void{
+		$this->region->close();
+		$region = RegionLoader::loadExisting($this->regionPath); //now we have a region, so the header will be verified, triggering two filesize() calls
+		$data = str_repeat("hello", 2000);
+		$region->writeChunk(0, 0, $data); //add some data to the end of the file, to make the cached filesize invalid
+		$region->close();
+		$region = RegionLoader::loadExisting($this->regionPath);
+		self::assertSame($data, $region->readChunk(0, 0));
+	}
+
+	public function testCreateNewWithExistingRegion() : void{
+		$this->region->close();
+		$this->expectException(\RuntimeException::class);
+		RegionLoader::createNew($this->regionPath);
+	}
+
+	public function testLoadExistingWithMissingFile() : void{
+		clearstatcache();
+
+		do{
+			$randfile = Path::join(sys_get_temp_dir(), bin2hex(random_bytes(6)) . ".mca");
+		}while(file_exists($randfile));
+		$this->expectException(\RuntimeException::class);
+		RegionLoader::loadExisting($randfile);
 	}
 }

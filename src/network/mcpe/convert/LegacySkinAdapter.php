@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,14 +25,15 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Skin;
-use pocketmine\network\mcpe\protocol\types\SkinData;
-use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\skin\SkinData;
+use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
 use function random_bytes;
 use function str_repeat;
+use const JSON_THROW_ON_ERROR;
 
 class LegacySkinAdapter implements SkinAdapter{
 
@@ -45,7 +46,8 @@ class LegacySkinAdapter implements SkinAdapter{
 		}
 		return new SkinData(
 			$skin->getSkinId(),
-			json_encode(["geometry" => ["default" => $geometryName]]),
+			"", //TODO: playfab ID
+			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,
 			$skin->getGeometryData()
@@ -54,7 +56,7 @@ class LegacySkinAdapter implements SkinAdapter{
 
 	public function fromSkinData(SkinData $data) : Skin{
 		if($data->isPersona()){
-			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
 
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();

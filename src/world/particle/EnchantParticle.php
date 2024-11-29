@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -29,15 +29,9 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class EnchantParticle implements Particle{
+	public function __construct(private Color $color){}
 
-	/** @var Color */
-	private $color;
-
-	public function __construct(Color $color){
-		$this->color = $color;
-	}
-
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL, $this->color->toARGB(), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL, $this->color->toARGB(), $pos)];
 	}
 }

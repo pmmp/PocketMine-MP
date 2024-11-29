@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -25,20 +25,16 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Human;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class TotemUseAnimation implements Animation{
 
-	/** @var Human */
-	private $human;
-
-	public function __construct(Human $human){
-		//TODO: check if this can be expanded to more than just humans
-		$this->human = $human;
-	}
+	//TODO: check if this can be expanded to more than just humans
+	public function __construct(private Human $human){}
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->human->getId(), ActorEventPacket::CONSUME_TOTEM, 0)
+			ActorEventPacket::create($this->human->getId(), ActorEvent::CONSUME_TOTEM, 0)
 		];
 	}
 }

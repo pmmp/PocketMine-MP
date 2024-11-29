@@ -1,0 +1,91 @@
+name: Update update.pmmp.io API info
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency: update-updater-api # only one job can run at a time, to avoid git conflicts when updating the repository
+
+    steps:
+      - name: Install jq
+        run: sudo apt update && sudo apt install jq -y
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/update.pmmp.io
+          ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
+
+      - name: Get actual tag name
+        id: tag-name
+        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
+
+      - name: Download new release information
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
+
+      - name: Detect channels
+        id: channel
+        run: |
+          CHANNEL=$(jq -r '.channel' new_build_info.json)
+          VERSION=${{ steps.tag-name.outputs.TAG_NAME }}
+          echo CHANNEL=$CHANNEL >> $GITHUB_OUTPUT
+          if [ "$CHANNEL" == "stable" ]; then
+            echo MAJOR=$(echo $VERSION | cut -d. -f1) >> $GITHUB_OUTPUT
+            echo MINOR=$(echo $VERSION | cut -d. -f1-2) >> $GITHUB_OUTPUT
+          else
+            echo MAJOR=$(echo $VERSION | cut -d. -f1)-$CHANNEL >> $GITHUB_OUTPUT
+            echo MINOR=$(echo $VERSION | cut -d. -f1-2)-$CHANNEL >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update channel info
+        run: |
+          function version_id() {
+            major=$(echo $1 | cut -d. -f1)
+            minor=$(echo $1 | cut -d. -f2)
+            patch=$(echo $1 | cut -d. -f3)
+            echo $(((major * 1000000) + (minor * 1000) + patch))
+          }
+
+          function update_channel() {
+            local target_file_name="$1"
+            local new_file_name="$2"
+
+            local old_version_id
+            local new_version_id
+
+            if [ ! -f "$target_file_name" ]; then
+              echo "Creating channel file: $target_file_name"
+              cp "$new_file_name" "$target_file_name"
+            else
+              old_version_id=$(version_id "$(jq -r '.base_version' "$target_file_name")")
+              new_version_id=$(version_id "$(jq -r '.base_version' "$new_file_name")")
+
+              echo "Old version ID: $old_version_id"
+              echo "New version ID: $new_version_id"
+
+              if [ $new_version_id -ge $old_version_id ]; then #suffixed versions will have the same version ID - assume they'll always be newer
+                echo "Updating channel file: $target_file_name ($old_version_id -> $new_version_id)"
+                cp "$new_file_name" "$target_file_name"
+              else
+                echo "Version $new_version_id is less than $old_version_id, not updating channel file: $target_file_name"
+              fi
+            fi
+          }
+
+          update_channel "channels/${{ steps.channel.outputs.CHANNEL }}.json" "new_build_info.json"
+          update_channel "channels/${{ steps.channel.outputs.MAJOR }}.json" "new_build_info.json"
+          update_channel "channels/${{ steps.channel.outputs.MINOR }}.json" "new_build_info.json"
+          rm new_build_info.json
+
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git diff-index --quiet HEAD || git commit -m "New ${{ steps.channel.outputs.CHANNEL }} release: ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }}"
+
+      - name: Push changes
+        run: git push

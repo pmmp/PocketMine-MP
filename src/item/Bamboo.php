@@ -17,7 +17,7 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
@@ -32,7 +32,7 @@ final class Bamboo extends Item{
 		return 50;
 	}
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::BAMBOO_SAPLING();
 	}
 }

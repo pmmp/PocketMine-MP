@@ -17,21 +17,18 @@
  * @link http://www.pocketmine.net/
  *
  *
-*/
+ */
 
 declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use function mt_rand;
+use function min;
 
 class Glowstone extends Transparent{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3, BlockToolType::PICKAXE));
-	}
 
 	public function getLightLevel() : int{
 		return 15;
@@ -39,7 +36,7 @@ class Glowstone extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::GLOWSTONE_DUST()->setCount(mt_rand(2, 4))
+			VanillaItems::GLOWSTONE_DUST()->setCount(min(4, FortuneDropHelper::discrete($item, 2, 4)))
 		];
 	}
 
