@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use pocketmine\utils\Utils;
+
 final class Translatable{
 	/** @var string[]|Translatable[] $params */
 	protected array $params = [];
@@ -34,7 +36,7 @@ final class Translatable{
 		protected string $text,
 		array $params = []
 	){
-		foreach($params as $k => $param){
+		foreach(Utils::promoteKeys($params) as $k => $param){
 			if(!($param instanceof Translatable)){
 				$this->params[$k] = (string) $param;
 			}else{

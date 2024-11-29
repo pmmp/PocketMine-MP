@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -41,7 +42,7 @@ final class ItemTypeDictionaryFromDataHelper{
 		}
 
 		$params = [];
-		foreach($table as $name => $entry){
+		foreach(Utils::promoteKeys($table) as $name => $entry){
 			if(!is_array($entry) || !is_string($name) || !isset($entry["component_based"], $entry["runtime_id"]) || !is_bool($entry["component_based"]) || !is_int($entry["runtime_id"])){
 				throw new AssumptionFailedError("Invalid item list format");
 			}

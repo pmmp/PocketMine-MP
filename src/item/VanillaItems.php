@@ -158,6 +158,7 @@ use function strtolower;
  * @method static EnchantedBook ENCHANTED_BOOK()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
  * @method static EnderPearl ENDER_PEARL()
+ * @method static EndCrystal END_CRYSTAL()
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
  * @method static Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item FEATHER()
@@ -191,6 +192,7 @@ use function strtolower;
  * @method static Item HONEYCOMB()
  * @method static HoneyBottle HONEY_BOTTLE()
  * @method static Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE()
+ * @method static IceBomb ICE_BOMB()
  * @method static Item INK_SAC()
  * @method static Axe IRON_AXE()
  * @method static Armor IRON_BOOTS()
@@ -479,6 +481,7 @@ final class VanillaItems{
 		self::register("emerald", fn(IID $id) => new Item($id, "Emerald"));
 		self::register("enchanted_book", fn(IID $id) => new EnchantedBook($id, "Enchanted Book", [EnchantmentTags::ALL]));
 		self::register("enchanted_golden_apple", fn(IID $id) => new GoldenAppleEnchanted($id, "Enchanted Golden Apple"));
+		self::register("end_crystal", fn(IID $id) => new EndCrystal($id, "End Crystal"));
 		self::register("ender_pearl", fn(IID $id) => new EnderPearl($id, "Ender Pearl"));
 		self::register("experience_bottle", fn(IID $id) => new ExperienceBottle($id, "Bottle o' Enchanting"));
 		self::register("feather", fn(IID $id) => new Item($id, "Feather"));
@@ -502,6 +505,7 @@ final class VanillaItems{
 		self::register("heart_of_the_sea", fn(IID $id) => new Item($id, "Heart of the Sea"));
 		self::register("honey_bottle", fn(IID $id) => new HoneyBottle($id, "Honey Bottle"));
 		self::register("honeycomb", fn(IID $id) => new Item($id, "Honeycomb"));
+		self::register("ice_bomb", fn(IID $id) => new IceBomb($id, "Ice Bomb"));
 		self::register("ink_sac", fn(IID $id) => new Item($id, "Ink Sac"));
 		self::register("iron_ingot", fn(IID $id) => new Item($id, "Iron Ingot"));
 		self::register("iron_nugget", fn(IID $id) => new Item($id, "Iron Nugget"));

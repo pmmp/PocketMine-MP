@@ -28,15 +28,24 @@ use pocketmine\utils\Utils;
 use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
-	/** @var RecipeIngredient[] */
+	/**
+	 * @var RecipeIngredient[]
+	 * @phpstan-var list<RecipeIngredient>
+	 */
 	private array $ingredients = [];
-	/** @var Item[] */
+	/**
+	 * @var Item[]
+	 * @phpstan-var list<Item>
+	 */
 	private array $results;
 	private ShapelessRecipeType $type;
 
 	/**
 	 * @param RecipeIngredient[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
 	 * @param Item[]             $results     List of result items created by this recipe.
+	 *
+	 * @phpstan-param list<RecipeIngredient> $ingredients
+	 * @phpstan-param list<Item>             $results
 	 */
 	public function __construct(array $ingredients, array $results, ShapelessRecipeType $type){
 		$this->type = $type;
@@ -50,6 +59,7 @@ class ShapelessRecipe implements CraftingRecipe{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return list<Item>
 	 */
 	public function getResults() : array{
 		return Utils::cloneObjectArray($this->results);
@@ -63,9 +73,6 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $this->type;
 	}
 
-	/**
-	 * @return RecipeIngredient[]
-	 */
 	public function getIngredientList() : array{
 		return $this->ingredients;
 	}

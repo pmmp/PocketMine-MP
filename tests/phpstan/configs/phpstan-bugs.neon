@@ -110,3 +110,8 @@ parameters:
 			count: 2
 			path: ../../phpunit/promise/PromiseTest.php
 
+		-
+			message: "#^Strict comparison using \\=\\=\\= between 0 and 0 will always evaluate to true\\.$#"
+			count: 1
+			path: ../rules/UnsafeForeachArrayOfStringRule.php
+

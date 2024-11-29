@@ -1330,6 +1330,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("enchanted_book", fn() => Items::ENCHANTED_BOOK());
 		$result->register("enchanted_golden_apple", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("enchanting_bottle", fn() => Items::EXPERIENCE_BOTTLE());
+		$result->register("end_crystal", fn() => Items::END_CRYSTAL());
 		$result->register("ender_pearl", fn() => Items::ENDER_PEARL());
 		$result->register("experience_bottle", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("eye_armor_trim_smithing_template", fn() => Items::EYE_ARMOR_TRIM_SMITHING_TEMPLATE());
@@ -1377,6 +1378,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
 		$result->register("host_armor_trim_smithing_template", fn() => Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("honeycomb", fn() => Items::HONEYCOMB());
+		$result->register("ice_bomb", fn() => Items::ICE_BOMB());
 		$result->register("ink_sac", fn() => Items::INK_SAC());
 		$result->register("iron_axe", fn() => Items::IRON_AXE());
 		$result->register("iron_boots", fn() => Items::IRON_BOOTS());

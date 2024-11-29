@@ -70,7 +70,6 @@ final class ApiVersion{
 	 * @return string[]
 	 */
 	public static function checkAmbiguousVersions(array $versions) : array{
-		/** @var VersionString[][] $indexedVersions */
 		$indexedVersions = [];
 
 		foreach($versions as $str){
@@ -85,9 +84,8 @@ final class ApiVersion{
 			}
 		}
 
-		/** @var VersionString[] $result */
 		$result = [];
-		foreach($indexedVersions as $major => $list){
+		foreach($indexedVersions as $list){
 			if(count($list) > 1){
 				array_push($result, ...$list);
 			}

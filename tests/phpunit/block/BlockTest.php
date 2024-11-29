@@ -135,7 +135,7 @@ class BlockTest extends TestCase{
 		}
 
 		$errors = [];
-		foreach($expected as $typeName => $numStates){
+		foreach(Utils::promoteKeys($expected) as $typeName => $numStates){
 			if(!is_string($typeName) || !is_int($numStates)){
 				throw new AssumptionFailedError("Old table should be array<string, int>");
 			}

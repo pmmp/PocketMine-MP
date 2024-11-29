@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use function mt_rand;
@@ -64,5 +65,9 @@ class Zombie extends Living{
 	public function getXpDropAmount() : int{
 		//TODO: check for equipment and whether it's a baby
 		return 5;
+	}
+
+	public function getPickedItem() : ?Item{
+		return VanillaItems::ZOMBIE_SPAWN_EGG();
 	}
 }

@@ -198,12 +198,12 @@ class ParserPacketHandler extends PacketHandler{
 		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
 		ksort($result, SORT_STRING);
 
-		foreach($result as $property => $value){
+		foreach(Utils::promoteKeys($result) as $property => $value){
 			if(is_object($value)){
 				$result[$property] = self::objectToOrderedArray($value);
 			}elseif(is_array($value)){
 				$array = [];
-				foreach($value as $k => $v){
+				foreach(Utils::promoteKeys($value) as $k => $v){
 					if(is_object($v)){
 						$array[$k] = self::objectToOrderedArray($v);
 					}else{
@@ -224,7 +224,7 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		if(is_array($object)){
 			$result = [];
-			foreach($object as $k => $v){
+			foreach(Utils::promoteKeys($object) as $k => $v){
 				$result[$k] = self::sort($v);
 			}
 			return $result;
@@ -247,7 +247,7 @@ class ParserPacketHandler extends PacketHandler{
 		ksort($table, SORT_STRING);
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
 
-		foreach($packet->levelSettings->experiments->getExperiments() as $name => $experiment){
+		foreach(Utils::promoteKeys($packet->levelSettings->experiments->getExperiments()) as $name => $experiment){
 			echo "Experiment \"$name\" is " . ($experiment ? "" : "not ") . "active\n";
 		}
 		return true;
@@ -317,8 +317,8 @@ class ParserPacketHandler extends PacketHandler{
 		$char = ord("A");
 
 		$outputsByKey = [];
-		foreach($entry->getInput() as $x => $row){
-			foreach($row as $y => $ingredient){
+		foreach(Utils::promoteKeys($entry->getInput()) as $x => $row){
+			foreach(Utils::promoteKeys($row) as $y => $ingredient){
 				if($ingredient->getDescriptor() === null){
 					$shape[$x][$y] = " ";
 				}else{
@@ -337,7 +337,7 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		$unlockingIngredients = $entry->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapedRecipeData(
-			array_map(fn(array $array) => implode('', $array), $shape),
+			array_map(fn(array $array) => implode('', array_values($array)), array_values($shape)),
 			$outputsByKey,
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $entry->getOutput()),
 			$entry->getBlockName(),

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\Utils;
 use function fclose;
 use function fgets;
 use function fopen;
@@ -32,7 +33,10 @@ use function strtolower;
 use function trim;
 
 class BanList{
-	/** @var BanEntry[] */
+	/**
+	 * @var BanEntry[]
+	 * @phpstan-var array<string, BanEntry>
+	 */
 	private array $list = [];
 
 	private bool $enabled = true;
@@ -101,7 +105,7 @@ class BanList{
 	}
 
 	public function removeExpired() : void{
-		foreach($this->list as $name => $entry){
+		foreach(Utils::promoteKeys($this->list) as $name => $entry){
 			if($entry->hasExpired()){
 				unset($this->list[$name]);
 			}

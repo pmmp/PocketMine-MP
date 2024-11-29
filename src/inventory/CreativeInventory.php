@@ -36,7 +36,10 @@ final class CreativeInventory{
 	use SingletonTrait;
 	use DestructorCallbackTrait;
 
-	/** @var Item[] */
+	/**
+	 * @var Item[]
+	 * @phpstan-var array<int, Item>
+	 */
 	private array $creative = [];
 
 	/** @phpstan-var ObjectSet<\Closure() : void> */
@@ -69,6 +72,7 @@ final class CreativeInventory{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return array<int, Item>
 	 */
 	public function getAll() : array{
 		return Utils::cloneObjectArray($this->creative);

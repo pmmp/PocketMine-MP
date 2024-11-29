@@ -25,7 +25,6 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\SlotValidatedInventory;
-use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -83,13 +82,6 @@ class SlotChangeAction extends InventoryAction{
 				}
 			}
 		}
-	}
-
-	/**
-	 * Adds this action's target inventory to the transaction's inventory list.
-	 */
-	public function onAddToTransaction(InventoryTransaction $transaction) : void{
-		$transaction->addInventory($this->inventory);
 	}
 
 	/**

@@ -58,6 +58,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
@@ -69,7 +70,6 @@ use function ceil;
 use function count;
 use function floor;
 use function ksort;
-use function lcg_value;
 use function max;
 use function min;
 use function mt_getrandmax;
@@ -490,7 +490,7 @@ abstract class Living extends Entity{
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
-					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + Utils::getRandomFloat() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}
@@ -697,7 +697,7 @@ abstract class Living extends Entity{
 			$this->setBreathing(false);
 
 			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 ||
-				lcg_value() <= (1 / ($respirationLevel + 1))
+				Utils::getRandomFloat() <= (1 / ($respirationLevel + 1))
 			){
 				$ticks -= $tickDiff;
 				if($ticks <= -20){

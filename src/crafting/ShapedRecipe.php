@@ -32,11 +32,20 @@ use function str_contains;
 use function strlen;
 
 class ShapedRecipe implements CraftingRecipe{
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $shape = [];
-	/** @var RecipeIngredient[] char => RecipeIngredient map */
+	/**
+	 * @var RecipeIngredient[] char => RecipeIngredient map
+	 * @phpstan-var array<string, RecipeIngredient>
+	 */
 	private array $ingredientList = [];
-	/** @var Item[] */
+	/**
+	 * @var Item[]
+	 * @phpstan-var list<Item>
+	 */
 	private array $results = [];
 
 	private int $height;
@@ -56,6 +65,10 @@ class ShapedRecipe implements CraftingRecipe{
 	 * @param Item[]             $results     List of items that this recipe produces when crafted.
 	 *
 	 * Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
+	 *
+	 * @phpstan-param list<string> $shape
+	 * @phpstan-param array<string, RecipeIngredient> $ingredients
+	 * @phpstan-param list<Item> $results
 	 */
 	public function __construct(array $shape, array $ingredients, array $results){
 		$this->height = count($shape);
@@ -84,7 +97,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 		$this->shape = $shape;
 
-		foreach($ingredients as $char => $i){
+		foreach(Utils::stringifyKeys($ingredients) as $char => $i){
 			if(!str_contains(implode($this->shape), $char)){
 				throw new \InvalidArgumentException("Symbol '$char' does not appear in the recipe shape");
 			}
@@ -105,6 +118,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return list<Item>
 	 */
 	public function getResults() : array{
 		return Utils::cloneObjectArray($this->results);
@@ -112,6 +126,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 	/**
 	 * @return Item[]
+	 * @phpstan-return list<Item>
 	 */
 	public function getResultsFor(CraftingGrid $grid) : array{
 		return $this->getResults();
@@ -119,6 +134,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 	/**
 	 * @return (RecipeIngredient|null)[][]
+	 * @phpstan-return list<list<RecipeIngredient|null>>
 	 */
 	public function getIngredientMap() : array{
 		$ingredients = [];
@@ -132,9 +148,6 @@ class ShapedRecipe implements CraftingRecipe{
 		return $ingredients;
 	}
 
-	/**
-	 * @return RecipeIngredient[]
-	 */
 	public function getIngredientList() : array{
 		$ingredients = [];
 
@@ -157,6 +170,7 @@ class ShapedRecipe implements CraftingRecipe{
 	/**
 	 * Returns an array of strings containing characters representing the recipe's shape.
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getShape() : array{
 		return $this->shape;
