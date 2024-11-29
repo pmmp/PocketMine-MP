@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
-use function assert;
-use function get_class;
-
 /**
  * This trait provides a basic boolean-setter-style implementation for `Cancellable` to reduce boilerplate.
  * The precise meaning of `setCancelled` is subject to definition by the class using this trait.
