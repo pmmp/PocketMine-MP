@@ -21,17 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\data\bedrock;
 
-class ArmorTrimPattern{
-
-	private Item $item;
-
-	public function __construct(Item $item){
-		$this->item = clone $item;
-	}
-
-	public function getItem() : Item{
-		return clone $this->item;
-	}
+final class ArmorTrimMaterialTypeIds{
+	public const AMETHYST = "amethyst";
+	public const COPPER = "copper";
+	public const DIAMOND = "diamond";
+	public const EMERALD = "emerald";
+	public const GOLD = "gold";
+	public const IRON = "iron";
+	public const LAPIS = "lapis";
+	public const NETHERITE = "netherite";
+	public const QUARTZ = "quartz";
+	public const REDSTONE = "redstone";
 }

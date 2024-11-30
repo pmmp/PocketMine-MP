@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\data\bedrock\ArmorTrimMaterialTypeIdMap;
+use pocketmine\data\bedrock\ArmorTrimPatternTypeIdMap;
 use pocketmine\item\ArmorTrimMaterial;
 use pocketmine\item\ArmorTrimPattern;
-use pocketmine\item\ArmorTrimRegistry;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
@@ -51,6 +52,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\VersionInfo;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Ramsey\Uuid\Uuid;
 use function array_map;
 use function sprintf;
@@ -152,9 +154,15 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->inventoryManager->syncCreative();
 
 			$this->session->getLogger()->debug("Sending armor trim data");
-			$patterns = array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($pattern->getItemName(), $pattern->getIdentifier()), ArmorTrimRegistry::getInstance()->getPatterns());
-			$materials = array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($material->getIdentifier(), $material->getColor(), $material->getItemName()), ArmorTrimRegistry::getInstance()->getMaterials());
-			$this->session->sendDataPacket(TrimDataPacket::create($patterns, $materials));
+
+			$serializer = GlobalItemDataHandlers::getSerializer();
+			$patternMap = ArmorTrimPatternTypeIdMap::getInstance();
+			$materialMap = ArmorTrimMaterialTypeIdMap::getInstance();
+
+			$this->session->sendDataPacket(TrimDataPacket::create(
+				array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($serializer->serializeType($pattern->getItem())->getName(), $patternMap->toId($pattern)), $patternMap->getAllPatterns()),
+				array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($materialMap->toId($material), $material->getColor(), $serializer->serializeType($material->getItem())->getName()), $materialMap->getAllMaterials()))
+			);
 
 			$this->session->getLogger()->debug("Sending crafting data");
 			$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));

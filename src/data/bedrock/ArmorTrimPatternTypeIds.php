@@ -21,17 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\data\bedrock;
 
-class ArmorTrimPattern{
-
-	private Item $item;
-
-	public function __construct(Item $item){
-		$this->item = clone $item;
-	}
-
-	public function getItem() : Item{
-		return clone $this->item;
-	}
+final class ArmorTrimPatternTypeIds{
+	public const COAST = "coast";
+	public const DUNE = "dune";
+	public const EYE = "eye";
+	public const HOST = "host";
+	public const RAISER = "raiser";
+	public const RIB = "rib";
+	public const SENTRY = "sentry";
+	public const SHAPER = "shaper";
+	public const SILENCE = "silence";
+	public const SNOUT = "snout";
+	public const SPIRE = "spire";
+	public const TIDE = "tide";
+	public const VEX = "vex";
+	public const WARD = "ward";
+	public const WAYFINDER = "wayfinder";
+	public const WILD = "wild";
 }

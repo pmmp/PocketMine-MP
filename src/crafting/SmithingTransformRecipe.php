@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use pocketmine\item\Armor;
 use pocketmine\item\Item;
-use pocketmine\item\TieredTool;
 
 class SmithingTransformRecipe implements SmithingRecipe{
 
@@ -59,15 +57,11 @@ class SmithingTransformRecipe implements SmithingRecipe{
 	 * @phpstan-param list<Item> $inputs
 	 */
 	public function getResultFor(array $inputs) : ?Item{
-		$input = null;
 		foreach($inputs as $item){
-			if ($item instanceof Armor || $item instanceof TieredTool){
-				$input = $item;
+			if($this->input->accepts($item)){
+				return $this->getResult()->setNamedTag($item->getNamedTag());
 			}
 		}
-		if($input === null){
-			return null;
-		}
-		return $this->getResult()->setNamedTag($input->getNamedTag());
+		return null;
 	}
 }

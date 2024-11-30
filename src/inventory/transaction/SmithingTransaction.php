@@ -32,7 +32,7 @@ class SmithingTransaction extends InventoryTransaction{
 
 	public function __construct(
 		Player $source,
-		private readonly SmithingRecipe $recipe,
+		private SmithingRecipe $recipe,
 		array $actions = []
 	){
 		parent::__construct($source, $actions);

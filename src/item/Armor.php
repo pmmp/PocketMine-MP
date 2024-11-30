@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\color\Color;
+use pocketmine\data\bedrock\ArmorTrimMaterialTypeIdMap;
+use pocketmine\data\bedrock\ArmorTrimPatternTypeIdMap;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\ProtectionEnchantment;
@@ -182,11 +184,13 @@ class Armor extends Durable{
 		}else{
 			$this->customColor = null;
 		}
+
 		$trimTag = $tag->getTag(self::TAG_TRIM);
 		if($trimTag instanceof CompoundTag){
-			$material = ArmorTrimRegistry::getInstance()->getMaterial($trimTag->getString(self::TAG_TRIM_MATERIAL));
-			$pattern = ArmorTrimRegistry::getInstance()->getPattern($trimTag->getString(self::TAG_TRIM_PATTERN));
-			if($material instanceof ArmorTrimMaterial && $pattern instanceof ArmorTrimPattern){
+			$material = ArmorTrimMaterialTypeIdMap::getInstance()->fromId($trimTag->getString(self::TAG_TRIM_MATERIAL));
+			$pattern = ArmorTrimPatternTypeIdMap::getInstance()->fromId($trimTag->getString(self::TAG_TRIM_PATTERN));
+
+			if($material !== null && $pattern !== null){
 				$this->armorTrim = new ArmorTrim($material, $pattern);
 			}
 		}
@@ -197,10 +201,11 @@ class Armor extends Durable{
 		$this->customColor !== null ?
 			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
+
 		$this->armorTrim !== null ?
 			$tag->setTag(self::TAG_TRIM, CompoundTag::create()
-				->setString(self::TAG_TRIM_MATERIAL, $this->armorTrim->getMaterial()->getIdentifier())
-				->setString(self::TAG_TRIM_PATTERN, $this->armorTrim->getPattern()->getIdentifier())) :
+				->setString(self::TAG_TRIM_MATERIAL, ArmorTrimMaterialTypeIdMap::getInstance()->toId($this->armorTrim->getMaterial()))
+				->setString(self::TAG_TRIM_PATTERN, ArmorTrimPatternTypeIdMap::getInstance()->toId($this->armorTrim->getPattern()))) :
 			$tag->removeTag(self::TAG_TRIM);
 	}
 }

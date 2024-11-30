@@ -25,37 +25,26 @@ namespace pocketmine\item;
 
 class ArmorTrimMaterial{
 
-	public const AMETHYST = "amethyst";
-	public const COPPER = "copper";
-	public const DIAMOND = "diamond";
-	public const EMERALD = "emerald";
-	public const GOLD = "gold";
-	public const IRON = "iron";
-	public const LAPIS = "lapis";
-	public const NETHERITE = "netherite";
-	public const QUARTZ = "quartz";
-	public const REDSTONE = "redstone";
+	private Item $item;
 
+	/**
+	 * @param string $color Minecraft color code.
+	 */
 	public function __construct(
-		private string $identifier,
-		private string $color,
-		private string $itemName,
-		private int $typeId
-	){}
-
-	public function getIdentifier() : string{
-		return $this->identifier;
+		Item $item,
+		private string $color
+	){
+		$this->item = clone $item;
 	}
 
+	public function getItem() : Item{
+		return clone $this->item;
+	}
+
+	/**
+	 * Returns the Minecraft color code.
+	 */
 	public function getColor() : string{
 		return $this->color;
-	}
-
-	public function getItemName() : string{
-		return $this->itemName;
-	}
-
-	public function getTypeId() : int{
-		return $this->typeId;
 	}
 }

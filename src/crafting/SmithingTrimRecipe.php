@@ -23,18 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pocketmine\data\bedrock\ArmorTrimMaterialTypeIdMap;
+use pocketmine\data\bedrock\ArmorTrimPatternTypeIdMap;
 use pocketmine\item\Armor;
 use pocketmine\item\ArmorTrim;
-use pocketmine\item\ArmorTrimRegistry;
 use pocketmine\item\Item;
 
 class SmithingTrimRecipe implements SmithingRecipe{
 
 	public function __construct(
-		private readonly RecipeIngredient $input,
-		private readonly RecipeIngredient $addition,
-		private readonly RecipeIngredient $template){
-	}
+		private RecipeIngredient $input,
+		private RecipeIngredient $addition,
+		private RecipeIngredient $template
+	){}
 
 	public function getInput() : RecipeIngredient{
 		return $this->input;
@@ -55,23 +56,22 @@ class SmithingTrimRecipe implements SmithingRecipe{
 	public function getResultFor(array $inputs) : ?Item{
 		$input = $template = $addition = null;
 		foreach($inputs as $item){
-			if($item instanceof Armor){
+			if($this->input->accepts($item) && $item instanceof Armor){
 				$input = $item;
-			}elseif(ArmorTrimRegistry::getInstance()->getPatternFromItem($item) !== null){
-				$template = $item;
-			}else{
+			}elseif($this->addition->accepts($item)){
 				$addition = $item;
+			}elseif($this->template->accepts($item)){
+				$template = $item;
+			}
+		}
+		if($input !== null && $addition !== null && $template !== null){
+			$material = ArmorTrimMaterialTypeIdMap::getInstance()->fromItem($addition);
+			$pattern = ArmorTrimPatternTypeIdMap::getInstance()->fromItem($template);
+			if($material !== null && $pattern !== null){
+				return (clone $input)->setTrim(new ArmorTrim($material, $pattern));
 			}
 		}
 
-		if($input === null || $addition === null || $template === null){
-			return null;
-		}
-		$material = ArmorTrimRegistry::getInstance()->getMaterialFromItem($addition);
-		$pattern = ArmorTrimRegistry::getInstance()->getPatternFromItem($template);
-		if($material === null || $pattern === null){
-			return null;
-		}
-		return $input->setTrim(new ArmorTrim($material, $pattern));
+		return null;
 	}
 }
