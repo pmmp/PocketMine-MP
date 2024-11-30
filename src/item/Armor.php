@@ -42,11 +42,9 @@ class Armor extends Durable{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
-	public const TAG_TRIM = "Trim"; // TAG_Compound
-
-	public const TAG_TRIM_MATERIAL = "Material"; //TAG_String
-
-	public const TAG_TRIM_PATTERN = "Pattern"; //TAG_String
+	private const TAG_TRIM = "Trim"; // TAG_Compound
+	private const TAG_TRIM_MATERIAL = "Material"; //TAG_String
+	private const TAG_TRIM_PATTERN = "Pattern"; //TAG_String
 
 	private ArmorTypeInfo $armorInfo;
 
