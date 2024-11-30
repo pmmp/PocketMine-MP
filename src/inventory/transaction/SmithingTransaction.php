@@ -56,7 +56,7 @@ class SmithingTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Expected 1 output item, but received $outputCount");
 		}
 		if(($output = $this->recipe->getResultFor($inputs)) === null){
-			throw new TransactionValidationException("Could find a matching output item for the given inputs");
+			throw new TransactionValidationException("Couldn't find a matching output item for the given inputs");
 		}
 		if(!$output->equalsExact($outputs[0])){
 			throw new TransactionValidationException("Invalid output item");
