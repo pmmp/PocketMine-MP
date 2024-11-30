@@ -32,9 +32,7 @@ final class SmithingTableInventory extends SimpleInventory implements BlockInven
 	use BlockInventoryTrait;
 
 	public const SLOT_INPUT = 0;
-
 	public const SLOT_ADDITION = 1;
-
 	public const SLOT_TEMPLATE = 2;
 
 	public function __construct(Position $holder){

@@ -53,8 +53,8 @@ final class ArmorTrimMaterialTypeIdMap{
 	private array $materialToId = [];
 
 	public function __construct(){
-		foreach(Materials::getAll() as $case){
-			$this->register(match($case) {
+		foreach(Materials::getAll() as $material){
+			$this->register(match($material){
 				Materials::AMETHYST() => Ids::AMETHYST,
 				Materials::COPPER() => Ids::COPPER,
 				Materials::DIAMOND() => Ids::DIAMOND,
@@ -66,7 +66,7 @@ final class ArmorTrimMaterialTypeIdMap{
 				Materials::QUARTZ() => Ids::QUARTZ,
 				Materials::REDSTONE() => Ids::REDSTONE,
 				default => throw new AssumptionFailedError("Unhandled armor trim material type")
-			}, $case);
+			}, $material);
 		}
 	}
 

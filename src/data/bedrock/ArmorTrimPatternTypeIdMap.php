@@ -53,8 +53,8 @@ final class ArmorTrimPatternTypeIdMap{
 	private array $patternToId = [];
 
 	public function __construct(){
-		foreach(Patterns::getAll() as $case){
-			$this->register(match($case){
+		foreach(Patterns::getAll() as $pattern){
+			$this->register(match($pattern){
 				Patterns::COAST() => Ids::COAST,
 				Patterns::DUNE() => Ids::DUNE,
 				Patterns::EYE() => Ids::EYE,
@@ -72,7 +72,7 @@ final class ArmorTrimPatternTypeIdMap{
 				Patterns::WAYFINDER() => Ids::WAYFINDER,
 				Patterns::WILD() => Ids::WILD,
 				default => throw new AssumptionFailedError("Unhandled armor trim pattern type")
-			}, $case);
+			}, $pattern);
 		}
 	}
 
