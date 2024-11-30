@@ -786,11 +786,6 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$fileResource \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
@@ -806,7 +801,7 @@ parameters:
 			path: ../../../src/scheduler/BulkCurlTask.php
 
 		-
-			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
+			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\.$#"
 			count: 1
 			path: ../../../src/scheduler/TaskScheduler.php
 
@@ -842,11 +837,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
@@ -1036,11 +1026,6 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
 			message: "#^Parameter \\#2 \\$size of function ftruncate expects int\\<0, max\\>, int given\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
@@ -1189,19 +1174,4 @@ parameters:
 			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMapColumn\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/block/regenerate_consistency_check.php
-
-		-
-			message: "#^Parameter \\#1 \\$logFile of class pocketmine\\\\utils\\\\MainLogger constructor expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../phpunit/scheduler/AsyncPoolTest.php
 

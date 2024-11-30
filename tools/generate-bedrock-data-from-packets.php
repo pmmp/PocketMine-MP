@@ -195,15 +195,15 @@ class ParserPacketHandler extends PacketHandler{
 	 * @return mixed[]
 	 */
 	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) $object;
+		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
 		ksort($result, SORT_STRING);
 
-		foreach($result as $property => $value){
+		foreach(Utils::promoteKeys($result) as $property => $value){
 			if(is_object($value)){
 				$result[$property] = self::objectToOrderedArray($value);
 			}elseif(is_array($value)){
 				$array = [];
-				foreach($value as $k => $v){
+				foreach(Utils::promoteKeys($value) as $k => $v){
 					if(is_object($v)){
 						$array[$k] = self::objectToOrderedArray($v);
 					}else{
@@ -224,7 +224,7 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		if(is_array($object)){
 			$result = [];
-			foreach($object as $k => $v){
+			foreach(Utils::promoteKeys($object) as $k => $v){
 				$result[$k] = self::sort($v);
 			}
 			return $result;
@@ -247,7 +247,7 @@ class ParserPacketHandler extends PacketHandler{
 		ksort($table, SORT_STRING);
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
 
-		foreach($packet->levelSettings->experiments->getExperiments() as $name => $experiment){
+		foreach(Utils::promoteKeys($packet->levelSettings->experiments->getExperiments()) as $name => $experiment){
 			echo "Experiment \"$name\" is " . ($experiment ? "" : "not ") . "active\n";
 		}
 		return true;
@@ -317,8 +317,8 @@ class ParserPacketHandler extends PacketHandler{
 		$char = ord("A");
 
 		$outputsByKey = [];
-		foreach($entry->getInput() as $x => $row){
-			foreach($row as $y => $ingredient){
+		foreach(Utils::promoteKeys($entry->getInput()) as $x => $row){
+			foreach(Utils::promoteKeys($row) as $y => $ingredient){
 				if($ingredient->getDescriptor() === null){
 					$shape[$x][$y] = " ";
 				}else{
@@ -335,21 +335,25 @@ class ParserPacketHandler extends PacketHandler{
 				}
 			}
 		}
+		$unlockingIngredients = $entry->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapedRecipeData(
-			array_map(fn(array $array) => implode('', $array), $shape),
+			array_map(fn(array $array) => implode('', array_values($array)), array_values($shape)),
 			$outputsByKey,
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $entry->getOutput()),
 			$entry->getBlockName(),
-			$entry->getPriority()
+			$entry->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 
 	private function shapelessRecipeToJson(ShapelessRecipe $recipe) : ShapelessRecipeData{
+		$unlockingIngredients = $recipe->getUnlockingRequirement()->getUnlockingIngredients();
 		return new ShapelessRecipeData(
 			array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $recipe->getInputs()),
 			array_map(fn(ItemStack $output) => $this->itemStackToJson($output), $recipe->getOutputs()),
 			$recipe->getBlockName(),
-			$recipe->getPriority()
+			$recipe->getPriority(),
+			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
 		);
 	}
 
@@ -395,7 +399,7 @@ class ParserPacketHandler extends PacketHandler{
 				CraftingDataPacket::ENTRY_FURNACE => "smelting",
 				CraftingDataPacket::ENTRY_FURNACE_DATA => "smelting",
 				CraftingDataPacket::ENTRY_MULTI => "special_hardcoded",
-				CraftingDataPacket::ENTRY_SHULKER_BOX => "shapeless_shulker_box",
+				CraftingDataPacket::ENTRY_USER_DATA_SHAPELESS => "shapeless_shulker_box",
 				CraftingDataPacket::ENTRY_SHAPELESS_CHEMISTRY => "shapeless_chemistry",
 				CraftingDataPacket::ENTRY_SHAPED_CHEMISTRY => "shaped_chemistry",
 				CraftingDataPacket::ENTRY_SMITHING_TRANSFORM => "smithing",
@@ -407,7 +411,13 @@ class ParserPacketHandler extends PacketHandler{
 			$mappedType = $typeMap[$entry->getTypeId()];
 
 			if($entry instanceof ShapedRecipe){
-				$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				//all known recipes are currently symmetric and I don't feel like attaching a `symmetric` field to
+				//every shaped recipe for this - split it into a separate category instead
+				if(!$entry->isSymmetric()){
+					$recipes[$mappedType . "_asymmetric"][] = $this->shapedRecipeToJson($entry);
+				}else{
+					$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				}
 			}elseif($entry instanceof ShapelessRecipe){
 				$recipes[$mappedType][] = $this->shapelessRecipeToJson($entry);
 			}elseif($entry instanceof MultiRecipe){

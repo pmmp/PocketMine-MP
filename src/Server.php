@@ -736,12 +736,15 @@ class Server{
 
 	/**
 	 * @return string[][]
+	 * @phpstan-return array<string, list<string>>
 	 */
 	public function getCommandAliases() : array{
 		$section = $this->configGroup->getProperty(Yml::ALIASES);
 		$result = [];
 		if(is_array($section)){
-			foreach($section as $key => $value){
+			foreach(Utils::promoteKeys($section) as $key => $value){
+				//TODO: more validation needed here
+				//key might not be a string, value might not be list<string>
 				$commands = [];
 				if(is_array($value)){
 					$commands = $value;
@@ -749,7 +752,7 @@ class Server{
 					$commands[] = (string) $value;
 				}
 
-				$result[$key] = $commands;
+				$result[(string) $key] = $commands;
 			}
 		}
 
@@ -1094,7 +1097,11 @@ class Server{
 
 		$anyWorldFailedToLoad = false;
 
-		foreach((array) $this->configGroup->getProperty(Yml::WORLDS, []) as $name => $options){
+		foreach(Utils::promoteKeys((array) $this->configGroup->getProperty(Yml::WORLDS, [])) as $name => $options){
+			if(!is_string($name)){
+				//TODO: this probably should be an error
+				continue;
+			}
 			if($options === null){
 				$options = [];
 			}elseif(!is_array($options)){
@@ -1666,9 +1673,11 @@ class Server{
 		$this->isRunning = false;
 
 		//Force minimum uptime to be >= 120 seconds, to reduce the impact of spammy crash loops
-		$spacing = ((int) $this->startTime) - time() + 120;
+		$uptime = time() - ((int) $this->startTime);
+		$minUptime = 120;
+		$spacing = $minUptime - $uptime;
 		if($spacing > 0){
-			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
+			echo "--- Uptime {$uptime}s - waiting {$spacing}s to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
 		@Process::kill(Process::pid());

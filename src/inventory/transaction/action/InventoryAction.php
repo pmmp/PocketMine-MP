@@ -60,6 +60,7 @@ abstract class InventoryAction{
 
 	/**
 	 * Called when the action is added to the specified InventoryTransaction.
+	 * @deprecated
 	 */
 	public function onAddToTransaction(InventoryTransaction $transaction) : void{
 

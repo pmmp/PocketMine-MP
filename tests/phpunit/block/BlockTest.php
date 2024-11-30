@@ -24,13 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
-use function asort;
-use function file_get_contents;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
+use function implode;
 use function is_array;
+use function is_int;
+use function is_string;
 use function json_decode;
 use function log;
-use function print_r;
-use const SORT_STRING;
+use const JSON_THROW_ON_ERROR;
 
 class BlockTest extends TestCase{
 
@@ -91,34 +94,71 @@ class BlockTest extends TestCase{
 		}
 	}
 
-	public function testConsistency() : void{
-		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
-		if(!is_array($list)){
-			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, stateDataBits: int}");
+	/**
+	 * @return int[]
+	 * @phpstan-return array<string, int>
+	 */
+	public static function computeConsistencyCheckTable(RuntimeBlockStateRegistry $blockStateRegistry) : array{
+		$newTable = [];
+
+		$idNameLookup = [];
+		//if we ever split up block registration into multiple registries (e.g. separating chemistry blocks),
+		//we'll need to ensure those additional registries are also included here
+		foreach(Utils::stringifyKeys(VanillaBlocks::getAll()) as $name => $blockType){
+			$id = $blockType->getTypeId();
+			if(isset($idNameLookup[$id])){
+				throw new AssumptionFailedError("TypeID $name collides with " . $idNameLookup[$id]);
+			}
+			$idNameLookup[$id] = $name;
 		}
-		$knownStates = [];
-		/**
-		 * @var string $name
-		 * @var int[]  $stateIds
-		 */
-		foreach($list["knownStates"] as $name => $stateIds){
-			foreach($stateIds as $stateId){
-				$knownStates[$stateId] = $name;
+
+		foreach($blockStateRegistry->getAllKnownStates() as $index => $block){
+			if($index !== $block->getStateId()){
+				throw new AssumptionFailedError("State index should always match state ID");
+			}
+			$idName = $idNameLookup[$block->getTypeId()];
+			$newTable[$idName] = ($newTable[$idName] ?? 0) + 1;
+		}
+
+		return $newTable;
+	}
+
+	/**
+	 * @phpstan-param array<string, int> $actual
+	 *
+	 * @return string[]
+	 */
+	public static function computeConsistencyCheckDiff(string $expectedFile, array $actual) : array{
+		$expected = json_decode(Filesystem::fileGetContents($expectedFile), true, 2, JSON_THROW_ON_ERROR);
+		if(!is_array($expected)){
+			throw new AssumptionFailedError("Old table should be array<string, int>");
+		}
+
+		$errors = [];
+		foreach(Utils::promoteKeys($expected) as $typeName => $numStates){
+			if(!is_string($typeName) || !is_int($numStates)){
+				throw new AssumptionFailedError("Old table should be array<string, int>");
+			}
+			if(!isset($actual[$typeName])){
+				$errors[] = "Removed block type $typeName ($numStates permutations)";
+			}elseif($actual[$typeName] !== $numStates){
+				$errors[] = "Block type $typeName permutation count changed: $numStates -> " . $actual[$typeName];
 			}
 		}
-		$oldStateDataSize = $list["stateDataBits"];
-		self::assertSame($oldStateDataSize, Block::INTERNAL_STATE_DATA_BITS, "Changed number of state data bits - consistency check probably need regenerating");
+		foreach(Utils::stringifyKeys($actual) as $typeName => $numStates){
+			if(!isset($expected[$typeName])){
+				$errors[] = "Added block type $typeName (" . $actual[$typeName] . " permutations)";
+			}
+		}
 
-		$states = $this->blockFactory->getAllKnownStates();
-		foreach($states as $stateId => $state){
-			self::assertArrayHasKey($stateId, $knownStates, "New block state $stateId (" . print_r($state, true) . ") - consistency check may need regenerating");
-			self::assertSame($knownStates[$stateId], $state->getName());
-		}
-		asort($knownStates, SORT_STRING);
-		foreach($knownStates as $k => $name){
-			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k " . ($k >> Block::INTERNAL_STATE_DATA_BITS) . ":" . ($k & Block::INTERNAL_STATE_DATA_MASK) . " ($name)");
-			self::assertSame($name, $states[$k]->getName());
-		}
+		return $errors;
+	}
+
+	public function testConsistency() : void{
+		$newTable = self::computeConsistencyCheckTable($this->blockFactory);
+		$errors = self::computeConsistencyCheckDiff(__DIR__ . '/block_factory_consistency_check.json', $newTable);
+
+		self::assertEmpty($errors, "Block factory consistency check failed:\n" . implode("\n", $errors));
 	}
 
 	public function testEmptyStateId() : void{

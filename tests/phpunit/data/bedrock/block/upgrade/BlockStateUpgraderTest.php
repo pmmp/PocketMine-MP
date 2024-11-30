@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use const PHP_INT_MAX;
 
 class BlockStateUpgraderTest extends TestCase{
@@ -208,6 +210,23 @@ class BlockStateUpgraderTest extends TestCase{
 		$upgradedStateData = $this->upgrade($getStateData(), $getStateData);
 
 		self::assertSame($upgradedStateData->getState(self::TEST_PROPERTY_2)?->getValue(), $valueAfter);
+	}
+
+	public function testFlattenProperty() : void{
+		$schema = $this->getNewSchema();
+		$schema->flattenedProperties[self::TEST_BLOCK] = new BlockStateUpgradeSchemaFlattenInfo(
+			"minecraft:",
+			"test",
+			"_suffix",
+			[],
+			StringTag::class
+		);
+
+		$stateData = new BlockStateData(self::TEST_BLOCK, ["test" => new StringTag("value1")], 0);
+		$upgradedStateData = $this->upgrade($stateData, fn() => $stateData);
+
+		self::assertSame("minecraft:value1_suffix", $upgradedStateData->getName());
+		self::assertEmpty($upgradedStateData->getStates());
 	}
 
 	/**

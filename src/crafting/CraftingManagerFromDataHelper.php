@@ -195,7 +195,7 @@ final class CraftingManagerFromDataHelper{
 	 */
 	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
 		$result = [];
-		foreach($data as $i => $item){
+		foreach(Utils::promoteKeys($data) as $i => $item){
 			if(!is_object($item)){
 				throw new SavedDataLoadingException("Invalid entry at index $i: expected object, got " . get_debug_type($item));
 			}
@@ -238,6 +238,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				$inputs,
 				$outputs,
@@ -264,6 +265,7 @@ final class CraftingManagerFromDataHelper{
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe->shape,
 				$inputs,
@@ -275,7 +277,8 @@ final class CraftingManagerFromDataHelper{
 				"furnace" => FurnaceType::FURNACE,
 				"blast_furnace" => FurnaceType::BLAST_FURNACE,
 				"smoker" => FurnaceType::SMOKER,
-				//TODO: campfire
+				"campfire" => FurnaceType::CAMPFIRE,
+				"soul_campfire" => FurnaceType::SOUL_CAMPFIRE,
 				default => null
 			};
 			if($furnaceType === null){

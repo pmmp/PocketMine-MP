@@ -64,12 +64,14 @@ use pocketmine\command\defaults\TransferServerCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\defaults\XpCommand;
 use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use function array_shift;
 use function count;
 use function implode;
@@ -80,7 +82,10 @@ use function trim;
 
 class SimpleCommandMap implements CommandMap{
 
-	/** @var Command[] */
+	/**
+	 * @var Command[]
+	 * @phpstan-var array<string, Command>
+	 */
 	protected array $knownCommands = [];
 
 	public function __construct(private Server $server){
@@ -128,7 +133,8 @@ class SimpleCommandMap implements CommandMap{
 			new TitleCommand(),
 			new TransferServerCommand(),
 			new VersionCommand(),
-			new WhitelistCommand()
+			new WhitelistCommand(),
+			new XpCommand(),
 		]);
 	}
 
@@ -169,7 +175,7 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function unregister(Command $command) : bool{
-		foreach($this->knownCommands as $lbl => $cmd){
+		foreach(Utils::promoteKeys($this->knownCommands) as $lbl => $cmd){
 			if($cmd === $command){
 				unset($this->knownCommands[$lbl]);
 			}
@@ -237,6 +243,7 @@ class SimpleCommandMap implements CommandMap{
 
 	/**
 	 * @return Command[]
+	 * @phpstan-return array<string, Command>
 	 */
 	public function getCommands() : array{
 		return $this->knownCommands;
@@ -245,7 +252,7 @@ class SimpleCommandMap implements CommandMap{
 	public function registerServerAliases() : void{
 		$values = $this->server->getCommandAliases();
 
-		foreach($values as $alias => $commandStrings){
+		foreach(Utils::stringifyKeys($values) as $alias => $commandStrings){
 			if(str_contains($alias, ":")){
 				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_illegal($alias)));
 				continue;

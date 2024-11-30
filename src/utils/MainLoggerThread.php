@@ -52,12 +52,12 @@ final class MainLoggerThread extends Thread{
 
 	public function __construct(
 		private string $logFile,
-		private string $archiveDir,
+		private ?string $archiveDir,
 		private readonly int $maxFileSize = 32 * 1024 * 1024 //32 MB
 	){
 		$this->buffer = new ThreadSafeArray();
 		touch($this->logFile);
-		if(!@mkdir($this->archiveDir) && !is_dir($this->archiveDir)){
+		if($this->archiveDir !== null && !@mkdir($this->archiveDir) && !is_dir($this->archiveDir)){
 			throw new \RuntimeException("Unable to create archive directory: " . (
 				is_file($this->archiveDir) ? "it already exists and is not a directory" : "permission denied"));
 		}
@@ -108,7 +108,7 @@ final class MainLoggerThread extends Thread{
 	 * @param resource $logResource
 	 * @return resource
 	 */
-	private function archiveLogFile($logResource, int &$size){
+	private function archiveLogFile($logResource, int &$size, string $archiveDir){
 		fclose($logResource);
 
 		clearstatcache();
@@ -125,7 +125,7 @@ final class MainLoggerThread extends Thread{
 		}while(file_exists($out));
 
 		//the user may have externally deleted the whole directory - make sure it exists before we do anything
-		@mkdir($this->archiveDir);
+		@mkdir($archiveDir);
 		rename($this->logFile, $out);
 
 		$logResource = $this->openLogFile($this->logFile, $size);
@@ -141,12 +141,12 @@ final class MainLoggerThread extends Thread{
 	/**
 	 * @param resource $logResource
 	 */
-	private function writeLogStream(&$logResource, int &$size) : void{
+	private function writeLogStream(&$logResource, int &$size, ?string $archiveDir) : void{
 		while(($chunk = $this->buffer->shift()) !== null){
 			fwrite($logResource, $chunk);
 			$size += strlen($chunk);
-			if($this->logFileReadyToArchive($size)){
-				$logResource = $this->archiveLogFile($logResource, $size);
+			if($archiveDir !== null && $this->logFileReadyToArchive($size)){
+				$logResource = $this->archiveLogFile($logResource, $size, $archiveDir);
 			}
 		}
 
@@ -161,12 +161,13 @@ final class MainLoggerThread extends Thread{
 	public function run() : void{
 		$size = 0;
 		$logResource = $this->openLogFile($this->logFile, $size);
-		if($this->logFileReadyToArchive($size)){
-			$logResource = $this->archiveLogFile($logResource, $size);
+		$archiveDir = $this->archiveDir;
+		if($archiveDir !== null && $this->logFileReadyToArchive($size)){
+			$logResource = $this->archiveLogFile($logResource, $size, $archiveDir);
 		}
 
 		while(!$this->shutdown){
-			$this->writeLogStream($logResource, $size);
+			$this->writeLogStream($logResource, $size, $archiveDir);
 			$this->synchronized(function() : void{
 				if(!$this->shutdown && !$this->syncFlush){
 					$this->wait();
@@ -174,7 +175,7 @@ final class MainLoggerThread extends Thread{
 			});
 		}
 
-		$this->writeLogStream($logResource, $size);
+		$this->writeLogStream($logResource, $size, $archiveDir);
 
 		fclose($logResource);
 	}

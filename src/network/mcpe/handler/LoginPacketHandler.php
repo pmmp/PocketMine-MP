@@ -150,7 +150,7 @@ class LoginPacketHandler extends PacketHandler{
 	protected function fetchAuthData(JwtChain $chain) : AuthenticationData{
 		/** @var AuthenticationData|null $extraData */
 		$extraData = null;
-		foreach($chain->chain as $k => $jwt){
+		foreach($chain->chain as $jwt){
 			//validate every chain element
 			try{
 				[, $claims, ] = JwtUtils::parse($jwt);

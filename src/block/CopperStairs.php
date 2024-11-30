@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperTrait;
 
-class CopperStairs extends Stair{
+class CopperStairs extends Stair implements CopperMaterial{
 	use CopperTrait;
 }

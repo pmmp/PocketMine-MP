@@ -115,12 +115,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		//TODO: support forcing server packs
 		$this->session->sendDataPacket(ResourcePacksInfoPacket::create(
 			resourcePackEntries: $resourcePackEntries,
-			behaviorPackEntries: [],
 			mustAccept: $this->mustAccept,
 			hasAddons: false,
-			hasScripts: false,
-			forceServerPacks: false,
-			cdnUrls: []
+			hasScripts: false
 		));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
@@ -177,7 +174,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
 				//the client remove its own non-server-supplied resource packs.
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false)));
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false), false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:

@@ -25,5 +25,7 @@ namespace pocketmine\item;
 
 class Bowl extends Item{
 
-	//TODO: check fuel
+	public function getFuelTime() : int{
+		return 200;
+	}
 }

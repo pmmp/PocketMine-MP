@@ -76,7 +76,10 @@ class PopulationTask extends AsyncTask{
 
 		$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
-		/** @var string[] $serialChunks */
+		/**
+		 * @var string[] $serialChunks
+		 * @phpstan-var array<int, string|null> $serialChunks
+		 */
 		$serialChunks = igbinary_unserialize($this->adjacentChunks);
 		$chunks = array_map(
 			function(?string $serialized) : ?Chunk{
@@ -92,7 +95,6 @@ class PopulationTask extends AsyncTask{
 
 		self::setOrGenerateChunk($manager, $generator, $this->chunkX, $this->chunkZ, $chunk);
 
-		/** @var Chunk[] $resultChunks */
 		$resultChunks = []; //this is just to keep phpstan's type inference happy
 		foreach($chunks as $relativeChunkHash => $c){
 			World::getXZ($relativeChunkHash, $relativeX, $relativeZ);

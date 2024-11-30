@@ -26,6 +26,7 @@ namespace pocketmine\plugin;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionParserException;
+use pocketmine\utils\Utils;
 use function array_map;
 use function array_values;
 use function get_debug_type;
@@ -151,7 +152,7 @@ class PluginDescription{
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin[self::KEY_OS] ?? []));
 
 		if(isset($plugin[self::KEY_COMMANDS]) && is_array($plugin[self::KEY_COMMANDS])){
-			foreach($plugin[self::KEY_COMMANDS] as $commandName => $commandData){
+			foreach(Utils::promoteKeys($plugin[self::KEY_COMMANDS]) as $commandName => $commandData){
 				if(!is_string($commandName)){
 					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
 				}
@@ -177,7 +178,7 @@ class PluginDescription{
 		if(isset($plugin[self::KEY_EXTENSIONS])){
 			$extensions = (array) $plugin[self::KEY_EXTENSIONS];
 			$isLinear = $extensions === array_values($extensions);
-			foreach($extensions as $k => $v){
+			foreach(Utils::promoteKeys($extensions) as $k => $v){
 				if($isLinear){
 					$k = $v;
 					$v = "*";

@@ -43,6 +43,7 @@ final class EnchantmentIdMap{
 		$this->register(EnchantmentIds::PROJECTILE_PROTECTION, VanillaEnchantments::PROJECTILE_PROTECTION());
 		$this->register(EnchantmentIds::THORNS, VanillaEnchantments::THORNS());
 		$this->register(EnchantmentIds::RESPIRATION, VanillaEnchantments::RESPIRATION());
+		$this->register(EnchantmentIds::AQUA_AFFINITY, VanillaEnchantments::AQUA_AFFINITY());
 
 		$this->register(EnchantmentIds::SHARPNESS, VanillaEnchantments::SHARPNESS());
 		//TODO: smite, bane of arthropods (these don't make sense now because their applicable mobs don't exist yet)
