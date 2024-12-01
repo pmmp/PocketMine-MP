@@ -52,22 +52,27 @@ final class ArmorTrimPatternTypeIdMap{
 	private array $patternToId = [];
 
 	public function __construct(){
-		$this->register(Ids::COAST, Patterns::COAST());
-		$this->register(Ids::DUNE, Patterns::DUNE());
-		$this->register(Ids::EYE, Patterns::EYE());
-		$this->register(Ids::HOST, Patterns::HOST());
-		$this->register(Ids::RAISER, Patterns::RAISER());
-		$this->register(Ids::RIB, Patterns::RIB());
-		$this->register(Ids::SENTRY, Patterns::SENTRY());
-		$this->register(Ids::SHAPER, Patterns::SHAPER());
-		$this->register(Ids::SILENCE, Patterns::SILENCE());
-		$this->register(Ids::SNOUT, Patterns::SNOUT());
-		$this->register(Ids::SPIRE, Patterns::SPIRE());
-		$this->register(Ids::TIDE, Patterns::TIDE());
-		$this->register(Ids::VEX, Patterns::VEX());
-		$this->register(Ids::WARD, Patterns::WARD());
-		$this->register(Ids::WAYFINDER, Patterns::WAYFINDER());
-		$this->register(Ids::WILD, Patterns::WILD());
+		foreach(Patterns::getAll() as $pattern){
+			$this->register(match($pattern){
+				Patterns::COAST() => Ids::COAST,
+				Patterns::DUNE() => Ids::DUNE,
+				Patterns::EYE() => Ids::EYE,
+				Patterns::HOST() => Ids::HOST,
+				Patterns::RAISER() => Ids::RAISER,
+				Patterns::RIB() => Ids::RIB,
+				Patterns::SENTRY() => Ids::SENTRY,
+				Patterns::SHAPER() => Ids::SHAPER,
+				Patterns::SILENCE() => Ids::SILENCE,
+				Patterns::SNOUT() => Ids::SNOUT,
+				Patterns::SPIRE() => Ids::SPIRE,
+				Patterns::TIDE() => Ids::TIDE,
+				Patterns::VEX() => Ids::VEX,
+				Patterns::WARD() => Ids::WARD,
+				Patterns::WAYFINDER() => Ids::WAYFINDER,
+				Patterns::WILD() => Ids::WILD,
+				default => throw new AssumptionFailedError("Unhandled armor trim pattern type")
+			}, $pattern);
+		}
 	}
 
 	public function register(string $stringId, ArmorTrimPattern $pattern) : void{

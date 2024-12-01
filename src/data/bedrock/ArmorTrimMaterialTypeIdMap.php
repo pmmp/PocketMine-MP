@@ -52,16 +52,21 @@ final class ArmorTrimMaterialTypeIdMap{
 	private array $materialToId = [];
 
 	public function __construct(){
-		$this->register(Ids::AMETHYST, Materials::AMETHYST());
-		$this->register(Ids::COPPER, Materials::COPPER());
-		$this->register(Ids::DIAMOND, Materials::DIAMOND());
-		$this->register(Ids::EMERALD, Materials::EMERALD());
-		$this->register(Ids::GOLD, Materials::GOLD());
-		$this->register(Ids::IRON, Materials::IRON());
-		$this->register(Ids::LAPIS, Materials::LAPIS());
-		$this->register(Ids::NETHERITE, Materials::NETHERITE());
-		$this->register(Ids::QUARTZ, Materials::QUARTZ());
-		$this->register(Ids::REDSTONE, Materials::REDSTONE());
+		foreach(Materials::getAll() as $material){
+			$this->register(match($material){
+				Materials::AMETHYST() => Ids::AMETHYST,
+				Materials::COPPER() => Ids::COPPER,
+				Materials::DIAMOND() => Ids::DIAMOND,
+				Materials::EMERALD() => Ids::EMERALD,
+				Materials::GOLD() => Ids::GOLD,
+				Materials::IRON() => Ids::IRON,
+				Materials::LAPIS() => Ids::LAPIS,
+				Materials::NETHERITE() => Ids::NETHERITE,
+				Materials::QUARTZ() => Ids::QUARTZ,
+				Materials::REDSTONE() => Ids::REDSTONE,
+				default => throw new AssumptionFailedError("Unhandled armor trim material type")
+			}, $material);
+		}
 	}
 
 	public function register(string $stringId, ArmorTrimMaterial $material) : void{
