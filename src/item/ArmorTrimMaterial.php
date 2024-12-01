@@ -32,7 +32,7 @@ class ArmorTrimMaterial{
 	 */
 	public function __construct(
 		Item $item,
-		private string $color
+		private readonly string $color
 	){
 		$this->item = clone $item;
 	}

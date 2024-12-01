@@ -32,9 +32,9 @@ use pocketmine\item\Item;
 class SmithingTrimRecipe implements SmithingRecipe{
 
 	public function __construct(
-		private RecipeIngredient $input,
-		private RecipeIngredient $addition,
-		private RecipeIngredient $template
+		private readonly RecipeIngredient $input,
+		private readonly RecipeIngredient $addition,
+		private readonly RecipeIngredient $template
 	){}
 
 	public function getInput() : RecipeIngredient{
