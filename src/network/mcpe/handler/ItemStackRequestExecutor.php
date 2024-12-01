@@ -36,7 +36,6 @@ use pocketmine\inventory\transaction\SmithingTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
@@ -348,7 +347,7 @@ class ItemStackRequestExecutor{
 				}
 			}elseif($window instanceof SmithingTableInventory){
 				$craftingManager = $this->player->getServer()->getCraftingManager();
-				$recipe = $craftingManager->getSmithingRecipeFromIndex($action->getRecipeId() - TypeConverter::SMITHING_RECIPES_NETWORK_OFFSET);
+				$recipe = $craftingManager->getSmithingRecipeFromIndex($action->getRecipeId() - InventoryManager::SMITHING_RECIPE_NETWORK_OFFSET);
 				if($recipe !== null){
 					$this->specialTransaction = new SmithingTransaction($this->player, $recipe);
 					$this->setNextCreatedItem($recipe->getResultFor($window->getContents()));

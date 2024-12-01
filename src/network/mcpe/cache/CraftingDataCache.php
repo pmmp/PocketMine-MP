@@ -31,6 +31,7 @@ use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\crafting\SmithingTransformRecipe;
 use pocketmine\crafting\SmithingTrimRecipe;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
@@ -152,7 +153,7 @@ final class CraftingDataCache{
 			}
 		}
 
-		$index = TypeConverter::SMITHING_RECIPES_NETWORK_OFFSET;
+		$index = InventoryManager::SMITHING_RECIPE_NETWORK_OFFSET;
 		foreach($manager->getSmithingRecipes() as $recipe){
 			if($recipe instanceof SmithingTransformRecipe){
 				$recipesWithTypeIds[] = new ProtocolSmithingTransformRecipe(

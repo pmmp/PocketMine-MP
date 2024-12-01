@@ -56,10 +56,6 @@ use function get_class;
 class TypeConverter{
 	use SingletonTrait;
 
-	//TODO: Hack! In Bedrock smithing recipe indexes go together with regular recipes,
-	//so we make an offset to prevent conflicts.
-	public const SMITHING_RECIPES_NETWORK_OFFSET = 200000;
-
 	private const PM_ID_TAG = "___Id___";
 
 	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
