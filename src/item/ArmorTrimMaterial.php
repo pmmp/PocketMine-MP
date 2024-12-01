@@ -23,7 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
+
 class ArmorTrimMaterial{
+	use NotCloneable;
+	use NotSerializable;
 
 	private Item $item;
 

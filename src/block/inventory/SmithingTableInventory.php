@@ -25,7 +25,6 @@ namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
-use pocketmine\item\Item;
 use pocketmine\world\Position;
 
 final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
@@ -38,17 +37,5 @@ final class SmithingTableInventory extends SimpleInventory implements BlockInven
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(3);
-	}
-
-	public function getInput() : Item{
-		return $this->getItem(self::SLOT_INPUT);
-	}
-
-	public function getAddition() : Item{
-		return $this->getItem(self::SLOT_ADDITION);
-	}
-
-	public function getTemplate() : Item{
-		return $this->getItem(self::SLOT_TEMPLATE);
 	}
 }

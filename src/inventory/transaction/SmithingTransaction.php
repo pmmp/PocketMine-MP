@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 use pocketmine\crafting\SmithingRecipe;
-use pocketmine\item\Item;
 use pocketmine\player\Player;
 use function count;
 
@@ -43,9 +42,7 @@ class SmithingTransaction extends InventoryTransaction{
 			throw new TransactionValidationException("Transaction must have at least one action to be executable");
 		}
 
-		/** @var Item[] $inputs */
 		$inputs = [];
-		/** @var Item[] $outputs */
 		$outputs = [];
 		$this->matchItems($outputs, $inputs);
 

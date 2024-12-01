@@ -152,7 +152,7 @@ final class CraftingDataCache{
 			}
 		}
 
-		$index = CraftingManager::SMITHING_RECIPES_OFFSET;
+		$index = TypeConverter::SMITHING_RECIPES_NETWORK_OFFSET;
 		foreach($manager->getSmithingRecipes() as $recipe){
 			if($recipe instanceof SmithingTransformRecipe){
 				$recipesWithTypeIds[] = new ProtocolSmithingTransformRecipe(
