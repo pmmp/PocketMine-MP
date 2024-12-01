@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\timings;
 
+use pmmp\thread\Thread as NativeThread;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
@@ -80,7 +81,8 @@ class TimingsHandler{
 	 * @return string[]
 	 * @phpstan-return list<string>
 	 */
-	public static function printCurrentThreadRecords(?int $threadId) : array{
+	public static function printCurrentThreadRecords() : array{
+		$threadId = NativeThread::getCurrentThread()?->getThreadId();
 		$groups = [];
 
 		foreach(TimingsRecord::getAll() as $timings){
@@ -143,7 +145,7 @@ class TimingsHandler{
 	 * @return string[]
 	 */
 	public static function printTimings() : array{
-		$records = self::printCurrentThreadRecords(null);
+		$records = self::printCurrentThreadRecords();
 		$footer = self::printFooter();
 
 		return [...$records, ...$footer];
@@ -161,7 +163,7 @@ class TimingsHandler{
 	 * @phpstan-return Promise<list<string>>
 	 */
 	public static function requestPrintTimings() : Promise{
-		$thisThreadRecords = self::printCurrentThreadRecords(null);
+		$thisThreadRecords = self::printCurrentThreadRecords();
 
 		$otherThreadRecordPromises = [];
 		if(self::$collectCallbacks !== null){

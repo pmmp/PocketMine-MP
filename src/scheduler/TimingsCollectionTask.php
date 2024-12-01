@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pmmp\thread\Thread as NativeThread;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\timings\TimingsHandler;
 
@@ -41,7 +40,7 @@ final class TimingsCollectionTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$this->setResult(TimingsHandler::printCurrentThreadRecords(NativeThread::getCurrentThreadId()));
+		$this->setResult(TimingsHandler::printCurrentThreadRecords());
 	}
 
 	public function onCompletion() : void{
