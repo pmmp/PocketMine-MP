@@ -34,11 +34,13 @@ final class ClosureCommand extends Command{
 	private \Closure $execute;
 
 	/**
+	 * @param string[] $permissions
 	 * @phpstan-param Execute $execute
 	 */
 	public function __construct(
 		string $name,
 		\Closure $execute,
+		array $permissions,
 		Translatable|string $description = "",
 		Translatable|string|null $usageMessage = null,
 		array $aliases = []
@@ -49,6 +51,7 @@ final class ClosureCommand extends Command{
 		);
 		$this->execute = $execute;
 		parent::__construct($name, $description, $usageMessage, $aliases);
+		$this->setPermissions($permissions);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
