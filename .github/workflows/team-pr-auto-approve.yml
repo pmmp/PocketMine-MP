@@ -9,14 +9,15 @@ on:
   pull_request_target:
     types:
       - opened
-      - synchronize
       - reopened
       - ready_for_review
+      - synchronize
 
 jobs:
   dispatch:
     name: Request approval
     runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
 
     steps:
       - name: Generate access token
@@ -34,4 +35,4 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           repository: ${{ github.repository_owner }}/RestrictedActions
           event-type: auto_approve_collaborator_pr
-          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}" }'
+          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}", "reviewer_id": "0" }'

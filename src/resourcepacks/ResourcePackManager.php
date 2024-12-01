@@ -25,6 +25,7 @@ namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function copy;
@@ -87,7 +88,7 @@ class ResourcePackManager{
 			throw new \InvalidArgumentException("\"resource_stack\" key should contain a list of pack names");
 		}
 
-		foreach($resourceStack as $pos => $pack){
+		foreach(Utils::promoteKeys($resourceStack) as $pos => $pack){
 			if(!is_string($pack) && !is_int($pack) && !is_float($pack)){
 				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
 				continue;

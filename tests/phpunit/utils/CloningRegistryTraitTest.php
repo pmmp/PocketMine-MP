@@ -47,7 +47,7 @@ final class CloningRegistryTraitTest extends TestCase{
 	public function testGetAllClone() : void{
 		$list1 = TestCloningRegistry::getAll();
 		$list2 = TestCloningRegistry::getAll();
-		foreach($list1 as $k => $member){
+		foreach(Utils::promoteKeys($list1) as $k => $member){
 			self::assertNotSame($member, $list2[$k], "VanillaBlocks ought to clone its members");
 		}
 	}

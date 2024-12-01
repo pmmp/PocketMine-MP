@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin\event;
+namespace pocketmine\event\fixtures;
 
-class ParentEvent extends \pocketmine\event\Event{
+class TestConcreteExtendsAbstractEvent extends TestAbstractEvent{
 
 }

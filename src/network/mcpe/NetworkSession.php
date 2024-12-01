@@ -1092,7 +1092,7 @@ class NetworkSession{
 
 	public function syncAvailableCommands() : void{
 		$commandData = [];
-		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
+		foreach($this->server->getCommandMap()->getCommands() as $command){
 			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}

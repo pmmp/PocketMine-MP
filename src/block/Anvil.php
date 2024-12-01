@@ -35,10 +35,10 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
-use function lcg_value;
 use function round;
 
 class Anvil extends Transparent implements Fallable{
@@ -97,7 +97,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	public function onHitGround(FallingBlock $blockEntity) : bool{
-		if(lcg_value() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
+		if(Utils::getRandomFloat() < 0.05 + (round($blockEntity->getFallDistance()) - 1) * 0.05){
 			if($this->damage !== self::VERY_DAMAGED){
 				$this->damage = $this->damage + 1;
 			}else{

@@ -30,7 +30,10 @@ use function spl_object_id;
 use const SORT_NUMERIC;
 
 class HandlerList{
-	/** @var RegisteredListener[][] */
+	/**
+	 * @var RegisteredListener[][]
+	 * @phpstan-var array<int, array<int, RegisteredListener>>
+	 */
 	private array $handlerSlots = [];
 
 	/** @var RegisteredListenerCache[] */

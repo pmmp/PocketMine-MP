@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\update_registry_annotations;
 
+use pocketmine\utils\Utils;
 use function basename;
 use function class_exists;
 use function count;
@@ -48,6 +49,7 @@ if(count($argv) !== 2){
 
 /**
  * @param object[] $members
+ * @phpstan-param array<string, object> $members
  */
 function generateMethodAnnotations(string $namespaceName, array $members) : string{
 	$selfName = basename(__FILE__);
@@ -60,7 +62,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 
 	static $lineTmpl = " * @method static %2\$s %s()";
 	$memberLines = [];
-	foreach($members as $name => $member){
+	foreach(Utils::stringifyKeys($members) as $name => $member){
 		$reflect = new \ReflectionClass($member);
 		while($reflect !== false && $reflect->isAnonymous()){
 			$reflect = $reflect->getParentClass();

@@ -41,7 +41,7 @@
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/color": "^0.3.0",
       "pocketmine/errorhandler": "^0.7.0",
-      "pocketmine/locale-data": "~2.21.0",
+      "pocketmine/locale-data": "~2.22.0",
       "pocketmine/log": "^0.4.0",
       "pocketmine/math": "~1.0.0",
       "pocketmine/nbt": "~1.0.0",

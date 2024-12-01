@@ -39,7 +39,10 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	public const SLOT_INPUT = 0;
 	public const SLOT_LAPIS = 1;
 
-	/** @var EnchantingOption[] $options */
+	/**
+	 * @var EnchantingOption[] $options
+	 * @phpstan-var list<EnchantingOption>
+	 */
 	private array $options = [];
 
 	public function __construct(Position $holder){

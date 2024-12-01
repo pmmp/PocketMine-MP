@@ -33,12 +33,12 @@ use pocketmine\utils\ReversePriorityQueue;
 class TaskScheduler{
 	private bool $enabled = true;
 
-	/** @phpstan-var ReversePriorityQueue<int, TaskHandler> */
+	/** @phpstan-var ReversePriorityQueue<int, TaskHandler<covariant Task>> */
 	protected ReversePriorityQueue $queue;
 
 	/**
 	 * @var ObjectSet|TaskHandler[]
-	 * @phpstan-var ObjectSet<TaskHandler>
+	 * @phpstan-var ObjectSet<TaskHandler<covariant Task>>
 	 */
 	protected ObjectSet $tasks;
 
@@ -51,18 +51,42 @@ class TaskScheduler{
 		$this->tasks = new ObjectSet();
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TTask $task
+	 *
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	public function scheduleTask(Task $task) : TaskHandler{
 		return $this->addTask($task, -1, -1);
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TTask $task
+	 *
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	public function scheduleDelayedTask(Task $task, int $delay) : TaskHandler{
 		return $this->addTask($task, $delay, -1);
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TTask $task
+	 *
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	public function scheduleRepeatingTask(Task $task, int $period) : TaskHandler{
 		return $this->addTask($task, -1, $period);
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TTask $task
+	 *
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period) : TaskHandler{
 		return $this->addTask($task, $delay, $period);
 	}
@@ -77,10 +101,19 @@ class TaskScheduler{
 		}
 	}
 
+	/**
+	 * @phpstan-param TaskHandler<covariant Task> $task
+	 */
 	public function isQueued(TaskHandler $task) : bool{
 		return $this->tasks->contains($task);
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TTask $task
+	 *
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	private function addTask(Task $task, int $delay, int $period) : TaskHandler{
 		if(!$this->enabled){
 			throw new \LogicException("Tried to schedule task to disabled scheduler");
@@ -99,6 +132,11 @@ class TaskScheduler{
 		return $this->handle(new TaskHandler($task, $delay, $period, $this->owner));
 	}
 
+	/**
+	 * @phpstan-template TTask of Task
+	 * @phpstan-param TaskHandler<TTask> $handler
+	 * @phpstan-return TaskHandler<TTask>
+	 */
 	private function handle(TaskHandler $handler) : TaskHandler{
 		if($handler->isDelayed()){
 			$nextRun = $this->currentTick + $handler->getDelay();
@@ -128,7 +166,7 @@ class TaskScheduler{
 		}
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
-			/** @var TaskHandler $task */
+			/** @phpstan-var TaskHandler<covariant Task> $task */
 			$task = $this->queue->extract();
 			if($task->isCancelled()){
 				$this->tasks->remove($task);

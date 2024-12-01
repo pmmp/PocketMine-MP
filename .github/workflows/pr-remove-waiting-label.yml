@@ -1,0 +1,33 @@
+name: Remove waiting label from PRs
+
+on:
+  pull_request_target:
+    types: synchronize
+
+jobs:
+  delabel:
+    name: Remove label
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Remove label
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const [owner, repo] = context.payload.repository.full_name.split('/');
+            try {
+              await github.rest.issues.removeLabel({
+                owner: owner,
+                repo: repo,
+                issue_number: context.payload.number,
+                name: "Status: Waiting on Author",
+              });
+            } catch (error) {
+              if (error.status === 404) {
+                //probably label wasn't set on the issue
+                console.log('Failed to remove label (probably label isn\'t on the PR): ' + error.message);
+              } else {
+                throw error;
+              }
+            }

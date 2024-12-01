@@ -42,7 +42,7 @@ $constants = [];
  * @phpstan-param-out array<string, string> $constants
  */
 function collectProperties(string $prefix, array $properties, array &$constants) : void{
-	foreach($properties as $propertyName => $property){
+	foreach(Utils::promoteKeys($properties) as $propertyName => $property){
 		$fullPropertyName = ($prefix !== "" ? $prefix . "." : "") . $propertyName;
 
 		$constName = str_replace([".", "-"], "_", strtoupper($fullPropertyName));

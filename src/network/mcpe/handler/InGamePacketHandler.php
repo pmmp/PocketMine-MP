@@ -251,7 +251,7 @@ class InGamePacketHandler extends PacketHandler{
 			if(count($blockActions) > 100){
 				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
 			}
-			foreach($blockActions as $k => $blockAction){
+			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
 				$actionHandled = false;
 				if($blockAction instanceof PlayerBlockActionStopBreak){
 					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);

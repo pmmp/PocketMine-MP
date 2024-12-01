@@ -69,10 +69,16 @@ use function strtolower;
  * Manages all the plugins
  */
 class PluginManager{
-	/** @var Plugin[] */
+	/**
+	 * @var Plugin[]
+	 * @phpstan-var array<string, Plugin>
+	 */
 	protected array $plugins = [];
 
-	/** @var Plugin[] */
+	/**
+	 * @var Plugin[]
+	 * @phpstan-var array<string, Plugin>
+	 */
 	protected array $enabledPlugins = [];
 
 	/** @var array<string, array<string, true>> */
@@ -114,6 +120,7 @@ class PluginManager{
 
 	/**
 	 * @return Plugin[]
+	 * @phpstan-return array<string, Plugin>
 	 */
 	public function getPlugins() : array{
 		return $this->plugins;
@@ -526,7 +533,7 @@ class PluginManager{
 	}
 
 	public function tickSchedulers(int $currentTick) : void{
-		foreach($this->enabledPlugins as $pluginName => $p){
+		foreach(Utils::promoteKeys($this->enabledPlugins) as $pluginName => $p){
 			if(isset($this->enabledPlugins[$pluginName])){
 				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
 				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write

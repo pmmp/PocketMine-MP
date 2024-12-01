@@ -27,6 +27,7 @@ use pmmp\thread\Runnable;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
+use pocketmine\timings\Timings;
 use function array_key_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -78,7 +79,14 @@ abstract class AsyncTask extends Runnable{
 	public function run() : void{
 		$this->result = null;
 
-		$this->onRun();
+		$timings = Timings::getAsyncTaskRunTimings($this);
+		$timings->startTiming();
+
+		try{
+			$this->onRun();
+		}finally{
+			$timings->stopTiming();
+		}
 
 		$this->finished = true;
 		AsyncWorker::getNotifier()->wakeupSleeper();

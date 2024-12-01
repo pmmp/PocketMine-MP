@@ -315,6 +315,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_TIME_DESCRIPTION = "pocketmine.command.time.description";
 	public const POCKETMINE_COMMAND_TIME_USAGE = "pocketmine.command.time.usage";
 	public const POCKETMINE_COMMAND_TIMINGS_ALREADYENABLED = "pocketmine.command.timings.alreadyEnabled";
+	public const POCKETMINE_COMMAND_TIMINGS_COLLECT = "pocketmine.command.timings.collect";
 	public const POCKETMINE_COMMAND_TIMINGS_DESCRIPTION = "pocketmine.command.timings.description";
 	public const POCKETMINE_COMMAND_TIMINGS_DISABLE = "pocketmine.command.timings.disable";
 	public const POCKETMINE_COMMAND_TIMINGS_ENABLE = "pocketmine.command.timings.enable";

@@ -64,6 +64,7 @@ jobs:
         id: get-pm-version
         run: |
           echo PM_VERSION=$(php build/dump-version-info.php base_version) >> $GITHUB_OUTPUT
+          echo PM_MAJOR=$(php build/dump-version-info.php major_version) >> $GITHUB_OUTPUT
           echo MCPE_VERSION=$(php build/dump-version-info.php mcpe_version) >> $GITHUB_OUTPUT
           echo CHANGELOG_FILE_NAME=$(php build/dump-version-info.php changelog_file_name) >> $GITHUB_OUTPUT
           echo CHANGELOG_MD_HEADER=$(php build/dump-version-info.php changelog_md_header) >> $GITHUB_OUTPUT
@@ -72,7 +73,7 @@ jobs:
       - name: Generate PHP binary download URL
         id: php-binary-url
         run: |
-          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/php-${{ matrix.php-version }}-latest" >> $GITHUB_OUTPUT
+          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/pm${{ steps.get-pm-version.outputs.PM_MAJOR }}-php-${{ matrix.php-version }}-latest" >> $GITHUB_OUTPUT
 
       - name: Generate build info
         run: |

@@ -28,6 +28,7 @@ use PhpParser\Node\Stmt\Foreach_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\ClassStringType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\StringType;
@@ -62,8 +63,17 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 
 		$hasCastableKeyTypes = false;
 		$expectsIntKeyTypes = false;
-		TypeTraverser::map($iterableType->getIterableKeyType(), function(Type $type, callable $traverse) use (&$hasCastableKeyTypes, &$expectsIntKeyTypes) : Type{
-			if($type instanceof IntegerType){
+		$implicitType = false;
+		$benevolentUnionDepth = 0;
+		TypeTraverser::map($iterableType->getIterableKeyType(), function(Type $type, callable $traverse) use (&$hasCastableKeyTypes, &$expectsIntKeyTypes, &$benevolentUnionDepth, &$implicitType) : Type{
+			if($type instanceof BenevolentUnionType){
+				$implicitType = true;
+				$benevolentUnionDepth++;
+				$result = $traverse($type);
+				$benevolentUnionDepth--;
+				return $result;
+			}
+			if($type instanceof IntegerType && $benevolentUnionDepth === 0){
 				$expectsIntKeyTypes = true;
 				return $type;
 			}
@@ -78,12 +88,20 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 			return $type;
 		});
 		if($hasCastableKeyTypes && !$expectsIntKeyTypes){
-			$func = Utils::stringifyKeys(...);
+			$tip = $implicitType ?
+				sprintf(
+					"Declare a key type using @phpstan-var or @phpstan-param, or use %s() to promote the key type to get proper error reporting",
+					Utils::getNiceClosureName(Utils::promoteKeys(...))
+				) :
+				sprintf(
+					"Use %s() to get a \Generator that will force the keys to string",
+					Utils::getNiceClosureName(Utils::stringifyKeys(...)),
+				);
 			return [
 				RuleErrorBuilder::message(sprintf(
 					"Unsafe foreach on array with key type %s (they might be casted to int).",
 					$iterableType->getIterableKeyType()->describe(VerbosityLevel::value())
-				))->tip(sprintf("Use %s() for a safe Generator-based iterator.", Utils::getNiceClosureName($func)))->build()
+				))->tip($tip)->build()
 			];
 		}
 		return [];

@@ -1441,6 +1441,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_ALREADYENABLED, []);
 	}
 
+	public static function pocketmine_command_timings_collect() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_COLLECT, []);
+	}
+
 	public static function pocketmine_command_timings_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_DESCRIPTION, []);
 	}

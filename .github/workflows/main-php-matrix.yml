@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@3.1.0
+        uses: pmmp/setup-php-action@3.2.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@3.1.0
+        uses: pmmp/setup-php-action@3.2.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -96,7 +96,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@3.1.0
+        uses: pmmp/setup-php-action@3.2.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"
@@ -128,7 +128,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup PHP
-        uses: pmmp/setup-php-action@3.1.0
+        uses: pmmp/setup-php-action@3.2.0
         with:
           php-version: ${{ inputs.php }}
           install-path: "./bin"

@@ -7,13 +7,13 @@ assignees: ''
 
 ---
 
-<!--- tell us what you want -->
-## Description
+<!--- Describe the problem you want to solve -->
+## Problem description
 
 
-<!--- explain why you want this and why it's a good idea -->
-## Justification
+<!--- Describe what changes you want to make to solve this problem -->
+## Proposed solution
 
 
 <!--- (optional) describe alternative methods you've explored to achieve your goal -->
-## Alternative methods
+## Alternative solutions that don't require API changes

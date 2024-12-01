@@ -29,6 +29,7 @@ use pocketmine\data\bedrock\item\upgrade\ItemDataUpgrader;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
 use function explode;
@@ -67,7 +68,7 @@ final class LegacyStringToItemParser{
 		$mappings = json_decode($mappingsRaw, true);
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
 
-		foreach($mappings as $name => $id){
+		foreach(Utils::promoteKeys($mappings) as $name => $id){
 			if(!is_string($id)) throw new AssumptionFailedError("Invalid mappings format, expected string values");
 			$result->addMapping((string) $name, $id);
 		}
