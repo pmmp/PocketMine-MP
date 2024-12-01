@@ -23,27 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\Utils;
+use pocketmine\entity\Location;
+use pocketmine\entity\projectile\IceBomb as IceBombEntity;
+use pocketmine\entity\projectile\Throwable;
+use pocketmine\player\Player;
 
-class RottenFlesh extends Food{
+class IceBomb extends ProjectileItem{
 
-	public function getFoodRestore() : int{
-		return 4;
+	public function getMaxStackSize() : int{
+		return 16;
 	}
 
-	public function getSaturationRestore() : float{
-		return 0.8;
+	protected function createEntity(Location $location, Player $thrower) : Throwable{
+		return new IceBombEntity($location, $thrower);
 	}
 
-	public function getAdditionalEffects() : array{
-		if(Utils::getRandomFloat() <= 0.8){
-			return [
-				new EffectInstance(VanillaEffects::HUNGER(), 600)
-			];
-		}
+	public function getThrowForce() : float{
+		return 1.5;
+	}
 
-		return [];
+	public function getCooldownTicks() : int{
+		return 10;
 	}
 }

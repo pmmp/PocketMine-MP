@@ -29,6 +29,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use function array_keys;
 use function array_values;
 use function assert;
@@ -57,10 +58,16 @@ use function spl_object_id;
 class InventoryTransaction{
 	protected bool $hasExecuted = false;
 
-	/** @var Inventory[] */
+	/**
+	 * @var Inventory[]
+	 * @phpstan-var array<int, Inventory>
+	 */
 	protected array $inventories = [];
 
-	/** @var InventoryAction[] */
+	/**
+	 * @var InventoryAction[]
+	 * @phpstan-var array<int, InventoryAction>
+	 */
 	protected array $actions = [];
 
 	/**
@@ -81,6 +88,7 @@ class InventoryTransaction{
 
 	/**
 	 * @return Inventory[]
+	 * @phpstan-return array<int, Inventory>
 	 */
 	public function getInventories() : array{
 		return $this->inventories;
@@ -93,6 +101,7 @@ class InventoryTransaction{
 	 * significance and should not be relied on.
 	 *
 	 * @return InventoryAction[]
+	 * @phpstan-return array<int, InventoryAction>
 	 */
 	public function getActions() : array{
 		return $this->actions;
@@ -102,6 +111,9 @@ class InventoryTransaction{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
+			if($action instanceof SlotChangeAction && !isset($this->inventories[$inventoryId = spl_object_id($action->getInventory())])){
+				$this->inventories[$inventoryId] = $action->getInventory();
+			}
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
@@ -121,20 +133,10 @@ class InventoryTransaction{
 	}
 
 	/**
-	 * @internal This method should not be used by plugins, it's used to add tracked inventories for InventoryActions
-	 * involving inventories.
-	 */
-	public function addInventory(Inventory $inventory) : void{
-		if(!isset($this->inventories[$hash = spl_object_id($inventory)])){
-			$this->inventories[$hash] = $inventory;
-		}
-	}
-
-	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
-	 * @phpstan-param-out Item[] $needItems
-	 * @phpstan-param-out Item[] $haveItems
+	 * @phpstan-param-out list<Item> $needItems
+	 * @phpstan-param-out list<Item> $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
@@ -188,11 +190,8 @@ class InventoryTransaction{
 	 * wrong order), so this method also tries to chain them into order.
 	 */
 	protected function squashDuplicateSlotChanges() : void{
-		/** @var SlotChangeAction[][] $slotChanges */
 		$slotChanges = [];
-		/** @var Inventory[] $inventories */
 		$inventories = [];
-		/** @var int[] $slots */
 		$slots = [];
 
 		foreach($this->actions as $key => $action){
@@ -203,7 +202,7 @@ class InventoryTransaction{
 			}
 		}
 
-		foreach($slotChanges as $hash => $list){
+		foreach(Utils::stringifyKeys($slotChanges) as $hash => $list){
 			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
 				continue;
 			}
@@ -233,6 +232,7 @@ class InventoryTransaction{
 
 	/**
 	 * @param SlotChangeAction[] $possibleActions
+	 * @phpstan-param list<SlotChangeAction> $possibleActions
 	 */
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
 		assert(count($possibleActions) > 0);

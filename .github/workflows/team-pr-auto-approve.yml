@@ -11,8 +11,7 @@ on:
       - opened
       - reopened
       - ready_for_review
-  pull_request_review:
-    types: dismissed
+      - synchronize
 
 jobs:
   dispatch:
@@ -36,4 +35,4 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           repository: ${{ github.repository_owner }}/RestrictedActions
           event-type: auto_approve_collaborator_pr
-          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}", "reviewer_id": "${{ github.event.review.user.id || 0 }}" }'
+          client-payload: '{"repo": "${{ github.repository }}", "pull_request_id": "${{ github.event.pull_request.number }}", "reviewer_id": "0" }'

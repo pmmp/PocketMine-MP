@@ -122,7 +122,7 @@ if(!is_array($ids)){
 	throw new \RuntimeException("Invalid biome ID map, expected array for root JSON object");
 }
 $cleanedIds = [];
-foreach($ids as $name => $id){
+foreach(Utils::promoteKeys($ids) as $name => $id){
 	if(!is_string($name) || !is_int($id)){
 		throw new \RuntimeException("Invalid biome ID map, expected string => int map");
 	}

@@ -326,8 +326,9 @@ final class ItemTypeIds{
 	public const NAME_TAG = 20287;
 	public const GOAT_HORN = 20288;
 	public const END_CRYSTAL = 20289;
+	public const ICE_BOMB = 20290;
 
-	public const FIRST_UNUSED_ITEM_ID = 20290;
+	public const FIRST_UNUSED_ITEM_ID = 20291;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

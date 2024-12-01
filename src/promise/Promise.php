@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\promise;
 
+use pocketmine\utils\Utils;
 use function count;
 use function spl_object_id;
 
@@ -84,7 +85,7 @@ final class Promise{
 		$toResolve = count($promises);
 		$continue = true;
 
-		foreach($promises as $key => $promise){
+		foreach(Utils::promoteKeys($promises) as $key => $promise){
 			$promise->onCompletion(
 				function(mixed $value) use ($resolver, $key, $toResolve, &$values) : void{
 					$values[$key] = $value;

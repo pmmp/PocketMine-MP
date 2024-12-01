@@ -21,29 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\world\sound;
 
-use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
-use pocketmine\utils\Utils;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class RottenFlesh extends Food{
-
-	public function getFoodRestore() : int{
-		return 4;
-	}
-
-	public function getSaturationRestore() : float{
-		return 0.8;
-	}
-
-	public function getAdditionalEffects() : array{
-		if(Utils::getRandomFloat() <= 0.8){
-			return [
-				new EffectInstance(VanillaEffects::HUNGER(), 600)
-			];
-		}
-
-		return [];
+final class IceBombHitSound implements Sound{
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ICEBOMB_HIT, $pos, false)];
 	}
 }

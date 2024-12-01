@@ -57,9 +57,15 @@ class CraftingTransaction extends InventoryTransaction{
 	protected ?CraftingRecipe $recipe = null;
 	protected ?int $repetitions = null;
 
-	/** @var Item[] */
+	/**
+	 * @var Item[]
+	 * @phpstan-var list<Item>
+	 */
 	protected array $inputs = [];
-	/** @var Item[] */
+	/**
+	 * @var Item[]
+	 * @phpstan-var list<Item>
+	 */
 	protected array $outputs = [];
 
 	private CraftingManager $craftingManager;
@@ -74,6 +80,9 @@ class CraftingTransaction extends InventoryTransaction{
 	/**
 	 * @param Item[] $providedItems
 	 * @return Item[]
+	 *
+	 * @phpstan-param list<Item> $providedItems
+	 * @phpstan-return list<Item>
 	 */
 	private static function packItems(array $providedItems) : array{
 		$packedProvidedItems = [];
@@ -94,6 +103,9 @@ class CraftingTransaction extends InventoryTransaction{
 	/**
 	 * @param Item[]             $providedItems
 	 * @param RecipeIngredient[] $recipeIngredients
+	 *
+	 * @phpstan-param list<Item> $providedItems
+	 * @phpstan-param list<RecipeIngredient> $recipeIngredients
 	 */
 	public static function matchIngredients(array $providedItems, array $recipeIngredients, int $expectedIterations) : void{
 		if(count($recipeIngredients) === 0){
@@ -171,6 +183,9 @@ class CraftingTransaction extends InventoryTransaction{
 	/**
 	 * @param Item[] $txItems
 	 * @param Item[] $recipeItems
+	 *
+	 * @phpstan-param list<Item> $txItems
+	 * @phpstan-param list<Item> $recipeItems
 	 *
 	 * @throws TransactionValidationException
 	 */

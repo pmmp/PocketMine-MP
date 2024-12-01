@@ -67,6 +67,8 @@ use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
+use function mt_getrandmax;
+use function mt_rand;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
@@ -403,7 +405,7 @@ final class Utils{
 	}
 
 	/**
-	 * @param mixed[] $trace
+	 * @param mixed[][] $trace
 	 * @return string[]
 	 */
 	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
@@ -445,6 +447,7 @@ final class Utils{
 	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
@@ -456,7 +459,7 @@ final class Utils{
 				}else{
 					$args = $trace[$i]["params"];
 				}
-				/** @var mixed[] $args */
+				/** @phpstan-var array<int, mixed> $args */
 
 				$paramsList = [];
 				$offset = 0;
@@ -608,6 +611,18 @@ final class Utils{
 		}
 	}
 
+	/**
+	 * Gets rid of PHPStan BenevolentUnionType on array keys, so that wrong type errors get reported properly
+	 * Use this if you don't care what the key type is and just want proper PHPStan error reporting
+	 *
+	 * @phpstan-template TValueType
+	 * @phpstan-param array<TValueType> $array
+	 * @phpstan-return array<int|string, TValueType>
+	 */
+	public static function promoteKeys(array $array) : array{
+		return $array;
+	}
+
 	public static function checkUTF8(string $string) : void{
 		if(!mb_check_encoding($string, 'UTF-8')){
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
@@ -674,5 +689,13 @@ final class Utils{
 
 		//jit not available
 		return null;
+	}
+
+	/**
+	 * Returns a random float between 0.0 and 1.0
+	 * Drop-in replacement for lcg_value()
+	 */
+	public static function getRandomFloat() : float{
+		return mt_rand() / mt_getrandmax();
 	}
 }
