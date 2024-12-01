@@ -69,6 +69,10 @@ class Campfire extends Transparent{
 
 	private const UPDATE_INTERVAL_TICKS = 10;
 
+	/**
+	 * @deprecated This was added by mistake. It can't be relied on as the inventory won't be initialized if this block
+	 * has never been set in the world.
+	 */
 	protected CampfireInventory $inventory;
 
 	/**
@@ -129,6 +133,10 @@ class Campfire extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 9 / 16)];
 	}
 
+	/**
+	 * @deprecated This was added by mistake. It can't be relied on as the inventory won't be initialized if this block
+	 * has never been set in the world.
+	 */
 	public function getInventory() : CampfireInventory{
 		return $this->inventory;
 	}

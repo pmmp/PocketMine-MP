@@ -89,6 +89,8 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
+use pocketmine\scheduler\TimingsCollectionTask;
+use pocketmine\scheduler\TimingsControlTask;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
@@ -894,7 +896,36 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
+			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
+			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
+
 			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool->addWorkerStartHook(function(int $i) : void{
+				if(TimingsHandler::isEnabled()){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::setEnabled(true), $i);
+				}
+			});
+			TimingsHandler::getToggleCallbacks()->add(function(bool $enable) : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::setEnabled($enable), $workerId);
+				}
+			});
+			TimingsHandler::getReloadCallbacks()->add(function() : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::reload(), $workerId);
+				}
+			});
+			TimingsHandler::getCollectCallbacks()->add(function() : array{
+				$promises = [];
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$resolver = new PromiseResolver();
+					$this->asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
+
+					$promises[] = $resolver->getPromise();
+				}
+
+				return $promises;
+			});
 
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
@@ -967,9 +998,6 @@ class Server{
 				(VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
-
-			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
-			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
 
 			DefaultPermissions::registerCorePermissions();
 

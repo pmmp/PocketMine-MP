@@ -91,6 +91,11 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
+			message: "#^Method pocketmine\\\\timings\\\\TimingsHandler\\:\\:lazyGetSet\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<T of object\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
+			count: 1
+			path: ../../../src/timings/TimingsHandler.php
+
+		-
 			message: "#^Casting to int something that's already int\\.$#"
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php
