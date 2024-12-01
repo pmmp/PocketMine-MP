@@ -189,6 +189,9 @@ class TimingsHandler{
 	}
 
 	public static function setEnabled(bool $enable = true) : void{
+		if($enable === self::$enabled){
+			return;
+		}
 		self::$enabled = $enable;
 		self::internalReload();
 		if(self::$toggleCallbacks !== null){
