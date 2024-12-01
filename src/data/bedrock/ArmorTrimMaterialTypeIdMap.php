@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\ArmorTrimMaterialTypeIds as Ids;
 use pocketmine\item\ArmorTrimMaterial;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaArmorTrimMaterials as Materials;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
 use function array_values;

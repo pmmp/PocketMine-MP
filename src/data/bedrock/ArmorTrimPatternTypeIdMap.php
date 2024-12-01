@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\ArmorTrimPatternTypeIds as Ids;
 use pocketmine\item\ArmorTrimPattern;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaArmorTrimPatterns as Patterns;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
 use function array_values;
