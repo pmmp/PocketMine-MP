@@ -211,11 +211,11 @@ class InGamePacketHandler extends PacketHandler{
 			$this->forceMoveSync = false;
 		}
 
-		$inputFlags = $packet->getInputFlags();
+		$inputFlags = $packet->getInputFlags()->getLength();
 		if($inputFlags !== $this->lastPlayerAuthInputFlags){
 			$this->lastPlayerAuthInputFlags = $inputFlags;
 
-			$sneaking = $packet->hasFlag(PlayerAuthInputFlags::SNEAKING);
+			$sneaking = $packet->getInputFlags()->get(PlayerAuthInputFlags::SNEAKING);
 			if($this->player->isSneaking() === $sneaking){
 				$sneaking = null;
 			}
@@ -233,10 +233,10 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->sendData([$this->player]);
 			}
 
-			if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+			if($packet->getInputFlags()->get(PlayerAuthInputFlags::START_JUMPING)){
 				$this->player->jump();
 			}
-			if($packet->hasFlag(PlayerAuthInputFlags::MISSED_SWING)){
+			if($packet->getInputFlags()->get(PlayerAuthInputFlags::MISSED_SWING)){
 				$this->player->missSwing();
 			}
 		}
