@@ -41,11 +41,12 @@ use function fopen;
 use function fwrite;
 use function gc_collect_cycles;
 use function gc_disable;
-use function gc_enable;
 use function gc_mem_caches;
+use function gc_status;
 use function get_class;
 use function get_declared_classes;
 use function get_defined_functions;
+use function hrtime;
 use function ini_get;
 use function ini_set;
 use function intdiv;
@@ -55,9 +56,11 @@ use function is_object;
 use function is_resource;
 use function is_string;
 use function json_encode;
+use function max;
 use function mb_strtoupper;
 use function min;
 use function mkdir;
+use function number_format;
 use function preg_match;
 use function print_r;
 use function round;
@@ -107,6 +110,7 @@ class MemoryManager{
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Memory Manager");
 
 		$this->init($server->getConfigGroup());
+		gc_disable();
 	}
 
 	private function init(ServerConfigGroup $config) : void{
@@ -152,7 +156,6 @@ class MemoryManager{
 		$this->lowMemClearWorldCache = $config->getPropertyBool(Yml::MEMORY_WORLD_CACHES_LOW_MEMORY_TRIGGER, true);
 
 		$this->dumpWorkers = $config->getPropertyBool(Yml::MEMORY_MEMORY_DUMP_DUMP_ASYNC_WORKER, true);
-		gc_enable();
 	}
 
 	public function isLowMemory() : bool{
@@ -204,6 +207,28 @@ class MemoryManager{
 		$this->logger->debug(sprintf("Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
+	private const GC_THRESHOLD_TRIGGER = 100;
+	private const GC_THRESHOLD_MAX = 1_000_000_000;
+	private const GC_THRESHOLD_DEFAULT = 10_001;
+	private const GC_THRESHOLD_STEP = 10_000;
+
+	private int $gcThreshold = self::GC_THRESHOLD_DEFAULT;
+
+	private function adjustGcThreshold(int $count, int $num_roots) : void{
+		//TODO Very simple heuristic for dynamic GC buffer resizing:
+		//If there are "too few" collections, increase the collection threshold
+		//by a fixed step
+		//Adapted from zend_gc.c/gc_adjust_threshold() as of PHP 8.3.14
+		if($count < self::GC_THRESHOLD_TRIGGER || $num_roots >= $this->gcThreshold){
+			/* increase */
+			if($this->gcThreshold < self::GC_THRESHOLD_MAX){
+				$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
+			}
+		}elseif($this->gcThreshold > self::GC_THRESHOLD_DEFAULT){
+			$this->gcThreshold = max(self::GC_THRESHOLD_DEFAULT, $this->gcThreshold - self::GC_THRESHOLD_STEP);
+		}
+	}
+
 	/**
 	 * Called every tick to update the memory manager state.
 	 */
@@ -239,6 +264,15 @@ class MemoryManager{
 		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
+		}else{
+			$status = gc_status();
+			$roots = $status["roots"];
+			if($roots >= $this->gcThreshold){
+				Timings::$garbageCollector->startTiming();
+				$cycles = gc_collect_cycles();
+				$this->adjustGcThreshold($cycles, $roots);
+				Timings::$garbageCollector->stopTiming();
+			}
 		}
 
 		Timings::$memoryManager->stopTiming();
@@ -465,7 +499,6 @@ class MemoryManager{
 		$logger->info("Finished!");
 
 		ini_set('memory_limit', $hardLimit);
-		gc_enable();
 	}
 
 	/**
