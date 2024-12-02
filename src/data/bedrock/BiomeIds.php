@@ -29,97 +29,174 @@ final class BiomeIds{
 		//NOOP
 	}
 
-	public const OCEAN = 0;
-	public const PLAINS = 1;
-	public const DESERT = 2;
-	public const EXTREME_HILLS = 3;
-	public const FOREST = 4;
-	public const TAIGA = 5;
-	public const SWAMPLAND = 6;
-	public const RIVER = 7;
-	public const HELL = 8;
-	public const THE_END = 9;
-	public const LEGACY_FROZEN_OCEAN = 10;
-	public const FROZEN_RIVER = 11;
-	public const ICE_PLAINS = 12;
-	public const ICE_MOUNTAINS = 13;
-	public const MUSHROOM_ISLAND = 14;
-	public const MUSHROOM_ISLAND_SHORE = 15;
-	public const BEACH = 16;
-	public const DESERT_HILLS = 17;
-	public const FOREST_HILLS = 18;
-	public const TAIGA_HILLS = 19;
-	public const EXTREME_HILLS_EDGE = 20;
-	public const JUNGLE = 21;
-	public const JUNGLE_HILLS = 22;
-	public const JUNGLE_EDGE = 23;
-	public const DEEP_OCEAN = 24;
-	public const STONE_BEACH = 25;
-	public const COLD_BEACH = 26;
-	public const BIRCH_FOREST = 27;
-	public const BIRCH_FOREST_HILLS = 28;
-	public const ROOFED_FOREST = 29;
-	public const COLD_TAIGA = 30;
-	public const COLD_TAIGA_HILLS = 31;
-	public const MEGA_TAIGA = 32;
-	public const MEGA_TAIGA_HILLS = 33;
-	public const EXTREME_HILLS_PLUS_TREES = 34;
-	public const SAVANNA = 35;
-	public const SAVANNA_PLATEAU = 36;
-	public const MESA = 37;
-	public const MESA_PLATEAU_STONE = 38;
-	public const MESA_PLATEAU = 39;
-	public const WARM_OCEAN = 40;
-	public const DEEP_WARM_OCEAN = 41;
-	public const LUKEWARM_OCEAN = 42;
-	public const DEEP_LUKEWARM_OCEAN = 43;
-	public const COLD_OCEAN = 44;
-	public const DEEP_COLD_OCEAN = 45;
-	public const FROZEN_OCEAN = 46;
-	public const DEEP_FROZEN_OCEAN = 47;
-	public const BAMBOO_JUNGLE = 48;
-	public const BAMBOO_JUNGLE_HILLS = 49;
+	public const HELL = 42415;
 
-	public const SUNFLOWER_PLAINS = 129;
-	public const DESERT_MUTATED = 130;
-	public const EXTREME_HILLS_MUTATED = 131;
-	public const FLOWER_FOREST = 132;
-	public const TAIGA_MUTATED = 133;
-	public const SWAMPLAND_MUTATED = 134;
+	public const SOULSAND_VALLEY = 42420;
 
-	public const ICE_PLAINS_SPIKES = 140;
+	public const THE_END = 42420;
 
-	public const JUNGLE_MUTATED = 149;
+	public const DEEP_DARK = 42423;
 
-	public const JUNGLE_EDGE_MUTATED = 151;
+	public const MESA = 42431;
 
-	public const BIRCH_FOREST_MUTATED = 155;
-	public const BIRCH_FOREST_HILLS_MUTATED = 156;
-	public const ROOFED_FOREST_MUTATED = 157;
-	public const COLD_TAIGA_MUTATED = 158;
+	public const RIVER = 42431;
 
-	public const REDWOOD_TAIGA_MUTATED = 160;
-	public const REDWOOD_TAIGA_HILLS_MUTATED = 161;
-	public const EXTREME_HILLS_PLUS_TREES_MUTATED = 162;
-	public const SAVANNA_MUTATED = 163;
-	public const SAVANNA_PLATEAU_MUTATED = 164;
-	public const MESA_BRYCE = 165;
-	public const MESA_PLATEAU_STONE_MUTATED = 166;
-	public const MESA_PLATEAU_MUTATED = 167;
+	public const WARPED_FOREST = 42431;
 
-	public const SOULSAND_VALLEY = 178;
-	public const CRIMSON_FOREST = 179;
-	public const WARPED_FOREST = 180;
-	public const BASALT_DELTAS = 181;
-	public const JAGGED_PEAKS = 182;
-	public const FROZEN_PEAKS = 183;
-	public const SNOWY_SLOPES = 184;
-	public const GROVE = 185;
-	public const MEADOW = 186;
-	public const LUSH_CAVES = 187;
-	public const DRIPSTONE_CAVES = 188;
-	public const STONY_PEAKS = 189;
-	public const DEEP_DARK = 190;
-	public const MANGROVE_SWAMP = 191;
-	public const CHERRY_GROVE = 192;
+	public const DEEP_OCEAN = 42469;
+
+	public const ICE_MOUNTAINS = 42478;
+
+	public const MANGROVE_SWAMP = 42478;
+
+	public const BEACH = 42512;
+
+	public const BIRCH_FOREST_HILLS = 42512;
+
+	public const BIRCH_FOREST_HILLS_MUTATED = 42512;
+
+	public const COLD_TAIGA = 42512;
+
+	public const COLD_TAIGA_MUTATED = 42512;
+
+	public const DEEP_COLD_OCEAN = 42512;
+
+	public const DEEP_FROZEN_OCEAN = 42512;
+
+	public const DEEP_LUKEWARM_OCEAN = 42512;
+
+	public const DEEP_WARM_OCEAN = 42512;
+
+	public const DESERT = 42512;
+
+	public const EXTREME_HILLS = 42512;
+
+	public const EXTREME_HILLS_EDGE = 42512;
+
+	public const EXTREME_HILLS_MUTATED = 42512;
+
+	public const EXTREME_HILLS_PLUS_TREES = 42512;
+
+	public const FLOWER_FOREST = 42512;
+
+	public const FOREST = 42512;
+
+	public const FOREST_HILLS = 42512;
+
+	public const FROZEN_PEAKS = 42512;
+
+	public const GROVE = 42512;
+
+	public const ICE_PLAINS_SPIKES = 42512;
+
+	public const JAGGED_PEAKS = 42512;
+
+	public const JUNGLE = 42512;
+
+	public const JUNGLE_HILLS = 42512;
+
+	public const JUNGLE_MUTATED = 42512;
+
+	public const MEGA_TAIGA = 42512;
+
+	public const MESA_BRYCE = 42512;
+
+	public const MESA_PLATEAU_STONE = 42512;
+
+	public const MESA_PLATEAU_STONE_MUTATED = 42512;
+
+	public const OCEAN = 42512;
+
+	public const PLAINS = 42512;
+
+	public const REDWOOD_TAIGA_HILLS_MUTATED = 42512;
+
+	public const SAVANNA_MUTATED = 42512;
+
+	public const SNOWY_SLOPES = 42512;
+
+	public const SWAMPLAND = 42512;
+
+	public const SWAMPLAND_MUTATED = 42512;
+
+	public const TAIGA = 42512;
+
+	public const TAIGA_HILLS = 42512;
+
+	public const WARM_OCEAN = 42512;
+
+	public const LUSH_CAVES = 42529;
+
+	public const PALE_GARDEN = 42529;
+
+	public const CRIMSON_FOREST = 42568;
+
+	public const DRIPSTONE_CAVES = 42568;
+
+	public const JUNGLE_EDGE = 42568;
+
+	public const BASALT_DELTAS = 42579;
+
+	public const FROZEN_RIVER = 42579;
+
+	public const LEGACY_FROZEN_OCEAN = 42579;
+
+	public const BIRCH_FOREST = 42636;
+
+	public const BIRCH_FOREST_MUTATED = 42636;
+
+	public const CHERRY_GROVE = 42636;
+
+	public const COLD_BEACH = 42636;
+
+	public const COLD_OCEAN = 42636;
+
+	public const COLD_TAIGA_HILLS = 42636;
+
+	public const DESERT_MUTATED = 42636;
+
+	public const EXTREME_HILLS_PLUS_TREES_MUTATED = 42636;
+
+	public const FROZEN_OCEAN = 42636;
+
+	public const JUNGLE_EDGE_MUTATED = 42636;
+
+	public const LUKEWARM_OCEAN = 42636;
+
+	public const MEADOW = 42636;
+
+	public const MEGA_TAIGA_HILLS = 42636;
+
+	public const MESA_PLATEAU = 42636;
+
+	public const MESA_PLATEAU_MUTATED = 42636;
+
+	public const REDWOOD_TAIGA_MUTATED = 42636;
+
+	public const ROOFED_FOREST = 42636;
+
+	public const ROOFED_FOREST_MUTATED = 42636;
+
+	public const SAVANNA = 42636;
+
+	public const SAVANNA_PLATEAU = 42636;
+
+	public const SAVANNA_PLATEAU_MUTATED = 42636;
+
+	public const STONE_BEACH = 42636;
+
+	public const STONY_PEAKS = 42636;
+
+	public const SUNFLOWER_PLAINS = 42636;
+
+	public const TAIGA_MUTATED = 42636;
+
+	public const ICE_PLAINS = 42648;
+
+	public const BAMBOO_JUNGLE = 42654;
+
+	public const BAMBOO_JUNGLE_HILLS = 42654;
+	public const MUSHROOM_ISLAND = 42655;
+	public const DESERT_HILLS = 42656;
+	public const MUSHROOM_ISLAND_SHORE = 42657;
 }
