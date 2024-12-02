@@ -190,6 +190,7 @@ class PluginManager{
 		}
 		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
 		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
+		$consoleRoot = $permManager->getPermission(DefaultPermissions::ROOT_CONSOLE);
 		foreach(Utils::stringifyKeys($description->getPermissions()) as $default => $perms){
 			foreach($perms as $perm){
 				$permManager->addPermission($perm);
@@ -209,6 +210,9 @@ class PluginManager{
 						//permission will be denied instead.
 						$everyoneRoot->addChild($perm->getName(), true);
 						$opRoot->addChild($perm->getName(), false);
+						break;
+					case PermissionParser::DEFAULT_CONSOLE:
+						$consoleRoot->addChild($perm->getName(), true);
 						break;
 					default:
 						break;

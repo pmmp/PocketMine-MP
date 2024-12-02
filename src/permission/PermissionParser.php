@@ -31,6 +31,10 @@ class PermissionParser{
 
 	public const DEFAULT_OP = "op";
 	public const DEFAULT_NOT_OP = "notop";
+
+	public const DEFAULT_CONSOLE = "console";
+
+	public const DEFAULT_NOT_CONSOLE = "notconsole";
 	public const DEFAULT_TRUE = "true";
 	public const DEFAULT_FALSE = "false";
 
@@ -41,6 +45,8 @@ class PermissionParser{
 		"isoperator" => self::DEFAULT_OP,
 		"admin" => self::DEFAULT_OP,
 		"isadmin" => self::DEFAULT_OP,
+		"console" => self::DEFAULT_CONSOLE,
+		"isconsole" => self::DEFAULT_CONSOLE,
 
 		"!op" => self::DEFAULT_NOT_OP,
 		"notop" => self::DEFAULT_NOT_OP,
@@ -48,6 +54,8 @@ class PermissionParser{
 		"notoperator" => self::DEFAULT_NOT_OP,
 		"!admin" => self::DEFAULT_NOT_OP,
 		"notadmin" => self::DEFAULT_NOT_OP,
+		"!console" => self::DEFAULT_NOT_CONSOLE,
+		"notconsole" => self::DEFAULT_NOT_CONSOLE,
 
 		"true" => self::DEFAULT_TRUE,
 		"false" => self::DEFAULT_FALSE,
