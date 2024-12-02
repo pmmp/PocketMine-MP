@@ -212,12 +212,12 @@ class MemoryManager{
 
 	private int $gcThreshold = self::GC_THRESHOLD_DEFAULT;
 
-	private function adjustGcThreshold(int $count, int $num_roots) : void{
+	private function adjustGcThreshold(int $count, int $roots) : void{
 		//TODO Very simple heuristic for dynamic GC buffer resizing:
 		//If there are "too few" collections, increase the collection threshold
 		//by a fixed step
 		//Adapted from zend_gc.c/gc_adjust_threshold() as of PHP 8.3.14
-		if($count < self::GC_THRESHOLD_TRIGGER || $num_roots >= $this->gcThreshold){
+		if($count < self::GC_THRESHOLD_TRIGGER || $roots >= $this->gcThreshold){
 			$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
 		}elseif($this->gcThreshold > self::GC_THRESHOLD_DEFAULT){
 			$this->gcThreshold = max(self::GC_THRESHOLD_DEFAULT, $this->gcThreshold - self::GC_THRESHOLD_STEP);
