@@ -218,10 +218,7 @@ class MemoryManager{
 		//by a fixed step
 		//Adapted from zend_gc.c/gc_adjust_threshold() as of PHP 8.3.14
 		if($count < self::GC_THRESHOLD_TRIGGER || $num_roots >= $this->gcThreshold){
-			/* increase */
-			if($this->gcThreshold < self::GC_THRESHOLD_MAX){
-				$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
-			}
+			$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
 		}elseif($this->gcThreshold > self::GC_THRESHOLD_DEFAULT){
 			$this->gcThreshold = max(self::GC_THRESHOLD_DEFAULT, $this->gcThreshold - self::GC_THRESHOLD_STEP);
 		}
