@@ -212,11 +212,12 @@ class MemoryManager{
 
 	private int $gcThreshold = self::GC_THRESHOLD_DEFAULT;
 
-	private function adjustGcThreshold(int $count, int $roots) : void{
+	private function adjustGcThreshold(int $count) : void{
 		//TODO Very simple heuristic for dynamic GC buffer resizing:
 		//If there are "too few" collections, increase the collection threshold
 		//by a fixed step
 		//Adapted from zend_gc.c/gc_adjust_threshold() as of PHP 8.3.14
+		$roots = gc_status()["roots"];
 		if($count < self::GC_THRESHOLD_TRIGGER || $roots >= $this->gcThreshold){
 			$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
 		}elseif($this->gcThreshold > self::GC_THRESHOLD_DEFAULT){
@@ -259,15 +260,11 @@ class MemoryManager{
 		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
-		}else{
-			$status = gc_status();
-			$roots = $status["roots"];
-			if($roots >= $this->gcThreshold){
-				Timings::$garbageCollector->startTiming();
-				$cycles = gc_collect_cycles();
-				$this->adjustGcThreshold($cycles, $roots);
-				Timings::$garbageCollector->stopTiming();
-			}
+		}elseif(gc_status()["roots"] >= $this->gcThreshold){
+			Timings::$garbageCollector->startTiming();
+			$cycles = gc_collect_cycles();
+			$this->adjustGcThreshold($cycles);
+			Timings::$garbageCollector->stopTiming();
 		}
 
 		Timings::$memoryManager->stopTiming();
