@@ -187,6 +187,7 @@ use function strtolower;
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
  * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
+ * @method static Opaque CHISELED_RESIN_BRICKS()
  * @method static Opaque CHISELED_SANDSTONE()
  * @method static Opaque CHISELED_STONE_BRICKS()
  * @method static Opaque CHISELED_TUFF()
@@ -225,6 +226,7 @@ use function strtolower;
  * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
+ * @method static CreakingHeart CREAKING_HEART()
  * @method static WoodenButton CRIMSON_BUTTON()
  * @method static WoodenDoor CRIMSON_DOOR()
  * @method static WoodenFence CRIMSON_FENCE()
@@ -430,6 +432,7 @@ use function strtolower;
  * @method static Slab END_STONE_BRICK_SLAB()
  * @method static Stair END_STONE_BRICK_STAIRS()
  * @method static Wall END_STONE_BRICK_WALL()
+ * @method static Eyeblossom EYEBLOSSOM()
  * @method static Slab FAKE_WOODEN_SLAB()
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
@@ -586,6 +589,20 @@ use function strtolower;
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
+ * @method static WoodenButton PALE_OAK_BUTTON()
+ * @method static WoodenDoor PALE_OAK_DOOR()
+ * @method static WoodenFence PALE_OAK_FENCE()
+ * @method static FenceGate PALE_OAK_FENCE_GATE()
+ * @method static Leaves PALE_OAK_LEAVES()
+ * @method static Wood PALE_OAK_LOG()
+ * @method static Planks PALE_OAK_PLANKS()
+ * @method static WoodenPressurePlate PALE_OAK_PRESSURE_PLATE()
+ * @method static FloorSign PALE_OAK_SIGN()
+ * @method static WoodenSlab PALE_OAK_SLAB()
+ * @method static WoodenStairs PALE_OAK_STAIRS()
+ * @method static WoodenTrapdoor PALE_OAK_TRAPDOOR()
+ * @method static WallSign PALE_OAK_WALL_SIGN()
+ * @method static Wood PALE_OAK_WOOD()
  * @method static DoublePlant PEONY()
  * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
@@ -669,6 +686,12 @@ use function strtolower;
  * @method static Flower RED_TULIP()
  * @method static Opaque REINFORCED_DEEPSLATE()
  * @method static Reserved6 RESERVED6()
+ * @method static Opaque RESIN_BLOCK()
+ * @method static Opaque RESIN_BRICKS()
+ * @method static Slab RESIN_BRICK_SLAB()
+ * @method static Stair RESIN_BRICK_STAIRS()
+ * @method static Wall RESIN_BRICK_WALL()
+ * @method static ResinClump RESIN_CLUMP()
  * @method static DoublePlant ROSE_BUSH()
  * @method static Sand SAND()
  * @method static Opaque SANDSTONE()
@@ -859,6 +882,8 @@ final class VanillaBlocks{
 		self::register("clay", new Clay(new BID(Ids::CLAY), "Clay Block", new Info(BreakInfo::shovel(0.6))));
 		self::register("coal", new Coal(new BID(Ids::COAL), "Coal Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
 
+		self::register("creaking_heart", new CreakingHeart(new BID(Ids::CREAKING_HEART), "Creaking Heart", new Info(BreakInfo::axe(10.0, null, 50.0))));
+
 		$cobblestoneBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 		self::register("cobblestone", $cobblestone = new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone", new Opaque(new BID(Ids::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
@@ -920,6 +945,7 @@ final class VanillaBlocks{
 		self::register("furnace", new Furnace(new BID(Ids::FURNACE, TileNormalFurnace::class), "Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::FURNACE));
 		self::register("blast_furnace", new Furnace(new BID(Ids::BLAST_FURNACE, TileBlastFurnace::class), "Blast Furnace", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::BLAST_FURNACE));
 		self::register("smoker", new Furnace(new BID(Ids::SMOKER, TileSmoker::class), "Smoker", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD)), FurnaceType::SMOKER));
+		self::register("eyeblossom", new Eyeblossom(new BID(Ids::EYEBLOSSOM), "Eyeblossom", $flowerTypeInfo));
 
 		$glassBreakInfo = new Info(new BreakInfo(0.3));
 		self::register("glass", new Glass(new BID(Ids::GLASS), "Glass", $glassBreakInfo));
@@ -1037,6 +1063,16 @@ final class VanillaBlocks{
 		self::register("redstone_torch", new RedstoneTorch(new BID(Ids::REDSTONE_TORCH), "Redstone Torch", new Info(BreakInfo::instant())));
 		self::register("redstone_wire", new RedstoneWire(new BID(Ids::REDSTONE_WIRE), "Redstone", new Info(BreakInfo::instant())));
 		self::register("reserved6", new Reserved6(new BID(Ids::RESERVED6), "reserved6", new Info(BreakInfo::instant())));
+
+		$resinBricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
+		self::register("chiseled_resin_bricks", new Opaque(new BID(Ids::CHISELED_RESIN_BRICKS), "Chiseled Resin Bricks", $resinBricksBreakInfo));
+		self::register("resin_block", new Opaque(new BID(Ids::RESIN_BLOCK), "Block of Resin", $resinBricksBreakInfo));
+		self::register("resin_brick_slab", new Slab(new BID(Ids::RESIN_BRICK_SLAB), "Resin Brick Slab", $resinBricksBreakInfo));
+		self::register("resin_brick_stairs", new Stair(new BID(Ids::RESIN_BRICK_STAIRS), "Resin Brick Stairs", $resinBricksBreakInfo));
+		self::register("resin_brick_wall", new Wall(new BID(Ids::RESIN_BRICK_WALL), "Resin Brick Wall", $resinBricksBreakInfo));
+		self::register("resin_bricks", new Opaque(new BID(Ids::RESIN_BRICKS), "Resin Bricks", $resinBricksBreakInfo));
+
+		self::register("resin_clump", new ResinClump(new BID(Ids::RESIN_CLUMP), "Resin Clump", new Info(BreakInfo::instant())));
 
 		$sandTypeInfo = new Info(BreakInfo::shovel(0.5), [Tags::SAND]);
 		self::register("sand", new Sand(new BID(Ids::SAND), "Sand", $sandTypeInfo));

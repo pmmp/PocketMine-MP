@@ -115,6 +115,7 @@ use function strtolower;
  * @method static Item CHEMICAL_SULPHATE()
  * @method static Item CHEMICAL_TUNGSTEN_CHLORIDE()
  * @method static Item CHEMICAL_WATER()
+ * @method static Boat CHERRY_BOAT()
  * @method static ItemBlockWallOrFloor CHERRY_SIGN()
  * @method static ChorusFruit CHORUS_FRUIT()
  * @method static Item CLAY()
@@ -239,6 +240,8 @@ use function strtolower;
  * @method static Boat OAK_BOAT()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static PaintingItem PAINTING()
+ * @method static Boat PALE_OAK_BOAT()
+ * @method static ItemBlockWallOrFloor PALE_OAK_SIGN()
  * @method static Item PAPER()
  * @method static Item PHANTOM_MEMBRANE()
  * @method static PitcherPod PITCHER_POD()
@@ -281,6 +284,7 @@ use function strtolower;
  * @method static Record RECORD_WAIT()
  * @method static Record RECORD_WARD()
  * @method static Redstone REDSTONE_DUST()
+ * @method static Item RESIN_BRICK()
  * @method static Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static RottenFlesh ROTTEN_FLESH()
  * @method static Item SCUTE()
@@ -504,6 +508,7 @@ final class VanillaItems{
 		});
 		self::register("oak_sign", new ItemBlockWallOrFloor(new IID(Ids::OAK_SIGN), Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
 		self::register("painting", new PaintingItem(new IID(Ids::PAINTING), "Painting"));
+		self::register("pale_oak_sign", new ItemBlockWallOrFloor(new IID(Ids::PALE_OAK_SIGN), Blocks::PALE_OAK_SIGN(), Blocks::PALE_OAK_WALL_SIGN()));
 		self::register("paper", new Item(new IID(Ids::PAPER), "Paper"));
 		self::register("phantom_membrane", new Item(new IID(Ids::PHANTOM_MEMBRANE), "Phantom Membrane"));
 		self::register("pitcher_pod", new PitcherPod(new IID(Ids::PITCHER_POD), "Pitcher Pod"));
@@ -545,6 +550,7 @@ final class VanillaItems{
 		self::register("record_wait", new Record(new IID(Ids::RECORD_WAIT), RecordType::DISK_WAIT, "Record Wait"));
 		self::register("record_ward", new Record(new IID(Ids::RECORD_WARD), RecordType::DISK_WARD, "Record Ward"));
 		self::register("redstone_dust", new Redstone(new IID(Ids::REDSTONE_DUST), "Redstone"));
+		self::register("resin_brick", new Item(new IID(Ids::RESIN_BRICK), "Resin Brick"));
 		self::register("rotten_flesh", new RottenFlesh(new IID(Ids::ROTTEN_FLESH), "Rotten Flesh"));
 		self::register("scute", new Item(new IID(Ids::SCUTE), "Scute"));
 		self::register("shears", new Shears(new IID(Ids::SHEARS), "Shears", [EnchantmentTags::SHEARS]));
@@ -580,6 +586,8 @@ final class VanillaItems{
 				BoatType::ACACIA => Ids::ACACIA_BOAT,
 				BoatType::DARK_OAK => Ids::DARK_OAK_BOAT,
 				BoatType::MANGROVE => Ids::MANGROVE_BOAT,
+				BoatType::CHERRY => Ids::CHERRY_BOAT,
+				BoatType::PALE_OAK => Ids::PALE_OAK_BOAT,
 			}), $type->getDisplayName() . " Boat", $type));
 		}
 	}

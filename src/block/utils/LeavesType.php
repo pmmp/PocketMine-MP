@@ -38,6 +38,7 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static LeavesType JUNGLE()
  * @method static LeavesType MANGROVE()
  * @method static LeavesType OAK()
+ * @method static LeavesType PALE_OAK()
  * @method static LeavesType SPRUCE()
  */
 enum LeavesType{
@@ -53,6 +54,7 @@ enum LeavesType{
 	case AZALEA;
 	case FLOWERING_AZALEA;
 	case CHERRY;
+	case PALE_OAK;
 
 	public function getDisplayName() : string{
 		return match($this){
@@ -65,7 +67,8 @@ enum LeavesType{
 			self::MANGROVE => "Mangrove",
 			self::AZALEA => "Azalea",
 			self::FLOWERING_AZALEA => "Flowering Azalea",
-			self::CHERRY => "Cherry"
+			self::CHERRY => "Cherry",
+			self::PALE_OAK => "Pale Oak"
 		};
 	}
 }

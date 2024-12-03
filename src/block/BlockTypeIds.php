@@ -765,8 +765,31 @@ final class BlockTypeIds{
 	public const COPPER_TRAPDOOR = 10735;
 	public const CHISELED_COPPER = 10736;
 	public const COPPER_GRATE = 10737;
+	public const CHISELED_RESIN_BRICKS = 10738;
+	public const EYEBLOSSOM = 10739;
+	public const CREAKING_HEART = 10740;
+	public const PALE_OAK_BUTTON = 10741;
+	public const PALE_OAK_DOOR = 10742;
+	public const PALE_OAK_FENCE = 10743;
+	public const PALE_OAK_FENCE_GATE = 10744;
+	public const PALE_OAK_LEAVES = 10745;
+	public const PALE_OAK_LOG = 10746;
+	public const PALE_OAK_PLANKS = 10747;
+	public const PALE_OAK_PRESSURE_PLATE = 10748;
+	public const PALE_OAK_SIGN = 10749;
+	public const PALE_OAK_SLAB = 10750;
+	public const PALE_OAK_STAIRS = 10751;
+	public const PALE_OAK_TRAPDOOR = 10752;
+	public const PALE_OAK_WALL_SIGN = 10753;
+	public const PALE_OAK_WOOD = 10754;
+	public const RESIN_BLOCK = 10755;
+	public const RESIN_BRICK_SLAB = 10756;
+	public const RESIN_BRICK_STAIRS = 10757;
+	public const RESIN_BRICK_WALL = 10758;
+	public const RESIN_BRICKS = 10759;
+	public const RESIN_CLUMP = 10760;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10738;
+	public const FIRST_UNUSED_BLOCK_ID = 10761;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
