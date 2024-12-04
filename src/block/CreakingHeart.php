@@ -23,16 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
+use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class CreakingHeart extends Opaque{
-	use PillarRotationTrait;
+class CreakingHeart extends SimplePillar{
 
 	protected bool $active = false;
 	protected bool $natural = false;
+
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+		$w->axis($this->axis);
+		$w->bool($this->active);
+		$w->bool($this->natural);
+	}
 
 	public function isActive() : bool{ return $this->active; }
 
@@ -56,6 +63,51 @@ class CreakingHeart extends Opaque{
 			return true;
 		}
 		return parent::onBreak($item, $player, $returnedItems);
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			VanillaBlocks::RESIN_CLUMP()->asItem()->setCount(mt_rand(1,3))
+		];
+	}
+
+	public function onNearbyBlockChange() : void{
+		if($this->checkActivation() && !$this->active){
+			$this->active = true;
+			$this->position->getWorld()->setBlock($this->position, $this);
+			//TODO: Spawn Creaking entity?
+		}
+	}
+
+	private function checkActivation() : bool{
+		$facingPairs = $this->getFacingPairFromAxis($this->getAxis());
+		if($facingPairs === null){
+			return false;
+		}
+
+		[$positiveFacing, $negativeFacing] = $facingPairs;
+
+		$positiveBlock = $this->getSide($positiveFacing);
+		$negativeBlock = $this->getSide($negativeFacing);
+
+		if($positiveBlock->getTypeId() === BlockTypeIds::PALE_OAK_LOG && $negativeBlock->getTypeId() === BlockTypeIds::PALE_OAK_LOG){
+			return true;
+		}
+
+		return false;
+	}
+
+	private function getFacingPairFromAxis(int $axis) : ?array{
+		return match($axis){
+			Axis::X => [Facing::EAST, Facing::WEST],
+			Axis::Y => [Facing::UP, Facing::DOWN],
+			Axis::Z => [Facing::SOUTH, Facing::NORTH],
+			default => null
+		};
 	}
 
 	//TODO: ambient sounds

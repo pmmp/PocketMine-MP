@@ -661,6 +661,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::JUNGLE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::JUNGLE_LEAVES(), $in));
 		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::OAK_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::OAK_LEAVES(), $in));
+		$this->map(Ids::PALE_OAK_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::PALE_OAK_LEAVES(), $in));
 		$this->map(Ids::SPRUCE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::SPRUCE_LEAVES(), $in));
 	}
 
@@ -741,6 +742,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::CHISELED_TUFF_BRICKS, fn() => Blocks::CHISELED_TUFF_BRICKS());
 		$this->mapSimple(Ids::CHORUS_PLANT, fn() => Blocks::CHORUS_PLANT());
 		$this->mapSimple(Ids::CLAY, fn() => Blocks::CLAY());
+		$this->mapSimple(Ids::CLOSED_EYEBLOSSOM, fn() => Blocks::EYEBLOSSOM());
 		$this->mapSimple(Ids::COAL_BLOCK, fn() => Blocks::COAL());
 		$this->mapSimple(Ids::COAL_ORE, fn() => Blocks::COAL_ORE());
 		$this->mapSimple(Ids::COBBLED_DEEPSLATE, fn() => Blocks::COBBLED_DEEPSLATE());
@@ -948,6 +950,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::NETHERREACTOR, fn() => Blocks::NETHER_REACTOR_CORE());
 		$this->mapSimple(Ids::NOTEBLOCK, fn() => Blocks::NOTE_BLOCK());
 		$this->mapSimple(Ids::OBSIDIAN, fn() => Blocks::OBSIDIAN());
+		$this->mapSimple(Ids::OPEN_EYEBLOSSOM, fn() => Blocks::EYEBLOSSOM()->setOpen(true));
 		$this->mapSimple(Ids::PACKED_ICE, fn() => Blocks::PACKED_ICE());
 		$this->mapSimple(Ids::PACKED_MUD, fn() => Blocks::PACKED_MUD());
 		$this->mapSimple(Ids::PODZOL, fn() => Blocks::PODZOL());
@@ -974,7 +977,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
 		$this->mapSimple(Ids::RESIN_BLOCK, fn() => Blocks::RESIN_BLOCK());
 		$this->mapSimple(Ids::RESIN_BRICKS, fn() => Blocks::RESIN_BRICKS());
-		$this->mapSimple(Ids::RESIN_CLUMP, fn() => Blocks::RESIN_CLUMP());
 		$this->mapSimple(Ids::SAND, fn() => Blocks::SAND());
 		$this->mapSimple(Ids::SANDSTONE, fn() => Blocks::SANDSTONE());
 		$this->mapSimple(Ids::SCULK, fn() => Blocks::SCULK());
@@ -1202,7 +1204,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::CHORUS_FLOWER()
 				->setAge($in->readBoundedInt(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE));
 		});
-		$this->map(Ids::CLOSED_EYEBLOSSOM, fn() => Blocks::EYEBLOSSOM());
 		$this->map(Ids::COARSE_DIRT, fn() => Blocks::DIRT()->setDirtType(DirtType::COARSE));
 		$this->mapSlab(Ids::COBBLED_DEEPSLATE_SLAB, Ids::COBBLED_DEEPSLATE_DOUBLE_SLAB, fn() => Blocks::COBBLED_DEEPSLATE_SLAB());
 		$this->mapStairs(Ids::COBBLED_DEEPSLATE_STAIRS, fn() => Blocks::COBBLED_DEEPSLATE_STAIRS());
@@ -1457,7 +1458,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->mapSlab(Ids::NORMAL_STONE_SLAB, Ids::NORMAL_STONE_DOUBLE_SLAB, fn() => Blocks::STONE_SLAB());
 		$this->mapStairs(Ids::NORMAL_STONE_STAIRS, fn() => Blocks::STONE_STAIRS());
-		$this->map(Ids::OPEN_EYEBLOSSOM, fn() => Blocks::EYEBLOSSOM()->setOpen(true));
 		$this->map(Ids::OCHRE_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::OCHRE)->setAxis($in->readPillarAxis()));
 		$this->map(Ids::OXIDIZED_COPPER, fn() => Helper::decodeCopper(Blocks::COPPER(), CopperOxidation::OXIDIZED));
 		$this->map(Ids::OXIDIZED_CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::OXIDIZED));
@@ -1596,6 +1596,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSlab(Ids::RESIN_BRICK_SLAB, Ids::RESIN_BRICK_DOUBLE_SLAB, fn() => Blocks::RESIN_BRICK_SLAB());
 		$this->mapStairs(Ids::RESIN_BRICK_STAIRS, fn() => Blocks::RESIN_BRICK_STAIRS());
 		$this->map(Ids::RESIN_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::RESIN_BRICK_WALL(), $in));
+		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
 		$this->mapSlab(Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB, fn() => Blocks::SANDSTONE_SLAB());
 		$this->mapStairs(Ids::SANDSTONE_STAIRS, fn() => Blocks::SANDSTONE_STAIRS());
 		$this->map(Ids::SANDSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::SANDSTONE_WALL(), $in));
