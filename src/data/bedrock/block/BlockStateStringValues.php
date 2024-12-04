@@ -106,6 +106,22 @@ final class BlockStateStringValues{
 	public const ORIENTATION_UP_WEST = "up_west";
 	public const ORIENTATION_WEST_UP = "west_up";
 
+	public const PALE_MOSS_CARPET_SIDE_EAST_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_EAST_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_EAST_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_NORTH_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_NORTH_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_NORTH_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_WEST_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_WEST_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_WEST_TALL = "tall";
+
 	public const PILLAR_AXIS_X = "x";
 	public const PILLAR_AXIS_Y = "y";
 	public const PILLAR_AXIS_Z = "z";
