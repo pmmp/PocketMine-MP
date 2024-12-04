@@ -120,7 +120,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			hasAddons: false,
 			hasScripts: false,
 			worldTemplateId: Uuid::fromString(Uuid::NIL),
-			worldTemplateVersion: ProtocolInfo::MINECRAFT_VERSION_NETWORK
+			worldTemplateVersion: ""
 		));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
