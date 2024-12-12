@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c57e8f52250edfd03906219fe14fc240",
+    "content-hash": "732102eca72dc1d29e7b67dfbce07653",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -126,6 +126,57 @@
             "time": "2023-11-29T23:19:16+00:00"
         },
         {
+            "name": "netresearch/jsonmapper",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/cweiske/jsonmapper.git",
+                "reference": "8c64d8d444a5d764c641ebe97e0e3bc72b25bf6c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/cweiske/jsonmapper/zipball/8c64d8d444a5d764c641ebe97e0e3bc72b25bf6c",
+                "reference": "8c64d8d444a5d764c641ebe97e0e3bc72b25bf6c",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-reflection": "*",
+                "ext-spl": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~7.5 || ~8.0 || ~9.0 || ~10.0",
+                "squizlabs/php_codesniffer": "~3.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "JsonMapper": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "OSL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Weiske",
+                    "email": "cweiske@cweiske.de",
+                    "homepage": "http://github.com/cweiske/jsonmapper/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Map nested JSON structures onto PHP classes",
+            "support": {
+                "email": "cweiske@cweiske.de",
+                "issues": "https://github.com/cweiske/jsonmapper/issues",
+                "source": "https://github.com/cweiske/jsonmapper/tree/v5.0.0"
+            },
+            "time": "2024-09-08T10:20:00+00:00"
+        },
+        {
             "name": "pocketmine/bedrock-block-upgrade-schema",
             "version": "5.0.0",
             "source": {
@@ -153,16 +204,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "2.14.1+bedrock-1.21.40",
+            "version": "2.15.0+bedrock-1.21.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "4a41864ed09613ecec6791e2ae076a8ec7089cc4"
+                "reference": "6e819f36d781866ce63d2406be2ce7f2d1afd9ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/4a41864ed09613ecec6791e2ae076a8ec7089cc4",
-                "reference": "4a41864ed09613ecec6791e2ae076a8ec7089cc4",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/6e819f36d781866ce63d2406be2ce7f2d1afd9ad",
+                "reference": "6e819f36d781866ce63d2406be2ce7f2d1afd9ad",
                 "shasum": ""
             },
             "type": "library",
@@ -173,22 +224,22 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/2.14.1+bedrock-1.21.40"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.50"
             },
-            "time": "2024-11-12T21:36:20+00:00"
+            "time": "2024-12-04T12:59:12+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
-            "version": "1.13.1",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockItemUpgradeSchema.git",
-                "reference": "1cf81305f2ffcf7dde9577c4f16a55c765192b03"
+                "reference": "9fc7c9bbb558a017395c1cb7dd819c033ee971bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockItemUpgradeSchema/zipball/1cf81305f2ffcf7dde9577c4f16a55c765192b03",
-                "reference": "1cf81305f2ffcf7dde9577c4f16a55c765192b03",
+                "url": "https://api.github.com/repos/pmmp/BedrockItemUpgradeSchema/zipball/9fc7c9bbb558a017395c1cb7dd819c033ee971bb",
+                "reference": "9fc7c9bbb558a017395c1cb7dd819c033ee971bb",
                 "shasum": ""
             },
             "type": "library",
@@ -199,22 +250,22 @@
             "description": "JSON schemas for upgrading items found in older Minecraft: Bedrock world saves",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockItemUpgradeSchema/issues",
-                "source": "https://github.com/pmmp/BedrockItemUpgradeSchema/tree/1.13.1"
+                "source": "https://github.com/pmmp/BedrockItemUpgradeSchema/tree/1.14.0"
             },
-            "time": "2024-11-12T21:33:17+00:00"
+            "time": "2024-12-04T12:22:49+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "35.0.0+bedrock-1.21.40",
+            "version": "35.0.0+bedrock-1.21.50",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "6aa7cbeb4a7ec6fa58f9024aeaddad7c5c65a459"
+                "reference": "bd1ec79bae8c88aa984e1c5f0c3313be5ae9b435"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/6aa7cbeb4a7ec6fa58f9024aeaddad7c5c65a459",
-                "reference": "6aa7cbeb4a7ec6fa58f9024aeaddad7c5c65a459",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/bd1ec79bae8c88aa984e1c5f0c3313be5ae9b435",
+                "reference": "bd1ec79bae8c88aa984e1c5f0c3313be5ae9b435",
                 "shasum": ""
             },
             "require": {
@@ -245,9 +296,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/35.0.0+bedrock-1.21.40"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/35.0.0+bedrock-1.21.50"
             },
-            "time": "2024-10-24T15:45:43+00:00"
+            "time": "2024-12-04T13:02:00+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -420,16 +471,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.22.0",
+            "version": "2.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "aed64e9ca92ffbb20788b3b3bb75b60e4f0eae2d"
+                "reference": "fa4e377c437391cfcfdedd08eea3a848eabd1b49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/aed64e9ca92ffbb20788b3b3bb75b60e4f0eae2d",
-                "reference": "aed64e9ca92ffbb20788b3b3bb75b60e4f0eae2d",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/fa4e377c437391cfcfdedd08eea3a848eabd1b49",
+                "reference": "fa4e377c437391cfcfdedd08eea3a848eabd1b49",
                 "shasum": ""
             },
             "type": "library",
@@ -437,9 +488,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.22.0"
+                "source": "https://github.com/pmmp/Language/tree/2.22.1"
             },
-            "time": "2024-11-16T13:28:01+00:00"
+            "time": "2024-12-06T14:44:17+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -564,60 +615,6 @@
                 "source": "https://github.com/pmmp/NBT/tree/1.0.0"
             },
             "time": "2023-07-14T13:01:49+00:00"
-        },
-        {
-            "name": "pocketmine/netresearch-jsonmapper",
-            "version": "v4.4.999",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/netresearch-jsonmapper.git",
-                "reference": "9a6610033d56e358e86a3e4fd5f87063c7318833"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/netresearch-jsonmapper/zipball/9a6610033d56e358e86a3e4fd5f87063c7318833",
-                "reference": "9a6610033d56e358e86a3e4fd5f87063c7318833",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "ext-pcre": "*",
-                "ext-reflection": "*",
-                "ext-spl": "*",
-                "php": ">=7.1"
-            },
-            "replace": {
-                "netresearch/jsonmapper": "~4.2.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "~7.5 || ~8.0 || ~9.0 || ~10.0",
-                "squizlabs/php_codesniffer": "~3.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "JsonMapper": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "OSL-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Christian Weiske",
-                    "email": "cweiske@cweiske.de",
-                    "homepage": "http://github.com/cweiske/jsonmapper/",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Fork of netresearch/jsonmapper with security fixes needed by pocketmine/pocketmine-mp",
-            "support": {
-                "email": "cweiske@cweiske.de",
-                "issues": "https://github.com/cweiske/jsonmapper/issues",
-                "source": "https://github.com/pmmp/netresearch-jsonmapper/tree/v4.4.999"
-            },
-            "time": "2024-02-23T13:17:01+00:00"
         },
         {
             "name": "pocketmine/raklib",

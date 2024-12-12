@@ -44,6 +44,6 @@ abstract class Food extends Item implements FoodSourceItem{
 	}
 
 	public function canStartUsingItem(Player $player) : bool{
-		return !$this->requiresHunger() || $player->getHungerManager()->isHungry();
+		return !$this->requiresHunger() || $player->canEat();
 	}
 }

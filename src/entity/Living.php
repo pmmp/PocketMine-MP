@@ -25,6 +25,8 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -44,6 +46,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -64,6 +67,7 @@ use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function abs;
 use function array_shift;
 use function atan2;
 use function ceil;
@@ -128,6 +132,8 @@ abstract class Living extends Entity{
 	protected bool $gliding = false;
 	protected bool $swimming = false;
 
+	private ?int $frostWalkerLevel = null;
+
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
 	protected function getInitialGravity() : float{ return 0.08; }
@@ -151,6 +157,14 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+			onSlotChange: function(Inventory $inventory, int $slot) : void{
+				if($slot === ArmorInventory::SLOT_FEET){
+					$this->frostWalkerLevel = null;
+				}
+			},
+			onContentChange: function() : void{ $this->frostWalkerLevel = null; }
+		));
 
 		$health = $this->getMaxHealth();
 
@@ -685,6 +699,47 @@ abstract class Living extends Entity{
 		Timings::$livingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
+	}
+
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		parent::move($dx, $dy, $dz);
+
+		$frostWalkerLevel = $this->getFrostWalkerLevel();
+		if($frostWalkerLevel > 0 && (abs($this->location->x - $oldX) > self::MOTION_THRESHOLD || abs($this->location->z - $oldZ) > self::MOTION_THRESHOLD)){
+			$this->applyFrostWalker($frostWalkerLevel);
+		}
+	}
+
+	protected function applyFrostWalker(int $level) : void{
+		$radius = $level + 2;
+		$world = $this->getWorld();
+
+		$baseX = $this->location->getFloorX();
+		$y = $this->location->getFloorY() - 1;
+		$baseZ = $this->location->getFloorZ();
+
+		$frostedIce = VanillaBlocks::FROSTED_ICE();
+		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
+			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
+				$block = $world->getBlockAt($x, $y, $z);
+				if(
+					!$block instanceof Water ||
+					!$block->isSource() ||
+					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
+					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
+				){
+					continue;
+				}
+				$world->setBlockAt($x, $y, $z, $frostedIce);
+			}
+		}
+	}
+
+	public function getFrostWalkerLevel() : int{
+		return $this->frostWalkerLevel ??= $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
 	}
 
 	/**

@@ -1,28 +1,61 @@
 name: Draft release
 
 on:
-  workflow_call:
-    outputs:
-      draft-url:
-        description: 'The URL of the draft release'
-        value: ${{ jobs.draft.outputs.draft-url }}
-      version:
-        description: 'PocketMine-MP version'
-        value: ${{ jobs.draft.outputs.version }}
+  #presume that pull_request_target is safe at this point, since the PR was approved and merged
+  #we need write access to prepare the release & create comments
+  pull_request_target:
+    types:
+      - closed
+    branches:
+      - stable
+      - minor-next
+      - major-next
+      - "legacy/*"
+    paths:
+      - "src/VersionInfo.php"
+  push:
+    tags:
+      - "*"
+
+env:
+  PHP_VERSION: "8.2"
 
 jobs:
-  draft:
-    name: Create GitHub draft release
+  check:
+    name: Check release
+    uses: ./.github/workflows/draft-release-pr-check.yml
+
+  trigger-post-release-workflow:
+    name: Trigger post-release RestrictedActions workflow
+    needs: [check]
+    if: needs.check.outputs.valid == 'true' && github.ref_type != 'tag' #can't do post-commit for a tag
 
     runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: [8.2]
 
-    outputs:
-      draft-url: ${{ steps.create-draft.outputs.html_url }}
-      version: ${{ steps.get-pm-version.outputs.PM_VERSION }}
+    steps:
+      - name: Generate access token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
+          private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: RestrictedActions
+
+      - name: Dispatch post-release restricted action
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: ${{ github.repository_owner }}/RestrictedActions
+          event-type: pocketmine_mp_post_release
+          client-payload: '{"branch": "${{ github.ref }}"}'
+
+  draft:
+    name: Create GitHub draft release
+    needs: [check]
+    if: needs.check.outputs.valid == 'true' || github.ref_type == 'tag' #ignore validity check for tags
+
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +65,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@2.31.1
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{ env.PHP_VERSION }}
 
       - name: Restore Composer package cache
         uses: actions/cache@v4
@@ -50,7 +83,7 @@ jobs:
       - name: Calculate build number
         id: build-number
         run: |
-          BUILD_NUMBER=$((2000+$GITHUB_RUN_NUMBER)) #to stay above jenkins
+          BUILD_NUMBER=$((2300+$GITHUB_RUN_NUMBER)) #to stay above jenkins
           echo "Build number: $BUILD_NUMBER"
           echo BUILD_NUMBER=$BUILD_NUMBER >> $GITHUB_OUTPUT
 
@@ -63,23 +96,31 @@ jobs:
       - name: Get PocketMine-MP release version
         id: get-pm-version
         run: |
-          echo PM_VERSION=$(php build/dump-version-info.php base_version) >> $GITHUB_OUTPUT
+          PM_VERSION=$(php build/dump-version-info.php base_version)
+          echo PM_VERSION=$PM_VERSION >> $GITHUB_OUTPUT
           echo PM_MAJOR=$(php build/dump-version-info.php major_version) >> $GITHUB_OUTPUT
           echo MCPE_VERSION=$(php build/dump-version-info.php mcpe_version) >> $GITHUB_OUTPUT
           echo CHANGELOG_FILE_NAME=$(php build/dump-version-info.php changelog_file_name) >> $GITHUB_OUTPUT
           echo CHANGELOG_MD_HEADER=$(php build/dump-version-info.php changelog_md_header) >> $GITHUB_OUTPUT
           echo PRERELEASE=$(php build/dump-version-info.php prerelease) >> $GITHUB_OUTPUT
 
+          if [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
+            tag="$(echo "${{ github.ref }}" | cut -d/ -f3-)"
+          else
+            tag="$PM_VERSION"
+          fi
+          echo TAG_NAME=$tag >> $GITHUB_OUTPUT
+
       - name: Generate PHP binary download URL
         id: php-binary-url
         run: |
-          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/pm${{ steps.get-pm-version.outputs.PM_MAJOR }}-php-${{ matrix.php-version }}-latest" >> $GITHUB_OUTPUT
+          echo PHP_BINARY_URL="${{ github.server_url }}/${{ github.repository_owner }}/PHP-Binaries/releases/tag/pm${{ steps.get-pm-version.outputs.PM_MAJOR }}-php-${{ env.PHP_VERSION }}-latest" >> $GITHUB_OUTPUT
 
       - name: Generate build info
         run: |
           php build/generate-build-info-json.php \
             ${{ github.sha }} \
-            ${{ steps.get-pm-version.outputs.PM_VERSION }} \
+            ${{ steps.get-pm-version.outputs.TAG_NAME }} \
             ${{ github.repository }} \
             ${{ steps.build-number.outputs.BUILD_NUMBER }} \
             ${{ github.run_id }} \
@@ -108,12 +149,17 @@ jobs:
           draft: true
           prerelease: ${{ steps.get-pm-version.outputs.PRERELEASE }}
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
-          tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
+          tag: ${{ steps.get-pm-version.outputs.TAG_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          skipIfReleaseExists: true #for release PRs, tags will be created on release publish and trigger the tag release workflow - don't create a second draft
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
             Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.CHANGELOG_FILE_NAME }}#${{ steps.get-pm-version.outputs.CHANGELOG_MD_HEADER }}) for details.
 
             :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
+
+      - name: Post draft release URL on PR
+        if: github.event_name == 'pull_request_target'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: "[Draft release ${{ steps.get-pm-version.outputs.PM_VERSION }}](${{ steps.create-draft.outputs.html_url }}) has been created for commit ${{ github.sha }}. Please review and publish it."

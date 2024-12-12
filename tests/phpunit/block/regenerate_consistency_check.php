@@ -28,11 +28,11 @@ require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
-$newTable = BlockTest::computeConsistencyCheckTable(RuntimeBlockStateRegistry::getInstance());
+[$newTable, $newTiles] = BlockTest::computeConsistencyCheckTable(RuntimeBlockStateRegistry::getInstance());
 
 $oldTablePath = __DIR__ . '/block_factory_consistency_check.json';
 if(file_exists($oldTablePath)){
-	$errors = BlockTest::computeConsistencyCheckDiff($oldTablePath, $newTable);
+	$errors = BlockTest::computeConsistencyCheckDiff($oldTablePath, $newTable, $newTiles);
 
 	if(count($errors) > 0){
 		echo count($errors) . " changes detected:\n";
@@ -47,5 +47,6 @@ if(file_exists($oldTablePath)){
 }
 
 ksort($newTable, SORT_STRING);
+ksort($newTiles, SORT_STRING);
 
-file_put_contents($oldTablePath, json_encode($newTable, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+file_put_contents($oldTablePath, json_encode(["stateCounts" => $newTable, "tiles" => $newTiles], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));

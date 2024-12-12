@@ -284,6 +284,7 @@ use function strtolower;
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
  * @method static Record RECORD_WARD()
+ * @method static Item RECOVERY_COMPASS()
  * @method static Redstone REDSTONE_DUST()
  * @method static Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static RottenFlesh ROTTEN_FLESH()
@@ -574,6 +575,7 @@ final class VanillaItems{
 		self::register("record_strad", fn(IID $id) => new Record($id, RecordType::DISK_STRAD, "Record Strad"));
 		self::register("record_wait", fn(IID $id) => new Record($id, RecordType::DISK_WAIT, "Record Wait"));
 		self::register("record_ward", fn(IID $id) => new Record($id, RecordType::DISK_WARD, "Record Ward"));
+		self::register("recovery_compass", fn(IID $id) => new Item($id, "Recovery Compass"));
 		self::register("redstone_dust", fn(IID $id) => new Redstone($id, "Redstone"));
 		self::register("rotten_flesh", fn(IID $id) => new RottenFlesh($id, "Rotten Flesh"));
 		self::register("scute", fn(IID $id) => new Item($id, "Scute"));

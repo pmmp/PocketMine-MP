@@ -45,6 +45,7 @@ final class BedrockDataFiles{
 	public const ITEM_TAGS_JSON = BEDROCK_DATA_PATH . '/item_tags.json';
 	public const LEVEL_SOUND_ID_MAP_JSON = BEDROCK_DATA_PATH . '/level_sound_id_map.json';
 	public const PARTICLE_ID_MAP_JSON = BEDROCK_DATA_PATH . '/particle_id_map.json';
+	public const PROTOCOL_INFO_JSON = BEDROCK_DATA_PATH . '/protocol_info.json';
 	public const R12_TO_CURRENT_BLOCK_MAP_BIN = BEDROCK_DATA_PATH . '/r12_to_current_block_map.bin';
 	public const R16_TO_CURRENT_ITEM_MAP_JSON = BEDROCK_DATA_PATH . '/r16_to_current_item_map.json';
 	public const REQUIRED_ITEM_LIST_JSON = BEDROCK_DATA_PATH . '/required_item_list.json';

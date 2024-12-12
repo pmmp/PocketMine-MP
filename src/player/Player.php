@@ -110,6 +110,7 @@ use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -191,6 +192,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const TAG_SPAWN_X = "SpawnX"; //TAG_Int
 	private const TAG_SPAWN_Y = "SpawnY"; //TAG_Int
 	private const TAG_SPAWN_Z = "SpawnZ"; //TAG_Int
+	private const TAG_DEATH_WORLD = "DeathLevel"; //TAG_String
+	private const TAG_DEATH_X = "DeathPositionX"; //TAG_Int
+	private const TAG_DEATH_Y = "DeathPositionY"; //TAG_Int
+	private const TAG_DEATH_Z = "DeathPositionZ"; //TAG_Int
 	public const TAG_LEVEL = "Level"; //TAG_String
 	public const TAG_LAST_KNOWN_XUID = "LastKnownXUID"; //TAG_String
 
@@ -272,6 +277,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private ?Position $spawnPosition = null;
 
 	private bool $respawnLocked = false;
+
+	private ?Position $deathPosition = null;
 
 	//TODO: Abilities
 	protected bool $autoJump = true;
@@ -390,6 +397,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString(self::TAG_SPAWN_WORLD, ""))) instanceof World){
 			$this->spawnPosition = new Position($nbt->getInt(self::TAG_SPAWN_X), $nbt->getInt(self::TAG_SPAWN_Y), $nbt->getInt(self::TAG_SPAWN_Z), $world);
+		}
+		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString(self::TAG_DEATH_WORLD, ""))) instanceof World){
+			$this->deathPosition = new Position($nbt->getInt(self::TAG_DEATH_X), $nbt->getInt(self::TAG_DEATH_Y), $nbt->getInt(self::TAG_DEATH_Z), $world);
 		}
 	}
 
@@ -1032,6 +1042,30 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	public function getDeathPosition() : ?Position{
+		if($this->deathPosition !== null && !$this->deathPosition->isValid()){
+			$this->deathPosition = null;
+		}
+		return $this->deathPosition;
+	}
+
+	/**
+	 * @param Vector3|Position|null $pos
+	 */
+	public function setDeathPosition(?Vector3 $pos) : void{
+		if($pos !== null){
+			if($pos instanceof Position && $pos->world !== null){
+				$world = $pos->world;
+			}else{
+				$world = $this->getWorld();
+			}
+			$this->deathPosition = new Position($pos->x, $pos->y, $pos->z, $world);
+		}else{
+			$this->deathPosition = null;
+		}
+		$this->networkPropertiesDirty = true;
+	}
+
 	/**
 	 * @return Position
 	 */
@@ -1469,6 +1503,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->timings->stopTiming();
 
 		return true;
+	}
+
+	public function canEat() : bool{
+		return $this->isCreative() || parent::canEat();
 	}
 
 	public function canBreathe() : bool{
@@ -2332,6 +2370,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		unset($this->cursorInventory);
 		unset($this->craftingGrid);
 		$this->spawnPosition = null;
+		$this->deathPosition = null;
 		$this->blockBreakHandler = null;
 		parent::destroyCycles();
 	}
@@ -2373,6 +2412,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt(self::TAG_SPAWN_Z, $spawn->getFloorZ());
 		}
 
+		if($this->deathPosition !== null && $this->deathPosition->isValid()){
+			$nbt->setString(self::TAG_DEATH_WORLD, $this->deathPosition->getWorld()->getFolderName());
+			$nbt->setInt(self::TAG_DEATH_X, $this->deathPosition->getFloorX());
+			$nbt->setInt(self::TAG_DEATH_Y, $this->deathPosition->getFloorY());
+			$nbt->setInt(self::TAG_DEATH_Z, $this->deathPosition->getFloorZ());
+		}
+
 		$nbt->setInt(self::TAG_GAME_MODE, GameModeIdMap::getInstance()->toId($this->gamemode));
 		$nbt->setLong(self::TAG_FIRST_PLAYED, $this->firstPlayed);
 		$nbt->setLong(self::TAG_LAST_PLAYED, (int) floor(microtime(true) * 1000));
@@ -2391,6 +2437,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
 		$this->removeCurrentWindow();
+
+		$this->setDeathPosition($this->getPosition());
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops(), $this->getXpDropAmount(), null);
 		$ev->call();
@@ -2520,6 +2568,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
+
+		if($this->deathPosition !== null && $this->deathPosition->world === $this->location->world){
+			$properties->setBlockPos(EntityMetadataProperties::PLAYER_DEATH_POSITION, BlockPosition::fromVector3($this->deathPosition));
+			//TODO: this should be updated when dimensions are implemented
+			$properties->setInt(EntityMetadataProperties::PLAYER_DEATH_DIMENSION, DimensionIds::OVERWORLD);
+			$properties->setByte(EntityMetadataProperties::PLAYER_HAS_DIED, 1);
+		}else{
+			$properties->setBlockPos(EntityMetadataProperties::PLAYER_DEATH_POSITION, new BlockPosition(0, 0, 0));
+			$properties->setInt(EntityMetadataProperties::PLAYER_DEATH_DIMENSION, DimensionIds::OVERWORLD);
+			$properties->setByte(EntityMetadataProperties::PLAYER_HAS_DIED, 0);
+		}
 	}
 
 	public function sendData(?array $targets, ?array $data = null) : void{

@@ -54,6 +54,7 @@ use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
+use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\AmethystTrait;
@@ -1359,8 +1360,8 @@ final class VanillaBlocks{
 				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
 			};
-			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
-			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
+			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
+			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
 		}
 	}
 

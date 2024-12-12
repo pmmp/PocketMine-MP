@@ -75,6 +75,7 @@ final class ItemTypeNames{
 	public const BLEACH = "minecraft:bleach";
 	public const BLUE_BUNDLE = "minecraft:blue_bundle";
 	public const BLUE_DYE = "minecraft:blue_dye";
+	public const BOARD = "minecraft:board";
 	public const BOAT = "minecraft:boat";
 	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
 	public const BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:bolt_armor_trim_smithing_template";
@@ -154,6 +155,7 @@ final class ItemTypeNames{
 	public const CORAL_FAN = "minecraft:coral_fan";
 	public const CORAL_FAN_DEAD = "minecraft:coral_fan_dead";
 	public const COW_SPAWN_EGG = "minecraft:cow_spawn_egg";
+	public const CREAKING_SPAWN_EGG = "minecraft:creaking_spawn_egg";
 	public const CREEPER_BANNER_PATTERN = "minecraft:creeper_banner_pattern";
 	public const CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
 	public const CRIMSON_DOOR = "minecraft:crimson_door";
@@ -398,6 +400,11 @@ final class ItemTypeNames{
 	public const ORANGE_DYE = "minecraft:orange_dye";
 	public const OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 	public const PAINTING = "minecraft:painting";
+	public const PALE_OAK_BOAT = "minecraft:pale_oak_boat";
+	public const PALE_OAK_CHEST_BOAT = "minecraft:pale_oak_chest_boat";
+	public const PALE_OAK_DOOR = "minecraft:pale_oak_door";
+	public const PALE_OAK_HANGING_SIGN = "minecraft:pale_oak_hanging_sign";
+	public const PALE_OAK_SIGN = "minecraft:pale_oak_sign";
 	public const PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 	public const PAPER = "minecraft:paper";
 	public const PARROT_SPAWN_EGG = "minecraft:parrot_spawn_egg";
@@ -448,6 +455,7 @@ final class ItemTypeNames{
 	public const RED_FLOWER = "minecraft:red_flower";
 	public const REDSTONE = "minecraft:redstone";
 	public const REPEATER = "minecraft:repeater";
+	public const RESIN_BRICK = "minecraft:resin_brick";
 	public const RIB_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:rib_armor_trim_smithing_template";
 	public const ROTTEN_FLESH = "minecraft:rotten_flesh";
 	public const SADDLE = "minecraft:saddle";
