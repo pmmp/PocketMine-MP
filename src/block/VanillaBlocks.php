@@ -191,6 +191,7 @@ use function strtolower;
  * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
  * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
+ * @method static Opaque CHISELED_RESIN_BRICKS()
  * @method static Opaque CHISELED_SANDSTONE()
  * @method static Opaque CHISELED_STONE_BRICKS()
  * @method static Opaque CHISELED_TUFF()
@@ -687,6 +688,12 @@ use function strtolower;
  * @method static Flower RED_TULIP()
  * @method static Opaque REINFORCED_DEEPSLATE()
  * @method static Reserved6 RESERVED6()
+ * @method static Opaque RESIN()
+ * @method static Opaque RESIN_BRICKS()
+ * @method static Slab RESIN_BRICK_SLAB()
+ * @method static Stair RESIN_BRICK_STAIRS()
+ * @method static Wall RESIN_BRICK_WALL()
+ * @method static ResinClump RESIN_CLUMP()
  * @method static DoublePlant ROSE_BUSH()
  * @method static Sand SAND()
  * @method static Opaque SANDSTONE()
@@ -1326,6 +1333,7 @@ final class VanillaBlocks{
 		self::registerBlocksR17();
 		self::registerBlocksR18();
 		self::registerMudBlocks();
+		self::registerResinBlocks();
 		self::registerTuffBlocks();
 
 		self::registerCraftingTables();
@@ -1741,6 +1749,18 @@ final class VanillaBlocks{
 		self::register("mud_brick_slab", fn(BID $id) => new Slab($id, "Mud Brick", $mudBricksBreakInfo));
 		self::register("mud_brick_stairs", fn(BID $id) => new Stair($id, "Mud Brick Stairs", $mudBricksBreakInfo));
 		self::register("mud_brick_wall", fn(BID $id) => new Wall($id, "Mud Brick Wall", $mudBricksBreakInfo));
+	}
+
+	private static function registerResinBlocks() : void{
+		self::register("resin", fn(BID $id) => new Opaque($id, "Block of Resin", new Info(BreakInfo::instant())));
+		self::register("resin_clump", fn(BID $id) => new ResinClump($id, "Resin Clump", new Info(BreakInfo::instant())));
+
+		$resinBricksInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD));
+		self::register("resin_brick_slab", fn(BID $id) => new Slab($id, "Resin Brick", $resinBricksInfo));
+		self::register("resin_brick_stairs", fn(BID $id) => new Stair($id, "Resin Brick Stairs", $resinBricksInfo));
+		self::register("resin_brick_wall", fn(BID $id) => new Wall($id, "Resin Brick Wall", $resinBricksInfo));
+		self::register("resin_bricks", fn(BID $id) => new Opaque($id, "Resin Bricks", $resinBricksInfo));
+		self::register("chiseled_resin_bricks", fn(BID $id) => new Opaque($id, "Chiseled Resin Bricks", $resinBricksInfo));
 	}
 
 	private static function registerTuffBlocks() : void{

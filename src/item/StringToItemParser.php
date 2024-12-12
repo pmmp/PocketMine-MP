@@ -243,6 +243,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chiseled_polished_blackstone", fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
 		$result->registerBlock("chiseled_quartz", fn() => Blocks::CHISELED_QUARTZ());
 		$result->registerBlock("chiseled_red_sandstone", fn() => Blocks::CHISELED_RED_SANDSTONE());
+		$result->registerBlock("chiseled_resin_bricks", fn() => Blocks::CHISELED_RESIN_BRICKS());
 		$result->registerBlock("chiseled_sandstone", fn() => Blocks::CHISELED_SANDSTONE());
 		$result->registerBlock("chiseled_stone_bricks", fn() => Blocks::CHISELED_STONE_BRICKS());
 		$result->registerBlock("chiseled_tuff", fn() => Blocks::CHISELED_TUFF());
@@ -985,6 +986,13 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("repeater", fn() => Blocks::REDSTONE_REPEATER());
 		$result->registerBlock("repeater_block", fn() => Blocks::REDSTONE_REPEATER());
 		$result->registerBlock("reserved6", fn() => Blocks::RESERVED6());
+		$result->registerBlock("resin", fn() => Blocks::RESIN());
+		$result->registerBlock("resin_block", fn() => Blocks::RESIN());
+		$result->registerBlock("resin_brick_slab", fn() => Blocks::RESIN_BRICK_SLAB());
+		$result->registerBlock("resin_brick_stairs", fn() => Blocks::RESIN_BRICK_STAIRS());
+		$result->registerBlock("resin_brick_wall", fn() => Blocks::RESIN_BRICK_WALL());
+		$result->registerBlock("resin_bricks", fn() => Blocks::RESIN_BRICKS());
+		$result->registerBlock("resin_clump", fn() => Blocks::RESIN_CLUMP());
 		$result->registerBlock("rooted_dirt", fn() => Blocks::DIRT()->setDirtType(DirtType::ROOTED));
 		$result->registerBlock("rose", fn() => Blocks::POPPY());
 		$result->registerBlock("rose_bush", fn() => Blocks::ROSE_BUSH());
@@ -1499,6 +1507,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("recovery_compass", fn() => Items::RECOVERY_COMPASS());
 		$result->register("redstone", fn() => Items::REDSTONE_DUST());
 		$result->register("redstone_dust", fn() => Items::REDSTONE_DUST());
+		$result->register("resin_brick", fn() => Items::RESIN_BRICK());
 		$result->register("rib_armor_trim_smithing_template", fn() => Items::RIB_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("rotten_flesh", fn() => Items::ROTTEN_FLESH());
 		$result->register("salmon", fn() => Items::RAW_SALMON());

@@ -121,6 +121,7 @@ use pocketmine\block\RedstoneOre;
 use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
+use pocketmine\block\ResinClump;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Sapling;
 use pocketmine\block\SeaPickle;
@@ -810,6 +811,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::CHISELED_NETHER_BRICKS(), Ids::CHISELED_NETHER_BRICKS);
 		$this->mapSimple(Blocks::CHISELED_POLISHED_BLACKSTONE(), Ids::CHISELED_POLISHED_BLACKSTONE);
 		$this->mapSimple(Blocks::CHISELED_RED_SANDSTONE(), Ids::CHISELED_RED_SANDSTONE);
+		$this->mapSimple(Blocks::CHISELED_RESIN_BRICKS(), Ids::CHISELED_RESIN_BRICKS);
 		$this->mapSimple(Blocks::CHISELED_SANDSTONE(), Ids::CHISELED_SANDSTONE);
 		$this->mapSimple(Blocks::CHISELED_STONE_BRICKS(), Ids::CHISELED_STONE_BRICKS);
 		$this->mapSimple(Blocks::CHISELED_TUFF(), Ids::CHISELED_TUFF);
@@ -1051,6 +1053,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSimple(Blocks::RED_SANDSTONE(), Ids::RED_SANDSTONE);
 		$this->mapSimple(Blocks::REINFORCED_DEEPSLATE(), Ids::REINFORCED_DEEPSLATE);
 		$this->mapSimple(Blocks::RESERVED6(), Ids::RESERVED6);
+		$this->mapSimple(Blocks::RESIN(), Ids::RESIN_BLOCK);
+		$this->mapSimple(Blocks::RESIN_BRICKS(), Ids::RESIN_BRICKS);
 		$this->mapSimple(Blocks::SAND(), Ids::SAND);
 		$this->mapSimple(Blocks::SANDSTONE(), Ids::SANDSTONE);
 		$this->mapSimple(Blocks::SCULK(), Ids::SCULK);
@@ -1735,6 +1739,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapStairs(Blocks::RED_SANDSTONE_STAIRS(), Ids::RED_SANDSTONE_STAIRS);
 		$this->map(Blocks::RED_SANDSTONE_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::RED_SANDSTONE_WALL)));
 		$this->map(Blocks::RED_TORCH(), fn(Torch $block) => Helper::encodeTorch($block, Writer::create(Ids::COLORED_TORCH_RED)));
+		$this->mapSlab(Blocks::RESIN_BRICK_SLAB(), Ids::RESIN_BRICK_SLAB, Ids::RESIN_BRICK_DOUBLE_SLAB);
+		$this->map(Blocks::RESIN_BRICK_STAIRS(), fn(Stair $block) => Helper::encodeStairs($block, new Writer(Ids::RESIN_BRICK_STAIRS)));
+		$this->map(Blocks::RESIN_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::RESIN_BRICK_WALL)));
+		$this->map(Blocks::RESIN_CLUMP(), function(ResinClump $block) : Writer{
+			return Writer::create(Ids::RESIN_CLUMP)
+				->writeFacingFlags($block->getFaces());
+		});
 		$this->map(Blocks::ROSE_BUSH(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::ROSE_BUSH)));
 		$this->mapSlab(Blocks::SANDSTONE_SLAB(), Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::SANDSTONE_STAIRS(), Ids::SANDSTONE_STAIRS);

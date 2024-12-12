@@ -329,8 +329,9 @@ final class ItemTypeIds{
 	public const ICE_BOMB = 20290;
 	public const RECOVERY_COMPASS = 20291;
 	public const PALE_OAK_SIGN = 20292;
+	public const RESIN_BRICK = 20293;
 
-	public const FIRST_UNUSED_ITEM_ID = 20293;
+	public const FIRST_UNUSED_ITEM_ID = 20294;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

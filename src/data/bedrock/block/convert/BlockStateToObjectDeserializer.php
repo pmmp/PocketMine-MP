@@ -735,6 +735,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::CHISELED_NETHER_BRICKS, fn() => Blocks::CHISELED_NETHER_BRICKS());
 		$this->mapSimple(Ids::CHISELED_POLISHED_BLACKSTONE, fn() => Blocks::CHISELED_POLISHED_BLACKSTONE());
 		$this->mapSimple(Ids::CHISELED_RED_SANDSTONE, fn() => Blocks::CHISELED_RED_SANDSTONE());
+		$this->mapSimple(Ids::CHISELED_RESIN_BRICKS, fn() => Blocks::CHISELED_RESIN_BRICKS());
 		$this->mapSimple(Ids::CHISELED_SANDSTONE, fn() => Blocks::CHISELED_SANDSTONE());
 		$this->mapSimple(Ids::CHISELED_STONE_BRICKS, fn() => Blocks::CHISELED_STONE_BRICKS());
 		$this->mapSimple(Ids::CHISELED_TUFF, fn() => Blocks::CHISELED_TUFF());
@@ -972,6 +973,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::REDSTONE_BLOCK, fn() => Blocks::REDSTONE());
 		$this->mapSimple(Ids::REINFORCED_DEEPSLATE, fn() => Blocks::REINFORCED_DEEPSLATE());
 		$this->mapSimple(Ids::RESERVED6, fn() => Blocks::RESERVED6());
+		$this->mapSimple(Ids::RESIN_BLOCK, fn() => Blocks::RESIN());
+		$this->mapSimple(Ids::RESIN_BRICKS, fn() => Blocks::RESIN_BRICKS());
 		$this->mapSimple(Ids::SAND, fn() => Blocks::SAND());
 		$this->mapSimple(Ids::SANDSTONE, fn() => Blocks::SANDSTONE());
 		$this->mapSimple(Ids::SCULK, fn() => Blocks::SCULK());
@@ -1582,6 +1585,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SUGARCANE()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 15));
 		});
+		$this->mapSlab(Ids::RESIN_BRICK_SLAB, Ids::RESIN_BRICK_DOUBLE_SLAB, fn() => Blocks::RESIN_BRICK_SLAB());
+		$this->mapStairs(Ids::RESIN_BRICK_STAIRS, fn() => Blocks::RESIN_BRICK_STAIRS());
+		$this->map(Ids::RESIN_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::RESIN_BRICK_WALL(), $in));
+		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
 		$this->mapSlab(Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB, fn() => Blocks::SANDSTONE_SLAB());
 		$this->mapStairs(Ids::SANDSTONE_STAIRS, fn() => Blocks::SANDSTONE_STAIRS());
 		$this->map(Ids::SANDSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::SANDSTONE_WALL(), $in));
