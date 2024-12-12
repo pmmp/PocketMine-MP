@@ -63,6 +63,16 @@ abstract class TextFormat{
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
 	public const MINECOIN_GOLD = TextFormat::ESCAPE . "g";
+	public const MATERIAL_QUARTZ = TextFormat::ESCAPE . "h";
+	public const MATERIAL_IRON = TextFormat::ESCAPE . "i";
+	public const MATERIAL_NETHERITE = TextFormat::ESCAPE . "j";
+	public const MATERIAL_REDSTONE = TextFormat::ESCAPE . "m";
+	public const MATERIAL_COPPER = TextFormat::ESCAPE . "n";
+	public const MATERIAL_GOLD = TextFormat::ESCAPE . "p";
+	public const MATERIAL_EMERALD = TextFormat::ESCAPE . "q";
+	public const MATERIAL_DIAMOND = TextFormat::ESCAPE . "s";
+	public const MATERIAL_LAPIS = TextFormat::ESCAPE . "t";
+	public const MATERIAL_AMETHYST = TextFormat::ESCAPE . "u";
 
 	public const COLORS = [
 		self::BLACK => self::BLACK,
@@ -82,19 +92,29 @@ abstract class TextFormat{
 		self::YELLOW => self::YELLOW,
 		self::WHITE => self::WHITE,
 		self::MINECOIN_GOLD => self::MINECOIN_GOLD,
+		self::MATERIAL_QUARTZ => self::MATERIAL_QUARTZ,
+		self::MATERIAL_IRON => self::MATERIAL_IRON,
+		self::MATERIAL_NETHERITE => self::MATERIAL_NETHERITE,
+		self::MATERIAL_REDSTONE => self::MATERIAL_REDSTONE,
+		self::MATERIAL_COPPER => self::MATERIAL_COPPER,
+		self::MATERIAL_GOLD => self::MATERIAL_GOLD,
+		self::MATERIAL_EMERALD => self::MATERIAL_EMERALD,
+		self::MATERIAL_DIAMOND => self::MATERIAL_DIAMOND,
+		self::MATERIAL_LAPIS => self::MATERIAL_LAPIS,
+		self::MATERIAL_AMETHYST => self::MATERIAL_AMETHYST,
 	];
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
-	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
-	public const UNDERLINE = TextFormat::ESCAPE . "n";
+	/** @deprecated */
+	public const STRIKETHROUGH = "";
+	/** @deprecated */
+	public const UNDERLINE = "";
 	public const ITALIC = TextFormat::ESCAPE . "o";
 
 	public const FORMATS = [
 		self::OBFUSCATED => self::OBFUSCATED,
 		self::BOLD => self::BOLD,
-		self::STRIKETHROUGH => self::STRIKETHROUGH,
-		self::UNDERLINE => self::UNDERLINE,
 		self::ITALIC => self::ITALIC,
 	];
 
@@ -130,7 +150,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-gk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-u])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
@@ -144,7 +164,7 @@ abstract class TextFormat{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-gk-or]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-u]/u", "", $string));
 		}
 		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
@@ -155,7 +175,7 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-gk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-u])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**
@@ -184,110 +204,66 @@ abstract class TextFormat{
 	}
 
 	/**
+	 * Converts any Java formatting codes in the given string to Bedrock.
+	 *
+	 * As of 1.21.50, strikethrough (§m) and underline (§n) are not supported by Bedrock, and these symbols are instead
+	 * used to represent additional colours in Bedrock. To avoid unintended formatting, this function currently strips
+	 * those formatting codes to prevent unintended colour display in formatted text.
+	 *
+	 * If Bedrock starts to support these formats in the future, this function will be updated to translate them rather
+	 * than removing them.
+	 */
+	public static function javaToBedrock(string $string) : string{
+		return str_replace([TextFormat::ESCAPE . "m", TextFormat::ESCAPE . "n"], "", $string);
+	}
+
+	/**
 	 * Returns an HTML-formatted string with colors/markup
 	 */
 	public static function toHTML(string $string) : string{
 		$newString = "";
 		$tokens = 0;
 		foreach(self::tokenize($string) as $token){
-			switch($token){
-				case TextFormat::BOLD:
-					$newString .= "<span style=font-weight:bold>";
-					++$tokens;
-					break;
-				case TextFormat::OBFUSCATED:
-					//$newString .= "<span style=text-decoration:line-through>";
-					//++$tokens;
-					break;
-				case TextFormat::ITALIC:
-					$newString .= "<span style=font-style:italic>";
-					++$tokens;
-					break;
-				case TextFormat::UNDERLINE:
-					$newString .= "<span style=text-decoration:underline>";
-					++$tokens;
-					break;
-				case TextFormat::STRIKETHROUGH:
-					$newString .= "<span style=text-decoration:line-through>";
-					++$tokens;
-					break;
-				case TextFormat::RESET:
-					$newString .= str_repeat("</span>", $tokens);
-					$tokens = 0;
-					break;
-
-				//Colors
-				case TextFormat::BLACK:
-					$newString .= "<span style=color:#000>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_BLUE:
-					$newString .= "<span style=color:#00A>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_GREEN:
-					$newString .= "<span style=color:#0A0>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_AQUA:
-					$newString .= "<span style=color:#0AA>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_RED:
-					$newString .= "<span style=color:#A00>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_PURPLE:
-					$newString .= "<span style=color:#A0A>";
-					++$tokens;
-					break;
-				case TextFormat::GOLD:
-					$newString .= "<span style=color:#FA0>";
-					++$tokens;
-					break;
-				case TextFormat::GRAY:
-					$newString .= "<span style=color:#AAA>";
-					++$tokens;
-					break;
-				case TextFormat::DARK_GRAY:
-					$newString .= "<span style=color:#555>";
-					++$tokens;
-					break;
-				case TextFormat::BLUE:
-					$newString .= "<span style=color:#55F>";
-					++$tokens;
-					break;
-				case TextFormat::GREEN:
-					$newString .= "<span style=color:#5F5>";
-					++$tokens;
-					break;
-				case TextFormat::AQUA:
-					$newString .= "<span style=color:#5FF>";
-					++$tokens;
-					break;
-				case TextFormat::RED:
-					$newString .= "<span style=color:#F55>";
-					++$tokens;
-					break;
-				case TextFormat::LIGHT_PURPLE:
-					$newString .= "<span style=color:#F5F>";
-					++$tokens;
-					break;
-				case TextFormat::YELLOW:
-					$newString .= "<span style=color:#FF5>";
-					++$tokens;
-					break;
-				case TextFormat::WHITE:
-					$newString .= "<span style=color:#FFF>";
-					++$tokens;
-					break;
-				case TextFormat::MINECOIN_GOLD:
-					$newString .= "<span style=color:#dd0>";
-					++$tokens;
-					break;
-				default:
-					$newString .= $token;
-					break;
+			$formatString = match($token){
+				TextFormat::BLACK => "color:#000",
+				TextFormat::DARK_BLUE => "color:#00A",
+				TextFormat::DARK_GREEN => "color:#0A0",
+				TextFormat::DARK_AQUA => "color:#0AA",
+				TextFormat::DARK_RED => "color:#A00",
+				TextFormat::DARK_PURPLE => "color:#A0A",
+				TextFormat::GOLD => "color:#FA0",
+				TextFormat::GRAY => "color:#AAA",
+				TextFormat::DARK_GRAY => "color:#555",
+				TextFormat::BLUE => "color:#55F",
+				TextFormat::GREEN => "color:#5F5",
+				TextFormat::AQUA => "color:#5FF",
+				TextFormat::RED => "color:#F55",
+				TextFormat::LIGHT_PURPLE => "color:#F5F",
+				TextFormat::YELLOW => "color:#FF5",
+				TextFormat::WHITE => "color:#FFF",
+				TextFormat::MINECOIN_GOLD => "color:#dd0",
+				TextFormat::MATERIAL_QUARTZ => "color:#e2d3d1",
+				TextFormat::MATERIAL_IRON => "color:#cec9c9",
+				TextFormat::MATERIAL_NETHERITE => "color:#44393a",
+				TextFormat::MATERIAL_REDSTONE => "color:#961506",
+				TextFormat::MATERIAL_COPPER => "color:#b4684d",
+				TextFormat::MATERIAL_GOLD => "color:#deb02c",
+				TextFormat::MATERIAL_EMERALD => "color:#119f36",
+				TextFormat::MATERIAL_DIAMOND => "color:#2cb9a8",
+				TextFormat::MATERIAL_LAPIS => "color:#20487a",
+				TextFormat::MATERIAL_AMETHYST => "color:#9a5cc5",
+				TextFormat::BOLD => "font-weight:bold",
+				TextFormat::ITALIC => "font-style:italic",
+				default => null
+			};
+			if($formatString !== null){
+				$newString .= "<span style=\"$formatString\">";
+				++$tokens;
+			}elseif($token === TextFormat::RESET){
+				$newString .= str_repeat("</span>", $tokens);
+				$tokens = 0;
+			}else{
+				$newString .= $token;
 			}
 		}
 

@@ -61,6 +61,11 @@ parameters:
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:PALE_OAK_SIGN\\(\\)\\.$#"
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:SPRUCE_SIGN\\(\\)\\.$#"
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
