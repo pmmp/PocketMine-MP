@@ -243,6 +243,7 @@ use function strtolower;
  * @method static Boat OAK_BOAT()
  * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static PaintingItem PAINTING()
+ * @method static ItemBlockWallOrFloor PALE_OAK_SIGN()
  * @method static Item PAPER()
  * @method static Item PHANTOM_MEMBRANE()
  * @method static PitcherPod PITCHER_POD()
@@ -535,6 +536,7 @@ final class VanillaItems{
 		});
 		self::register("oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
 		self::register("painting", fn(IID $id) => new PaintingItem($id, "Painting"));
+		self::register("pale_oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::PALE_OAK_SIGN(), Blocks::PALE_OAK_WALL_SIGN()));
 		self::register("paper", fn(IID $id) => new Item($id, "Paper"));
 		self::register("phantom_membrane", fn(IID $id) => new Item($id, "Phantom Membrane"));
 		self::register("pitcher_pod", fn(IID $id) => new PitcherPod($id, "Pitcher Pod"));

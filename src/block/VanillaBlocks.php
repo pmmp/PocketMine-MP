@@ -590,6 +590,20 @@ use function strtolower;
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
+ * @method static WoodenButton PALE_OAK_BUTTON()
+ * @method static WoodenDoor PALE_OAK_DOOR()
+ * @method static WoodenFence PALE_OAK_FENCE()
+ * @method static FenceGate PALE_OAK_FENCE_GATE()
+ * @method static Leaves PALE_OAK_LEAVES()
+ * @method static Wood PALE_OAK_LOG()
+ * @method static Planks PALE_OAK_PLANKS()
+ * @method static WoodenPressurePlate PALE_OAK_PRESSURE_PLATE()
+ * @method static FloorSign PALE_OAK_SIGN()
+ * @method static WoodenSlab PALE_OAK_SLAB()
+ * @method static WoodenStairs PALE_OAK_STAIRS()
+ * @method static WoodenTrapdoor PALE_OAK_TRAPDOOR()
+ * @method static WallSign PALE_OAK_WALL_SIGN()
+ * @method static Wood PALE_OAK_WOOD()
  * @method static DoublePlant PEONY()
  * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
@@ -1359,6 +1373,7 @@ final class VanillaBlocks{
 				WoodType::CRIMSON => VanillaItems::CRIMSON_SIGN(...),
 				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
+				WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
 			};
 			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
 			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
