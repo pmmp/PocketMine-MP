@@ -276,11 +276,15 @@ use function strtolower;
  * @method static Record RECORD_BLOCKS()
  * @method static Record RECORD_CAT()
  * @method static Record RECORD_CHIRP()
+ * @method static Record RECORD_CREATOR()
+ * @method static Record RECORD_CREATOR_MUSIC_BOX()
  * @method static Record RECORD_FAR()
  * @method static Record RECORD_MALL()
  * @method static Record RECORD_MELLOHI()
  * @method static Record RECORD_OTHERSIDE()
  * @method static Record RECORD_PIGSTEP()
+ * @method static Record RECORD_PRECIPICE()
+ * @method static Record RECORD_RELIC()
  * @method static Record RECORD_STAL()
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
@@ -569,11 +573,15 @@ final class VanillaItems{
 		self::register("record_blocks", fn(IID $id) => new Record($id, RecordType::DISK_BLOCKS, "Record Blocks"));
 		self::register("record_cat", fn(IID $id) => new Record($id, RecordType::DISK_CAT, "Record Cat"));
 		self::register("record_chirp", fn(IID $id) => new Record($id, RecordType::DISK_CHIRP, "Record Chirp"));
+		self::register("record_creator", fn(IID $id) => new Record($id, RecordType::DISK_CREATOR, "Record Creator"));
+		self::register("record_creator_music_box", fn(IID $id) => new Record($id, RecordType::DISK_CREATOR_MUSIC_BOX, "Record Creator (Music Box)"));
 		self::register("record_far", fn(IID $id) => new Record($id, RecordType::DISK_FAR, "Record Far"));
 		self::register("record_mall", fn(IID $id) => new Record($id, RecordType::DISK_MALL, "Record Mall"));
 		self::register("record_mellohi", fn(IID $id) => new Record($id, RecordType::DISK_MELLOHI, "Record Mellohi"));
 		self::register("record_otherside", fn(IID $id) => new Record($id, RecordType::DISK_OTHERSIDE, "Record Otherside"));
 		self::register("record_pigstep", fn(IID $id) => new Record($id, RecordType::DISK_PIGSTEP, "Record Pigstep"));
+		self::register("record_precipice", fn(IID $id) => new Record($id, RecordType::DISK_PRECIPICE, "Record Precipice"));
+		self::register("record_relic", fn(IID $id) => new Record($id, RecordType::DISK_RELIC, "Record Relic"));
 		self::register("record_stal", fn(IID $id) => new Record($id, RecordType::DISK_STAL, "Record Stal"));
 		self::register("record_strad", fn(IID $id) => new Record($id, RecordType::DISK_STRAD, "Record Strad"));
 		self::register("record_wait", fn(IID $id) => new Record($id, RecordType::DISK_WAIT, "Record Wait"));
