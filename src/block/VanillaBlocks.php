@@ -879,12 +879,12 @@ final class VanillaBlocks{
 		self::register("bedrock", fn(BID $id) => new Bedrock($id, "Bedrock", new Info(BreakInfo::indestructible())));
 
 		self::register("beetroots", fn(BID $id) => new Beetroot($id, "Beetroot Block", new Info(BreakInfo::instant())));
-		self::register("bell", fn(BID $id) => new Bell($id, "Bell", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))), TileBell::class);
+		self::register("bell", fn(BID $id) => new Bell($id, "Bell", new Info(BreakInfo::pickaxe(5.0))), TileBell::class);
 		self::register("blue_ice", fn(BID $id) => new BlueIce($id, "Blue Ice", new Info(BreakInfo::pickaxe(2.8))));
 		self::register("bone_block", fn(BID $id) => new BoneBlock($id, "Bone Block", new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD))));
 		self::register("bookshelf", fn(BID $id) => new Bookshelf($id, "Bookshelf", new Info(BreakInfo::axe(1.5))));
 		self::register("chiseled_bookshelf", fn(BID $id) => new ChiseledBookshelf($id, "Chiseled Bookshelf", new Info(BreakInfo::axe(1.5))), TileChiseledBookshelf::class);
-		self::register("brewing_stand", fn(BID $id) => new BrewingStand($id, "Brewing Stand", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))), TileBrewingStand::class);
+		self::register("brewing_stand", fn(BID $id) => new BrewingStand($id, "Brewing Stand", new Info(BreakInfo::pickaxe(0.5))), TileBrewingStand::class);
 
 		$bricksBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 		self::register("brick_stairs", fn(BID $id) => new Stair($id, "Brick Stairs", $bricksBreakInfo));
@@ -942,7 +942,7 @@ final class VanillaBlocks{
 		self::register("end_stone_bricks", fn(BID $id) => new Opaque($id, "End Stone Bricks", $endBrickBreakInfo));
 		self::register("end_stone_brick_stairs", fn(BID $id) => new Stair($id, "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		self::register("ender_chest", fn(BID $id) => new EnderChest($id, "Ender Chest", new Info(BreakInfo::pickaxe(22.5, ToolTier::WOOD, 3000.0))), TileEnderChest::class);
+		self::register("ender_chest", fn(BID $id) => new EnderChest($id, "Ender Chest", new Info(BreakInfo::pickaxe(22.5, blastResistance: 3000.0))), TileEnderChest::class);
 		self::register("farmland", fn(BID $id) => new Farmland($id, "Farmland", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 		self::register("fire", fn(BID $id) => new Fire($id, "Fire Block", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
@@ -998,9 +998,9 @@ final class VanillaBlocks{
 		$ironBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::STONE, 30.0));
 		self::register("iron", fn(BID $id) => new Opaque($id, "Iron Block", $ironBreakInfo));
 		self::register("iron_bars", fn(BID $id) => new Thin($id, "Iron Bars", $ironBreakInfo));
-		$ironDoorBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 25.0));
-		self::register("iron_door", fn(BID $id) => new Door($id, "Iron Door", $ironDoorBreakInfo));
-		self::register("iron_trapdoor", fn(BID $id) => new Trapdoor($id, "Iron Trapdoor", $ironDoorBreakInfo));
+
+		self::register("iron_door", fn(BID $id) => new Door($id, "Iron Door", new Info(BreakInfo::pickaxe(5.0))));
+		self::register("iron_trapdoor", fn(BID $id) => new Trapdoor($id, "Iron Trapdoor", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
 
 		$itemFrameInfo = new Info(new BreakInfo(0.25));
 		self::register("item_frame", fn(BID $id) => new ItemFrame($id, "Item Frame", $itemFrameInfo), TileItemFrame::class);
@@ -1009,7 +1009,7 @@ final class VanillaBlocks{
 		self::register("jukebox", fn(BID $id) => new Jukebox($id, "Jukebox", new Info(BreakInfo::axe(0.8))), TileJukebox::class); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		self::register("ladder", fn(BID $id) => new Ladder($id, "Ladder", new Info(BreakInfo::axe(0.4))));
 
-		$lanternBreakInfo = new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD));
+		$lanternBreakInfo = new Info(BreakInfo::pickaxe(5.0));
 		self::register("lantern", fn(BID $id) => new Lantern($id, "Lantern", $lanternBreakInfo, 15));
 		self::register("soul_lantern", fn(BID $id) => new Lantern($id, "Soul Lantern", $lanternBreakInfo, 10));
 
@@ -1144,7 +1144,7 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_stairs", fn(BID $id) => new Stair($id, "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		self::register("stone_button", fn(BID $id) => new StoneButton($id, "Stone Button", new Info(BreakInfo::pickaxe(0.5))));
 		self::register("stonecutter", fn(BID $id) => new Stonecutter($id, "Stonecutter", new Info(BreakInfo::pickaxe(3.5))));
-		self::register("stone_pressure_plate", fn(BID $id) => new StonePressurePlate($id, "Stone Pressure Plate", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD))));
+		self::register("stone_pressure_plate", fn(BID $id) => new StonePressurePlate($id, "Stone Pressure Plate", new Info(BreakInfo::pickaxe(0.5))));
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
@@ -1200,7 +1200,7 @@ final class VanillaBlocks{
 		self::register("water", fn(BID $id) => new Water($id, "Water", new Info(BreakInfo::indestructible(500.0))));
 		self::register("lily_pad", fn(BID $id) => new WaterLily($id, "Lily Pad", new Info(BreakInfo::instant())));
 
-		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD));
+		$weightedPressurePlateBreakInfo = new Info(BreakInfo::pickaxe(0.5));
 		self::register("weighted_pressure_plate_heavy", fn(BID $id) => new WeightedPressurePlateHeavy(
 			$id,
 			"Weighted Pressure Plate Heavy",
@@ -1606,7 +1606,7 @@ final class VanillaBlocks{
 		$prefix = fn(string $thing) => "Polished Blackstone" . ($thing !== "" ? " $thing" : "");
 		self::register("polished_blackstone", fn(BID $id) => new Opaque($id, $prefix(""), $blackstoneBreakInfo));
 		self::register("polished_blackstone_button", fn(BID $id) => new StoneButton($id, $prefix("Button"), new Info(BreakInfo::pickaxe(0.5))));
-		self::register("polished_blackstone_pressure_plate", fn(BID $id) => new StonePressurePlate($id, $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), 20));
+		self::register("polished_blackstone_pressure_plate", fn(BID $id) => new StonePressurePlate($id, $prefix("Pressure Plate"), new Info(BreakInfo::pickaxe(0.5)), 20));
 		self::register("polished_blackstone_slab", fn(BID $id) => new Slab($id, $prefix(""), $slabBreakInfo));
 		self::register("polished_blackstone_stairs", fn(BID $id) => new Stair($id, $prefix("Stairs"), $blackstoneBreakInfo));
 		self::register("polished_blackstone_wall", fn(BID $id) => new Wall($id, $prefix("Wall"), $blackstoneBreakInfo));
@@ -1713,9 +1713,8 @@ final class VanillaBlocks{
 		self::register("cut_copper_stairs", fn(BID $id) => new CopperStairs($id, "Cut Copper Stairs", $copperBreakInfo));
 		self::register("copper_bulb", fn(BID $id) => new CopperBulb($id, "Copper Bulb", $copperBreakInfo));
 
-		$copperDoorBreakInfo = new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE, 30.0));
-		self::register("copper_door", fn(BID $id) => new CopperDoor($id, "Copper Door", $copperDoorBreakInfo));
-		self::register("copper_trapdoor", fn(BID $id) => new CopperTrapdoor($id, "Copper Trapdoor", $copperDoorBreakInfo));
+		self::register("copper_door", fn(BID $id) => new CopperDoor($id, "Copper Door", new Info(BreakInfo::pickaxe(3.0, blastResistance: 30.0))));
+		self::register("copper_trapdoor", fn(BID $id) => new CopperTrapdoor($id, "Copper Trapdoor", new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE, 30.0))));
 
 		$candleBreakInfo = new Info(new BreakInfo(0.1));
 		self::register("candle", fn(BID $id) => new Candle($id, "Candle", $candleBreakInfo));
