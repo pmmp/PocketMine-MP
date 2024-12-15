@@ -274,7 +274,7 @@ class MemoryManager{
 			$end = hrtime(true);
 
 			$rootsAfter = gc_status()["roots"];
-			$this->adjustGcThreshold($rootsBefore - $rootsAfter, $rootsAfter);
+			$this->adjustGcThreshold($cycles, $rootsAfter);
 
 			Timings::$garbageCollector->stopTiming();
 
