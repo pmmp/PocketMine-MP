@@ -46,6 +46,7 @@ use function gc_status;
 use function get_class;
 use function get_declared_classes;
 use function get_defined_functions;
+use function hrtime;
 use function ini_get;
 use function ini_set;
 use function intdiv;
@@ -59,6 +60,7 @@ use function max;
 use function mb_strtoupper;
 use function min;
 use function mkdir;
+use function number_format;
 use function preg_match;
 use function print_r;
 use function round;
@@ -76,6 +78,14 @@ class MemoryManager{
 	private const DEFAULT_CONTINUOUS_TRIGGER_RATE = Server::TARGET_TICKS_PER_SECOND * 2;
 	private const DEFAULT_TICKS_PER_GC = 30 * 60 * Server::TARGET_TICKS_PER_SECOND;
 
+	//These constants are copied from Zend/zend_gc.c as of PHP 8.3.14
+	//TODO: These values could be adjusted to better suit PM, but for now we just want to mirror PHP GC to minimize
+	//behavioural changes.
+	private const GC_THRESHOLD_TRIGGER = 100;
+	private const GC_THRESHOLD_MAX = 1_000_000_000;
+	private const GC_THRESHOLD_DEFAULT = 10_001;
+	private const GC_THRESHOLD_STEP = 10_000;
+
 	private int $memoryLimit;
 	private int $globalMemoryLimit;
 	private int $checkRate;
@@ -91,6 +101,9 @@ class MemoryManager{
 	private int $garbageCollectionTicker = 0;
 	private bool $garbageCollectionTrigger;
 	private bool $garbageCollectionAsync;
+
+	private int $cycleCollectionThreshold = self::GC_THRESHOLD_DEFAULT;
+	private int $cycleCollectionTimeTotalNs = 0;
 
 	private int $lowMemChunkRadiusOverride;
 	private bool $lowMemChunkGC;
@@ -205,23 +218,15 @@ class MemoryManager{
 		$this->logger->debug(sprintf("Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
-	private const GC_THRESHOLD_TRIGGER = 100;
-	private const GC_THRESHOLD_MAX = 1_000_000_000;
-	private const GC_THRESHOLD_DEFAULT = 10_001;
-	private const GC_THRESHOLD_STEP = 10_000;
-
-	private int $gcThreshold = self::GC_THRESHOLD_DEFAULT;
-
-	private function adjustGcThreshold(int $count) : void{
+	private function adjustGcThreshold(int $cyclesCollected, int $rootsAfterGC) : void{
 		//TODO Very simple heuristic for dynamic GC buffer resizing:
 		//If there are "too few" collections, increase the collection threshold
 		//by a fixed step
 		//Adapted from zend_gc.c/gc_adjust_threshold() as of PHP 8.3.14
-		$roots = gc_status()["roots"];
-		if($count < self::GC_THRESHOLD_TRIGGER || $roots >= $this->gcThreshold){
-			$this->gcThreshold = min(self::GC_THRESHOLD_MAX, $this->gcThreshold + self::GC_THRESHOLD_STEP);
-		}elseif($this->gcThreshold > self::GC_THRESHOLD_DEFAULT){
-			$this->gcThreshold = max(self::GC_THRESHOLD_DEFAULT, $this->gcThreshold - self::GC_THRESHOLD_STEP);
+		if($cyclesCollected < self::GC_THRESHOLD_TRIGGER || $rootsAfterGC >= $this->cycleCollectionThreshold){
+			$this->cycleCollectionThreshold = min(self::GC_THRESHOLD_MAX, $this->cycleCollectionThreshold + self::GC_THRESHOLD_STEP);
+		}elseif($this->cycleCollectionThreshold > self::GC_THRESHOLD_DEFAULT){
+			$this->cycleCollectionThreshold = max(self::GC_THRESHOLD_DEFAULT, $this->cycleCollectionThreshold - self::GC_THRESHOLD_STEP);
 		}
 	}
 
@@ -257,14 +262,25 @@ class MemoryManager{
 			}
 		}
 
+		$rootsBefore = gc_status()["roots"];
 		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
-		}elseif(gc_status()["roots"] >= $this->gcThreshold){
+		}elseif($rootsBefore >= $this->cycleCollectionThreshold){
 			Timings::$garbageCollector->startTiming();
+
+			$start = hrtime(true);
 			$cycles = gc_collect_cycles();
-			$this->adjustGcThreshold($cycles);
+			$end = hrtime(true);
+
+			$rootsAfter = gc_status()["roots"];
+			$this->adjustGcThreshold($rootsBefore - $rootsAfter, $rootsAfter);
+
 			Timings::$garbageCollector->stopTiming();
+
+			$time = $end - $start;
+			$this->cycleCollectionTimeTotalNs += $time;
+			$this->logger->debug("gc_collect_cycles: " . number_format($time) . " ns ($rootsBefore -> $rootsAfter roots, $cycles cycles collected) - total GC time: " . number_format($this->cycleCollectionTimeTotalNs) . " ns");
 		}
 
 		Timings::$memoryManager->stopTiming();
