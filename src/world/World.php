@@ -1560,19 +1560,42 @@ class World implements ChunkManager{
 	 * This checks a padding of 1 block around the coordinates to account for oversized AABBs of blocks like fences.
 	 * Larger AABBs (>= 2 blocks on any axis) are not accounted for.
 	 *
+	 * @param int[] $collisionInfo
+	 * @phpstan-param array<int, int> $collisionInfo
+	 *
 	 * @return AxisAlignedBB[]
 	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z) : array{
-		$block = $this->getBlockAt($x, $y, $z);
-		$boxes = $block->getCollisionBoxes();
+	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z, array $collisionInfo) : array{
+		if($y < $this->minY || $y > $this->maxY){
+			return [];
+		}
+		$stateId = $this
+			->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)
+			?->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK) ?? Block::EMPTY_STATE_ID;
 
-		$cellBB = AxisAlignedBB::one()->offset($x, $y, $z);
+		$cellBB = null;
+		$boxes = match($collisionInfo[$stateId]){
+			RuntimeBlockStateRegistry::COLLISION_NONE => [],
+			RuntimeBlockStateRegistry::COLLISION_CUBE => [$cellBB = AxisAlignedBB::one()->offset($x, $y, $z)],
+			default => $this->getBlockAt($x, $y, $z)->getCollisionBoxes()
+		};
+
 		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
-			$extraBoxes = $this->getBlockAt($x + $dx, $y + $dy, $z + $dz)->getCollisionBoxes();
-			foreach($extraBoxes as $extraBox){
-				if($extraBox->intersectsWith($cellBB)){
-					$boxes[] = $extraBox;
+			$offsetY = $y + $dy;
+			if($offsetY < $this->minY || $offsetY > $this->maxY){
+				continue;
+			}
+			$stateId = $this
+				->getChunk(($x + $dx) >> Chunk::COORD_BIT_SIZE, ($z + $dz) >> Chunk::COORD_BIT_SIZE)
+				?->getBlockStateId(($x + $dx) & Chunk::COORD_MASK, $offsetY, ($z + $dz) & Chunk::COORD_MASK) ?? Block::EMPTY_STATE_ID;
+			if($collisionInfo[$stateId] === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW){
+				$cellBB ??= AxisAlignedBB::one()->offset($x, $y, $z);
+				$extraBoxes = $this->getBlockAt($x + $dx, $offsetY, $z + $dz)->getCollisionBoxes();
+				foreach($extraBoxes as $extraBox){
+					if($extraBox->intersectsWith($cellBB)){
+						$boxes[] = $extraBox;
+					}
 				}
 			}
 		}
@@ -1593,6 +1616,8 @@ class World implements ChunkManager{
 		$maxZ = (int) floor($bb->maxZ);
 
 		$collides = [];
+
+		$collisionInfo = RuntimeBlockStateRegistry::getInstance()->collisionInfo;
 
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){

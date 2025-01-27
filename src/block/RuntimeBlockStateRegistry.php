@@ -40,6 +40,11 @@ use function min;
 class RuntimeBlockStateRegistry{
 	use SingletonTrait;
 
+	public const COLLISION_CUSTOM = 0;
+	public const COLLISION_CUBE = 1;
+	public const COLLISION_NONE = 2;
+	public const COLLISION_MAY_OVERFLOW = 3;
+
 	/**
 	 * @var Block[]
 	 * @phpstan-var array<int, Block>
@@ -73,6 +78,13 @@ class RuntimeBlockStateRegistry{
 	 * @phpstan-var array<int, float>
 	 */
 	public array $blastResistance = [];
+
+	/**
+	 * Map of state ID -> useful AABB info to avoid unnecessary block allocations
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	public array $collisionInfo = [];
 
 	public function __construct(){
 		foreach(VanillaBlocks::getAll() as $block){
@@ -111,6 +123,46 @@ class RuntimeBlockStateRegistry{
 			$this->lightFilter[$index] = min(15, $block->getLightFilter() + LightUpdate::BASE_LIGHT_FILTER);
 			if($block->blocksDirectSkyLight()){
 				$this->blocksDirectSkyLight[$index] = true;
+			}
+
+			$declarer = (new \ReflectionFunction($block->getModelPositionOffset(...)))->getClosureScopeClass();
+			if($declarer === null){
+				throw new AssumptionFailedError("We know this is a class method");
+			}
+			if($declarer->getName() !== Block::class){
+				$this->collisionInfo[$index] = self::COLLISION_MAY_OVERFLOW;
+			}else{
+				$boxes = $block->getCollisionBoxes();
+				if(count($boxes) === 0){
+					$this->collisionInfo[$index] = self::COLLISION_NONE;
+				}elseif(
+					count($boxes) === 1 &&
+					$boxes[0]->minX === 0.0 &&
+					$boxes[0]->minY === 0.0 &&
+					$boxes[0]->minZ === 0.0 &&
+					$boxes[0]->maxX === 1.0 &&
+					$boxes[0]->maxY === 1.0 &&
+					$boxes[0]->maxZ === 1.0
+				){
+					$this->collisionInfo[$index] = self::COLLISION_CUBE;
+				}else{
+					$info = self::COLLISION_CUSTOM;
+
+					//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
+					//it shouldn't, but that doesn't mean that custom blocks won't...
+					foreach($block->getCollisionBoxes() as $box){
+						if(
+							$box->minX < 0 || $box->maxX > 1 ||
+							$box->minY < 0 || $box->maxY > 1 ||
+							$box->minZ < 0 || $box->maxZ > 1
+						){
+							$info = self::COLLISION_MAY_OVERFLOW;
+							break;
+						}
+					}
+
+					$this->collisionInfo[$index] = $info;
+				}
 			}
 		}
 	}
