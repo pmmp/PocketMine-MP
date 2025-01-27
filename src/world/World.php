@@ -1625,7 +1625,7 @@ class World implements ChunkManager{
 				for($y = $minY; $y <= $maxY; ++$y){
 					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z);
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z, $collisionInfo);
 
 					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){

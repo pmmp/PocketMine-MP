@@ -28,6 +28,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
+use function count;
 use function min;
 
 /**
