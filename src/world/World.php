@@ -1574,16 +1574,16 @@ class World implements ChunkManager{
 			->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)
 			?->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK) ?? Block::EMPTY_STATE_ID;
 
-		$cellBB = null;
 		$stateCollisionInfo = $collisionInfo[$stateId] ?? throw new AssumptionFailedError("This should always exist");
 		$boxes = match($stateCollisionInfo){
 			RuntimeBlockStateRegistry::COLLISION_NONE => [],
-			RuntimeBlockStateRegistry::COLLISION_CUBE => [$cellBB = AxisAlignedBB::one()->offset($x, $y, $z)],
+			RuntimeBlockStateRegistry::COLLISION_CUBE => [AxisAlignedBB::one()->offset($x, $y, $z)],
 			default => $this->getBlockAt($x, $y, $z)->getCollisionBoxes()
 		};
 
 		//overlapping AABBs can't make any difference if this is a cube, so we can save some CPU cycles in this common case
 		if($stateCollisionInfo !== RuntimeBlockStateRegistry::COLLISION_CUBE){
+			$cellBB = null;
 			foreach(Facing::OFFSET as [$dx, $dy, $dz]){
 				$offsetY = $y + $dy;
 				if($offsetY < $this->minY || $offsetY > $this->maxY){
@@ -1593,6 +1593,7 @@ class World implements ChunkManager{
 					->getChunk(($x + $dx) >> Chunk::COORD_BIT_SIZE, ($z + $dz) >> Chunk::COORD_BIT_SIZE)
 					?->getBlockStateId(($x + $dx) & Chunk::COORD_MASK, $offsetY, ($z + $dz) & Chunk::COORD_MASK) ?? Block::EMPTY_STATE_ID;
 				if($collisionInfo[$stateId] === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW){
+					//avoid allocating this unless it's needed
 					$cellBB ??= AxisAlignedBB::one()->offset($x, $y, $z);
 					$extraBoxes = $this->getBlockAt($x + $dx, $offsetY, $z + $dz)->getCollisionBoxes();
 					foreach($extraBoxes as $extraBox){
