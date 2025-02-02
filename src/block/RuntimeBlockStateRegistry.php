@@ -113,6 +113,70 @@ class RuntimeBlockStateRegistry{
 		}
 	}
 
+	/**
+	 * Checks if the given class method overrides a method in Block.
+	 * Used to determine if a block might need to disable fast path optimizations.
+	 *
+	 * @phpstan-param anyClosure $closure
+	 */
+	private static function overridesBlockMethod(\Closure $closure) : bool{
+		$declarer = (new \ReflectionFunction($closure))->getClosureScopeClass();
+		return $declarer !== null && $declarer->getName() !== Block::class;
+	}
+
+	/**
+	 * A big ugly hack to set up fast paths for handling collisions on blocks with common shapes.
+	 * The information returned here is stored in RuntimeBlockStateRegistry->collisionInfo, and is used during entity
+	 * collision box calculations to avoid complex logic and unnecessary block object allocations.
+	 * This hack allows significant performance improvements.
+	 *
+	 * TODO: We'll want to redesign block collision box handling and block shapes in the future, but that's a job for a
+	 * major version. For now, this hack nets major performance wins.
+	 */
+	private static function calculateCollisionInfo(Block $block) : int{
+		if(
+			self::overridesBlockMethod($block->getModelPositionOffset(...)) ||
+			self::overridesBlockMethod($block->readStateFromWorld(...))
+		){
+			//getModelPositionOffset() might cause AABBs to shift outside the cell
+			//readStateFromWorld() might cause overflow in ways we can't predict just by looking at known states
+			//TODO: excluding overriders of readStateFromWorld() also excludes blocks with tiles that don't do anything
+			//weird with their AABBs, but for now this is the best we can do.
+			return self::COLLISION_MAY_OVERFLOW;
+		}
+
+		//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
+		//it shouldn't, but that doesn't mean that custom blocks won't...
+		$boxes = $block->getCollisionBoxes();
+		if(count($boxes) === 0){
+			return self::COLLISION_NONE;
+		}
+
+		if(
+			count($boxes) === 1 &&
+			$boxes[0]->minX === 0.0 &&
+			$boxes[0]->minY === 0.0 &&
+			$boxes[0]->minZ === 0.0 &&
+			$boxes[0]->maxX === 1.0 &&
+			$boxes[0]->maxY === 1.0 &&
+			$boxes[0]->maxZ === 1.0
+		){
+			return self::COLLISION_CUBE;
+		}
+
+		foreach($boxes as $box){
+			if(
+				$box->minX < 0 || $box->maxX > 1 ||
+				$box->minY < 0 || $box->maxY > 1 ||
+				$box->minZ < 0 || $box->maxZ > 1
+			){
+				return self::COLLISION_MAY_OVERFLOW;
+			}
+		}
+
+		return self::COLLISION_CUSTOM;
+	}
+
 	private function fillStaticArrays(int $index, Block $block) : void{
 		$fullId = $block->getStateId();
 		if($index !== $fullId){
@@ -126,44 +190,7 @@ class RuntimeBlockStateRegistry{
 				$this->blocksDirectSkyLight[$index] = true;
 			}
 
-			$declarer = (new \ReflectionFunction($block->getModelPositionOffset(...)))->getClosureScopeClass();
-			if($declarer === null){
-				throw new AssumptionFailedError("We know this is a class method");
-			}
-			if($declarer->getName() !== Block::class){
-				$this->collisionInfo[$index] = self::COLLISION_MAY_OVERFLOW;
-			}else{
-				//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
-				//it shouldn't, but that doesn't mean that custom blocks won't...
-				$boxes = $block->getCollisionBoxes();
-				if(count($boxes) === 0){
-					$this->collisionInfo[$index] = self::COLLISION_NONE;
-				}elseif(
-					count($boxes) === 1 &&
-					$boxes[0]->minX === 0.0 &&
-					$boxes[0]->minY === 0.0 &&
-					$boxes[0]->minZ === 0.0 &&
-					$boxes[0]->maxX === 1.0 &&
-					$boxes[0]->maxY === 1.0 &&
-					$boxes[0]->maxZ === 1.0
-				){
-					$this->collisionInfo[$index] = self::COLLISION_CUBE;
-				}else{
-					$info = self::COLLISION_CUSTOM;
-					foreach($boxes as $box){
-						if(
-							$box->minX < 0 || $box->maxX > 1 ||
-							$box->minY < 0 || $box->maxY > 1 ||
-							$box->minZ < 0 || $box->maxZ > 1
-						){
-							$info = self::COLLISION_MAY_OVERFLOW;
-							break;
-						}
-					}
-
-					$this->collisionInfo[$index] = $info;
-				}
-			}
+			$this->collisionInfo[$index] = self::calculateCollisionInfo($block);
 		}
 	}
 
