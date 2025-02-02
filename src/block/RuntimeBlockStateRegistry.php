@@ -133,6 +133,8 @@ class RuntimeBlockStateRegistry{
 			if($declarer->getName() !== Block::class){
 				$this->collisionInfo[$index] = self::COLLISION_MAY_OVERFLOW;
 			}else{
+				//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
+				//it shouldn't, but that doesn't mean that custom blocks won't...
 				$boxes = $block->getCollisionBoxes();
 				if(count($boxes) === 0){
 					$this->collisionInfo[$index] = self::COLLISION_NONE;
@@ -148,10 +150,7 @@ class RuntimeBlockStateRegistry{
 					$this->collisionInfo[$index] = self::COLLISION_CUBE;
 				}else{
 					$info = self::COLLISION_CUSTOM;
-
-					//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
-					//it shouldn't, but that doesn't mean that custom blocks won't...
-					foreach($block->getCollisionBoxes() as $box){
+					foreach($boxes as $box){
 						if(
 							$box->minX < 0 || $box->maxX > 1 ||
 							$box->minY < 0 || $box->maxY > 1 ||
