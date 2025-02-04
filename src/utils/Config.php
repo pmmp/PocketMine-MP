@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use ArrayAccess;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Symfony\Component\Filesystem\Path;
 use function array_change_key_case;
@@ -37,6 +38,7 @@ use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function preg_match_all;
@@ -59,7 +61,7 @@ use const YAML_UTF8_ENCODING;
 /**
  * Config Class for simple config manipulation of multiple formats.
  */
-class Config{
+class Config implements ArrayAccess {
 	public const DETECT = -1; //Detect by file extension
 	public const PROPERTIES = 0; // .properties
 	public const CNF = Config::PROPERTIES; // .cnf
@@ -305,37 +307,44 @@ class Config{
 		return $this->jsonOptions;
 	}
 
-	/**
-	 * @param string $k
-	 *
-	 * @return bool|mixed
-	 */
-	public function __get($k){
-		return $this->get($k);
+	public function __get(string $name) : mixed {
+		return $this->get($name);
 	}
 
-	/**
-	 * @param string $k
-	 * @param mixed  $v
-	 */
-	public function __set($k, $v) : void{
-		$this->set($k, $v);
+	public function __set(string $name, mixed $value) : void {
+		$this->set($name, $value);
 	}
 
-	/**
-	 * @param string $k
-	 *
-	 * @return bool
-	 */
-	public function __isset($k){
-		return $this->exists($k);
+	public function __isset(string $name) : bool {
+		return $this->exists($name);
 	}
 
-	/**
-	 * @param string $k
-	 */
-	public function __unset($k){
-		$this->remove($k);
+	public function __unset(string $name) : void {
+		$this->remove($name);
+	}
+
+	public function offsetGet(mixed $name) : mixed {
+		if (!is_string($name))
+			return null;
+		return $this->get($name);
+	}
+
+	public function offsetSet(mixed $name, mixed $value) : void {
+		if (!is_string($name))
+			return;
+		$this->set($name, $value);
+	}
+
+	public function offsetExists(mixed $name) : bool {
+		if (!is_string($name))
+			return false;
+		return $this->exists($name);
+	}
+
+	public function offsetUnset(mixed $name) : void {
+		if (!is_string($name))
+			return;
+		$this->remove($name);
 	}
 
 	public function setNested(string $key, mixed $value) : void{
