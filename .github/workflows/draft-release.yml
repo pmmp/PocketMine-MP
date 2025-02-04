@@ -165,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.15.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
