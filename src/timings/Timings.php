@@ -131,7 +131,7 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	private static array $asyncTaskError = [];
 
-	private static TimingsHandler $asyncTaskWorkers;
+	public static TimingsHandler $asyncTaskWorkers;
 	/** @var TimingsHandler[] */
 	private static array $asyncTaskRun = [];
 

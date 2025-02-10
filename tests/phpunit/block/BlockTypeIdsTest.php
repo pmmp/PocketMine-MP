@@ -35,8 +35,12 @@ class BlockTypeIdsTest extends TestCase{
 
 		$constants = $reflect->getConstants();
 		unset($constants['FIRST_UNUSED_BLOCK_ID']);
+		self::assertNotEmpty($constants, "We should never have zero type IDs");
 
-		self::assertSame($reflect->getConstant('FIRST_UNUSED_BLOCK_ID'), max($constants) + 1, "FIRST_UNUSED_BLOCK_ID must be one higher than the highest fixed type ID");
+		$max = max($constants);
+		self::assertIsInt($max, "Max type ID should always be an integer");
+
+		self::assertSame($reflect->getConstant('FIRST_UNUSED_BLOCK_ID'), $max + 1, "FIRST_UNUSED_BLOCK_ID must be one higher than the highest fixed type ID");
 	}
 
 	public function testNoDuplicates() : void{

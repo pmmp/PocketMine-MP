@@ -68,7 +68,10 @@ abstract class AsyncTask extends Runnable{
 	 */
 	private static array $threadLocalStorage = [];
 
-	/** @phpstan-var ThreadSafeArray<int, string>|null */
+	/**
+	 * @phpstan-var ThreadSafeArray<int, string>|null
+	 * @deprecated
+	 */
 	private ?ThreadSafeArray $progressUpdates = null;
 
 	private ThreadSafe|string|int|bool|null|float $result = null;
@@ -90,6 +93,7 @@ abstract class AsyncTask extends Runnable{
 
 		$this->finished = true;
 		AsyncWorker::getNotifier()->wakeupSleeper();
+		AsyncWorker::maybeCollectCycles();
 	}
 
 	/**
@@ -161,6 +165,8 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * Call this method from {@link AsyncTask::onRun} (AsyncTask execution thread) to schedule a call to
 	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
 	 *
@@ -175,6 +181,7 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
@@ -187,6 +194,8 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * Called from the main thread after {@link AsyncTask::publishProgress} is called.
 	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
 	 * {@link AsyncTask::onCompletion} is called.

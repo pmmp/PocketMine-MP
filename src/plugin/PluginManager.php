@@ -327,12 +327,12 @@ class PluginManager{
 	 * @param string[][] $dependencyLists
 	 * @param Plugin[]   $loadedPlugins
 	 *
-	 * @phpstan-param array<string, list<string>> $dependencyLists
-	 * @phpstan-param-out array<string, list<string>> $dependencyLists
+	 * @phpstan-param array<string, array<string>> $dependencyLists
+	 * @phpstan-param-out array<string, array<string>> $dependencyLists
 	 */
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){
-			foreach($dependencyLists[$pluginName] as $key => $dependency){
+			foreach(Utils::promoteKeys($dependencyLists[$pluginName]) as $key => $dependency){
 				if(isset($loadedPlugins[$dependency]) || $this->getPlugin($dependency) instanceof Plugin){
 					$this->server->getLogger()->debug("Successfully resolved $dependencyType dependency \"$dependency\" for plugin \"$pluginName\"");
 					unset($dependencyLists[$pluginName][$key]);
@@ -399,7 +399,7 @@ class PluginManager{
 				//check for skippable soft dependencies first, in case the dependents could resolve hard dependencies
 				foreach(Utils::stringifyKeys($triage->plugins) as $name => $file){
 					if(isset($triage->softDependencies[$name]) && !isset($triage->dependencies[$name])){
-						foreach($triage->softDependencies[$name] as $k => $dependency){
+						foreach(Utils::promoteKeys($triage->softDependencies[$name]) as $k => $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
 								$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
 								unset($triage->softDependencies[$name][$k]);
@@ -416,7 +416,7 @@ class PluginManager{
 					if(isset($triage->dependencies[$name])){
 						$unknownDependencies = [];
 
-						foreach($triage->dependencies[$name] as $k => $dependency){
+						foreach($triage->dependencies[$name] as $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
 								//assume that the plugin is never going to be loaded
 								//by this point all soft dependencies have been ignored if they were able to be, so

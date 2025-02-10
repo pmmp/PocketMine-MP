@@ -53,6 +53,7 @@ enum LeavesType{
 	case AZALEA;
 	case FLOWERING_AZALEA;
 	case CHERRY;
+	case PALE_OAK;
 
 	public function getDisplayName() : string{
 		return match($this){
@@ -65,7 +66,8 @@ enum LeavesType{
 			self::MANGROVE => "Mangrove",
 			self::AZALEA => "Azalea",
 			self::FLOWERING_AZALEA => "Flowering Azalea",
-			self::CHERRY => "Cherry"
+			self::CHERRY => "Cherry",
+			self::PALE_OAK => "Pale Oak",
 		};
 	}
 }

@@ -59,9 +59,6 @@ class Lantern extends Transparent{
 		return $this->lightLevel;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()

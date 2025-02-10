@@ -1,1177 +1,1423 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
-			count: 2
-			path: ../../../build/make-release.php
-
-		-
-			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
+			message: '#^Parameter \#1 \$strings of function pocketmine\\build\\server_phar\\preg_quote_array expects array\<string\>, array\<int, string\|false\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Do\\-while loop condition is always false\\.$#"
+			message: '#^Do\-while loop condition is always false\.$#'
+			identifier: doWhile.alwaysFalse
 			count: 1
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: '#^Method pocketmine\\Server\:\:getCommandAliases\(\) should return array\<string, list\<string\>\> but returns array\<string, array\<mixed\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: '#^Parameter \#1 \$generatorName of closure expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 2
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 2
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Cannot access offset 'git' on mixed\\.$#"
+			message: '#^Cannot access offset ''git'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: "#^Method pocketmine\\\\VersionInfo\\:\\:GIT_HASH\\(\\) should return string but returns mixed\\.$#"
+			message: '#^Method pocketmine\\VersionInfo\:\:GIT_HASH\(\) should return string but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: "#^Static property pocketmine\\\\VersionInfo\\:\\:\\$gitHash \\(string\\|null\\) does not accept mixed\\.$#"
+			message: '#^Static property pocketmine\\VersionInfo\:\:\$gitHash \(string\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:setBlockStateId\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\format\\Chunk\:\:setBlockStateId\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/block/ChorusFlower.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/block/ChorusFlower.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/block/ChorusFlower.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getRealBlockSkyLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getRealBlockSkyLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getRealBlockSkyLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getRealBlockSkyLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DaylightSensor.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#1 \\$xDiff of class pocketmine\\\\world\\\\particle\\\\DragonEggTeleportParticle constructor expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$xDiff of class pocketmine\\world\\particle\\DragonEggTeleportParticle constructor expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int\\<\\-64, 319\\> given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int\<\-64, 319\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#2 \\$yDiff of class pocketmine\\\\world\\\\particle\\\\DragonEggTeleportParticle constructor expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$yDiff of class pocketmine\\world\\particle\\DragonEggTeleportParticle constructor expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#3 \\$zDiff of class pocketmine\\\\world\\\\particle\\\\DragonEggTeleportParticle constructor expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$zDiff of class pocketmine\\world\\particle\\DragonEggTeleportParticle constructor expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/DragonEgg.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Fire.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getHighestAdjacentFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getHighestAdjacentFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getHighestAdjacentFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#1 \\$min of function mt_rand expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$min of function mt_rand expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$max of function mt_rand expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Grass.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getHighestAdjacentBlockLight\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Ice.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getHighestAdjacentBlockLight\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Ice.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getHighestAdjacentBlockLight\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Ice.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Leaves.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Leaves.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Leaves.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#1 \\$min of function mt_rand expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$min of function mt_rand expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Mycelium.php
 
 		-
-			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$max of function mt_rand expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Mycelium.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/RedMushroom.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/RedMushroom.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/RedMushroom.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/SnowLayer.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/SnowLayer.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/SnowLayer.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of class pocketmine\\\\math\\\\Vector3 constructor expects float\\|int, int\\|null given\\.$#"
+			message: '#^Parameter \#1 \$x of class pocketmine\\math\\Vector3 constructor expects float\|int, int\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, int\\|null given\\.$#"
+			message: '#^Parameter \#2 \$value of method pocketmine\\nbt\\tag\\CompoundTag\:\:setInt\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
 			count: 4
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of class pocketmine\\\\math\\\\Vector3 constructor expects float\\|int, int\\|null given\\.$#"
+			message: '#^Parameter \#3 \$z of class pocketmine\\math\\Vector3 constructor expects float\|int, int\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\Chest\\:\\:\\$pairX \\(int\\|null\\) does not accept float\\|int\\.$#"
+			message: '#^Property pocketmine\\block\\tile\\Chest\:\:\$pairX \(int\|null\) does not accept float\|int\.$#'
+			identifier: assign.propertyType
 			count: 2
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Property pocketmine\\\\block\\\\tile\\\\Chest\\:\\:\\$pairZ \\(int\\|null\\) does not accept float\\|int\\.$#"
+			message: '#^Property pocketmine\\block\\tile\\Chest\:\:\$pairZ \(int\|null\) does not accept float\|int\.$#'
+			identifier: assign.propertyType
 			count: 2
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_MOVING is unused\\.$#"
+			message: '#^Constant pocketmine\\block\\tile\\MobHead\:\:TAG_MOUTH_MOVING is unused\.$#'
+			identifier: classConstant.unused
 			count: 1
 			path: ../../../src/block/tile/MobHead.php
 
 		-
-			message: "#^Constant pocketmine\\\\block\\\\tile\\\\MobHead\\:\\:TAG_MOUTH_TICK_COUNT is unused\\.$#"
+			message: '#^Constant pocketmine\\block\\tile\\MobHead\:\:TAG_MOUTH_TICK_COUNT is unused\.$#'
+			identifier: classConstant.unused
 			count: 1
 			path: ../../../src/block/tile/MobHead.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$value of method pocketmine\\nbt\\tag\\CompoundTag\:\:setInt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 3
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getPotentialLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/utils/CropGrowthHelper.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getPotentialLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/utils/CropGrowthHelper.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getPotentialLightAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getPotentialLightAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/block/utils/CropGrowthHelper.php
 
 		-
-			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: '#^Cannot call method addParticle\(\) on pocketmine\\world\\World\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
 
 		-
-			message: "#^Cannot call method getSeed\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: '#^Cannot call method getSeed\(\) on pocketmine\\world\\World\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/command/defaults/SeedCommand.php
 
 		-
-			message: "#^Cannot call method setSpawnLocation\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: '#^Cannot call method setSpawnLocation\(\) on pocketmine\\world\\World\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/command/defaults/SetWorldSpawnCommand.php
 
 		-
-			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: '#^Cannot call method getTime\(\) on pocketmine\\world\\World\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/command/defaults/TimeCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
-			count: 2
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$path of static method pocketmine\\utils\\Filesystem\:\:cleanPath\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/crash/CrashDump.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Binary operation "\." between ''Error\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/crash/CrashDumpRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''File\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/crash/CrashDumpRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''Line\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/crash/CrashDumpRenderer.php
+
+		-
+			message: '#^Binary operation "\." between ''Type\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/crash/CrashDumpRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$blockToItemId of class pocketmine\\data\\bedrock\\item\\BlockItemIdMap constructor expects array\<string, string\>, array\<mixed, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/data/bedrock/item/BlockItemIdMap.php
+
+		-
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/Living.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/Living.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/Living.php
 
 		-
-			message: "#^Parameter \\#2 \\$x of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$x of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/FallingBlock.php
 
 		-
-			message: "#^Parameter \\#3 \\$y of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$y of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/FallingBlock.php
 
 		-
-			message: "#^Parameter \\#4 \\$z of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#4 \$z of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/FallingBlock.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/Painting.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/Painting.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/Painting.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\crafting\\\\CraftingRecipe, pocketmine\\\\crafting\\\\CraftingRecipe\\|null given\\.$#"
+			message: '#^Parameter \#2 \$recipe of class pocketmine\\event\\inventory\\CraftItemEvent constructor expects pocketmine\\crafting\\CraftingRecipe, pocketmine\\crafting\\CraftingRecipe\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#3 \\$repetitions of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects int, int\\|null given\\.$#"
+			message: '#^Parameter \#3 \$repetitions of class pocketmine\\event\\inventory\\CraftItemEvent constructor expects int, int\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: '#^Parameter &\$haveItems @param\-out type of method pocketmine\\inventory\\transaction\\InventoryTransaction\:\:matchItems\(\) expects list\<pocketmine\\item\\Item\>, array\<int\<0, max\>, pocketmine\\item\\Item\> given\.$#'
+			identifier: paramOut.type
+			count: 1
+			path: ../../../src/inventory/transaction/InventoryTransaction.php
+
+		-
+			message: '#^Parameter &\$needItems @param\-out type of method pocketmine\\inventory\\transaction\\InventoryTransaction\:\:matchItems\(\) expects list\<pocketmine\\item\\Item\>, array\<int\<0, max\>, pocketmine\\item\\Item\> given\.$#'
+			identifier: paramOut.type
+			count: 1
+			path: ../../../src/inventory/transaction/InventoryTransaction.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
 			count: 2
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$buffer of method pocketmine\\nbt\\BaseNbtSerializer\:\:read\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$string of function base64_decode expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function hex2bin expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$string of function hex2bin expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#1 \\$result of method pocketmine\\\\network\\\\mcpe\\\\compression\\\\CompressBatchPromise\\:\\:resolve\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/ChunkRequestTask.php
 
 		-
-			message: "#^Cannot call method doFirstSpawn\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method doFirstSpawn\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getAttributeMap\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method getAttributeMap\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method getLanguage\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 4
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getLocation\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method getLocation\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getUsedChunkStatus\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method getUsedChunkStatus\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
+			message: '#^Cannot call method getUsername\(\) on pocketmine\\player\\PlayerInfo\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getUuid\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
+			message: '#^Cannot call method getUuid\(\) on pocketmine\\player\\PlayerInfo\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method sendData\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method setNoClientPredictions\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: '#^Cannot call method setNoClientPredictions\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method syncAll\\(\\) on pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
+			message: '#^Cannot call method syncAll\(\) on pocketmine\\network\\mcpe\\InventoryManager\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects string, string\\|null given\\.$#"
+			message: '#^Parameter \#1 \$clientPub of class pocketmine\\network\\mcpe\\encryption\\PrepareEncryptionTask constructor expects string, string\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAbilities\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#1 \$for of method pocketmine\\network\\mcpe\\NetworkSession\:\:syncAbilities\(\) expects pocketmine\\player\\Player, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$player of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\DeathPacketHandler constructor expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#1 \$player of class pocketmine\\network\\mcpe\\handler\\DeathPacketHandler constructor expects pocketmine\\player\\Player, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$player of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\InGamePacketHandler constructor expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#1 \$player of class pocketmine\\network\\mcpe\\handler\\InGamePacketHandler constructor expects pocketmine\\player\\Player, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$playerInfo of class pocketmine\\\\event\\\\player\\\\PlayerResourcePackOfferEvent constructor expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
+			message: '#^Parameter \#1 \$playerInfo of class pocketmine\\event\\player\\PlayerResourcePackOfferEvent constructor expects pocketmine\\player\\PlayerInfo, pocketmine\\player\\PlayerInfo\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\command\\\\Command\\:\\:testPermissionSilent\\(\\) expects pocketmine\\\\command\\\\CommandSender, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#1 \$target of method pocketmine\\command\\Command\:\:testPermissionSilent\(\) expects pocketmine\\command\\CommandSender, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:onEntityEffectAdded\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#2 \$entity of method pocketmine\\network\\mcpe\\EntityEventBroadcaster\:\:onEntityEffectAdded\(\) expects pocketmine\\entity\\Living, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:onEntityEffectRemoved\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#2 \$entity of method pocketmine\\network\\mcpe\\EntityEventBroadcaster\:\:onEntityEffectRemoved\(\) expects pocketmine\\entity\\Living, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#2 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\EntityEventBroadcaster\\:\\:syncAttributes\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#2 \$entity of method pocketmine\\network\\mcpe\\EntityEventBroadcaster\:\:syncAttributes\(\) expects pocketmine\\entity\\Living, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#2 \\$player of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\PreSpawnPacketHandler constructor expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			message: '#^Parameter \#2 \$player of class pocketmine\\network\\mcpe\\handler\\PreSpawnPacketHandler constructor expects pocketmine\\player\\Player, pocketmine\\player\\Player\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#2 \\$playerInfo of method pocketmine\\\\Server\\:\\:createPlayer\\(\\) expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
+			message: '#^Parameter \#2 \$playerInfo of method pocketmine\\Server\:\:createPlayer\(\) expects pocketmine\\player\\PlayerInfo, pocketmine\\player\\PlayerInfo\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#3 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\InGamePacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
+			message: '#^Parameter \#3 \$inventoryManager of class pocketmine\\network\\mcpe\\handler\\InGamePacketHandler constructor expects pocketmine\\network\\mcpe\\InventoryManager, pocketmine\\network\\mcpe\\InventoryManager\|null given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#4 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\PreSpawnPacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
+			message: '#^Parameter \#4 \$inventoryManager of class pocketmine\\network\\mcpe\\handler\\PreSpawnPacketHandler constructor expects pocketmine\\network\\mcpe\\InventoryManager, pocketmine\\network\\mcpe\\InventoryManager\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\auth\\\\ProcessLoginTask\\:\\:\\$chain \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$result of method pocketmine\\\\network\\\\mcpe\\\\compression\\\\CompressBatchPromise\\:\\:resolve\\(\\) expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/compression/CompressBatchTask.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask\\:\\:\\$serverPrivateKey \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\network\\mcpe\\encryption\\PrepareEncryptionTask\:\:\$serverPrivateKey \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
-			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
+			message: '#^Method pocketmine\\permission\\DefaultPermissions\:\:registerPermission\(\) should return pocketmine\\permission\\Permission but returns pocketmine\\permission\\Permission\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:defaultFromString\\(\\) expects bool\\|string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$value of static method pocketmine\\permission\\PermissionParser\:\:defaultFromString\(\) expects bool\|string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects pocketmine\\\\lang\\\\Translatable\\|string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#2 \$description of class pocketmine\\permission\\Permission constructor expects pocketmine\\lang\\Translatable\|string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Cannot call method getSpawnLocation\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: '#^Cannot call method getSpawnLocation\(\) on pocketmine\\world\\World\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Method pocketmine\\\\player\\\\Player\\:\\:getSpawn\\(\\) should return pocketmine\\\\world\\\\Position but returns pocketmine\\\\world\\\\Position\\|null\\.$#"
+			message: '#^Method pocketmine\\player\\Player\:\:getSpawn\(\) should return pocketmine\\world\\Position but returns pocketmine\\world\\Position\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Method pocketmine\\\\plugin\\\\PluginBase\\:\\:getConfig\\(\\) should return pocketmine\\\\utils\\\\Config but returns pocketmine\\\\utils\\\\Config\\|null\\.$#"
+			message: '#^Method pocketmine\\plugin\\PluginBase\:\:getConfig\(\) should return pocketmine\\utils\\Config but returns pocketmine\\utils\\Config\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
+			message: '#^Parameter \#1 \$haystack of function stripos expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
+			message: '#^Parameter \#2 \$subject of function preg_match expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$authors \(array\<string\>\) does not accept list\<mixed\>\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$main \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Cannot call method addChild\\(\\) on pocketmine\\\\permission\\\\Permission\\|null\\.$#"
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$name \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Cannot call method addChild\(\) on pocketmine\\permission\\Permission\|null\.$#'
+			identifier: method.nonObject
 			count: 4
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\<0, max\\>\\|false\\.$#"
+			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getPackSize\(\) should return int but returns int\<0, max\>\|false\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
+			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getSha256\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$fileResource \\(resource\\) does not accept resource\\|false\\.$#"
+			message: '#^Property pocketmine\\resourcepacks\\ZippedResourcePack\:\:\$fileResource \(resource\) does not accept resource\|false\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$sha256 \\(string\\|null\\) does not accept string\\|false\\.$#"
+			message: '#^Property pocketmine\\resourcepacks\\ZippedResourcePack\:\:\$sha256 \(string\|null\) does not accept string\|false\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Property pocketmine\\\\scheduler\\\\BulkCurlTask\\:\\:\\$operations \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\scheduler\\BulkCurlTask\:\:\$operations \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/scheduler/BulkCurlTask.php
 
 		-
-			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\<covariant pocketmine\\\\scheduler\\\\Task\\>\\.$#"
+			message: '#^Cannot call method getNextRun\(\) on array\<string, int\|pocketmine\\scheduler\\TaskHandler\<covariant pocketmine\\scheduler\\Task\>\>\|int\|pocketmine\\scheduler\\TaskHandler\<covariant pocketmine\\scheduler\\Task\>\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/scheduler/TaskScheduler.php
 
 		-
-			message: "#^Cannot access offset string on mixed\\.$#"
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"
+			message: '#^Method pocketmine\\utils\\Config\:\:fixYAMLIndexes\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
+			message: '#^Parameter \#1 \$config of static method pocketmine\\utils\\Config\:\:writeProperties\(\) expects array\<int\|string, bool\|float\|int\|string\>, array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|false given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/utils/Timezone.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: '#^Binary operation "\." between mixed and ''\-\>''\|''\:\:'' results in an error\.$#'
+			identifier: binaryOp.invalid
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 2
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
+			message: '#^Method pocketmine\\utils\\Utils\:\:printable\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$file of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects string\\|null, mixed given\\.$#"
+			message: '#^Parameter \#1 \$path of static method pocketmine\\utils\\Filesystem\:\:cleanPath\(\) expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#3 \\$line of class pocketmine\\\\thread\\\\ThreadCrashInfoFrame constructor expects int, mixed given\\.$#"
+			message: '#^Parameter \#2 \$file of class pocketmine\\thread\\ThreadCrashInfoFrame constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$line of class pocketmine\\thread\\ThreadCrashInfoFrame constructor expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:setBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:setBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:setBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			message: '#^Cannot access offset ''data'' on array\{priority\: int, data\: pocketmine\\math\\Vector3\}\|int\|pocketmine\\math\\Vector3\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot access offset 'priority' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			message: '#^Cannot access offset ''priority'' on array\{priority\: int, data\: pocketmine\\math\\Vector3\}\|int\|pocketmine\\math\\Vector3\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$x of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$x of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$y of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$y of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#4 \\$z of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#4 \$z of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\biome\\\\BiomeRegistry\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
+			message: '#^Method pocketmine\\world\\biome\\BiomeRegistry\:\:getBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/world/biome/BiomeRegistry.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: '#^Method pocketmine\\world\\format\\Chunk\:\:getSubChunk\(\) should return pocketmine\\world\\format\\SubChunk but returns pocketmine\\world\\format\\SubChunk\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$x of static method pocketmine\\world\\format\\Chunk\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of static method pocketmine\\world\\format\\Chunk\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\format\\Chunk\:\:blockHash\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\HeightArray\\:\\:get\\(\\) should return int but returns int\\|null\\.$#"
+			message: '#^Method pocketmine\\world\\format\\HeightArray\:\:get\(\) should return int but returns int\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/world/format/HeightArray.php
 
 		-
-			message: "#^Only numeric types are allowed in %%, int\\<0, max\\>\\|false given on the left side\\.$#"
+			message: '#^Only numeric types are allowed in %%, int\<0, max\>\|false given on the left side\.$#'
+			identifier: mod.leftNonNumeric
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$size of function ftruncate expects int\\<0, max\\>, int given\\.$#"
+			message: '#^Parameter \#2 \$size of function ftruncate expects int\<0, max\>, int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Cannot access offset 1 on mixed\\.$#"
-			count: 2
-			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Cannot access offset 2 on mixed\\.$#"
-			count: 2
-			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 4
-			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\generator\\\\biome\\\\BiomeSelector\\:\\:pickBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
+			message: '#^Method pocketmine\\world\\generator\\biome\\BiomeSelector\:\:pickBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/world/generator/biome/BiomeSelector.php
 
 		-
-			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getBiomeId\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/generator/hell/Nether.php
 
 		-
-			message: "#^Offset int does not exist on SplFixedArray\\<float\\>\\|null\\.$#"
-			count: 4
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\$q0 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			message: '#^Parameter \$q0 of static method pocketmine\\world\\generator\\noise\\Noise\:\:linearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/generator/noise/Noise.php
 
 		-
-			message: "#^Parameter \\$q1 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, float\\|null given\\.$#"
+			message: '#^Parameter \$q1 of static method pocketmine\\world\\generator\\noise\\Noise\:\:linearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/generator/noise/Noise.php
 
 		-
-			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getBiomeId\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php
 
 		-
-			message: "#^Parameter \\#1 \\$start of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#1 \$start of method pocketmine\\utils\\Random\:\:nextRange\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/generator/object/TallGrass.php
 
 		-
-			message: "#^Parameter \\#2 \\$end of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$end of method pocketmine\\utils\\Random\:\:nextRange\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/generator/object/TallGrass.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\ChunkManager\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\ChunkManager\:\:getBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 2
 			path: ../../../src/world/generator/object/TallGrass.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\ChunkManager\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\ChunkManager\:\:setBlockAt\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/generator/object/TallGrass.php
 
 		-
-			message: "#^Cannot call method getBlockLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: '#^Cannot call method getBlockLightArray\(\) on pocketmine\\world\\format\\SubChunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: '#^Cannot call method getBlockStateId\(\) on pocketmine\\world\\format\\SubChunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getSubChunks\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Property pocketmine\\\\world\\\\light\\\\LightPopulationTask\\:\\:\\$resultBlockLightArrays \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\world\\light\\LightPopulationTask\:\:\$resultBlockLightArrays \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Property pocketmine\\\\world\\\\light\\\\LightPopulationTask\\:\\:\\$resultHeightMap \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\world\\light\\LightPopulationTask\:\:\$resultHeightMap \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Property pocketmine\\\\world\\\\light\\\\LightPopulationTask\\:\\:\\$resultSkyLightArrays \\(string\\) does not accept string\\|null\\.$#"
+			message: '#^Property pocketmine\\world\\light\\LightPopulationTask\:\:\$resultSkyLightArrays \(string\) does not accept string\|null\.$#'
+			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/world/light/LightPopulationTask.php
 
 		-
-			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: '#^Cannot call method getBlockSkyLightArray\(\) on pocketmine\\world\\format\\SubChunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getBlockStateId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: '#^Cannot call method getBlockStateId\(\) on pocketmine\\world\\format\\SubChunk\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getHeightMap\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getHeightMap\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 6
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getHeightMapArray\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getHeightMapArray\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getSubChunk\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method getSubChunk\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method setHeightMap\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method setHeightMap\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method setHeightMapArray\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: '#^Cannot call method setHeightMapArray\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
+			identifier: method.nonObject
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMap\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			message: '#^Parameter \#1 \$chunk of static method pocketmine\\world\\light\\SkyLightUpdate\:\:recalculateHeightMap\(\) expects pocketmine\\world\\format\\Chunk, pocketmine\\world\\format\\Chunk\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMapColumn\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			message: '#^Parameter \#1 \$chunk of static method pocketmine\\world\\light\\SkyLightUpdate\:\:recalculateHeightMapColumn\(\) expects pocketmine\\world\\format\\Chunk, pocketmine\\world\\format\\Chunk\|null given\.$#'
+			identifier: argument.type
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
-

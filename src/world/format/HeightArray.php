@@ -36,7 +36,7 @@ final class HeightArray{
 
 	/**
 	 * @param int[] $values ZZZZXXXX key bit order
-	 * @phpstan-param list<int> $values
+	 * @phpstan-param non-empty-list<int> $values
 	 */
 	public function __construct(array $values){
 		if(count($values) !== 256){
@@ -66,7 +66,7 @@ final class HeightArray{
 
 	/**
 	 * @return int[] ZZZZXXXX key bit order
-	 * @phpstan-return list<int>
+	 * @phpstan-return non-empty-list<int>
 	 */
 	public function getValues() : array{
 		return $this->array->toArray();

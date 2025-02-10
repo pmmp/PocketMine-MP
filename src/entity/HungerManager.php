@@ -88,7 +88,8 @@ class HungerManager{
 	}
 
 	/**
-	 * Returns whether this Human may consume objects requiring hunger.
+	 * Returns whether the food level is below the maximum.
+	 * This doesn't decide if the entity can eat food. Use {@link Human::canEat()} for that.
 	 */
 	public function isHungry() : bool{
 		return $this->getFood() < $this->getMaxFood();

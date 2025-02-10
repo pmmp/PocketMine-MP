@@ -25,6 +25,7 @@ namespace pocketmine\server_phar_stub;
 
 use function clearstatcache;
 use function copy;
+use function define;
 use function fclose;
 use function fflush;
 use function flock;
@@ -165,4 +166,5 @@ $start = hrtime(true);
 $cacheName = preparePharCache($tmpDir, __FILE__);
 echo "Cache ready at $cacheName in " . number_format((hrtime(true) - $start) / 1e9, 2) . "s\n";
 
+define('pocketmine\ORIGINAL_PHAR_PATH', __FILE__);
 require 'phar://' . str_replace(DIRECTORY_SEPARATOR, '/', $cacheName) . '/src/PocketMine.php';

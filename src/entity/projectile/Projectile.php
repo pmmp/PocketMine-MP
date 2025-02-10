@@ -44,7 +44,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\timings\Timings;
-use function assert;
 use function atan2;
 use function ceil;
 use function count;
@@ -170,8 +169,6 @@ abstract class Projectile extends Entity{
 		$start = $this->location->asVector3();
 		$end = $start->add($dx, $dy, $dz);
 
-		$blockHit = null;
-		$entityHit = null;
 		$hitResult = null;
 
 		$world = $this->getWorld();
@@ -181,8 +178,7 @@ abstract class Projectile extends Entity{
 			$blockHitResult = $this->calculateInterceptWithBlock($block, $start, $end);
 			if($blockHitResult !== null){
 				$end = $blockHitResult->hitVector;
-				$blockHit = $block;
-				$hitResult = $blockHitResult;
+				$hitResult = [$block, $blockHitResult];
 				break;
 			}
 		}
@@ -206,8 +202,7 @@ abstract class Projectile extends Entity{
 
 			if($distance < $entityDistance){
 				$entityDistance = $distance;
-				$entityHit = $entity;
-				$hitResult = $entityHitResult;
+				$hitResult = [$entity, $entityHitResult];
 				$end = $entityHitResult->hitVector;
 			}
 		}
@@ -223,26 +218,18 @@ abstract class Projectile extends Entity{
 		$this->recalculateBoundingBox();
 
 		if($hitResult !== null){
-			/** @var ProjectileHitEvent|null $ev */
-			$ev = null;
-			if($entityHit !== null){
-				$ev = new ProjectileHitEntityEvent($this, $hitResult, $entityHit);
-			}elseif($blockHit !== null){
-				$ev = new ProjectileHitBlockEvent($this, $hitResult, $blockHit);
+			[$objectHit, $rayTraceResult] = $hitResult;
+			if($objectHit instanceof Entity){
+				$ev = new ProjectileHitEntityEvent($this, $rayTraceResult, $objectHit);
+				$specificHitFunc = fn() => $this->onHitEntity($objectHit, $rayTraceResult);
 			}else{
-				assert(false, "unknown hit type");
+				$ev = new ProjectileHitBlockEvent($this, $rayTraceResult, $objectHit);
+				$specificHitFunc = fn() => $this->onHitBlock($objectHit, $rayTraceResult);
 			}
 
-			if($ev !== null){
-				$ev->call();
-				$this->onHit($ev);
-
-				if($ev instanceof ProjectileHitEntityEvent){
-					$this->onHitEntity($ev->getEntityHit(), $ev->getRayTraceResult());
-				}elseif($ev instanceof ProjectileHitBlockEvent){
-					$this->onHitBlock($ev->getBlockHit(), $ev->getRayTraceResult());
-				}
-			}
+			$ev->call();
+			$this->onHit($ev);
+			$specificHitFunc();
 
 			$this->isCollided = $this->onGround = true;
 			$this->motion = Vector3::zero();
@@ -290,10 +277,11 @@ abstract class Projectile extends Entity{
 		$damage = $this->getResultDamage();
 
 		if($damage >= 0){
-			if($this->getOwningEntity() === null){
+			$owner = $this->getOwningEntity();
+			if($owner === null){
 				$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 			}else{
-				$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
+				$ev = new EntityDamageByChildEntityEvent($owner, $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, $damage);
 			}
 
 			$entityHit->attack($ev);

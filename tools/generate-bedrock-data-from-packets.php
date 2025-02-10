@@ -454,7 +454,7 @@ class ParserPacketHandler extends PacketHandler{
 
 		//this sorts the data into a canonical order to make diffs between versions reliable
 		//how the data is ordered doesn't matter as long as it's reproducible
-		foreach($recipes as $_type => $entries){
+		foreach(Utils::promoteKeys($recipes) as $_type => $entries){
 			$_sortedRecipes = [];
 			$_seen = [];
 			foreach($entries as $entry){
@@ -475,10 +475,10 @@ class ParserPacketHandler extends PacketHandler{
 		}
 
 		ksort($recipes, SORT_STRING);
-		foreach($recipes as $type => $entries){
+		foreach(Utils::promoteKeys($recipes) as $type => $entries){
 			echo "$type: " . count($entries) . "\n";
 		}
-		foreach($recipes as $type => $entries){
+		foreach(Utils::promoteKeys($recipes) as $type => $entries){
 			file_put_contents(Path::join($recipesPath, $type . '.json'), json_encode($entries, JSON_PRETTY_PRINT) . "\n");
 		}
 

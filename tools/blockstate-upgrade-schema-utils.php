@@ -523,10 +523,12 @@ function processRemappedStates(array $upgradeTable) : array{
 			}
 		}
 	}
+	$orderedUnchanged = [];
 	foreach(Utils::stringifyKeys($unchangedStatesByNewName) as $newName => $unchangedStates){
-		ksort($unchangedStates);
-		$unchangedStatesByNewName[$newName] = $unchangedStates;
+		sort($unchangedStates);
+		$orderedUnchanged[$newName] = $unchangedStates;
 	}
+	$unchangedStatesByNewName = $orderedUnchanged;
 
 	$notFlattenedProperties = [];
 
@@ -656,7 +658,8 @@ function processRemappedStates(array $upgradeTable) : array{
 	usort($list, function(BlockStateUpgradeSchemaBlockRemap $a, BlockStateUpgradeSchemaBlockRemap $b) : int{
 		return count($b->oldState) <=> count($a->oldState);
 	});
-	return array_values($list);
+	//usort discards keys, so this is already a list<BlockStateUpgradeSchemaBlockRemap>
+	return $list;
 }
 
 /**

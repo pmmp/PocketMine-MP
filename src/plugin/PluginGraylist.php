@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\utils\Utils;
-use function array_flip;
+use function array_fill_keys;
+use function array_keys;
 use function is_array;
 use function is_float;
 use function is_int;
@@ -32,23 +33,28 @@ use function is_string;
 
 class PluginGraylist{
 
-	/** @var string[] */
+	/**
+	 * @var true[]
+	 * @phpstan-var array<string, true>
+	 */
 	private array $plugins;
 	private bool $isWhitelist = false;
 
 	/**
 	 * @param string[] $plugins
+	 * @phpstan-param list<string> $plugins
 	 */
 	public function __construct(array $plugins = [], bool $whitelist = false){
-		$this->plugins = array_flip($plugins);
+		$this->plugins = array_fill_keys($plugins, true);
 		$this->isWhitelist = $whitelist;
 	}
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getPlugins() : array{
-		return array_flip($this->plugins);
+		return array_keys($this->plugins);
 	}
 
 	public function isWhitelist() : bool{

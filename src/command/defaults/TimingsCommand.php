@@ -46,6 +46,8 @@ use function fwrite;
 use function http_build_query;
 use function implode;
 use function is_array;
+use function is_int;
+use function is_string;
 use function json_decode;
 use function mkdir;
 use function strtolower;
@@ -178,7 +180,7 @@ class TimingsCommand extends VanillaCommand{
 					return;
 				}
 				$response = json_decode($result->getBody(), true);
-				if(is_array($response) && isset($response["id"])){
+				if(is_array($response) && isset($response["id"]) && (is_int($response["id"]) || is_string($response["id"]))){
 					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
 						"https://" . $host . "/?id=" . $response["id"]));
 				}else{

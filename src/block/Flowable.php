@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 
 /**
@@ -46,9 +45,6 @@ abstract class Flowable extends Transparent{
 			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

@@ -134,7 +134,7 @@ abstract class Timezone{
 
 				$offset = $matches[2];
 
-				if($offset == ""){
+				if($offset === ""){
 					return "UTC";
 				}
 
@@ -156,7 +156,7 @@ abstract class Timezone{
 
 				$offset = trim(exec('date +%:z'));
 
-				if($offset == "+00:00"){
+				if($offset === "+00:00"){
 					return "UTC";
 				}
 
@@ -195,7 +195,7 @@ abstract class Timezone{
 		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
 
 		//After date_parse is done, put the sign back
-		if($negative_offset == true){
+		if($negative_offset){
 			$offset = -abs($offset);
 		}
 
@@ -204,7 +204,7 @@ abstract class Timezone{
 		//That's been a bug in PHP since 2008!
 		foreach(timezone_abbreviations_list() as $zones){
 			foreach($zones as $timezone){
-				if($timezone['timezone_id'] !== null && $timezone['offset'] == $offset){
+				if($timezone['timezone_id'] !== null && $timezone['offset'] === $offset){
 					return $timezone['timezone_id'];
 				}
 			}

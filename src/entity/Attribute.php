@@ -76,7 +76,7 @@ class Attribute{
 			throw new \InvalidArgumentException("Minimum $minValue is greater than the maximum $max");
 		}
 
-		if($this->minValue != $minValue){
+		if($this->minValue !== $minValue){
 			$this->desynchronized = true;
 			$this->minValue = $minValue;
 		}
@@ -95,7 +95,7 @@ class Attribute{
 			throw new \InvalidArgumentException("Maximum $maxValue is less than the minimum $min");
 		}
 
-		if($this->maxValue != $maxValue){
+		if($this->maxValue !== $maxValue){
 			$this->desynchronized = true;
 			$this->maxValue = $maxValue;
 		}
@@ -140,7 +140,7 @@ class Attribute{
 			$value = min(max($value, $this->getMinValue()), $this->getMaxValue());
 		}
 
-		if($this->currentValue != $value){
+		if($this->currentValue !== $value){
 			$this->desynchronized = true;
 			$this->currentValue = $value;
 		}elseif($forceSend){

@@ -122,4 +122,5 @@ final class BiomeIds{
 	public const DEEP_DARK = 190;
 	public const MANGROVE_SWAMP = 191;
 	public const CHERRY_GROVE = 192;
+	public const PALE_GARDEN = 193;
 }

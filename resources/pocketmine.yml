@@ -54,12 +54,6 @@ memory:
     #This only affects the main thread. Other threads should fire their own collections
     period: 36000
 
-    #Fire asynchronous tasks to collect garbage from workers
-    collect-async-worker: true
-
-    #Trigger on low memory
-    low-memory-trigger: true
-
   #Settings controlling memory dump handling.
   memory-dump:
     #Dump memory from async workers as well as the main thread. If you have issues with segfaults when dumping memory, disable this setting.
@@ -68,16 +62,6 @@ memory:
   max-chunks:
     #Cap maximum render distance per player when low memory is triggered. Set to 0 to disable cap.
     chunk-radius: 4
-
-    #Do chunk garbage collection on trigger
-    trigger-chunk-collect: true
-
-  world-caches:
-    #Disallow adding to world chunk-packet caches when memory is low
-    disable-chunk-cache: true
-    #Clear world caches when memory is low
-    low-memory-trigger: true
-
 
 network:
   #Threshold for batching packets, in bytes. Only these packets will be compressed

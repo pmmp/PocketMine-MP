@@ -68,6 +68,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
 use pocketmine\world\sound\TotemUseSound;
+use pocketmine\world\World;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_fill;
@@ -189,8 +190,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->hungerManager;
 	}
 
+	/**
+	 * Returns whether the Human can eat food. This may return a different result than {@link HungerManager::isHungry()},
+	 * as HungerManager only handles the hunger bar.
+	 */
+	public function canEat() : bool{
+		return $this->hungerManager->isHungry() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
+	}
+
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->canEat()){
 			return false;
 		}
 

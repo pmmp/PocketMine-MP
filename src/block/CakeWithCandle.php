@@ -36,9 +36,6 @@ class CakeWithCandle extends BaseCake{
 		onInteract as onInteractCandle;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()

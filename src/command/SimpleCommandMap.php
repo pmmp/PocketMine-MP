@@ -73,6 +73,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use function array_shift;
+use function array_values;
 use function count;
 use function implode;
 use function str_contains;
@@ -163,7 +164,7 @@ class SimpleCommandMap implements CommandMap{
 				unset($aliases[$index]);
 			}
 		}
-		$command->setAliases($aliases);
+		$command->setAliases(array_values($aliases));
 
 		if(!$registered){
 			$command->setLabel($fallbackPrefix . ":" . $label);

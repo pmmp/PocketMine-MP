@@ -52,9 +52,6 @@ class EndRod extends Flowable{
 		return 14;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		$myAxis = Facing::axis($this->facing);
 

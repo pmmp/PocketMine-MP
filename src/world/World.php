@@ -113,6 +113,7 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_sum;
+use function array_values;
 use function assert;
 use function cos;
 use function count;
@@ -167,6 +168,9 @@ class World implements ChunkManager{
 
 	public const DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK = 3;
 
+	//TODO: this could probably do with being a lot bigger
+	private const BLOCK_CACHE_SIZE_CAP = 2048;
+
 	/**
 	 * @var Player[] entity runtime ID => Player
 	 * @phpstan-var array<int, Player>
@@ -202,6 +206,7 @@ class World implements ChunkManager{
 	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, Block>>
 	 */
 	private array $blockCache = [];
+	private int $blockCacheSize = 0;
 	/**
 	 * @var AxisAlignedBB[][][] chunkHash => [relativeBlockHash => AxisAlignedBB[]]
 	 * @phpstan-var array<ChunkPosHash, array<ChunkBlockPosHash, list<AxisAlignedBB>>>
@@ -370,6 +375,8 @@ class World implements ChunkManager{
 
 	private \Logger $logger;
 
+	private RuntimeBlockStateRegistry $blockStateRegistry;
+
 	/**
 	 * @phpstan-return ChunkPosHash
 	 */
@@ -483,6 +490,7 @@ class World implements ChunkManager{
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
 
+		$this->blockStateRegistry = RuntimeBlockStateRegistry::getInstance();
 		$this->minY = $this->provider->getWorldMinY();
 		$this->maxY = $this->provider->getWorldMaxY();
 
@@ -554,7 +562,7 @@ class World implements ChunkManager{
 				}catch(BlockStateDeserializeException){
 					continue;
 				}
-				$block = RuntimeBlockStateRegistry::getInstance()->fromStateId(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
+				$block = $this->blockStateRegistry->fromStateId(GlobalBlockStateHandlers::getDeserializer()->deserialize($blockStateData));
 			}else{
 				//TODO: we probably ought to log an error here
 				continue;
@@ -565,7 +573,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){
+		foreach($this->blockStateRegistry->getAllKnownStates() as $state){
 			$dontTickName = $dontTickBlocks[$state->getTypeId()] ?? null;
 			if($dontTickName === null && $state->ticksRandomly()){
 				$this->randomTickBlocks[$state->getStateId()] = true;
@@ -653,6 +661,7 @@ class World implements ChunkManager{
 
 		$this->provider->close();
 		$this->blockCache = [];
+		$this->blockCacheSize = 0;
 		$this->blockCollisionBoxCache = [];
 
 		$this->unloaded = true;
@@ -673,7 +682,6 @@ class World implements ChunkManager{
 	 * Used for broadcasting sounds and particles with specific targets.
 	 *
 	 * @param Player[] $allowed
-	 * @phpstan-param list<Player> $allowed
 	 *
 	 * @return array<int, Player>
 	 */
@@ -1084,7 +1092,6 @@ class World implements ChunkManager{
 
 	/**
 	 * @param Vector3[] $blocks
-	 * @phpstan-param list<Vector3> $blocks
 	 *
 	 * @return ClientboundPacket[]
 	 * @phpstan-return list<ClientboundPacket>
@@ -1138,13 +1145,16 @@ class World implements ChunkManager{
 	public function clearCache(bool $force = false) : void{
 		if($force){
 			$this->blockCache = [];
+			$this->blockCacheSize = 0;
 			$this->blockCollisionBoxCache = [];
 		}else{
-			$count = 0;
+			//Recalculate this when we're asked - blockCacheSize may be higher than the real size
+			$this->blockCacheSize = 0;
 			foreach($this->blockCache as $list){
-				$count += count($list);
-				if($count > 2048){
+				$this->blockCacheSize += count($list);
+				if($this->blockCacheSize > self::BLOCK_CACHE_SIZE_CAP){
 					$this->blockCache = [];
+					$this->blockCacheSize = 0;
 					break;
 				}
 			}
@@ -1152,11 +1162,24 @@ class World implements ChunkManager{
 			$count = 0;
 			foreach($this->blockCollisionBoxCache as $list){
 				$count += count($list);
-				if($count > 2048){
+				if($count > self::BLOCK_CACHE_SIZE_CAP){
 					//TODO: Is this really the best logic?
 					$this->blockCollisionBoxCache = [];
 					break;
 				}
+			}
+		}
+	}
+
+	private function trimBlockCache() : void{
+		$before = $this->blockCacheSize;
+		//Since PHP maintains key order, earliest in foreach should be the oldest entries
+		//Older entries are less likely to be hot, so destroying these should usually have the lowest impact on performance
+		foreach($this->blockCache as $chunkHash => $blocks){
+			unset($this->blockCache[$chunkHash]);
+			$this->blockCacheSize -= count($blocks);
+			if($this->blockCacheSize < self::BLOCK_CACHE_SIZE_CAP){
+				break;
 			}
 		}
 	}
@@ -1343,7 +1366,7 @@ class World implements ChunkManager{
 					 * TODO: phpstan can't infer these types yet :(
 					 * @phpstan-var array<int, LightArray> $blockLight
 					 * @phpstan-var array<int, LightArray> $skyLight
-					 * @phpstan-var array<int, int>        $heightMap
+					 * @phpstan-var non-empty-list<int>    $heightMap
 					 */
 					if($this->unloaded || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true){
 						return;
@@ -1374,7 +1397,7 @@ class World implements ChunkManager{
 			$entity->onRandomUpdate();
 		}
 
-		$blockFactory = RuntimeBlockStateRegistry::getInstance();
+		$blockFactory = $this->blockStateRegistry;
 		foreach($chunk->getSubChunks() as $Y => $subChunk){
 			if(!$subChunk->isEmptyFast()){
 				$k = 0;
@@ -1435,8 +1458,8 @@ class World implements ChunkManager{
 				$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
 					$chunk->getSubChunks(),
 					$chunk->isPopulated(),
-					array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($chunkX, $chunkZ), fn(Entity $e) => $e->canSaveWithChunk())),
-					array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
+					array_map(fn(Entity $e) => $e->saveNBT(), array_values(array_filter($this->getChunkEntities($chunkX, $chunkZ), fn(Entity $e) => $e->canSaveWithChunk()))),
+					array_map(fn(Tile $t) => $t->saveNBT(), array_values($chunk->getTiles())),
 				), $chunk->getTerrainDirtyFlags());
 				$chunk->clearTerrainDirtyFlags();
 			}
@@ -1508,13 +1531,18 @@ class World implements ChunkManager{
 
 		$collides = [];
 
+		$collisionInfo = $this->blockStateRegistry->collisionInfo;
 		if($targetFirst){
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->getBlockAt($x, $y, $z);
-						if($block->collidesWithBB($bb)){
-							return [$block];
+						$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
+						if(match($stateCollisionInfo){
+							RuntimeBlockStateRegistry::COLLISION_CUBE => true,
+							RuntimeBlockStateRegistry::COLLISION_NONE => false,
+							default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
+						}){
+							return [$this->getBlockAt($x, $y, $z)];
 						}
 					}
 				}
@@ -1523,9 +1551,13 @@ class World implements ChunkManager{
 			for($z = $minZ; $z <= $maxZ; ++$z){
 				for($x = $minX; $x <= $maxX; ++$x){
 					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $this->getBlockAt($x, $y, $z);
-						if($block->collidesWithBB($bb)){
-							$collides[] = $block;
+						$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
+						if(match($stateCollisionInfo){
+							RuntimeBlockStateRegistry::COLLISION_CUBE => true,
+							RuntimeBlockStateRegistry::COLLISION_NONE => false,
+							default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
+						}){
+							$collides[] = $this->getBlockAt($x, $y, $z);
 						}
 					}
 				}
@@ -1536,22 +1568,63 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * @param int[] $collisionInfo
+	 * @phpstan-param array<int, int> $collisionInfo
+	 */
+	private function getBlockCollisionInfo(int $x, int $y, int $z, array $collisionInfo) : int{
+		if(!$this->isInWorld($x, $y, $z)){
+			return RuntimeBlockStateRegistry::COLLISION_NONE;
+		}
+		$chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
+		if($chunk === null){
+			return RuntimeBlockStateRegistry::COLLISION_NONE;
+		}
+		$stateId = $chunk
+			->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)
+			->getBlockStateId(
+				$x & SubChunk::COORD_MASK,
+				$y & SubChunk::COORD_MASK,
+				$z & SubChunk::COORD_MASK
+			);
+		return $collisionInfo[$stateId];
+	}
+
+	/**
 	 * Returns a list of all block AABBs which overlap the full block area at the given coordinates.
 	 * This checks a padding of 1 block around the coordinates to account for oversized AABBs of blocks like fences.
 	 * Larger AABBs (>= 2 blocks on any axis) are not accounted for.
 	 *
+	 * @param int[] $collisionInfo
+	 * @phpstan-param array<int, int> $collisionInfo
+	 *
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
-	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z) : array{
-		$block = $this->getBlockAt($x, $y, $z);
-		$boxes = $block->getCollisionBoxes();
+	private function getBlockCollisionBoxesForCell(int $x, int $y, int $z, array $collisionInfo) : array{
+		$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
+		$boxes = match($stateCollisionInfo){
+			RuntimeBlockStateRegistry::COLLISION_NONE => [],
+			RuntimeBlockStateRegistry::COLLISION_CUBE => [AxisAlignedBB::one()->offset($x, $y, $z)],
+			default => $this->getBlockAt($x, $y, $z)->getCollisionBoxes()
+		};
 
-		$cellBB = AxisAlignedBB::one()->offset($x, $y, $z);
-		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
-			$extraBoxes = $this->getBlockAt($x + $dx, $y + $dy, $z + $dz)->getCollisionBoxes();
-			foreach($extraBoxes as $extraBox){
-				if($extraBox->intersectsWith($cellBB)){
-					$boxes[] = $extraBox;
+		//overlapping AABBs can't make any difference if this is a cube, so we can save some CPU cycles in this common case
+		if($stateCollisionInfo !== RuntimeBlockStateRegistry::COLLISION_CUBE){
+			$cellBB = null;
+			foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+				$offsetX = $x + $dx;
+				$offsetY = $y + $dy;
+				$offsetZ = $z + $dz;
+				$stateCollisionInfo = $this->getBlockCollisionInfo($offsetX, $offsetY, $offsetZ, $collisionInfo);
+				if($stateCollisionInfo === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW){
+					//avoid allocating this unless it's needed
+					$cellBB ??= AxisAlignedBB::one()->offset($x, $y, $z);
+					$extraBoxes = $this->getBlockAt($offsetX, $offsetY, $offsetZ)->getCollisionBoxes();
+					foreach($extraBoxes as $extraBox){
+						if($extraBox->intersectsWith($cellBB)){
+							$boxes[] = $extraBox;
+						}
+					}
 				}
 			}
 		}
@@ -1573,13 +1646,15 @@ class World implements ChunkManager{
 
 		$collides = [];
 
+		$collisionInfo = $this->blockStateRegistry->collisionInfo;
+
 		for($z = $minZ; $z <= $maxZ; ++$z){
 			for($x = $minX; $x <= $maxX; ++$x){
 				$chunkPosHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
 				for($y = $minY; $y <= $maxY; ++$y){
 					$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z);
+					$boxes = $this->blockCollisionBoxCache[$chunkPosHash][$relativeBlockHash] ??= $this->getBlockCollisionBoxesForCell($x, $y, $z, $collisionInfo);
 
 					foreach($boxes as $blockBB){
 						if($blockBB->intersectsWith($bb)){
@@ -1774,7 +1849,7 @@ class World implements ChunkManager{
 			return;
 		}
 
-		$blockFactory = RuntimeBlockStateRegistry::getInstance();
+		$blockFactory = $this->blockStateRegistry;
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 		if($this->skyLightUpdate === null){
 			$this->skyLightUpdate = new SkyLightUpdate(new SubChunkExplorer($this), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight);
@@ -1893,7 +1968,7 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
-				$block = RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
@@ -1921,6 +1996,10 @@ class World implements ChunkManager{
 
 		if($addToCache && $relativeBlockHash !== null){
 			$this->blockCache[$chunkHash][$relativeBlockHash] = $block;
+
+			if(++$this->blockCacheSize >= self::BLOCK_CACHE_SIZE_CAP){
+				$this->trimBlockCache();
+			}
 		}
 
 		return $block;
@@ -1967,6 +2046,7 @@ class World implements ChunkManager{
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
+		$this->blockCacheSize--;
 		unset($this->blockCollisionBoxCache[$chunkHash][$relativeBlockHash]);
 		//blocks like fences have collision boxes that reach into neighbouring blocks, so we need to invalidate the
 		//caches for those blocks as well
@@ -2014,7 +2094,6 @@ class World implements ChunkManager{
 	 * @phpstan-return list<ExperienceOrb>
 	 */
 	public function dropExperience(Vector3 $pos, int $amount) : array{
-		/** @var ExperienceOrb[] $orbs */
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
@@ -2548,7 +2627,7 @@ class World implements ChunkManager{
 				$localY = $tilePosition->getFloorY();
 				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
 
-				$newBlock = RuntimeBlockStateRegistry::getInstance()->fromStateId($chunk->getBlockStateId($localX, $localY, $localZ));
+				$newBlock = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($localX, $localY, $localZ));
 				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
 				if(
 					$expectedTileClass === null || //new block doesn't expect a tile
@@ -2570,6 +2649,7 @@ class World implements ChunkManager{
 
 		$this->chunks[$chunkHash] = $chunk;
 
+		$this->blockCacheSize -= count($this->blockCache[$chunkHash] ?? []);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
@@ -2854,6 +2934,8 @@ class World implements ChunkManager{
 			$this->logger->debug("Chunk $x $z has been upgraded, will be saved at the next autosave opportunity");
 		}
 		$this->chunks[$chunkHash] = $chunk;
+
+		$this->blockCacheSize -= count($this->blockCache[$chunkHash] ?? []);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->blockCollisionBoxCache[$chunkHash]);
 
@@ -2990,8 +3072,8 @@ class World implements ChunkManager{
 					$this->provider->saveChunk($x, $z, new ChunkData(
 						$chunk->getSubChunks(),
 						$chunk->isPopulated(),
-						array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($x, $z), fn(Entity $e) => $e->canSaveWithChunk())),
-						array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
+						array_map(fn(Entity $e) => $e->saveNBT(), array_values(array_filter($this->getChunkEntities($x, $z), fn(Entity $e) => $e->canSaveWithChunk()))),
+						array_map(fn(Tile $t) => $t->saveNBT(), array_values($chunk->getTiles())),
 					), $chunk->getTerrainDirtyFlags());
 				}finally{
 					$this->timings->syncChunkSave->stopTiming();
@@ -3013,6 +3095,7 @@ class World implements ChunkManager{
 		}
 
 		unset($this->chunks[$chunkHash]);
+		$this->blockCacheSize -= count($this->blockCache[$chunkHash] ?? []);
 		unset($this->blockCache[$chunkHash]);
 		unset($this->blockCollisionBoxCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
@@ -3053,6 +3136,7 @@ class World implements ChunkManager{
 	 * @phpstan-return Promise<Position>
 	 */
 	public function requestSafeSpawn(?Vector3 $spawn = null) : Promise{
+		/** @phpstan-var PromiseResolver<Position> $resolver */
 		$resolver = new PromiseResolver();
 		$spawn ??= $this->getSpawnLocation();
 		/*
@@ -3224,6 +3308,7 @@ class World implements ChunkManager{
 	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$this->addChunkHashToPopulationRequestQueue($chunkHash);
+		/** @phpstan-var PromiseResolver<Chunk> $resolver */
 		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};

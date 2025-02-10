@@ -57,6 +57,7 @@ final class AvailableEnchantmentRegistry{
 		$this->register(Enchantments::THORNS(), [Tags::CHESTPLATE], [Tags::HELMET, Tags::LEGGINGS, Tags::BOOTS]);
 		$this->register(Enchantments::RESPIRATION(), [Tags::HELMET], []);
 		$this->register(Enchantments::AQUA_AFFINITY(), [Tags::HELMET], []);
+		$this->register(Enchantments::FROST_WALKER(), [/* no primary items */], [Tags::BOOTS]);
 		$this->register(Enchantments::SHARPNESS(), [Tags::SWORD, Tags::AXE], []);
 		$this->register(Enchantments::KNOCKBACK(), [Tags::SWORD], []);
 		$this->register(Enchantments::FIRE_ASPECT(), [Tags::SWORD], []);
