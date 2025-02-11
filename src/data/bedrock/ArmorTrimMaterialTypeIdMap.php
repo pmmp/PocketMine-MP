@@ -65,6 +65,7 @@ final class ArmorTrimMaterialTypeIdMap{
 				Materials::NETHERITE() => Ids::NETHERITE,
 				Materials::QUARTZ() => Ids::QUARTZ,
 				Materials::REDSTONE() => Ids::REDSTONE,
+				Materials::RESIN() => Ids::RESIN,
 				default => throw new AssumptionFailedError("Unhandled armor trim material type")
 			}, $material);
 		}

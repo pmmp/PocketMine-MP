@@ -34,4 +34,5 @@ final class ArmorTrimMaterialTypeIds{
 	public const NETHERITE = "netherite";
 	public const QUARTZ = "quartz";
 	public const REDSTONE = "redstone";
+	public const RESIN = "resin";
 }

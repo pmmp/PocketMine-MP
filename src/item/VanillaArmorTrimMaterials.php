@@ -42,6 +42,7 @@ use pocketmine\utils\TextFormat;
  * @method static ArmorTrimMaterial NETHERITE()
  * @method static ArmorTrimMaterial QUARTZ()
  * @method static ArmorTrimMaterial REDSTONE()
+ * @method static ArmorTrimMaterial RESIN()
  */
 final class VanillaArmorTrimMaterials{
 	use RegistryTrait;
@@ -76,5 +77,6 @@ final class VanillaArmorTrimMaterials{
 		self::register("netherite", new ArmorTrimMaterial(VanillaItems::NETHERITE_INGOT(), TextFormat::MATERIAL_NETHERITE));
 		self::register("quartz", new ArmorTrimMaterial(VanillaItems::NETHER_QUARTZ(), TextFormat::MATERIAL_QUARTZ));
 		self::register("redstone", new ArmorTrimMaterial(VanillaItems::REDSTONE_DUST(), TextFormat::MATERIAL_REDSTONE));
+		self::register("resin", new ArmorTrimMaterial(VanillaItems::RESIN_BRICK(), TextFormat::MATERIAL_RESIN));
 	}
 }
