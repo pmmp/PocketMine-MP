@@ -69,6 +69,7 @@ abstract class Terminal{
 	public static string $COLOR_MATERIAL_DIAMOND = "";
 	public static string $COLOR_MATERIAL_LAPIS = "";
 	public static string $COLOR_MATERIAL_AMETHYST = "";
+	public static string $COLOR_MATERIAL_RESIN = "";
 
 	private static ?bool $formattingCodes = null;
 
@@ -131,6 +132,7 @@ abstract class Terminal{
 		self::$COLOR_MATERIAL_DIAMOND = $color(37);
 		self::$COLOR_MATERIAL_LAPIS = $color(24);
 		self::$COLOR_MATERIAL_AMETHYST = $color(98);
+		self::$COLOR_MATERIAL_RESIN = $color(208);
 	}
 
 	protected static function getEscapeCodes() : void{
@@ -174,11 +176,12 @@ abstract class Terminal{
 			self::$COLOR_MATERIAL_DIAMOND = $colors >= 256 ? $setaf(37) : $setaf(14);
 			self::$COLOR_MATERIAL_LAPIS = $colors >= 256 ? $setaf(24) : $setaf(12);
 			self::$COLOR_MATERIAL_AMETHYST = $colors >= 256 ? $setaf(98) : $setaf(13);
+			self::$COLOR_MATERIAL_RESIN = $colors >= 256 ? $setaf(208) : $setaf(11);
 		}else{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = self::$COLOR_MATERIAL_NETHERITE = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = self::$COLOR_MATERIAL_REDSTONE = self::$COLOR_MATERIAL_COPPER = $setaf(1);
 			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = self::$COLOR_MATERIAL_EMERALD = $setaf(2);
-			self::$COLOR_YELLOW = self::$COLOR_GOLD = self::$COLOR_MINECOIN_GOLD = self::$COLOR_MATERIAL_GOLD = $setaf(3);
+			self::$COLOR_YELLOW = self::$COLOR_GOLD = self::$COLOR_MINECOIN_GOLD = self::$COLOR_MATERIAL_GOLD = self::$COLOR_MATERIAL_RESIN = $setaf(3);
 			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = self::$COLOR_MATERIAL_LAPIS = $setaf(4);
 			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = self::$COLOR_MATERIAL_AMETHYST = $setaf(5);
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = self::$COLOR_MATERIAL_DIAMOND = $setaf(6);
@@ -253,6 +256,7 @@ abstract class Terminal{
 				TextFormat::MATERIAL_DIAMOND => Terminal::$COLOR_MATERIAL_DIAMOND,
 				TextFormat::MATERIAL_LAPIS => Terminal::$COLOR_MATERIAL_LAPIS,
 				TextFormat::MATERIAL_AMETHYST => Terminal::$COLOR_MATERIAL_AMETHYST,
+				TextFormat::MATERIAL_RESIN => Terminal::$COLOR_MATERIAL_RESIN,
 				default => $token,
 			};
 		}
