@@ -81,7 +81,7 @@ use function spl_object_id;
 class InventoryManager{
 
 	//TODO: Hack! In Bedrock these indexes go together with regular crafting recipes,
-	//so we make an offsets to prevent conflicts.
+	//so we make offsets to prevent conflicts.
 	public const ENCHANTING_OPTION_NETWORK_OFFSET = 100000;
 	public const SMITHING_RECIPE_NETWORK_OFFSET = 200000;
 
