@@ -77,7 +77,10 @@ class BulkCurlTask extends AsyncTask{
 		 * @phpstan-var \Closure(list<InternetRequestResult|InternetException>) : void
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_COMPLETION_CALLBACK);
-		/** @var InternetRequestResult[]|InternetException[] $results */
+		/**
+		 * @var InternetRequestResult[]|InternetException[] $results
+		 * @phpstan-var list<InternetRequestResult|InternetException> $results
+		 */
 		$results = $this->getResult();
 		$callback($results);
 	}

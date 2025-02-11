@@ -84,11 +84,20 @@ class PluginDescription{
 	 * @phpstan-var array<string, list<string>>
 	 */
 	private array $extensions = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $depend = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $softDepend = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $loadBefore = [];
 	private string $version;
 	/**
@@ -173,7 +182,7 @@ class PluginDescription{
 		}
 
 		if(isset($plugin[self::KEY_DEPEND])){
-			$this->depend = (array) $plugin[self::KEY_DEPEND];
+			$this->depend = array_values((array) $plugin[self::KEY_DEPEND]);
 		}
 		if(isset($plugin[self::KEY_EXTENSIONS])){
 			$extensions = (array) $plugin[self::KEY_EXTENSIONS];
@@ -183,13 +192,13 @@ class PluginDescription{
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[(string) $k] = array_map('strval', is_array($v) ? $v : [$v]);
+				$this->extensions[(string) $k] = array_values(array_map('strval', is_array($v) ? $v : [$v]));
 			}
 		}
 
-		$this->softDepend = (array) ($plugin[self::KEY_SOFTDEPEND] ?? $this->softDepend);
+		$this->softDepend = array_values((array) ($plugin[self::KEY_SOFTDEPEND] ?? $this->softDepend));
 
-		$this->loadBefore = (array) ($plugin[self::KEY_LOADBEFORE] ?? $this->loadBefore);
+		$this->loadBefore = array_values((array) ($plugin[self::KEY_LOADBEFORE] ?? $this->loadBefore));
 
 		$this->website = (string) ($plugin[self::KEY_WEBSITE] ?? $this->website);
 
@@ -210,7 +219,7 @@ class PluginDescription{
 		$this->authors = [];
 		if(isset($plugin[self::KEY_AUTHOR])){
 			if(is_array($plugin[self::KEY_AUTHOR])){
-				$this->authors = $plugin[self::KEY_AUTHOR];
+				$this->authors = array_values($plugin[self::KEY_AUTHOR]);
 			}else{
 				$this->authors[] = $plugin[self::KEY_AUTHOR];
 			}
@@ -284,6 +293,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getDepend() : array{
 		return $this->depend;
@@ -295,6 +305,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getLoadBefore() : array{
 		return $this->loadBefore;
@@ -324,6 +335,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getSoftDepend() : array{
 		return $this->softDepend;

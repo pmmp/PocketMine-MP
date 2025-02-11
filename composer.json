@@ -44,7 +44,7 @@
       "pocketmine/locale-data": "~2.22.0",
       "pocketmine/log": "^0.4.0",
       "pocketmine/math": "~1.0.0",
-      "pocketmine/nbt": "~1.0.0",
+      "pocketmine/nbt": "~1.1.0",
       "pocketmine/raklib": "~1.1.0",
       "pocketmine/raklib-ipc": "~1.0.0",
       "pocketmine/snooze": "^0.5.0",
@@ -52,9 +52,9 @@
       "symfony/filesystem": "~6.4.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.11.11",
-      "phpstan/phpstan-phpunit": "^1.1.0",
-      "phpstan/phpstan-strict-rules": "^1.2.0",
+      "phpstan/phpstan": "2.1.2",
+      "phpstan/phpstan-phpunit": "^2.0.0",
+      "phpstan/phpstan-strict-rules": "^2.0.0",
       "phpunit/phpunit": "^10.5.24"
    },
    "autoload": {

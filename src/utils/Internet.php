@@ -100,7 +100,7 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== null && ($addr = trim($ip->getBody())) != ""){
+		if($ip !== null && ($addr = trim($ip->getBody())) !== ""){
 			return self::$ip = $addr;
 		}
 

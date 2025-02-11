@@ -19,6 +19,7 @@ rules:
 parameters:
 	level: 9
 	checkMissingCallableSignature: true
+	rememberPossiblyImpureFunctionValues: false #risky to remember these, better for performance to avoid repeated calls anyway
 	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
@@ -31,6 +32,7 @@ parameters:
 	paths:
 		- build
 		- src
+		- tests/phpstan/DummyPluginOwned.php
 		- tests/phpstan/rules
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
@@ -44,6 +46,7 @@ parameters:
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
+		- tests/phpstan/stubs/chunkutils2.stub
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
 		- tests/phpstan/stubs/pmmpthread.stub

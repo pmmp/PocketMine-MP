@@ -83,11 +83,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 			}
 
 			try{
-				$newPalette[$k] = $this->blockStateDeserializer->deserialize($newStateData);
+				$newPalette[] = $this->blockStateDeserializer->deserialize($newStateData);
 			}catch(BlockStateDeserializeException $e){
 				//this should never happen anyway - if the upgrader returned an invalid state, we have bigger problems
 				$blockDecodeErrors[] = "Palette offset $k / Failed to deserialize upgraded state $id:$meta: " . $e->getMessage();
-				$newPalette[$k] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
+				$newPalette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
 		}
 

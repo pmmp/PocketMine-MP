@@ -62,9 +62,6 @@ class DaylightSensor extends Transparent{
 		return 300;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}

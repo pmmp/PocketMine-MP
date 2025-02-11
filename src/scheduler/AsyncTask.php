@@ -93,6 +93,7 @@ abstract class AsyncTask extends Runnable{
 
 		$this->finished = true;
 		AsyncWorker::getNotifier()->wakeupSleeper();
+		AsyncWorker::maybeCollectCycles();
 	}
 
 	/**

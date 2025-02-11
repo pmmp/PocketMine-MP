@@ -32,6 +32,7 @@ use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
+use function is_string;
 use function spl_object_id;
 use function strlen;
 
@@ -69,7 +70,7 @@ class ChunkCache implements ChunkListener{
 		foreach(self::$instances as $compressorMap){
 			foreach($compressorMap as $chunkCache){
 				foreach($chunkCache->caches as $chunkHash => $promise){
-					if($promise->hasResult()){
+					if(is_string($promise)){
 						//Do not clear promises that are not yet fulfilled; they will have requesters waiting on them
 						unset($chunkCache->caches[$chunkHash]);
 					}
@@ -79,58 +80,72 @@ class ChunkCache implements ChunkListener{
 	}
 
 	/**
-	 * @var CompressBatchPromise[]
-	 * @phpstan-var array<int, CompressBatchPromise>
+	 * @var CompressBatchPromise[]|string[]
+	 * @phpstan-var array<int, CompressBatchPromise|string>
 	 */
 	private array $caches = [];
 
 	private int $hits = 0;
 	private int $misses = 0;
 
+	/**
+	 * @phpstan-param DimensionIds::* $dimensionId
+	 */
 	private function __construct(
 		private World $world,
-		private Compressor $compressor
+		private Compressor $compressor,
+		private int $dimensionId = DimensionIds::OVERWORLD
 	){}
 
-	/**
-	 * Requests asynchronous preparation of the chunk at the given coordinates.
-	 *
-	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
-	 */
-	public function request(int $chunkX, int $chunkZ) : CompressBatchPromise{
+	private function prepareChunkAsync(int $chunkX, int $chunkZ, int $chunkHash) : CompressBatchPromise{
 		$this->world->registerChunkListener($this, $chunkX, $chunkZ);
 		$chunk = $this->world->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
 			throw new \InvalidArgumentException("Cannot request an unloaded chunk");
 		}
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-
-		if(isset($this->caches[$chunkHash])){
-			++$this->hits;
-			return $this->caches[$chunkHash];
-		}
-
 		++$this->misses;
 
 		$this->world->timings->syncChunkSendPrepare->startTiming();
 		try{
-			$this->caches[$chunkHash] = new CompressBatchPromise();
+			$promise = new CompressBatchPromise();
 
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
 					$chunkX,
 					$chunkZ,
-					DimensionIds::OVERWORLD, //TODO: not hardcode this
+					$this->dimensionId,
 					$chunk,
-					$this->caches[$chunkHash],
+					$promise,
 					$this->compressor
 				)
 			);
+			$this->caches[$chunkHash] = $promise;
+			$promise->onResolve(function(CompressBatchPromise $promise) use ($chunkHash) : void{
+				//the promise may have been discarded or replaced if the chunk was unloaded or modified in the meantime
+				if(($this->caches[$chunkHash] ?? null) === $promise){
+					$this->caches[$chunkHash] = $promise->getResult();
+				}
+			});
 
-			return $this->caches[$chunkHash];
+			return $promise;
 		}finally{
 			$this->world->timings->syncChunkSendPrepare->stopTiming();
 		}
+	}
+
+	/**
+	 * Requests asynchronous preparation of the chunk at the given coordinates.
+	 *
+	 * @return CompressBatchPromise|string Compressed chunk packet, or a promise for one to be resolved asynchronously.
+	 */
+	public function request(int $chunkX, int $chunkZ) : CompressBatchPromise|string{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		if(isset($this->caches[$chunkHash])){
+			++$this->hits;
+			return $this->caches[$chunkHash];
+		}
+
+		return $this->prepareChunkAsync($chunkX, $chunkZ, $chunkHash);
 	}
 
 	private function destroy(int $chunkX, int $chunkZ) : bool{
@@ -148,12 +163,12 @@ class ChunkCache implements ChunkListener{
 		$chunkPosHash = World::chunkHash($chunkX, $chunkZ);
 		$cache = $this->caches[$chunkPosHash] ?? null;
 		if($cache !== null){
-			if(!$cache->hasResult()){
+			if(!is_string($cache)){
 				//some requesters are waiting for this chunk, so their request needs to be fulfilled
 				$cache->cancel();
 				unset($this->caches[$chunkPosHash]);
 
-				$this->request($chunkX, $chunkZ)->onResolve(...$cache->getResolveCallbacks());
+				$this->prepareChunkAsync($chunkX, $chunkZ, $chunkPosHash)->onResolve(...$cache->getResolveCallbacks());
 			}else{
 				//dump the cache, it'll be regenerated the next time it's requested
 				$this->destroy($chunkX, $chunkZ);
@@ -199,8 +214,8 @@ class ChunkCache implements ChunkListener{
 	public function calculateCacheSize() : int{
 		$result = 0;
 		foreach($this->caches as $cache){
-			if($cache->hasResult()){
-				$result += strlen($cache->getResult());
+			if(is_string($cache)){
+				$result += strlen($cache);
 			}
 		}
 		return $result;

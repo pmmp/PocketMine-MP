@@ -1,122 +1,266 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method pocketmine\\\\block\\\\CakeWithCandle\\:\\:onInteractCandle\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			message: '#^Access to an undefined property object\:\:\$crashId\.$#'
+			identifier: property.notFound
 			count: 1
-			path: ../../../src/block/CakeWithCandle.php
+			path: ../../../src/Server.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\CopperDoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			message: '#^Access to an undefined property object\:\:\$crashUrl\.$#'
+			identifier: property.notFound
 			count: 1
-			path: ../../../src/block/CopperDoor.php
+			path: ../../../src/Server.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\CopperTrapdoor\\:\\:onInteractCopper\\(\\) has parameter \\$returnedItems with no value type specified in iterable type array\\.$#"
+			message: '#^Access to an undefined property object\:\:\$error\.$#'
+			identifier: property.notFound
 			count: 1
-			path: ../../../src/block/CopperTrapdoor.php
+			path: ../../../src/Server.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\DoubleTallGrass\\:\\:traitGetDropsForIncompatibleTool\\(\\) return type has no value type specified in iterable type array\\.$#"
+			message: '#^Method pocketmine\\block\\Block\:\:readStateFromWorld\(\) is marked as impure but does not have any side effects\.$#'
+			identifier: impureMethod.pure
+			count: 1
+			path: ../../../src/block/Block.php
+
+		-
+			message: '#^Method pocketmine\\block\\DoubleTallGrass\:\:traitGetDropsForIncompatibleTool\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: ../../../src/block/DoubleTallGrass.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:ACACIA_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:ACACIA_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:BIRCH_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:BIRCH_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CHERRY_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:CHERRY_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:CRIMSON_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:CRIMSON_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:DARK_OAK_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:DARK_OAK_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:JUNGLE_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:JUNGLE_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:MANGROVE_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:MANGROVE_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:OAK_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:OAK_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:SPRUCE_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:PALE_OAK_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Creating callable from a non\\-native static method pocketmine\\\\item\\\\VanillaItems\\:\\:WARPED_SIGN\\(\\)\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:SPRUCE_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
-			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:WARPED_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between \*NEVER\* and 5 will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: ../../../src/command/defaults/TeleportCommand.php
+
+		-
+			message: '#^Method pocketmine\\crafting\\ShapedRecipe\:\:getIngredientMap\(\) should return list\<list\<pocketmine\\crafting\\RecipeIngredient\|null\>\> but returns array\<int\<0, max\>, non\-empty\-array\<int\<0, max\>, pocketmine\\crafting\\RecipeIngredient\|null\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../src/crafting/ShapedRecipe.php
+
+		-
+			message: '#^Property pocketmine\\crash\\CrashDumpData\:\:\$parameters \(list\<string\>\) does not accept array\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/crash/CrashDump.php
+
+		-
+			message: '#^Call to function assert\(\) with false and ''unknown hit type'' will always evaluate to false\.$#'
+			identifier: function.impossibleType
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
+			message: '#^Property pocketmine\\item\\WritableBookBase\:\:\$pages \(list\<pocketmine\\item\\WritableBookPage\>\) does not accept non\-empty\-array\<int, pocketmine\\item\\WritableBookPage\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/item/WritableBookBase.php
+
+		-
+			message: '#^Parameter \#3 \$input of class pocketmine\\network\\mcpe\\protocol\\types\\recipe\\ShapedRecipe constructor expects list\<list\<pocketmine\\network\\mcpe\\protocol\\types\\recipe\\RecipeIngredient\>\>, array\<int\<0, max\>, non\-empty\-array\<int\<0, max\>, pocketmine\\network\\mcpe\\protocol\\types\\recipe\\RecipeIngredient\>\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/network/mcpe/cache/CraftingDataCache.php
+
+		-
+			message: '#^Method pocketmine\\network\\mcpe\\compression\\ZlibCompressor\:\:getNetworkId\(\) never returns 1 so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
+
+		-
+			message: '#^Method pocketmine\\network\\mcpe\\compression\\ZlibCompressor\:\:getNetworkId\(\) never returns 255 so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
+
+		-
+			message: '#^Parameter \#1 \$states of class pocketmine\\network\\mcpe\\convert\\BlockStateDictionary constructor expects list\<pocketmine\\network\\mcpe\\convert\\BlockStateDictionaryEntry\>, array\<int\<0, max\>, pocketmine\\network\\mcpe\\convert\\BlockStateDictionaryEntry\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/network/mcpe/convert/BlockStateDictionary.php
+
+		-
+			message: '#^Cannot access offset ''default'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../../../src/network/mcpe/convert/LegacySkinAdapter.php
+
+		-
+			message: '#^Property pocketmine\\network\\mcpe\\raklib\\PthreadsChannelWriter\:\:\$buffer is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\SnoozeAwarePthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
+			message: '#^Property pocketmine\\network\\mcpe\\raklib\\SnoozeAwarePthreadsChannelWriter\:\:\$buffer is never read, only written\.$#'
+			identifier: property.onlyWritten
 			count: 1
 			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
 
 		-
-			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
+			message: '#^Dead catch \- RuntimeException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Method pocketmine\\\\timings\\\\TimingsHandler\\:\\:lazyGetSet\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<T of object\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
+			message: '#^Binary operation "\." between mixed and ''/''\|''\\\\'' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/thread/ThreadSafeClassLoader.php
+
+		-
+			message: '#^Binary operation "\." between mixed and non\-falsy\-string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/thread/ThreadSafeClassLoader.php
+
+		-
+			message: '#^Method pocketmine\\timings\\TimingsHandler\:\:lazyGetSet\(\) should return pocketmine\\utils\\ObjectSet\<T of object\> but returns pocketmine\\utils\\ObjectSet\<object\>\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/timings/TimingsHandler.php
 
 		-
-			message: "#^Casting to int something that's already int\\.$#"
+			message: '#^Parameter &\$where @param\-out type of method pocketmine\\timings\\TimingsHandler\:\:lazyGetSet\(\) expects pocketmine\\utils\\ObjectSet\<T of object\>, pocketmine\\utils\\ObjectSet\<object\> given\.$#'
+			identifier: paramOut.type
+			count: 1
+			path: ../../../src/timings/TimingsHandler.php
+
+		-
+			message: '#^Binary operation "\*" between mixed and 3600 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: '#^Binary operation "\*" between mixed and 60 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: '#^Binary operation "\+" between \(float\|int\) and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: '#^Property pocketmine\\world\\format\\io\\region\\RegionLoader\:\:\$locationTable \(list\<pocketmine\\world\\format\\io\\region\\RegionLocationTableEntry\|null\>\) does not accept non\-empty\-array\<int, pocketmine\\world\\format\\io\\region\\RegionLocationTableEntry\|null\>\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: '#^Property pocketmine\\world\\format\\io\\region\\RegionLoader\:\:\$locationTable \(list\<pocketmine\\world\\format\\io\\region\\RegionLocationTableEntry\|null\>\) does not accept non\-empty\-array\<int\<0, max\>, pocketmine\\world\\format\\io\\region\\RegionLocationTableEntry\|null\>\.$#'
+			identifier: assign.propertyType
+			count: 3
+			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: '#^Method pocketmine\\world\\format\\io\\region\\RegionWorldProvider\:\:createRegionIterator\(\) should return RegexIterator\<mixed, string, FilesystemIterator\> but returns RegexIterator\<mixed, mixed, Traversable\<TKey, TValue\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../src/world/format/io/region/RegionWorldProvider.php
+
+		-
+			message: '#^Casting to int something that''s already int\.$#'
+			identifier: cast.useless
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertFalse\\(\\) with false will always evaluate to true\\.$#"
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to true\.$#'
+			identifier: staticMethod.alreadyNarrowedType
 			count: 1
 			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false and 'All promise should…' will always evaluate to false\\.$#"
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false and ''All promise should…'' will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
 			count: 1
 			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertTrue\\(\\) with false will always evaluate to false\\.$#"
+			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false will always evaluate to false\.$#'
+			identifier: staticMethod.impossibleType
 			count: 2
 			path: ../../phpunit/promise/PromiseTest.php
 
 		-
-			message: "#^Strict comparison using \\=\\=\\= between 0 and 0 will always evaluate to true\\.$#"
+			message: '#^Strict comparison using \=\=\= between 0 and 0 will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
 			count: 1
 			path: ../rules/UnsafeForeachArrayOfStringRule.php
 

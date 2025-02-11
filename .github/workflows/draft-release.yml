@@ -21,7 +21,31 @@ env:
   PHP_VERSION: "8.2"
 
 jobs:
+  skip:
+    name: Check whether to ignore this tag
+    runs-on: ubuntu-20.04
+
+    outputs:
+      skip: ${{ steps.exists.outputs.exists == 'true' }}
+
+    steps:
+      - name: Check if release already exists
+        id: exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          exists=false
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            tag="$(echo "${{ github.ref }}" | cut -d/ -f3-)"
+            if gh release view "$tag" --repo "${{ github.repository }}"; then
+              exists=true
+            fi
+          fi
+          echo exists=$exists >> $GITHUB_OUTPUT
+
   check:
+    needs: [skip]
+    if: needs.skip.outputs.skip != 'true'
     name: Check release
     uses: ./.github/workflows/draft-release-pr-check.yml
 
@@ -63,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.31.1
+        uses: shivammathur/setup-php@2.32.0
         with:
           php-version: ${{ env.PHP_VERSION }}
 
@@ -141,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@v1.15.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst

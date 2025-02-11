@@ -33,6 +33,7 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
+use function array_values;
 use function explode;
 use function implode;
 use function str_replace;
@@ -80,6 +81,7 @@ abstract class Command{
 
 	/**
 	 * @param string[] $args
+	 * @phpstan-param list<string> $args
 	 *
 	 * @return mixed
 	 * @throws CommandException
@@ -212,6 +214,7 @@ abstract class Command{
 	 * @phpstan-param list<string> $aliases
 	 */
 	public function setAliases(array $aliases) : void{
+		$aliases = array_values($aliases); //because plugins can and will pass crap
 		$this->aliases = $aliases;
 		if(!$this->isRegistered()){
 			$this->activeAliases = $aliases;

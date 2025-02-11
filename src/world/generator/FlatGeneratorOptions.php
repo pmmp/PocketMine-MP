@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use function array_map;
-use function count;
 use function explode;
 use function preg_match;
 use function preg_match_all;
@@ -75,8 +74,7 @@ final class FlatGeneratorOptions{
 		$y = 0;
 		$itemParser = LegacyStringToItemParser::getInstance();
 		foreach($split as $line){
-			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
-			if(count($matches) !== 3){
+			if(preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches) !== 1){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
 			}
 
@@ -119,7 +117,7 @@ final class FlatGeneratorOptions{
 					}
 				}
 			}
-			$options[(string) $option] = $params;
+			$options[$option] = $params;
 		}
 		return new self($structure, $biomeId, $options);
 	}

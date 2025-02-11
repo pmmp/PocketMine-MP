@@ -83,9 +83,6 @@ class FlowerPot extends Flowable{
 		return $block->hasTypeTag(BlockTypeTags::POTTABLE_PLANTS);
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->contract(3 / 16, 0, 3 / 16)->trim(Facing::UP, 5 / 8)];
 	}

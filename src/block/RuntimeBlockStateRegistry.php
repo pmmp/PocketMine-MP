@@ -28,6 +28,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
+use function count;
 use function min;
 
 /**
@@ -39,6 +40,11 @@ use function min;
  */
 class RuntimeBlockStateRegistry{
 	use SingletonTrait;
+
+	public const COLLISION_CUSTOM = 0;
+	public const COLLISION_CUBE = 1;
+	public const COLLISION_NONE = 2;
+	public const COLLISION_MAY_OVERFLOW = 3;
 
 	/**
 	 * @var Block[]
@@ -74,6 +80,13 @@ class RuntimeBlockStateRegistry{
 	 */
 	public array $blastResistance = [];
 
+	/**
+	 * Map of state ID -> useful AABB info to avoid unnecessary block allocations
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	public array $collisionInfo = [];
+
 	public function __construct(){
 		foreach(VanillaBlocks::getAll() as $block){
 			$this->register($block);
@@ -100,6 +113,70 @@ class RuntimeBlockStateRegistry{
 		}
 	}
 
+	/**
+	 * Checks if the given class method overrides a method in Block.
+	 * Used to determine if a block might need to disable fast path optimizations.
+	 *
+	 * @phpstan-param anyClosure $closure
+	 */
+	private static function overridesBlockMethod(\Closure $closure) : bool{
+		$declarer = (new \ReflectionFunction($closure))->getClosureScopeClass();
+		return $declarer !== null && $declarer->getName() !== Block::class;
+	}
+
+	/**
+	 * A big ugly hack to set up fast paths for handling collisions on blocks with common shapes.
+	 * The information returned here is stored in RuntimeBlockStateRegistry->collisionInfo, and is used during entity
+	 * collision box calculations to avoid complex logic and unnecessary block object allocations.
+	 * This hack allows significant performance improvements.
+	 *
+	 * TODO: We'll want to redesign block collision box handling and block shapes in the future, but that's a job for a
+	 * major version. For now, this hack nets major performance wins.
+	 */
+	private static function calculateCollisionInfo(Block $block) : int{
+		if(
+			self::overridesBlockMethod($block->getModelPositionOffset(...)) ||
+			self::overridesBlockMethod($block->readStateFromWorld(...))
+		){
+			//getModelPositionOffset() might cause AABBs to shift outside the cell
+			//readStateFromWorld() might cause overflow in ways we can't predict just by looking at known states
+			//TODO: excluding overriders of readStateFromWorld() also excludes blocks with tiles that don't do anything
+			//weird with their AABBs, but for now this is the best we can do.
+			return self::COLLISION_MAY_OVERFLOW;
+		}
+
+		//TODO: this could blow up if any recalculateCollisionBoxes() uses the world
+		//it shouldn't, but that doesn't mean that custom blocks won't...
+		$boxes = $block->getCollisionBoxes();
+		if(count($boxes) === 0){
+			return self::COLLISION_NONE;
+		}
+
+		if(
+			count($boxes) === 1 &&
+			$boxes[0]->minX === 0.0 &&
+			$boxes[0]->minY === 0.0 &&
+			$boxes[0]->minZ === 0.0 &&
+			$boxes[0]->maxX === 1.0 &&
+			$boxes[0]->maxY === 1.0 &&
+			$boxes[0]->maxZ === 1.0
+		){
+			return self::COLLISION_CUBE;
+		}
+
+		foreach($boxes as $box){
+			if(
+				$box->minX < 0 || $box->maxX > 1 ||
+				$box->minY < 0 || $box->maxY > 1 ||
+				$box->minZ < 0 || $box->maxZ > 1
+			){
+				return self::COLLISION_MAY_OVERFLOW;
+			}
+		}
+
+		return self::COLLISION_CUSTOM;
+	}
+
 	private function fillStaticArrays(int $index, Block $block) : void{
 		$fullId = $block->getStateId();
 		if($index !== $fullId){
@@ -112,6 +189,8 @@ class RuntimeBlockStateRegistry{
 			if($block->blocksDirectSkyLight()){
 				$this->blocksDirectSkyLight[$index] = true;
 			}
+
+			$this->collisionInfo[$index] = self::calculateCollisionInfo($block);
 		}
 	}
 

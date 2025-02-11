@@ -33,9 +33,6 @@ class WaterLily extends Flowable{
 		canBePlacedAt as supportedWhenPlacedAt;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
 	}

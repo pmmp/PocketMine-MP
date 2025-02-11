@@ -101,7 +101,7 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 				RuleErrorBuilder::message(sprintf(
 					"Unsafe foreach on array with key type %s (they might be casted to int).",
 					$iterableType->getIterableKeyType()->describe(VerbosityLevel::value())
-				))->tip($tip)->build()
+				))->tip($tip)->identifier('pocketmine.foreach.stringKeys')->build()
 			];
 		}
 		return [];

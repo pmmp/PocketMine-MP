@@ -95,7 +95,7 @@ class BlockBreakInfo{
 	 * Returns whether this block can be instantly broken.
 	 */
 	public function breaksInstantly() : bool{
-		return $this->hardness == 0.0;
+		return $this->hardness === 0.0;
 	}
 
 	/**

@@ -1,0 +1,84 @@
+name: Bug report
+description: Report a feature of PocketMine-MP not working as expected
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Plugin information
+
+        > [!IMPORTANT]
+        > It's strongly recommended to test for bugs without plugins before reporting an issue.
+        > This helps avoid wasting maintainers' time on bugs that are not actually caused by PocketMine-MP.
+        >
+        > If you're not sure whether a plugin might be causing your issue, please seek help on our [Discord](https://discord.gg/bmSAZBG) before writing an issue.
+
+  - type: dropdown
+    attributes:
+      label: Plugin information
+      options:
+        - "I haven't tested without plugins"
+        - Bug happens without plugins
+        - Bug only happens with certain plugins (describe below)
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Bug description
+
+        > [!TIP]
+        > Helpful information to include:
+        > - Steps to reproduce the issue
+        > - Error backtraces
+        > - Crashdumps
+        > - Plugin code that triggers the issue
+        > - List of installed plugins (use /plugins)
+
+        > [!IMPORTANT]
+        > **Steps to reproduce are critical to finding the cause of the problem!**
+        > Without reproducing steps, the issue will probably not be solvable and may be closed.
+
+  - type: textarea
+    attributes:
+      label: Problem description
+      description: Describe the problem, and how you encountered it
+      placeholder: e.g. Steps to reproduce the issue
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: markdown
+    attributes:
+      value: |
+        ## Version, OS and game info
+
+  - type: input
+    attributes:
+      label: PocketMine-MP version
+      placeholder: Use the /version command in PocketMine-MP
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: PHP version
+      placeholder: Use the /version command in PocketMine-MP
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Server OS
+      placeholder: Use the /version command in PocketMine-MP
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Game version (if applicable)
+      placeholder: e.g. Android, iOS, Windows, Xbox, PS4, Switch
+    validations:
+      required: false

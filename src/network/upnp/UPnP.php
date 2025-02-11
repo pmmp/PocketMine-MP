@@ -215,6 +215,7 @@ class UPnP{
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"'
 		];
 
+		$err = "";
 		if(Internet::postURL($serviceURL, $contents, 3, $headers, $err) === null){
 			throw new UPnPException("Failed to portforward using UPnP: " . $err);
 		}

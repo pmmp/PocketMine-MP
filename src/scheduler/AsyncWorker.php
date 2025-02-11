@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Thread as NativeThread;
+use pocketmine\GarbageCollectorManager;
 use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Worker;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use function gc_enable;
 use function ini_set;
 
 class AsyncWorker extends Worker{
@@ -37,6 +38,7 @@ class AsyncWorker extends Worker{
 	private static array $store = [];
 
 	private static ?SleeperNotifier $notifier = null;
+	private static ?GarbageCollectorManager $cycleGcManager = null;
 
 	public function __construct(
 		private ThreadSafeLogger $logger,
@@ -52,10 +54,15 @@ class AsyncWorker extends Worker{
 		throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
 	}
 
+	public static function maybeCollectCycles() : void{
+		if(self::$cycleGcManager === null){
+			throw new AssumptionFailedError("GarbageCollectorManager not found in thread-local storage");
+		}
+		self::$cycleGcManager->maybeCollectCycles();
+	}
+
 	protected function onRun() : void{
 		\GlobalLogger::set($this->logger);
-
-		gc_enable();
 
 		if($this->memoryLimit > 0){
 			ini_set('memory_limit', $this->memoryLimit . 'M');
@@ -66,6 +73,8 @@ class AsyncWorker extends Worker{
 		}
 
 		self::$notifier = $this->sleeperEntry->createNotifier();
+		Timings::init();
+		self::$cycleGcManager = new GarbageCollectorManager($this->logger, Timings::$asyncTaskWorkers);
 	}
 
 	public function getLogger() : ThreadSafeLogger{

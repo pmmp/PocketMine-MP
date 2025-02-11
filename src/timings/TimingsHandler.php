@@ -123,6 +123,7 @@ class TimingsHandler{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	private static function printFooter() : array{
 		$result = [];
@@ -173,6 +174,7 @@ class TimingsHandler{
 			}
 		}
 
+		/** @phpstan-var PromiseResolver<list<string>> $resolver */
 		$resolver = new PromiseResolver();
 		Promise::all($otherThreadRecordPromises)->onCompletion(
 			function(array $promisedRecords) use ($resolver, $thisThreadRecords) : void{

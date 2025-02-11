@@ -50,9 +50,6 @@ class CocoaBlock extends Flowable{
 		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()

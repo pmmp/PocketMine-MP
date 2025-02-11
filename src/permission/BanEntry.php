@@ -101,11 +101,12 @@ class BanEntry{
 	}
 
 	public function getString() : string{
+		$expires = $this->getExpires();
 		return implode("|", [
 			$this->getName(),
 			$this->getCreated()->format(self::$format),
 			$this->getSource(),
-			$this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format),
+			$expires === null ? "Forever" : $expires->format(self::$format),
 			$this->getReason()
 		]);
 	}

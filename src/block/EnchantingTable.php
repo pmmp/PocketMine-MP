@@ -33,9 +33,6 @@ use pocketmine\player\Player;
 
 class EnchantingTable extends Transparent{
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.25)];
 	}

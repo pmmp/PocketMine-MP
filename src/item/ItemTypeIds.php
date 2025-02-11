@@ -328,8 +328,14 @@ final class ItemTypeIds{
 	public const END_CRYSTAL = 20289;
 	public const ICE_BOMB = 20290;
 	public const RECOVERY_COMPASS = 20291;
+	public const PALE_OAK_SIGN = 20292;
+	public const RESIN_BRICK = 20293;
+	public const RECORD_RELIC = 20294;
+	public const RECORD_CREATOR = 20295;
+	public const RECORD_CREATOR_MUSIC_BOX = 20296;
+	public const RECORD_PRECIPICE = 20297;
 
-	public const FIRST_UNUSED_ITEM_ID = 20292;
+	public const FIRST_UNUSED_ITEM_ID = 20298;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

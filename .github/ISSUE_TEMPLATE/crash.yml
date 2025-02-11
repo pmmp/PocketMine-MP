@@ -1,0 +1,25 @@
+name: Crash
+description: Report a crash in PocketMine-MP (not plugins)
+title: Server crashed
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > [!TIP]
+        > Submit crashdump `.log` files to the [Crash Archive](https://crash.pmmp.io/submit).
+        > If you can't submit the crashdump to the Crash Archive, paste it on a site like [GitHub Gist](https://gist.github.com) or [Pastebin](https://pastebin.com).
+
+        > [!CAUTION]
+        > DON'T paste the crashdump data directly into an issue.
+
+  - type: input
+    id: crashdump-url
+    attributes:
+      label: Link to crashdump
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Additional comments (optional)
+      description: Any other information that might help us solve the problem
