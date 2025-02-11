@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\data\bedrock\ArmorTrimPatternTypeIds as Ids;
+use pocketmine\item\ArmorTrimMaterial;
 use pocketmine\item\ArmorTrimPattern;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaArmorTrimPatterns as Patterns;
@@ -100,6 +101,7 @@ final class ArmorTrimPatternTypeIdMap{
 
 	/**
 	 * @return ArmorTrimPattern[]
+	 * @phpstan-return list<ArmorTrimPattern>
 	 */
 	public function getAllPatterns() : array{
 		return array_values($this->idToPattern);

@@ -51,7 +51,6 @@ class SmithingTrimRecipe implements SmithingRecipe{
 
 	/**
 	 * @param Item[] $inputs
-	 * @phpstan-param list<Item> $inputs
 	 */
 	public function getResultFor(array $inputs) : ?Item{
 		$input = $template = $addition = null;

@@ -95,6 +95,7 @@ final class ArmorTrimMaterialTypeIdMap{
 
 	/**
 	 * @return ArmorTrimMaterial[]
+	 * @phpstan-return list<ArmorTrimMaterial>
 	 */
 	public function getAllMaterials() : array{
 		return array_values($this->idToMaterial);

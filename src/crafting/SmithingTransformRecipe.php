@@ -54,7 +54,6 @@ class SmithingTransformRecipe implements SmithingRecipe{
 
 	/**
 	 * @param Item[] $inputs
-	 * @phpstan-param list<Item> $inputs
 	 */
 	public function getResultFor(array $inputs) : ?Item{
 		foreach($inputs as $item){
