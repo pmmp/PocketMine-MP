@@ -25,12 +25,16 @@ namespace pocketmine\inventory\transaction;
 
 use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
+use pocketmine\item\ItemLockMode;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use function array_keys;
+use function array_push;
 use function array_values;
 use function assert;
 use function count;
@@ -135,30 +139,14 @@ class InventoryTransaction{
 	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
+	 * @phpstan-param list<Item> $needItems
+	 * @phpstan-param list<Item> $haveItems
 	 * @phpstan-param-out list<Item> $needItems
 	 * @phpstan-param-out list<Item> $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
-	protected function matchItems(array &$needItems, array &$haveItems) : void{
-		$needItems = [];
-		$haveItems = [];
-		foreach($this->actions as $key => $action){
-			if(!$action->getTargetItem()->isNull()){
-				$needItems[] = $action->getTargetItem();
-			}
-
-			try{
-				$action->validate($this->source);
-			}catch(TransactionValidationException $e){
-				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
-			}
-
-			if(!$action->getSourceItem()->isNull()){
-				$haveItems[] = $action->getSourceItem();
-			}
-		}
-
+	public function computeDiff(array &$needItems, array &$haveItems) : void{
 		foreach($needItems as $i => $needItem){
 			foreach($haveItems as $j => $haveItem){
 				if($needItem->canStackWith($haveItem)){
@@ -177,6 +165,64 @@ class InventoryTransaction{
 		}
 		$needItems = array_values($needItems);
 		$haveItems = array_values($haveItems);
+	}
+
+	/**
+	 * @param Item[] $needItems
+	 * @param Item[] $haveItems
+	 * @phpstan-param-out list<Item> $needItems
+	 * @phpstan-param-out list<Item> $haveItems
+	 *
+	 * @throws TransactionValidationException
+	 */
+	protected function matchItems(array &$needItems, array &$haveItems) : void{
+		$needItems = [];
+		$haveItems = [];
+
+		$boundLockedNeedItems = [];
+		$boundLockedHaveItems = [];
+		foreach($this->actions as $key => $action){
+			$checkBoundLockedItem = $action instanceof SlotChangeAction &&
+				(($inventory = $action->getInventory()) instanceof PlayerInventory || $inventory instanceof PlayerCursorInventory);
+			$targetItem = $action->getTargetItem();
+			if(!$targetItem->isNull()){
+				if($checkBoundLockedItem && $targetItem->getLockMode() !== ItemLockMode::NONE){
+					$boundLockedNeedItems[] = $targetItem;
+				}else{
+					$needItems[] = $targetItem;
+				}
+			}
+
+			try{
+				$action->validate($this->source);
+			}catch(TransactionValidationException $e){
+				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
+			}
+
+			$sourceItem = $action->getSourceItem();
+			if(!$sourceItem->isNull()){
+				if($checkBoundLockedItem && $sourceItem->getLockMode() !== ItemLockMode::NONE){
+					$boundLockedHaveItems[] = $sourceItem;
+				}else{
+					$haveItems[] = $sourceItem;
+				}
+			}
+		}
+
+		$this->computeDiff($needItems, $haveItems);
+
+		if(count($boundLockedNeedItems) > 0 || count($boundLockedHaveItems) > 0){
+			//try to balance bound locked items with items already bound to the player's inventory
+			$this->computeDiff($boundLockedNeedItems, $boundLockedHaveItems);
+			if(count($boundLockedHaveItems) > 0){
+				throw new TransactionValidationException("Player tried to remove locked items from their inventory");
+			}
+
+			//check if there are unbound locked items the player moved into its inventory
+			//this allows moving locked items from e.g. a chest -> player's inventory, but not the other way round
+			$this->computeDiff($boundLockedNeedItems, $haveItems);
+			array_push($needItems, ...$boundLockedNeedItems);
+		}
 	}
 
 	/**
