@@ -1,24 +1,5 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace pocketmine\block;
@@ -100,15 +81,25 @@ class Wall extends Transparent{
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
 			if($block instanceof static || $block instanceof FenceGate || $block instanceof Thin || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
-				if(!isset($this->connections[$facing])){
-					if($this->getSide(Facing::UP)->getTypeId() == BlockTypeIds::AIR) {
-						$this->connections[$facing] = WallConnectionType::SHORT;
-					} else {
-						$this->connections[$facing] = WallConnectionType::TALL;
-					}
+				$aboveBlock = $this->getSide($facing)->getSide(Facing::UP);
+				$connectionType = ($aboveBlock->getTypeId() === BlockTypeIds::AIR)
+					? WallConnectionType::SHORT
+					: WallConnectionType::TALL;
+
+				if(!isset($this->connections[$facing]) || $this->connections[$facing] !== $connectionType){
+					$this->connections[$facing] = $connectionType;
 					$changed++;
 				}
-			}elseif(isset($this->connections[$facing])){
+
+				if ($connectionType === WallConnectionType::SHORT) {
+					$up = $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR;
+					if ($up !== $this->post) {
+						$this->post = $up;
+						$changed++;
+					}
+				}
+			}
+			elseif(isset($this->connections[$facing])){
 				unset($this->connections[$facing]);
 				$changed++;
 			}
@@ -126,7 +117,8 @@ class Wall extends Transparent{
 		$east = isset($this->connections[Facing::EAST]);
 
 		$inset = 0.25;
-		if(!$this->post && //if there is a block on top, it stays as a post
+		if(
+			!$this->post && //if there is a block on top, it stays as a post
 			(
 				($north && $south && !$west && !$east) ||
 				(!$north && !$south && $west && $east)
