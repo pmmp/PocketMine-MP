@@ -29,12 +29,14 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
  *  These are retained for backwards compatibility only.
  *
+ * @method static WallConnectionType NONE()
  * @method static WallConnectionType SHORT()
  * @method static WallConnectionType TALL()
  */
 enum WallConnectionType{
 	use LegacyEnumShimTrait;
 
+	case NONE;
 	case SHORT;
 	case TALL;
 }
