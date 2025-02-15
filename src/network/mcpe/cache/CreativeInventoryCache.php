@@ -27,7 +27,6 @@ use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\data\CreativeContentCache;
 use pocketmine\inventory\data\CreativeGroup;
 use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 use pocketmine\utils\SingletonTrait;
 use function array_reduce;
@@ -41,12 +40,6 @@ final class CreativeInventoryCache{
 	 * @phpstan-var array<int, CreativeContentCache>
 	 */
 	private array $caches = [];
-
-	/**
-	 * @var CreativeItemEntry[][]
-	 * @phpstan-var array<int, list<CreativeItemEntry>>
-	 */
-	private array $itemEntries = [];
 
 	public function getCache(CreativeInventory $inventory) : CreativeContentCache{
 		$id = spl_object_id($inventory);
@@ -66,9 +59,7 @@ final class CreativeInventoryCache{
 	 * Rebuild the cache for the given inventory.
 	 */
 	private function buildCreativeInventoryCache(CreativeInventory $inventory) : CreativeContentCache{
-		/** @var CreativeGroup[] $groups */
 		$groups = [];
-		/** @var CreativeItemEntry[] $items */
 		$items = [];
 
 		$typeConverter = TypeConverter::getInstance();

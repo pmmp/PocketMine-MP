@@ -35,7 +35,7 @@ use function array_reduce;
 final class CreativeContentCache{
 
 	/**
-	 * @param list<CreativeGroup>  	  $groupEntries
+	 * @param list<CreativeGroup>     $groupEntries
 	 * @param list<CreativeItemEntry> $itemEntries
 	 */
 	public function __construct(
@@ -58,6 +58,11 @@ final class CreativeContentCache{
 
 				if($group->name instanceof Translatable){
 					$player = $session->getPlayer();
+
+					if($player === null){
+						throw new \LogicException("Cannot send creative content for a player that is not yet created");
+					}
+
 					if(!$player->getServer()->isLanguageForced()){
 						[$message, ] = $player->getNetworkSession()->prepareClientTranslatableMessage($group->name);
 					}else{
