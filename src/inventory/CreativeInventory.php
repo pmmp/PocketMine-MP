@@ -72,11 +72,18 @@ final class CreativeInventory{
 			);
 
 			foreach($groups as $groupData){
-				$group = CreativeGroup::named(
-					$categoryId,
-					new Translatable($groupData->group_name),
-					$groupData->group_icon === null ? null : CraftingManagerFromDataHelper::deserializeItemStack($groupData->group_icon)
-				);
+				$icon = $groupData->group_icon === null ? null : CraftingManagerFromDataHelper::deserializeItemStack($groupData->group_icon);
+
+				if($icon === null){
+					$group = CreativeGroup::anonymous($categoryId);
+				}else{
+					$group = CreativeGroup::named(
+						$categoryId,
+						new Translatable($groupData->group_name),
+						$icon
+					);
+				}
+
 				$items = array_filter(array_map(static fn($itemStack) => CraftingManagerFromDataHelper::deserializeItemStack($itemStack), $groupData->items));
 
 				foreach($items as $item){

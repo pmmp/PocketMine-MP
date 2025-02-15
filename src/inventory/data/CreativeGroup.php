@@ -26,6 +26,7 @@ namespace pocketmine\inventory\data;
 use pocketmine\inventory\CreativeCategory;
 use pocketmine\item\Item;
 use pocketmine\lang\Translatable;
+use function strlen;
 
 final class CreativeGroup{
 	private function __construct(
@@ -40,7 +41,12 @@ final class CreativeGroup{
 		return new self($categoryId, "", null);
 	}
 
-	public static function named(CreativeCategory $categoryId, Translatable|string $name, ?Item $icon = null) : self{
+	public static function named(CreativeCategory $categoryId, Translatable|string $name, Item $icon) : self{
+		$nameLength = $name instanceof Translatable ? strlen($name->getText()) : strlen($name);
+		if($nameLength === 0){
+			throw new \InvalidArgumentException("Creative group name cannot be empty");
+		}
+
 		return new self($categoryId, $name, $icon);
 	}
 }

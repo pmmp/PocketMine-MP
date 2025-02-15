@@ -23,15 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
-use pocketmine\inventory\CreativeCategory;
 use pocketmine\inventory\CreativeInventory;
+use pocketmine\inventory\data\CreativeContentCache;
 use pocketmine\inventory\data\CreativeGroup;
-use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CreativeContentPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\utils\SingletonTrait;
 use function array_reduce;
 use function spl_object_id;
@@ -40,12 +37,18 @@ final class CreativeInventoryCache{
 	use SingletonTrait;
 
 	/**
-	 * @var CreativeContentPacket[]
-	 * @phpstan-var array<int, CreativeContentPacket>
+	 * @var CreativeContentCache[]
+	 * @phpstan-var array<int, CreativeContentCache>
 	 */
 	private array $caches = [];
 
-	public function getCache(CreativeInventory $inventory) : CreativeContentPacket{
+	/**
+	 * @var CreativeItemEntry[][]
+	 * @phpstan-var array<int, list<CreativeItemEntry>>
+	 */
+	private array $itemEntries = [];
+
+	public function getCache(CreativeInventory $inventory) : CreativeContentCache{
 		$id = spl_object_id($inventory);
 		if(!isset($this->caches[$id])){
 			$inventory->getDestructorCallbacks()->add(function() use ($id) : void{
@@ -62,8 +65,8 @@ final class CreativeInventoryCache{
 	/**
 	 * Rebuild the cache for the given inventory.
 	 */
-	private function buildCreativeInventoryCache(CreativeInventory $inventory) : CreativeContentPacket{
-		/** @var CreativeGroupEntry[] $groups */
+	private function buildCreativeInventoryCache(CreativeInventory $inventory) : CreativeContentCache{
+		/** @var CreativeGroup[] $groups */
 		$groups = [];
 		/** @var CreativeItemEntry[] $items */
 		$items = [];
@@ -71,22 +74,10 @@ final class CreativeInventoryCache{
 		$typeConverter = TypeConverter::getInstance();
 
 		$index = 0;
-		$mappedGroups = array_reduce($inventory->getItemGroups(), function (array $carry, CreativeGroup $group) use ($typeConverter, &$index, &$groups) : array{
+		$mappedGroups = array_reduce($inventory->getItemGroups(), function (array $carry, CreativeGroup $group) use (&$index, &$groups) : array{
 			if (!isset($carry[$id = spl_object_id($group)])) {
 				$carry[$id] = $index++;
-
-				$categoryId = match($group->categoryId){
-					CreativeCategory::CONSTRUCTION => CreativeContentPacket::CATEGORY_CONSTRUCTION,
-					CreativeCategory::NATURE => CreativeContentPacket::CATEGORY_NATURE,
-					CreativeCategory::EQUIPMENT => CreativeContentPacket::CATEGORY_EQUIPMENT,
-					CreativeCategory::ITEMS => CreativeContentPacket::CATEGORY_ITEMS
-				};
-
-				$groups[] = new CreativeGroupEntry(
-					$categoryId,
-					$group->name instanceof Translatable ? $group->name->getText() : $group->name,
-					$group->icon === null ? ItemStack::null() : $typeConverter->coreItemStackToNet($group->icon)
-				);
+				$groups[] = $group;
 			}
 			return $carry;
 		}, []);
@@ -100,6 +91,6 @@ final class CreativeInventoryCache{
 			);
 		}
 
-		return CreativeContentPacket::create($groups, $items);
+		return new CreativeContentCache($groups, $items);
 	}
 }
