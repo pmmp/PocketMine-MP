@@ -26,11 +26,15 @@ namespace pocketmine\inventory;
 use pocketmine\item\Item;
 
 final class CreativeInventoryEntry{
+	private readonly Item $item;
+
 	public function __construct(
-		private readonly Item $item,
+		Item $item,
 		private readonly CreativeCategory $category,
 		private readonly ?CreativeGroup $group = null
-	){}
+	){
+		$this->item = clone $item;
+	}
 
 	public function getItem() : Item{ return clone $this->item; }
 

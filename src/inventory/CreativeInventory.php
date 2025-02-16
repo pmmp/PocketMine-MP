@@ -127,7 +127,6 @@ final class CreativeInventory{
 	 */
 	public function add(Item $item, CreativeCategory $category = CreativeCategory::ITEMS, ?CreativeGroup $group = null) : void{
 		$this->creative[] = new CreativeInventoryEntry($item, $category, $group);
-
 		$this->onContentChange();
 	}
 
