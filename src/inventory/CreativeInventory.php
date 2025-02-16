@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\crafting\CraftingManagerFromDataHelper;
-use pocketmine\inventory\data\CreativeGroup;
 use pocketmine\inventory\json\CreativeGroupData;
 use pocketmine\item\Item;
 use pocketmine\lang\Translatable;
@@ -126,6 +125,8 @@ final class CreativeInventory{
 	}
 
 	/**
+	 * Returns the group info for the item at the provided index.
+	 *
 	 * @see CreativeInventory::getItemIndex()
 	 */
 	public function getItemGroupByIndex(int $index) : ?CreativeGroup{
@@ -145,6 +146,8 @@ final class CreativeInventory{
 	/**
 	 * Adds an item to the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
+	 *
+	 * If a group is not specified, the item will be added to the items tab.
 	 */
 	public function add(Item $item, ?CreativeGroup $group = null) : void{
 		$this->items[] = $item;

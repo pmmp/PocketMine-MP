@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+/**
+ * Available tabs in the creative inventory that an item can be displayed in.
+ */
 enum CreativeCategory{
 	case CONSTRUCTION;
 	case NATURE;

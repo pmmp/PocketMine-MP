@@ -21,32 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\data;
+namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\inventory\CreativeCategory;
-use pocketmine\item\Item;
+use pocketmine\inventory\CreativeGroup;
 use pocketmine\lang\Translatable;
-use function strlen;
+use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\CreativeContentPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use function array_map;
 
-final class CreativeGroup{
-	private function __construct(
-		public readonly CreativeCategory $categoryId,
-		public readonly Translatable|string $name,
-		public readonly ?Item $icon
+final class CreativeInventoryCacheEntry{
+
+	/**
+	 * @param CreativeGroup[]     $groupEntries
+	 * @param CreativeItemEntry[] $itemEntries
+	 */
+	public function __construct(
+		public readonly array $groupEntries,
+		public readonly array $itemEntries,
 	){
 		//NOOP
-	}
-
-	public static function anonymous(CreativeCategory $categoryId) : self{
-		return new self($categoryId, "", null);
-	}
-
-	public static function named(CreativeCategory $categoryId, Translatable|string $name, Item $icon) : self{
-		$nameLength = $name instanceof Translatable ? strlen($name->getText()) : strlen($name);
-		if($nameLength === 0){
-			throw new \InvalidArgumentException("Creative group name cannot be empty");
-		}
-
-		return new self($categoryId, $name, $icon);
 	}
 }

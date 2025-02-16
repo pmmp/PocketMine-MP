@@ -56,7 +56,6 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
@@ -80,9 +79,7 @@ use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Ramsey\Uuid\Exception\InvalidArgumentException;
 use Symfony\Component\Filesystem\Path;
-use function array_keys;
 use function array_map;
-use function array_reduce;
 use function array_values;
 use function asort;
 use function base64_decode;
@@ -291,12 +288,10 @@ class ParserPacketHandler extends PacketHandler{
 	public function handleCreativeContent(CreativeContentPacket $packet) : bool{
 		echo "updating creative inventory data\n";
 
-		$groupItems = array_reduce($packet->getItems(), function (array $carry, CreativeItemEntry $item) : array{
-			$carry[$item->getGroupId()][] = self::objectToOrderedArray($this->itemStackToJson($item->getItem()));
-			return $carry;
-		}, []);
-
-		$groups = $packet->getGroups();
+		$groupItems = [];
+		foreach($packet->getItems() as $itemEntry){
+			$groupItems[$itemEntry->getGroupId()][] = $this->itemStackToJson($itemEntry->getItem());
+		}
 
 		static $typeMap = [
 			CreativeContentPacket::CATEGORY_CONSTRUCTION => "construction",
@@ -305,16 +300,13 @@ class ParserPacketHandler extends PacketHandler{
 			CreativeContentPacket::CATEGORY_ITEMS => "items",
 		];
 
-		$groupCategories = array_reduce(array_keys($packet->getGroups()), function (array $carry, int $groupIndex) use ($typeMap, $groups, $groupItems) : array{
-			$group = $groups[$groupIndex];
-			if(!isset($typeMap[$group->getCategoryId()])){
-				throw new \UnexpectedValueException("Unknown category ID " . $group->getCategoryId());
-			}
-
-			$mappedCategory = $typeMap[$group->getCategoryId()];
-			$carry[$mappedCategory][] = self::objectToOrderedArray($this->creativeGroupEntryToJson($group, $groupItems[$groupIndex]));
-			return $carry;
-		}, []);
+		$groupCategories = [];
+		foreach(Utils::promoteKeys($packet->getGroups()) as $groupId => $group){
+			$category = $typeMap[$group->getCategoryId()] ?? throw new PacketHandlingException("Unknown creative category ID " . $group->getCategoryId());
+			//FIXME: objectToOrderedArray might mess with the order of groupItems
+			//this isn't a problem right now because it's a list, but could cause problems in the future
+			$groupCategories[$category][] = self::objectToOrderedArray($this->creativeGroupEntryToJson($group, $groupItems[$groupId]));
+		}
 
 		foreach(Utils::promoteKeys($groupCategories) as $category => $categoryGroups){
 			file_put_contents($this->bedrockDataPath . '/creative/' . $category . '.json', json_encode($categoryGroups, JSON_PRETTY_PRINT) . "\n");
