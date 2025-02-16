@@ -21,11 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\data;
+namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 
-final class CreativeGroupedItem{
-	public Item $item;
-	public int $groupId;
+final class CreativeInventoryEntry{
+	public function __construct(
+		private readonly Item $item,
+		private readonly CreativeCategory $category,
+		private readonly ?CreativeGroup $group = null
+	){}
+
+	public function getItem() : Item{ return clone $this->item; }
+
+	public function getCategory() : CreativeCategory{ return $this->category; }
+
+	public function getGroup() : ?CreativeGroup{ return $this->group; }
+
+	public function matchesItem(Item $item) : bool{
+		return $item->equals($this->item, checkDamage: true, checkCompound: false);
+	}
 }

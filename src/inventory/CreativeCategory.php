@@ -21,12 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\data;
+namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
-
-final class CreativeItemGroup{
-	public int $categoryId;
-	public string $categoryName;
-	public ?Item $icon;
+/**
+ * Available tabs in the creative inventory that an item can be displayed in.
+ */
+enum CreativeCategory{
+	case CONSTRUCTION;
+	case NATURE;
+	case EQUIPMENT;
+	case ITEMS;
 }

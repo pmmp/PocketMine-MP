@@ -27,9 +27,12 @@ use pocketmine\crafting\json\ItemStackData;
 
 final class CreativeGroupData{
 	/** @required */
-	public int $category_id;
+	public string $group_name;
 	/** @required */
-	public string $category_name;
-	/** @required */
-	public ?ItemStackData $icon;
+	public ?ItemStackData $group_icon;
+	/**
+	 * @var \pocketmine\crafting\json\ItemStackData[]
+	 * @required
+	 */
+	public array $items;
 }

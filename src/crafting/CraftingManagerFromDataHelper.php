@@ -191,7 +191,7 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-param class-string<TRecipeData> $modelClass
 	 * @phpstan-return list<TRecipeData>
 	 */
-	public static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
+	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
 		$result = [];
 		foreach(Utils::promoteKeys($data) as $i => $item){
 			if(!is_object($item)){
