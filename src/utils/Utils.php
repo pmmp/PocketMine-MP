@@ -264,14 +264,7 @@ final class Utils{
 	}
 
 	/**
-	 * Returns the current Operating System
-	 * Windows => win
-	 * MacOS => mac
-	 * iOS => ios
-	 * Android => android
-	 * Linux => Linux
-	 * BSD => bsd
-	 * Other => other
+	 * @return string one of the Utils::OS_* constants
 	 */
 	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null || $recalculate){
