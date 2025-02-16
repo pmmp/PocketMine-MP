@@ -29,30 +29,23 @@ use function strlen;
 
 /**
  * Info for an item group in the creative inventory menu.
- * All items have a group.
- *
- * If a name and icon is specified, the game will display a collapsible group.
- * Otherwise, the item will be displayed in the chosen category directly.
  */
 final class CreativeGroup{
-	private function __construct(
-		public readonly CreativeCategory $category,
-		public readonly Translatable|string $name,
-		public readonly ?Item $icon
+	/**
+	 * @param Translatable|string $name Tooltip shown to the player on hover
+	 * @param Item                $icon Item shown when the group is collapsed
+	 */
+	public function __construct(
+		private readonly Translatable|string $name,
+		private readonly Item $icon
 	){
-		//NOOP
-	}
-
-	public static function anonymous(CreativeCategory $category) : self{
-		return new self($category, "", null);
-	}
-
-	public static function named(CreativeCategory $category, Translatable|string $name, Item $icon) : self{
 		$nameLength = $name instanceof Translatable ? strlen($name->getText()) : strlen($name);
 		if($nameLength === 0){
 			throw new \InvalidArgumentException("Creative group name cannot be empty");
 		}
-
-		return new self($category, $name, $icon);
 	}
+
+	public function getName() : Translatable|string{ return $this->name; }
+
+	public function getIcon() : Item{ return clone $this->icon; }
 }

@@ -25,23 +25,23 @@ namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\inventory\CreativeCategory;
 use pocketmine\inventory\CreativeGroup;
-use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\CreativeContentPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use function array_map;
 
 final class CreativeInventoryCacheEntry{
 
 	/**
-	 * @param CreativeGroup[]     $groupEntries
-	 * @param CreativeItemEntry[] $itemEntries
+	 * @param CreativeCategory[]     $categories
+	 * @param CreativeGroup[]|null[] $groups
+	 * @param CreativeItemEntry[]    $items
+	 *
+	 * @phpstan-param list<CreativeCategory>   $categories
+	 * @phpstan-param list<CreativeGroup|null> $groups
+	 * @phpstan-param list<CreativeItemEntry>  $items
 	 */
 	public function __construct(
-		public readonly array $groupEntries,
-		public readonly array $itemEntries,
+		public readonly array $categories,
+		public readonly array $groups,
+		public readonly array $items,
 	){
 		//NOOP
 	}

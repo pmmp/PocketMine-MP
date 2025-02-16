@@ -30,7 +30,6 @@ use pocketmine\lang\Translatable;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_filter;
 use function array_map;
@@ -40,21 +39,13 @@ final class CreativeInventory{
 	use DestructorCallbackTrait;
 
 	/**
-	 * @var CreativeGroup[]
-	 * @phpstan-var array<int, CreativeGroup>
+	 * @var CreativeInventoryEntry[]
+	 * @phpstan-var array<int, CreativeInventoryEntry>
 	 */
-	private array $groups = [];
-
-	/**
-	 * @var Item[]
-	 * @phpstan-var array<int, Item>
-	 */
-	private array $items = [];
+	private array $creative = [];
 
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private ObjectSet $contentChangedCallbacks;
-
-	private ?CreativeGroup $defaultGroup = null;
 
 	private function __construct(){
 		$this->contentChangedCallbacks = new ObjectSet();
@@ -64,29 +55,24 @@ final class CreativeInventory{
 			"nature" => CreativeCategory::NATURE,
 			"equipment" => CreativeCategory::EQUIPMENT,
 			"items" => CreativeCategory::ITEMS,
-		] as $category => $categoryId){
+		] as $categoryId => $categoryEnum){
 			$groups = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
-				Path::join(\pocketmine\BEDROCK_DATA_PATH, "creative", $category . ".json"),
+				Path::join(\pocketmine\BEDROCK_DATA_PATH, "creative", $categoryId . ".json"),
 				CreativeGroupData::class
 			);
 
 			foreach($groups as $groupData){
 				$icon = $groupData->group_icon === null ? null : CraftingManagerFromDataHelper::deserializeItemStack($groupData->group_icon);
 
-				if($icon === null){
-					$group = CreativeGroup::anonymous($categoryId);
-				}else{
-					$group = CreativeGroup::named(
-						$categoryId,
-						new Translatable($groupData->group_name),
-						$icon
-					);
-				}
+				$group = $icon === null ? null : new CreativeGroup(
+					new Translatable($groupData->group_name),
+					$icon
+				);
 
 				$items = array_filter(array_map(static fn($itemStack) => CraftingManagerFromDataHelper::deserializeItemStack($itemStack), $groupData->items));
 
 				foreach($items as $item){
-					$this->add($item, $group);
+					$this->add($item, $categoryEnum, $group);
 				}
 			}
 		}
@@ -97,8 +83,7 @@ final class CreativeInventory{
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
 	public function clear() : void{
-		$this->groups = [];
-		$this->items = [];
+		$this->creative = [];
 		$this->onContentChange();
 	}
 
@@ -107,35 +92,28 @@ final class CreativeInventory{
 	 * @phpstan-return array<int, Item>
 	 */
 	public function getAll() : array{
-		return Utils::cloneObjectArray($this->items);
+		return array_map(fn(CreativeInventoryEntry $entry) => $entry->getItem(), $this->creative);
 	}
 
 	/**
-	 * Returns the group of every item indexed by the item index.
-	 *
-	 * @return CreativeGroup[]
-	 * @phpstan-return array<int, CreativeGroup>
+	 * @return CreativeInventoryEntry[]
+	 * @phpstan-return array<int, CreativeInventoryEntry>
 	 */
-	public function getItemGroups() : array{
-		return $this->groups;
+	public function getAllEntries() : array{
+		return $this->creative;
 	}
 
 	public function getItem(int $index) : ?Item{
-		return isset($this->items[$index]) ? clone $this->items[$index] : null;
+		return $this->getEntry($index)?->getItem();
 	}
 
-	/**
-	 * Returns the group info for the item at the provided index.
-	 *
-	 * @see CreativeInventory::getItemIndex()
-	 */
-	public function getItemGroupByIndex(int $index) : ?CreativeGroup{
-		return $this->groups[$index] ?? null;
+	public function getEntry(int $index) : ?CreativeInventoryEntry{
+		return $this->creative[$index] ?? null;
 	}
 
 	public function getItemIndex(Item $item) : int{
-		foreach($this->items as $i => $d){
-			if($item->equals($d, true, false)){
+		foreach($this->creative as $i => $d){
+			if($d->matchesItem($item)){
 				return $i;
 			}
 		}
@@ -146,19 +124,9 @@ final class CreativeInventory{
 	/**
 	 * Adds an item to the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
-	 *
-	 * If a group is not specified, the item will be added to the items tab.
 	 */
-	public function add(Item $item, ?CreativeGroup $group = null) : void{
-		$this->items[] = $item;
-
-		if($group === null){
-			$this->defaultGroup ??= CreativeGroup::anonymous(CreativeCategory::ITEMS);
-			$this->groups[] = $this->defaultGroup;
-		}else{
-			$this->defaultGroup = null;
-			$this->groups[] = $group;
-		}
+	public function add(Item $item, CreativeCategory $category = CreativeCategory::ITEMS, ?CreativeGroup $group = null) : void{
+		$this->creative[] = new CreativeInventoryEntry($item, $category, $group);
 
 		$this->onContentChange();
 	}
@@ -170,8 +138,7 @@ final class CreativeInventory{
 	public function remove(Item $item) : void{
 		$index = $this->getItemIndex($item);
 		if($index !== -1){
-			unset($this->items[$index]);
-			unset($this->groups[$index]);
+			unset($this->creative[$index]);
 			$this->onContentChange();
 		}
 	}

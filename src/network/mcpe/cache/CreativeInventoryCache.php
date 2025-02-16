@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\inventory\CreativeCategory;
-use pocketmine\inventory\CreativeGroup;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -34,8 +33,9 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\utils\SingletonTrait;
-use function array_map;
+use function is_string;
 use function spl_object_id;
+use const PHP_INT_MIN;
 
 final class CreativeInventoryCache{
 	use SingletonTrait;
@@ -64,30 +64,45 @@ final class CreativeInventoryCache{
 	 * Rebuild the cache for the given inventory.
 	 */
 	private function buildCacheEntry(CreativeInventory $inventory) : CreativeInventoryCacheEntry{
-		$groupList = [];
+		$categories = [];
+		$groups = [];
 
 		$typeConverter = TypeConverter::getInstance();
 
-		$index = 0;
+		$nextIndex = 0;
 		$groupIndexes = [];
-		foreach($inventory->getItemGroups() as $group){
-			if(!isset($groupIndexes[$id = spl_object_id($group)])){
-				$groupIndexes[$id] = $index++;
-				$groupList[] = $group;
+		$itemGroupIndexes = [];
+
+		foreach($inventory->getAllEntries() as $k => $entry){
+			$group = $entry->getGroup();
+			$category = $entry->getCategory();
+			if($group === null){
+				$groupId = PHP_INT_MIN;
+			}else{
+				$groupId = spl_object_id($group);
+				unset($groupIndexes[$category->name][PHP_INT_MIN]); //start a new anonymous group for this category
 			}
+
+			//group object may be reused by multiple categories
+			if(!isset($groupIndexes[$category->name][$groupId])){
+				$groupIndexes[$category->name][$groupId] = $nextIndex++;
+				$categories[] = $category;
+				$groups[] = $group;
+			}
+			$itemGroupIndexes[$k] = $groupIndexes[$category->name][$groupId];
 		}
 
 		//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
 		$items = [];
-		foreach($inventory->getAll() as $k => $item){
+		foreach($inventory->getAllEntries() as $k => $entry){
 			$items[] = new CreativeItemEntry(
 				$k,
-				$typeConverter->coreItemStackToNet($item),
-				$groupIndexes[spl_object_id($inventory->getItemGroupByIndex($k) ?? throw new \AssertionError("Item group not found"))]
+				$typeConverter->coreItemStackToNet($entry->getItem()),
+				$itemGroupIndexes[$k]
 			);
 		}
 
-		return new CreativeInventoryCacheEntry($groupList, $items);
+		return new CreativeInventoryCacheEntry($categories, $groups, $items);
 	}
 
 	public function buildPacket(CreativeInventory $inventory, NetworkSession $session) : CreativeContentPacket{
@@ -96,8 +111,10 @@ final class CreativeInventoryCache{
 		$forceLanguage = $player->getServer()->isLanguageForced();
 		$typeConverter = $session->getTypeConverter();
 		$cachedEntry = $this->getCacheEntry($inventory);
-		$translate = function(Translatable $translatable) use ($session, $language, $forceLanguage) : string{
-			if(!$forceLanguage){
+		$translate = function(Translatable|string $translatable) use ($session, $language, $forceLanguage) : string{
+			if(is_string($translatable)){
+				$message = $translatable;
+			}elseif(!$forceLanguage){
 				[$message,] = $session->prepareClientTranslatableMessage($translatable);
 			}else{
 				$message = $language->translate($translatable);
@@ -105,18 +122,27 @@ final class CreativeInventoryCache{
 			return $message;
 		};
 
-		return CreativeContentPacket::create(
-			array_map(fn(CreativeGroup $group) => new CreativeGroupEntry(
-				match ($group->category) {
-					CreativeCategory::CONSTRUCTION => CreativeContentPacket::CATEGORY_CONSTRUCTION,
-					CreativeCategory::NATURE => CreativeContentPacket::CATEGORY_NATURE,
-					CreativeCategory::EQUIPMENT => CreativeContentPacket::CATEGORY_EQUIPMENT,
-					CreativeCategory::ITEMS => CreativeContentPacket::CATEGORY_ITEMS
-				},
-				$group->name instanceof Translatable ? $translate($group->name) : $group->name,
-				$group->icon === null ? ItemStack::null() : $typeConverter->coreItemStackToNet($group->icon)
-			), $cachedEntry->groupEntries),
-			$cachedEntry->itemEntries
-		);
+		$groupEntries = [];
+		foreach($cachedEntry->categories as $index => $category){
+			$group = $cachedEntry->groups[$index];
+			$categoryId = match ($category) {
+				CreativeCategory::CONSTRUCTION => CreativeContentPacket::CATEGORY_CONSTRUCTION,
+				CreativeCategory::NATURE => CreativeContentPacket::CATEGORY_NATURE,
+				CreativeCategory::EQUIPMENT => CreativeContentPacket::CATEGORY_EQUIPMENT,
+				CreativeCategory::ITEMS => CreativeContentPacket::CATEGORY_ITEMS
+			};
+			if($group === null){
+				$groupEntries[] = new CreativeGroupEntry($categoryId, "", ItemStack::null());
+			}else{
+				$groupName = $group->getName();
+				$groupEntries[] = new CreativeGroupEntry(
+					$categoryId,
+					$translate($groupName),
+					$typeConverter->coreItemStackToNet($group->getIcon())
+				);
+			}
+		}
+
+		return CreativeContentPacket::create($groupEntries, $cachedEntry->items);
 	}
 }
