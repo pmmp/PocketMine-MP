@@ -120,7 +120,7 @@ final class BedrockDataFiles{
 HEADER
 );
 
-foreach($consts as $constName => $fileName){
+foreach($consts as $fileName){
 	fwrite($output, "\tpublic const " . constantify($fileName) . " = BEDROCK_DATA_PATH . '/$fileName';\n");
 }
 
