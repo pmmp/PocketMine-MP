@@ -28,8 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\StringToEffectParser;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -44,8 +43,8 @@ class EffectCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_effect_usage()
 		);
 		$this->setPermissions([
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_EFFECT_SELF),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_EFFECT_OTHER)
+			DefaultPermissions::POCKETMINE_COMMAND_EFFECT_SELF(),
+			DefaultPermissions::POCKETMINE_COMMAND_EFFECT_OTHER()
 		]);
 	}
 
@@ -54,7 +53,7 @@ class EffectCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_EFFECT_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_EFFECT_OTHER));
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_EFFECT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_EFFECT_OTHER());
 		if($player === null){
 			return true;
 		}

@@ -26,8 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use function array_slice;
 use function count;
 use function implode;
@@ -41,8 +40,8 @@ class TitleCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_title_usage()
 		);
 		$this->setPermissions([
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TITLE_SELF),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TITLE_OTHER)
+			DefaultPermissions::POCKETMINE_COMMAND_TITLE_SELF(),
+			DefaultPermissions::POCKETMINE_COMMAND_TITLE_OTHER()
 		]);
 	}
 
@@ -51,7 +50,7 @@ class TitleCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TITLE_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TITLE_OTHER));
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_TITLE_SELF(), DefaultPermissions::POCKETMINE_COMMAND_TITLE_OTHER());
 		if($player === null){
 			return true;
 		}

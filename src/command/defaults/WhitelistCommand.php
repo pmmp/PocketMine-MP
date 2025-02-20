@@ -27,8 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\ServerProperties;
@@ -47,12 +46,12 @@ class WhitelistCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_whitelist_usage()
 		);
 		$this->setPermissions([
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_RELOAD),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_ENABLE),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_DISABLE),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_LIST),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_ADD),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_REMOVE)
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_RELOAD(),
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ENABLE(),
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_DISABLE(),
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_LIST(),
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ADD(),
+			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_REMOVE()
 		]);
 	}
 
@@ -60,7 +59,7 @@ class WhitelistCommand extends VanillaCommand{
 		if(count($args) === 1){
 			switch(strtolower($args[0])){
 				case "reload":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_RELOAD))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_RELOAD())){
 						$server = $sender->getServer();
 						$server->getWhitelisted()->reload();
 						if($server->hasWhitelist()){
@@ -71,7 +70,7 @@ class WhitelistCommand extends VanillaCommand{
 
 					return true;
 				case "on":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_ENABLE))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ENABLE())){
 						$server = $sender->getServer();
 						$server->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, true);
 						$this->kickNonWhitelistedPlayers($server);
@@ -80,14 +79,14 @@ class WhitelistCommand extends VanillaCommand{
 
 					return true;
 				case "off":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_DISABLE))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_DISABLE())){
 						$sender->getServer()->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, false);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_disabled());
 					}
 
 					return true;
 				case "list":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_LIST))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_LIST())){
 						$entries = $sender->getServer()->getWhitelisted()->getAll(true);
 						sort($entries, SORT_STRING);
 						$result = implode(", ", $entries);
@@ -113,14 +112,14 @@ class WhitelistCommand extends VanillaCommand{
 			}
 			switch(strtolower($args[0])){
 				case "add":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_ADD))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ADD())){
 						$sender->getServer()->addWhitelist($args[1]);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_add_success($args[1]));
 					}
 
 					return true;
 				case "remove":
-					if($this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_WHITELIST_REMOVE))){
+					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_REMOVE())){
 						$server = $sender->getServer();
 						$server->removeWhitelist($args[1]);
 						if(!$server->isWhitelisted($args[1])){

@@ -97,9 +97,7 @@ use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\network\mcpe\protocol\UpdateAdventureSettingsPacket;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\network\PacketHandlingException;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\permission\PermissionManager;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
@@ -1035,7 +1033,7 @@ class NetworkSession{
 	}
 
 	public function syncAbilities(Player $for) : void{
-		$isOp = $for->hasPermission(PermissionManager::getInstance()->getPermission(DefaultPermissions::ROOT_OPERATOR));
+		$isOp = $for->hasPermission(DefaultPermissions::POCKETMINE_GROUP_OPERATOR());
 
 		//ALL of these need to be set for the base layer, otherwise the client will cry
 		$boolAbilities = [
@@ -1043,7 +1041,7 @@ class NetworkSession{
 			AbilitiesLayer::ABILITY_FLYING => $for->isFlying(),
 			AbilitiesLayer::ABILITY_NO_CLIP => !$for->hasBlockCollision(),
 			AbilitiesLayer::ABILITY_OPERATOR => $isOp,
-			AbilitiesLayer::ABILITY_TELEPORT => $for->hasPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF)),
+			AbilitiesLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissions::POCKETMINE_COMMAND_TELEPORT_SELF()),
 			AbilitiesLayer::ABILITY_INVULNERABLE => $for->isCreative(),
 			AbilitiesLayer::ABILITY_MUTED => false,
 			AbilitiesLayer::ABILITY_WORLD_BUILDER => false,

@@ -25,8 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 use function array_map;
@@ -44,7 +43,7 @@ class PluginsCommand extends VanillaCommand{
 			null,
 			["pl"]
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_PLUGINS));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_PLUGINS());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

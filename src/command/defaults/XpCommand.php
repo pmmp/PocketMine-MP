@@ -27,8 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Attribute;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -46,8 +45,8 @@ class XpCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);
 		$this->setPermissions([
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_XP_SELF),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_XP_OTHER)
+			DefaultPermissions::POCKETMINE_COMMAND_XP_SELF(),
+			DefaultPermissions::POCKETMINE_COMMAND_XP_OTHER()
 		]);
 	}
 
@@ -56,7 +55,7 @@ class XpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_XP_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_XP_OTHER));
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissions::POCKETMINE_COMMAND_XP_SELF(), DefaultPermissions::POCKETMINE_COMMAND_XP_OTHER());
 		if($player === null){
 			return true;
 		}

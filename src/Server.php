@@ -697,7 +697,7 @@ class Server{
 		$this->operators->set(strtolower($name), true);
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->setBasePermission(DefaultPermissions::ROOT_OPERATOR, true);
+			$player->setBasePermission(DefaultPermissions::POCKETMINE_GROUP_OPERATOR(), true);
 		}
 		$this->operators->save();
 	}
@@ -712,7 +712,7 @@ class Server{
 		}
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->unsetBasePermission(DefaultPermissions::ROOT_OPERATOR);
+			$player->unsetBasePermission(DefaultPermissions::POCKETMINE_GROUP_OPERATOR());
 		}
 		$this->operators->save();
 	}
@@ -1006,8 +1006,6 @@ class Server{
 				(VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
-
-			DefaultPermissions::registerCorePermissions();
 
 			$this->commandMap = new SimpleCommandMap($this);
 

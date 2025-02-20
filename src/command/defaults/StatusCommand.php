@@ -25,8 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\utils\Process;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -42,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 			"status",
 			KnownTranslationFactory::pocketmine_command_status_description()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_STATUS));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_STATUS());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

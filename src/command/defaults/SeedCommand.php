@@ -25,8 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 
 class SeedCommand extends VanillaCommand{
@@ -36,7 +35,7 @@ class SeedCommand extends VanillaCommand{
 			"seed",
 			KnownTranslationFactory::pocketmine_command_seed_description()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SEED));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_SEED());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

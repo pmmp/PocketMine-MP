@@ -27,8 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\world\World;
@@ -44,13 +43,13 @@ class SpawnpointCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_spawnpoint_usage()
 		);
 		$this->setPermissions([
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF),
-			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER)
+			DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_SELF(),
+			DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_OTHER()
 		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER));
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_OTHER());
 		if($target === null){
 			return true;
 		}

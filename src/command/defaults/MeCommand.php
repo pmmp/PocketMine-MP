@@ -26,8 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -41,7 +40,7 @@ class MeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_me_description(),
 			KnownTranslationFactory::commands_me_usage()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_ME));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_ME());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

@@ -116,11 +116,9 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
-use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
-use pocketmine\permission\PermissionManager;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
 use pocketmine\ServerProperties;
@@ -921,11 +919,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	private function recheckBroadcastPermissions() : void{
 		foreach([
-			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
-			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
-		] as $permissionName => $channel){
-			$permission = PermissionManager::getInstance()->getPermission($permissionName);
-			if($permission !== null && $this->hasPermission($permission)){
+			Server::BROADCAST_CHANNEL_ADMINISTRATIVE => DefaultPermissions::POCKETMINE_BROADCAST_ADMIN(),
+			Server::BROADCAST_CHANNEL_USERS => DefaultPermissions::POCKETMINE_BROADCAST_USER(),
+		] as $channel => $permission){
+			if($this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);
 			}else{
 				$this->server->unsubscribeFromBroadcastChannel($channel, $this);

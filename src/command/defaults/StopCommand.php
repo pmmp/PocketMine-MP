@@ -26,8 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 
 class StopCommand extends VanillaCommand{
 
@@ -36,7 +35,7 @@ class StopCommand extends VanillaCommand{
 			"stop",
 			KnownTranslationFactory::pocketmine_command_stop_description()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_STOP));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_STOP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

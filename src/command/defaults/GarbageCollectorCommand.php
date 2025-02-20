@@ -25,8 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\utils\TextFormat;
 use function count;
 use function memory_get_usage;
@@ -40,7 +39,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 			"gc",
 			KnownTranslationFactory::pocketmine_command_gc_description()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GC));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_GC());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

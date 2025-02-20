@@ -26,8 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\ServerProperties;
 use function count;
@@ -40,7 +39,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_defaultgamemode_description(),
 			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_DEFAULTGAMEMODE());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

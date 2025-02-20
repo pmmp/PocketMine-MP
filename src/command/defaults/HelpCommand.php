@@ -27,8 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\utils\TextFormat;
 use function array_chunk;
 use function array_pop;
@@ -52,7 +51,7 @@ class HelpCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]
 		);
-		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_HELP));
+		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_HELP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
