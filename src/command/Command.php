@@ -34,6 +34,7 @@ use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use function array_map;
 use function array_values;
 use function implode;
 use function str_replace;
@@ -125,7 +126,7 @@ abstract class Command{
 		if($message instanceof Translatable){
 			$target->sendMessage($message->prefix(TextFormat::RED));
 		}elseif($message !== ""){
-			$permissionsName = array_map(function (Permission $permission): string{
+			$permissionsName = array_map(function (Permission $permission) : string{
 				return $permission->getName();
 			}, $this->permission);
 			$target->sendMessage(str_replace("<permission>", $permission?->getName() ?? implode(";", $permissionsName), $message));
