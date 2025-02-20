@@ -103,7 +103,7 @@ abstract class Command{
 	 * @param Permission[] $permissions
 	 */
 	public function setPermissions(array $permissions) : void{
-		Utils::validateArrayValueType($permissions, function (Permission $permission): void{});
+		Utils::validateArrayValueType($permissions, function (Permission $permission) : void{});
 		$this->permission = $permissions;
 	}
 

@@ -37,7 +37,7 @@ abstract class VanillaCommand extends Command{
 	public const MAX_COORD = 30000000;
 	public const MIN_COORD = -30000000;
 
-	protected function fetchPermittedPlayerTarget(CommandSender $sender, ?string $target, Permission $selfPermission, Permission $otherPermission) : ?Player{
+	protected function fetchPermittedPlayerTarget(CommandSender $sender, ?string $target, ?Permission $selfPermission, ?Permission $otherPermission) : ?Player{
 		if($target !== null){
 			$player = $sender->getServer()->getPlayerByPrefix($target);
 		}elseif($sender instanceof Player){
@@ -51,8 +51,8 @@ abstract class VanillaCommand extends Command{
 			return null;
 		}
 		if(
-			($player === $sender && $this->testPermission($sender, $selfPermission)) ||
-			($player !== $sender && $this->testPermission($sender, $otherPermission))
+			($player === $sender && ($selfPermission === null || $this->testPermission($sender, $selfPermission))) ||
+			($player !== $sender && ($otherPermission === null || $this->testPermission($sender, $otherPermission)))
 		){
 			return $player;
 		}
