@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\World;
@@ -42,7 +43,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_setworldspawn_description(),
 			KnownTranslationFactory::commands_setworldspawn_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

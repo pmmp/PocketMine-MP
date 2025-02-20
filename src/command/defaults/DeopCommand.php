@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -41,7 +42,7 @@ class DeopCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_deop_description(),
 			KnownTranslationFactory::commands_deop_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_OP_TAKE);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_OP_TAKE));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

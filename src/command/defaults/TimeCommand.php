@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 use function count;
@@ -41,11 +42,11 @@ class TimeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_time_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_TIME_ADD,
-			DefaultPermissionNames::COMMAND_TIME_SET,
-			DefaultPermissionNames::COMMAND_TIME_START,
-			DefaultPermissionNames::COMMAND_TIME_STOP,
-			DefaultPermissionNames::COMMAND_TIME_QUERY
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_ADD),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_SET),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_START),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_STOP),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_QUERY)
 		]);
 	}
 
@@ -55,7 +56,7 @@ class TimeCommand extends VanillaCommand{
 		}
 
 		if($args[0] === "start"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_START)){
+			if(!$this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_START))){
 				return true;
 			}
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
@@ -64,7 +65,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, "Restarted the time");
 			return true;
 		}elseif($args[0] === "stop"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_STOP)){
+			if(!$this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_STOP))){
 				return true;
 			}
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
@@ -73,7 +74,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, "Stopped the time");
 			return true;
 		}elseif($args[0] === "query"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_QUERY)){
+			if(!$this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_QUERY))){
 				return true;
 			}
 			if($sender instanceof Player){
@@ -90,7 +91,7 @@ class TimeCommand extends VanillaCommand{
 		}
 
 		if($args[0] === "set"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_SET)){
+			if(!$this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_SET))){
 				return true;
 			}
 
@@ -123,7 +124,7 @@ class TimeCommand extends VanillaCommand{
 			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $value));
 		}elseif($args[0] === "add"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_ADD)){
+			if(!$this->testPermission($sender, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TIME_ADD))){
 				return true;
 			}
 

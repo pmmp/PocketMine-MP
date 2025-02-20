@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\lang\Translatable;
+use pocketmine\permission\Permission;
 use pocketmine\utils\Utils;
 
 /**
@@ -34,7 +35,7 @@ final class ClosureCommand extends Command{
 	private \Closure $execute;
 
 	/**
-	 * @param string[] $permissions
+	 * @param Permission[] $permissions
 	 * @phpstan-param Execute $execute
 	 */
 	public function __construct(

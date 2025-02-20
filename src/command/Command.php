@@ -29,12 +29,12 @@ namespace pocketmine\command;
 use pocketmine\command\utils\CommandException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\permission\PermissionManager;
+use pocketmine\permission\Permission;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use function array_values;
-use function explode;
 use function implode;
 use function str_replace;
 
@@ -63,7 +63,7 @@ abstract class Command{
 
 	protected Translatable|string $usageMessage;
 
-	/** @var string[] */
+	/** @var Permission[] */
 	private array $permission = [];
 	private Translatable|string|null $permissionMessage = null;
 
@@ -93,30 +93,30 @@ abstract class Command{
 	}
 
 	/**
-	 * @return string[]
+	 * @return Permission[]
 	 */
 	public function getPermissions() : array{
 		return $this->permission;
 	}
 
 	/**
-	 * @param string[] $permissions
+	 * @param Permission[] $permissions
 	 */
 	public function setPermissions(array $permissions) : void{
-		$permissionManager = PermissionManager::getInstance();
-		foreach($permissions as $perm){
-			if($permissionManager->getPermission($perm) === null){
-				throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
-			}
-		}
+		Utils::validateArrayValueType($permissions, function (Permission $permission): void{});
 		$this->permission = $permissions;
 	}
 
-	public function setPermission(?string $permission) : void{
-		$this->setPermissions($permission === null ? [] : explode(";", $permission));
+	public function setPermission(?Permission $permission) : void{
+		$permissions = [];
+		if ($permission !== null){
+			$permissions = $this->permission;
+			$permissions[] = $permission;
+		}
+		$this->setPermissions($permissions);
 	}
 
-	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
+	public function testPermission(CommandSender $target, ?Permission $permission = null) : bool{
 		if($this->testPermissionSilent($target, $permission)){
 			return true;
 		}
@@ -125,13 +125,13 @@ abstract class Command{
 		if($message instanceof Translatable){
 			$target->sendMessage($message->prefix(TextFormat::RED));
 		}elseif($message !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $message));
+			$target->sendMessage(str_replace("<permission>", $permission?->getName() ?? implode(";", $this->permission), $message));
 		}
 
 		return false;
 	}
 
-	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
+	public function testPermissionSilent(CommandSender $target, ?Permission $permission = null) : bool{
 		$list = $permission !== null ? [$permission] : $this->permission;
 		foreach($list as $p){
 			if($target->hasPermission($p)){

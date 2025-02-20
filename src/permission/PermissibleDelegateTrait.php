@@ -31,20 +31,20 @@ trait PermissibleDelegateTrait{
 	/** @var Permissible */
 	private $perm;
 
-	public function setBasePermission(Permission|string $name, bool $grant) : void{
-		$this->perm->setBasePermission($name, $grant);
+	public function setBasePermission(Permission $permission, bool $grant) : void{
+		$this->perm->setBasePermission($permission, $grant);
 	}
 
-	public function unsetBasePermission(Permission|string $name) : void{
-		$this->perm->unsetBasePermission($name);
+	public function unsetBasePermission(Permission $permission) : void{
+		$this->perm->unsetBasePermission($permission);
 	}
 
-	public function isPermissionSet(Permission|string $name) : bool{
-		return $this->perm->isPermissionSet($name);
+	public function isPermissionSet(Permission $permission) : bool{
+		return $this->perm->isPermissionSet($permission);
 	}
 
-	public function hasPermission(Permission|string $name) : bool{
-		return $this->perm->hasPermission($name);
+	public function hasPermission(Permission $permission) : bool{
+		return $this->perm->hasPermission($permission);
 	}
 
 	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{

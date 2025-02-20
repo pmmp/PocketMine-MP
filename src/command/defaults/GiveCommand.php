@@ -34,6 +34,7 @@ use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
@@ -48,8 +49,8 @@ class GiveCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_give_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_GIVE_SELF,
-			DefaultPermissionNames::COMMAND_GIVE_OTHER
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GIVE_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GIVE_OTHER)
 		]);
 	}
 
@@ -58,7 +59,7 @@ class GiveCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GIVE_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GIVE_OTHER));
 		if($player === null){
 			return true;
 		}

@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use function microtime;
 use function round;
 
@@ -37,7 +38,7 @@ class SaveCommand extends VanillaCommand{
 			"save-all",
 			KnownTranslationFactory::pocketmine_command_save_description()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_PERFORM);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_SAVE_PERFORM));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

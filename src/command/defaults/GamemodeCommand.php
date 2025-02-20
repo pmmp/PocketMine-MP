@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\GameMode;
 use function count;
 
@@ -40,8 +41,8 @@ class GamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_GAMEMODE_SELF,
-			DefaultPermissionNames::COMMAND_GAMEMODE_OTHER
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GAMEMODE_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER)
 		]);
 	}
 
@@ -56,7 +57,7 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GAMEMODE_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_GAMEMODE_OTHER));
 		if($target === null){
 			return true;
 		}

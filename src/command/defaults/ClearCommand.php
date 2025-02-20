@@ -33,6 +33,7 @@ use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\utils\TextFormat;
 use function count;
 use function min;
@@ -45,7 +46,10 @@ class ClearCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_clear_description(),
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
-		$this->setPermissions([DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]);
+		$this->setPermissions([
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_CLEAR_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_CLEAR_OTHER)
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -53,7 +57,7 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_CLEAR_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_CLEAR_OTHER));
 		if($target === null){
 			return true;
 		}

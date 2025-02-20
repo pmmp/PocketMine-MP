@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
@@ -47,8 +48,8 @@ class TeleportCommand extends VanillaCommand{
 			["teleport"]
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
-			DefaultPermissionNames::COMMAND_TELEPORT_OTHER
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TELEPORT_OTHER)
 		]);
 	}
 
@@ -77,7 +78,7 @@ class TeleportCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 		}
 
-		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
+		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_TELEPORT_OTHER));
 		if($subject === null){
 			return true;
 		}

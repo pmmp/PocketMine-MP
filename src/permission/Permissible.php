@@ -36,7 +36,7 @@ interface Permissible{
 	 * @internal
 	 * @see Permissible::addAttachment() for normal permission assignments
 	 */
-	public function setBasePermission(Permission|string $name, bool $grant) : void;
+	public function setBasePermission(Permission $permission, bool $grant) : void;
 
 	/**
 	 * Unsets a baseline permission previously set. If it wasn't already set, this will have no effect.
@@ -44,17 +44,17 @@ interface Permissible{
 	 *
 	 * @internal
 	 */
-	public function unsetBasePermission(Permission|string $name) : void;
+	public function unsetBasePermission(Permission $permission) : void;
 
 	/**
 	 * Checks if this instance has a permission overridden
 	 */
-	public function isPermissionSet(Permission|string $name) : bool;
+	public function isPermissionSet(Permission $permission) : bool;
 
 	/**
 	 * Returns the permission value if overridden, or the default value if not
 	 */
-	public function hasPermission(Permission|string $name) : bool;
+	public function hasPermission(Permission $permission) : bool;
 
 	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment;
 

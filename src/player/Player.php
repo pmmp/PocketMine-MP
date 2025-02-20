@@ -120,6 +120,7 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
 use pocketmine\ServerProperties;
@@ -922,8 +923,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		foreach([
 			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
 			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
-		] as $permission => $channel){
-			if($this->hasPermission($permission)){
+		] as $permissionName => $channel){
+			$permission = PermissionManager::getInstance()->getPermission($permissionName);
+			if($permission !== null && $this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);
 			}else{
 				$this->server->unsubscribeFromBroadcastChannel($channel, $this);

@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use function array_shift;
 use function count;
@@ -42,7 +43,7 @@ class BanIpCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
 			KnownTranslationFactory::commands_banip_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_IP);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_BAN_IP));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

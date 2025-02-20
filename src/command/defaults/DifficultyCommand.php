@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use pocketmine\ServerProperties;
 use pocketmine\world\World;
 use function count;
@@ -40,7 +41,7 @@ class DifficultyCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_difficulty_description(),
 			KnownTranslationFactory::commands_difficulty_usage()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_DIFFICULTY));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use function count;
 
 class KillCommand extends VanillaCommand{
@@ -40,7 +41,10 @@ class KillCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_kill_usage(),
 			["suicide"]
 		);
-		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
+		$this->setPermissions([
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_KILL_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)
+		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -48,7 +52,7 @@ class KillCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_KILL_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_KILL_OTHER));
 		if($player === null){
 			return true;
 		}

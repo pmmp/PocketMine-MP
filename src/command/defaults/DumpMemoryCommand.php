@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use Symfony\Component\Filesystem\Path;
 use function date;
 
@@ -37,7 +38,7 @@ class DumpMemoryCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_dumpmemory_description(),
 			"/dumpmemory [path]"
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY);
+		$this->setPermission(PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

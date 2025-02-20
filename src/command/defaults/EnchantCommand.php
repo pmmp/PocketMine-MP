@@ -30,6 +30,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\permission\PermissionManager;
 use function count;
 
 class EnchantCommand extends VanillaCommand{
@@ -41,8 +42,8 @@ class EnchantCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_enchant_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_ENCHANT_SELF,
-			DefaultPermissionNames::COMMAND_ENCHANT_OTHER
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_ENCHANT_SELF),
+			PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_ENCHANT_OTHER)
 		]);
 	}
 
@@ -51,7 +52,7 @@ class EnchantCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_ENCHANT_SELF), PermissionManager::getInstance()->getPermission(DefaultPermissionNames::COMMAND_ENCHANT_OTHER));
 		if($player === null){
 			return true;
 		}
