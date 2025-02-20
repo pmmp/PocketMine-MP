@@ -25,7 +25,6 @@ namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
-use pocketmine\utils\Utils;
 use function spl_object_id;
 
 class PermissionAttachment{
