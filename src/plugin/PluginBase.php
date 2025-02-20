@@ -28,6 +28,7 @@ use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\PermissionManager;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -174,7 +175,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 			$newCmd->setAliases($aliasList);
 
-			$newCmd->setPermission($data->getPermission());
+			$newCmd->setPermission(PermissionManager::getInstance()->getPermission($data->getPermission()));
 
 			if(($permissionDeniedMessage = $data->getPermissionDeniedMessage()) !== null){
 				$newCmd->setPermissionMessage($permissionDeniedMessage);

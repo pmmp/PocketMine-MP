@@ -25,6 +25,7 @@ namespace pocketmine\permission;
 
 use pocketmine\lang\KnownTranslationFactory as l10n;
 use pocketmine\utils\RegistryTrait;
+use function str_replace;
 
 /**
  * @method static Permission POCKETMINE_BROADCAST_ADMIN()

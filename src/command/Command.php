@@ -125,7 +125,10 @@ abstract class Command{
 		if($message instanceof Translatable){
 			$target->sendMessage($message->prefix(TextFormat::RED));
 		}elseif($message !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission?->getName() ?? implode(";", $this->permission), $message));
+			$permissionsName = array_map(function (Permission $permission): string{
+				return $permission->getName();
+			}, $this->permission);
+			$target->sendMessage(str_replace("<permission>", $permission?->getName() ?? implode(";", $permissionsName), $message));
 		}
 
 		return false;
