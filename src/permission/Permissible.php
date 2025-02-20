@@ -56,7 +56,7 @@ interface Permissible{
 	 */
 	public function hasPermission(Permission $permission) : bool;
 
-	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment;
+	public function addAttachment(Plugin $plugin, ?Permission $permission = null, ?bool $value = null) : PermissionAttachment;
 
 	public function removeAttachment(PermissionAttachment $attachment) : void;
 

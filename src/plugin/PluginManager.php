@@ -34,6 +34,7 @@ use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissions;
+use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
 use pocketmine\Server;
@@ -195,10 +196,10 @@ class PluginManager{
 				$permManager->addPermission($perm);
 				switch($default){
 					case PermissionParser::DEFAULT_TRUE:
-						$everyoneRoot->addChild($perm->getName(), true);
+						$everyoneRoot->addChild($perm, true);
 						break;
 					case PermissionParser::DEFAULT_OP:
-						$opRoot->addChild($perm->getName(), true);
+						$opRoot->addChild($perm, true);
 						break;
 					case PermissionParser::DEFAULT_NOT_OP:
 						//TODO: I don't think anyone uses this, and it currently relies on some magic inside PermissibleBase
@@ -207,8 +208,8 @@ class PluginManager{
 						//The following grants this permission to anyone who has the "everyone" root permission.
 						//However, if the operator root node (which has higher priority) is present, the
 						//permission will be denied instead.
-						$everyoneRoot->addChild($perm->getName(), true);
-						$opRoot->addChild($perm->getName(), false);
+						$everyoneRoot->addChild($perm, true);
+						$opRoot->addChild($perm, false);
 						break;
 					default:
 						break;

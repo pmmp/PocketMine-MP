@@ -47,8 +47,8 @@ trait PermissibleDelegateTrait{
 		return $this->perm->hasPermission($permission);
 	}
 
-	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{
-		return $this->perm->addAttachment($plugin, $name, $value);
+	public function addAttachment(Plugin $plugin, ?Permission $permission = null, ?bool $value = null) : PermissionAttachment{
+		return $this->perm->addAttachment($plugin, $permission, $value);
 	}
 
 	public function removeAttachment(PermissionAttachment $attachment) : void{

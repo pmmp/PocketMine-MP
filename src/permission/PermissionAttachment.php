@@ -81,29 +81,8 @@ class PermissionAttachment{
 		$this->recalculatePermissibles();
 	}
 
-	/**
-	 * @param bool[] $permissions
-	 * @phpstan-param array<string, bool> $permissions
-	 */
-	public function setPermissions(array $permissions) : void{
-		foreach(Utils::stringifyKeys($permissions) as $key => $value){
-			$this->permissions[$key] = $value;
-		}
-		$this->recalculatePermissibles();
-	}
-
-	/**
-	 * @param string[] $permissions
-	 */
-	public function unsetPermissions(array $permissions) : void{
-		foreach($permissions as $node){
-			unset($this->permissions[$node]);
-		}
-		$this->recalculatePermissibles();
-	}
-
-	public function setPermission(Permission|string $name, bool $value) : void{
-		$name = $name instanceof Permission ? $name->getName() : $name;
+	public function setPermission(Permission $permission, bool $value) : void{
+		$name = $permission->getName();
 		if(isset($this->permissions[$name])){
 			if($this->permissions[$name] === $value){
 				return;
@@ -123,8 +102,8 @@ class PermissionAttachment{
 		$this->recalculatePermissibles();
 	}
 
-	public function unsetPermission(Permission|string $name) : void{
-		$name = $name instanceof Permission ? $name->getName() : $name;
+	public function unsetPermission(Permission $permission) : void{
+		$name = $permission->getName();
 		if(isset($this->permissions[$name])){
 			unset($this->permissions[$name]);
 			$this->recalculatePermissibles();

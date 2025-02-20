@@ -36,15 +36,17 @@ class Permission{
 	private Translatable|string $description;
 
 	/**
-	 * Creates a new Permission object to be attached to Permissible objects
-	 *
-	 * @param bool[] $children
+	 * @var bool[] $children
 	 * @phpstan-param array<string, bool> $children
+	 */
+	private array $children = [];
+
+	/**
+	 * Creates a new Permission object to be attached to Permissible objects
 	 */
 	public function __construct(
 		private string $name,
 		Translatable|string|null $description = null,
-		private array $children = []
 	){
 		$this->description = $description ?? ""; //TODO: wtf ????
 
@@ -86,14 +88,13 @@ class Permission{
 		}
 	}
 
-	public function addChild(string $name, bool $value) : void{
-		$this->children[$name] = $value;
+	public function addChild(Permission $permission, bool $value) : void{
+		$this->children[$permission->getName()] = $value;
 		$this->recalculatePermissibles();
 	}
 
-	public function removeChild(string $name) : void{
-		unset($this->children[$name]);
+	public function removeChild(Permission $permission) : void{
+		unset($this->children[$permission->getName()]);
 		$this->recalculatePermissibles();
-
 	}
 }

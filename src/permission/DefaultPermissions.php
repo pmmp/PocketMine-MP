@@ -107,10 +107,10 @@ final class DefaultPermissions{
 	 */
 	private static function registerPermission(Permission $candidate, array $grantedBy = [], array $deniedBy = []) : Permission{
 		foreach($grantedBy as $permission){
-			$permission->addChild($candidate->getName(), true);
+			$permission->addChild($candidate, true);
 		}
 		foreach($deniedBy as $permission){
-			$permission->addChild($candidate->getName(), false);
+			$permission->addChild($candidate, false);
 		}
 		PermissionManager::getInstance()->addPermission($candidate);
 		self::_registryRegister(str_replace(".", "_", $candidate->getName()), $candidate);

@@ -94,15 +94,15 @@ class PermissibleInternal implements Permissible{
 	/**
 	 * //TODO: tick scheduled attachments
 	 */
-	public function addAttachment(Plugin $plugin, ?string $name = null, ?bool $value = null) : PermissionAttachment{
+	public function addAttachment(Plugin $plugin, ?Permission $permission = null, ?bool $value = null) : PermissionAttachment{
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
 		$result = new PermissionAttachment($plugin);
 		$this->attachments[spl_object_id($result)] = $result;
-		if($name !== null && $value !== null){
-			$result->setPermission($name, $value);
+		if($permission !== null && $value !== null){
+			$result->setPermission($permission, $value);
 		}
 
 		$result->subscribePermissible($this);
