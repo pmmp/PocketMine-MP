@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 
-class CakeWithDyedCandle extends CakeWithCandle{
+class CakeWithDyedCandle extends CakeWithCandle implements ColoredInterface{
 	use ColoredTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){

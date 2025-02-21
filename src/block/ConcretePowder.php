@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;
 
-class ConcretePowder extends Opaque implements Fallable{
+class ConcretePowder extends Opaque implements Fallable, ColoredInterface{
 	use ColoredTrait;
 	use FallableTrait {
 		onNearbyBlockChange as protected startFalling;

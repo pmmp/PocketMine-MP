@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
@@ -36,7 +37,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 use function mt_rand;
 
-class SmallDripleaf extends Transparent{
+class SmallDripleaf extends Transparent implements SingleFacingInterface{
 	use HorizontalFacingTrait;
 
 	protected bool $top = false;

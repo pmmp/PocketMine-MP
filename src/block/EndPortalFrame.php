@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class EndPortalFrame extends Opaque{
+class EndPortalFrame extends Opaque implements SingleFacingInterface{
 	use FacesOppositePlacingPlayerTrait;
 
 	protected bool $eye = false;

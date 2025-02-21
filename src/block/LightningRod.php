@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -32,7 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class LightningRod extends Transparent{
+final class LightningRod extends Transparent implements SingleFacingInterface{
 	use AnyFacingTrait;
 
 	protected function recalculateCollisionBoxes() : array{

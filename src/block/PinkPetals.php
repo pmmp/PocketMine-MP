@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -34,7 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class PinkPetals extends Flowable{
+class PinkPetals extends Flowable implements SingleFacingInterface{
 	use HorizontalFacingTrait;
 	use StaticSupportTrait {
 		canBePlacedAt as supportedWhenPlacedAt;

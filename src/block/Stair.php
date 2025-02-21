@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -35,7 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Stair extends Transparent{
+class Stair extends Transparent implements SingleFacingInterface{
 	use HorizontalFacingTrait;
 
 	protected bool $upsideDown = false;

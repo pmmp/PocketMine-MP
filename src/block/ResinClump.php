@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\MultiAnySupportTrait;
+use pocketmine\block\utils\MultiFacingInterface;
 use pocketmine\block\utils\SupportType;
 
-final class ResinClump extends Transparent{
+final class ResinClump extends Transparent implements MultiFacingInterface{
 	use MultiAnySupportTrait;
 
 	public function isSolid() : bool{

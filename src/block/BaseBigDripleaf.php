@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -33,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-abstract class BaseBigDripleaf extends Transparent{
+abstract class BaseBigDripleaf extends Transparent implements SingleFacingInterface{
 	use HorizontalFacingTrait;
 
 	abstract protected function isHead() : bool;

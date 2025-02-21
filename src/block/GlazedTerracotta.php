@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 
-class GlazedTerracotta extends Opaque{
+class GlazedTerracotta extends Opaque implements ColoredInterface, SingleFacingInterface{
 	use ColoredTrait;
 	use FacesOppositePlacingPlayerTrait;
 }

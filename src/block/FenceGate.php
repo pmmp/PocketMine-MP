@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodTypeInterface;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -35,7 +37,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
-class FenceGate extends Transparent{
+class FenceGate extends Transparent implements SingleFacingInterface, WoodTypeInterface{
 	use WoodTypeTrait;
 	use HorizontalFacingTrait;
 

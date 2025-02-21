@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -31,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class WallSign extends BaseSign{
+final class WallSign extends BaseSign implements SingleFacingInterface{
 	use HorizontalFacingTrait;
 
 	protected function getSupportingFace() : int{

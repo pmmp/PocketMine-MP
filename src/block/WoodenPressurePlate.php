@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\WoodType;
+use pocketmine\block\utils\WoodTypeInterface;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class WoodenPressurePlate extends SimplePressurePlate{
+class WoodenPressurePlate extends SimplePressurePlate implements WoodTypeInterface{
 	use WoodTypeTrait;
 
 	public function __construct(

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\FortuneDropHelper;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -38,7 +39,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
-final class AmethystCluster extends Transparent{
+final class AmethystCluster extends Transparent implements SingleFacingInterface{
 	use AmethystTrait;
 	use AnyFacingTrait;
 

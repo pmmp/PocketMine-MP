@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 
-class Wool extends Opaque{
+class Wool extends Opaque implements ColoredInterface{
 	use ColoredTrait;
 
 	public function getFlameEncouragement() : int{

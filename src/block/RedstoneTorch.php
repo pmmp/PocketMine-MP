@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\LightableInterface;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
-class RedstoneTorch extends Torch{
+class RedstoneTorch extends Torch implements LightableInterface{
 	use LightableTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){

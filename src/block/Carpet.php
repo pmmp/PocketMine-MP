@@ -23,12 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class Carpet extends Flowable{
+class Carpet extends Flowable implements ColoredInterface{
 	use ColoredTrait;
 	use StaticSupportTrait;
 

@@ -25,11 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-final class Loom extends Opaque{
+final class Loom extends Opaque implements SingleFacingInterface{
 	use FacesOppositePlacingPlayerTrait;
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

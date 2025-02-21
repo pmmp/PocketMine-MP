@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 
-class DyedCandle extends Candle{
+class DyedCandle extends Candle implements ColoredInterface{
 	use ColoredTrait;
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{

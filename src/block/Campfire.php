@@ -26,7 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\LightableInterface;
 use pocketmine\block\utils\LightableTrait;
+use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
@@ -59,7 +61,7 @@ use function count;
 use function min;
 use function mt_rand;
 
-class Campfire extends Transparent{
+class Campfire extends Transparent implements LightableInterface, SingleFacingInterface{
 	use HorizontalFacingTrait{
 		HorizontalFacingTrait::describeBlockOnlyState as encodeFacingState;
 	}
