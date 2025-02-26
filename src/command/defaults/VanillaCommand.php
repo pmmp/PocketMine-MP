@@ -51,8 +51,8 @@ abstract class VanillaCommand extends Command{
 			return null;
 		}
 		if(
-			($player === $sender && ($selfPermission === null || $this->testPermission($sender, $selfPermission))) ||
-			($player !== $sender && ($otherPermission === null || $this->testPermission($sender, $otherPermission)))
+			($player === $sender && $this->testPermission($sender, $selfPermission)) ||
+			($player !== $sender && $this->testPermission($sender, $otherPermission))
 		){
 			return $player;
 		}
