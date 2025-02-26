@@ -109,12 +109,7 @@ abstract class Command{
 	}
 
 	public function setPermission(?Permission $permission) : void{
-		$permissions = [];
-		if ($permission !== null){
-			$permissions = $this->permission;
-			$permissions[] = $permission;
-		}
-		$this->setPermissions($permissions);
+		$this->setPermissions($permission === null ? [] : [$permission]);
 	}
 
 	public function testPermission(CommandSender $target, ?Permission $permission = null) : bool{
