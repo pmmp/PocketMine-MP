@@ -40,7 +40,7 @@ class MeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_me_description(),
 			KnownTranslationFactory::commands_me_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_ME());
+		$this->setPermission(DefaultPermissions::COMMAND_ME());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

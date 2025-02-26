@@ -43,7 +43,7 @@ class BanListCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_banlist_description(),
 			KnownTranslationFactory::commands_banlist_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_BAN_LIST());
+		$this->setPermission(DefaultPermissions::COMMAND_BAN_LIST());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

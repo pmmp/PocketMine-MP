@@ -189,8 +189,8 @@ class PluginManager{
 				}
 			}
 		}
-		$opRoot = DefaultPermissions::POCKETMINE_GROUP_OPERATOR();
-		$everyoneRoot = DefaultPermissions::POCKETMINE_GROUP_USER();
+		$opRoot = DefaultPermissions::GROUP_OPERATOR();
+		$everyoneRoot = DefaultPermissions::GROUP_USER();
 		foreach(Utils::stringifyKeys($description->getPermissions()) as $default => $perms){
 			foreach($perms as $perm){
 				$permManager->addPermission($perm);

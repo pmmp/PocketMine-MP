@@ -51,7 +51,7 @@ class HelpCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_help_usage(),
 			["?"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_HELP());
+		$this->setPermission(DefaultPermissions::COMMAND_HELP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

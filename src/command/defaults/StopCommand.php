@@ -35,7 +35,7 @@ class StopCommand extends VanillaCommand{
 			"stop",
 			KnownTranslationFactory::pocketmine_command_stop_description()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_STOP());
+		$this->setPermission(DefaultPermissions::COMMAND_STOP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

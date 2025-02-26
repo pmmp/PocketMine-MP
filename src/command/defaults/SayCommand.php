@@ -41,7 +41,7 @@ class SayCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_say_description(),
 			KnownTranslationFactory::commands_say_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_SAY());
+		$this->setPermission(DefaultPermissions::COMMAND_SAY());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

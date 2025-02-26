@@ -66,7 +66,7 @@ class TimingsCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_timings_description(),
 			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_TIMINGS());
+		$this->setPermission(DefaultPermissions::COMMAND_TIMINGS());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

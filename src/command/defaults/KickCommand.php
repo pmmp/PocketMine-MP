@@ -43,7 +43,7 @@ class KickCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_kick_description(),
 			KnownTranslationFactory::commands_kick_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_KICK());
+		$this->setPermission(DefaultPermissions::COMMAND_KICK());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

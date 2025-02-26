@@ -40,7 +40,7 @@ class PardonIpCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_unbanip_usage(),
 			["unban-ip"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_UNBAN_IP());
+		$this->setPermission(DefaultPermissions::COMMAND_UNBAN_IP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

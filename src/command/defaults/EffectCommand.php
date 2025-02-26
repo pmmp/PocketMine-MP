@@ -43,8 +43,8 @@ class EffectCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_effect_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_EFFECT_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_EFFECT_OTHER()
+			DefaultPermissions::COMMAND_EFFECT_SELF(),
+			DefaultPermissions::COMMAND_EFFECT_OTHER()
 		]);
 	}
 
@@ -53,7 +53,7 @@ class EffectCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_EFFECT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_EFFECT_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::COMMAND_EFFECT_SELF(), DefaultPermissions::COMMAND_EFFECT_OTHER());
 		if($player === null){
 			return true;
 		}

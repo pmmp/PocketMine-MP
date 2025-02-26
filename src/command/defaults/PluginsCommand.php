@@ -43,7 +43,7 @@ class PluginsCommand extends VanillaCommand{
 			null,
 			["pl"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_PLUGINS());
+		$this->setPermission(DefaultPermissions::COMMAND_PLUGINS());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

@@ -35,7 +35,7 @@ class SeedCommand extends VanillaCommand{
 			"seed",
 			KnownTranslationFactory::pocketmine_command_seed_description()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_SEED());
+		$this->setPermission(DefaultPermissions::COMMAND_SEED());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

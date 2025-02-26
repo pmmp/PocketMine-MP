@@ -47,7 +47,7 @@ class VersionCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_version_usage(),
 			["ver", "about"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_VERSION());
+		$this->setPermission(DefaultPermissions::COMMAND_VERSION());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

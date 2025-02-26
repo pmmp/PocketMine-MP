@@ -40,8 +40,8 @@ class TitleCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_title_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_TITLE_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_TITLE_OTHER()
+			DefaultPermissions::COMMAND_TITLE_SELF(),
+			DefaultPermissions::COMMAND_TITLE_OTHER()
 		]);
 	}
 
@@ -50,7 +50,7 @@ class TitleCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_TITLE_SELF(), DefaultPermissions::POCKETMINE_COMMAND_TITLE_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::COMMAND_TITLE_SELF(), DefaultPermissions::COMMAND_TITLE_OTHER());
 		if($player === null){
 			return true;
 		}

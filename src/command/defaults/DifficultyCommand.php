@@ -40,7 +40,7 @@ class DifficultyCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_difficulty_description(),
 			KnownTranslationFactory::commands_difficulty_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_DIFFICULTY());
+		$this->setPermission(DefaultPermissions::COMMAND_DIFFICULTY());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

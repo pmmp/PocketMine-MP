@@ -47,8 +47,8 @@ class TeleportCommand extends VanillaCommand{
 			["teleport"]
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_TELEPORT_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_TELEPORT_OTHER()
+			DefaultPermissions::COMMAND_TELEPORT_SELF(),
+			DefaultPermissions::COMMAND_TELEPORT_OTHER()
 		]);
 	}
 
@@ -77,7 +77,7 @@ class TeleportCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 		}
 
-		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissions::POCKETMINE_COMMAND_TELEPORT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_TELEPORT_OTHER());
+		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissions::COMMAND_TELEPORT_SELF(), DefaultPermissions::COMMAND_TELEPORT_OTHER());
 		if($subject === null){
 			return true;
 		}

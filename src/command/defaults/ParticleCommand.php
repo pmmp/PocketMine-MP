@@ -80,7 +80,7 @@ class ParticleCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_particle_description(),
 			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_PARTICLE());
+		$this->setPermission(DefaultPermissions::COMMAND_PARTICLE());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

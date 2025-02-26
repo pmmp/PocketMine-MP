@@ -39,7 +39,7 @@ class GarbageCollectorCommand extends VanillaCommand{
 			"gc",
 			KnownTranslationFactory::pocketmine_command_gc_description()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_GC());
+		$this->setPermission(DefaultPermissions::COMMAND_GC());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

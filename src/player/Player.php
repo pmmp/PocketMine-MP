@@ -919,8 +919,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	private function recheckBroadcastPermissions() : void{
 		foreach([
-			Server::BROADCAST_CHANNEL_ADMINISTRATIVE => DefaultPermissions::POCKETMINE_BROADCAST_ADMIN(),
-			Server::BROADCAST_CHANNEL_USERS => DefaultPermissions::POCKETMINE_BROADCAST_USER(),
+			Server::BROADCAST_CHANNEL_ADMINISTRATIVE => DefaultPermissions::BROADCAST_ADMIN(),
+			Server::BROADCAST_CHANNEL_USERS => DefaultPermissions::BROADCAST_USER(),
 		] as $channel => $permission){
 			if($this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);

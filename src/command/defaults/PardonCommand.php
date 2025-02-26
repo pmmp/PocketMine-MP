@@ -39,7 +39,7 @@ class PardonCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_unban_usage(),
 			["unban"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_UNBAN_PLAYER());
+		$this->setPermission(DefaultPermissions::COMMAND_UNBAN_PLAYER());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

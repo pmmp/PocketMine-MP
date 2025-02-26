@@ -39,7 +39,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_defaultgamemode_description(),
 			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_DEFAULTGAMEMODE());
+		$this->setPermission(DefaultPermissions::COMMAND_DEFAULTGAMEMODE());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

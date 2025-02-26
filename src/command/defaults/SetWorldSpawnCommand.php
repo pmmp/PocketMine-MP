@@ -42,7 +42,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_setworldspawn_description(),
 			KnownTranslationFactory::commands_setworldspawn_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_SETWORLDSPAWN());
+		$this->setPermission(DefaultPermissions::COMMAND_SETWORLDSPAWN());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

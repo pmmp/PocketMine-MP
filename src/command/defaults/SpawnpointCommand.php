@@ -43,13 +43,13 @@ class SpawnpointCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_spawnpoint_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_OTHER()
+			DefaultPermissions::COMMAND_SPAWNPOINT_SELF(),
+			DefaultPermissions::COMMAND_SPAWNPOINT_OTHER()
 		]);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_SPAWNPOINT_OTHER());
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::COMMAND_SPAWNPOINT_SELF(), DefaultPermissions::COMMAND_SPAWNPOINT_OTHER());
 		if($target === null){
 			return true;
 		}

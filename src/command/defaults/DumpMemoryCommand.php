@@ -37,7 +37,7 @@ class DumpMemoryCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_dumpmemory_description(),
 			"/dumpmemory [path]"
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_DUMPMEMORY());
+		$this->setPermission(DefaultPermissions::COMMAND_DUMPMEMORY());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

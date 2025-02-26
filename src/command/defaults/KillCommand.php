@@ -41,8 +41,8 @@ class KillCommand extends VanillaCommand{
 			["suicide"]
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_KILL_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_KILL_OTHER()
+			DefaultPermissions::COMMAND_KILL_SELF(),
+			DefaultPermissions::COMMAND_KILL_OTHER()
 		]);
 	}
 
@@ -51,7 +51,7 @@ class KillCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::POCKETMINE_COMMAND_KILL_SELF(), DefaultPermissions::POCKETMINE_COMMAND_KILL_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::COMMAND_KILL_SELF(), DefaultPermissions::COMMAND_KILL_OTHER());
 		if($player === null){
 			return true;
 		}

@@ -697,7 +697,7 @@ class Server{
 		$this->operators->set(strtolower($name), true);
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->setBasePermission(DefaultPermissions::POCKETMINE_GROUP_OPERATOR(), true);
+			$player->setBasePermission(DefaultPermissions::GROUP_OPERATOR(), true);
 		}
 		$this->operators->save();
 	}
@@ -712,7 +712,7 @@ class Server{
 		}
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->unsetBasePermission(DefaultPermissions::POCKETMINE_GROUP_OPERATOR());
+			$player->unsetBasePermission(DefaultPermissions::GROUP_OPERATOR());
 		}
 		$this->operators->save();
 	}

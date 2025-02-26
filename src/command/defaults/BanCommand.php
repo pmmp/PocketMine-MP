@@ -41,7 +41,7 @@ class BanCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_ban_player_description(),
 			KnownTranslationFactory::commands_ban_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_BAN_PLAYER());
+		$this->setPermission(DefaultPermissions::COMMAND_BAN_PLAYER());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

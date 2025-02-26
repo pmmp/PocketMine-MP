@@ -45,8 +45,8 @@ class XpCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_XP_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_XP_OTHER()
+			DefaultPermissions::COMMAND_XP_SELF(),
+			DefaultPermissions::COMMAND_XP_OTHER()
 		]);
 	}
 
@@ -55,7 +55,7 @@ class XpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissions::POCKETMINE_COMMAND_XP_SELF(), DefaultPermissions::POCKETMINE_COMMAND_XP_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissions::COMMAND_XP_SELF(), DefaultPermissions::COMMAND_XP_OTHER());
 		if($player === null){
 			return true;
 		}

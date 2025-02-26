@@ -38,7 +38,7 @@ class TransferServerCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_transferserver_description(),
 			KnownTranslationFactory::pocketmine_command_transferserver_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_TRANSFERSERVER());
+		$this->setPermission(DefaultPermissions::COMMAND_TRANSFERSERVER());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

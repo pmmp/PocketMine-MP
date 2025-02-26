@@ -41,8 +41,8 @@ class EnchantCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_enchant_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_ENCHANT_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_ENCHANT_OTHER()
+			DefaultPermissions::COMMAND_ENCHANT_SELF(),
+			DefaultPermissions::COMMAND_ENCHANT_OTHER()
 		]);
 	}
 
@@ -51,7 +51,7 @@ class EnchantCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_ENCHANT_SELF(), DefaultPermissions::POCKETMINE_COMMAND_ENCHANT_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::COMMAND_ENCHANT_SELF(), DefaultPermissions::COMMAND_ENCHANT_OTHER());
 		if($player === null){
 			return true;
 		}

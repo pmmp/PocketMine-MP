@@ -48,8 +48,8 @@ class GiveCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_give_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_GIVE_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_GIVE_OTHER()
+			DefaultPermissions::COMMAND_GIVE_SELF(),
+			DefaultPermissions::COMMAND_GIVE_OTHER()
 		]);
 	}
 
@@ -58,7 +58,7 @@ class GiveCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::POCKETMINE_COMMAND_GIVE_SELF(), DefaultPermissions::POCKETMINE_COMMAND_GIVE_OTHER());
+		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissions::COMMAND_GIVE_SELF(), DefaultPermissions::COMMAND_GIVE_OTHER());
 		if($player === null){
 			return true;
 		}

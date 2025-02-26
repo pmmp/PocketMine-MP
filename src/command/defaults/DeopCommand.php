@@ -41,7 +41,7 @@ class DeopCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_deop_description(),
 			KnownTranslationFactory::commands_deop_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_OP_TAKE());
+		$this->setPermission(DefaultPermissions::COMMAND_OP_TAKE());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

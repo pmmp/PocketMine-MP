@@ -41,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 			"status",
 			KnownTranslationFactory::pocketmine_command_status_description()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_STATUS());
+		$this->setPermission(DefaultPermissions::COMMAND_STATUS());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

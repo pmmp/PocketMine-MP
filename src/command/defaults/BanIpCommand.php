@@ -42,7 +42,7 @@ class BanIpCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
 			KnownTranslationFactory::commands_banip_usage()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_BAN_IP());
+		$this->setPermission(DefaultPermissions::COMMAND_BAN_IP());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

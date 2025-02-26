@@ -46,12 +46,12 @@ class WhitelistCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_whitelist_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_RELOAD(),
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ENABLE(),
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_DISABLE(),
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_LIST(),
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ADD(),
-			DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_REMOVE()
+			DefaultPermissions::COMMAND_WHITELIST_RELOAD(),
+			DefaultPermissions::COMMAND_WHITELIST_ENABLE(),
+			DefaultPermissions::COMMAND_WHITELIST_DISABLE(),
+			DefaultPermissions::COMMAND_WHITELIST_LIST(),
+			DefaultPermissions::COMMAND_WHITELIST_ADD(),
+			DefaultPermissions::COMMAND_WHITELIST_REMOVE()
 		]);
 	}
 
@@ -59,7 +59,7 @@ class WhitelistCommand extends VanillaCommand{
 		if(count($args) === 1){
 			switch(strtolower($args[0])){
 				case "reload":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_RELOAD())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_RELOAD())){
 						$server = $sender->getServer();
 						$server->getWhitelisted()->reload();
 						if($server->hasWhitelist()){
@@ -70,7 +70,7 @@ class WhitelistCommand extends VanillaCommand{
 
 					return true;
 				case "on":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ENABLE())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_ENABLE())){
 						$server = $sender->getServer();
 						$server->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, true);
 						$this->kickNonWhitelistedPlayers($server);
@@ -79,14 +79,14 @@ class WhitelistCommand extends VanillaCommand{
 
 					return true;
 				case "off":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_DISABLE())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_DISABLE())){
 						$sender->getServer()->getConfigGroup()->setConfigBool(ServerProperties::WHITELIST, false);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_disabled());
 					}
 
 					return true;
 				case "list":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_LIST())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_LIST())){
 						$entries = $sender->getServer()->getWhitelisted()->getAll(true);
 						sort($entries, SORT_STRING);
 						$result = implode(", ", $entries);
@@ -112,14 +112,14 @@ class WhitelistCommand extends VanillaCommand{
 			}
 			switch(strtolower($args[0])){
 				case "add":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_ADD())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_ADD())){
 						$sender->getServer()->addWhitelist($args[1]);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_add_success($args[1]));
 					}
 
 					return true;
 				case "remove":
-					if($this->testPermission($sender, DefaultPermissions::POCKETMINE_COMMAND_WHITELIST_REMOVE())){
+					if($this->testPermission($sender, DefaultPermissions::COMMAND_WHITELIST_REMOVE())){
 						$server = $sender->getServer();
 						$server->removeWhitelist($args[1]);
 						if(!$server->isWhitelisted($args[1])){

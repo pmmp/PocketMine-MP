@@ -43,7 +43,7 @@ class TellCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_message_usage(),
 			["w", "msg"]
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_TELL());
+		$this->setPermission(DefaultPermissions::COMMAND_TELL());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

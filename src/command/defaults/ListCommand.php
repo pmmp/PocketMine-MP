@@ -41,7 +41,7 @@ class ListCommand extends VanillaCommand{
 			"list",
 			KnownTranslationFactory::pocketmine_command_list_description()
 		);
-		$this->setPermission(DefaultPermissions::POCKETMINE_COMMAND_LIST());
+		$this->setPermission(DefaultPermissions::COMMAND_LIST());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

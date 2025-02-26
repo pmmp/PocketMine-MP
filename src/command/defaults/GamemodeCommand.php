@@ -40,8 +40,8 @@ class GamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_GAMEMODE_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_GAMEMODE_OTHER()
+			DefaultPermissions::COMMAND_GAMEMODE_SELF(),
+			DefaultPermissions::COMMAND_GAMEMODE_OTHER()
 		]);
 	}
 
@@ -56,7 +56,7 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissions::POCKETMINE_COMMAND_GAMEMODE_SELF(), DefaultPermissions::POCKETMINE_COMMAND_GAMEMODE_OTHER());
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissions::COMMAND_GAMEMODE_SELF(), DefaultPermissions::COMMAND_GAMEMODE_OTHER());
 		if($target === null){
 			return true;
 		}

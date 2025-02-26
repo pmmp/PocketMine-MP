@@ -46,8 +46,8 @@ class ClearCommand extends VanillaCommand{
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
 		$this->setPermissions([
-			DefaultPermissions::POCKETMINE_COMMAND_CLEAR_SELF(),
-			DefaultPermissions::POCKETMINE_COMMAND_CLEAR_OTHER()
+			DefaultPermissions::COMMAND_CLEAR_SELF(),
+			DefaultPermissions::COMMAND_CLEAR_OTHER()
 		]);
 	}
 
@@ -56,7 +56,7 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::POCKETMINE_COMMAND_CLEAR_SELF(), DefaultPermissions::POCKETMINE_COMMAND_CLEAR_OTHER());
+		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissions::COMMAND_CLEAR_SELF(), DefaultPermissions::COMMAND_CLEAR_OTHER());
 		if($target === null){
 			return true;
 		}
