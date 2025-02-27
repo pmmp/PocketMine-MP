@@ -80,6 +80,16 @@ class PermissionAttachment{
 		$this->recalculatePermissibles();
 	}
 
+	/**
+	 * @param string[] $permissions
+	 */
+	public function unsetPermissions(array $permissions) : void{
+		foreach($permissions as $node){
+			unset($this->permissions[$node]);
+		}
+		$this->recalculatePermissibles();
+	}
+
 	public function setPermission(Permission $permission, bool $value) : void{
 		$name = $permission->getName();
 		if(isset($this->permissions[$name])){

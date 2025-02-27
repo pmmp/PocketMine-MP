@@ -113,7 +113,7 @@ final class DefaultPermissions{
 			$permission->addChild($candidate, false);
 		}
 		PermissionManager::getInstance()->addPermission($candidate);
-		
+
 		$name = str_replace("pocketmine.", "", $candidate->getName());
 		self::_registryRegister(str_replace(".", "_", $name), $candidate);
 
