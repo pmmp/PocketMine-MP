@@ -175,7 +175,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 			$newCmd->setAliases($aliasList);
 
-			$newCmd->setPermission(PermissionManager::getInstance()->getPermission($data->getPermission()));
+			$permission = PermissionManager::getInstance()->getPermission($data->getPermission());
+			if ($permission !== null) {
+				$newCmd->setPermission($permission);
+			}
 
 			if(($permissionDeniedMessage = $data->getPermissionDeniedMessage()) !== null){
 				$newCmd->setPermissionMessage($permissionDeniedMessage);
