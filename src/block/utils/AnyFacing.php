@@ -25,7 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\math\Facing;
 
-interface SingleFacingInterface{
+interface AnyFacing{
 
 	/**
 	 * @see Facing

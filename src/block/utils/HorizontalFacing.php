@@ -21,19 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacing;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
+use pocketmine\math\Facing;
 
-final class ChemistryTable extends Opaque implements HorizontalFacing{
-	use FacesOppositePlacingPlayerTrait;
+interface HorizontalFacing{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		//TODO
-		return false;
-	}
+	/**
+	 * @see Facing
+	 */
+	public function getFacing() : int;
+
+	/**
+	 * @throws \InvalidArgumentException if `$facing` is not a `Facing` constant
+	 * or if `$facing` is not horizontal
+	 *
+	 * @see Facing
+	 */
+	public function setFacing(int $facing) : self;
 }

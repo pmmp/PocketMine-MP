@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\SingleFacingInterface;
+use pocketmine\block\utils\HorizontalFacing;
 
-class CarvedPumpkin extends Opaque implements SingleFacingInterface{
+class CarvedPumpkin extends Opaque implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
 }

@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -34,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
-abstract class Button extends Flowable implements SingleFacingInterface{
+abstract class Button extends Flowable implements AnyFacing{
 	use AnyFacingTrait;
 
 	protected bool $pressed = false;

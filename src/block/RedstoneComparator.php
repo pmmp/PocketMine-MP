@@ -26,10 +26,10 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterInterface;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneInterface;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,7 +41,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
 
-class RedstoneComparator extends Flowable implements AnalogRedstoneSignalEmitterInterface, PoweredByRedstoneInterface, SingleFacingInterface{
+class RedstoneComparator extends Flowable implements AnalogRedstoneSignalEmitterInterface, PoweredByRedstoneInterface, HorizontalFacing{
 	use HorizontalFacingTrait;
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;

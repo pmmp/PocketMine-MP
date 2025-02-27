@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -40,7 +40,7 @@ use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
 
-class ItemFrame extends Flowable implements SingleFacingInterface{
+class ItemFrame extends Flowable implements AnyFacing{
 	use AnyFacingTrait;
 
 	public const ROTATIONS = 8;

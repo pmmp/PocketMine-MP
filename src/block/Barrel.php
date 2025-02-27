@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -34,7 +34,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function abs;
 
-class Barrel extends Opaque implements SingleFacingInterface{
+class Barrel extends Opaque implements AnyFacing{
 	use AnyFacingTrait;
 
 	protected bool $open = false;

@@ -26,8 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AgeableInterface;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\WoodType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -41,7 +41,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class CocoaBlock extends Flowable implements AgeableInterface, SingleFacingInterface{
+class CocoaBlock extends Flowable implements AgeableInterface, HorizontalFacing{
 	use HorizontalFacingTrait;
 	use AgeableTrait;
 

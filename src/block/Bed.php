@@ -27,8 +27,8 @@ use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\ColoredInterface;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\SingleFacingInterface;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
@@ -43,7 +43,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
-class Bed extends Transparent implements ColoredInterface, SingleFacingInterface{
+class Bed extends Transparent implements ColoredInterface, HorizontalFacing{
 	use ColoredTrait;
 	use HorizontalFacingTrait;
 
