@@ -58,15 +58,8 @@ class PermissibleInternal implements Permissible{
 	 */
 	private ObjectSet $permissionRecalculationCallbacks;
 
-	/**
-	 * @param bool[] $basePermissions
-	 * @phpstan-param array<string, bool> $basePermissions
-	 */
-	public function __construct(array $basePermissions){
+	public function __construct(){
 		$this->permissionRecalculationCallbacks = new ObjectSet();
-
-		$this->rootPermissions = $basePermissions;
-		$this->recalculatePermissions();
 	}
 
 	public function setBasePermission(Permission $permission, bool $grant) : void{

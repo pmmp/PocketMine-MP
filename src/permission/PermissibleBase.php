@@ -28,12 +28,8 @@ final class PermissibleBase implements Permissible{
 
 	private PermissibleInternal $permissibleBase;
 
-	/**
-	 * @param bool[] $basePermissions
-	 * @phpstan-param array<string, bool> $basePermissions
-	 */
-	public function __construct(array $basePermissions){
-		$this->permissibleBase = new PermissibleInternal($basePermissions);
+	public function __construct(){
+		$this->permissibleBase = new PermissibleInternal();
 		$this->perm = $this->permissibleBase;
 	}
 

@@ -97,10 +97,6 @@ use function str_replace;
 final class DefaultPermissions{
 	use RegistryTrait;
 
-	public const ROOT_CONSOLE = "pocketmine.group.console";
-	public const ROOT_OPERATOR = "pocketmine.group.operator";
-	public const ROOT_USER = "pocketmine.group.user";
-
 	/**
 	 * @param Permission[] $grantedBy
 	 * @param Permission[] $deniedBy

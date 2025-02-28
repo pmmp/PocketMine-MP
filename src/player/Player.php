@@ -329,11 +329,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->creativeInventory = CreativeInventory::getInstance();
 
-		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
+		$this->perm = new PermissibleBase();
+		$this->perm->setBasePermission(DefaultPermissions::GROUP_USER(), true);
 		if($this->server->isOp($this->username)){
-			$rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
+			$this->perm->setBasePermission(DefaultPermissions::GROUP_OPERATOR(), true);
 		}
-		$this->perm = new PermissibleBase($rootPermissions);
+
 		$this->chunksPerTick = $this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_PER_TICK, 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();

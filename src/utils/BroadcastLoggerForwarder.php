@@ -47,7 +47,7 @@ final class BroadcastLoggerForwarder implements CommandSender{
 		private Language $language
 	){
 		//this doesn't need any permissions
-		$this->perm = new PermissibleBase([]);
+		$this->perm = new PermissibleBase();
 	}
 
 	public function getLanguage() : Language{
