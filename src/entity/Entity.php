@@ -1495,7 +1495,7 @@ abstract class Entity{
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			static::getNetworkTypeId(),
-			$this->location->asVector3(),
+			$this->getOffsetPosition($this->location->asVector3()),
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,
