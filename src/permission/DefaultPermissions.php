@@ -28,6 +28,11 @@ use pocketmine\utils\RegistryTrait;
 use function str_replace;
 
 /**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
+ *
  * @method static Permission BROADCAST_ADMIN()
  * @method static Permission BROADCAST_USER()
  * @method static Permission COMMAND_BAN_IP()
@@ -96,6 +101,17 @@ use function str_replace;
  */
 final class DefaultPermissions{
 	use RegistryTrait;
+
+	/**
+	 * @return Permission[]
+	 * @phpstan-return array<string, Permission>
+	 */
+	public static function getAll() : array{
+		//phpstan doesn't support generic traits yet :(
+		/** @var Permission[] $result */
+		$result = self::_registryGetAll();
+		return $result;
+	}
 
 	/**
 	 * @param Permission[] $grantedBy
