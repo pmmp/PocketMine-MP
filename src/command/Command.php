@@ -38,6 +38,7 @@ use function array_map;
 use function array_values;
 use function implode;
 use function str_replace;
+use const PHP_INT_MAX;
 
 abstract class Command{
 

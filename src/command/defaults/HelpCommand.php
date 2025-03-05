@@ -39,6 +39,7 @@ use function ksort;
 use function min;
 use function sort;
 use function strtolower;
+use const PHP_INT_MAX;
 use const SORT_FLAG_CASE;
 use const SORT_NATURAL;
 
@@ -108,7 +109,7 @@ class HelpCommand extends VanillaCommand{
 
 					$usage = $cmd->getUsage();
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString)))
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString, limit: PHP_INT_MAX)))
 						->prefix(TextFormat::GOLD));
 
 					$aliases = $cmd->getAliases();

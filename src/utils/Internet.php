@@ -60,6 +60,7 @@ use const CURLOPT_RETURNTRANSFER;
 use const CURLOPT_SSL_VERIFYHOST;
 use const CURLOPT_SSL_VERIFYPEER;
 use const CURLOPT_TIMEOUT_MS;
+use const PHP_INT_MAX;
 use const SOCK_DGRAM;
 use const SOL_UDP;
 
@@ -227,9 +228,10 @@ class Internet{
 			$rawHeaders = substr($raw, 0, $headerSize);
 			$body = substr($raw, $headerSize);
 			$headers = [];
-			foreach(explode("\r\n\r\n", $rawHeaders) as $rawHeaderGroup){
+			//TODO: explore if we can set these limits lower
+			foreach(explode("\r\n\r\n", $rawHeaders, limit: PHP_INT_MAX) as $rawHeaderGroup){
 				$headerGroup = [];
-				foreach(explode("\r\n", $rawHeaderGroup) as $line){
+				foreach(explode("\r\n", $rawHeaderGroup, limit: PHP_INT_MAX) as $line){
 					$nameValue = explode(":", $line, 2);
 					if(isset($nameValue[1])){
 						$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
