@@ -1007,6 +1007,8 @@ class Server{
 			)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
+			DefaultPermissions::registerCorePermissions();
+
 			$this->commandMap = new SimpleCommandMap($this);
 
 			$this->craftingManager = CraftingManagerFromDataHelper::make(BedrockDataFiles::RECIPES);
