@@ -33,18 +33,18 @@ use pocketmine\world\Position;
  * This event is used to handle the explosion of blocks and customize their behavior.
  *
  * @see BlockPreExplodeEvent
- *
- * @phpstan-extends BlockEvent<Block>
  */
 class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/**
-	 * @param Block $block The block that exploded
-	 * @param Position $position The position of the explosion
-	 * @param Block[] $blocks The list of blocks affected by the explosion
-	 * @param float $yield The explosion yield (intensity 0-100)
-	 */
+    /**
+     * @param Block $block The block that exploded
+     * @param Position $position The position of the explosion
+     * @param Block[] $blocks The list of blocks affected by the explosion
+     * @param float $yield The explosion yield (intensity 0-100)
+     * @param Block[] $ignitions Blocks that can be ignited by the explosion
+     * @param float $fireChance Probability of fire starting due to the explosion
+     */
 	public function __construct(
 		Block $block,
 		protected Position $position,
@@ -88,7 +88,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Get the set of affected blocks for fire ignitions
 	 *
-	 * @return array A set of blocks that are affected by fire ignitions
+	 * @return Block[]
 	 */
 	public function getAffectedBlocks() : array{
 		return $this->blocks;
@@ -97,7 +97,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Set the set of blocks affected by fire ignitions
 	 *
-	 * @param array $blocks The set of blocks to be affected by fire ignitions
+	 * @param Block[] $blocks
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
 		$this->blocks = $blocks;
@@ -106,7 +106,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Get the set of blocks that can be ignited by the explosion
 	 *
-	 * @return array A set of blocks that are ignited by the explosion
+	 * @return Block[] A set of blocks that are ignited by the explosion
 	 */
 	public function getIgnitions() : array{
 		return $this->ignitions;
@@ -115,7 +115,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Set the set of blocks that can be ignited by the explosion
 	 *
-	 * @param array $ignitions The set of blocks to set as ignited
+	 * @param Block[] $ignitions The set of blocks to set as ignited
 	 */
 	public function setIgnitions(array $ignitions) : void{
 		$this->ignitions = $ignitions;

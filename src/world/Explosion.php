@@ -89,9 +89,9 @@ class Explosion{
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
-		if ($what instanceof Explosive && $what instanceof Entity) {
-			/** @var Entity $entity */
-			$entity = $what;
+		if ($this->what instanceof Explosive && $this->what instanceof Entity) {
+			/** @var Entity|Explosive|null $entity */
+			$entity = $this->what;
 		
 			if ($entity->isUnderwater()) {
 				$this->doesDamage = false;
@@ -191,14 +191,11 @@ class Explosion{
 			$yield = $ev->getYield();
 			$this->affectedBlocks = $ev->getBlockList();
 		}elseif($this->what instanceof Block){
-			$affectedBlocksArray = $this->affectedBlocks;
-
 			$ev = new BlockExplodeEvent(
 				$this->what,
 				$this->source,
 				$this->affectedBlocks,
 				$yield,
-				$affectedBlocksArray,
 				$this->fireIgnitions,
 				$this->fireChance
 			);
