@@ -94,7 +94,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		if(!$incendiary){
 			$this->fireChance = 0;
 		}else{
-			if ($this->fireChance <= 0){
+			if($this->fireChance <= 0){
 				$this->fireChance = 1.0 / 3.0;
 			}
 		}

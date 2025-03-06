@@ -46,7 +46,7 @@ class RespawnAnchor extends Opaque{
 	}
 
 	public function getLightLevel() : int{
-		return match ($this->charges) {
+		return match ($this->charges){
 			1 => 3,
 			2 => 7,
 			default => ($this->charges > 2 ? 15 : 0),
@@ -94,7 +94,6 @@ class RespawnAnchor extends Opaque{
 		if($ev->isBlockBreaking()){
 			$explosion->explodeA();
 		}
-
 		$explosion->explodeB();
 	}
 }

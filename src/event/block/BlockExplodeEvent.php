@@ -26,7 +26,6 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
@@ -34,25 +33,23 @@ use pocketmine\world\Position;
  * This event is used to handle the explosion of blocks and customize their behavior.
  *
  * @see BlockPreExplodeEvent
+ *
+ * @phpstan-extends BlockEvent<Block>
  */
 class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-    /**
-     * @param Block $block The block that exploded
-     * @param Position $position The position of the explosion
-     * @param Block[] $blocks The list of blocks affected by the explosion
-     * @param float $yield The explosion yield (intensity 0-100)
-     * @param Block[] $affectedBlocks The blocks affected by fire ignitions
-     * @param Block[] $ignitions The blocks that can be ignited by the explosion
-     * @param float $fireChance The fire chance (probability) of the explosion
-     */
+	/**
+	 * @param Block $block The block that exploded
+	 * @param Position $position The position of the explosion
+	 * @param Block[] $blocks The list of blocks affected by the explosion
+	 * @param float $yield The explosion yield (intensity 0-100)
+	 */
 	public function __construct(
 		Block $block,
 		protected Position $position,
 		protected array $blocks,
 		protected float $yield,
-		private array $affectedBlocks,
 		private array $ignitions,
 		protected float $fireChance
 	){
@@ -68,23 +65,6 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
- 	 * @return Block[]
- 	 */
-	public function getBlockList() : array{
-		return $this->blocks;
-	}
-
-	/**
-	 * Set the list of blocks affected by the explosion.
-	 *
-	 * @param Block[] $blocks
-	 */
-	public function setBlockList(array $blocks) : void{
-		Utils::validateArrayValueType($blocks, function(Block $_) : void {});
-		$this->blocks = $blocks;
-	}
-
-	/**
 	 * Get the explosion yield (intensity).
 	 *
 	 * @return float The intensity of the explosion
@@ -97,7 +77,6 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * Set the explosion yield (intensity).
 	 *
 	 * @param float $yield The intensity of the explosion (0-100)
-	 * @throws \InvalidArgumentException If the yield is not within the valid range
 	 */
 	public function setYield(float $yield) : void{
 		if($yield < 0.0 || $yield > 100.0){
@@ -109,25 +88,25 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Get the set of affected blocks for fire ignitions
 	 *
-	 * @return Block[]
+	 * @return array A set of blocks that are affected by fire ignitions
 	 */
 	public function getAffectedBlocks() : array{
-		return $this->affectedBlocks;
+		return $this->blocks;
 	}
 
 	/**
 	 * Set the set of blocks affected by fire ignitions
 	 *
- 	 * @param Block[] $blocks
+	 * @param array $blocks The set of blocks to be affected by fire ignitions
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
-		$this->affectedBlocks = $blocks;
+		$this->blocks = $blocks;
 	}
 
 	/**
 	 * Get the set of blocks that can be ignited by the explosion
 	 *
-	 * @return Block[]
+	 * @return array A set of blocks that are ignited by the explosion
 	 */
 	public function getIgnitions() : array{
 		return $this->ignitions;
@@ -136,7 +115,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Set the set of blocks that can be ignited by the explosion
 	 *
-	 * @param Block[] $ignitions
+	 * @param array $ignitions The set of blocks to set as ignited
 	 */
 	public function setIgnitions(array $ignitions) : void{
 		$this->ignitions = $ignitions;

@@ -268,7 +268,6 @@ class Explosion{
 
 		foreach($this->affectedBlocks as $block){
 			$pos = $block->getPosition();
-
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
 			}else{
@@ -277,7 +276,6 @@ class Explosion{
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
-
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
@@ -370,7 +368,7 @@ class Explosion{
 			}
 
 			if($tMaxX < $tMaxY && $tMaxX < $tMaxZ){
-				if ($tMaxX > $radius){
+				if($tMaxX > $radius){
 					break;
 				}
 

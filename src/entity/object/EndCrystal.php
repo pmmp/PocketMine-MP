@@ -132,7 +132,7 @@ class EndCrystal extends Entity implements Explosive{
 			$explosion = new Explosion($this->getPosition(), $ev->getRadius(), $this);
 			$explosion->setFireChance(0);
 
-			if (!isset($explosion->fireIgnitions)){
+			if(!isset($explosion->fireIgnitions)){
 				$explosion->fireIgnitions = array();
 			}
 			if($ev->isBlockBreaking()){
