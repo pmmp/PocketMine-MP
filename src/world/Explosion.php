@@ -304,7 +304,7 @@ class Explosion{
 		}
 
 		$x = 1 / (($bb->maxX - $bb->minX) * 2 + 1);
-		$y = 1 / (($bb->maxY- $bb->minY) * 2 + 1);
+		$y = 1 / (($bb->maxY - $bb->minY) * 2 + 1);
 		$z = 1 / (($bb->maxZ - $bb->minZ) * 2 + 1);
 
 		$xOffset = (1 - floor(1 / $x) * $x) / 2;

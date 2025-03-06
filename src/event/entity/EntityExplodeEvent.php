@@ -60,7 +60,6 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		}
 	}
 
-
 	public function getPosition() : Position{
 		return $this->position;
 	}

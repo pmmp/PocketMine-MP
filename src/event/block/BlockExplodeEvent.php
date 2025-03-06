@@ -38,12 +38,8 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Block    $block
-	 * @param Position $position
-	 * @param Block[]  $blocks
-	 * @param float    $yield
-	 * @param Block[]  $ignitions
-	 * @param float    $fireChance
+	 * @param Block[] $blocks
+	 * @param Block[] $ignitions
 	 */
 	public function __construct(
 		Block $block,

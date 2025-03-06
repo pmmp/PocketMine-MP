@@ -81,16 +81,16 @@ class RespawnAnchor extends Opaque{
 	public function explode(Player $player) : void{
 		$ev = new BlockPreExplodeEvent($this, 5, $player);
 		$ev->setIncendiary(true);
-
+	
 		if($ev->isCancelled()){
 			return;
 		}
-
+	
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
-
+	
 		$explosion = new Explosion($this->position, $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
-
+	
 		if($ev->isBlockBreaking()){
 			$explosion->explodeA();
 		}
