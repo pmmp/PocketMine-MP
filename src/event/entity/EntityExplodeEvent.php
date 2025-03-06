@@ -44,12 +44,14 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	/**
 	 * @param Block[] $blocks
 	 * @param float   $yield  0-100
+	 * @param Block[] $ignitions
 	 */
 	public function __construct(
 		Entity $entity,
 		protected Position $position,
 		protected array $blocks,
-		protected float $yield
+		protected float $yield,
+		private array $ignitions
 	){
 		$this->entity = $entity;
 		if($yield < 0.0 || $yield > 100.0){
@@ -97,5 +99,19 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
 		$this->yield = $yield;
+	}
+
+	/**
+ 	 * @param Block[] $ignitions
+ 	 */
+	public function setIgnitions($ignitions) : void{
+		$this->ignitions = $ignitions;
+	}
+
+	/**
+ 	 * @return Block[]
+ 	 */
+	public function getIgnitions() : array{
+		return $this->ignitions;
 	}
 }

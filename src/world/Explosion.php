@@ -28,13 +28,19 @@ use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Explosive;
+use pocketmine\event\block\BlockExplodeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
+use pocketmine\item\TieredTool;
+use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
@@ -54,6 +60,11 @@ class Explosion{
 	/** @var Block[] */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
+	private bool $doesDamage = true;
+	public float $fireChance = 0.0;
+
+	/** @var Block[] */
+	public array $fireIgnitions = [];
 
 	private SubChunkExplorer $subChunkExplorer;
 
@@ -78,6 +89,16 @@ class Explosion{
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
+		if ($what instanceof Explosive && $what instanceof Entity) {
+			/** @var Entity $entity */
+			$entity = $what;
+		
+			if ($entity->isUnderwater()) {
+				$this->doesDamage = false;
+				return true;
+			}
+		}
+		
 		if($this->radius < 0.1){
 			return false;
 		}
@@ -85,6 +106,10 @@ class Explosion{
 		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 
 		$mRays = $this->rays - 1;
+		$incendiary = $this->fireChance > 0;
+		if($incendiary && !isset($this->fireIgnitions)){
+			$this->fireIgnitions = array();
+		}
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
@@ -119,8 +144,9 @@ class Explosion{
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
+							$block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
-							if($blastResistance >= 0){
+							if($blastResistance >= 0 && $block->getTypeId() !== VanillaBlocks::AIR()->getTypeId()){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
@@ -131,6 +157,9 @@ class Explosion{
 										}
 									}
 								}
+							}
+							if($incendiary && mt_rand() / mt_getrandmax() <= $this->fireChance){
+								$this->fireIgnitions[spl_object_id($block)] = $block;
 							}
 						}
 					}
@@ -150,13 +179,38 @@ class Explosion{
 		$yield = min(100, (1 / $this->radius) * 100);
 
 		if($this->what instanceof Entity){
-			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
+			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield, $this->fireIgnitions);
+
+			$ev->setIgnitions($this->fireIgnitions);
 			$ev->call();
+
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$yield = $ev->getYield();
+			$this->affectedBlocks = $ev->getBlockList();
+		}elseif($this->what instanceof Block){
+			$affectedBlocksArray = $this->affectedBlocks;
+
+			$ev = new BlockExplodeEvent(
+				$this->what,
+				$this->source,
+				$this->affectedBlocks,
+				$yield,
+				$affectedBlocksArray,
+				$this->fireIgnitions,
+				$this->fireChance
+			);
+
+			$ev->call();
+
 			if($ev->isCancelled()){
 				return false;
 			}else{
 				$yield = $ev->getYield();
-				$this->affectedBlocks = $ev->getBlockList();
+				$this->affectedBlocks = $ev->getAffectedBlocks();
+				$this->fireIgnitions = $ev->getIgnitions();
 			}
 		}
 
@@ -179,9 +233,9 @@ class Explosion{
 			if($distance <= 1){
 				$motion = $entityPos->subtractVector($this->source)->normalize();
 
-				$impact = (1 - $distance) * ($exposure = 1);
+				$impact = max(0, (1 - $distance) * $this->getSeenPercent($this->source, $entity));
 
-				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
+				$damage = $this->doesDamage ? max((int)(((($impact * $impact + $impact) / 2) * 8 * $explosionSize) + 1), 0) : 0;
 
 				if($this->what instanceof Entity){
 					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
@@ -189,6 +243,19 @@ class Explosion{
 					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}else{
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
+				}
+
+				if($entity instanceof Player){
+					$netheritePieces = 0;
+					foreach($entity->getArmorInventory()->getContents() as $item){
+						if($item instanceof TieredTool && $item->getTier() === ToolTier::NETHERITE){
+							$netheritePieces++;
+						}
+					}
+					$netheriteReduction = 1 - (0.125 * $netheritePieces);
+					$netheriteReduction = max(0.5, $netheriteReduction);
+
+					$impact *= $netheriteReduction;
 				}
 
 				$entity->attack($ev);
@@ -201,6 +268,7 @@ class Explosion{
 
 		foreach($this->affectedBlocks as $block){
 			$pos = $block->getPosition();
+
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
 			}else{
@@ -209,10 +277,25 @@ class Explosion{
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
+
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
+			}
+
+			foreach($this->fireIgnitions as $fireBlock){
+				$firePos = $fireBlock->getPosition();
+				$x = $firePos->x;
+				$y = $firePos->y;
+				$z = $firePos->z;
+
+				$toIgnite = $this->world->getBlockAt($x, $y, $z);
+
+				if($toIgnite->getTypeId() === VanillaBlocks::AIR()->getTypeId() &&
+					$toIgnite->getSide(Facing::UP)->isSolid()){
+					$this->world->setBlockAt($x, $y, $z, VanillaBlocks::FIRE());
+				}
 			}
 		}
 
@@ -220,5 +303,122 @@ class Explosion{
 		$this->world->addSound($source, new ExplodeSound());
 
 		return true;
+	}
+
+	private function getSeenPercent(Vector3 $source, Entity $entity) : float{
+		$bb = $entity->getBoundingBox();
+
+		if($bb->isVectorInside($source)){
+			return 1.0;
+		}
+
+		$x = 1 / (($bb->maxX - $bb->minX) * 2 + 1);
+		$y = 1 / (($bb->maxY- $bb->minY) * 2 + 1);
+		$z = 1 / (($bb->maxZ - $bb->minZ) * 2 + 1);
+
+		$xOffset = (1 - floor(1 / $x) * $x) / 2;
+		$yOffset = (1 - floor(1 / $y) * $y) / 2;
+		$zOffset = (1 - floor(1 / $z) * $z) / 2;
+
+		$misses = 0;
+		$total = 0;
+
+		for($i = 0; $i <= 1; $i += $x){
+			for($j = 0; $j <= 1; $j += $y){
+				for($k = 0; $k <= 1; $k += $z){
+					$target = new Vector3(
+						$bb->minX + $i * ($bb->maxX - $bb->minX) + $xOffset,
+						$bb->minY + $j * ($bb->maxY - $bb->minY) + $yOffset,
+						$bb->minZ + $k * ($bb->maxZ - $bb->minZ) + $zOffset
+					);
+
+					if(!$this->raycastHit($source, $target)){
+						++$misses;
+					}
+
+					$total++;
+				}
+			}
+		}
+
+		return $total !== 0 ? (float) $misses / (float) $total : 0.0;
+	}
+
+	private function raycastHit(Vector3 $start, Vector3 $end) : bool{
+		$current = new Vector3($start->getX(), $start->getY(), $start->getZ());
+		$direction = $end->subtractVector($start)->normalize();
+
+		$stepX = $this->sign($direction->getX());
+		$stepY = $this->sign($direction->getY());
+		$stepZ = $this->sign($direction->getZ());
+
+		$tMaxX = $this->boundary($start->getX(), $direction->getX());
+		$tMaxY = $this->boundary($start->getY(), $direction->getY());
+		$tMaxZ = $this->boundary($start->getZ(), $direction->getZ());
+
+		$tDeltaX = $direction->getX() === 0 ? 0 : $stepX / $direction->getX();
+		$tDeltaY = $direction->getY() === 0 ? 0 : $stepY / $direction->getY();
+		$tDeltaZ = $direction->getZ() === 0 ? 0 : $stepZ / $direction->getZ();
+
+		$radius = $start->distance($end);
+
+		while(true){
+			$block = $this->world->getBlock($current);
+
+			if($block->isSolid() && $block->calculateIntercept($current, $end) !== null){
+				return true;
+			}
+
+			if($tMaxX < $tMaxY && $tMaxX < $tMaxZ){
+				if ($tMaxX > $radius){
+					break;
+				}
+
+				$current = new Vector3($current->getX() + $stepX, $current->getY(), $current->getZ());
+				$tMaxX += $tDeltaX;
+			}elseif($tMaxY < $tMaxZ){
+				if($tMaxY > $radius){
+					break;
+				}
+
+				$current = new Vector3($current->getX(), $current->getY() + $stepY, $current->getZ());
+				$tMaxY += $tDeltaY;
+			}else{
+				if($tMaxZ > $radius){
+					break;
+				}
+
+				$current = new Vector3($current->getX(), $current->getY(), $current->getZ() + $stepZ);
+				$tMaxZ += $tDeltaZ;
+			}
+		}
+
+		return false;
+	}
+
+	private function sign(float $d) : float{
+		if($d > 0){
+			return 1;
+		}
+
+		if($d < 0){
+			return -1;
+		}
+
+		return 0;
+	}
+
+	private function boundary(float $start, float $distance) : float{
+		if($distance === 0.0){
+			return INF;
+		}
+
+		return $distance < 0 ?
+			($start - floor($start)) / -$distance :
+			(1 - ($start - floor($start))) / $distance;
+	}
+
+	public function setFireChance(float $fireChance) : void{
+		$this->fireChance = $fireChance;
 	}
 }

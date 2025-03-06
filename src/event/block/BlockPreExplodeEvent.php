@@ -1,0 +1,126 @@
+<?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
+
+declare(strict_types=1);
+
+namespace pocketmine\event\block;
+
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
+
+/**
+ * Event triggered before a block explosion, allowing modifications to the explosion radius, block destruction, and fire chances.
+ * This event is used to customize the behavior of explosions before they happen.
+ *
+ * @see BlockExplodeEvent
+ */
+class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
+
+	private bool $blockBreaking = true;
+
+	public function __construct(
+		Block $block,
+		protected float $radius,
+		private readonly ?Player $player = null,
+		protected float $fireChance = 0.0
+	){
+		if ($radius <= 0) {
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
+		parent::__construct($block);
+	}
+
+	public function getRadius() : float{
+		return $this->radius;
+	}
+
+	public function setRadius(float $radius) : void{
+		if($radius <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
+		$this->radius = $radius;
+	}
+
+	/**
+	 * Checking whether the block will collapse
+	 * @return bool
+	 */
+	public function isBlockBreaking() : bool{
+		return $this->blockBreaking;
+	}
+
+	/**
+	 * Set whether a block will be destroyed
+	 * @param bool $affectsBlocks
+	 */
+	public function setBlockBreaking(bool $affectsBlocks) : void{
+		$this->blockBreaking = $affectsBlocks;
+	}
+
+	/**
+	 * Checking if there will be a fire
+	 * @return bool
+	 */
+	public function isIncendiary() : bool{
+		return $this->fireChance > 0;
+	}
+
+	/**
+	 * Establish the probability of fire
+	 * @param bool $incendiary
+	 */
+	public function setIncendiary(bool $incendiary) : void{
+		if(!$incendiary){
+			$this->fireChance = 0;
+		}else{
+			if ($this->fireChance <= 0){
+				$this->fireChance = 1.0 / 3.0;
+			}
+		}
+	}
+
+	/**
+	 * Get the probability of fire
+	 * @return float
+	 */
+	public function getFireChance() : float{
+		return $this->fireChance;
+	}
+
+	/**
+	 * Establish the probability of fire
+	 * @param float $fireChance
+	 */
+	public function setFireChance(float $fireChance) : void{
+		$this->fireChance = $fireChance;
+	}
+
+	/**
+	 * Get the player if the event was caused by him
+	 * @return Player|null
+	 */
+	public function getPlayer() : ?Player{
+		return $this->player;
+	}
+}
