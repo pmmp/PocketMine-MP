@@ -226,7 +226,7 @@ class Explosion{
 
 				$motion = $entityPos->subtractVector($this->source)->normalize();
 
-				$damage = $this->doesDamage ? max((int)(((($impact * $impact + $impact) / 2) * 8 * $explosionSize) + 1), 0) : 0;
+				$damage = $this->doesDamage ? max((int) (((($impact * $impact + $impact) / 2) * 8 * $explosionSize) + 1), 0) : 0;
 
 				if($this->what instanceof Entity){
 					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
@@ -268,11 +268,11 @@ class Explosion{
 					}
 				}
 
-				if(($t = $this->world->getTileAt((int)$pos->x, (int)$pos->y, (int)$pos->z)) !== null){
+				if(($t = $this->world->getTileAt((int) $pos->x, (int) $pos->y, (int) $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
 
-				$this->world->setBlockAt((int)$pos->x, (int)$pos->y, (int)$pos->z, $airBlock);
+				$this->world->setBlockAt((int) $pos->x, (int) $pos->y, (int) $pos->z, $airBlock);
 			}
 
 			foreach($this->fireIgnitions as $fireBlock){

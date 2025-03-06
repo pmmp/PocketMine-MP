@@ -64,7 +64,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Checking whether the block will collapse
-	 * @return bool
 	 */
 	public function isBlockBreaking() : bool{
 		return $this->blockBreaking;
@@ -72,7 +71,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Set whether a block will be destroyed
-	 * @param bool $affectsBlocks
 	 */
 	public function setBlockBreaking(bool $affectsBlocks) : void{
 		$this->blockBreaking = $affectsBlocks;
@@ -80,7 +78,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Checking if there will be a fire
-	 * @return bool
 	 */
 	public function isIncendiary() : bool{
 		return $this->fireChance > 0;
@@ -88,7 +85,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Establish the probability of fire
-	 * @param bool $incendiary
 	 */
 	public function setIncendiary(bool $incendiary) : void{
 		if(!$incendiary){
@@ -102,7 +98,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Get the probability of fire
-	 * @return float
 	 */
 	public function getFireChance() : float{
 		return $this->fireChance;
@@ -110,7 +105,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Establish the probability of fire
-	 * @param float $fireChance
 	 */
 	public function setFireChance(float $fireChance) : void{
 		$this->fireChance = $fireChance;
@@ -118,7 +112,6 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	/**
 	 * Get the player if the event was caused by him
-	 * @return Player|null
 	 */
 	public function getPlayer() : ?Player{
 		return $this->player;
