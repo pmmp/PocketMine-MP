@@ -49,9 +49,13 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function max;
 use function min;
+use function mt_getrandmax;
 use function mt_rand;
+use function spl_object_id;
 use function sqrt;
+use const INF;
 
 class Explosion{
 	private int $rays = 16;

@@ -87,11 +87,11 @@ class RespawnAnchor extends Opaque{
 		}
 	
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
-	
+
 		$explosion = new Explosion($this->position, $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
-	
-		if($ev->isBlockBreaking()){
+		
+		if ($ev->isBlockBreaking()) {
 			$explosion->explodeA();
 		}
 		$explosion->explodeB();
