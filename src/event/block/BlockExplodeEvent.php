@@ -37,14 +37,14 @@ use pocketmine\world\Position;
 class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-    /**
-     * @param Block $block The block that exploded
-     * @param Position $position The position of the explosion
-     * @param Block[] $blocks The list of blocks affected by the explosion
-     * @param float $yield The explosion yield (intensity 0-100)
-     * @param Block[] $ignitions Blocks that can be ignited by the explosion
-     * @param float $fireChance Probability of fire starting due to the explosion
-     */
+	/**
+	 * @param Block $block The block that exploded
+	 * @param Position $position The position of the explosion
+	 * @param Block[] $blocks The list of blocks affected by the explosion
+	 * @param float $yield The explosion yield (intensity 0-100)
+	 * @param Block[] $ignitions The list of blocks affected by fire ignitions
+	 * @param float $fireChance The chance of fire spreading
+	 */
 	public function __construct(
 		Block $block,
 		protected Position $position,
@@ -88,7 +88,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Get the set of affected blocks for fire ignitions
 	 *
-	 * @return Block[]
+	 * @return Block[] A set of blocks that are affected by fire ignitions
 	 */
 	public function getAffectedBlocks() : array{
 		return $this->blocks;
@@ -97,7 +97,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	/**
 	 * Set the set of blocks affected by fire ignitions
 	 *
-	 * @param Block[] $blocks
+	 * @param Block[] $blocks The set of blocks to be affected by fire ignitions
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
 		$this->blocks = $blocks;

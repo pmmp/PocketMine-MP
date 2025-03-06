@@ -62,7 +62,6 @@ class Explosion{
 	public float $stepLen = 0.3;
 	private bool $doesDamage = true;
 	public float $fireChance = 0.0;
-
 	/** @var Block[] */
 	public array $fireIgnitions = [];
 
@@ -89,16 +88,12 @@ class Explosion{
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
-		if ($this->what instanceof Explosive && $this->what instanceof Entity) {
-			/** @var Entity|Explosive|null $entity */
-			$entity = $this->what;
-		
-			if ($entity->isUnderwater()) {
+		if($this->what instanceof Explosive){
+			if($this->what instanceof Entity && $this->what->isUnderwater()){
 				$this->doesDamage = false;
 				return true;
 			}
 		}
-		
 		if($this->radius < 0.1){
 			return false;
 		}
@@ -108,7 +103,7 @@ class Explosion{
 		$mRays = $this->rays - 1;
 		$incendiary = $this->fireChance > 0;
 		if($incendiary && !isset($this->fireIgnitions)){
-			$this->fireIgnitions = array();
+			$this->fireIgnitions = [];
 		}
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
@@ -153,7 +148,7 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
-											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+											$this->affectedBlocks[World::blockHash((int) $_affectedBlockPos->x, (int) $_affectedBlockPos->y, (int) $_affectedBlockPos->z)] = $_affectedBlock;
 										}
 									}
 								}
@@ -196,7 +191,7 @@ class Explosion{
 				$this->source,
 				$this->affectedBlocks,
 				$yield,
-				$this->fireIgnitions,
+				$this->affectedBlocks,
 				$this->fireChance
 			);
 
@@ -221,16 +216,15 @@ class Explosion{
 
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
-		/** @var Entity[] $list */
 		$list = $this->world->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
-		foreach($list as $entity){
+		foreach ($list as $entity){
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($this->source) / $explosionSize;
 
 			if($distance <= 1){
-				$motion = $entityPos->subtractVector($this->source)->normalize();
-
 				$impact = max(0, (1 - $distance) * $this->getSeenPercent($this->source, $entity));
+
+				$motion = $entityPos->subtractVector($this->source)->normalize();
 
 				$damage = $this->doesDamage ? max((int)(((($impact * $impact + $impact) / 2) * 8 * $explosionSize) + 1), 0) : 0;
 
@@ -273,17 +267,19 @@ class Explosion{
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
-				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
+
+				if(($t = $this->world->getTileAt((int)$pos->x, (int)$pos->y, (int)$pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
+
+				$this->world->setBlockAt((int)$pos->x, (int)$pos->y, (int)$pos->z, $airBlock);
 			}
 
 			foreach($this->fireIgnitions as $fireBlock){
 				$firePos = $fireBlock->getPosition();
-				$x = $firePos->x;
-				$y = $firePos->y;
-				$z = $firePos->z;
+				$x = (int) $firePos->x;
+				$y = (int) $firePos->y;
+				$z = (int) $firePos->z;
 
 				$toIgnite = $this->world->getBlockAt($x, $y, $z);
 

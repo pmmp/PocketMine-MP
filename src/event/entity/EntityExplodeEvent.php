@@ -42,15 +42,16 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Block[] $blocks
-	 * @param float   $yield  0-100
-	 * @param Block[] $ignitions
+	 * @param Block[] $blocks The list of blocks affected by the explosion
+	 * @param float   $yield  0-100 The explosion yield
+	 * @param Block[] $ignitions The list of blocks affected by fire ignitions
 	 */
 	public function __construct(
 		Entity $entity,
 		protected Position $position,
 		protected array $blocks,
 		protected float $yield,
+		/** @var Block[] $ignitions */
 		private array $ignitions
 	){
 		$this->entity = $entity;
@@ -58,6 +59,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
 	}
+
 
 	public function getPosition() : Position{
 		return $this->position;
@@ -102,16 +104,20 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
- 	 * @param Block[] $ignitions
- 	 */
-	public function setIgnitions($ignitions) : void{
+	 * Sets the blocks that will be ignited by the explosion.
+	 *
+	 * @param Block[] $ignitions
+	 */
+	public function setIgnitions(array $ignitions) : void {
 		$this->ignitions = $ignitions;
 	}
 
 	/**
- 	 * @return Block[]
- 	 */
-	public function getIgnitions() : array{
+	 * Gets the array of blocks that may be ignited by the explosion.
+	 *
+	 * @return Block[]
+	 */
+	public function getIgnitions() : array {
 		return $this->ignitions;
 	}
 }
