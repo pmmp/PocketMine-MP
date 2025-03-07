@@ -221,7 +221,7 @@ class Explosion{
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
 		$list = $this->world->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
-		foreach ($list as $entity){
+		foreach($list as $entity){
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($this->source) / $explosionSize;
 
