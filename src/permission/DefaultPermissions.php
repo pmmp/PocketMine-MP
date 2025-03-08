@@ -100,7 +100,9 @@ use function str_replace;
  * @method static Permission GROUP_USER()
  */
 final class DefaultPermissions{
-	use RegistryTrait;
+	use RegistryTrait {
+		checkInit as public registerCorePermissions;
+	}
 
 	/**
 	 * @return Permission[]
@@ -133,10 +135,6 @@ final class DefaultPermissions{
 	}
 
 	protected static function setup() : void{
-		self::registerCorePermissions();
-	}
-
-	public static function registerCorePermissions() : void{
 		$consoleRoot = self::registerPermission(new Permission("pocketmine.group.console", l10n::pocketmine_permission_group_console()));
 		$operatorRoot = self::registerPermission(new Permission("pocketmine.group.operator", l10n::pocketmine_permission_group_operator()), [$consoleRoot]);
 		$everyoneRoot = self::registerPermission(new Permission("pocketmine.group.user", l10n::pocketmine_permission_group_user()), [$operatorRoot]);
