@@ -64,14 +64,6 @@ class PermissionManager{
 		return false;
 	}
 
-	public function removePermission(Permission|string $permission) : void{
-		if($permission instanceof Permission){
-			unset($this->permissions[$permission->getName()]);
-		}else{
-			unset($this->permissions[$permission]);
-		}
-	}
-
 	/**
 	 * @deprecated Superseded by server chat broadcast channels
 	 * @see Server::subscribeToBroadcastChannel()
@@ -125,9 +117,5 @@ class PermissionManager{
 	 */
 	public function getPermissions() : array{
 		return $this->permissions;
-	}
-
-	public function clearPermissions() : void{
-		$this->permissions = [];
 	}
 }
