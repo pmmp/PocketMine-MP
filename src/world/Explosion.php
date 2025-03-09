@@ -40,6 +40,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\SubChunk;
@@ -55,7 +56,6 @@ use function mt_getrandmax;
 use function mt_rand;
 use function spl_object_id;
 use function sqrt;
-use const INF;
 
 class Explosion{
 	private int $rays = 16;
@@ -327,7 +327,8 @@ class Explosion{
 						$bb->minZ + $k * ($bb->maxZ - $bb->minZ) + $zOffset
 					);
 
-					if(!$this->raycastHit($source, $target)){
+					$generator = VoxelRayTrace::betweenPoints($source, $target);
+					if (!$generator->valid()) {
 						++$misses;
 					}
 
@@ -337,80 +338,6 @@ class Explosion{
 		}
 
 		return $total !== 0 ? (float) $misses / (float) $total : 0.0;
-	}
-
-	private function raycastHit(Vector3 $start, Vector3 $end) : bool{
-		$current = new Vector3($start->getX(), $start->getY(), $start->getZ());
-		$direction = $end->subtractVector($start)->normalize();
-
-		$stepX = $this->sign($direction->getX());
-		$stepY = $this->sign($direction->getY());
-		$stepZ = $this->sign($direction->getZ());
-
-		$tMaxX = $this->boundary($start->getX(), $direction->getX());
-		$tMaxY = $this->boundary($start->getY(), $direction->getY());
-		$tMaxZ = $this->boundary($start->getZ(), $direction->getZ());
-
-		$tDeltaX = $direction->getX() === 0 ? 0 : $stepX / $direction->getX();
-		$tDeltaY = $direction->getY() === 0 ? 0 : $stepY / $direction->getY();
-		$tDeltaZ = $direction->getZ() === 0 ? 0 : $stepZ / $direction->getZ();
-
-		$radius = $start->distance($end);
-
-		while(true){
-			$block = $this->world->getBlock($current);
-
-			if($block->isSolid() && $block->calculateIntercept($current, $end) !== null){
-				return true;
-			}
-
-			if($tMaxX < $tMaxY && $tMaxX < $tMaxZ){
-				if($tMaxX > $radius){
-					break;
-				}
-
-				$current = new Vector3($current->getX() + $stepX, $current->getY(), $current->getZ());
-				$tMaxX += $tDeltaX;
-			}elseif($tMaxY < $tMaxZ){
-				if($tMaxY > $radius){
-					break;
-				}
-
-				$current = new Vector3($current->getX(), $current->getY() + $stepY, $current->getZ());
-				$tMaxY += $tDeltaY;
-			}else{
-				if($tMaxZ > $radius){
-					break;
-				}
-
-				$current = new Vector3($current->getX(), $current->getY(), $current->getZ() + $stepZ);
-				$tMaxZ += $tDeltaZ;
-			}
-		}
-
-		return false;
-	}
-
-	private function sign(float $d) : float{
-		if($d > 0){
-			return 1;
-		}
-
-		if($d < 0){
-			return -1;
-		}
-
-		return 0;
-	}
-
-	private function boundary(float $start, float $distance) : float{
-		if($distance === 0.0){
-			return INF;
-		}
-
-		return $distance < 0 ?
-			($start - floor($start)) / -$distance :
-			(1 - ($start - floor($start))) / $distance;
 	}
 
 	public function setFireChance(float $fireChance) : void{
