@@ -19,6 +19,12 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/Server.php
+
+		-
 			message: '#^Method pocketmine\\Server\:\:getCommandAliases\(\) should return array\<string, list\<string\>\> but returns array\<string, array\<mixed\>\>\.$#'
 			identifier: return.type
 			count: 1
@@ -53,6 +59,12 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/VersionInfo.php
+
+		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/block/Block.php
 
 		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
@@ -511,6 +523,12 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/block/tile/TileFactory.php
+
+		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getPotentialLightAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -937,6 +955,12 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
+
+		-
 			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getPackSize\(\) should return int but returns int\<0, max\>\|false\.$#'
 			identifier: return.type
 			count: 1
@@ -1247,6 +1271,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/world/generator/GeneratorRegisterTask.php
 
 		-
 			message: '#^Method pocketmine\\world\\generator\\biome\\BiomeSelector\:\:pickBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'
