@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\Server;
 use pocketmine\utils\Utils;
 use function is_bool;
 use function strtolower;
@@ -80,7 +82,7 @@ class PermissionParser{
 	 * @phpstan-return array<string, list<Permission>>
 	 * @throws PermissionParserException
 	 */
-	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
+	public static function loadPermissions(string $descriptionName, array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
 		foreach(Utils::stringifyKeys($data) as $name => $entry){
 			$desc = null;
@@ -90,6 +92,13 @@ class PermissionParser{
 
 			if(isset($entry[self::KEY_CHILDREN])){
 				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
+			}
+
+			if (PermissionManager::getInstance()->getPermission($name) !== null) {
+				throw new PermissionParserException(Server::getInstance()->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+					$descriptionName,
+					KnownTranslationFactory::pocketmine_plugin_duplicatePermissionError($name)
+				)));
 			}
 
 			if(isset($entry[self::KEY_DESCRIPTION])){

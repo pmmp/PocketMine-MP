@@ -232,7 +232,7 @@ class PluginDescription{
 
 		if(isset($plugin[self::KEY_PERMISSIONS])){
 			try{
-				$this->permissions = PermissionParser::loadPermissions($plugin[self::KEY_PERMISSIONS]);
+				$this->permissions = PermissionParser::loadPermissions($this->name, $plugin[self::KEY_PERMISSIONS]);
 			}catch(PermissionParserException $e){
 				throw new PluginDescriptionParseException("Invalid Plugin \"" . self::KEY_PERMISSIONS . "\": " . $e->getMessage(), 0, $e);
 			}

@@ -51,6 +51,7 @@ class Permission{
 		$this->description = $description ?? ""; //TODO: wtf ????
 
 		$this->recalculatePermissibles();
+		PermissionManager::getInstance()->addPermission($this);
 	}
 
 	public function getName() : string{

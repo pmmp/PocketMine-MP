@@ -34,8 +34,6 @@ use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\permission\Permission;
-use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -177,23 +175,10 @@ class PluginManager{
 			return null;
 		}
 
-		$permManager = PermissionManager::getInstance();
-		foreach($description->getPermissions() as $permsGroup){
-			foreach($permsGroup as $perm){
-				if($permManager->getPermission($perm->getName()) !== null){
-					$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$description->getName(),
-						KnownTranslationFactory::pocketmine_plugin_duplicatePermissionError($perm->getName())
-					)));
-					return null;
-				}
-			}
-		}
 		$opRoot = DefaultPermissions::GROUP_OPERATOR();
 		$everyoneRoot = DefaultPermissions::GROUP_USER();
 		foreach(Utils::stringifyKeys($description->getPermissions()) as $default => $perms){
 			foreach($perms as $perm){
-				$permManager->addPermission($perm);
 				switch($default){
 					case PermissionParser::DEFAULT_TRUE:
 						$everyoneRoot->addChild($perm, true);
