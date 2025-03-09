@@ -23,9 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface LightableInterface{
+interface CoralMaterial{
 
-	public function isLit() : bool;
+	public function getCoralType() : CoralType;
 
-	public function setLit(bool $lit = true) : self;
+	public function setCoralType(CoralType $coralType) : self;
+
+	public function isDead() : bool;
+
+	public function setDead(bool $dead) : self;
 }

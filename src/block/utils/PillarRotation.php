@@ -25,7 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\math\Axis;
 
-interface PillarRotationInterface{
+interface PillarRotation{
 
 	/** @see Axis */
 	public function getAxis() : int;

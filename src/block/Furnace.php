@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\LightableInterface;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -34,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class Furnace extends Opaque implements LightableInterface{
+class Furnace extends Opaque implements Lightable{
 	use FacesOppositePlacingPlayerTrait;
 	use LightableTrait;
 

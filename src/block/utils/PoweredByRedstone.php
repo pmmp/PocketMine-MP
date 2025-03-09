@@ -23,12 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface AgeableInterface{
+interface PoweredByRedstone{
 
-	public function getAge() : int;
+	public function isPowered() : bool;
 
-	/**
-	 * @throws \InvalidArgumentException if `$age` is out of bounds
-	 */
-	public function setAge(int $age) : self;
+	public function setPowered(bool $powered) : self;
 }

@@ -23,17 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface SignLikeRotationInterface{
+interface WoodMaterial{
 
-	/**
-	 * @return int between 0 and 15
-	 */
-	public function getRotation() : int;
-
-	/**
-	 * @param int $rotation between 0 and 15
-	 *
-	 * @throws \InvalidArgumentException if `$rotation` is out of hounds
-	 */
-	public function setRotation(int $rotation) : self;
+	public function getWoodType() : WoodType;
 }

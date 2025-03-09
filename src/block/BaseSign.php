@@ -27,8 +27,8 @@ use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodType;
-use pocketmine\block\utils\WoodTypeInterface;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
@@ -45,7 +45,7 @@ use function array_map;
 use function assert;
 use function strlen;
 
-abstract class BaseSign extends Transparent implements WoodTypeInterface{
+abstract class BaseSign extends Transparent implements WoodMaterial{
 	use WoodTypeTrait;
 
 	protected SignText $text;

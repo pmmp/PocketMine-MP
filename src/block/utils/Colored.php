@@ -23,13 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface CoralTypeInterface{
+interface Colored{
 
-	public function getCoralType() : CoralType;
+	public function getColor() : DyeColor;
 
-	public function setCoralType(CoralType $coralType) : self;
-
-	public function isDead() : bool;
-
-	public function setDead(bool $dead) : self;
+	public function setColor(DyeColor $color) : self;
 }

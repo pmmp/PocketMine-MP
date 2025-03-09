@@ -23,12 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface AnalogRedstoneSignalEmitterInterface{
-
-	public function getOutputSignalStrength() : int;
+interface SignLikeRotation{
 
 	/**
-	 * @throws \InvalidArgumentException if `$signalStrength` is out of bounds
+	 * @return int between 0 and 15
 	 */
-	public function setOutputSignalStrength(int $signalStrength) : self;
+	public function getRotation() : int;
+
+	/**
+	 * @param int $rotation between 0 and 15
+	 *
+	 * @throws \InvalidArgumentException if `$rotation` is out of hounds
+	 */
+	public function setRotation(int $rotation) : self;
 }

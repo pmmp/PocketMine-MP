@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface WoodTypeInterface{
+interface Lightable{
 
-	public function getWoodType() : WoodType;
+	public function isLit() : bool;
+
+	public function setLit(bool $lit = true) : self;
 }

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\FortuneDropHelper;
-use pocketmine\block\utils\LightableInterface;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -32,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class RedstoneOre extends Opaque implements LightableInterface{
+class RedstoneOre extends Opaque implements Lightable{
 	use LightableTrait;
 
 	public function getLightLevel() : int{

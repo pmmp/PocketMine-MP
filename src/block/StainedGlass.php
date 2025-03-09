@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColoredInterface;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 
-final class StainedGlass extends Glass implements ColoredInterface{
+final class StainedGlass extends Glass implements Colored{
 	use ColoredTrait;
 }

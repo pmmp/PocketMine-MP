@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableInterface;
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
@@ -34,7 +34,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class Cactus extends Transparent implements AgeableInterface{
+class Cactus extends Transparent implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 

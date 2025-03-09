@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\ColoredInterface;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 
-final class StainedHardenedGlassPane extends HardenedGlassPane implements ColoredInterface{
+final class StainedHardenedGlassPane extends HardenedGlassPane implements Colored{
 	use ColoredTrait;
 }

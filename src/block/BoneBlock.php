@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationInterface;
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
 
-class BoneBlock extends Opaque implements PillarRotationInterface{
+class BoneBlock extends Opaque implements PillarRotation{
 	use PillarRotationTrait;
 }

@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeInterface;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class WoodenButton extends Button implements WoodTypeInterface{
+class WoodenButton extends Button implements WoodMaterial{
 	use WoodTypeTrait;
 
 	protected function getActivationTime() : int{

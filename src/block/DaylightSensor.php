@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AnalogRedstoneSignalEmitterInterface;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,7 +37,7 @@ use function max;
 use function round;
 use const M_PI;
 
-class DaylightSensor extends Transparent implements AnalogRedstoneSignalEmitterInterface{
+class DaylightSensor extends Transparent implements AnalogRedstoneSignalEmitter{
 	use AnalogRedstoneSignalEmitterTrait;
 
 	protected bool $inverted = false;

@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
-use pocketmine\block\utils\ColoredInterface;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
@@ -37,7 +37,7 @@ use pocketmine\world\BlockTransaction;
 use function assert;
 use function count;
 
-abstract class BaseBanner extends Transparent implements ColoredInterface{
+abstract class BaseBanner extends Transparent implements Colored{
 	use ColoredTrait;
 
 	/**

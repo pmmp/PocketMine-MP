@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WoodTypeInterface;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class Planks extends Opaque implements WoodTypeInterface{
+class Planks extends Opaque implements WoodMaterial{
 	use WoodTypeTrait;
 
 	public function getFuelTime() : int{

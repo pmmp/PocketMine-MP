@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface ColoredInterface{
+interface AnalogRedstoneSignalEmitter{
 
-	public function getColor() : DyeColor;
+	public function getOutputSignalStrength() : int;
 
-	public function setColor(DyeColor $color) : self;
+	/**
+	 * @throws \InvalidArgumentException if `$signalStrength` is out of bounds
+	 */
+	public function setOutputSignalStrength(int $signalStrength) : self;
 }

@@ -23,14 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AnalogRedstoneSignalEmitterInterface;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use function ceil;
 use function count;
 use function max;
 use function min;
 
-class WeightedPressurePlate extends PressurePlate implements AnalogRedstoneSignalEmitterInterface{
+class WeightedPressurePlate extends PressurePlate implements AnalogRedstoneSignalEmitter{
 	use AnalogRedstoneSignalEmitterTrait;
 
 	private readonly float $signalStrengthFactor;

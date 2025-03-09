@@ -23,9 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface PoweredByRedstoneInterface{
+use pocketmine\math\Facing;
 
-	public function isPowered() : bool;
+interface MultiFacing{
 
-	public function setPowered(bool $powered) : self;
+	/**
+	 * @return int[]
+	 * @see Facing
+	 */
+	public function getFaces() : array;
+
+	public function hasFace(int $face) : bool;
+
+	/**
+	 * @throws \InvalidArgumentException if `$face` is not Facing value
+	 * @see Facing
+	 */
+	public function setFace(int $face, bool $value) : self;
+
+	/**
+	 * @param int[] $faces
+	 *
+	 * @throws \InvalidArgumentException if a value in `$faces` is not Facing value
+	 * @see Facing
+	 */
+	public function setFaces(array $faces) : self;
+
 }

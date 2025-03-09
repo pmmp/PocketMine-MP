@@ -23,30 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\math\Facing;
+interface Ageable{
 
-interface MultiFacingInterface{
-
-	/**
-	 * @return int[]
-	 * @see Facing
-	 */
-	public function getFaces() : array;
-
-	public function hasFace(int $face) : bool;
+	public function getAge() : int;
 
 	/**
-	 * @throws \InvalidArgumentException if `$face` is not Facing value
-	 * @see Facing
+	 * @throws \InvalidArgumentException if `$age` is out of bounds
 	 */
-	public function setFace(int $face, bool $value) : self;
-
-	/**
-	 * @param int[] $faces
-	 *
-	 * @throws \InvalidArgumentException if a value in `$faces` is not Facing value
-	 * @see Facing
-	 */
-	public function setFaces(array $faces) : self;
-
+	public function setAge(int $age) : self;
 }

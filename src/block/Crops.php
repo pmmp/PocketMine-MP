@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AgeableInterface;
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CropGrowthHelper;
@@ -35,7 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-abstract class Crops extends Flowable implements AgeableInterface{
+abstract class Crops extends Flowable implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
