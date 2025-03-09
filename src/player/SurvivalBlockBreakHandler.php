@@ -25,6 +25,8 @@ namespace pocketmine\player;
 
 use pocketmine\block\Block;
 use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -65,11 +67,29 @@ final class SurvivalBlockBreakHandler{
 		if(!$this->block->getBreakInfo()->isBreakable()){
 			return 0.0;
 		}
-		//TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
 		$breakTimePerTick = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand()) * 20;
-
+		if(!$this->player->isOnGround() && !$this->player->isFlying()){
+			$breakTimePerTick *= 5;
+		}
+		if($this->player->isUnderwater() && !$this->player->getArmorInventory()->getHelmet()->hasEnchantment(VanillaEnchantments::AQUA_AFFINITY())){
+			$breakTimePerTick *= 5;
+		}
 		if($breakTimePerTick > 0){
-			return 1 / $breakTimePerTick;
+			$progressPerTick = 1 / $breakTimePerTick;
+
+			$haste = $this->player->getEffects()->get(VanillaEffects::HASTE());
+			if($haste !== null){
+				$hasteLevel = $haste->getEffectLevel();
+				$progressPerTick *= (1 + 0.2 * $hasteLevel) * (1.2 ** $hasteLevel);
+			}
+
+			$miningFatigue = $this->player->getEffects()->get(VanillaEffects::MINING_FATIGUE());
+			if($miningFatigue !== null){
+				$miningFatigueLevel = $miningFatigue->getEffectLevel();
+				$progressPerTick *= 0.21 ** $miningFatigueLevel;
+			}
+
+			return $progressPerTick;
 		}
 		return 1;
 	}
@@ -82,7 +102,10 @@ final class SurvivalBlockBreakHandler{
 		$newBreakSpeed = $this->calculateBreakProgressPerTick();
 		if(abs($newBreakSpeed - $this->breakSpeed) > 0.0001){
 			$this->breakSpeed = $newBreakSpeed;
-			//TODO: sync with client
+			$this->player->getWorld()->broadcastPacketToViewers(
+				$this->blockPos,
+				LevelEventPacket::create(LevelEvent::BLOCK_BREAK_SPEED, (int) (65535 * $this->breakSpeed), $this->blockPos)
+			);
 		}
 
 		$this->breakProgress += $this->breakSpeed;
