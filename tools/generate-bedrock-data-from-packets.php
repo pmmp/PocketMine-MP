@@ -624,7 +624,7 @@ function main(array $argv) : int{
 	}
 
 	foreach($packets as $lineNum => $line){
-		$parts = explode(':', $line);
+		$parts = explode(':', $line, limit: 3);
 		if(count($parts) !== 2){
 			fwrite(STDERR, 'Wrong packet format at line ' . ($lineNum + 1) . ', expected read:base64 or write:base64');
 			return 1;

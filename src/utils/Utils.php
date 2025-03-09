@@ -369,7 +369,7 @@ final class Utils{
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
 		if($contents === false) throw new AssumptionFailedError("ob_get_contents() should never return false here");
-		$ret = explode("\n", $contents);
+		$ret = explode("\n", $contents, limit: 2);
 		ob_end_clean();
 
 		if(preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){

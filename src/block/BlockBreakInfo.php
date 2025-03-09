@@ -154,7 +154,7 @@ class BlockBreakInfo{
 
 		$efficiency = $item->getMiningEfficiency(($this->toolType & $item->getBlockToolType()) !== 0);
 		if($efficiency <= 0){
-			throw new \InvalidArgumentException(get_class($item) . " has invalid mining efficiency: expected >= 0, got $efficiency");
+			throw new \InvalidArgumentException(get_class($item) . " must have a positive mining efficiency, but got $efficiency");
 		}
 
 		$base /= $efficiency;

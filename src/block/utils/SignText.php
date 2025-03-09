@@ -79,7 +79,7 @@ class SignText{
 	 * @throws \InvalidArgumentException if the text is not valid UTF-8
 	 */
 	public static function fromBlob(string $blob, ?Color $baseColor = null, bool $glowing = false) : SignText{
-		return new self(array_slice(array_pad(explode("\n", $blob), self::LINE_COUNT, ""), 0, self::LINE_COUNT), $baseColor, $glowing);
+		return new self(array_slice(array_pad(explode("\n", $blob, limit: self::LINE_COUNT + 1), self::LINE_COUNT, ""), 0, self::LINE_COUNT), $baseColor, $glowing);
 	}
 
 	/**
