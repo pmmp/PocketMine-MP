@@ -30,13 +30,13 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\Explosion;
-use pocketmine\world\sound\AnchorChargeSound;
+use pocketmine\world\sound\RespawnAnchorChargeSound;
 
 final class RespawnAnchor extends Opaque{
 	protected const MIN_CHARGES = 0;
 	protected const MAX_CHARGES = 4;
 
-	private int $charges = self::MIN_CHARGES;
+	protected int $charges = self::MIN_CHARGES;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(self::MIN_CHARGES, self::MAX_CHARGES, $this->charges);
@@ -63,7 +63,7 @@ final class RespawnAnchor extends Opaque{
 		if ($item->getTypeId() === ItemTypeIds::fromBlockTypeId(BlockTypeIds::GLOWSTONE) && $this->charges < self::MAX_CHARGES) {
 			$this->charges++;
 			$this->position->getWorld()->setBlock($this->position, $this);
-			$this->position->getWorld()->addSound($this->position, new AnchorChargeSound());
+			$this->position->getWorld()->addSound($this->position, new RespawnAnchorChargeSound());
 
 			return true;
 		}

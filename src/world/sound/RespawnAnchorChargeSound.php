@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class AnchorChargeSound implements Sound{
+class RespawnAnchorChargeSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::RESPAWN_ANCHOR_CHARGE, $pos, false)];
