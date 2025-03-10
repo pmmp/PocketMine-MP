@@ -328,6 +328,8 @@ class Explosion{
 					);
 
 					$generator = VoxelRayTrace::betweenPoints($source, $target);
+					$generator->next();
+
 					if(!$generator->valid()){
 						++$misses;
 					}
