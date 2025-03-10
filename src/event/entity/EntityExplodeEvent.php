@@ -107,7 +107,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @param Block[] $ignitions
 	 */
-	public function setIgnitions(array $ignitions) : void {
+	public function setIgnitions(array $ignitions) : void{
 		$this->ignitions = $ignitions;
 	}
 
@@ -116,7 +116,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @return Block[]
 	 */
-	public function getIgnitions() : array {
+	public function getIgnitions() : array{
 		return $this->ignitions;
 	}
 }
