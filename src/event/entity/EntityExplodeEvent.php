@@ -115,7 +115,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @return Block[]
 	 */
-	public function getIgnitions() : array {
+	public function getIgnitions() : array{
 		return $this->ignitions;
 	}
 }
