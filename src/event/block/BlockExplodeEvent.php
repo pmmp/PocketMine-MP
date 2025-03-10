@@ -96,6 +96,11 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param Block[] $blocks The set of blocks to be affected by fire ignitions
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
+		foreach($blocks as $block){
+			if(!$block instanceof Block){
+				throw new \InvalidArgumentException("Each affected block must be an instance of Block.");
+			}
+		}
 		$this->blocks = $blocks;
 	}
 
@@ -114,6 +119,11 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param Block[] $ignitions The set of blocks to set as ignited
 	 */
 	public function setIgnitions(array $ignitions) : void{
+		foreach($ignitions as $ignition){
+			if(!$ignition instanceof Block){
+				throw new \InvalidArgumentException("Each element in ignitions array must be an instance of Block.");
+			}
+		}
 		$this->ignitions = $ignitions;
 	}
 
@@ -132,6 +142,9 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param float $fireChance The fire chance to set
 	 */
 	public function setFireChance(float $fireChance) : void{
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+		}
 		$this->fireChance = $fireChance;
 	}
 }

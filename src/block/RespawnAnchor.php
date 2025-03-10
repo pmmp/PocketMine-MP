@@ -26,38 +26,41 @@ namespace pocketmine\block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockPreExplodeEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\Explosion;
 use pocketmine\world\sound\AnchorChargeSound;
 
-class RespawnAnchor extends Opaque{
-	protected int $charges = 0;
+final class RespawnAnchor extends Opaque{
+	protected const MIN_CHARGES = 0;
+	protected const MAX_CHARGES = 4;
+
+	private int $charges = self::MIN_CHARGES;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedIntAuto(0, 4, $this->charges);
+		$w->boundedIntAuto(self::MIN_CHARGES, self::MAX_CHARGES, $this->charges);
 	}
 
-	public function getCharges() : int{ return $this->charges; }
+	public function getCharges() : int {
+		return $this->charges;
+	}
 
-	public function setCharges(int $charges) : self{
+	public function setCharges(int $charges) : self {
+		if ($charges < self::MIN_CHARGES || $charges > self::MAX_CHARGES) {
+			throw new \InvalidArgumentException("Charges must be between " . self::MIN_CHARGES . " and " . self::MAX_CHARGES . ", given: $charges");
+		}
 		$this->charges = $charges;
 		return $this;
 	}
 
 	public function getLightLevel() : int{
-		return match ($this->charges){
-			1 => 3,
-			2 => 7,
-			default => ($this->charges > 2 ? 15 : 0),
-		};
+		return $this->charges > 0 ? 3 + 4 * ($this->charges - 1) : 0;
 	}
 
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item->getTypeId() === VanillaBlocks::GLOWSTONE()->asItem()->getTypeId() && $this->charges < 4){
-			if($player !== null && !$player->isCreative()){
-				$item->pop();
-			}
+		if ($item->getTypeId() === ItemTypeIds::fromBlockTypeId(BlockTypeIds::GLOWSTONE) && $this->charges < self::MAX_CHARGES) {
 			$this->charges++;
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$this->position->getWorld()->addSound($this->position, new AnchorChargeSound());
@@ -65,13 +68,8 @@ class RespawnAnchor extends Opaque{
 			return true;
 		}
 
-		if($player === null){
-			return false;
-		}
-
-		if($this->charges >= 1){
+		if($this->charges > self::MIN_CHARGES){
 			$this->explode($player);
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR(), false);
 			return true;
 		}
 
@@ -81,16 +79,16 @@ class RespawnAnchor extends Opaque{
 	public function explode(Player $player) : void{
 		$ev = new BlockPreExplodeEvent($this, 5, $player);
 		$ev->setIncendiary(true);
-	
+
 		if($ev->isCancelled()){
 			return;
 		}
-	
+
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
 		$explosion = new Explosion($this->position, $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
-		
+
 		if($ev->isBlockBreaking()){
 			$explosion->explodeA();
 		}

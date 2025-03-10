@@ -89,10 +89,8 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	public function setIncendiary(bool $incendiary) : void{
 		if(!$incendiary){
 			$this->fireChance = 0;
-		}else{
-			if($this->fireChance <= 0){
-				$this->fireChance = 1.0 / 3.0;
-			}
+		}elseif($this->fireChance <= 0){
+			$this->fireChance = 1.0 / 3.0;
 		}
 	}
 
@@ -107,6 +105,9 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	 * Establish the probability of fire
 	 */
 	public function setFireChance(float $fireChance) : void{
+		if($fireChance < 0 || $fireChance > 1){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+		}
 		$this->fireChance = $fireChance;
 	}
 

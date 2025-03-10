@@ -51,7 +51,6 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		protected Position $position,
 		protected array $blocks,
 		protected float $yield,
-		/** @var Block[] $ignitions */
 		private array $ignitions
 	){
 		$this->entity = $entity;
@@ -116,7 +115,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 *
 	 * @return Block[]
 	 */
-	public function getIgnitions() : array{
+	public function getIgnitions() : array {
 		return $this->ignitions;
 	}
 }

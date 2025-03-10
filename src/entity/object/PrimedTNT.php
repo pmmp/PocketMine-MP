@@ -124,9 +124,6 @@ class PrimedTNT extends Entity implements Explosive{
 			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this);
 			$explosion->setFireChance(0);
 
-			if(!isset($explosion->fireIgnitions)){
-				$explosion->fireIgnitions = [];
-			}
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

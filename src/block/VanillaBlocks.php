@@ -1644,8 +1644,7 @@ final class VanillaBlocks{
 
 		self::register("chain", fn(BID $id) => new Chain($id, "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))));
 
-		$respawnAnchorBreakInfo = new Info(BreakInfo::pickaxe(50.0, ToolTier::DIAMOND, 1200.0));
-		self::register("respawn_anchor", fn(BID $id) => new RespawnAnchor($id, "Respawn Anchor", $respawnAnchorBreakInfo));
+		self::register("respawn_anchor", fn(BID $id) => new RespawnAnchor($id, "Respawn Anchor", new Info(BreakInfo::pickaxe(50.0, ToolTier::DIAMOND, 1200.0))));
 	}
 
 	private static function registerBlocksR17() : void{

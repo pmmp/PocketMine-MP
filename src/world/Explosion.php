@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
@@ -43,6 +44,7 @@ use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
@@ -65,9 +67,9 @@ class Explosion{
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
 	private bool $doesDamage = true;
-	public float $fireChance = 0.0;
+	private float $fireChance = 0.0;
 	/** @var Block[] */
-	public array $fireIgnitions = [];
+	private array $fireIgnitions = [];
 
 	private SubChunkExplorer $subChunkExplorer;
 
@@ -106,8 +108,8 @@ class Explosion{
 
 		$mRays = $this->rays - 1;
 		$incendiary = $this->fireChance > 0;
-		if($incendiary && !isset($this->fireIgnitions)){
-			$this->fireIgnitions = [];
+		if($incendiary){
+			$this->fireIgnitions = $this->fireIgnitions ?? [];
 		}
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
@@ -145,7 +147,7 @@ class Explosion{
 
 							$block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
-							if($blastResistance >= 0 && $block->getTypeId() !== VanillaBlocks::AIR()->getTypeId()){
+							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
@@ -157,7 +159,7 @@ class Explosion{
 									}
 								}
 							}
-							if($incendiary && mt_rand() / mt_getrandmax() <= $this->fireChance){
+							if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
 								$this->fireIgnitions[spl_object_id($block)] = $block;
 							}
 						}
@@ -279,8 +281,10 @@ class Explosion{
 				$this->world->setBlockAt((int) $pos->x, (int) $pos->y, (int) $pos->z, $airBlock);
 			}
 
-			foreach($this->fireIgnitions as $fireBlock){
-				$firePos = $fireBlock->getPosition();
+			$fireBlock = VanillaBlocks::FIRE();
+
+			foreach($this->fireIgnitions as $ignition){
+				$firePos = $ignition->getPosition();
 				$x = (int) $firePos->x;
 				$y = (int) $firePos->y;
 				$z = (int) $firePos->z;
@@ -289,7 +293,7 @@ class Explosion{
 
 				if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
 					$toIgnite->getSide(Facing::UP)->isSolid()){
-					$this->world->setBlockAt($x, $y, $z, VanillaBlocks::FIRE());
+					$this->world->setBlockAt($x, $y, $z, $fireBlock);
 				}
 			}
 		}
@@ -327,10 +331,11 @@ class Explosion{
 						$bb->minZ + $k * ($bb->maxZ - $bb->minZ) + $zOffset
 					);
 
-					$generator = VoxelRayTrace::betweenPoints($source, $target);
-					$generator->next();
+					foreach(VoxelRayTrace::betweenPoints($source, $target) as $voxel){
+						break;
+					}
 
-					if(!$generator->valid()){
+					if(!isset($voxel)){
 						++$misses;
 					}
 
