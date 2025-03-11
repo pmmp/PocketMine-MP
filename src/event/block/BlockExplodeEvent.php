@@ -28,7 +28,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
-use function get_debug_type;
 
 /**
  * Event triggered when a block explodes (e.g., a bed in the Nether).
