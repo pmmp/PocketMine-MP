@@ -107,6 +107,11 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 * @param Block[] $ignitions
 	 */
 	public function setIgnitions(array $ignitions) : void{
+		foreach($ignitions as $ignition){
+			if(!$ignition instanceof Block){
+				throw new \InvalidArgumentException("Each element in ignitions array must be an instance of Block.");
+			}
+		}
 		$this->ignitions = $ignitions;
 	}
 
