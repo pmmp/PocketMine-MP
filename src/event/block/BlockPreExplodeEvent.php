@@ -41,12 +41,15 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 
 	public function __construct(
 		Block $block,
-		protected float $radius,
+		private float $radius,
 		private readonly ?Player $player = null,
-		protected float $fireChance = 0.0
+		private float $fireChance = 0.0
 	){
-		if ($radius <= 0) {
+		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
 		}
 		parent::__construct($block);
 	}
@@ -105,8 +108,8 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	 * Establish the probability of fire
 	 */
 	public function setFireChance(float $fireChance) : void{
-		if($fireChance < 0 || $fireChance > 1){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

@@ -48,12 +48,15 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 		protected array $blocks,
 		protected float $yield,
 		private array $ignitions,
-		protected float $fireChance
+		private float $fireChance
 	){
 		parent::__construct($block);
 
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
 		}
 	}
 
@@ -116,11 +119,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param Block[] $ignitions The set of blocks to set as ignited
 	 */
 	public function setIgnitions(array $ignitions) : void{
-		foreach($ignitions as $ignition){
-			if(!$ignition instanceof Block){
-				throw new \InvalidArgumentException("Each element in ignitions array must be an instance of Block.");
-			}
-		}
+		Utils::validateArrayValueType($ignitions, fn(Block $block) => null);
 		$this->ignitions = $ignitions;
 	}
 
@@ -139,8 +138,8 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param float $fireChance The fire chance to set
 	 */
 	public function setFireChance(float $fireChance) : void{
-		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

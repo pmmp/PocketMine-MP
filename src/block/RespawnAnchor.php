@@ -33,8 +33,8 @@ use pocketmine\world\Explosion;
 use pocketmine\world\sound\RespawnAnchorChargeSound;
 
 final class RespawnAnchor extends Opaque{
-	protected const MIN_CHARGES = 0;
-	protected const MAX_CHARGES = 4;
+	private const MIN_CHARGES = 0;
+	private const MAX_CHARGES = 4;
 
 	private int $charges = self::MIN_CHARGES;
 
@@ -60,10 +60,8 @@ final class RespawnAnchor extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item->getTypeId() === ItemTypeIds::fromBlockTypeId(BlockTypeIds::GLOWSTONE) && $this->charges < self::MAX_CHARGES){
-			$this->charges++;
-			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->setBlock($this->position, $this->setCharges($this->charges + 1));
 			$this->position->getWorld()->addSound($this->position, new RespawnAnchorChargeSound());
-
 			return true;
 		}
 
@@ -75,9 +73,14 @@ final class RespawnAnchor extends Opaque{
 		return false;
 	}
 
-	public function explode(?Player $player) : void{
+	private function explode(?Player $player) : void{
 		$ev = new BlockPreExplodeEvent($this, 5, $player);
 		$ev->setIncendiary(true);
+
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
 
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 

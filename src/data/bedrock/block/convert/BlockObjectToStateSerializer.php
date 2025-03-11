@@ -1747,9 +1747,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::RESIN_CLUMP)
 				->writeFacingFlags($block->getFaces());
 		});
-		$this->map(Blocks::RESPAWN_ANCHOR(), fn(RespawnAnchor $block) => Writer::create(Ids::RESPAWN_ANCHOR)
-		->writeInt(StateNames::RESPAWN_ANCHOR_CHARGE, $block->getCharges())
-		);
+		$this->map(Blocks::RESPAWN_ANCHOR(), function(RespawnAnchor $block) : Writer{
+			return Writer::create(Ids::RESPAWN_ANCHOR)
+				->writeInt(StateNames::RESPAWN_ANCHOR_CHARGE, $block->getCharges());
+		});
 		$this->map(Blocks::ROSE_BUSH(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::ROSE_BUSH)));
 		$this->mapSlab(Blocks::SANDSTONE_SLAB(), Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::SANDSTONE_STAIRS(), Ids::SANDSTONE_STAIRS);

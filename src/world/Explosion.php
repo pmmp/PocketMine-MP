@@ -165,9 +165,7 @@ class Explosion{
 		if($this->what instanceof Entity){
 			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield, $this->fireIgnitions);
 
-			$ev->setIgnitions($this->fireIgnitions);
 			$ev->call();
-
 			if($ev->isCancelled()){
 				return false;
 			}
@@ -274,6 +272,9 @@ class Explosion{
 	}
 
 	public function setFireChance(float $fireChance) : void{
+		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
+		}
 		$this->fireChance = $fireChance;
 	}
 }
