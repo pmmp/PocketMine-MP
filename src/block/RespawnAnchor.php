@@ -36,7 +36,7 @@ final class RespawnAnchor extends Opaque{
 	protected const MIN_CHARGES = 0;
 	protected const MAX_CHARGES = 4;
 
-	protected int $charges = self::MIN_CHARGES;
+	private int $charges = self::MIN_CHARGES;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(self::MIN_CHARGES, self::MAX_CHARGES, $this->charges);
