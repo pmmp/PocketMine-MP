@@ -98,11 +98,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param Block[] $blocks The set of blocks to be affected by fire ignitions
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
-		Utils::validateArrayValueType($blocks, function($block){
-			if(!$block instanceof Block){
-				throw new \TypeError("Expected instance of Block, got " . get_debug_type($block));
-			}
-		});
+		Utils::validateArrayValueType($blocks, fn(Block $block) => null);
 		$this->blocks = $blocks;
 	}
 
