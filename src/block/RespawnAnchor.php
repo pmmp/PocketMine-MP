@@ -42,12 +42,12 @@ final class RespawnAnchor extends Opaque{
 		$w->boundedIntAuto(self::MIN_CHARGES, self::MAX_CHARGES, $this->charges);
 	}
 
-	public function getCharges() : int {
+	public function getCharges() : int{
 		return $this->charges;
 	}
 
-	public function setCharges(int $charges) : self {
-		if ($charges < self::MIN_CHARGES || $charges > self::MAX_CHARGES) {
+	public function setCharges(int $charges) : self{
+		if($charges < self::MIN_CHARGES || $charges > self::MAX_CHARGES){
 			throw new \InvalidArgumentException("Charges must be between " . self::MIN_CHARGES . " and " . self::MAX_CHARGES . ", given: $charges");
 		}
 		$this->charges = $charges;
@@ -76,13 +76,9 @@ final class RespawnAnchor extends Opaque{
 		return false;
 	}
 
-	public function explode(Player $player) : void{
+	public function explode(?Player $player) : void{
 		$ev = new BlockPreExplodeEvent($this, 5, $player);
 		$ev->setIncendiary(true);
-
-		if($ev->isCancelled()){
-			return;
-		}
 
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 

@@ -26,7 +26,9 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\Position;
+use function get_debug_type;
 
 /**
  * Event triggered when a block explodes (e.g., a bed in the Nether).
@@ -96,11 +98,11 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param Block[] $blocks The set of blocks to be affected by fire ignitions
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
-		foreach($blocks as $block){
+		Utils::validateArrayValueType($blocks, function($block){
 			if(!$block instanceof Block){
-				throw new \InvalidArgumentException("Each affected block must be an instance of Block.");
+				throw new \TypeError("Expected instance of Block, got " . get_debug_type($block));
 			}
-		}
+		});
 		$this->blocks = $blocks;
 	}
 

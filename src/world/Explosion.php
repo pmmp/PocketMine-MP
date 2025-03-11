@@ -29,20 +29,15 @@ use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Explosive;
 use pocketmine\event\block\BlockExplodeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
-use pocketmine\item\TieredTool;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\math\VoxelRayTrace;
-use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\SubChunk;
@@ -52,9 +47,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
-use function max;
 use function min;
-use function mt_getrandmax;
 use function mt_rand;
 use function spl_object_id;
 use function sqrt;
@@ -66,7 +59,6 @@ class Explosion{
 	/** @var Block[] */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
-	private bool $doesDamage = true;
 	private float $fireChance = 0.0;
 	/** @var Block[] */
 	private array $fireIgnitions = [];
@@ -94,12 +86,6 @@ class Explosion{
 	 * will be destroyed.
 	 */
 	public function explodeA() : bool{
-		if($this->what instanceof Explosive){
-			if($this->what instanceof Entity && $this->what->isUnderwater()){
-				$this->doesDamage = false;
-				return true;
-			}
-		}
 		if($this->radius < 0.1){
 			return false;
 		}
@@ -108,9 +94,6 @@ class Explosion{
 
 		$mRays = $this->rays - 1;
 		$incendiary = $this->fireChance > 0;
-		if($incendiary){
-			$this->fireIgnitions = $this->fireIgnitions ?? [];
-		}
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
@@ -154,7 +137,7 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
-											$this->affectedBlocks[World::blockHash((int) $_affectedBlockPos->x, (int) $_affectedBlockPos->y, (int) $_affectedBlockPos->z)] = $_affectedBlock;
+											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
 									}
 								}
@@ -222,17 +205,18 @@ class Explosion{
 
 		$explosionBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
 
+		/** @var Entity[] $list */
 		$list = $this->world->getNearbyEntities($explosionBB, $this->what instanceof Entity ? $this->what : null);
 		foreach($list as $entity){
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($this->source) / $explosionSize;
 
 			if($distance <= 1){
-				$impact = max(0, (1 - $distance) * $this->getSeenPercent($this->source, $entity));
-
 				$motion = $entityPos->subtractVector($this->source)->normalize();
 
-				$damage = $this->doesDamage ? max((int) (((($impact * $impact + $impact) / 2) * 8 * $explosionSize) + 1), 0) : 0;
+				$impact = (1 - $distance) * ($exposure = 1);
+
+				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
 				if($this->what instanceof Entity){
 					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
@@ -240,19 +224,6 @@ class Explosion{
 					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}else{
 					$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
-				}
-
-				if($entity instanceof Player){
-					$netheritePieces = 0;
-					foreach($entity->getArmorInventory()->getContents() as $item){
-						if($item instanceof TieredTool && $item->getTier() === ToolTier::NETHERITE){
-							$netheritePieces++;
-						}
-					}
-					$netheriteReduction = 1 - (0.125 * $netheritePieces);
-					$netheriteReduction = max(0.5, $netheriteReduction);
-
-					$impact *= $netheriteReduction;
 				}
 
 				$entity->attack($ev);
@@ -273,12 +244,10 @@ class Explosion{
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}
-
-				if(($t = $this->world->getTileAt((int) $pos->x, (int) $pos->y, (int) $pos->z)) !== null){
+				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-
-				$this->world->setBlockAt((int) $pos->x, (int) $pos->y, (int) $pos->z, $airBlock);
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
 
 			$fireBlock = VanillaBlocks::FIRE();
@@ -302,49 +271,6 @@ class Explosion{
 		$this->world->addSound($source, new ExplodeSound());
 
 		return true;
-	}
-
-	private function getSeenPercent(Vector3 $source, Entity $entity) : float{
-		$bb = $entity->getBoundingBox();
-
-		if($bb->isVectorInside($source)){
-			return 1.0;
-		}
-
-		$x = 1 / (($bb->maxX - $bb->minX) * 2 + 1);
-		$y = 1 / (($bb->maxY - $bb->minY) * 2 + 1);
-		$z = 1 / (($bb->maxZ - $bb->minZ) * 2 + 1);
-
-		$xOffset = (1 - floor(1 / $x) * $x) / 2;
-		$yOffset = (1 - floor(1 / $y) * $y) / 2;
-		$zOffset = (1 - floor(1 / $z) * $z) / 2;
-
-		$misses = 0;
-		$total = 0;
-
-		for($i = 0; $i <= 1; $i += $x){
-			for($j = 0; $j <= 1; $j += $y){
-				for($k = 0; $k <= 1; $k += $z){
-					$target = new Vector3(
-						$bb->minX + $i * ($bb->maxX - $bb->minX) + $xOffset,
-						$bb->minY + $j * ($bb->maxY - $bb->minY) + $yOffset,
-						$bb->minZ + $k * ($bb->maxZ - $bb->minZ) + $zOffset
-					);
-
-					foreach(VoxelRayTrace::betweenPoints($source, $target) as $voxel){
-						break;
-					}
-
-					if(!isset($voxel)){
-						++$misses;
-					}
-
-					$total++;
-				}
-			}
-		}
-
-		return $total !== 0 ? (float) $misses / (float) $total : 0.0;
 	}
 
 	public function setFireChance(float $fireChance) : void{
