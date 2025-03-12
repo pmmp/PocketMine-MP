@@ -44,9 +44,9 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 */
 	public function __construct(
 		Block $block,
-		protected Position $position,
-		protected array $blocks,
-		protected float $yield,
+		private Position $position,
+		private array $blocks,
+		private float $yield,
 		private array $ignitions,
 		private float $fireChance
 	){

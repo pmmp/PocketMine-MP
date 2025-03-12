@@ -128,22 +128,21 @@ class Explosion{
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
+										if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
+											$this->fireIgnitions[spl_object_id($_block)] = $_block;
+										}
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
 									}
 								}
-							}
-							if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
-								$this->fireIgnitions[spl_object_id($block)] = $block;
 							}
 						}
 					}
@@ -178,7 +177,7 @@ class Explosion{
 				$this->source,
 				$this->affectedBlocks,
 				$yield,
-				$this->affectedBlocks,
+				$this->fireIgnitions,
 				$this->fireChance
 			);
 
