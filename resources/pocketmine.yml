@@ -83,6 +83,29 @@ network:
   #DO NOT DISABLE THIS unless you understand the risks involved.
   enable-encryption: true
 
+  #EXPERIMENTAL! Limit packet read operations per network session.
+  #This is intended to stop exploitation of packets with arrays in them.
+  #Note that enabling this system may cause players to be unexpectedly kicked, or it may fail to stop attackers.
+  #As of March 2025, the system is still in development and subject to change.
+  packet-read-ops-limit:
+    #What to do when a session's read ops budget is depleted.
+    #Supported actions are "none", "warn" and "kick".
+    deplete-action: warn
+
+    #How many backlog ticks to budget for. 200 allows for a 10-second network lag spike, or a small number of complex
+    #packets.
+    session-budget-ticks: 200
+
+    #How much to top up each session's read operations budget per tick. Recommended to set this to about 2x the
+    #average number of read operations per tick per session.
+    #Exceeding this value won't cause any action to be taken. However, consistently exceeding it will cause the
+    #session's budget to be depleted, resulting in action being taken.
+    session-budget-per-tick: 100
+
+    #Whether to collect stats for debugging. This might impact performance.
+    #See NetworkSession::dumpDecodeCostStats() if you want to visualize the stats yourself.
+    collect-stats: false
+
 debug:
   #If > 1, it will show debug messages in the console
   level: 1

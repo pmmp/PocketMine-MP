@@ -90,6 +90,11 @@ final class YmlServerProperties{
 	public const NETWORK_COMPRESSION_LEVEL = 'network.compression-level';
 	public const NETWORK_ENABLE_ENCRYPTION = 'network.enable-encryption';
 	public const NETWORK_MAX_MTU_SIZE = 'network.max-mtu-size';
+	public const NETWORK_PACKET_READ_OPS_LIMIT = 'network.packet-read-ops-limit';
+	public const NETWORK_PACKET_READ_OPS_LIMIT_COLLECT_STATS = 'network.packet-read-ops-limit.collect-stats';
+	public const NETWORK_PACKET_READ_OPS_LIMIT_DEPLETE_ACTION = 'network.packet-read-ops-limit.deplete-action';
+	public const NETWORK_PACKET_READ_OPS_LIMIT_SESSION_BUDGET_PER_TICK = 'network.packet-read-ops-limit.session-budget-per-tick';
+	public const NETWORK_PACKET_READ_OPS_LIMIT_SESSION_BUDGET_TICKS = 'network.packet-read-ops-limit.session-budget-ticks';
 	public const NETWORK_UPNP_FORWARDING = 'network.upnp-forwarding';
 	public const PLAYER = 'player';
 	public const PLAYER_SAVE_PLAYER_DATA = 'player.save-player-data';

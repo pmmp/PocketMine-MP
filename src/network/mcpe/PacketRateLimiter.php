@@ -62,6 +62,14 @@ final class PacketRateLimiter{
 		$this->budget -= $amount;
 	}
 
+	public function getBudget() : int{
+		return $this->budget;
+	}
+
+	public function reset() : void{
+		$this->budget = $this->maxBudget;
+	}
+
 	public function update() : void{
 		$nowNs = hrtime(true);
 		$timeSinceLastUpdateNs = $nowNs - $this->lastUpdateTimeNs;

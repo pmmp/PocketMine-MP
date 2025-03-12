@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bef9decc40d9f5bd82e1de2d151bd99f",
+    "content-hash": "415cb668882a32039066467bb308421f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -302,16 +302,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.2.6",
+            "version": "dev-experimental/read-ops-accounting",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "ccfc1899b859d45814ea3592e20ebec4cb731c84"
+                "reference": "8cfa34c9d5aae11886a4142c172cff05f1e87ee2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/ccfc1899b859d45814ea3592e20ebec4cb731c84",
-                "reference": "ccfc1899b859d45814ea3592e20ebec4cb731c84",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/8cfa34c9d5aae11886a4142c172cff05f1e87ee2",
+                "reference": "8cfa34c9d5aae11886a4142c172cff05f1e87ee2",
                 "shasum": ""
             },
             "require": {
@@ -320,9 +320,9 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "~1.10.3",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpstan/phpstan-strict-rules": "^1.0.0",
+                "phpstan/phpstan": "2.1.0",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0.0",
                 "phpunit/phpunit": "^9.5 || ^10.0 || ^11.0"
             },
             "type": "library",
@@ -338,9 +338,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.6"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/experimental/read-ops-accounting"
             },
-            "time": "2024-03-04T15:04:17+00:00"
+            "time": "2025-03-11T11:50:46+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -2930,9 +2930,18 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "pocketmine/binaryutils",
+            "version": "dev-experimental/read-ops-accounting",
+            "alias": "0.2.6",
+            "alias_normalized": "0.2.6.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "pocketmine/binaryutils": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
