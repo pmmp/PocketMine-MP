@@ -57,6 +57,9 @@ body:
     attributes:
       value: |
         ## Version, OS and game info
+        > [!WARNING]
+        > "Latest" is not a valid version.
+        > Failure to fill these fields with valid information may result in your issue being closed.
 
   - type: input
     attributes:
