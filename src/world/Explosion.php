@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\utils\SupportType;
@@ -51,14 +50,13 @@ use function floor;
 use function is_finite;
 use function min;
 use function mt_rand;
-use function spl_object_id;
 use function sqrt;
 
 class Explosion{
 	private int $rays = 16;
 	public World $world;
 
-	/** @var Block[] */
+	/** @var array<string, Block> */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
 	/** @var Block[] */
@@ -136,7 +134,6 @@ class Explosion{
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
-										/** @phpstan-var array<int|string, Block> $affectedBlocks */
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$posHash = World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z);
