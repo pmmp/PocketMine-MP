@@ -28,7 +28,6 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
-use function is_finite;
 
 /**
  * Event triggered when a block explodes (e.g., a bed in the Nether).
@@ -53,11 +52,13 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	){
 		parent::__construct($block);
 
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a infinite or nan number between 0 and 1.");
 		}
 	}
 
@@ -80,6 +81,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param float $yield The intensity of the explosion (0-100)
 	 */
 	public function setYield(float $yield) : void{
+		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
@@ -139,8 +141,9 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	 * @param float $fireChance The fire chance to set
 	 */
 	public function setFireChance(float $fireChance) : void{
-		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

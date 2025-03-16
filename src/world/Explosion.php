@@ -47,7 +47,6 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
-use function is_finite;
 use function min;
 use function mt_rand;
 use function sqrt;
@@ -56,7 +55,7 @@ class Explosion{
 	private int $rays = 16;
 	public World $world;
 
-	/** @var array<string, Block> */
+	/** @var Block[] */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
 	/** @var Block[] */
@@ -234,6 +233,7 @@ class Explosion{
 		$airBlock = VanillaBlocks::AIR();
 
 		foreach($this->affectedBlocks as $hash => $block){
+			$hash = (string) $hash;
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
@@ -264,8 +264,9 @@ class Explosion{
 	}
 
 	public function setFireChance(float $fireChance) : void{
-		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

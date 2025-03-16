@@ -27,7 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
-use function is_finite;
+use pocketmine\utils\Utils;
 
 /**
  * Event triggered before a block explosion, allowing modifications to the explosion radius, block destruction, and fire chances.
@@ -49,8 +49,9 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
 		}
 		parent::__construct($block);
 	}
@@ -109,8 +110,9 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	 * Establish the probability of fire
 	 */
 	public function setFireChance(float $fireChance) : void{
-		if(!is_finite($fireChance) || $fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a finite number between 0 and 1.");
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}
