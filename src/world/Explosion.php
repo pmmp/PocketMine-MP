@@ -136,6 +136,7 @@ class Explosion{
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
+										/** @phpstan-var array<int|string, Block> $affectedBlocks */
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$posHash = World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z);
