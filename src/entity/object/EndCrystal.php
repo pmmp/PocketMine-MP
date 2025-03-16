@@ -130,7 +130,6 @@ class EndCrystal extends Entity implements Explosive{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$explosion = new Explosion($this->getPosition(), $ev->getRadius(), $this);
-
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}

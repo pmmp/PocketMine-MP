@@ -258,7 +258,7 @@ class Explosion{
 				$toIgnite = $this->world->getBlockAt($x, $y, $z);
 
 				if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
-					$toIgnite->getSide(Facing::UP)->isSolid()){
+					$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::DOWN) === SupportType::FULL){
 					$this->world->setBlockAt($x, $y, $z, $fireBlock);
 				}
 			}
