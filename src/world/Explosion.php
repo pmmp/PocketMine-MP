@@ -61,7 +61,6 @@ class Explosion{
 	/** @var Block[] */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
-	private float $fireChance = 0.0;
 	/** @var Block[] */
 	private array $fireIgnitions = [];
 
@@ -70,7 +69,8 @@ class Explosion{
 	public function __construct(
 		public Position $source,
 		public float $radius,
-		private Entity|Block|null $what = null
+		private Entity|Block|null $what = null,
+		private float $fireChance = 0.0
 	){
 		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
@@ -136,12 +136,14 @@ class Explosion{
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
-										if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
-											$this->fireIgnitions[spl_object_id($_block)] = $_block;
-										}
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
+
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+
+											if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
+												$this->fireIgnitions[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+											}
 										}
 									}
 								}
@@ -173,6 +175,7 @@ class Explosion{
 
 			$yield = $ev->getYield();
 			$this->affectedBlocks = $ev->getBlockList();
+			$this->fireIgnitions = $ev->getIgnitions();
 		}elseif($this->what instanceof Block){
 			$ev = new BlockExplodeEvent(
 				$this->what,
@@ -184,7 +187,6 @@ class Explosion{
 			);
 
 			$ev->call();
-
 			if($ev->isCancelled()){
 				return false;
 			}else{
@@ -248,20 +250,21 @@ class Explosion{
 				}
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
-
 			$fireBlock = VanillaBlocks::FIRE();
 
-			foreach($this->fireIgnitions as $ignition){
-				$firePos = $ignition->getPosition();
-				$x = (int) $firePos->x;
-				$y = (int) $firePos->y;
-				$z = (int) $firePos->z;
+			foreach($this->affectedBlocks as $hash => $affectedBlock){
+				if(isset($this->fireIgnitions[$hash])){
+					$pos = $affectedBlock->getPosition();
+					$x = (int) $pos->x;
+					$y = (int) $pos->y;
+					$z = (int) $pos->z;
 
-				$toIgnite = $this->world->getBlockAt($x, $y, $z);
+					$toIgnite = $this->world->getBlockAt($x, $y, $z);
 
-				if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
-					$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL){
-					$this->world->setBlockAt($x, $y, $z, $fireBlock);
+					if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
+						$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL){
+						$this->world->setBlockAt($x, $y, $z, $fireBlock);
+					}
 				}
 			}
 		}
