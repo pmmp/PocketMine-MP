@@ -67,6 +67,7 @@ final class RespawnAnchor extends Opaque{
 		}
 
 		if($this->charges > self::MIN_CHARGES){
+			//TODO: Implement the ability to set a respawn point in Nether
 			$this->explode($player);
 			return true;
 		}

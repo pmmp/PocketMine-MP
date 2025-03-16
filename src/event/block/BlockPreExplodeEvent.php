@@ -39,6 +39,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	private bool $blockBreaking = true;
+	private const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
 
 	public function __construct(
 		Block $block,
@@ -97,7 +98,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		if(!$incendiary){
 			$this->fireChance = 0;
 		}elseif($this->fireChance <= 0){
-			$this->fireChance = 1.0 / 3.0;
+			$this->fireChance = self::DEFAULT_FIRE_CHANCE;
 		}
 	}
 

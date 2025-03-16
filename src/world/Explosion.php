@@ -73,7 +73,10 @@ class Explosion{
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
 		$this->world = $this->source->getWorld();
-
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
+		}
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $radius");
 		}
@@ -245,6 +248,7 @@ class Explosion{
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
 
 			$this->world->setBlockAt(
