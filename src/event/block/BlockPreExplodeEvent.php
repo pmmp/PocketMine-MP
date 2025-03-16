@@ -46,6 +46,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		private readonly ?Player $player = null,
 		private float $fireChance = 0.0
 	){
+		Utils::checkFloatNotInfOrNaN("radius", $radius);
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
@@ -61,6 +62,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	public function setRadius(float $radius) : void{
+		Utils::checkFloatNotInfOrNaN("radius", $radius);
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}

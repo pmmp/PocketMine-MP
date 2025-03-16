@@ -51,12 +51,12 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 		private float $fireChance
 	){
 		parent::__construct($block);
-
-		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		
 		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
 			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
