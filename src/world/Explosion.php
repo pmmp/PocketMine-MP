@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockExplodeEvent;
@@ -258,7 +259,7 @@ class Explosion{
 				$toIgnite = $this->world->getBlockAt($x, $y, $z);
 
 				if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
-					$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::DOWN) === SupportType::FULL){
+					$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL){
 					$this->world->setBlockAt($x, $y, $z, $fireBlock);
 				}
 			}
