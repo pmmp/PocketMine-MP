@@ -51,7 +51,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		}
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		parent::__construct($block);
 	}
@@ -112,7 +112,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

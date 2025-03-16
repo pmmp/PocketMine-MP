@@ -232,8 +232,7 @@ class Explosion{
 		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
 
-		$this->affectedBlocks = Utils::promoteKeys($this->affectedBlocks);
-		foreach($this->affectedBlocks as $hash => $block){
+		foreach(Utils::promoteKeys($this->affectedBlocks) as $hash => $block){
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
@@ -266,7 +265,7 @@ class Explosion{
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}

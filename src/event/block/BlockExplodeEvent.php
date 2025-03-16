@@ -58,7 +58,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 	}
 
@@ -143,7 +143,7 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a inf or nan number between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}
