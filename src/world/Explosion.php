@@ -138,11 +138,11 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
-
-											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+											$posHash = World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z);
+											$this->affectedBlocks[$posHash] = $_affectedBlock;
 
 											if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
-												$this->fireIgnitions[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+												$this->fireIgnitions[$posHash] = $_affectedBlock;
 											}
 										}
 									}
@@ -235,7 +235,7 @@ class Explosion{
 		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
 
-		foreach($this->affectedBlocks as $block){
+		foreach($this->affectedBlocks as $hash => $block){
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
@@ -248,25 +248,15 @@ class Explosion{
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
-			$fireBlock = VanillaBlocks::FIRE();
 
-			foreach($this->affectedBlocks as $hash => $affectedBlock){
-				if(isset($this->fireIgnitions[$hash])){
-					$pos = $affectedBlock->getPosition();
-					$x = (int) $pos->x;
-					$y = (int) $pos->y;
-					$z = (int) $pos->z;
-
-					$toIgnite = $this->world->getBlockAt($x, $y, $z);
-
-					if($toIgnite->getTypeId() === BlockTypeIds::AIR &&
-						$toIgnite->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL){
-						$this->world->setBlockAt($x, $y, $z, $fireBlock);
-					}
-				}
-			}
+			$this->world->setBlockAt(
+				$pos->x, $pos->y, $pos->z,
+				isset($this->fireIgnitions[$hash]) &&
+				$block->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL
+					? VanillaBlocks::FIRE()
+					: $airBlock
+			);
 		}
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());

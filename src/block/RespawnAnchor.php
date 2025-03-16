@@ -30,6 +30,7 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\Explosion;
+use pocketmine\world\Position;
 use pocketmine\world\sound\RespawnAnchorChargeSound;
 
 final class RespawnAnchor extends Opaque{
@@ -84,7 +85,7 @@ final class RespawnAnchor extends Opaque{
 
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
-		$explosion = new Explosion($this->position, $ev->getRadius(), $this);
+		$explosion = new Explosion(Position::fromObject($this->position->add(0.5, 0.5, 0.5), $this->position->getWorld()), $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
 
 		if($ev->isBlockBreaking()){
