@@ -232,8 +232,8 @@ class Explosion{
 		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
 
+		$this->affectedBlocks = Utils::promoteKeys($this->affectedBlocks);
 		foreach($this->affectedBlocks as $hash => $block){
-			$hash = (string) $hash;
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
