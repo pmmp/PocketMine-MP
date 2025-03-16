@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
+use function is_finite;СЫ
 
 /**
  * Event triggered before a block explosion, allowing modifications to the explosion radius, block destruction, and fire chances.

@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
+use function is_finite;
 
 /**
  * Event triggered when a block explodes (e.g., a bed in the Nether).

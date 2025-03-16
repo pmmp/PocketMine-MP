@@ -48,6 +48,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function is_finite;
 use function min;
 use function mt_rand;
 use function spl_object_id;
