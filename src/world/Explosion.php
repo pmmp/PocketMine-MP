@@ -248,9 +248,11 @@ class Explosion{
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$targetBlock = (isset($this->fireIgnitions[$hash]) &&
-					$block->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL
-				) ? $fireBlock : $airBlock;
+				$targetBlock =
+					isset($this->fireIgnitions[$hash]) &&
+					$block->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL ?
+						$fireBlock :
+						$airBlock;
 
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $targetBlock);
 			}
