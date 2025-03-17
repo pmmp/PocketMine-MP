@@ -47,6 +47,7 @@ final class RespawnAnchor extends Opaque{
 		return $this->charges;
 	}
 
+	/** @return $this */
 	public function setCharges(int $charges) : self{
 		if($charges < self::MIN_CHARGES || $charges > self::MAX_CHARGES){
 			throw new \InvalidArgumentException("Charges must be between " . self::MIN_CHARGES . " and " . self::MAX_CHARGES . ", given: $charges");
