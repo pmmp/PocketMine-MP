@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\world\Explosion;
 
 /**
  * Called when a block wants to explode, before the explosion impact calculation.
@@ -37,8 +38,6 @@ use pocketmine\utils\Utils;
  */
 class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
-
-	private const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
 
 	private bool $blockBreaking = true;
 
@@ -95,7 +94,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		if(!$incendiary){
 			$this->fireChance = 0;
 		}elseif($this->fireChance <= 0){
-			$this->fireChance = self::DEFAULT_FIRE_CHANCE;
+			$this->fireChance = Explosion::DEFAULT_FIRE_CHANCE;
 		}
 	}
 

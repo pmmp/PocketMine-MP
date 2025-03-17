@@ -52,6 +52,8 @@ use function mt_rand;
 use function sqrt;
 
 class Explosion{
+	public const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
+
 	private int $rays = 16;
 	public World $world;
 
