@@ -234,6 +234,7 @@ class Explosion{
 
 		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
+		$fireBlock = VanillaBlocks::FIRE();
 
 		foreach(Utils::promoteKeys($this->affectedBlocks) as $hash => $block){
 			$pos = $block->getPosition();
@@ -251,13 +252,11 @@ class Explosion{
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
 
-			$this->world->setBlockAt(
-				$pos->x, $pos->y, $pos->z,
-				isset($this->fireIgnitions[$hash]) &&
+			if(isset($this->fireIgnitions[$hash]) &&
 				$block->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL
-					? VanillaBlocks::FIRE()
-					: $airBlock
-			);
+			){
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $fireBlock);
+			}
 		}
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());
