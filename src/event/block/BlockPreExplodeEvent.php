@@ -38,8 +38,8 @@ use pocketmine\utils\Utils;
 class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	private bool $blockBreaking = true;
 	private const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
+	private bool $blockBreaking = true;
 
 	public function __construct(
 		Block $block,
