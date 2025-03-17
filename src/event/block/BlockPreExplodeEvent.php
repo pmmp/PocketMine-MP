@@ -39,6 +39,7 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	private const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
+
 	private bool $blockBreaking = true;
 
 	public function __construct(
