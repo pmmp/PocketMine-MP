@@ -46,18 +46,13 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 		private Position $position,
 		private array $blocks,
 		private float $yield,
-		private array $ignitions,
-		private float $fireChance
+		private array $ignitions
 	){
 		parent::__construct($block);
 
 		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
-		}
-		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
-		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 	}
 
@@ -123,26 +118,5 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	public function setIgnitions(array $ignitions) : void{
 		Utils::validateArrayValueType($ignitions, fn(Block $block) => null);
 		$this->ignitions = $ignitions;
-	}
-
-	/**
-	 * Returns a chance between 0 and 1 of creating a fire.
-	 */
-	public function getFireChance() : float{
-		return $this->fireChance;
-	}
-
-	/**
-	 * Sets a chance between 0 and 1 of creating a fire.
-	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
-	 *
-	 * @param float $fireChance 0 ... 1
-	 */
-	public function setFireChance(float $fireChance) : void{
-		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
-		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
-		}
-		$this->fireChance = $fireChance;
 	}
 }

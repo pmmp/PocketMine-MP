@@ -183,7 +183,6 @@ class Explosion{
 				$this->affectedBlocks,
 				$yield,
 				$this->fireIgnitions,
-				$this->fireChance
 			);
 
 			$ev->call();
