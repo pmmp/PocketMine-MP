@@ -42,9 +42,9 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
-	 * @param Block[] $blocks    The list of blocks affected by the explosion
-	 * @param float   $yield     0-100 The explosion yield
-	 * @param Block[] $ignitions The list of blocks affected by fire ignitions
+	 * @param Block[] $blocks
+	 * @param float   $yield  0-100
+	 * @param Block[] $ignitions
 	 */
 	public function __construct(
 		Entity $entity,
