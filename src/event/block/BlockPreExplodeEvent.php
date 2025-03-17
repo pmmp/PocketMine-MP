@@ -31,7 +31,7 @@ use pocketmine\utils\Utils;
 use pocketmine\world\Explosion;
 
 /**
- * Called when a block wants to explode, before the explosion impact calculation.
+ * Called when a block wants to explode, before the explosion impact is calculated.
  * This allows changing the explosion force, fire chance and whether it will destroy blocks.
  *
  * @see BlockExplodeEvent
