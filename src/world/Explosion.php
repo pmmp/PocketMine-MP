@@ -262,6 +262,12 @@ class Explosion{
 		return true;
 	}
 
+	/**
+	 * Sets a chance between 0 and 1 of creating a fire.
+	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
+	 *
+	 * @param float $fireChance 0 ... 1
+	 */
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
