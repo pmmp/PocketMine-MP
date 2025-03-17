@@ -56,7 +56,7 @@ final class RespawnAnchor extends Opaque{
 	}
 
 	public function getLightLevel() : int{
-		return $this->charges > 0 ? 3 + 4 * ($this->charges - 1) : 0;
+		return $this->charges > 0 ? ($this->charges * 4) - 1 : 0;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
