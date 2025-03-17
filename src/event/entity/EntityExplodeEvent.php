@@ -102,7 +102,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Sets the blocks that will be ignited by the explosion.
+	 * Set the list of blocks that will be replaced by fire.
 	 *
 	 * @param Block[] $ignitions
 	 */
@@ -112,7 +112,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Gets the array of blocks that may be ignited by the explosion.
+	 * Returns a list of affected blocks that will be replaced by fire.
 	 *
 	 * @return Block[]
 	 */

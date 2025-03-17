@@ -30,8 +30,7 @@ use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
- * Event triggered when a block explodes (e.g., a bed in the Nether).
- * This event is used to handle the explosion of blocks and customize their behavior.
+ * Called when a block explodes, after explosion impact has been calculated.
  *
  * @see BlockPreExplodeEvent
  */
@@ -67,18 +66,18 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the explosion yield (intensity).
+	 * Returns the percentage chance of drops from each block destroyed by the explosion.
 	 *
-	 * @return float The intensity of the explosion
+	 * @return float 0-100
 	 */
 	public function getYield() : float{
 		return $this->yield;
 	}
 
 	/**
-	 * Set the explosion yield (intensity).
+	 * Sets the percentage chance of drops from each block destroyed by the explosion.
 	 *
-	 * @param float $yield The intensity of the explosion (0-100)
+	 * @param float $yield 0-100
 	 */
 	public function setYield(float $yield) : void{
 		Utils::checkFloatNotInfOrNaN("yield", $yield);
@@ -89,18 +88,18 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the set of affected blocks for fire ignitions
+	 * Returns a list of blocks destroyed by the explosion.
 	 *
-	 * @return Block[] A set of blocks that are affected by fire ignitions
+	 * @return Block[]
 	 */
 	public function getAffectedBlocks() : array{
 		return $this->blocks;
 	}
 
 	/**
-	 * Set the set of blocks affected by fire ignitions
+	 * Sets the blocks destroyed by the explosion.
 	 *
-	 * @param Block[] $blocks The set of blocks to be affected by fire ignitions
+	 * @param Block[] $blocks
 	 */
 	public function setAffectedBlocks(array $blocks) : void{
 		Utils::validateArrayValueType($blocks, fn(Block $block) => null);
@@ -108,18 +107,18 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the set of blocks that can be ignited by the explosion
+	 * Returns a list of affected blocks that will be replaced by fire.
 	 *
-	 * @return Block[] A set of blocks that are ignited by the explosion
+	 * @return Block[]
 	 */
 	public function getIgnitions() : array{
 		return $this->ignitions;
 	}
 
 	/**
-	 * Set the set of blocks that can be ignited by the explosion
+	 * Set the list of blocks that will be replaced by fire.
 	 *
-	 * @param Block[] $ignitions The set of blocks to set as ignited
+	 * @param Block[] $ignitions
 	 */
 	public function setIgnitions(array $ignitions) : void{
 		Utils::validateArrayValueType($ignitions, fn(Block $block) => null);
@@ -127,18 +126,17 @@ class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the fire chance of the explosion
-	 *
-	 * @return float The fire chance (probability) of the explosion
+	 * Returns a chance between 0 and 1 of creating a fire.
 	 */
 	public function getFireChance() : float{
 		return $this->fireChance;
 	}
 
 	/**
-	 * Set the fire chance of the explosion
+	 * Sets a chance between 0 and 1 of creating a fire.
+	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
 	 *
-	 * @param float $fireChance The fire chance to set
+	 * @param float $fireChance 0 ... 1
 	 */
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);

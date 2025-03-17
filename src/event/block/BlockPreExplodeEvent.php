@@ -30,8 +30,8 @@ use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 
 /**
- * Event triggered before a block explosion, allowing modifications to the explosion radius, block destruction, and fire chances.
- * This event is used to customize the behavior of explosions before they happen.
+ * Called when a block wants to explode, before the explosion impact calculation.
+ * This allows changing the explosion force, fire chance and whether it will destroy blocks.
  *
  * @see BlockExplodeEvent
  */
@@ -71,29 +71,25 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 		$this->radius = $radius;
 	}
 
-	/**
-	 * Checking whether the block will collapse
-	 */
 	public function isBlockBreaking() : bool{
 		return $this->blockBreaking;
 	}
 
-	/**
-	 * Set whether a block will be destroyed
-	 */
 	public function setBlockBreaking(bool $affectsBlocks) : void{
 		$this->blockBreaking = $affectsBlocks;
 	}
 
 	/**
-	 * Checking if there will be a fire
+	 * Returns whether the explosion will create a fire.
 	 */
 	public function isIncendiary() : bool{
 		return $this->fireChance > 0;
 	}
 
 	/**
-	 * Establish the probability of fire
+	 * Sets whether the explosion will create a fire by filling fireChance with default values.
+	 *
+	 * If $incendiary is true, the fire chance will be filled only if explosion isn't currently creating a fire (if fire chance is 0).
 	 */
 	public function setIncendiary(bool $incendiary) : void{
 		if(!$incendiary){
@@ -104,14 +100,17 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the probability of fire
+	 * Returns a chance between 0 and 1 of creating a fire.
 	 */
 	public function getFireChance() : float{
 		return $this->fireChance;
 	}
 
 	/**
-	 * Establish the probability of fire
+	 * Sets a chance between 0 and 1 of creating a fire.
+	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
+	 *
+	 * @param float $fireChance 0 ... 1
 	 */
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
@@ -122,7 +121,8 @@ class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Get the player if the event was caused by him
+	 * Returns the player who triggered the block explosion.
+	 * Returns null if the block was exploded by other means.
 	 */
 	public function getPlayer() : ?Player{
 		return $this->player;
