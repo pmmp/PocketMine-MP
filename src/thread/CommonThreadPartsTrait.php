@@ -25,6 +25,7 @@ namespace pocketmine\thread;
 
 use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafeArray;
+use pocketmine\crash\CrashDump;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\Server;
 use function error_get_last;
@@ -150,7 +151,7 @@ trait CommonThreadPartsTrait{
 		$this->synchronized(function() : void{
 			if($this->isTerminated() && $this->crashInfo === null){
 				$last = error_get_last();
-				if($last !== null){
+				if($last !== null && ($last["type"] & CrashDump::FATAL_ERROR_MASK) !== 0){
 					//fatal error
 					$crashInfo = ThreadCrashInfo::fromLastErrorInfo($last, $this->getThreadName());
 				}else{

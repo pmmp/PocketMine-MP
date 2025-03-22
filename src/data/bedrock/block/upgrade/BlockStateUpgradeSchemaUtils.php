@@ -166,7 +166,8 @@ final class BlockStateUpgradeSchemaUtils{
 					$remap->newName ?? new BlockStateUpgradeSchemaFlattenedName(
 						$remap->newFlattenedName->prefix,
 						$remap->newFlattenedName->flattenedProperty,
-						$remap->newFlattenedName->suffix
+						$remap->newFlattenedName->suffix,
+						$remap->newFlattenedName->flattenedValueRemaps ?? [],
 					),
 					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState ?? []),
 					$remap->copiedState ?? []
@@ -301,7 +302,8 @@ final class BlockStateUpgradeSchemaUtils{
 						new BlockStateUpgradeSchemaModelFlattenedName(
 							$remap->newName->prefix,
 							$remap->newName->flattenedProperty,
-							$remap->newName->suffix
+							$remap->newName->suffix,
+							$remap->newName->flattenedValueRemaps
 						),
 					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
 					$remap->copiedState

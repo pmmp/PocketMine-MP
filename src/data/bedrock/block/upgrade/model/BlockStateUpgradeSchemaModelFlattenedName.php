@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade\model;
 
-final class BlockStateUpgradeSchemaModelFlattenedName{
+use function count;
+
+final class BlockStateUpgradeSchemaModelFlattenedName implements \JsonSerializable{
 
 	/** @required */
 	public string $prefix;
@@ -31,10 +33,31 @@ final class BlockStateUpgradeSchemaModelFlattenedName{
 	public string $flattenedProperty;
 	/** @required */
 	public string $suffix;
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	public array $flattenedValueRemaps;
 
-	public function __construct(string $prefix, string $flattenedProperty, string $suffix){
+	/**
+	 * @param string[] $flattenedValueRemaps
+	 * @phpstan-param array<string, string> $flattenedValueRemaps
+	 */
+	public function __construct(string $prefix, string $flattenedProperty, string $suffix, array $flattenedValueRemaps){
 		$this->prefix = $prefix;
 		$this->flattenedProperty = $flattenedProperty;
 		$this->suffix = $suffix;
+		$this->flattenedValueRemaps = $flattenedValueRemaps;
+	}
+
+	/**
+	 * @return mixed[]
+	 */
+	public function jsonSerialize() : array{
+		$result = (array) $this;
+		if(count($this->flattenedValueRemaps) === 0){
+			unset($result["flattenedValueRemaps"]);
+		}
+		return $result;
 	}
 }

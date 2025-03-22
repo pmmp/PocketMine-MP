@@ -167,18 +167,13 @@ final class BlockStateSerializerHelper{
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
 	}
 
-	public static function encodeRedFlower(string $type) : Writer{
-		return Writer::create(Ids::RED_FLOWER)->writeString(BlockStateNames::FLOWER_TYPE, $type);
-	}
-
 	public static function encodeSandstone(string $id, string $type) : Writer{
 		return Writer::create($id)->writeString(BlockStateNames::SAND_STONE_TYPE, $type);
 	}
 
-	public static function encodeSapling(Sapling $block, string $type) : Writer{
-		return Writer::create(Ids::SAPLING)
-			->writeBool(BlockStateNames::AGE_BIT, $block->isReady())
-			->writeString(BlockStateNames::SAPLING_TYPE, $type);
+	public static function encodeSapling(Sapling $block, Writer $out) : Writer{
+		return $out
+			->writeBool(BlockStateNames::AGE_BIT, $block->isReady());
 	}
 
 	public static function encodeSimplePressurePlate(SimplePressurePlate $block, Writer $out) : Writer{

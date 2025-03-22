@@ -83,6 +83,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->registerCauldronDeserializers();
 		$this->registerFlatWoodBlockDeserializers();
 		$this->registerLeavesDeserializers();
+		$this->registerSaplingDeserializers();
 		$this->registerSimpleDeserializers();
 		$this->registerDeserializers();
 	}
@@ -438,6 +439,17 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		] as $id => $coralType){
 			$this->mapSimple($id, fn() => Blocks::CORAL()->setCoralType($coralType)->setDead(true));
 		}
+
+		foreach([
+			[CoralType::BRAIN, Ids::BRAIN_CORAL_FAN, Ids::DEAD_BRAIN_CORAL_FAN],
+			[CoralType::BUBBLE, Ids::BUBBLE_CORAL_FAN, Ids::DEAD_BUBBLE_CORAL_FAN],
+			[CoralType::FIRE, Ids::FIRE_CORAL_FAN, Ids::DEAD_FIRE_CORAL_FAN],
+			[CoralType::HORN, Ids::HORN_CORAL_FAN, Ids::DEAD_HORN_CORAL_FAN],
+			[CoralType::TUBE, Ids::TUBE_CORAL_FAN, Ids::DEAD_TUBE_CORAL_FAN],
+		] as [$coralType, $aliveId, $deadId]){
+			$this->map($aliveId, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN()->setCoralType($coralType)->setDead(false), $in));
+			$this->map($deadId, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN()->setCoralType($coralType)->setDead(true), $in));
+		}
 	}
 
 	private function registerCauldronDeserializers() : void{
@@ -620,6 +632,19 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::MANGROVE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::MANGROVE_LEAVES(), $in));
 		$this->map(Ids::OAK_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::OAK_LEAVES(), $in));
 		$this->map(Ids::SPRUCE_LEAVES, fn(Reader $in) => Helper::decodeLeaves(Blocks::SPRUCE_LEAVES(), $in));
+	}
+
+	private function registerSaplingDeserializers() : void{
+		foreach([
+			Ids::ACACIA_SAPLING => fn() => Blocks::ACACIA_SAPLING(),
+			Ids::BIRCH_SAPLING => fn() => Blocks::BIRCH_SAPLING(),
+			Ids::DARK_OAK_SAPLING => fn() => Blocks::DARK_OAK_SAPLING(),
+			Ids::JUNGLE_SAPLING => fn() => Blocks::JUNGLE_SAPLING(),
+			Ids::OAK_SAPLING => fn() => Blocks::OAK_SAPLING(),
+			Ids::SPRUCE_SAPLING => fn() => Blocks::SPRUCE_SAPLING(),
+		] as $id => $getBlock){
+			$this->map($id, fn(Reader $in) => Helper::decodeSapling($getBlock(), $in));
+		}
 	}
 
 	private function registerSimpleDeserializers() : void{
@@ -880,6 +905,18 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::WEB, fn() => Blocks::COBWEB());
 		$this->mapSimple(Ids::WITHER_ROSE, fn() => Blocks::WITHER_ROSE());
 		$this->mapSimple(Ids::YELLOW_FLOWER, fn() => Blocks::DANDELION());
+
+		$this->mapSimple(Ids::ALLIUM, fn() => Blocks::ALLIUM());
+		$this->mapSimple(Ids::CORNFLOWER, fn() => Blocks::CORNFLOWER());
+		$this->mapSimple(Ids::AZURE_BLUET, fn() => Blocks::AZURE_BLUET());
+		$this->mapSimple(Ids::LILY_OF_THE_VALLEY, fn() => Blocks::LILY_OF_THE_VALLEY());
+		$this->mapSimple(Ids::BLUE_ORCHID, fn() => Blocks::BLUE_ORCHID());
+		$this->mapSimple(Ids::OXEYE_DAISY, fn() => Blocks::OXEYE_DAISY());
+		$this->mapSimple(Ids::POPPY, fn() => Blocks::POPPY());
+		$this->mapSimple(Ids::ORANGE_TULIP, fn() => Blocks::ORANGE_TULIP());
+		$this->mapSimple(Ids::PINK_TULIP, fn() => Blocks::PINK_TULIP());
+		$this->mapSimple(Ids::RED_TULIP, fn() => Blocks::RED_TULIP());
+		$this->mapSimple(Ids::WHITE_TULIP, fn() => Blocks::WHITE_TULIP());
 	}
 
 	private function registerDeserializers() : void{
@@ -921,7 +958,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				});
 		});
 		$this->map(Ids::BAMBOO_SAPLING, function(Reader $in) : Block{
-			$in->ignored(StateNames::SAPLING_TYPE); //bug in MCPE
 			return Blocks::BAMBOO_SAPLING()->setReady($in->readBool(StateNames::AGE_BIT));
 		});
 		$this->map(Ids::BARREL, function(Reader $in) : Block{
@@ -1078,10 +1114,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setCoralType($in->readCoralType())
 				->setDead($in->readBool(StateNames::DEAD_BIT));
 		});
-		$this->map(Ids::CORAL_FAN, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN(), $in)
-				->setDead(false));
-		$this->map(Ids::CORAL_FAN_DEAD, fn(Reader $in) => Helper::decodeFloorCoralFan(Blocks::CORAL_FAN(), $in)
-				->setDead(true));
 		$this->map(Ids::CORAL_FAN_HANG, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN : CoralType::TUBE));
 		$this->map(Ids::CORAL_FAN_HANG2, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
@@ -1413,22 +1445,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::RAIL()
 				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 9));
 		});
-		$this->map(Ids::RED_FLOWER, function(Reader $in) : Block{
-			return match($type = $in->readString(StateNames::FLOWER_TYPE)){
-				StringValues::FLOWER_TYPE_ALLIUM => Blocks::ALLIUM(),
-				StringValues::FLOWER_TYPE_CORNFLOWER => Blocks::CORNFLOWER(),
-				StringValues::FLOWER_TYPE_HOUSTONIA => Blocks::AZURE_BLUET(), //wtf ???
-				StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY => Blocks::LILY_OF_THE_VALLEY(),
-				StringValues::FLOWER_TYPE_ORCHID => Blocks::BLUE_ORCHID(),
-				StringValues::FLOWER_TYPE_OXEYE => Blocks::OXEYE_DAISY(),
-				StringValues::FLOWER_TYPE_POPPY => Blocks::POPPY(),
-				StringValues::FLOWER_TYPE_TULIP_ORANGE => Blocks::ORANGE_TULIP(),
-				StringValues::FLOWER_TYPE_TULIP_PINK => Blocks::PINK_TULIP(),
-				StringValues::FLOWER_TYPE_TULIP_RED => Blocks::RED_TULIP(),
-				StringValues::FLOWER_TYPE_TULIP_WHITE => Blocks::WHITE_TULIP(),
-				default => throw $in->badValueException(StateNames::FLOWER_TYPE, $type),
-			};
-		});
 		$this->map(Ids::RED_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::RED_MUSHROOM_BLOCK(), $in));
 		$this->mapStairs(Ids::RED_NETHER_BRICK_STAIRS, fn() => Blocks::RED_NETHER_BRICK_STAIRS());
 		$this->map(Ids::RED_SANDSTONE, function(Reader $in) : Block{
@@ -1479,18 +1495,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			};
 		});
 		$this->mapStairs(Ids::SANDSTONE_STAIRS, fn() => Blocks::SANDSTONE_STAIRS());
-		$this->map(Ids::SAPLING, function(Reader $in) : Block{
-			return (match($type = $in->readString(StateNames::SAPLING_TYPE)){
-					StringValues::SAPLING_TYPE_ACACIA => Blocks::ACACIA_SAPLING(),
-					StringValues::SAPLING_TYPE_BIRCH => Blocks::BIRCH_SAPLING(),
-					StringValues::SAPLING_TYPE_DARK_OAK => Blocks::DARK_OAK_SAPLING(),
-					StringValues::SAPLING_TYPE_JUNGLE => Blocks::JUNGLE_SAPLING(),
-					StringValues::SAPLING_TYPE_OAK => Blocks::OAK_SAPLING(),
-					StringValues::SAPLING_TYPE_SPRUCE => Blocks::SPRUCE_SAPLING(),
-					default => throw $in->badValueException(StateNames::SAPLING_TYPE, $type),
-				})
-				->setReady($in->readBool(StateNames::AGE_BIT));
-		});
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)

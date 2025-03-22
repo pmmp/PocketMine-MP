@@ -555,26 +555,33 @@ abstract class Living extends Entity{
 			return;
 		}
 
-		$this->attackTime = $source->getAttackCooldown();
+		if($this->attackTime <= 0){
+			//this logic only applies if the entity was cold attacked
 
-		if($source instanceof EntityDamageByChildEntityEvent){
-			$e = $source->getChild();
-			if($e !== null){
-				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+			$this->attackTime = $source->getAttackCooldown();
+
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$e = $source->getChild();
+				if($e !== null){
+					$motion = $e->getMotion();
+					$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
+			}elseif($source instanceof EntityDamageByEntityEvent){
+				$e = $source->getDamager();
+				if($e !== null){
+					$deltaX = $this->location->x - $e->location->x;
+					$deltaZ = $this->location->z - $e->location->z;
+					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
 			}
-		}elseif($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($e !== null){
-				$deltaX = $this->location->x - $e->location->x;
-				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+
+			if($this->isAlive()){
+				$this->doHitAnimation();
 			}
 		}
 
 		if($this->isAlive()){
 			$this->applyPostDamageEffects($source);
-			$this->doHitAnimation();
 		}
 	}
 

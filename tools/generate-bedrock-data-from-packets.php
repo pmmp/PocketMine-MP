@@ -407,7 +407,13 @@ class ParserPacketHandler extends PacketHandler{
 			$mappedType = $typeMap[$entry->getTypeId()];
 
 			if($entry instanceof ShapedRecipe){
-				$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				//all known recipes are currently symmetric and I don't feel like attaching a `symmetric` field to
+				//every shaped recipe for this - split it into a separate category instead
+				if(!$entry->isSymmetric()){
+					$recipes[$mappedType . "_asymmetric"][] = $this->shapedRecipeToJson($entry);
+				}else{
+					$recipes[$mappedType][] = $this->shapedRecipeToJson($entry);
+				}
 			}elseif($entry instanceof ShapelessRecipe){
 				$recipes[$mappedType][] = $this->shapelessRecipeToJson($entry);
 			}elseif($entry instanceof MultiRecipe){

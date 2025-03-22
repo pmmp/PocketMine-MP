@@ -51,12 +51,12 @@ use function time;
 class BedrockWorldData extends BaseNbtWorldData{
 
 	public const CURRENT_STORAGE_VERSION = 10;
-	public const CURRENT_STORAGE_NETWORK_VERSION = 662;
+	public const CURRENT_STORAGE_NETWORK_VERSION = 671;
 	public const CURRENT_CLIENT_VERSION_TARGET = [
 		1, //major
 		20, //minor
-		71, //patch
-		1, //revision
+		80, //patch
+		5, //revision
 		0 //is beta
 	];
 

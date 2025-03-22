@@ -142,7 +142,8 @@ final class BlockStateUpgrader{
 				}else{
 					$flattenedValue = $oldState[$remap->newName->flattenedProperty] ?? null;
 					if($flattenedValue instanceof StringTag){
-						$newName = sprintf("%s%s%s", $remap->newName->prefix, $flattenedValue->getValue(), $remap->newName->suffix);
+						$embedValue = $remap->newName->flattenedValueRemaps[$flattenedValue->getValue()] ?? $flattenedValue->getValue();
+						$newName = sprintf("%s%s%s", $remap->newName->prefix, $embedValue, $remap->newName->suffix);
 						unset($oldState[$remap->newName->flattenedProperty]);
 					}else{
 						//flattened property is not a TAG_String, so this transformation is not applicable

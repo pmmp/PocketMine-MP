@@ -113,7 +113,8 @@ final class CraftingDataCache{
 					$nullUUID,
 					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
-					$index
+					true,
+					$index,
 				);
 			}else{
 				//TODO: probably special recipe types
