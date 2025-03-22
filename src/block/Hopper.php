@@ -81,7 +81,7 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return match($facing){
+		return match ($facing) {
 			Facing::UP => SupportType::FULL,
 			Facing::DOWN => $this->facing === Facing::DOWN ? SupportType::CENTER : SupportType::NONE,
 			default => SupportType::NONE
@@ -220,11 +220,11 @@ class Hopper extends Transparent implements HopperInteractable{
 		);
 	}
 
-	public function getPickingBox() : AxisAlignedBB {
+	public function getPickingBox() : AxisAlignedBB{
 		return $this->pickingBox ??= $this->recalculateBoundingBox();
 	}
 
-	protected function recalculateBoundingBox() : ?AxisAlignedBB {
+	protected function recalculateBoundingBox() : AxisAlignedBB{
 		return AxisAlignedBB::one()->expand(0, 1, 0)->offset($this->position->x, $this->position->y, $this->position->z);
 	}
 
@@ -246,14 +246,14 @@ class Hopper extends Transparent implements HopperInteractable{
 		$this->lastEntityPickupTick = $this->position->getWorld()->getServer()->getTick();
 	}
 
-	private function getNextTickUpdate() : int {
+	private function getNextTickUpdate() : int{
 		$currentTick = $this->position->getWorld()->getServer()->getTick();
 
 		$nextTick = 1;
-		if($this->isTransferInCooldown()) {
+		if($this->isTransferInCooldown()){
 			$nextTick = self::TRANSFER_COOLDOWN - ($currentTick - $this->lastTransferActionTick);
 		}
-		if($this->isEntityPickingInCooldown()) {
+		if($this->isEntityPickingInCooldown()){
 			$nextTick = min($nextTick, self::ENTITY_PICKUP_COOLDOWN - ($currentTick - $this->lastEntityPickupTick));
 		}
 
