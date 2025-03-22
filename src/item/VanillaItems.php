@@ -157,7 +157,7 @@ use function strtolower;
  * @method static Item EMERALD()
  * @method static EnchantedBook ENCHANTED_BOOK()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
- * @method static Item ENDER_EYE()
+ * @method static EnderEye ENDER_EYE()
  * @method static EnderPearl ENDER_PEARL()
  * @method static EndCrystal END_CRYSTAL()
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
@@ -489,6 +489,8 @@ final class VanillaItems{
 		self::register("emerald", fn(IID $id) => new Item($id, "Emerald"));
 		self::register("enchanted_book", fn(IID $id) => new EnchantedBook($id, "Enchanted Book", [EnchantmentTags::ALL]));
 		self::register("enchanted_golden_apple", fn(IID $id) => new GoldenAppleEnchanted($id, "Enchanted Golden Apple"));
+		self::register("end_crystal", fn(IID $id) => new EndCrystal($id, "End Crystal"));
+		self::register("ender_eye", fn(IID $id) => new EnderEye($id, "Ender Eye"));
 		self::register("ender_pearl", fn(IID $id) => new EnderPearl($id, "Ender Pearl"));
 		self::register("experience_bottle", fn(IID $id) => new ExperienceBottle($id, "Bottle o' Enchanting"));
 		self::register("feather", fn(IID $id) => new Item($id, "Feather"));
