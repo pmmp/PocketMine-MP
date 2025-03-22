@@ -21,8 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\block;
 
-class TestConcreteExtendsAllowHandleEvent extends TestAbstractAllowHandleEvent{
+use pocketmine\block\utils\MultiAnySupportTrait;
+use pocketmine\block\utils\SupportType;
 
+final class ResinClump extends Transparent{
+	use MultiAnySupportTrait;
+
+	public function isSolid() : bool{
+		return false;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE;
+	}
+
+	public function canBeReplaced() : bool{
+		return true;
+	}
+
+	/**
+	 * @return int[]
+	 */
+	protected function getInitialPlaceFaces(Block $blockReplace) : array{
+		return $blockReplace instanceof ResinClump ? $blockReplace->faces : [];
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
 }

@@ -52,7 +52,7 @@ $writableFormats = array_filter($providerManager->getAvailableProviders(), fn(Wo
 $requiredOpts = [
 	"world" => "path to the input world for conversion",
 	"backup" => "path to back up the original files",
-	"format" => "desired output format (can be one of: " . implode(",", array_keys($writableFormats)) . ")"
+	"format" => "desired output format (can be one of: " . implode(", ", array_keys($writableFormats)) . ")"
 ];
 $usageMessage = "Options:\n";
 foreach($requiredOpts as $_opt => $_desc){
@@ -89,7 +89,7 @@ if(count($oldProviderClasses) === 0){
 	exit(1);
 }
 if(count($oldProviderClasses) > 1){
-	fwrite(STDERR, "Ambiguous input world format: matched " . count($oldProviderClasses) . " (" . implode(array_keys($oldProviderClasses)) . ")" . PHP_EOL);
+	fwrite(STDERR, "Ambiguous input world format: matched " . count($oldProviderClasses) . " (" . implode(", ", array_keys($oldProviderClasses)) . ")" . PHP_EOL);
 	exit(1);
 }
 $oldProviderClass = array_shift($oldProviderClasses);

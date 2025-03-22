@@ -36,6 +36,7 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -89,6 +90,8 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
+use pocketmine\scheduler\TimingsCollectionTask;
+use pocketmine\scheduler\TimingsControlTask;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\thread\log\AttachableThreadSafeLogger;
@@ -136,6 +139,7 @@ use function file_put_contents;
 use function filemtime;
 use function fopen;
 use function get_class;
+use function gettype;
 use function ini_set;
 use function is_array;
 use function is_dir;
@@ -695,7 +699,7 @@ class Server{
 
 	public function removeOp(string $name) : void{
 		$lowercaseName = strtolower($name);
-		foreach($this->operators->getAll() as $operatorName => $_){
+		foreach(Utils::promoteKeys($this->operators->getAll()) as $operatorName => $_){
 			$operatorName = (string) $operatorName;
 			if($lowercaseName === strtolower($operatorName)){
 				$this->operators->remove($operatorName);
@@ -736,12 +740,15 @@ class Server{
 
 	/**
 	 * @return string[][]
+	 * @phpstan-return array<string, list<string>>
 	 */
 	public function getCommandAliases() : array{
 		$section = $this->configGroup->getProperty(Yml::ALIASES);
 		$result = [];
 		if(is_array($section)){
-			foreach($section as $key => $value){
+			foreach(Utils::promoteKeys($section) as $key => $value){
+				//TODO: more validation needed here
+				//key might not be a string, value might not be list<string>
 				$commands = [];
 				if(is_array($value)){
 					$commands = $value;
@@ -749,7 +756,7 @@ class Server{
 					$commands[] = (string) $value;
 				}
 
-				$result[$key] = $commands;
+				$result[(string) $key] = $commands;
 			}
 		}
 
@@ -891,7 +898,37 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
+			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
+			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
+
 			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt(Yml::MEMORY_ASYNC_WORKER_HARD_LIMIT, 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool->addWorkerStartHook(function(int $i) : void{
+				if(TimingsHandler::isEnabled()){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::setEnabled(true), $i);
+				}
+			});
+			TimingsHandler::getToggleCallbacks()->add(function(bool $enable) : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::setEnabled($enable), $workerId);
+				}
+			});
+			TimingsHandler::getReloadCallbacks()->add(function() : void{
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					$this->asyncPool->submitTaskToWorker(TimingsControlTask::reload(), $workerId);
+				}
+			});
+			TimingsHandler::getCollectCallbacks()->add(function() : array{
+				$promises = [];
+				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					/** @phpstan-var PromiseResolver<list<string>> $resolver */
+					$resolver = new PromiseResolver();
+					$this->asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
+
+					$promises[] = $resolver->getPromise();
+				}
+
+				return $promises;
+			});
 
 			$netCompressionThreshold = -1;
 			if($this->configGroup->getPropertyInt(Yml::NETWORK_BATCH_THRESHOLD, 256) >= 0){
@@ -965,14 +1002,11 @@ class Server{
 			)));
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_license($this->getName())));
 
-			TimingsHandler::setEnabled($this->configGroup->getPropertyBool(Yml::SETTINGS_ENABLE_PROFILING, false));
-			$this->profilingTickRate = $this->configGroup->getPropertyInt(Yml::SETTINGS_PROFILE_REPORT_TRIGGER, self::TARGET_TICKS_PER_SECOND);
-
 			DefaultPermissions::registerCorePermissions();
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(BedrockDataFiles::RECIPES);
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
@@ -982,7 +1016,11 @@ class Server{
 				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
+				$array = yaml_parse(Filesystem::fileGetContents($graylistFile));
+				if(!is_array($array)){
+					throw new \InvalidArgumentException("Expected array for root, but have " . gettype($array));
+				}
+				$pluginGraylist = PluginGraylist::fromArray($array);
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
 				$this->forceShutdownExit();
@@ -1094,7 +1132,11 @@ class Server{
 
 		$anyWorldFailedToLoad = false;
 
-		foreach((array) $this->configGroup->getProperty(Yml::WORLDS, []) as $name => $options){
+		foreach(Utils::promoteKeys((array) $this->configGroup->getProperty(Yml::WORLDS, [])) as $name => $options){
+			if(!is_string($name)){
+				//TODO: this probably should be an error
+				continue;
+			}
 			if($options === null){
 				$options = [];
 			}elseif(!is_array($options)){
@@ -1139,7 +1181,7 @@ class Server{
 
 		if($this->worldManager->getDefaultWorld() === null){
 			$default = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
-			if(trim($default) == ""){
+			if(trim($default) === ""){
 				$this->logger->warning("level-name cannot be null, using default");
 				$default = "world";
 				$this->configGroup->setConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");

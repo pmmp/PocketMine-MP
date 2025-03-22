@@ -93,9 +93,6 @@ class Slab extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		if($this->slabType === SlabType::DOUBLE){
 			return [AxisAlignedBB::one()];

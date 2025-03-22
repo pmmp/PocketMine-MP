@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\event\fixtures;
 
-abstract class TestAbstractEvent extends Event{
+class TestConcreteExtendsAbstractEvent extends TestAbstractEvent{
 
 }

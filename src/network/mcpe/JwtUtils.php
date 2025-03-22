@@ -72,9 +72,11 @@ final class JwtUtils{
 	 * @throws JwtException
 	 */
 	public static function split(string $jwt) : array{
-		$v = explode(".", $jwt);
+		//limit of 4 allows us to detect too many parts without having to split the string up into a potentially large
+		//number of parts
+		$v = explode(".", $jwt, limit: 4);
 		if(count($v) !== 3){
-			throw new JwtException("Expected exactly 3 JWT parts, got " . count($v));
+			throw new JwtException("Expected exactly 3 JWT parts delimited by a period");
 		}
 		return [$v[0], $v[1], $v[2]]; //workaround phpstan bug
 	}

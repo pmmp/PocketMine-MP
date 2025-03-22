@@ -24,11 +24,9 @@
 <!-- Suggest any actions to be done before/after merging this pull request -->
 <!-- For example, future changes that this PR lays the groundwork for -->
 
-## In-Game Testing
+## Tests
 <!--
-GAMEPLAY FEATURE PRS MUST BE TESTED IN-GAME.
-Include any screenshots or videos of in-game testing here.
+If this PR affects gameplay or user experience in some way, it must be manually tested.
+Include any screenshots or videos of manual testing here.
 Any test plugin code should also be pasted here if it can't be adapted to a PHPUnit test.
-
-If this isn't a gameplay PR, you can delete this section.
 -->

@@ -40,9 +40,6 @@ class Cake extends BaseCake{
 		$w->boundedIntAuto(0, self::MAX_BITES, $this->bites);
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()

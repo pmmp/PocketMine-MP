@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin\event;
+namespace pocketmine\event\fixtures;
 
-class ChildEvent extends ParentEvent{
+class TestChildEvent extends TestParentEvent{
 
 }

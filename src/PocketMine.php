@@ -264,7 +264,7 @@ JIT_WARNING
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){
 			//we can't verify dependency versions if we were installed without using git
-			$currentGitHash = explode("-", VersionInfo::GIT_HASH())[0];
+			$currentGitHash = explode("-", VersionInfo::GIT_HASH(), 2)[0];
 			if($currentGitHash !== $composerGitHash){
 				critical_error("Composer dependencies and/or autoloader are out of sync.");
 				critical_error("- Current revision is $currentGitHash");
@@ -280,6 +280,11 @@ JIT_WARNING
 		if(count(getopt("", [BootstrapOptions::VERSION])) > 0){
 			printf("%s %s (git hash %s) for Minecraft: Bedrock Edition %s\n", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true), VersionInfo::GIT_HASH(), ProtocolInfo::MINECRAFT_VERSION);
 			exit(0);
+		}
+
+		if(defined('pocketmine\ORIGINAL_PHAR_PATH')){
+			//if we're inside a phar cache, \pocketmine\PATH will not include the original phar
+			Filesystem::addCleanedPath(ORIGINAL_PHAR_PATH, Filesystem::CLEAN_PATH_SRC_PREFIX);
 		}
 
 		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));

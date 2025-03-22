@@ -48,7 +48,7 @@ final class ItemTagToIdMap{
 			throw new AssumptionFailedError("Invalid item tag map, expected array");
 		}
 		$cleanMap = [];
-		foreach($map as $tagName => $ids){
+		foreach(Utils::promoteKeys($map) as $tagName => $ids){
 			if(!is_string($tagName)){
 				throw new AssumptionFailedError("Invalid item tag name $tagName, expected string as key");
 			}

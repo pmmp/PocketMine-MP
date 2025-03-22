@@ -21,8 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\inventory\json;
 
-class TestConcreteExtendsConcreteEvent extends TestConcreteEvent{
+use pocketmine\crafting\json\ItemStackData;
 
+final class CreativeGroupData{
+	/** @required */
+	public string $group_name;
+	/** @required */
+	public ?ItemStackData $group_icon;
+	/**
+	 * @var \pocketmine\crafting\json\ItemStackData[]
+	 * @required
+	 */
+	public array $items;
 }

@@ -28,7 +28,10 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Utils;
 
 class BlockTransaction{
-	/** @var Block[][][] */
+	/**
+	 * @var Block[][][]
+	 * @phpstan-var array<int, array<int, array<int, Block>>>
+	 */
 	private array $blocks = [];
 
 	/**

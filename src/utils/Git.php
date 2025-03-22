@@ -39,7 +39,7 @@ final class Git{
 	 * @param bool $dirty reference parameter, set to whether the repo has local changes
 	 */
 	public static function getRepositoryState(string $dir, bool &$dirty) : ?string{
-		if(Process::execute("git -C \"$dir\" rev-parse HEAD", $out) === 0 && $out !== false && strlen($out = trim($out)) === 40){
+		if(Process::execute("git -C \"$dir\" rev-parse HEAD", $out) === 0 && strlen($out = trim($out)) === 40){
 			if(Process::execute("git -C \"$dir\" diff --quiet") === 1 || Process::execute("git -C \"$dir\" diff --cached --quiet") === 1){ //Locally-modified
 				$dirty = true;
 			}

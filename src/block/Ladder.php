@@ -58,9 +58,6 @@ class Ladder extends Transparent{
 		return true;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}

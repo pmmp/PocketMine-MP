@@ -104,9 +104,6 @@ class MobHead extends Flowable{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		$collisionBox = AxisAlignedBB::one()
 			->contract(0.25, 0, 0.25)

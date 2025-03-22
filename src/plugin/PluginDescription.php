@@ -26,6 +26,7 @@ namespace pocketmine\plugin;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionParserException;
+use pocketmine\utils\Utils;
 use function array_map;
 use function array_values;
 use function get_debug_type;
@@ -83,11 +84,20 @@ class PluginDescription{
 	 * @phpstan-var array<string, list<string>>
 	 */
 	private array $extensions = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $depend = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $softDepend = [];
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $loadBefore = [];
 	private string $version;
 	/**
@@ -151,7 +161,7 @@ class PluginDescription{
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin[self::KEY_OS] ?? []));
 
 		if(isset($plugin[self::KEY_COMMANDS]) && is_array($plugin[self::KEY_COMMANDS])){
-			foreach($plugin[self::KEY_COMMANDS] as $commandName => $commandData){
+			foreach(Utils::promoteKeys($plugin[self::KEY_COMMANDS]) as $commandName => $commandData){
 				if(!is_string($commandName)){
 					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
 				}
@@ -172,23 +182,23 @@ class PluginDescription{
 		}
 
 		if(isset($plugin[self::KEY_DEPEND])){
-			$this->depend = (array) $plugin[self::KEY_DEPEND];
+			$this->depend = array_values((array) $plugin[self::KEY_DEPEND]);
 		}
 		if(isset($plugin[self::KEY_EXTENSIONS])){
 			$extensions = (array) $plugin[self::KEY_EXTENSIONS];
 			$isLinear = $extensions === array_values($extensions);
-			foreach($extensions as $k => $v){
+			foreach(Utils::promoteKeys($extensions) as $k => $v){
 				if($isLinear){
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[(string) $k] = array_map('strval', is_array($v) ? $v : [$v]);
+				$this->extensions[(string) $k] = array_values(array_map('strval', is_array($v) ? $v : [$v]));
 			}
 		}
 
-		$this->softDepend = (array) ($plugin[self::KEY_SOFTDEPEND] ?? $this->softDepend);
+		$this->softDepend = array_values((array) ($plugin[self::KEY_SOFTDEPEND] ?? $this->softDepend));
 
-		$this->loadBefore = (array) ($plugin[self::KEY_LOADBEFORE] ?? $this->loadBefore);
+		$this->loadBefore = array_values((array) ($plugin[self::KEY_LOADBEFORE] ?? $this->loadBefore));
 
 		$this->website = (string) ($plugin[self::KEY_WEBSITE] ?? $this->website);
 
@@ -209,7 +219,7 @@ class PluginDescription{
 		$this->authors = [];
 		if(isset($plugin[self::KEY_AUTHOR])){
 			if(is_array($plugin[self::KEY_AUTHOR])){
-				$this->authors = $plugin[self::KEY_AUTHOR];
+				$this->authors = array_values($plugin[self::KEY_AUTHOR]);
 			}else{
 				$this->authors[] = $plugin[self::KEY_AUTHOR];
 			}
@@ -283,6 +293,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getDepend() : array{
 		return $this->depend;
@@ -294,6 +305,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getLoadBefore() : array{
 		return $this->loadBefore;
@@ -323,6 +335,7 @@ class PluginDescription{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getSoftDepend() : array{
 		return $this->softDepend;

@@ -67,6 +67,8 @@ use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
+use function mt_getrandmax;
+use function mt_rand;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
@@ -80,7 +82,7 @@ use function preg_match_all;
 use function preg_replace;
 use function shell_exec;
 use function spl_object_id;
-use function str_ends_with;
+use function str_contains;
 use function str_pad;
 use function str_split;
 use function str_starts_with;
@@ -121,7 +123,7 @@ final class Utils{
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
 		$func = new \ReflectionFunction($closure);
-		if(!str_ends_with($func->getName(), '{closure}')){
+		if(!str_contains($func->getName(), '{closure')){
 			//closure wraps a named function, can be done with reflection or fromCallable()
 			//isClosure() is useless here because it just tells us if $func is reflecting a Closure object
 
@@ -165,6 +167,7 @@ final class Utils{
 
 	/**
 	 * @phpstan-return \Closure(object) : object
+	 * @deprecated
 	 */
 	public static function cloneCallback() : \Closure{
 		return static function(object $o){
@@ -177,15 +180,13 @@ final class Utils{
 	 * @phpstan-template TValue of object
 	 *
 	 * @param object[] $array
-	 * @phpstan-param array<TKey, TValue> $array
+	 * @phpstan-param array<TKey, TValue>|list<TValue> $array
 	 *
 	 * @return object[]
-	 * @phpstan-return array<TKey, TValue>
+	 * @phpstan-return ($array is list<TValue> ? list<TValue> : array<TKey, TValue>)
 	 */
 	public static function cloneObjectArray(array $array) : array{
-		/** @phpstan-var \Closure(TValue) : TValue $callback */
-		$callback = self::cloneCallback();
-		return array_map($callback, $array);
+		return array_map(fn(object $o) => clone $o, $array);
 	}
 
 	/**
@@ -218,7 +219,7 @@ final class Utils{
 			$mac = implode("\n", $mac);
 			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches) > 0){
 				foreach($matches[1] as $i => $v){
-					if($v == "00-00-00-00-00-00"){
+					if($v === "00-00-00-00-00-00"){
 						unset($matches[1][$i]);
 					}
 				}
@@ -232,7 +233,7 @@ final class Utils{
 				$mac = implode("\n", $mac);
 				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches) > 0){
 					foreach($matches[1] as $i => $v){
-						if($v == "00:00:00:00:00:00"){
+						if($v === "00:00:00:00:00:00"){
 							unset($matches[1][$i]);
 						}
 					}
@@ -263,14 +264,7 @@ final class Utils{
 	}
 
 	/**
-	 * Returns the current Operating System
-	 * Windows => win
-	 * MacOS => mac
-	 * iOS => ios
-	 * Android => android
-	 * Linux => Linux
-	 * BSD => bsd
-	 * Other => other
+	 * @return string one of the Utils::OS_* constants
 	 */
 	public static function getOS(bool $recalculate = false) : string{
 		if(self::$os === null || $recalculate){
@@ -375,7 +369,7 @@ final class Utils{
 		debug_zval_dump($value);
 		$contents = ob_get_contents();
 		if($contents === false) throw new AssumptionFailedError("ob_get_contents() should never return false here");
-		$ret = explode("\n", $contents);
+		$ret = explode("\n", $contents, limit: 2);
 		ob_end_clean();
 
 		if(preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
@@ -403,7 +397,8 @@ final class Utils{
 	}
 
 	/**
-	 * @param mixed[] $trace
+	 * @param mixed[][] $trace
+	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 * @return string[]
 	 */
 	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
@@ -445,6 +440,7 @@ final class Utils{
 	 * @phpstan-param list<array<string, mixed>> $trace
 	 *
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public static function printableTrace(array $trace, int $maxStringLength = 80) : array{
 		$messages = [];
@@ -456,7 +452,7 @@ final class Utils{
 				}else{
 					$args = $trace[$i]["params"];
 				}
-				/** @var mixed[] $args */
+				/** @phpstan-var array<int, mixed> $args */
 
 				$paramsList = [];
 				$offset = 0;
@@ -466,7 +462,15 @@ final class Utils{
 				}
 				$params = implode(", ", $paramsList);
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " .
+				(isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") .
+				"(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " .
+				(isset($trace[$i]["class"]) ?
+					$trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") :
+					""
+				) .
+				$trace[$i]["function"] .
+				"(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
@@ -487,7 +491,7 @@ final class Utils{
 			$rawFrame = $rawTrace[$frameId];
 			$safeTrace[$frameId] = new ThreadCrashInfoFrame(
 				$printableFrame,
-				$rawFrame["file"] ?? "unknown",
+				$rawFrame["file"] ?? null,
 				$rawFrame["line"] ?? 0
 			);
 		}
@@ -583,7 +587,7 @@ final class Utils{
 	 * @phpstan-param \Closure(TMemberType) : void $validator
 	 */
 	public static function validateArrayValueType(array $array, \Closure $validator) : void{
-		foreach($array as $k => $v){
+		foreach(Utils::promoteKeys($array) as $k => $v){
 			try{
 				$validator($v);
 			}catch(\TypeError $e){
@@ -606,6 +610,18 @@ final class Utils{
 		foreach($array as $key => $value){ // @phpstan-ignore-line - this is where we fix the stupid bullshit with array keys :)
 			yield (string) $key => $value;
 		}
+	}
+
+	/**
+	 * Gets rid of PHPStan BenevolentUnionType on array keys, so that wrong type errors get reported properly
+	 * Use this if you don't care what the key type is and just want proper PHPStan error reporting
+	 *
+	 * @phpstan-template TValueType
+	 * @phpstan-param array<TValueType> $array
+	 * @phpstan-return array<int|string, TValueType>
+	 */
+	public static function promoteKeys(array $array) : array{
+		return $array;
 	}
 
 	public static function checkUTF8(string $string) : void{
@@ -674,5 +690,13 @@ final class Utils{
 
 		//jit not available
 		return null;
+	}
+
+	/**
+	 * Returns a random float between 0.0 and 1.0
+	 * Drop-in replacement for lcg_value()
+	 */
+	public static function getRandomFloat() : float{
+		return mt_rand() / mt_getrandmax();
 	}
 }

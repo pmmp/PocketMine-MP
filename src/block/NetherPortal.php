@@ -28,7 +28,6 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
-use pocketmine\math\AxisAlignedBB;
 
 class NetherPortal extends Transparent{
 
@@ -62,9 +61,6 @@ class NetherPortal extends Transparent{
 		return false;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

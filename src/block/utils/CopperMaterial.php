@@ -30,9 +30,15 @@ interface CopperMaterial{
 
 	public function getOxidation() : CopperOxidation;
 
+	/**
+	 * @return $this
+	 */
 	public function setOxidation(CopperOxidation $oxidation) : CopperMaterial;
 
 	public function isWaxed() : bool;
 
+	/**
+	 * @return $this
+	 */
 	public function setWaxed(bool $waxed) : CopperMaterial;
 }

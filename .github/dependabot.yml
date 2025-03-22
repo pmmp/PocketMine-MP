@@ -12,6 +12,10 @@ updates:
       update-types:
         - "version-update:semver-major"
         - "version-update:semver-minor"
+
+    #since we lock this to exact versions, it causes conflicts with minor-next & major-next in composer.lock
+    #better to just test updates to this locally anyway since almost every version breaks something
+    - dependency-name: phpstan/phpstan
   groups:
     production-patch-updates:
       dependency-type: production
@@ -37,4 +41,7 @@ updates:
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: weekly
+    interval: monthly
+  groups:
+    github-actions:
+      patterns: ["*"]

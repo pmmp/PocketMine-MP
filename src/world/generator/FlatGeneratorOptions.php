@@ -26,11 +26,12 @@ namespace pocketmine\world\generator;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
+use pocketmine\world\World;
 use function array_map;
-use function count;
 use function explode;
 use function preg_match;
 use function preg_match_all;
+use const PHP_INT_MAX;
 
 /**
  * @internal
@@ -71,12 +72,11 @@ final class FlatGeneratorOptions{
 	 */
 	public static function parseLayers(string $layers) : array{
 		$result = [];
-		$split = array_map('\trim', explode(',', $layers));
+		$split = array_map('\trim', explode(',', $layers, limit: World::Y_MAX - World::Y_MIN));
 		$y = 0;
 		$itemParser = LegacyStringToItemParser::getInstance();
 		foreach($split as $line){
-			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
-			if(count($matches) !== 3){
+			if(preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches) !== 1){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
 			}
 
@@ -98,7 +98,7 @@ final class FlatGeneratorOptions{
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public static function parsePreset(string $presetString) : self{
-		$preset = explode(";", $presetString);
+		$preset = explode(";", $presetString, limit: 4);
 		$blocks = $preset[1] ?? "";
 		$biomeId = (int) ($preset[2] ?? BiomeIds::PLAINS);
 		$optionsString = $preset[3] ?? "";
@@ -111,15 +111,16 @@ final class FlatGeneratorOptions{
 			$params = true;
 			if($matches[3][$i] !== ""){
 				$params = [];
-				$p = explode(" ", $matches[3][$i]);
+				$p = explode(" ", $matches[3][$i], limit: PHP_INT_MAX);
 				foreach($p as $k){
-					$k = explode("=", $k);
+					//TODO: this should be limited to 2 parts, but 3 preserves old behaviour when given e.g. treecount=20=1
+					$k = explode("=", $k, limit: 3);
 					if(isset($k[1])){
 						$params[$k[0]] = $k[1];
 					}
 				}
 			}
-			$options[(string) $option] = $params;
+			$options[$option] = $params;
 		}
 		return new self($structure, $biomeId, $options);
 	}

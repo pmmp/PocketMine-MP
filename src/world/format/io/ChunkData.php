@@ -32,6 +32,10 @@ final class ChunkData{
 	 * @param SubChunk[]    $subChunks
 	 * @param CompoundTag[] $entityNBT
 	 * @param CompoundTag[] $tileNBT
+	 *
+	 * @phpstan-param array<int, SubChunk> $subChunks
+	 * @phpstan-param list<CompoundTag> $entityNBT
+	 * @phpstan-param list<CompoundTag> $tileNBT
 	 */
 	public function __construct(
 		private array $subChunks,
@@ -42,14 +46,21 @@ final class ChunkData{
 
 	/**
 	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
 	 */
 	public function getSubChunks() : array{ return $this->subChunks; }
 
 	public function isPopulated() : bool{ return $this->populated; }
 
-	/** @return CompoundTag[] */
+	/**
+	 * @return CompoundTag[]
+	 * @phpstan-return list<CompoundTag>
+	 */
 	public function getEntityNBT() : array{ return $this->entityNBT; }
 
-	/** @return CompoundTag[] */
+	/**
+	 * @return CompoundTag[]
+	 * @phpstan-return list<CompoundTag>
+	 */
 	public function getTileNBT() : array{ return $this->tileNBT; }
 }

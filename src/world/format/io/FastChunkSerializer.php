@@ -112,7 +112,6 @@ final class FastChunkSerializer{
 			$y = Binary::signByte($stream->getByte());
 			$airBlockId = $stream->getInt();
 
-			/** @var PalettedBlockArray[] $layers */
 			$layers = [];
 			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
 				$layers[] = self::deserializePalettedArray($stream);
