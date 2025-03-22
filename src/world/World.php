@@ -2147,9 +2147,10 @@ class World implements ChunkManager{
 			$item = VanillaItems::AIR();
 		}
 
-		$drops = [];
 		if($player === null || $player->hasFiniteResources()){
 			$drops = array_merge(...array_map(fn(Block $block) => $block->getDrops($item), $affectedBlocks));
+		}else{
+			$drops = array_merge(...array_map(fn(Block $block) => $block->getCreativeDrops(), $affectedBlocks));
 		}
 
 		$xpDrop = 0;

@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function count;
 
 class ShulkerBox extends Opaque{
 	use AnyFacingTrait;
@@ -114,5 +115,17 @@ class ShulkerBox extends Opaque{
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
+	}
+
+	public function getCreativeDrops() : array{
+		$shulker = $this->position->getWorld()->getTile($this->position);
+		if($shulker instanceof TileShulkerBox){
+			if(count($shulker->getInventory()->getContents()) > 0){
+				$drop = $this->asItem();
+				$this->addDataFromTile($shulker, $drop);
+				return [$drop];
+			}
+		}
+		return [];
 	}
 }
