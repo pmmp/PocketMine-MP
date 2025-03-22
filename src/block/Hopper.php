@@ -38,6 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function array_shift;
+use function assert;
 use function count;
 use function min;
 
@@ -56,6 +57,23 @@ class Hopper extends Transparent implements HopperInteractable{
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::UP);
 		$w->bool($this->powered);
+	}
+
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileHopper){
+			$this->lastTransferActionTick = $this->position->getWorld()->getServer()->getTick() - $tile->getTransferCooldown();
+		}
+
+		return $this;
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		assert($tile instanceof TileHopper);
+		$tile->setTransferCooldown($this->position->getWorld()->getServer()->getTick() - $this->lastTransferActionTick);
 	}
 
 	public function getFacing() : int{ return $this->facing; }
