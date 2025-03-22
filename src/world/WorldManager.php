@@ -56,7 +56,10 @@ use function trim;
 class WorldManager{
 	public const TICKS_PER_AUTOSAVE = 300 * Server::TARGET_TICKS_PER_SECOND;
 
-	/** @var World[] */
+	/**
+	 * @var World[]
+	 * @phpstan-var array<int, World>
+	 */
 	private array $worlds = [];
 	private ?World $defaultWorld = null;
 
@@ -76,6 +79,7 @@ class WorldManager{
 
 	/**
 	 * @return World[]
+	 * @phpstan-return array<int, World>
 	 */
 	public function getWorlds() : array{
 		return $this->worlds;
@@ -129,10 +133,6 @@ class WorldManager{
 		}
 
 		$ev = new WorldUnloadEvent($world);
-		if($world === $this->defaultWorld && !$forceUnload){
-			$ev->cancel();
-		}
-
 		$ev->call();
 
 		if(!$forceUnload && $ev->isCancelled()){

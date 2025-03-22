@@ -34,11 +34,16 @@ use function mt_rand;
 final class ChorusPlant extends Flowable{
 	use StaticSupportTrait;
 
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	protected array $connections = [];
+
 	protected function recalculateCollisionBoxes() : array{
 		$bb = AxisAlignedBB::one();
-		foreach($this->getAllSides() as $facing => $block){
-			$id = $block->getTypeId();
-			if($id !== BlockTypeIds::END_STONE && $id !== BlockTypeIds::CHORUS_FLOWER && !$block->hasSameTypeId($this)){
+		foreach(Facing::ALL as $facing){
+			if(!isset($this->connections[$facing])){
 				$bb->trim($facing, 2 / 16);
 			}
 		}
@@ -46,12 +51,32 @@ final class ChorusPlant extends Flowable{
 		return [$bb];
 	}
 
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
+
+		foreach(Facing::ALL as $facing){
+			$block = $this->getSide($facing);
+			if(match($block->getTypeId()){
+				BlockTypeIds::END_STONE, BlockTypeIds::CHORUS_FLOWER, $this->getTypeId() => true,
+				default => false
+			}){
+				$this->connections[$facing] = true;
+			}else{
+				unset($this->connections[$facing]);
+			}
+		}
+
+		return $this;
+	}
+
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		$position = $block->getPosition();
+		$position = $block->position;
 		$world = $position->getWorld();
 
 		$down = $world->getBlock($position->down());

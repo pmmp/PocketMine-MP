@@ -59,11 +59,15 @@ enum RecordType{
 	case DISK_CAT;
 	case DISK_BLOCKS;
 	case DISK_CHIRP;
+	case DISK_CREATOR;
+	case DISK_CREATOR_MUSIC_BOX;
 	case DISK_FAR;
 	case DISK_MALL;
 	case DISK_MELLOHI;
 	case DISK_OTHERSIDE;
 	case DISK_PIGSTEP;
+	case DISK_PRECIPICE;
+	case DISK_RELIC;
 	case DISK_STAL;
 	case DISK_STRAD;
 	case DISK_WARD;
@@ -83,11 +87,15 @@ enum RecordType{
 			self::DISK_CAT => ["C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()],
 			self::DISK_BLOCKS => ["C418 - blocks", LevelSoundEvent::RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()],
 			self::DISK_CHIRP => ["C418 - chirp", LevelSoundEvent::RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()],
+			self::DISK_CREATOR => ["Lena Raine - Creator", LevelSoundEvent::RECORD_CREATOR, KnownTranslationFactory::item_record_creator_desc()],
+			self::DISK_CREATOR_MUSIC_BOX => ["Lena Raine - Creator (Music Box)", LevelSoundEvent::RECORD_CREATOR_MUSIC_BOX, KnownTranslationFactory::item_record_creator_music_box_desc()],
 			self::DISK_FAR => ["C418 - far", LevelSoundEvent::RECORD_FAR, KnownTranslationFactory::item_record_far_desc()],
 			self::DISK_MALL => ["C418 - mall", LevelSoundEvent::RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()],
 			self::DISK_MELLOHI => ["C418 - mellohi", LevelSoundEvent::RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()],
 			self::DISK_OTHERSIDE => ["Lena Raine - otherside", LevelSoundEvent::RECORD_OTHERSIDE, KnownTranslationFactory::item_record_otherside_desc()],
 			self::DISK_PIGSTEP => ["Lena Raine - Pigstep", LevelSoundEvent::RECORD_PIGSTEP, KnownTranslationFactory::item_record_pigstep_desc()],
+			self::DISK_PRECIPICE => ["Aaron Cherof - Precipice", LevelSoundEvent::RECORD_PRECIPICE, KnownTranslationFactory::item_record_precipice_desc()],
+			self::DISK_RELIC => ["Aaron Cherof - Relic", LevelSoundEvent::RECORD_RELIC, KnownTranslationFactory::item_record_relic_desc()],
 			self::DISK_STAL => ["C418 - stal", LevelSoundEvent::RECORD_STAL, KnownTranslationFactory::item_record_stal_desc()],
 			self::DISK_STRAD => ["C418 - strad", LevelSoundEvent::RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()],
 			self::DISK_WARD => ["C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()],

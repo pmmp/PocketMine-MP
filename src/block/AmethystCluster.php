@@ -50,7 +50,7 @@ final class AmethystCluster extends Transparent{
 	private int $stage = self::STAGE_CLUSTER;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::STAGE_SMALL_BUD, self::STAGE_CLUSTER, $this->stage);
+		$w->boundedIntAuto(self::STAGE_SMALL_BUD, self::STAGE_CLUSTER, $this->stage);
 	}
 
 	public function getStage() : int{ return $this->stage; }

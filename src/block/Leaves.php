@@ -38,6 +38,8 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
+	private const MAX_LOG_DISTANCE = 4;
+
 	protected LeavesType $leavesType; //immutable for now
 	protected bool $noDecay = false;
 	protected bool $checkDecay = false;
@@ -91,7 +93,7 @@ class Leaves extends Transparent{
 			return true;
 		}
 
-		if($block instanceof Leaves && $distance <= 4){
+		if($block instanceof Leaves && $distance <= self::MAX_LOG_DISTANCE){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -155,6 +157,7 @@ class Leaves extends Transparent{
 				LeavesType::MANGROVE, //TODO: mangrove propagule
 				LeavesType::AZALEA, LeavesType::FLOWERING_AZALEA => null, //TODO: azalea
 				LeavesType::CHERRY => null, //TODO: cherry
+				LeavesType::PALE_OAK => null, //TODO: pale oak
 			})?->asItem();
 			if($sapling !== null){
 				$drops[] = $sapling;

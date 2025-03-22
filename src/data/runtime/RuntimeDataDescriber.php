@@ -38,7 +38,16 @@ use pocketmine\math\Facing;
 interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	public function int(int $bits, int &$value) : void;
 
+	/**
+	 * @deprecated Use {@link RuntimeDataDescriber::boundedIntAuto()} instead.
+	 */
 	public function boundedInt(int $bits, int $min, int $max, int &$value) : void;
+
+	/**
+	 * Same as boundedInt() but automatically calculates the required number of bits from the range.
+	 * The range bounds must be constant.
+	 */
+	public function boundedIntAuto(int $min, int $max, int &$value) : void;
 
 	public function bool(bool &$value) : void;
 
@@ -82,7 +91,8 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 
 	/**
 	 * @phpstan-template T of \UnitEnum
-	 * @phpstan-param T $case
+	 * @phpstan-param T &$case
+	 * @phpstan-param-out T $case
 	 */
 	public function enum(\UnitEnum &$case) : void;
 

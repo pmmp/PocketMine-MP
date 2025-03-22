@@ -30,11 +30,9 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function array_filter;
 use function assert;
 use function count;
 
@@ -89,17 +87,15 @@ abstract class BaseBanner extends Transparent{
 	 * @return $this
 	 */
 	public function setPatterns(array $patterns) : self{
-		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPatternLayer);
-		if(count($checked) !== count($patterns)){
-			throw new \TypeError("Deque must only contain " . BannerPatternLayer::class . " objects");
+		foreach($patterns as $pattern){
+			if(!$pattern instanceof BannerPatternLayer){
+				throw new \TypeError("Array must only contain " . BannerPatternLayer::class . " objects");
+			}
 		}
-		$this->patterns = $checked;
+		$this->patterns = $patterns;
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

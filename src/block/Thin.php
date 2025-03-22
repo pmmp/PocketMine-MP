@@ -39,6 +39,8 @@ class Thin extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
 			if($side instanceof Thin || $side instanceof Wall || $side->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
@@ -54,7 +56,6 @@ class Thin extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 7 / 16;
 
-		/** @var AxisAlignedBB[] $bbs */
 		$bbs = [];
 
 		if(isset($this->connections[Facing::WEST]) || isset($this->connections[Facing::EAST])){

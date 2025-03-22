@@ -1,0 +1,29 @@
+name: 'Clean up stale PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *'
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          stale-pr-message: |
+            This PR has been marked as "Waiting on Author", but we haven't seen any activity in 7 days.
+
+            If there is no further activity, it will be closed in 28 days.
+
+            Note for maintainers: Adding an assignee to the PR will prevent it from being marked as stale.
+
+          close-pr-message: |
+            As this PR hasn't been updated for a while, unfortunately we'll have to close it.
+
+          days-before-pr-stale: 7
+          days-before-pr-close: 28
+          only-labels: "Status: Waiting on Author"
+          close-pr-label: "Resolution: Abandoned"
+          exempt-all-assignees: true
+          

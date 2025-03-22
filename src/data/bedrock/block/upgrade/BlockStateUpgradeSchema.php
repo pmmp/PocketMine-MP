@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade;
 
+use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaFlattenInfo as FlattenInfo;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgradeSchemaValueRemap as ValueRemap;
 use pocketmine\nbt\tag\Tag;
 use function count;
@@ -59,25 +60,35 @@ final class BlockStateUpgradeSchema{
 	public array $remappedPropertyValues = [];
 
 	/**
+	 * @var FlattenInfo[]
+	 * @phpstan-var array<string, FlattenInfo>
+	 */
+	public array $flattenedProperties = [];
+
+	/**
 	 * @var BlockStateUpgradeSchemaBlockRemap[][]
 	 * @phpstan-var array<string, list<BlockStateUpgradeSchemaBlockRemap>>
 	 */
 	public array $remappedStates = [];
 
+	public readonly int $versionId;
+
 	public function __construct(
-		public int $maxVersionMajor,
-		public int $maxVersionMinor,
-		public int $maxVersionPatch,
-		public int $maxVersionRevision,
+		public readonly int $maxVersionMajor,
+		public readonly int $maxVersionMinor,
+		public readonly int $maxVersionPatch,
+		public readonly int $maxVersionRevision,
 		private int $schemaId
-	){}
+	){
+		$this->versionId = ($this->maxVersionMajor << 24) | ($this->maxVersionMinor << 16) | ($this->maxVersionPatch << 8) | $this->maxVersionRevision;
+	}
 
 	/**
 	 * @deprecated This is defined by Mojang, and therefore cannot be relied on. Use getSchemaId() instead for
 	 * internal version management.
 	 */
 	public function getVersionId() : int{
-		return ($this->maxVersionMajor << 24) | ($this->maxVersionMinor << 16) | ($this->maxVersionPatch << 8) | $this->maxVersionRevision;
+		return $this->versionId;
 	}
 
 	public function getSchemaId() : int{ return $this->schemaId; }
@@ -89,6 +100,7 @@ final class BlockStateUpgradeSchema{
 			$this->removedProperties,
 			$this->renamedProperties,
 			$this->remappedPropertyValues,
+			$this->flattenedProperties,
 			$this->remappedStates,
 		] as $list){
 			if(count($list) !== 0){

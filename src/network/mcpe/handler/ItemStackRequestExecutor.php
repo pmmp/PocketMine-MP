@@ -54,6 +54,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResp
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;
 use function spl_object_id;
@@ -112,10 +113,10 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
+		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerName()->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
-			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerId() . ", slot ID: " . $info->getSlotId());
+			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerName()->getContainerId() . ", slot ID: " . $info->getSlotId());
 		}
 		[$inventory, $slot] = $windowAndSlot;
 		if(!$inventory->slotExists($slot)){
@@ -142,7 +143,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
-		if($slotInfo->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+		if($slotInfo->getContainerName()->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 			//special case for the "created item" output slot
 			//TODO: do we need to send a response for this slot info?
 			return $this->takeCreatedItem($count);
@@ -343,7 +344,7 @@ class ItemStackRequestExecutor{
 					$this->setNextCreatedItem($window->getOutput($optionId));
 				}
 			}else{
-				$this->beginCrafting($action->getRecipeId(), 1);
+				$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 			}
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
@@ -370,7 +371,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	public function generateInventoryTransaction() : InventoryTransaction{
-		foreach($this->request->getActions() as $k => $action){
+		foreach(Utils::promoteKeys($this->request->getActions()) as $k => $action){
 			try{
 				$this->processItemStackRequestAction($action);
 			}catch(ItemStackRequestProcessException $e){
@@ -391,7 +392,7 @@ class ItemStackRequestExecutor{
 	public function buildItemStackResponse() : ItemStackResponse{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
-			$builder->addSlot($requestInfo->getContainerId(), $requestInfo->getSlotId());
+			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
 		return $builder->build();

@@ -24,6 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\RegistryTrait;
+use pocketmine\world\sound\ArmorEquipChainSound;
+use pocketmine\world\sound\ArmorEquipDiamondSound;
+use pocketmine\world\sound\ArmorEquipGenericSound;
+use pocketmine\world\sound\ArmorEquipGoldSound;
+use pocketmine\world\sound\ArmorEquipIronSound;
+use pocketmine\world\sound\ArmorEquipLeatherSound;
+use pocketmine\world\sound\ArmorEquipNetheriteSound;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -62,12 +69,12 @@ final class VanillaArmorMaterials{
 	}
 
 	protected static function setup() : void{
-		self::register("leather", new ArmorMaterial(15));
-		self::register("chainmail", new ArmorMaterial(12));
-		self::register("iron", new ArmorMaterial(9));
-		self::register("turtle", new ArmorMaterial(9));
-		self::register("gold", new ArmorMaterial(25));
-		self::register("diamond", new ArmorMaterial(10));
-		self::register("netherite", new ArmorMaterial(15));
+		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound()));
+		self::register("chainmail", new ArmorMaterial(12, new ArmorEquipChainSound()));
+		self::register("iron", new ArmorMaterial(9, new ArmorEquipIronSound()));
+		self::register("turtle", new ArmorMaterial(9, new ArmorEquipGenericSound()));
+		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound()));
+		self::register("diamond", new ArmorMaterial(10, new ArmorEquipDiamondSound()));
+		self::register("netherite", new ArmorMaterial(15, new ArmorEquipNetheriteSound()));
 	}
 }

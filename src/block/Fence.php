@@ -40,6 +40,8 @@ class Fence extends Transparent{
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
 
+		$this->collisionBoxes = null;
+
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
 			if($block instanceof static || $block instanceof FenceGate || $block->getSupportType(Facing::opposite($facing)) === SupportType::FULL){
@@ -52,13 +54,9 @@ class Fence extends Transparent{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 0.5 - $this->getThickness() / 2;
 
-		/** @var AxisAlignedBB[] $bbs */
 		$bbs = [];
 
 		$connectWest = isset($this->connections[Facing::WEST]);

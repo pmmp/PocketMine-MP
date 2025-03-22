@@ -33,6 +33,7 @@ use function basename;
 use function crc32;
 use function file_exists;
 use function floor;
+use function flush;
 use function microtime;
 use function mkdir;
 use function random_bytes;
@@ -150,6 +151,10 @@ class FormatConverter{
 				$diff = $time - $thisRound;
 				$thisRound = $time;
 				$this->logger->info("Converted $counter / $count chunks (" . floor($this->chunksPerProgressUpdate / $diff) . " chunks/sec)");
+				flush();
+			}
+			if(($counter % (2 ** 16)) === 0){
+				$new->doGarbageCollection();
 			}
 		}
 		$total = microtime(true) - $start;

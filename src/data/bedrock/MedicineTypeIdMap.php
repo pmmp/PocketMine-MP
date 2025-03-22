@@ -32,9 +32,13 @@ final class MedicineTypeIdMap{
 	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(MedicineTypeIds::ANTIDOTE, MedicineType::ANTIDOTE);
-		$this->register(MedicineTypeIds::ELIXIR, MedicineType::ELIXIR);
-		$this->register(MedicineTypeIds::EYE_DROPS, MedicineType::EYE_DROPS);
-		$this->register(MedicineTypeIds::TONIC, MedicineType::TONIC);
+		foreach(MedicineType::cases() as $case){
+			$this->register(match($case){
+				MedicineType::ANTIDOTE => MedicineTypeIds::ANTIDOTE,
+				MedicineType::ELIXIR => MedicineTypeIds::ELIXIR,
+				MedicineType::EYE_DROPS => MedicineTypeIds::EYE_DROPS,
+				MedicineType::TONIC => MedicineTypeIds::TONIC,
+			}, $case);
+		}
 	}
 }

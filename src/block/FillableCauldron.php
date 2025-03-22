@@ -38,7 +38,7 @@ abstract class FillableCauldron extends Transparent{
 	private int $fillLevel = self::MIN_FILL_LEVEL;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
+		$w->boundedIntAuto(self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}
 
 	public function getFillLevel() : int{ return $this->fillLevel; }

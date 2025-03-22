@@ -8,7 +8,7 @@ jobs:
   support:
     runs-on: ubuntu-latest
     steps:
-      - uses: dessant/support-requests@v3
+      - uses: dessant/support-requests@v4
         with:
           github-token: ${{ github.token }}
           support-label:  "Support request"
@@ -20,10 +20,7 @@ jobs:
 
             - Check our [Documentation](https://doc.pmmp.io) to see if you can find answers there
 
-            - Ask the community on our [Discord server](https://discord.gg/bmSAZBG) or our [Forums](https://forums.pmmp.io)
-
-
-            [Docs](https://pmmp.rtfd.io) | [Discord](https://discord.gg/bmSAZBG) | [Forums](https://forums.pmmp.io)
+            - Ask the community on our [Discord server](https://discord.gg/bmSAZBG)
 
           close-issue: true
           lock-issue: false

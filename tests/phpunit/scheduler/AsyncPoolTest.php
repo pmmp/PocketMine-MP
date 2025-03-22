@@ -32,8 +32,6 @@ use pocketmine\utils\MainLogger;
 use function define;
 use function dirname;
 use function microtime;
-use function sys_get_temp_dir;
-use function tempnam;
 use function usleep;
 
 class AsyncPoolTest extends TestCase{
@@ -45,13 +43,12 @@ class AsyncPoolTest extends TestCase{
 
 	public function setUp() : void{
 		@define('pocketmine\\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 3) . '/vendor/autoload.php');
-		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"), false, "Main", new \DateTimeZone('UTC'));
+		$this->mainLogger = new MainLogger(null, false, "Main", new \DateTimeZone('UTC'));
 		$this->pool = new AsyncPool(2, 1024, new ThreadSafeClassLoader(), $this->mainLogger, new SleeperHandler());
 	}
 
 	public function tearDown() : void{
 		$this->pool->shutdown();
-		$this->mainLogger->shutdownLogWriterThread();
 	}
 
 	public function testTaskLeak() : void{
@@ -74,6 +71,7 @@ class AsyncPoolTest extends TestCase{
 	}
 
 	public function testThreadSafeSetResult() : void{
+		/** @phpstan-var PromiseResolver<ThreadSafeArray<array-key, mixed>> $resolver */
 		$resolver = new PromiseResolver();
 		$resolver->getPromise()->onCompletion(
 			function(ThreadSafeArray $result) : void{
@@ -115,6 +113,25 @@ class AsyncPoolTest extends TestCase{
 
 			public function onRun() : void{
 				//dummy
+			}
+		});
+		while($this->pool->collectTasks()){
+			usleep(50 * 1000);
+		}
+	}
+
+	public function testNullComplexDataFetch() : void{
+		$this->pool->submitTask(new class extends AsyncTask{
+			public function __construct(){
+				$this->storeLocal("null", null);
+			}
+
+			public function onRun() : void{
+				//dummy
+			}
+
+			public function onCompletion() : void{
+				AsyncPoolTest::assertNull($this->fetchLocal("null"));
 			}
 		});
 		while($this->pool->collectTasks()){

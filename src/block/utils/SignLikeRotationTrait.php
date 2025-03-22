@@ -31,7 +31,7 @@ trait SignLikeRotationTrait{
 	private $rotation = 0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, 15, $this->rotation);
+		$w->boundedIntAuto(0, 15, $this->rotation);
 	}
 
 	public function getRotation() : int{ return $this->rotation; }

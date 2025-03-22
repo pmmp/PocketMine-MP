@@ -66,7 +66,7 @@ class Location extends Position{
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Location){
-			return parent::equals($v) && $v->yaw == $this->yaw && $v->pitch == $this->pitch;
+			return parent::equals($v) && $v->yaw === $this->yaw && $v->pitch === $this->pitch;
 		}
 		return parent::equals($v);
 	}

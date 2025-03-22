@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
@@ -32,7 +33,6 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use function mt_rand;
 
 final class TorchflowerCrop extends Flowable{
 	use StaticSupportTrait;
@@ -79,7 +79,7 @@ final class TorchflowerCrop extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if(mt_rand(0, 2) === 1){
+		if(CropGrowthHelper::canGrow($this)){
 			BlockEventHelper::grow($this, $this->getNextState(), null);
 		}
 	}

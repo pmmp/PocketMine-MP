@@ -36,9 +36,6 @@ class CakeWithCandle extends BaseCake{
 		onInteract as onInteractCandle;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()
@@ -52,6 +49,9 @@ class CakeWithCandle extends BaseCake{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($this->lit && $face !== Facing::UP){
+			return true;
+		}
 		if($this->onInteractCandle($item, $face, $clickVector, $player, $returnedItems)){
 			return true;
 		}

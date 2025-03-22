@@ -137,6 +137,7 @@ abstract class LightUpdate{
 		while(!$context->spreadQueue->isEmpty()){
 			$touched++;
 			[$x, $y, $z] = $context->spreadQueue->dequeue();
+			$from = $context->spreadVisited[World::blockHash($x, $y, $z)];
 
 			unset($context->spreadVisited[World::blockHash($x, $y, $z)]);
 
@@ -155,7 +156,11 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			foreach(Facing::OFFSET as [$ox, $oy, $oz]){
+			foreach(Facing::OFFSET as $side => [$ox, $oy, $oz]){
+				if($from === $side){
+					//don't check the side that this node received its initial light from
+					continue;
+				}
 				$cx = $x + $ox;
 				$cy = $y + $oy;
 				$cz = $z + $oz;
@@ -169,7 +174,7 @@ abstract class LightUpdate{
 					$lightArray = $this->getCurrentLightArray();
 				}
 				assert($subChunk !== null);
-				$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context, $lightArray, $subChunk);
+				$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context, $lightArray, $subChunk, $side);
 			}
 		}
 
@@ -199,7 +204,7 @@ abstract class LightUpdate{
 		}
 	}
 
-	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context, LightArray $lightArray, SubChunk $subChunk) : void{
+	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context, LightArray $lightArray, SubChunk $subChunk, int $side) : void{
 		$lx = $x & SubChunk::COORD_MASK;
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;
@@ -210,7 +215,11 @@ abstract class LightUpdate{
 			$lightArray->set($lx, $ly, $lz, $potentialLight);
 
 			if(!isset($context->spreadVisited[$index = World::blockHash($x, $y, $z)]) && $potentialLight > 1){
-				$context->spreadVisited[$index] = true;
+				//Track where this node was lit from, to avoid checking the source again when we propagate from here
+				//TODO: In the future it might be worth tracking more than one adjacent source face in case multiple
+				//nodes try to light the same node. However, this is a rare case since the vast majority of calls are
+				//basic propagation with only one source anyway.
+				$context->spreadVisited[$index] = Facing::opposite($side);
 				$context->spreadQueue->enqueue([$x, $y, $z]);
 			}
 		}

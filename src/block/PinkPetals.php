@@ -47,7 +47,7 @@ class PinkPetals extends Flowable{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
-		$w->boundedInt(2, self::MIN_COUNT, self::MAX_COUNT, $this->count);
+		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
 
 	public function getCount() : int{
@@ -70,13 +70,13 @@ class PinkPetals extends Flowable{
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return ($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT) || $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return ($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT) || $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof PinkPetals && $blockReplace->getCount() < self::MAX_COUNT){
-			$this->count = $blockReplace->getCount() + 1;
-			$this->facing = $blockReplace->getFacing();
+		if($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT){
+			$this->count = $blockReplace->count + 1;
+			$this->facing = $blockReplace->facing;
 		}elseif($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}

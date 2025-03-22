@@ -25,6 +25,8 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -44,6 +46,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -58,17 +61,19 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function abs;
 use function array_shift;
 use function atan2;
 use function ceil;
 use function count;
 use function floor;
-use function lcg_value;
+use function ksort;
 use function max;
 use function min;
 use function mt_getrandmax;
@@ -76,6 +81,7 @@ use function mt_rand;
 use function round;
 use function sqrt;
 use const M_PI;
+use const SORT_NUMERIC;
 
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
@@ -126,11 +132,17 @@ abstract class Living extends Entity{
 	protected bool $gliding = false;
 	protected bool $swimming = false;
 
+	private ?int $frostWalkerLevel = null;
+
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
 	protected function getInitialGravity() : float{ return 0.08; }
 
 	abstract public function getName() : string;
+
+	public function canBeRenamed() : bool{
+		return true;
+	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -145,6 +157,14 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+			onSlotChange: function(Inventory $inventory, int $slot) : void{
+				if($slot === ArmorInventory::SLOT_FEET){
+					$this->frostWalkerLevel = null;
+				}
+			},
+			onContentChange: function() : void{ $this->frostWalkerLevel = null; }
+		));
 
 		$health = $this->getMaxHealth();
 
@@ -484,7 +504,7 @@ abstract class Living extends Entity{
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
-					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + Utils::getRandomFloat() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}
@@ -551,26 +571,33 @@ abstract class Living extends Entity{
 			return;
 		}
 
-		$this->attackTime = $source->getAttackCooldown();
+		if($this->attackTime <= 0){
+			//this logic only applies if the entity was cold attacked
 
-		if($source instanceof EntityDamageByChildEntityEvent){
-			$e = $source->getChild();
-			if($e !== null){
-				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+			$this->attackTime = $source->getAttackCooldown();
+
+			if($source instanceof EntityDamageByChildEntityEvent){
+				$e = $source->getChild();
+				if($e !== null){
+					$motion = $e->getMotion();
+					$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
+			}elseif($source instanceof EntityDamageByEntityEvent){
+				$e = $source->getDamager();
+				if($e !== null){
+					$deltaX = $this->location->x - $e->location->x;
+					$deltaZ = $this->location->z - $e->location->z;
+					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+				}
 			}
-		}elseif($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($e !== null){
-				$deltaX = $this->location->x - $e->location->x;
-				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
+
+			if($this->isAlive()){
+				$this->doHitAnimation();
 			}
 		}
 
 		if($this->isAlive()){
 			$this->applyPostDamageEffects($source);
-			$this->doHitAnimation();
 		}
 	}
 
@@ -674,6 +701,47 @@ abstract class Living extends Entity{
 		return $hasUpdate;
 	}
 
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		parent::move($dx, $dy, $dz);
+
+		$frostWalkerLevel = $this->getFrostWalkerLevel();
+		if($frostWalkerLevel > 0 && (abs($this->location->x - $oldX) > self::MOTION_THRESHOLD || abs($this->location->z - $oldZ) > self::MOTION_THRESHOLD)){
+			$this->applyFrostWalker($frostWalkerLevel);
+		}
+	}
+
+	protected function applyFrostWalker(int $level) : void{
+		$radius = $level + 2;
+		$world = $this->getWorld();
+
+		$baseX = $this->location->getFloorX();
+		$y = $this->location->getFloorY() - 1;
+		$baseZ = $this->location->getFloorZ();
+
+		$frostedIce = VanillaBlocks::FROSTED_ICE();
+		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
+			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
+				$block = $world->getBlockAt($x, $y, $z);
+				if(
+					!$block instanceof Water ||
+					!$block->isSource() ||
+					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
+					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
+				){
+					continue;
+				}
+				$world->setBlockAt($x, $y, $z, $frostedIce);
+			}
+		}
+	}
+
+	public function getFrostWalkerLevel() : int{
+		return $this->frostWalkerLevel ??= $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
+	}
+
 	/**
 	 * Ticks the entity's air supply, consuming it when underwater and regenerating it when out of water.
 	 */
@@ -684,7 +752,7 @@ abstract class Living extends Entity{
 			$this->setBreathing(false);
 
 			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 ||
-				lcg_value() <= (1 / ($respirationLevel + 1))
+				Utils::getRandomFloat() <= (1 / ($respirationLevel + 1))
 			){
 				$ticks -= $tickDiff;
 				if($ticks <= -20){
@@ -872,8 +940,30 @@ abstract class Living extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$visibleEffects = [];
+		foreach ($this->effectManager->all() as $effect) {
+			if (!$effect->isVisible() || !$effect->getType()->hasBubbles()) {
+				continue;
+			}
+			$visibleEffects[EffectIdMap::getInstance()->toId($effect->getType())] = $effect->isAmbient();
+		}
+
+		//TODO: HACK! the client may not be able to identify effects if they are not sorted.
+		ksort($visibleEffects, SORT_NUMERIC);
+
+		$effectsData = 0;
+		$packedEffectsCount = 0;
+		foreach ($visibleEffects as $effectId => $isAmbient) {
+			$effectsData = ($effectsData << 7) |
+				(($effectId & 0x3f) << 1) | //Why not use 7 bits instead of only 6? mojang...
+				($isAmbient ? 1 : 0);
+
+			if (++$packedEffectsCount >= 8) {
+				break;
+			}
+		}
+		$properties->setLong(EntityMetadataProperties::VISIBLE_MOB_EFFECTS, $effectsData);
+
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 

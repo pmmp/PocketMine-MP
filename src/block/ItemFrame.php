@@ -31,13 +31,13 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 use pocketmine\world\sound\ItemFrameRemoveItemSound;
 use pocketmine\world\sound\ItemFrameRotateItemSound;
 use function is_infinite;
 use function is_nan;
-use function lcg_value;
 
 class ItemFrame extends Flowable{
 	use AnyFacingTrait;
@@ -154,7 +154,7 @@ class ItemFrame extends Flowable{
 			return false;
 		}
 		$world = $this->position->getWorld();
-		if(lcg_value() <= $this->itemDropChance){
+		if(Utils::getRandomFloat() <= $this->itemDropChance){
 			$world->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
 			$world->addSound($this->position, new ItemFrameRemoveItemSound());
 		}
@@ -185,7 +185,7 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-		if($this->framedItem !== null && lcg_value() <= $this->itemDropChance){
+		if($this->framedItem !== null && Utils::getRandomFloat() <= $this->itemDropChance){
 			$drops[] = clone $this->framedItem;
 		}
 

@@ -65,8 +65,8 @@ abstract class BaseBigDripleaf extends Transparent{
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 		if($block instanceof BaseBigDripleaf){
-			$this->facing = $block->getFacing();
-			$tx->addBlock($block->getPosition(), VanillaBlocks::BIG_DRIPLEAF_STEM()->setFacing($this->facing));
+			$this->facing = $block->facing;
+			$tx->addBlock($block->position, VanillaBlocks::BIG_DRIPLEAF_STEM()->setFacing($this->facing));
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -98,7 +98,7 @@ abstract class BaseBigDripleaf extends Transparent{
 		if($head === null){
 			return false;
 		}
-		$pos = $head->getPosition();
+		$pos = $head->position;
 		$up = $pos->up();
 		$world = $pos->getWorld();
 		if(
@@ -110,8 +110,8 @@ abstract class BaseBigDripleaf extends Transparent{
 
 		$tx = new BlockTransaction($world);
 
-		$tx->addBlock($pos, VanillaBlocks::BIG_DRIPLEAF_STEM()->setFacing($head->getFacing()));
-		$tx->addBlock($up, VanillaBlocks::BIG_DRIPLEAF_HEAD()->setFacing($head->getFacing()));
+		$tx->addBlock($pos, VanillaBlocks::BIG_DRIPLEAF_STEM()->setFacing($head->facing));
+		$tx->addBlock($up, VanillaBlocks::BIG_DRIPLEAF_HEAD()->setFacing($head->facing));
 
 		$ev = new StructureGrowEvent($head, $tx, $player);
 		$ev->call();

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format;
 
 use function array_map;
-use function array_values;
 use function count;
 
 class SubChunk{
@@ -36,6 +35,7 @@ class SubChunk{
 	 * SubChunk constructor.
 	 *
 	 * @param PalettedBlockArray[] $blockLayers
+	 * @phpstan-param list<PalettedBlockArray> $blockLayers
 	 */
 	public function __construct(
 		private int $emptyBlockId,
@@ -85,6 +85,7 @@ class SubChunk{
 
 	/**
 	 * @return PalettedBlockArray[]
+	 * @phpstan-return list<PalettedBlockArray>
 	 */
 	public function getBlockLayers() : array{
 		return $this->blockLayers;
@@ -129,17 +130,18 @@ class SubChunk{
 	}
 
 	public function collectGarbage() : void{
-		foreach($this->blockLayers as $k => $layer){
+		$cleanedLayers = [];
+		foreach($this->blockLayers as $layer){
 			$layer->collectGarbage();
 
 			foreach($layer->getPalette() as $p){
 				if($p !== $this->emptyBlockId){
+					$cleanedLayers[] = $layer;
 					continue 2;
 				}
 			}
-			unset($this->blockLayers[$k]);
 		}
-		$this->blockLayers = array_values($this->blockLayers);
+		$this->blockLayers = $cleanedLayers;
 		$this->biomes->collectGarbage();
 
 		if($this->skyLight !== null && $this->skyLight->isUniform(0)){

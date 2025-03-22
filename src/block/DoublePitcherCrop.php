@@ -24,17 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function mt_rand;
 
 final class DoublePitcherCrop extends DoublePlant{
 	use AgeableTrait {
@@ -101,10 +102,19 @@ final class DoublePitcherCrop extends DoublePlant{
 	}
 
 	public function onRandomTick() : void{
-		//TODO: the growth speed is influenced by farmland and nearby crops
 		//only the bottom half of the plant can grow randomly
-		if(mt_rand(0, 2) === 0 && !$this->top){
+		if(CropGrowthHelper::canGrow($this) && !$this->top){
 			$this->grow(null);
 		}
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [
+			$this->age >= self::MAX_AGE ? VanillaBlocks::PITCHER_PLANT()->asItem() : VanillaItems::PITCHER_POD()
+		];
+	}
+
+	public function asItem() : Item{
+		return VanillaItems::PITCHER_POD();
 	}
 }

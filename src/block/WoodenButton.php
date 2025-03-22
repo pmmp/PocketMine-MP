@@ -35,4 +35,8 @@ class WoodenButton extends Button{
 	public function hasEntityCollision() : bool{
 		return false; //TODO: arrows activate wooden buttons
 	}
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 100 : 0;
+	}
 }

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
+use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
+
 interface Compressor{
 	/**
 	 * @throws DecompressionException
@@ -30,6 +32,14 @@ interface Compressor{
 	public function decompress(string $payload) : string;
 
 	public function compress(string $payload) : string;
+
+	/**
+	 * Returns the canonical ID of this compressor, used to tell the remote end how to decompress a packet compressed
+	 * with this compressor.
+	 *
+	 * @return CompressionAlgorithm::*
+	 */
+	public function getNetworkId() : int;
 
 	/**
 	 * Returns the minimum size of packet batch that the compressor will attempt to compress.

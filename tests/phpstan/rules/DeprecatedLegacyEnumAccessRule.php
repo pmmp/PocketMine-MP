@@ -28,7 +28,6 @@ use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
-use PHPStan\Type\TypeWithClassName;
 use pocketmine\utils\LegacyEnumShimTrait;
 use function sprintf;
 
@@ -51,18 +50,15 @@ final class DeprecatedLegacyEnumAccessRule implements Rule{
 			$scope->resolveTypeByName($node->class) :
 			$scope->getType($node->class);
 
-		if(!$classType instanceof TypeWithClassName){
-			return [];
-		}
+		$errors = [];
+		$reflections = $classType->getObjectClassReflections();
+		foreach($reflections as $reflection){
+			if(!$reflection->hasTraitUse(LegacyEnumShimTrait::class) || !$reflection->implementsInterface(\UnitEnum::class)){
+				continue;
+			}
 
-		$reflection = $classType->getClassReflection();
-		if($reflection === null || !$reflection->hasTraitUse(LegacyEnumShimTrait::class) || !$reflection->implementsInterface(\UnitEnum::class)){
-			return [];
-		}
-
-		if(!$reflection->hasNativeMethod($caseName)){
-			return [
-				RuleErrorBuilder::message(sprintf(
+			if(!$reflection->hasNativeMethod($caseName)){
+				$errors[] = RuleErrorBuilder::message(sprintf(
 					'Use of legacy enum case accessor %s::%s().',
 					$reflection->getName(),
 					$caseName
@@ -70,10 +66,11 @@ final class DeprecatedLegacyEnumAccessRule implements Rule{
 					'Access the enum constant directly instead (remove the brackets), e.g. %s::%s',
 					$reflection->getName(),
 					$caseName
-				))->build()
-			];
+				))->identifier('pocketmine.enum.deprecatedAccessor')
+					->build();
+			}
 		}
 
-		return [];
+		return $errors;
 	}
 }

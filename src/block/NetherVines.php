@@ -108,8 +108,8 @@ class NetherVines extends Flowable{
 
 	private function grow(?Player $player, int $growthAmount = 1) : bool{
 		$top = $this->seekToTip();
-		$age = $top->getAge();
-		$pos = $top->getPosition();
+		$age = $top->age;
+		$pos = $top->position;
 		$world = $pos->getWorld();
 		$changedBlocks = 0;
 

@@ -23,8 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Living;
+use pocketmine\inventory\transaction\action\validator\CallbackSlotValidator;
+use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Armor;
 use pocketmine\item\Item;
+use pocketmine\item\ItemBlock;
 
 class ArmorInventory extends SimpleInventory{
 	public const SLOT_HEAD = 0;
@@ -36,6 +41,8 @@ class ArmorInventory extends SimpleInventory{
 		protected Living $holder
 	){
 		parent::__construct(4);
+
+		$this->validators->add(new CallbackSlotValidator(self::validate(...)));
 	}
 
 	public function getHolder() : Living{
@@ -72,5 +79,21 @@ class ArmorInventory extends SimpleInventory{
 
 	public function setBoots(Item $boots) : void{
 		$this->setItem(self::SLOT_FEET, $boots);
+	}
+
+	private static function validate(Inventory $inventory, Item $item, int $slot) : ?TransactionValidationException{
+		if($item instanceof Armor){
+			if($item->getArmorSlot() !== $slot){
+				return new TransactionValidationException("Armor item is in wrong slot");
+			}
+		}else{
+			if(!($slot === ArmorInventory::SLOT_HEAD && $item instanceof ItemBlock && (
+					$item->getBlock()->getTypeId() === BlockTypeIds::CARVED_PUMPKIN ||
+					$item->getBlock()->getTypeId() === BlockTypeIds::MOB_HEAD
+				))){
+				return new TransactionValidationException("Item is not accepted in an armor slot");
+			}
+		}
+		return null;
 	}
 }

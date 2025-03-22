@@ -58,7 +58,7 @@ final class FloorCoralFan extends BaseCoral{
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$playerBlockPos = $player->getPosition()->floor();
-			$directionVector = $blockReplace->getPosition()->subtractVector($playerBlockPos)->normalize();
+			$directionVector = $blockReplace->position->subtractVector($playerBlockPos)->normalize();
 			$angle = rad2deg(atan2($directionVector->getZ(), $directionVector->getX()));
 
 			if($angle <= 45 || 315 <= $angle || (135 <= $angle && $angle <= 225)){

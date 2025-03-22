@@ -30,15 +30,17 @@ use function spl_object_id;
 use const SORT_NUMERIC;
 
 class HandlerList{
-	/** @var RegisteredListener[][] */
+	/**
+	 * @var RegisteredListener[][]
+	 * @phpstan-var array<int, array<int, RegisteredListener>>
+	 */
 	private array $handlerSlots = [];
 
 	/** @var RegisteredListenerCache[] */
 	private array $affectedHandlerCaches = [];
 
 	/**
-	 * @phpstan-template TEvent of Event
-	 * @phpstan-param class-string<TEvent> $class
+	 * @phpstan-param class-string<covariant Event> $class
 	 */
 	public function __construct(
 		private string $class,

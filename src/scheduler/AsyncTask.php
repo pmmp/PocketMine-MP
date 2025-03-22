@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Runnable;
-use pmmp\thread\Thread as NativeThread;
 use pmmp\thread\ThreadSafe;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
-use function assert;
+use pocketmine\timings\Timings;
+use function array_key_exists;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function is_null;
@@ -68,7 +68,10 @@ abstract class AsyncTask extends Runnable{
 	 */
 	private static array $threadLocalStorage = [];
 
-	/** @phpstan-var ThreadSafeArray<int, string>|null */
+	/**
+	 * @phpstan-var ThreadSafeArray<int, string>|null
+	 * @deprecated
+	 */
 	private ?ThreadSafeArray $progressUpdates = null;
 
 	private ThreadSafe|string|int|bool|null|float $result = null;
@@ -79,12 +82,18 @@ abstract class AsyncTask extends Runnable{
 	public function run() : void{
 		$this->result = null;
 
-		$this->onRun();
+		$timings = Timings::getAsyncTaskRunTimings($this);
+		$timings->startTiming();
+
+		try{
+			$this->onRun();
+		}finally{
+			$timings->stopTiming();
+		}
 
 		$this->finished = true;
-		$worker = NativeThread::getCurrentThread();
-		assert($worker instanceof AsyncWorker);
-		$worker->getNotifier()->wakeupSleeper();
+		AsyncWorker::getNotifier()->wakeupSleeper();
+		AsyncWorker::maybeCollectCycles();
 	}
 
 	/**
@@ -156,6 +165,8 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * Call this method from {@link AsyncTask::onRun} (AsyncTask execution thread) to schedule a call to
 	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
 	 *
@@ -170,6 +181,7 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
 	 * @internal Only call from AsyncPool.php on the main thread
 	 */
 	public function checkProgressUpdates() : void{
@@ -182,6 +194,8 @@ abstract class AsyncTask extends Runnable{
 	}
 
 	/**
+	 * @deprecated
+	 *
 	 * Called from the main thread after {@link AsyncTask::publishProgress} is called.
 	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
 	 * {@link AsyncTask::onCompletion} is called.
@@ -230,7 +244,7 @@ abstract class AsyncTask extends Runnable{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(!isset(self::$threadLocalStorage[$id][$key])){
+		if(!isset(self::$threadLocalStorage[$id]) || !array_key_exists($key, self::$threadLocalStorage[$id])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 

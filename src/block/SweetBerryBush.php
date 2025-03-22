@@ -36,6 +36,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\SweetBerriesPickSound;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
@@ -81,6 +82,7 @@ class SweetBerryBush extends Flowable{
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
 			$world->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
 			$world->dropItem($this->position, $this->asItem()->setCount($dropAmount));
+			$world->addSound($this->position, new SweetBerriesPickSound());
 		}
 
 		return true;

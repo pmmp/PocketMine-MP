@@ -47,7 +47,7 @@ class SnowLayer extends Flowable implements Fallable{
 	protected int $layers = self::MIN_LAYERS;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
+		$w->boundedIntAuto(self::MIN_LAYERS, self::MAX_LAYERS, $this->layers);
 	}
 
 	public function getLayers() : int{ return $this->layers; }
@@ -65,9 +65,6 @@ class SnowLayer extends Flowable implements Fallable{
 		return $this->layers < self::MAX_LAYERS;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: this zero-height BB is intended to stay in lockstep with a MCPE bug
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];

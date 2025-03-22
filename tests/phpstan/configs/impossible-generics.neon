@@ -1,12 +1,14 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method pocketmine\\\\event\\\\RegisteredListener\\:\\:__construct\\(\\) has parameter \\$handler with no signature specified for Closure\\.$#"
+			message: '#^Method pocketmine\\event\\RegisteredListener\:\:__construct\(\) has parameter \$handler with no signature specified for Closure\.$#'
+			identifier: missingType.callable
 			count: 1
 			path: ../../../src/event/RegisteredListener.php
 
 		-
-			message: "#^Method pocketmine\\\\event\\\\RegisteredListener\\:\\:getHandler\\(\\) return type has no signature specified for Closure\\.$#"
+			message: '#^Method pocketmine\\event\\RegisteredListener\:\:getHandler\(\) return type has no signature specified for Closure\.$#'
+			identifier: missingType.callable
 			count: 1
 			path: ../../../src/event/RegisteredListener.php
 

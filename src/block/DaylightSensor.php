@@ -42,7 +42,7 @@ class DaylightSensor extends Transparent{
 	protected bool $inverted = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(4, 0, 15, $this->signalStrength);
+		$w->boundedIntAuto(0, 15, $this->signalStrength);
 		$w->bool($this->inverted);
 	}
 
@@ -62,9 +62,6 @@ class DaylightSensor extends Transparent{
 		return 300;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}

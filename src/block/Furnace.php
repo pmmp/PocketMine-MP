@@ -27,6 +27,7 @@ use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\block\utils\HopperTransferHelper;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -39,10 +40,9 @@ use function mt_rand;
 
 class Furnace extends Opaque implements HopperInteractable{
 	use FacesOppositePlacingPlayerTrait;
+	use LightableTrait;
 
 	protected FurnaceType $furnaceType;
-
-	protected bool $lit = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, FurnaceType $furnaceType){
 		$this->furnaceType = $furnaceType;
@@ -60,18 +60,6 @@ class Furnace extends Opaque implements HopperInteractable{
 
 	public function getLightLevel() : int{
 		return $this->lit ? 13 : 0;
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

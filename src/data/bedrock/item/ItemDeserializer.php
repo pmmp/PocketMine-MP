@@ -51,10 +51,17 @@ final class ItemDeserializer{
 	 * @phpstan-param \Closure(Data) : Item $deserializer
 	 */
 	public function map(string $id, \Closure $deserializer) : void{
-		if(isset($this->deserializers[$id])){
-			throw new \InvalidArgumentException("Deserializer is already assigned for \"$id\"");
-		}
 		$this->deserializers[$id] = $deserializer;
+	}
+
+	/**
+	 * Returns the existing data deserializer for the given ID, or null if none exists.
+	 * This may be useful if you need to override a deserializer, but still want to be able to fall back to the original.
+	 *
+	 * @phpstan-return ?\Closure(Data) : Item
+	 */
+	public function getDeserializerForId(string $id) : ?\Closure{
+		return $this->deserializers[$id] ?? null;
 	}
 
 	/**

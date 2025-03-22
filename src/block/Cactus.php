@@ -43,9 +43,6 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		$shrinkSize = 1 / 16;
 		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
@@ -95,10 +92,10 @@ class Cactus extends Transparent{
 					}
 				}
 				$this->age = 0;
-				$world->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this, update: false);
 			}else{
 				++$this->age;
-				$world->setBlock($this->position, $this);
+				$world->setBlock($this->position, $this, update: false);
 			}
 		}
 	}

@@ -58,7 +58,7 @@ class Bamboo extends Transparent{
 	protected int $leafSize = self::NO_LEAVES;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(2, self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
+		$w->boundedIntAuto(self::NO_LEAVES, self::LARGE_LEAVES, $this->leafSize);
 		$w->bool($this->thick);
 		$w->bool($this->ready);
 	}
@@ -87,9 +87,6 @@ class Bamboo extends Transparent{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		//this places the BB at the northwest corner, not the center
 		$inset = 1 - (($this->thick ? 3 : 2) / 16);
@@ -173,7 +170,7 @@ class Bamboo extends Transparent{
 		$newHeight = $height + $growAmount;
 
 		$stemBlock = (clone $this)->setReady(false)->setLeafSize(self::NO_LEAVES);
-		if($newHeight >= 4 && !$stemBlock->isThick()){ //don't change it to false if height is less, because it might have been chopped
+		if($newHeight >= 4 && !$stemBlock->thick){ //don't change it to false if height is less, because it might have been chopped
 			$stemBlock = $stemBlock->setThick(true);
 		}
 		$smallLeavesBlock = (clone $stemBlock)->setLeafSize(self::SMALL_LEAVES);
