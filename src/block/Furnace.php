@@ -27,8 +27,8 @@ use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\LightableTrait;
 use pocketmine\block\utils\HopperTransferHelper;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\inventory\Inventory;
@@ -100,7 +100,7 @@ class Furnace extends Opaque implements HopperInteractable{
 
 		$hopperFacing = $hopperBlock->getFacing();
 
-		foreach($sourceInventory->getContents() as $item) {
+		foreach($sourceInventory->getContents() as $item){
 			if($item->isNull()){
 				continue;
 			}
