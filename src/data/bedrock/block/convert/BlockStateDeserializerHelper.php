@@ -126,7 +126,13 @@ final class BlockStateDeserializerHelper{
 			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TDoor of Door
+	 * @phpstan-param TDoor $block
+	 * @phpstan-return TDoor
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeDoor(Door $block, BlockStateReader $in) : Door{
 		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
 		return $block
@@ -237,18 +243,36 @@ final class BlockStateDeserializerHelper{
 		return $block->setPressed($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15) !== 0);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TSlab of Slab
+	 * @phpstan-param TSlab $block
+	 * @phpstan-return TSlab
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeSingleSlab(Slab $block, BlockStateReader $in) : Slab{
 		return $block->setSlabType($in->readSlabPosition());
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TSlab of Slab
+	 * @phpstan-param TSlab $block
+	 * @phpstan-return TSlab
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeDoubleSlab(Slab $block, BlockStateReader $in) : Slab{
 		$in->ignored(StateNames::MC_VERTICAL_HALF);
 		return $block->setSlabType(SlabType::DOUBLE);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TStair of Stair
+	 * @phpstan-param TStair $block
+	 * @phpstan-return TStair
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeStairs(Stair $block, BlockStateReader $in) : Stair{
 		return $block
 			->setUpsideDown($in->readBool(BlockStateNames::UPSIDE_DOWN_BIT))
@@ -265,7 +289,13 @@ final class BlockStateDeserializerHelper{
 			->setFacing($facing === Facing::DOWN ? Facing::UP : $facing);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TTrapdoor of Trapdoor
+	 * @phpstan-param TTrapdoor $block
+	 * @phpstan-return TTrapdoor
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeTrapdoor(Trapdoor $block, BlockStateReader $in) : Trapdoor{
 		return $block
 			->setFacing($in->read5MinusHorizontalFacing())

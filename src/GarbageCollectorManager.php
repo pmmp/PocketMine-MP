@@ -31,6 +31,7 @@ use function hrtime;
 use function max;
 use function min;
 use function number_format;
+use function sprintf;
 
 /**
  * Allows threads to manually trigger the cyclic garbage collector using a threshold like PHP's own garbage collector,
@@ -48,6 +49,7 @@ final class GarbageCollectorManager{
 
 	private int $threshold = self::GC_THRESHOLD_DEFAULT;
 	private int $collectionTimeTotalNs = 0;
+	private int $runs = 0;
 
 	private \Logger $logger;
 	private TimingsHandler $timings;
@@ -96,7 +98,16 @@ final class GarbageCollectorManager{
 
 		$time = $end - $start;
 		$this->collectionTimeTotalNs += $time;
-		$this->logger->debug("gc_collect_cycles: " . number_format($time) . " ns ($rootsBefore -> $rootsAfter roots, $cycles cycles collected) - total GC time: " . number_format($this->collectionTimeTotalNs) . " ns");
+		$this->runs++;
+		$this->logger->info(sprintf(
+			"Run #%d took %s ms (%s -> %s roots, %s cycles collected) - cumulative GC time: %s ms",
+			$this->runs,
+			number_format($time / 1_000_000, 2),
+			$rootsBefore,
+			$rootsAfter,
+			$cycles,
+			number_format($this->collectionTimeTotalNs / 1_000_000, 2)
+		));
 
 		return $cycles;
 	}

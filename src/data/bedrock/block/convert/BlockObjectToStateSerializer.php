@@ -214,6 +214,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->registerLeavesSerializers();
 		$this->registerSaplingSerializers();
 		$this->registerMobHeadSerializers();
+		$this->registerCopperSerializers();
 		$this->registerSimpleSerializers();
 		$this->registerSerializers();
 	}
@@ -791,6 +792,178 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		})->writeFacingWithoutDown($block->getFacing()));
 	}
 
+	private function registerCopperSerializers() : void{
+		$this->map(Blocks::COPPER(), function(Copper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation, Ids::WAXED_COPPER, Ids::WAXED_EXPOSED_COPPER, Ids::WAXED_WEATHERED_COPPER, Ids::WAXED_OXIDIZED_COPPER) :
+				Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER)
+			);
+		});
+		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_CHISELED_COPPER,
+					Ids::WAXED_EXPOSED_CHISELED_COPPER,
+					Ids::WAXED_WEATHERED_CHISELED_COPPER,
+					Ids::WAXED_OXIDIZED_CHISELED_COPPER
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::CHISELED_COPPER,
+					Ids::EXPOSED_CHISELED_COPPER,
+					Ids::WEATHERED_CHISELED_COPPER,
+					Ids::OXIDIZED_CHISELED_COPPER
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_GRATE,
+					Ids::WAXED_EXPOSED_COPPER_GRATE,
+					Ids::WAXED_WEATHERED_COPPER_GRATE,
+					Ids::WAXED_OXIDIZED_COPPER_GRATE
+				) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_GRATE,
+					Ids::EXPOSED_COPPER_GRATE,
+					Ids::WEATHERED_COPPER_GRATE,
+					Ids::OXIDIZED_COPPER_GRATE
+				)
+			);
+		});
+		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return new Writer($block->isWaxed() ?
+				Helper::selectCopperId($oxidation, Ids::WAXED_CUT_COPPER, Ids::WAXED_EXPOSED_CUT_COPPER, Ids::WAXED_WEATHERED_CUT_COPPER, Ids::WAXED_OXIDIZED_CUT_COPPER) :
+				Helper::selectCopperId($oxidation, Ids::CUT_COPPER, Ids::EXPOSED_CUT_COPPER, Ids::WEATHERED_CUT_COPPER, Ids::OXIDIZED_CUT_COPPER)
+			);
+		});
+		$this->map(Blocks::CUT_COPPER_SLAB(), function(CopperSlab $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeSlab(
+				$block,
+				($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_CUT_COPPER_SLAB,
+						Ids::WAXED_EXPOSED_CUT_COPPER_SLAB,
+						Ids::WAXED_WEATHERED_CUT_COPPER_SLAB,
+						Ids::WAXED_OXIDIZED_CUT_COPPER_SLAB
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::CUT_COPPER_SLAB,
+						Ids::EXPOSED_CUT_COPPER_SLAB,
+						Ids::WEATHERED_CUT_COPPER_SLAB,
+						Ids::OXIDIZED_CUT_COPPER_SLAB
+					)
+				),
+				($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_DOUBLE_CUT_COPPER_SLAB,
+						Ids::WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB,
+						Ids::WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB,
+						Ids::WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::DOUBLE_CUT_COPPER_SLAB,
+						Ids::EXPOSED_DOUBLE_CUT_COPPER_SLAB,
+						Ids::WEATHERED_DOUBLE_CUT_COPPER_SLAB,
+						Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB
+					)
+				)
+			);
+		});
+		$this->map(Blocks::CUT_COPPER_STAIRS(), function(CopperStairs $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeStairs(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_CUT_COPPER_STAIRS,
+						Ids::WAXED_EXPOSED_CUT_COPPER_STAIRS,
+						Ids::WAXED_WEATHERED_CUT_COPPER_STAIRS,
+						Ids::WAXED_OXIDIZED_CUT_COPPER_STAIRS
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::CUT_COPPER_STAIRS,
+						Ids::EXPOSED_CUT_COPPER_STAIRS,
+						Ids::WEATHERED_CUT_COPPER_STAIRS,
+						Ids::OXIDIZED_CUT_COPPER_STAIRS
+					)
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_BULB(), function(CopperBulb $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Writer::create($block->isWaxed() ?
+				Helper::selectCopperId($oxidation,
+					Ids::WAXED_COPPER_BULB,
+					Ids::WAXED_EXPOSED_COPPER_BULB,
+					Ids::WAXED_WEATHERED_COPPER_BULB,
+					Ids::WAXED_OXIDIZED_COPPER_BULB) :
+				Helper::selectCopperId($oxidation,
+					Ids::COPPER_BULB,
+					Ids::EXPOSED_COPPER_BULB,
+					Ids::WEATHERED_COPPER_BULB,
+					Ids::OXIDIZED_COPPER_BULB
+				))
+				->writeBool(StateNames::LIT, $block->isLit())
+				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
+		});
+		$this->map(Blocks::COPPER_DOOR(), function(CopperDoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeDoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_DOOR,
+						Ids::WAXED_EXPOSED_COPPER_DOOR,
+						Ids::WAXED_WEATHERED_COPPER_DOOR,
+						Ids::WAXED_OXIDIZED_COPPER_DOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_DOOR,
+						Ids::EXPOSED_COPPER_DOOR,
+						Ids::WEATHERED_COPPER_DOOR,
+						Ids::OXIDIZED_COPPER_DOOR
+					)
+				)
+			);
+		});
+		$this->map(Blocks::COPPER_TRAPDOOR(), function(CopperTrapdoor $block) : Writer{
+			$oxidation = $block->getOxidation();
+			return Helper::encodeTrapdoor(
+				$block,
+				new Writer($block->isWaxed() ?
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::WAXED_COPPER_TRAPDOOR,
+						Ids::WAXED_EXPOSED_COPPER_TRAPDOOR,
+						Ids::WAXED_WEATHERED_COPPER_TRAPDOOR,
+						Ids::WAXED_OXIDIZED_COPPER_TRAPDOOR
+					) :
+					Helper::selectCopperId(
+						$oxidation,
+						Ids::COPPER_TRAPDOOR,
+						Ids::EXPOSED_COPPER_TRAPDOOR,
+						Ids::WEATHERED_COPPER_TRAPDOOR,
+						Ids::OXIDIZED_COPPER_TRAPDOOR
+					)
+				)
+			);
+		});
+	}
+
 	private function registerSimpleSerializers() : void{
 		$this->mapSimple(Blocks::AIR(), Ids::AIR);
 		$this->mapSimple(Blocks::AMETHYST(), Ids::AMETHYST_BLOCK);
@@ -1265,175 +1438,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSlab(Blocks::COBBLESTONE_SLAB(), Ids::COBBLESTONE_SLAB, Ids::COBBLESTONE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::COBBLESTONE_STAIRS(), Ids::STONE_STAIRS);
 		$this->map(Blocks::COBBLESTONE_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::COBBLESTONE_WALL)));
-		$this->map(Blocks::COPPER(), function(Copper $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_COPPER, Ids::WAXED_EXPOSED_COPPER, Ids::WAXED_WEATHERED_COPPER, Ids::WAXED_OXIDIZED_COPPER) :
-				Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER)
-			);
-		});
-		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation,
-					Ids::WAXED_CHISELED_COPPER,
-					Ids::WAXED_EXPOSED_CHISELED_COPPER,
-					Ids::WAXED_WEATHERED_CHISELED_COPPER,
-					Ids::WAXED_OXIDIZED_CHISELED_COPPER
-				) :
-				Helper::selectCopperId($oxidation,
-					Ids::CHISELED_COPPER,
-					Ids::EXPOSED_CHISELED_COPPER,
-					Ids::WEATHERED_CHISELED_COPPER,
-					Ids::OXIDIZED_CHISELED_COPPER
-				)
-			);
-		});
-		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation,
-					Ids::WAXED_COPPER_GRATE,
-					Ids::WAXED_EXPOSED_COPPER_GRATE,
-					Ids::WAXED_WEATHERED_COPPER_GRATE,
-					Ids::WAXED_OXIDIZED_COPPER_GRATE
-				) :
-				Helper::selectCopperId($oxidation,
-					Ids::COPPER_GRATE,
-					Ids::EXPOSED_COPPER_GRATE,
-					Ids::WEATHERED_COPPER_GRATE,
-					Ids::OXIDIZED_COPPER_GRATE
-				)
-			);
-		});
-		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return new Writer($block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_CUT_COPPER, Ids::WAXED_EXPOSED_CUT_COPPER, Ids::WAXED_WEATHERED_CUT_COPPER, Ids::WAXED_OXIDIZED_CUT_COPPER) :
-				Helper::selectCopperId($oxidation, Ids::CUT_COPPER, Ids::EXPOSED_CUT_COPPER, Ids::WEATHERED_CUT_COPPER, Ids::OXIDIZED_CUT_COPPER)
-			);
-		});
-		$this->map(Blocks::CUT_COPPER_SLAB(), function(CopperSlab $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Helper::encodeSlab(
-				$block,
-				($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_CUT_COPPER_SLAB,
-						Ids::WAXED_EXPOSED_CUT_COPPER_SLAB,
-						Ids::WAXED_WEATHERED_CUT_COPPER_SLAB,
-						Ids::WAXED_OXIDIZED_CUT_COPPER_SLAB
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::CUT_COPPER_SLAB,
-						Ids::EXPOSED_CUT_COPPER_SLAB,
-						Ids::WEATHERED_CUT_COPPER_SLAB,
-						Ids::OXIDIZED_CUT_COPPER_SLAB
-					)
-				),
-				($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::DOUBLE_CUT_COPPER_SLAB,
-						Ids::EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB
-					)
-				)
-			);
-		});
-		$this->map(Blocks::CUT_COPPER_STAIRS(), function(CopperStairs $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Helper::encodeStairs(
-				$block,
-				new Writer($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_CUT_COPPER_STAIRS,
-						Ids::WAXED_EXPOSED_CUT_COPPER_STAIRS,
-						Ids::WAXED_WEATHERED_CUT_COPPER_STAIRS,
-						Ids::WAXED_OXIDIZED_CUT_COPPER_STAIRS
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::CUT_COPPER_STAIRS,
-						Ids::EXPOSED_CUT_COPPER_STAIRS,
-						Ids::WEATHERED_CUT_COPPER_STAIRS,
-						Ids::OXIDIZED_CUT_COPPER_STAIRS
-					)
-				)
-			);
-		});
-		$this->map(Blocks::COPPER_BULB(), function(CopperBulb $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Writer::create($block->isWaxed() ?
-				Helper::selectCopperId($oxidation,
-					Ids::WAXED_COPPER_BULB,
-					Ids::WAXED_EXPOSED_COPPER_BULB,
-					Ids::WAXED_WEATHERED_COPPER_BULB,
-					Ids::WAXED_OXIDIZED_COPPER_BULB) :
-				Helper::selectCopperId($oxidation,
-					Ids::COPPER_BULB,
-					Ids::EXPOSED_COPPER_BULB,
-					Ids::WEATHERED_COPPER_BULB,
-					Ids::OXIDIZED_COPPER_BULB
-				))
-				->writeBool(StateNames::LIT, $block->isLit())
-				->writeBool(StateNames::POWERED_BIT, $block->isPowered());
-		});
-		$this->map(Blocks::COPPER_DOOR(), function(CopperDoor $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Helper::encodeDoor(
-				$block,
-				new Writer($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_COPPER_DOOR,
-						Ids::WAXED_EXPOSED_COPPER_DOOR,
-						Ids::WAXED_WEATHERED_COPPER_DOOR,
-						Ids::WAXED_OXIDIZED_COPPER_DOOR
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::COPPER_DOOR,
-						Ids::EXPOSED_COPPER_DOOR,
-						Ids::WEATHERED_COPPER_DOOR,
-						Ids::OXIDIZED_COPPER_DOOR
-					)
-				)
-			);
-		});
-		$this->map(Blocks::COPPER_TRAPDOOR(), function(CopperTrapdoor $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Helper::encodeTrapdoor(
-				$block,
-				new Writer($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_COPPER_TRAPDOOR,
-						Ids::WAXED_EXPOSED_COPPER_TRAPDOOR,
-						Ids::WAXED_WEATHERED_COPPER_TRAPDOOR,
-						Ids::WAXED_OXIDIZED_COPPER_TRAPDOOR
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::COPPER_TRAPDOOR,
-						Ids::EXPOSED_COPPER_TRAPDOOR,
-						Ids::WEATHERED_COPPER_TRAPDOOR,
-						Ids::OXIDIZED_COPPER_TRAPDOOR
-					)
-				)
-			);
-		});
 		$this->map(Blocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
 			return Writer::create(Ids::COCOA)
 				->writeInt(StateNames::AGE, $block->getAge())
