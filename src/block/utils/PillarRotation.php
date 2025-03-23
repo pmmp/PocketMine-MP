@@ -30,6 +30,10 @@ interface PillarRotation{
 	/** @see Axis */
 	public function getAxis() : int;
 
-	/** @see Axis */
+	/**
+	 * @return $this
+	 *
+	 * @see Axis
+	 */
 	public function setAxis(int $axis) : self;
 }

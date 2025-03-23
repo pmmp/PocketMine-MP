@@ -34,6 +34,7 @@ interface SignLikeRotation{
 	 * @param int $rotation between 0 and 15
 	 *
 	 * @throws \InvalidArgumentException if `$rotation` is out of hounds
+	 * @return $this
 	 */
 	public function setRotation(int $rotation) : self;
 }

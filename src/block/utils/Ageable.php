@@ -29,6 +29,7 @@ interface Ageable{
 
 	/**
 	 * @throws \InvalidArgumentException if `$age` is out of bounds
+	 * @return $this
 	 */
 	public function setAge(int $age) : self;
 }

@@ -27,5 +27,8 @@ interface Colored{
 
 	public function getColor() : DyeColor;
 
+	/**
+	 * @return $this
+	 */
 	public function setColor(DyeColor $color) : self;
 }

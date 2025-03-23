@@ -34,6 +34,7 @@ interface AnyFacing{
 
 	/**
 	 * @throws \InvalidArgumentException if `$facing` is not a `Facing` constant
+	 * @return $this
 	 *
 	 * @see Facing
 	 */

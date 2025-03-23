@@ -27,9 +27,15 @@ interface CoralMaterial{
 
 	public function getCoralType() : CoralType;
 
+	/**
+	 * @return $this
+	 */
 	public function setCoralType(CoralType $coralType) : self;
 
 	public function isDead() : bool;
 
+	/**
+	 * @return $this
+	 */
 	public function setDead(bool $dead) : self;
 }

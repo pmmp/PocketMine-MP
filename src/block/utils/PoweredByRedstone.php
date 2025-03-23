@@ -27,5 +27,8 @@ interface PoweredByRedstone{
 
 	public function isPowered() : bool;
 
+	/**
+	 * @return $this
+	 */
 	public function setPowered(bool $powered) : self;
 }

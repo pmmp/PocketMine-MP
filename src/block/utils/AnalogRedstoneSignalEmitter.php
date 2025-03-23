@@ -29,6 +29,7 @@ interface AnalogRedstoneSignalEmitter{
 
 	/**
 	 * @throws \InvalidArgumentException if `$signalStrength` is out of bounds
+	 * @return $this
 	 */
 	public function setOutputSignalStrength(int $signalStrength) : self;
 }

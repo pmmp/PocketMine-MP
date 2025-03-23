@@ -27,5 +27,8 @@ interface Lightable{
 
 	public function isLit() : bool;
 
+	/**
+	 * @return $this
+	 */
 	public function setLit(bool $lit = true) : self;
 }

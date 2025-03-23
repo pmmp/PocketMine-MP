@@ -37,6 +37,8 @@ interface MultiFacing{
 
 	/**
 	 * @throws \InvalidArgumentException if `$face` is not Facing value
+	 * @return $this
+	 *
 	 * @see Facing
 	 */
 	public function setFace(int $face, bool $value) : self;
@@ -45,6 +47,8 @@ interface MultiFacing{
 	 * @param int[] $faces
 	 *
 	 * @throws \InvalidArgumentException if a value in `$faces` is not Facing value
+	 * @return $this
+	 *
 	 * @see Facing
 	 */
 	public function setFaces(array $faces) : self;
