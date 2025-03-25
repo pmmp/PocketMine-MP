@@ -57,7 +57,7 @@ class Explosion{
 	private int $rays = 16;
 	public World $world;
 
-	/** @var Block[] */
+	/** @phpstan-var array<int, Block> */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
 	/** @var Block[] */
@@ -237,7 +237,7 @@ class Explosion{
 		$airBlock = VanillaBlocks::AIR();
 		$fireBlock = VanillaBlocks::FIRE();
 
-		foreach(Utils::promoteKeys($this->affectedBlocks) as $hash => $block){
+		foreach($this->affectedBlocks as $hash => $block){
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
