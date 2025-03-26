@@ -57,8 +57,10 @@ class Explosion{
 	private int $rays = 16;
 	public World $world;
 
-	/** @var Block[] */
-	/** @phpstan-var array<int, Block> */
+	/**
+	* @var Block[]
+	* @phpstan-var array<int, Block>
+ 	*/
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
 	/** @var Block[] */
