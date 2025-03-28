@@ -75,6 +75,7 @@ final class ItemTypeNames{
 	public const BLEACH = "minecraft:bleach";
 	public const BLUE_BUNDLE = "minecraft:blue_bundle";
 	public const BLUE_DYE = "minecraft:blue_dye";
+	public const BLUE_EGG = "minecraft:blue_egg";
 	public const BOARD = "minecraft:board";
 	public const BOAT = "minecraft:boat";
 	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
@@ -93,6 +94,7 @@ final class ItemTypeNames{
 	public const BRICK = "minecraft:brick";
 	public const BROWN_BUNDLE = "minecraft:brown_bundle";
 	public const BROWN_DYE = "minecraft:brown_dye";
+	public const BROWN_EGG = "minecraft:brown_egg";
 	public const BRUSH = "minecraft:brush";
 	public const BUCKET = "minecraft:bucket";
 	public const BUNDLE = "minecraft:bundle";
