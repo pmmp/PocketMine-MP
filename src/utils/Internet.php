@@ -25,7 +25,6 @@ namespace pocketmine\utils;
 
 use pocketmine\VersionInfo;
 use function array_merge;
-use function curl_close;
 use function curl_error;
 use function curl_exec;
 use function curl_getinfo;
@@ -217,34 +216,30 @@ class Internet{
 			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::VERSION()->getFullVersion(true)], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
-		try{
-			$raw = curl_exec($ch);
-			if($raw === false){
-				throw new InternetException(curl_error($ch));
-			}
-			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
-			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-			$rawHeaders = substr($raw, 0, $headerSize);
-			$body = substr($raw, $headerSize);
-			$headers = [];
-			//TODO: explore if we can set these limits lower
-			foreach(explode("\r\n\r\n", $rawHeaders, limit: PHP_INT_MAX) as $rawHeaderGroup){
-				$headerGroup = [];
-				foreach(explode("\r\n", $rawHeaderGroup, limit: PHP_INT_MAX) as $line){
-					$nameValue = explode(":", $line, 2);
-					if(isset($nameValue[1])){
-						$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
-					}
-				}
-				$headers[] = $headerGroup;
-			}
-			if($onSuccess !== null){
-				$onSuccess($ch);
-			}
-			return new InternetRequestResult($headers, $body, $httpCode);
-		}finally{
-			curl_close($ch);
+		$raw = curl_exec($ch);
+		if($raw === false){
+			throw new InternetException(curl_error($ch));
 		}
+		if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
+		$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$rawHeaders = substr($raw, 0, $headerSize);
+		$body = substr($raw, $headerSize);
+		$headers = [];
+		//TODO: explore if we can set these limits lower
+		foreach(explode("\r\n\r\n", $rawHeaders, limit: PHP_INT_MAX) as $rawHeaderGroup){
+			$headerGroup = [];
+			foreach(explode("\r\n", $rawHeaderGroup, limit: PHP_INT_MAX) as $line){
+				$nameValue = explode(":", $line, 2);
+				if(isset($nameValue[1])){
+					$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
+				}
+			}
+			$headers[] = $headerGroup;
+		}
+		if($onSuccess !== null){
+			$onSuccess($ch);
+		}
+		return new InternetRequestResult($headers, $body, $httpCode);
 	}
 }
