@@ -25,13 +25,18 @@ namespace pocketmine\block;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\event\block\BlockPreExplodeEvent;
+use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use pocketmine\world\Explosion;
 use pocketmine\world\Position;
 use pocketmine\world\sound\RespawnAnchorChargeSound;
+use pocketmine\world\sound\RespawnAnchorDepleteSound;
+use pocketmine\world\sound\RespawnAnchorSetSpawnSound;
 
 final class RespawnAnchor extends Opaque{
 	private const MIN_CHARGES = 0;
@@ -68,9 +73,45 @@ final class RespawnAnchor extends Opaque{
 		}
 
 		if($this->charges > self::MIN_CHARGES){
-			//TODO: Implement the ability to set a respawn point in Nether
-			$this->explode($player);
-			return true;
+			if($player === null){
+				return false;
+			}
+
+			$ev = new PlayerRespawnAnchorUseEvent($player, $this, PlayerRespawnAnchorUseEvent::ACTION_EXPLODE);
+
+			if($this->position->getWorld()->getId() === DimensionIds::NETHER){
+				$ev->setAction(PlayerRespawnAnchorUseEvent::ACTION_SET_SPAWN);
+			}
+
+			$ev->call();
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			switch($ev->getAction()){
+				case PlayerRespawnAnchorUseEvent::ACTION_EXPLODE:
+					$this->explode($player);
+					return false;
+
+				case PlayerRespawnAnchorUseEvent::ACTION_SET_SPAWN:
+					if($this->charges >= 4){
+						if($player->getSpawn() !== null && $player->getSpawn()->equals($this->position)){
+							return true;
+						}
+
+						$player->setSpawn($this->position);
+						$this->position->getWorld()->addSound($this->position, new RespawnAnchorSetSpawnSound());
+						$player->sendMessage(TextFormat::GRAY . "Respawn point set");
+						return true;
+					}
+					return true;
+
+				case PlayerRespawnAnchorUseEvent::ACTION_NONE:
+				default:
+					return false;
+			}
+		}else{
+			$this->position->getWorld()->addSound($this->position, new RespawnAnchorDepleteSound());
 		}
 
 		return false;
