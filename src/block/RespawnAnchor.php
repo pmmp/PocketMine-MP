@@ -29,6 +29,7 @@ use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Explosion;
@@ -89,7 +90,7 @@ final class RespawnAnchor extends Opaque{
 					return false;
 
 				case PlayerRespawnAnchorUseEvent::ACTION_SET_SPAWN:
-					if($this->charges > self::MAX_CHARGES){
+					if($this->charges >= self::MAX_CHARGES){
 						if($player->getSpawn() !== null && $player->getSpawn()->equals($this->position)){
 							return true;
 						}
@@ -105,8 +106,6 @@ final class RespawnAnchor extends Opaque{
 				default:
 					return false;
 			}
-		}else{
-			$this->position->getWorld()->addSound($this->position, new RespawnAnchorDepleteSound());
 		}
 
 		return false;
