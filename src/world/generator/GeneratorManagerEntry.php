@@ -31,7 +31,8 @@ final class GeneratorManagerEntry{
 	 */
 	public function __construct(
 		private string $generatorClass,
-		private \Closure $presetValidator
+		private \Closure $presetValidator,
+		private bool $fast
 	){}
 
 	/** @phpstan-return class-string<Generator> */
@@ -44,5 +45,9 @@ final class GeneratorManagerEntry{
 		if(($exception = ($this->presetValidator)($generatorOptions)) !== null){
 			throw $exception;
 		}
+	}
+
+	public function isFast() : bool{
+		return $this->fast;
 	}
 }

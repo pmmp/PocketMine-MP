@@ -92,6 +92,7 @@ use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\SubChunk;
+use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
@@ -468,15 +469,25 @@ class World implements ChunkManager{
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_preparing($this->displayName)));
 		$generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator()) ??
 			throw new AssumptionFailedError("WorldManager should already have checked that the generator exists");
-		$generator->validateGeneratorOptions($this->provider->getWorldData()->getGeneratorOptions());
+		$generatorOptions = $this->provider->getWorldData()->getGeneratorOptions();
+		$generator->validateGeneratorOptions($generatorOptions);
 		$this->generator = $generator->getGeneratorClass();
 
 		$cfg = $this->server->getConfigGroup();
-		$this->chunkGenerator = new AsyncChunkGenerator(
-			$this->workerPool,
-			$this->logger,
-			$cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2)
-		);
+		if($generator->isFast()){
+			/**
+			 * @see Generator::__construct()
+			 */
+			$this->chunkGenerator = new SyncChunkGenerator(new $this->generator($this->getSeed(), $generatorOptions));
+			$this->logger->debug("Using main thread generator system for fast generator " . $this->generator);
+		}else{
+			$this->chunkGenerator = new AsyncChunkGenerator(
+				$this->workerPool,
+				$this->logger,
+				$cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2)
+			);
+			$this->logger->debug("Using async task generator system for slow generator " . $this->generator);
+		}
 		$this->addOnUnloadCallback(function() : void{
 			$this->chunkGenerator->shutdown($this);
 		});
