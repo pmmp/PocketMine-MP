@@ -89,7 +89,7 @@ final class RespawnAnchor extends Opaque{
 					return false;
 
 				case PlayerRespawnAnchorUseEvent::ACTION_SET_SPAWN:
-					if($this->charges > self::MIN_CHARGES){
+					if($this->charges > self::MAX_CHARGES){
 						if($player->getSpawn() !== null && $player->getSpawn()->equals($this->position)){
 							return true;
 						}
