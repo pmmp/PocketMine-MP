@@ -29,13 +29,11 @@ use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Explosion;
 use pocketmine\world\Position;
 use pocketmine\world\sound\RespawnAnchorChargeSound;
-use pocketmine\world\sound\RespawnAnchorDepleteSound;
 use pocketmine\world\sound\RespawnAnchorSetSpawnSound;
 
 final class RespawnAnchor extends Opaque{
