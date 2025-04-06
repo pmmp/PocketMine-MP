@@ -2910,7 +2910,6 @@ class World implements ChunkManager, InventoryListener{
 	private function notifyInventoryUpdate(Inventory $inventory) : void{
 		$blockPosition = $this->containerToBlockPositionMap[$inventory] ?? null;
 		if($blockPosition !== null){
-			$this->getBlock($blockPosition)->onContainerUpdate($inventory);
 			$this->scheduleDelayedBlockUpdate($blockPosition, 1);
 		}
 	}

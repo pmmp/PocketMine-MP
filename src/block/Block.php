@@ -36,7 +36,6 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTagRegistry;
 use pocketmine\item\enchantment\ItemEnchantmentTags;
@@ -516,15 +515,6 @@ class Block{
 	 * Called when this block is updated by the delayed blockupdate scheduler in the world.
 	 */
 	public function onScheduledUpdate() : void{
-
-	}
-
-	/**
-	 * Called by the World when a change is detected in a container's inventory at the block's position.
-	 * Use this to do visual updates on the block if needed.
-	 * Don't do any expensive logic in here. It will be called every time a slot of the inventory changes.
-	 */
-	public function onContainerUpdate(Inventory $inventory) : void{
 
 	}
 

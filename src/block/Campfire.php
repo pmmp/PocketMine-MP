@@ -37,7 +37,6 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\block\CampfireCookEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -66,6 +65,8 @@ class Campfire extends Transparent{
 	use LightableTrait{
 		LightableTrait::describeBlockOnlyState as encodeLitState;
 	}
+
+	private const UPDATE_INTERVAL_TICKS = 10;
 
 	/**
 	 * @deprecated This was added by mistake. It can't be relied on as the inventory won't be initialized if this block
@@ -243,7 +244,7 @@ class Campfire extends Transparent{
 			$furnaceType = $this->getFurnaceType();
 			$maxCookDuration = $furnaceType->getCookDurationTicks();
 			foreach($items as $slot => $item){
-				$this->setCookingTime($slot, min($maxCookDuration, $this->getCookingTime($slot) + 1));
+				$this->setCookingTime($slot, min($maxCookDuration, $this->getCookingTime($slot) + self::UPDATE_INTERVAL_TICKS));
 				if($this->getCookingTime($slot) >= $maxCookDuration){
 					$result =
 						($recipe = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($item)) instanceof FurnaceRecipe ?
@@ -262,23 +263,17 @@ class Campfire extends Transparent{
 					$this->position->getWorld()->dropItem($this->position->add(0.5, 1, 0.5), $ev->getResult());
 				}
 			}
-			$tile = $this->position->getWorld()->getTile($this->position);
-			if($tile instanceof TileCampfire){
-				//TODO: we probably need to rethink how these are tracked
-				$tile->setCookingTimes($this->cookingTimes);
-			}
 			if(count($items) > 0){
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 			if(mt_rand(1, 6) === 1){
 				$this->position->getWorld()->addSound($this->position, $furnaceType->getCookSound());
 			}
-			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
+		}else{
+			//make sure the visual state is updated when items are added
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
-	}
-
-	public function onContainerUpdate(Inventory $inventory) : void{
-		$this->position->getWorld()->setBlock($this->position, $this); //update visual state
 	}
 
 	private function extinguish() : void{
@@ -289,6 +284,6 @@ class Campfire extends Transparent{
 	private function ignite() : void{
 		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
 		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
 	}
 }

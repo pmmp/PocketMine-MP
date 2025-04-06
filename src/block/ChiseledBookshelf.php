@@ -28,7 +28,6 @@ use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\Book;
 use pocketmine\item\EnchantedBook;
 use pocketmine\item\Item;
@@ -163,20 +162,6 @@ class ChiseledBookshelf extends Opaque{
 
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
-	}
-
-	public function onContainerUpdate(Inventory $inventory) : void{
-		$changed = false;
-		foreach(ChiseledBookshelfSlot::cases() as $case){
-			$hasItem = !$inventory->isSlotEmpty($case->value);
-			if($this->hasSlot($case) !== $hasItem){
-				$this->setSlot($case, $hasItem);
-				$changed = true;
-			}
-		}
-		if($changed){
-			$this->position->getWorld()->setBlock($this->position, $this);
-		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
