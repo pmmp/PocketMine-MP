@@ -45,7 +45,7 @@
       "pocketmine/log": "^0.4.0",
       "pocketmine/math": "~1.0.0",
       "pocketmine/nbt": "~1.1.0",
-      "pocketmine/raklib": "~1.1.0",
+      "pocketmine/raklib": "~1.1.2",
       "pocketmine/raklib-ipc": "~1.0.0",
       "pocketmine/snooze": "^0.5.0",
       "ramsey/uuid": "~4.7.0",

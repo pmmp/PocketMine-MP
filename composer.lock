@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28b4de9a23a293646dbad2707cdfd9e0",
+    "content-hash": "8d3061c5cc77e5b1dfa1fcf77f5146c6",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -618,16 +618,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "be2783be516bf6e2872ff5c81fb9048596617b97"
+                "reference": "4145a31cd812fe8931c3c9c691fcd2ded2f47e7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/be2783be516bf6e2872ff5c81fb9048596617b97",
-                "reference": "be2783be516bf6e2872ff5c81fb9048596617b97",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/4145a31cd812fe8931c3c9c691fcd2ded2f47e7f",
+                "reference": "4145a31cd812fe8931c3c9c691fcd2ded2f47e7f",
                 "shasum": ""
             },
             "require": {
@@ -639,8 +639,8 @@
                 "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.10.1",
-                "phpstan/phpstan-strict-rules": "^1.0"
+                "phpstan/phpstan": "2.1.0",
+                "phpstan/phpstan-strict-rules": "^2.0"
             },
             "type": "library",
             "autoload": {
@@ -655,9 +655,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/1.1.1"
+                "source": "https://github.com/pmmp/RakLib/tree/1.1.2"
             },
-            "time": "2024-03-04T14:02:14+00:00"
+            "time": "2025-04-06T03:38:21+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
