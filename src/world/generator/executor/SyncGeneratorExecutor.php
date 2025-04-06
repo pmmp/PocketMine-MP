@@ -21,20 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\Generator;
+use pocketmine\world\World;
 
 /**
  * Very simple chunk generator which runs everything immediately on the main thread.
  * Useful if your generator is very fast and doesn't benefit from async tasks or threading.
  */
-final class SyncChunkGenerator implements ChunkGenerator{
+final class SyncGeneratorExecutor implements GeneratorExecutor{
 	public function __construct(
 		private readonly Generator $generator
 	){}

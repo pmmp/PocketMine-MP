@@ -21,16 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\world\generator\executor;
 
+use pmmp\thread\ThreadSafeArray;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\ChunkLoader;
+use pocketmine\world\ChunkLockId;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorRegisterTask;
 use pocketmine\world\generator\PopulationTask;
+use pocketmine\world\World;
 use function array_key_exists;
 use function assert;
 use function count;
@@ -38,7 +43,7 @@ use function count;
 /**
  * @phpstan-import-type ChunkPosHash from World
  */
-final class AsyncChunkGenerator implements ChunkGenerator{
+final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	/**
 	 * @var bool[] chunkHash => isValid
 	 * @phpstan-var array<ChunkPosHash, bool>
@@ -71,11 +76,19 @@ final class AsyncChunkGenerator implements ChunkGenerator{
 	/** @phpstan-var \Closure(int) : void */
 	private \Closure $workerStartHook;
 
+	/**
+	 * @phpstan-param \Closure() : Generator $generatorFactory Must be a thread-safe closure
+	 */
 	public function __construct(
 		private readonly AsyncPool $workerPool,
 		private readonly \Logger $logger,
-		private readonly int $maxConcurrentChunkPopulationTasks = 2,
+		private readonly \Closure $generatorFactory,
+		private readonly int $maxConcurrentChunkPopulationTasks = 2
 	){
+		//TODO: we really need a better way to check if a closure is thread-safe :(
+		$temp = new ThreadSafeArray();
+		$temp["dummy"] = $this->generatorFactory;
+
 		$this->chunkPopulationRequestQueue = new \SplQueue();
 		//TODO: don't love the circular reference here, but we need to make sure this gets cleaned up on shutdown
 		$this->workerStartHook = function(int $workerId) : void{
@@ -91,8 +104,7 @@ final class AsyncChunkGenerator implements ChunkGenerator{
 		$world->getLogger()->debug("Registering generator on worker $worker");
 		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask(
 			$world,
-			$world->getGeneratorClass(),
-			$world->getProvider()->getWorldData()->getGeneratorOptions()
+			$this->generatorFactory,
 		), $worker);
 		$this->generatorRegisteredWorkers[$worker] = true;
 	}

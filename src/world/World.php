@@ -92,8 +92,12 @@ use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\SubChunk;
+use pocketmine\world\generator\executor\AsyncGeneratorExecutor;
+use pocketmine\world\generator\executor\GeneratorExecutor;
+use pocketmine\world\generator\executor\SyncGeneratorExecutor;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\GeneratorManagerEntry;
 use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
 use pocketmine\world\light\SkyLightUpdate;
@@ -306,7 +310,7 @@ class World implements ChunkManager{
 	 */
 	private array $neighbourBlockUpdateQueueIndex = [];
 
-	private readonly ChunkGenerator $chunkGenerator;
+	private readonly GeneratorExecutor $generatorExecutor;
 
 	/**
 	 * @var ChunkLockId[]
@@ -331,9 +335,6 @@ class World implements ChunkManager{
 	public float $tickRateTime = 0;
 
 	private bool $doingTick = false;
-
-	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
-	private string $generator;
 
 	private bool $unloaded = false;
 	/**
@@ -471,25 +472,24 @@ class World implements ChunkManager{
 			throw new AssumptionFailedError("WorldManager should already have checked that the generator exists");
 		$generatorOptions = $this->provider->getWorldData()->getGeneratorOptions();
 		$generator->validateGeneratorOptions($generatorOptions);
-		$this->generator = $generator->getGeneratorClass();
+		$generatorClass = $generator->getGeneratorClass();
 
 		$cfg = $this->server->getConfigGroup();
+		$seed = $this->getSeed();
 		if($generator->isFast()){
-			/**
-			 * @see Generator::__construct()
-			 */
-			$this->chunkGenerator = new SyncChunkGenerator(new $this->generator($this->getSeed(), $generatorOptions));
-			$this->logger->debug("Using main thread generator system for fast generator " . $this->generator);
+			$this->generatorExecutor = new SyncGeneratorExecutor(GeneratorManagerEntry::make($generatorClass, $seed, $generatorOptions));
+			$this->logger->debug("Using main thread generator system for fast generator " . $generatorClass);
 		}else{
-			$this->chunkGenerator = new AsyncChunkGenerator(
+			$this->generatorExecutor = new AsyncGeneratorExecutor(
 				$this->workerPool,
 				$this->logger,
+				static fn() => GeneratorManagerEntry::make($generatorClass, $seed, $generatorOptions),
 				$cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2)
 			);
-			$this->logger->debug("Using async task generator system for slow generator " . $this->generator);
+			$this->logger->debug("Using async task generator system for slow generator " . $generatorClass);
 		}
 		$this->addOnUnloadCallback(function() : void{
-			$this->chunkGenerator->shutdown($this);
+			$this->generatorExecutor->shutdown($this);
 		});
 
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
@@ -547,13 +547,6 @@ class World implements ChunkManager{
 
 	public function getTickRateTime() : float{
 		return $this->tickRateTime;
-	}
-
-	/**
-	 * @phpstan-return class-string<covariant \pocketmine\world\generator\Generator>
-	 */
-	public function getGeneratorClass() : string{
-		return $this->generator;
 	}
 
 	public function getServer() : Server{
@@ -791,7 +784,7 @@ class World implements ChunkManager{
 			if(count($this->chunkLoaders[$chunkHash]) === 1){
 				unset($this->chunkLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
-				$this->chunkGenerator->cancelChunkPopulation($this, $chunkX, $chunkZ);
+				$this->generatorExecutor->cancelChunkPopulation($this, $chunkX, $chunkZ);
 			}else{
 				unset($this->chunkLoaders[$chunkHash][$loaderId]);
 			}
@@ -3068,7 +3061,7 @@ class World implements ChunkManager{
 		unset($this->registeredTickingChunks[$chunkHash]);
 		$this->markTickingChunkForRecheck($x, $z);
 
-		$this->chunkGenerator->cancelChunkPopulation($this, $x, $z);
+		$this->generatorExecutor->cancelChunkPopulation($this, $x, $z);
 
 		$this->timings->doChunkUnload->stopTiming();
 
@@ -3265,7 +3258,7 @@ class World implements ChunkManager{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
-		return $this->chunkGenerator->requestChunkPopulation($this, $chunkX, $chunkZ, $associatedChunkLoader);
+		return $this->generatorExecutor->requestChunkPopulation($this, $chunkX, $chunkZ, $associatedChunkLoader);
 	}
 
 	/**
@@ -3279,7 +3272,7 @@ class World implements ChunkManager{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function orderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
-		return $this->chunkGenerator->orderChunkPopulation($this, $chunkX, $chunkZ, $associatedChunkLoader);
+		return $this->generatorExecutor->orderChunkPopulation($this, $chunkX, $chunkZ, $associatedChunkLoader);
 	}
 
 	public function doChunkGarbageCollection() : void{

@@ -50,4 +50,14 @@ final class GeneratorManagerEntry{
 	public function isFast() : bool{
 		return $this->fast;
 	}
+
+	/**
+	 * @phpstan-param class-string<covariant Generator> $class
+	 */
+	public static function make(string $class, int $seed, string $options) : Generator{
+		/**
+		 * @see Generator::__construct()
+		 */
+		return new $class($seed, $options);
+	}
 }

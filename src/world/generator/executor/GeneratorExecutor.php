@@ -21,19 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\promise\Promise;
+use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
 
 /**
+ * Decides how and when to invoke the world generator.
+ *
  * @phpstan-import-type ChunkPosHash from World
  */
-interface ChunkGenerator{
+interface GeneratorExecutor{
 	/**
-	 * Attempts to initiate asynchronous generation/population of the target chunk, if it's currently reasonable to do
-	 * so (and if it isn't already generated/populated).
-	 * If the generator is busy, the request will be put into a queue and delayed until a better time.
+	 * Requests generation/population of the target chunk, if it's currently reasonable to do so (and if it isn't
+	 * already generated/populated).
+	 * The executor may decide not to process this request immediately based on internal conditions (e.g. the number of
+	 * concurrently active generation tasks may have reached a limit). If this happens, it will be queued and processed
+	 * as soon as possible.
 	 *
 	 * A ChunkLoader can be associated with the generation request to ensure that the generation request is cancelled if
 	 * no loaders are attached to the target chunk. If no loader is provided, one will be assigned (and automatically
@@ -44,12 +50,12 @@ interface ChunkGenerator{
 	public function requestChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise;
 
 	/**
-	 * Initiates asynchronous generation/population of the target chunk, if it's not already generated/populated.
-	 * If generation has already been requested for the target chunk, the promise for the already active request will be
-	 * returned directly.
+	 * Initiates generation/population of the target chunk, if it's not already generated/populated.
 	 *
-	 * If the chunk is currently locked (for example due to another chunk using it for async generation), the request
-	 * will be queued and executed at the earliest opportunity.
+	 * This function will begin processing the request immediately, unless any of the adjacent chunks are currently in
+	 * use for other generation tasks.
+	 *
+	 * @see World::isChunkLocked()
 	 *
 	 * @phpstan-return Promise<Chunk>
 	 */
