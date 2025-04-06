@@ -87,16 +87,13 @@ final class RespawnAnchor extends Opaque{
 					return false;
 
 				case PlayerRespawnAnchorUseEvent::ACTION_SET_SPAWN:
-					if($this->charges > self::MIN_CHARGES){
-						if($player->getSpawn() !== null && $player->getSpawn()->equals($this->position)){
-							return true;
-						}
-
-						$player->setSpawn($this->position);
-						$this->position->getWorld()->addSound($this->position, new RespawnAnchorSetSpawnSound());
-						$player->sendMessage(TextFormat::GRAY . "Respawn point set");
+					if($player->getSpawn() !== null && $player->getSpawn()->equals($this->position)){
 						return true;
 					}
+
+					$player->setSpawn($this->position);
+					$this->position->getWorld()->addSound($this->position, new RespawnAnchorSetSpawnSound());
+					$player->sendMessage(TextFormat::GRAY . "Respawn point set");
 					return true;
 
 				case PlayerRespawnAnchorUseEvent::ACTION_NONE:
@@ -104,7 +101,6 @@ final class RespawnAnchor extends Opaque{
 					return false;
 			}
 		}
-
 		return false;
 	}
 
