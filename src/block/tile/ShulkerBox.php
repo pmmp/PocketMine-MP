@@ -80,6 +80,13 @@ class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 		}
 	}
 
+	public function close() : void{
+		if(!$this->closed){
+			$this->inventory->removeAllViewers();
+			parent::close();
+		}
+	}
+
 	protected function onBlockDestroyedHook() : void{
 		//NOOP override of ContainerTrait - shulker boxes retain their contents when destroyed
 	}

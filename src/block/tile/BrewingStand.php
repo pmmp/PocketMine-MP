@@ -27,6 +27,7 @@ use pocketmine\block\inventory\window\BrewingStandInventoryWindow;
 use pocketmine\crafting\BrewingRecipe;
 use pocketmine\event\block\BrewingFuelUseEvent;
 use pocketmine\event\block\BrewItemEvent;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
@@ -63,6 +64,9 @@ class BrewingStand extends Spawnable implements ContainerTile, Nameable{
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new SimpleInventory(5);
+		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(static function(Inventory $unused) use ($world, $pos) : void{
+			$world->scheduleDelayedBlockUpdate($pos, 1);
+		}));
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -99,6 +103,14 @@ class BrewingStand extends Spawnable implements ContainerTile, Nameable{
 
 	public function getDefaultName() : string{
 		return "Brewing Stand";
+	}
+
+	public function close() : void{
+		if(!$this->closed){
+			$this->inventory->removeAllViewers();
+
+			parent::close();
+		}
 	}
 
 	public function getInventory() : Inventory{

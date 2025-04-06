@@ -94,6 +94,8 @@ class Chest extends Spawnable implements ContainerTile, Nameable{
 
 	public function close() : void{
 		if(!$this->closed){
+			$this->inventory->removeAllViewers();
+
 			if($this->doubleInventory !== null){
 				if($this->isPaired() && $this->position->getWorld()->isChunkLoaded($this->pairX >> Chunk::COORD_BIT_SIZE, $this->pairZ >> Chunk::COORD_BIT_SIZE)){
 					$this->doubleInventory->removeAllViewers();

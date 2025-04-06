@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\Campfire as BlockCampfire;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
@@ -53,6 +55,14 @@ class Campfire extends Spawnable implements ContainerTile{
 		parent::__construct($world, $pos);
 		$this->inventory = new SimpleInventory(4);
 		$this->inventory->setMaxStackSize(1);
+		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
+			static function(Inventory $unused) use ($world, $pos) : void{
+				$block = $world->getBlock($pos);
+				if($block instanceof BlockCampfire){
+					$world->setBlock($pos, $block);
+				}
+			})
+		);
 	}
 
 	public function getInventory() : Inventory{

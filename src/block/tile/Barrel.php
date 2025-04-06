@@ -50,6 +50,13 @@ class Barrel extends Spawnable implements ContainerTile, Nameable{
 		$this->saveItems($nbt);
 	}
 
+	public function close() : void{
+		if(!$this->closed){
+			$this->inventory->removeAllViewers();
+			parent::close();
+		}
+	}
+
 	public function getInventory() : Inventory{
 		return $this->inventory;
 	}

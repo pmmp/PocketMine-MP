@@ -270,9 +270,6 @@ class Campfire extends Transparent{
 				$this->position->getWorld()->addSound($this->position, $furnaceType->getCookSound());
 			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, self::UPDATE_INTERVAL_TICKS);
-		}else{
-			//make sure the visual state is updated when items are added
-			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
