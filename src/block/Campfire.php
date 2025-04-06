@@ -37,6 +37,7 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\event\block\CampfireCookEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;

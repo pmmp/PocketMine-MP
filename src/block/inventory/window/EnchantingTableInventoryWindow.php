@@ -51,7 +51,7 @@ final class EnchantingTableInventoryWindow extends BlockInventoryWindow{
 	){
 		parent::__construct($viewer, new SimpleInventory(2), $holder);
 
-		/** @phpstan-var \WeakReference<self> $weakThis */
+		/** @phpstan-var \WeakReference<$this> $weakThis */
 		$weakThis = \WeakReference::create($this);
 		$this->listener = new CallbackInventoryListener(
 			onSlotChange: static function(Inventory $_, int $slot) use ($weakThis) : void{ //remaining params unneeded
