@@ -165,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.15.0
+        uses: ncipollo/release-action@v1.16.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
@@ -181,6 +181,8 @@ jobs:
             Please see the [changelogs](${{ github.server_url }}/${{ github.repository }}/blob/${{ steps.get-pm-version.outputs.PM_VERSION }}/changelogs/${{ steps.get-pm-version.outputs.CHANGELOG_FILE_NAME }}#${{ steps.get-pm-version.outputs.CHANGELOG_MD_HEADER }}) for details.
 
             :information_source: Download the recommended PHP binary [here](${{ steps.php-binary-url.outputs.PHP_BINARY_URL }}).
+
+            :warning: Found a bug? Report it on our [issue tracker](${{ github.server_url }}/${{ github.repository }}/issues). **We can't fix bugs if you don't report them.**
 
       - name: Post draft release URL on PR
         if: github.event_name == 'pull_request_target'

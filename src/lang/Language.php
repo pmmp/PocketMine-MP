@@ -71,7 +71,7 @@ class Language{
 
 				foreach($files as $file){
 					try{
-						$code = explode(".", $file)[0];
+						$code = explode(".", $file, limit: 2)[0];
 						$strings = self::loadLang($path, $code);
 						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
 							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];

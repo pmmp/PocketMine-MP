@@ -37,6 +37,7 @@ use function array_values;
 use function explode;
 use function implode;
 use function str_replace;
+use const PHP_INT_MAX;
 
 abstract class Command{
 
@@ -113,7 +114,7 @@ abstract class Command{
 	}
 
 	public function setPermission(?string $permission) : void{
-		$this->setPermissions($permission === null ? [] : explode(";", $permission));
+		$this->setPermissions($permission === null ? [] : explode(";", $permission, limit: PHP_INT_MAX));
 	}
 
 	public function testPermission(CommandSender $target, ?string $permission = null) : bool{

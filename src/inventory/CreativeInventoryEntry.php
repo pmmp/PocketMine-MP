@@ -21,29 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\sound;
+namespace pocketmine\inventory;
 
-use pocketmine\entity\Entity;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+use pocketmine\item\Item;
 
-/**
- * Played when an entity hits ground after falling a long distance (damage).
- * This is the bone-breaker "crunch" sound.
- */
-class EntityLongFallSound implements Sound{
-	public function __construct(private Entity $entity){}
+final class CreativeInventoryEntry{
+	private readonly Item $item;
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(
-			LevelSoundEvent::FALL_BIG,
-			$pos,
-			-1,
-			$this->entity->getNetworkTypeId(),
-			false, //TODO: is isBaby relevant here?
-			false,
-			$this->entity->getId()
-		)];
+	public function __construct(
+		Item $item,
+		private readonly CreativeCategory $category,
+		private readonly ?CreativeGroup $group = null
+	){
+		$this->item = clone $item;
+	}
+
+	public function getItem() : Item{ return clone $this->item; }
+
+	public function getCategory() : CreativeCategory{ return $this->category; }
+
+	public function getGroup() : ?CreativeGroup{ return $this->group; }
+
+	public function matchesItem(Item $item) : bool{
+		return $item->equals($this->item, checkDamage: true, checkCompound: false);
 	}
 }

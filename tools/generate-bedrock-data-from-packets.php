@@ -35,6 +35,7 @@ use pocketmine\crafting\json\SmithingTrimRecipeData;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames;
+use pocketmine\inventory\json\CreativeGroupData;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -48,15 +49,17 @@ use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CreativeContentPacket;
+use pocketmine\network\mcpe\protocol\ItemRegistryPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
-use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
+use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
@@ -132,6 +135,19 @@ class ParserPacketHandler extends PacketHandler{
 			$statePropertiesTag->setTag($name, $value);
 		}
 		return base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($statePropertiesTag)));
+	}
+
+	/**
+	 * @param ItemStackData[] $items
+	 */
+	private function creativeGroupEntryToJson(CreativeGroupEntry $entry, array $items) : CreativeGroupData{
+		$data = new CreativeGroupData();
+
+		$data->group_name = $entry->getCategoryName();
+		$data->group_icon = $entry->getIcon()->getId() === 0 ? null : $this->itemStackToJson($entry->getIcon());
+		$data->items = $items;
+
+		return $data;
 	}
 
 	private function itemStackToJson(ItemStack $itemStack) : ItemStackData{
@@ -234,31 +250,68 @@ class ParserPacketHandler extends PacketHandler{
 	}
 
 	public function handleStartGame(StartGamePacket $packet) : bool{
-		$this->itemTypeDictionary = new ItemTypeDictionary($packet->itemTable);
-
-		echo "updating legacy item ID mapping table\n";
-		$table = [];
-		foreach($packet->itemTable as $entry){
-			$table[$entry->getStringId()] = [
-				"runtime_id" => $entry->getNumericId(),
-				"component_based" => $entry->isComponentBased()
-			];
-		}
-		ksort($table, SORT_STRING);
-		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
-
 		foreach(Utils::promoteKeys($packet->levelSettings->experiments->getExperiments()) as $name => $experiment){
 			echo "Experiment \"$name\" is " . ($experiment ? "" : "not ") . "active\n";
 		}
 		return true;
 	}
 
+	public function handleItemRegistry(ItemRegistryPacket $packet) : bool{
+		$this->itemTypeDictionary = new ItemTypeDictionary($packet->getEntries());
+
+		echo "updating legacy item ID mapping table\n";
+		$emptyNBT = new CompoundTag();
+		$table = [];
+		foreach($packet->getEntries() as $entry){
+			$table[$entry->getStringId()] = [
+				"runtime_id" => $entry->getNumericId(),
+				"component_based" => $entry->isComponentBased(),
+				"version" => $entry->getVersion(),
+			];
+
+			$componentNBT = $entry->getComponentNbt()->getRoot();
+			if(!$componentNBT->equals($emptyNBT)){
+				$table[$entry->getStringId()]["component_nbt"] = base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($componentNBT)));
+			}
+		}
+		ksort($table, SORT_STRING);
+		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
+
+		echo "updating item registry\n";
+		$items = array_map(function(ItemTypeEntry $entry) : array{
+			return self::objectToOrderedArray($entry);
+		}, $packet->getEntries());
+		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
+		return true;
+	}
+
 	public function handleCreativeContent(CreativeContentPacket $packet) : bool{
 		echo "updating creative inventory data\n";
-		$items = array_map(function(CreativeContentEntry $entry) : array{
-			return self::objectToOrderedArray($this->itemStackToJson($entry->getItem()));
-		}, $packet->getEntries());
-		file_put_contents($this->bedrockDataPath . '/creativeitems.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
+
+		$groupItems = [];
+		foreach($packet->getItems() as $itemEntry){
+			$groupItems[$itemEntry->getGroupId()][] = $this->itemStackToJson($itemEntry->getItem());
+		}
+
+		static $typeMap = [
+			CreativeContentPacket::CATEGORY_CONSTRUCTION => "construction",
+			CreativeContentPacket::CATEGORY_NATURE => "nature",
+			CreativeContentPacket::CATEGORY_EQUIPMENT => "equipment",
+			CreativeContentPacket::CATEGORY_ITEMS => "items",
+		];
+
+		$groupCategories = [];
+		foreach(Utils::promoteKeys($packet->getGroups()) as $groupId => $group){
+			$category = $typeMap[$group->getCategoryId()] ?? throw new PacketHandlingException("Unknown creative category ID " . $group->getCategoryId());
+			//FIXME: objectToOrderedArray might mess with the order of groupItems
+			//this isn't a problem right now because it's a list, but could cause problems in the future
+			$groupCategories[$category][] = self::objectToOrderedArray($this->creativeGroupEntryToJson($group, $groupItems[$groupId]));
+		}
+
+		foreach(Utils::promoteKeys($groupCategories) as $category => $categoryGroups){
+			file_put_contents($this->bedrockDataPath . '/creative/' . $category . '.json', json_encode($categoryGroups, JSON_PRETTY_PRINT) . "\n");
+		}
+
 		return true;
 	}
 
@@ -571,7 +624,7 @@ function main(array $argv) : int{
 	}
 
 	foreach($packets as $lineNum => $line){
-		$parts = explode(':', $line);
+		$parts = explode(':', $line, limit: 3);
 		if(count($parts) !== 2){
 			fwrite(STDERR, 'Wrong packet format at line ' . ($lineNum + 1) . ', expected read:base64 or write:base64');
 			return 1;

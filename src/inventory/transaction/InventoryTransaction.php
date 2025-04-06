@@ -144,8 +144,9 @@ class InventoryTransaction{
 		$needItems = [];
 		$haveItems = [];
 		foreach($this->actions as $key => $action){
-			if(!$action->getTargetItem()->isNull()){
-				$needItems[] = $action->getTargetItem();
+			$targetItem = $action->getTargetItem();
+			if(!$targetItem->isNull()){
+				$needItems[] = $targetItem;
 			}
 
 			try{
@@ -154,8 +155,9 @@ class InventoryTransaction{
 				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
-			if(!$action->getSourceItem()->isNull()){
-				$haveItems[] = $action->getSourceItem();
+			$sourceItem = $action->getSourceItem();
+			if(!$sourceItem->isNull()){
+				$haveItems[] = $sourceItem;
 			}
 		}
 

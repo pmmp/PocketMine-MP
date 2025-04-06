@@ -738,7 +738,7 @@ class InventoryManager implements InventoryListener{
 	}
 
 	public function syncCreative() : void{
-		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache($this->player->getCreativeInventory()));
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->buildPacket($this->player->getCreativeInventory(), $this->session));
 	}
 
 	/**

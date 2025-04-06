@@ -56,6 +56,10 @@ final class BlockStateStringValues{
 	public const CRACKED_STATE_MAX_CRACKED = "max_cracked";
 	public const CRACKED_STATE_NO_CRACKS = "no_cracks";
 
+	public const CREAKING_HEART_STATE_AWAKE = "awake";
+	public const CREAKING_HEART_STATE_DORMANT = "dormant";
+	public const CREAKING_HEART_STATE_UPROOTED = "uprooted";
+
 	public const DRIPSTONE_THICKNESS_BASE = "base";
 	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
 	public const DRIPSTONE_THICKNESS_MERGE = "merge";

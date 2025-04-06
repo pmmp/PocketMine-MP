@@ -115,12 +115,6 @@ parameters:
 			path: ../../../src/crash/CrashDump.php
 
 		-
-			message: '#^Call to function assert\(\) with false and ''unknown hit type'' will always evaluate to false\.$#'
-			identifier: function.impossibleType
-			count: 1
-			path: ../../../src/entity/projectile/Projectile.php
-
-		-
 			message: '#^Property pocketmine\\item\\WritableBookBase\:\:\$pages \(list\<pocketmine\\item\\WritableBookPage\>\) does not accept non\-empty\-array\<int, pocketmine\\item\\WritableBookPage\>\.$#'
 			identifier: assign.propertyType
 			count: 1

@@ -21,29 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\sound;
+namespace pocketmine\network\mcpe\cache;
 
-use pocketmine\entity\Entity;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+use pocketmine\inventory\CreativeCategory;
+use pocketmine\inventory\CreativeGroup;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 
-/**
- * Played when an entity hits ground after falling a long distance (damage).
- * This is the bone-breaker "crunch" sound.
- */
-class EntityLongFallSound implements Sound{
-	public function __construct(private Entity $entity){}
+final class CreativeInventoryCacheEntry{
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(
-			LevelSoundEvent::FALL_BIG,
-			$pos,
-			-1,
-			$this->entity->getNetworkTypeId(),
-			false, //TODO: is isBaby relevant here?
-			false,
-			$this->entity->getId()
-		)];
+	/**
+	 * @param CreativeCategory[]     $categories
+	 * @param CreativeGroup[]|null[] $groups
+	 * @param CreativeItemEntry[]    $items
+	 *
+	 * @phpstan-param list<CreativeCategory>   $categories
+	 * @phpstan-param list<CreativeGroup|null> $groups
+	 * @phpstan-param list<CreativeItemEntry>  $items
+	 */
+	public function __construct(
+		public readonly array $categories,
+		public readonly array $groups,
+		public readonly array $items,
+	){
+		//NOOP
 	}
 }

@@ -897,6 +897,18 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_FROSTWALKER, []);
 	}
 
+	public static function enchantment_heavy_weapon_breach() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_HEAVY_WEAPON_BREACH, []);
+	}
+
+	public static function enchantment_heavy_weapon_density() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_HEAVY_WEAPON_DENSITY, []);
+	}
+
+	public static function enchantment_heavy_weapon_windburst() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_HEAVY_WEAPON_WINDBURST, []);
+	}
+
 	public static function enchantment_knockback() : Translatable{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_KNOCKBACK, []);
 	}
@@ -1106,6 +1118,318 @@ final class KnownTranslationFactory{
 
 	public static function item_record_ward_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_WARD_DESC, []);
+	}
+
+	public static function itemGroup_name_anvil() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_ANVIL, []);
+	}
+
+	public static function itemGroup_name_arrow() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_ARROW, []);
+	}
+
+	public static function itemGroup_name_axe() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_AXE, []);
+	}
+
+	public static function itemGroup_name_banner() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BANNER, []);
+	}
+
+	public static function itemGroup_name_banner_pattern() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BANNER_PATTERN, []);
+	}
+
+	public static function itemGroup_name_bed() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BED, []);
+	}
+
+	public static function itemGroup_name_boat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BOAT, []);
+	}
+
+	public static function itemGroup_name_boots() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BOOTS, []);
+	}
+
+	public static function itemGroup_name_bundles() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BUNDLES, []);
+	}
+
+	public static function itemGroup_name_buttons() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_BUTTONS, []);
+	}
+
+	public static function itemGroup_name_candles() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CANDLES, []);
+	}
+
+	public static function itemGroup_name_chalkboard() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CHALKBOARD, []);
+	}
+
+	public static function itemGroup_name_chest() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CHEST, []);
+	}
+
+	public static function itemGroup_name_chestboat() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CHESTBOAT, []);
+	}
+
+	public static function itemGroup_name_chestplate() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CHESTPLATE, []);
+	}
+
+	public static function itemGroup_name_compounds() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_COMPOUNDS, []);
+	}
+
+	public static function itemGroup_name_concrete() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CONCRETE, []);
+	}
+
+	public static function itemGroup_name_concretePowder() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CONCRETEPOWDER, []);
+	}
+
+	public static function itemGroup_name_cookedFood() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_COOKEDFOOD, []);
+	}
+
+	public static function itemGroup_name_coral() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CORAL, []);
+	}
+
+	public static function itemGroup_name_coral_decorations() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CORAL_DECORATIONS, []);
+	}
+
+	public static function itemGroup_name_crop() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_CROP, []);
+	}
+
+	public static function itemGroup_name_door() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_DOOR, []);
+	}
+
+	public static function itemGroup_name_dye() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_DYE, []);
+	}
+
+	public static function itemGroup_name_enchantedBook() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_ENCHANTEDBOOK, []);
+	}
+
+	public static function itemGroup_name_fence() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_FENCE, []);
+	}
+
+	public static function itemGroup_name_fenceGate() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_FENCEGATE, []);
+	}
+
+	public static function itemGroup_name_firework() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_FIREWORK, []);
+	}
+
+	public static function itemGroup_name_fireworkStars() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_FIREWORKSTARS, []);
+	}
+
+	public static function itemGroup_name_flower() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_FLOWER, []);
+	}
+
+	public static function itemGroup_name_glass() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GLASS, []);
+	}
+
+	public static function itemGroup_name_glassPane() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GLASSPANE, []);
+	}
+
+	public static function itemGroup_name_glazedTerracotta() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GLAZEDTERRACOTTA, []);
+	}
+
+	public static function itemGroup_name_goatHorn() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GOATHORN, []);
+	}
+
+	public static function itemGroup_name_grass() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GRASS, []);
+	}
+
+	public static function itemGroup_name_helmet() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_HELMET, []);
+	}
+
+	public static function itemGroup_name_hoe() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_HOE, []);
+	}
+
+	public static function itemGroup_name_horseArmor() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_HORSEARMOR, []);
+	}
+
+	public static function itemGroup_name_leaves() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_LEAVES, []);
+	}
+
+	public static function itemGroup_name_leggings() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_LEGGINGS, []);
+	}
+
+	public static function itemGroup_name_lingeringPotion() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_LINGERINGPOTION, []);
+	}
+
+	public static function itemGroup_name_log() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_LOG, []);
+	}
+
+	public static function itemGroup_name_minecart() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_MINECART, []);
+	}
+
+	public static function itemGroup_name_miscFood() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_MISCFOOD, []);
+	}
+
+	public static function itemGroup_name_mobEgg() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_MOBEGG, []);
+	}
+
+	public static function itemGroup_name_monsterStoneEgg() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_MONSTERSTONEEGG, []);
+	}
+
+	public static function itemGroup_name_mushroom() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_MUSHROOM, []);
+	}
+
+	public static function itemGroup_name_netherWartBlock() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_NETHERWARTBLOCK, []);
+	}
+
+	public static function itemGroup_name_ominousBottle() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_OMINOUSBOTTLE, []);
+	}
+
+	public static function itemGroup_name_ore() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_ORE, []);
+	}
+
+	public static function itemGroup_name_permission() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_PERMISSION, []);
+	}
+
+	public static function itemGroup_name_pickaxe() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_PICKAXE, []);
+	}
+
+	public static function itemGroup_name_planks() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_PLANKS, []);
+	}
+
+	public static function itemGroup_name_potion() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_POTION, []);
+	}
+
+	public static function itemGroup_name_pressurePlate() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_PRESSUREPLATE, []);
+	}
+
+	public static function itemGroup_name_products() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_PRODUCTS, []);
+	}
+
+	public static function itemGroup_name_rail() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_RAIL, []);
+	}
+
+	public static function itemGroup_name_rawFood() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_RAWFOOD, []);
+	}
+
+	public static function itemGroup_name_record() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_RECORD, []);
+	}
+
+	public static function itemGroup_name_sandstone() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SANDSTONE, []);
+	}
+
+	public static function itemGroup_name_sapling() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SAPLING, []);
+	}
+
+	public static function itemGroup_name_seed() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SEED, []);
+	}
+
+	public static function itemGroup_name_shovel() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SHOVEL, []);
+	}
+
+	public static function itemGroup_name_shulkerBox() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SHULKERBOX, []);
+	}
+
+	public static function itemGroup_name_sign() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SIGN, []);
+	}
+
+	public static function itemGroup_name_skull() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SKULL, []);
+	}
+
+	public static function itemGroup_name_slab() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SLAB, []);
+	}
+
+	public static function itemGroup_name_splashPotion() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SPLASHPOTION, []);
+	}
+
+	public static function itemGroup_name_stainedClay() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_STAINEDCLAY, []);
+	}
+
+	public static function itemGroup_name_stairs() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_STAIRS, []);
+	}
+
+	public static function itemGroup_name_stone() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_STONE, []);
+	}
+
+	public static function itemGroup_name_stoneBrick() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_STONEBRICK, []);
+	}
+
+	public static function itemGroup_name_sword() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SWORD, []);
+	}
+
+	public static function itemGroup_name_trapdoor() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_TRAPDOOR, []);
+	}
+
+	public static function itemGroup_name_walls() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_WALLS, []);
+	}
+
+	public static function itemGroup_name_wood() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_WOOD, []);
+	}
+
+	public static function itemGroup_name_wool() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_WOOL, []);
+	}
+
+	public static function itemGroup_name_woolCarpet() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_WOOLCARPET, []);
 	}
 
 	public static function kick_admin() : Translatable{

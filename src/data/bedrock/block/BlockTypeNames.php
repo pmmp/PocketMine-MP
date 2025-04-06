@@ -175,7 +175,9 @@ final class BlockTypeNames{
 	public const BUBBLE_CORAL_FAN = "minecraft:bubble_coral_fan";
 	public const BUBBLE_CORAL_WALL_FAN = "minecraft:bubble_coral_wall_fan";
 	public const BUDDING_AMETHYST = "minecraft:budding_amethyst";
+	public const BUSH = "minecraft:bush";
 	public const CACTUS = "minecraft:cactus";
+	public const CACTUS_FLOWER = "minecraft:cactus_flower";
 	public const CAKE = "minecraft:cake";
 	public const CALCITE = "minecraft:calcite";
 	public const CALIBRATED_SCULK_SENSOR = "minecraft:calibrated_sculk_sensor";
@@ -545,6 +547,7 @@ final class BlockTypeNames{
 	public const FIRE_CORAL_BLOCK = "minecraft:fire_coral_block";
 	public const FIRE_CORAL_FAN = "minecraft:fire_coral_fan";
 	public const FIRE_CORAL_WALL_FAN = "minecraft:fire_coral_wall_fan";
+	public const FIREFLY_BUSH = "minecraft:firefly_bush";
 	public const FLETCHING_TABLE = "minecraft:fletching_table";
 	public const FLOWER_POT = "minecraft:flower_pot";
 	public const FLOWERING_AZALEA = "minecraft:flowering_azalea";
@@ -685,6 +688,7 @@ final class BlockTypeNames{
 	public const LARGE_AMETHYST_BUD = "minecraft:large_amethyst_bud";
 	public const LARGE_FERN = "minecraft:large_fern";
 	public const LAVA = "minecraft:lava";
+	public const LEAF_LITTER = "minecraft:leaf_litter";
 	public const LECTERN = "minecraft:lectern";
 	public const LEVER = "minecraft:lever";
 	public const LIGHT_BLOCK_0 = "minecraft:light_block_0";
@@ -1043,6 +1047,7 @@ final class BlockTypeNames{
 	public const SEA_LANTERN = "minecraft:sea_lantern";
 	public const SEA_PICKLE = "minecraft:sea_pickle";
 	public const SEAGRASS = "minecraft:seagrass";
+	public const SHORT_DRY_GRASS = "minecraft:short_dry_grass";
 	public const SHORT_GRASS = "minecraft:short_grass";
 	public const SHROOMLIGHT = "minecraft:shroomlight";
 	public const SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
@@ -1140,6 +1145,7 @@ final class BlockTypeNames{
 	public const SUSPICIOUS_GRAVEL = "minecraft:suspicious_gravel";
 	public const SUSPICIOUS_SAND = "minecraft:suspicious_sand";
 	public const SWEET_BERRY_BUSH = "minecraft:sweet_berry_bush";
+	public const TALL_DRY_GRASS = "minecraft:tall_dry_grass";
 	public const TALL_GRASS = "minecraft:tall_grass";
 	public const TARGET = "minecraft:target";
 	public const TINTED_GLASS = "minecraft:tinted_glass";
@@ -1267,6 +1273,7 @@ final class BlockTypeNames{
 	public const WHITE_TERRACOTTA = "minecraft:white_terracotta";
 	public const WHITE_TULIP = "minecraft:white_tulip";
 	public const WHITE_WOOL = "minecraft:white_wool";
+	public const WILDFLOWERS = "minecraft:wildflowers";
 	public const WITHER_ROSE = "minecraft:wither_rose";
 	public const WITHER_SKELETON_SKULL = "minecraft:wither_skeleton_skull";
 	public const WOODEN_BUTTON = "minecraft:wooden_button";

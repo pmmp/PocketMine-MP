@@ -19,6 +19,12 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/Server.php
+
+		-
 			message: '#^Method pocketmine\\Server\:\:getCommandAliases\(\) should return array\<string, list\<string\>\> but returns array\<string, array\<mixed\>\>\.$#'
 			identifier: return.type
 			count: 1
@@ -49,16 +55,16 @@ parameters:
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: '#^Method pocketmine\\VersionInfo\:\:GIT_HASH\(\) should return string but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: ../../../src/VersionInfo.php
-
-		-
 			message: '#^Static property pocketmine\\VersionInfo\:\:\$gitHash \(string\|null\) does not accept mixed\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/VersionInfo.php
+
+		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/block/Block.php
 
 		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
@@ -517,6 +523,12 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/block/tile/TileFactory.php
+
+		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getPotentialLightAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -919,24 +931,6 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: '#^Parameter \#1 \$haystack of function stripos expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: '#^Parameter \#2 \$subject of function preg_match expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$authors \(array\<string\>\) does not accept list\<mixed\>\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -961,13 +955,13 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getPackSize\(\) should return int but returns int\<0, max\>\|false\.$#'
-			identifier: return.type
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
 			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
+			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getSha256\(\) should return string but returns string\|false\.$#'
+			message: '#^Method pocketmine\\resourcepacks\\ZippedResourcePack\:\:getPackSize\(\) should return int but returns int\<0, max\>\|false\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
@@ -1009,7 +1003,7 @@ parameters:
 			path: ../../../src/utils/Config.php
 
 		-
-			message: '#^Parameter \#1 \$config of static method pocketmine\\utils\\Config\:\:writeProperties\(\) expects array\<int\|string, bool\|float\|int\|string\>, array\<int\|string, mixed\> given\.$#'
+			message: '#^Parameter \#1 \$config of static method pocketmine\\utils\\Config\:\:writeProperties\(\) expects array\<int\|string, bool\|float\|int\|string\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/utils/Config.php
@@ -1277,6 +1271,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/world/generator/GeneratorRegisterTask.php
 
 		-
 			message: '#^Method pocketmine\\world\\generator\\biome\\BiomeSelector\:\:pickBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'

@@ -10,7 +10,9 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 rules:
+	- pocketmine\phpstan\rules\DisallowDynamicNewRule
 	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
+	- pocketmine\phpstan\rules\ExplodeLimitRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 

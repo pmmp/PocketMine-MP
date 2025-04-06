@@ -73,6 +73,7 @@ abstract class TextFormat{
 	public const MATERIAL_DIAMOND = TextFormat::ESCAPE . "s";
 	public const MATERIAL_LAPIS = TextFormat::ESCAPE . "t";
 	public const MATERIAL_AMETHYST = TextFormat::ESCAPE . "u";
+	public const MATERIAL_RESIN = TextFormat::ESCAPE . "v";
 
 	public const COLORS = [
 		self::BLACK => self::BLACK,
@@ -102,6 +103,7 @@ abstract class TextFormat{
 		self::MATERIAL_DIAMOND => self::MATERIAL_DIAMOND,
 		self::MATERIAL_LAPIS => self::MATERIAL_LAPIS,
 		self::MATERIAL_AMETHYST => self::MATERIAL_AMETHYST,
+		self::MATERIAL_RESIN => self::MATERIAL_RESIN,
 	];
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
@@ -146,7 +148,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-u])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-v])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
@@ -160,7 +162,7 @@ abstract class TextFormat{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-u]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-v]/u", "", $string));
 		}
 		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
@@ -171,7 +173,7 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-u])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-v])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**
@@ -248,6 +250,7 @@ abstract class TextFormat{
 				TextFormat::MATERIAL_DIAMOND => "color:#2cb9a8",
 				TextFormat::MATERIAL_LAPIS => "color:#20487a",
 				TextFormat::MATERIAL_AMETHYST => "color:#9a5cc5",
+				TextFormat::MATERIAL_RESIN => "color:#fc7812",
 				TextFormat::BOLD => "font-weight:bold",
 				TextFormat::ITALIC => "font-style:italic",
 				default => null
