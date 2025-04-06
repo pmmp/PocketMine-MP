@@ -267,6 +267,9 @@ class Campfire extends Transparent{
 				//TODO: we probably need to rethink how these are tracked
 				$tile->setCookingTimes($this->cookingTimes);
 			}
+			if(count($items) > 0){
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
 			if(mt_rand(1, 6) === 1){
 				$this->position->getWorld()->addSound($this->position, $furnaceType->getCookSound());
 			}
