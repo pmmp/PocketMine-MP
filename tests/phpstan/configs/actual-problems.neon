@@ -1135,12 +1135,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: '#^Dynamic new is not allowed\.$#'
-			identifier: pocketmine.new.dynamic
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1282,7 +1276,7 @@ parameters:
 			message: '#^Dynamic new is not allowed\.$#'
 			identifier: pocketmine.new.dynamic
 			count: 1
-			path: ../../../src/world/generator/GeneratorRegisterTask.php
+			path: ../../../src/world/generator/GeneratorManagerEntry.php
 
 		-
 			message: '#^Method pocketmine\\world\\generator\\biome\\BiomeSelector\:\:pickBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'
