@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28b4de9a23a293646dbad2707cdfd9e0",
+    "content-hash": "818c679a25da8e6b466bc454ad48dec3",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -471,16 +471,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.24.1",
+            "version": "2.24.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "8f48cbe1fb5835a8bb573bed00ef04c65c26c7e5"
+                "reference": "2a00c44c52bce98e7a43aa31517df78cbb2ba23b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/8f48cbe1fb5835a8bb573bed00ef04c65c26c7e5",
-                "reference": "8f48cbe1fb5835a8bb573bed00ef04c65c26c7e5",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/2a00c44c52bce98e7a43aa31517df78cbb2ba23b",
+                "reference": "2a00c44c52bce98e7a43aa31517df78cbb2ba23b",
                 "shasum": ""
             },
             "type": "library",
@@ -488,9 +488,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.24.1"
+                "source": "https://github.com/pmmp/Language/tree/2.24.2"
             },
-            "time": "2025-03-16T19:04:15+00:00"
+            "time": "2025-04-03T01:23:27+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -618,16 +618,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "1.1.1",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "be2783be516bf6e2872ff5c81fb9048596617b97"
+                "reference": "4145a31cd812fe8931c3c9c691fcd2ded2f47e7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/be2783be516bf6e2872ff5c81fb9048596617b97",
-                "reference": "be2783be516bf6e2872ff5c81fb9048596617b97",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/4145a31cd812fe8931c3c9c691fcd2ded2f47e7f",
+                "reference": "4145a31cd812fe8931c3c9c691fcd2ded2f47e7f",
                 "shasum": ""
             },
             "require": {
@@ -639,8 +639,8 @@
                 "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.10.1",
-                "phpstan/phpstan-strict-rules": "^1.0"
+                "phpstan/phpstan": "2.1.0",
+                "phpstan/phpstan-strict-rules": "^2.0"
             },
             "type": "library",
             "autoload": {
@@ -655,9 +655,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/1.1.1"
+                "source": "https://github.com/pmmp/RakLib/tree/1.1.2"
             },
-            "time": "2024-03-04T14:02:14+00:00"
+            "time": "2025-04-06T03:38:21+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
@@ -742,16 +742,16 @@
         },
         {
             "name": "ramsey/collection",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/collection.git",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109"
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/344572933ad0181accbf4ba763e85a0306a8c5e2",
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2",
                 "shasum": ""
             },
             "require": {
@@ -812,9 +812,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/collection/issues",
-                "source": "https://github.com/ramsey/collection/tree/2.1.0"
+                "source": "https://github.com/ramsey/collection/tree/2.1.1"
             },
-            "time": "2025-03-02T04:48:29+00:00"
+            "time": "2025-03-22T05:38:12+00:00"
         },
         {
             "name": "ramsey/uuid",
@@ -1373,16 +1373,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.8",
+            "version": "2.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "f9adff3b87c03b12cc7e46a30a524648e497758f"
+                "reference": "8ca5f79a8f63c49b2359065832a654e1ec70ac30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f9adff3b87c03b12cc7e46a30a524648e497758f",
-                "reference": "f9adff3b87c03b12cc7e46a30a524648e497758f",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8ca5f79a8f63c49b2359065832a654e1ec70ac30",
+                "reference": "8ca5f79a8f63c49b2359065832a654e1ec70ac30",
                 "shasum": ""
             },
             "require": {
@@ -1427,20 +1427,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-09T09:30:48+00:00"
+            "time": "2025-03-24T13:45:00+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "2.0.4",
+            "version": "2.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "d09e152f403c843998d7a52b5d87040c937525dd"
+                "reference": "6b92469f8a7995e626da3aa487099617b8dfa260"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/d09e152f403c843998d7a52b5d87040c937525dd",
-                "reference": "d09e152f403c843998d7a52b5d87040c937525dd",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/6b92469f8a7995e626da3aa487099617b8dfa260",
+                "reference": "6b92469f8a7995e626da3aa487099617b8dfa260",
                 "shasum": ""
             },
             "require": {
@@ -1451,7 +1451,9 @@
                 "phpunit/phpunit": "<7.0"
             },
             "require-dev": {
+                "nikic/php-parser": "^5",
                 "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-strict-rules": "^2.0",
                 "phpunit/phpunit": "^9.6"
             },
@@ -1476,9 +1478,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.4"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.6"
             },
-            "time": "2025-01-22T13:07:38+00:00"
+            "time": "2025-03-26T12:47:06+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
