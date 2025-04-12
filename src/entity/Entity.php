@@ -31,6 +31,7 @@ use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
+use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
@@ -710,6 +711,9 @@ abstract class Entity{
 	}
 
 	public function extinguish() : void{
+		$ev = new EntityExtinguishEvent($this);
+		$ev->call();
+
 		$this->fireTicks = 0;
 		$this->networkPropertiesDirty = true;
 	}
