@@ -734,9 +734,13 @@ abstract class Living extends Entity{
 				){
 					continue;
 				}
-				$ev = new EntityWaterFreezeEvent($this, $block);
-				$ev->call();
-				if(!$ev->isCancelled()){
+				$cancelled = false;
+				if(EntityWaterFreezeEvent::hasHandlers()){
+					$ev = new EntityWaterFreezeEvent($this, $block);
+					$ev->call();
+					$cancelled = $ev->isCancelled();
+				}
+				if(!$cancelled){
 					$world->setBlockAt($x, $y, $z, $frostedIce);
 				}
 			}
