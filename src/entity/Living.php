@@ -38,7 +38,7 @@ use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
-use pocketmine\event\entity\EntityFreezeWaterEvent;
+use pocketmine\event\entity\EntityWaterFreezeEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -734,7 +734,7 @@ abstract class Living extends Entity{
 				){
 					continue;
 				}
-				$ev = new EntityFreezeWaterEvent($this, $block);
+				$ev = new EntityWaterFreezeEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$world->setBlockAt($x, $y, $z, $frostedIce);
