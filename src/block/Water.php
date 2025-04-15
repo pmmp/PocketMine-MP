@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\world\sound\BucketEmptyWaterSound;
 use pocketmine\world\sound\BucketFillWaterSound;
 use pocketmine\world\sound\Sound;
@@ -53,7 +54,7 @@ class Water extends Liquid{
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
 		if($entity->isOnFire()){
-			$entity->extinguish();
+			$entity->extinguish(EntityExtinguishEvent::CAUSE_WATER);
 		}
 		return true;
 	}

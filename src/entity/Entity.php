@@ -710,8 +710,8 @@ abstract class Entity{
 		}
 	}
 
-	public function extinguish() : void{
-		$ev = new EntityExtinguishEvent($this);
+	public function extinguish(int $cause = EntityExtinguishEvent::CAUSE_CUSTOM) : void{
+		$ev = new EntityExtinguishEvent($this, $cause);
 		$ev->call();
 
 		$this->fireTicks = 0;
@@ -724,7 +724,7 @@ abstract class Entity{
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
 		if($this->isFireProof() && $this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_FIRE_PROOF);
 			return false;
 		}
 
@@ -735,7 +735,7 @@ abstract class Entity{
 		}
 
 		if(!$this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_TICKING);
 		}else{
 			return true;
 		}
