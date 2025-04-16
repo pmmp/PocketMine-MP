@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     name: Update Docker Hub images
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Set up Docker Buildx

@@ -24,7 +24,7 @@ permissions:
 jobs:
   check-intent:
     name: Check release trigger
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     outputs:
       valid: ${{ steps.validate.outputs.DEV_BUILD == 'false' }}
@@ -43,7 +43,7 @@ jobs:
     #don't do these checks if this isn't a release - we don't want to generate unnecessary failed statuses
     if: needs.check-intent.outputs.valid == 'true'
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
