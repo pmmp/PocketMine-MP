@@ -37,6 +37,8 @@ class EntityExtinguishEvent extends EntityEvent{
 	public const CAUSE_RESPAWN = 3;
 	public const CAUSE_FIRE_PROOF = 4;
 	public const CAUSE_TICKING = 5;
+	public const CAUSE_RAIN = 6;
+	public const CAUSE_POWDER_SNOW = 7;
 
 	public function __construct(
 		Entity $entity,
