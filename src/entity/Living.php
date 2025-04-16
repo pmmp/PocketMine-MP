@@ -722,27 +722,32 @@ abstract class Living extends Entity{
 		$y = $this->location->getFloorY() - 1;
 		$baseZ = $this->location->getFloorZ();
 
-		$frostedIce = VanillaBlocks::FROSTED_ICE();
+		$cancelled = false;
+		$liquid = VanillaBlocks::WATER();
+		$targetBlock = VanillaBlocks::FROSTED_ICE();
+		if(EntityWaterFreezeEvent::hasHandlers()){
+			$ev = new EntityWaterFreezeEvent($this, $radius, $liquid, $targetBlock);
+			$ev->call();
+			$cancelled = $ev->isCancelled();
+			$radius = $ev->getRadius();
+			$liquid = $ev->getLiquid();
+			$targetBlock = $ev->getTargetBlock();
+		}
+		if($cancelled){
+			return;
+		}
 		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
 			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
 				$block = $world->getBlockAt($x, $y, $z);
 				if(
-					!$block instanceof Water ||
+					!$block instanceof $liquid ||
 					!$block->isSource() ||
 					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
 					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
 				){
 					continue;
 				}
-				$cancelled = false;
-				if(EntityWaterFreezeEvent::hasHandlers()){
-					$ev = new EntityWaterFreezeEvent($this, $block);
-					$ev->call();
-					$cancelled = $ev->isCancelled();
-				}
-				if(!$cancelled){
-					$world->setBlockAt($x, $y, $z, $frostedIce);
-				}
+				$world->setBlockAt($x, $y, $z, $targetBlock);
 			}
 		}
 	}

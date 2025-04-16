@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\event\entity;
 
-use pocketmine\block\Water;
+use pocketmine\block\Block;
+use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
@@ -38,12 +39,46 @@ class EntityWaterFreezeEvent extends EntityEvent implements Cancellable{
 
 	public function __construct(
 		Living $entity,
-		private Water $water
+		private int $radius,
+		private Liquid $liquid,
+		private Block $targetBlock
 	){
 		$this->entity = $entity;
 	}
 
-	public function getWater() : Water{
-		return $this->water;
+	public function getRadius() : int{
+		return $this->radius;
+	}
+
+	public function setRadius(int $radius) : void{
+		$this->radius = $radius;
+	}
+
+	/**
+	 * Returns the liquid that gets frozen
+	 */
+	public function getLiquid() : Liquid{
+		return $this->liquid;
+	}
+
+	/**
+	 * Sets the liquid that gets frozen
+	 */
+	public function setLiquid(Liquid $liquid) : void{
+		$this->liquid = $liquid;
+	}
+
+	/**
+	 * Returns the block that replaces the liquid
+	 */
+	public function getTargetBlock() : Block{
+		return $this->targetBlock;
+	}
+
+	/**
+	 * Sets the block that replaces the liquid
+	 */
+	public function setTargetBlock(Block $targetBlock) : void{
+		$this->targetBlock = $targetBlock;
 	}
 }
