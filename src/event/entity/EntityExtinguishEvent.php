@@ -34,7 +34,7 @@ class EntityExtinguishEvent extends EntityEvent{
 	public const CAUSE_CUSTOM = 0;
 	public const CAUSE_WATER = 1;
 	public const CAUSE_WATER_CAULDRON = 2;
-	public const CAUSE_SPAWN = 3;
+	public const CAUSE_RESPAWN = 3;
 	public const CAUSE_FIRE_PROOF = 4;
 	public const CAUSE_TICKING = 5;
 
