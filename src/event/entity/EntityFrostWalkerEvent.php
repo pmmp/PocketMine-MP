@@ -34,7 +34,7 @@ use pocketmine\event\CancellableTrait;
  *
  * @phpstan-extends EntityEvent<Living>
  */
-class EntityWaterFreezeEvent extends EntityEvent implements Cancellable{
+class EntityFrostWalkerEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
