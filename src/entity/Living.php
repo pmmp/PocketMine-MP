@@ -740,8 +740,7 @@ abstract class Living extends Entity{
 			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
 				$block = $world->getBlockAt($x, $y, $z);
 				if(
-					!$block instanceof $liquid ||
-					!$block->isSource() ||
+					!$block->isSameState($liquid) ||
 					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
 					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
 				){
