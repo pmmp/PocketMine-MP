@@ -30,7 +30,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when an entity with boots enchanted with frost walker freezes nearby water.
+ * Called when an entity moves horizontally while wearing boots enchanted with Frost Walker.
  *
  * @phpstan-extends EntityEvent<Living>
  */
