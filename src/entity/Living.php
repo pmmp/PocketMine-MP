@@ -722,20 +722,19 @@ abstract class Living extends Entity{
 		$y = $this->location->getFloorY() - 1;
 		$baseZ = $this->location->getFloorZ();
 
-		$cancelled = false;
 		$liquid = VanillaBlocks::WATER();
 		$targetBlock = VanillaBlocks::FROSTED_ICE();
 		if(EntityFrostWalkerEvent::hasHandlers()){
 			$ev = new EntityFrostWalkerEvent($this, $radius, $liquid, $targetBlock);
 			$ev->call();
-			$cancelled = $ev->isCancelled();
+			if($ev->isCancelled()){
+				return;
+			}
 			$radius = $ev->getRadius();
 			$liquid = $ev->getLiquid();
 			$targetBlock = $ev->getTargetBlock();
 		}
-		if($cancelled){
-			return;
-		}
+
 		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
 			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
 				$block = $world->getBlockAt($x, $y, $z);
