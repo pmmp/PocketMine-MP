@@ -753,6 +753,10 @@ class Item implements \JsonSerializable{
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		$itemData = GlobalItemDataHandlers::getUpgrader()->upgradeItemStackNbt($tag);
+		if($itemData === null){
+			return VanillaItems::AIR();
+		}
+
 		try{
 			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemData);
 		}catch(ItemTypeDeserializeException $e){
