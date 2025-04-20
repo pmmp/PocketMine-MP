@@ -28,6 +28,7 @@ use pocketmine\event\block\BlockPreExplodeEvent;
 use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -93,7 +94,7 @@ final class RespawnAnchor extends Opaque{
 
 					$player->setSpawn($this->position);
 					$this->position->getWorld()->addSound($this->position, new RespawnAnchorSetSpawnSound());
-					$player->sendMessage(TextFormat::GRAY . "Respawn point set");
+					$player->sendMessage(KnownTranslationFactory::tile_respawn_anchor_respawnSet()->prefix(TextFormat::GRAY));
 					return true;
 
 				case PlayerRespawnAnchorUseEvent::ACTION_NONE:

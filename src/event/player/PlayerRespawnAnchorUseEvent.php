@@ -33,7 +33,6 @@ class PlayerRespawnAnchorUseEvent extends PlayerEvent implements Cancellable{
 
 	public const ACTION_EXPLODE = 0;
 	public const ACTION_SET_SPAWN = 1;
-	public const ACTION_NONE = 2;
 
 	public function __construct(
 		Player $player,
