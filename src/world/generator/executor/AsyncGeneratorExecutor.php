@@ -212,9 +212,6 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			unset($this->activeChunkPopulationTasks[$index]);
 		}else{
 			if($dirtyChunks === 0){
-				$oldChunk = $world->loadChunk($x, $z);
-				$world->setChunk($x, $z, $chunk);
-
 				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
 					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
 					if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
@@ -223,14 +220,12 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 					$world->setChunk($x + $relativeX, $z + $relativeZ, $adjacentChunk);
 				}
 
-				if(($oldChunk === null || !$oldChunk->isPopulated()) && $chunk->isPopulated()){
-					if(ChunkPopulateEvent::hasHandlers()){
-						(new ChunkPopulateEvent($world, $x, $z, $chunk))->call();
-					}
+				if(ChunkPopulateEvent::hasHandlers()){
+					(new ChunkPopulateEvent($world, $x, $z, $chunk))->call();
+				}
 
-					foreach($world->getChunkListeners($x, $z) as $listener){
-						$listener->onChunkPopulated($x, $z, $chunk);
-					}
+				foreach($world->getChunkListeners($x, $z) as $listener){
+					$listener->onChunkPopulated($x, $z, $chunk);
 				}
 			}else{
 				$world->getLogger()->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
