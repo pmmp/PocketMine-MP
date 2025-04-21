@@ -100,7 +100,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	}
 
 	private function registerWorker(World $world, int $worker) : void{
-		$world->getLogger()->debug("Registering generator on worker $worker");
+		$this->logger->debug("Registering generator on worker $worker");
 		$this->workerPool->submitTaskToWorker(new AsyncGeneratorRegisterTask(
 			$world,
 			$this->generatorFactory,
@@ -208,7 +208,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
 		}
 		if(!$this->activeTasks[$index]){
-			$world->getLogger()->debug("Discarding orphaned population result for chunk x=$x,z=$z");
+			$this->logger->debug("Discarding orphaned population result for chunk x=$x,z=$z");
 			unset($this->activeTasks[$index]);
 		}else{
 			if($dirtyChunks === 0){
@@ -228,7 +228,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 					$listener->onChunkPopulated($x, $z, $chunk);
 				}
 			}else{
-				$world->getLogger()->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
+				$this->logger->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
 			}
 
 			//This needs to be in this specific spot because user code might call back to orderChunkPopulation().
@@ -246,7 +246,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 					$promise->resolve($chunk);
 				}else{
 					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
-					$world->getLogger()->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
+					$this->logger->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
 				}
 			}else{
 				//request failed, stick it back on the queue
@@ -315,7 +315,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			);
 			$workerId = $this->workerPool->selectWorker();
 			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->registeredWorkers[$workerId])){
-				$world->getLogger()->debug("Selected worker $workerId previously had generator registered, but is now offline");
+				$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
 				unset($this->registeredWorkers[$workerId]);
 			}
 			if(!isset($this->registeredWorkers[$workerId])){
@@ -386,7 +386,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	}
 
 	public function shutdown(World $world) : void{
-		$world->getLogger()->debug("Cancelling unfulfilled generation requests");
+		$this->logger->debug("Cancelling unfulfilled generation requests");
 
 		foreach($this->requestMap as $chunkHash => $promise){
 			$promise->reject();
