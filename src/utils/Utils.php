@@ -584,7 +584,7 @@ final class Utils{
 	/**
 	 * @phpstan-template TMemberType
 	 * @phpstan-param array<mixed, TMemberType> $array
-	 * @phpstan-param \Closure(TMemberType) : void $validator
+	 * @phpstan-param \Closure(TMemberType) : mixed $validator
 	 */
 	public static function validateArrayValueType(array $array, \Closure $validator) : void{
 		foreach(Utils::promoteKeys($array) as $k => $v){
