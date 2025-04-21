@@ -33,8 +33,6 @@ use pocketmine\world\ChunkLoader;
 use pocketmine\world\ChunkLockId;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\Generator;
-use pocketmine\world\generator\GeneratorRegisterTask;
-use pocketmine\world\generator\GeneratorUnregisterTask;
 use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\World;
 use function array_key_exists;
@@ -103,7 +101,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 
 	private function registerGeneratorToWorker(World $world, int $worker) : void{
 		$world->getLogger()->debug("Registering generator on worker $worker");
-		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask(
+		$this->workerPool->submitTaskToWorker(new AsyncGeneratorRegisterTask(
 			$world,
 			$this->generatorFactory,
 		), $worker);
@@ -406,7 +404,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		}
 
 		foreach($this->generatorRegisteredWorkers as $worker => $true){
-			$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($world), $worker);
+			$this->workerPool->submitTaskToWorker(new AsyncGeneratorUnregisterTask($world), $worker);
 		}
 
 		$this->workerPool->removeWorkerStartHook($this->workerStartHook);

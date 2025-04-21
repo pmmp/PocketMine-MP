@@ -27,6 +27,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
+use pocketmine\world\generator\executor\ThreadLocalGeneratorContext;
 use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 use function array_map;
@@ -34,6 +35,12 @@ use function igbinary_serialize;
 use function igbinary_unserialize;
 
 /**
+ * @internal
+ *
+ * TODO: this should be moved to the executor namespace, but plugins have unfortunately used it directly due to the
+ * difficulty of regenerating chunks. This should be addressed in the future.
+ * For the remainder of PM5, we can't relocate this class.
+ *
  * @phpstan-type OnCompletion \Closure(Chunk $centerChunk, array<int, Chunk> $adjacentChunks) : void
  */
 class PopulationTask extends AsyncTask{
