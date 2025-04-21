@@ -48,7 +48,6 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 	public function orderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$temporaryChunkLoader = new class implements ChunkLoader{};
 		$world->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
-		$oldChunk = $world->loadChunk($chunkX, $chunkZ);
 
 		//TODO: the following code is basically identical to PopulationTask
 		//we should probably generalize this
@@ -62,16 +61,17 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 			}
 		}
 
-		$this->generator->populateChunk($world, $chunkX, $chunkZ);
 		$chunk = $world->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
-			throw new AssumptionFailedError("We just generated and populated this, it should not be null");
+			throw new AssumptionFailedError("We just loaded and/or generated this chunk, it should not be null");
 		}
-		$chunk->setPopulated();
 
-		//TODO: this is basically identical to the AsyncChunkGenerator generateChunkCallback side
-		//we probably ought to generalize this
-		if(($oldChunk === null || !$oldChunk->isPopulated()) && $chunk->isPopulated()){
+		if(!$chunk->isPopulated()){
+			$this->generator->populateChunk($world, $chunkX, $chunkZ);
+			$chunk->setPopulated();
+
+			//TODO: this is basically identical to the AsyncChunkGenerator generateChunkCallback side
+			//we probably ought to generalize this
 			if(ChunkPopulateEvent::hasHandlers()){
 				(new ChunkPopulateEvent($world, $chunkX, $chunkZ, $chunk))->call();
 			}
