@@ -47,30 +47,30 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @var bool[] chunkHash => isValid
 	 * @phpstan-var array<ChunkPosHash, bool>
 	 */
-	private array $activeChunkPopulationTasks = [];
+	private array $activeTasks = [];
 
 	/**
 	 * @var PromiseResolver[] chunkHash => promise
 	 * @phpstan-var array<ChunkPosHash, PromiseResolver<Chunk>>
 	 */
-	private array $chunkPopulationRequestMap = [];
+	private array $requestMap = [];
 
 	/**
 	 * @var \SplQueue (queue of chunkHashes)
 	 * @phpstan-var \SplQueue<ChunkPosHash>
 	 */
-	private \SplQueue $chunkPopulationRequestQueue;
+	private \SplQueue $requestQueue;
 	/**
 	 * @var true[] chunkHash => dummy
 	 * @phpstan-var array<ChunkPosHash, true>
 	 */
-	private array $chunkPopulationRequestQueueIndex = [];
+	private array $requestQueueIndex = [];
 
 	/**
 	 * @var true[]
 	 * @phpstan-var array<int, true>
 	 */
-	private array $generatorRegisteredWorkers = [];
+	private array $registeredWorkers = [];
 
 	/** @phpstan-var \Closure(int) : void */
 	private \Closure $workerStartHook;
@@ -82,47 +82,47 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		private readonly AsyncPool $workerPool,
 		private readonly \Logger $logger,
 		private readonly \Closure $generatorFactory,
-		private readonly int $maxConcurrentChunkPopulationTasks = 2
+		private readonly int $maxConcurrentTasks = 2
 	){
 		//TODO: we really need a better way to check if a closure is thread-safe :(
 		$temp = new ThreadSafeArray();
 		$temp["dummy"] = $this->generatorFactory;
 
-		$this->chunkPopulationRequestQueue = new \SplQueue();
+		$this->requestQueue = new \SplQueue();
 		//TODO: don't love the circular reference here, but we need to make sure this gets cleaned up on shutdown
 		$this->workerStartHook = function(int $workerId) : void{
-			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
+			if(array_key_exists($workerId, $this->registeredWorkers)){
 				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
-				unset($this->generatorRegisteredWorkers[$workerId]);
+				unset($this->registeredWorkers[$workerId]);
 			}
 		};
 		$this->workerPool->addWorkerStartHook($this->workerStartHook);
 	}
 
-	private function registerGeneratorToWorker(World $world, int $worker) : void{
+	private function registerWorker(World $world, int $worker) : void{
 		$world->getLogger()->debug("Registering generator on worker $worker");
 		$this->workerPool->submitTaskToWorker(new AsyncGeneratorRegisterTask(
 			$world,
 			$this->generatorFactory,
 		), $worker);
-		$this->generatorRegisteredWorkers[$worker] = true;
+		$this->registeredWorkers[$worker] = true;
 	}
 
-	private function addChunkHashToPopulationRequestQueue(int $chunkHash) : void{
-		if(!isset($this->chunkPopulationRequestQueueIndex[$chunkHash])){
-			$this->chunkPopulationRequestQueue->enqueue($chunkHash);
-			$this->chunkPopulationRequestQueueIndex[$chunkHash] = true;
+	private function addChunkHashToRequestQueue(int $chunkHash) : void{
+		if(!isset($this->requestQueueIndex[$chunkHash])){
+			$this->requestQueue->enqueue($chunkHash);
+			$this->requestQueueIndex[$chunkHash] = true;
 		}
 	}
 
 	/**
 	 * @phpstan-return Promise<Chunk>
 	 */
-	private function enqueuePopulationRequest(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
+	private function enqueueRequest(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$this->addChunkHashToPopulationRequestQueue($chunkHash);
+		$this->addChunkHashToRequestQueue($chunkHash);
 		/** @phpstan-var PromiseResolver<Chunk> $resolver */
-		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
+		$resolver = $this->requestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
 			$world->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
@@ -139,10 +139,10 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @return bool[]|PromiseResolver[]|null[]
 	 * @phpstan-return array{?PromiseResolver<Chunk>, bool}
 	 */
-	private function checkChunkPopulationPreconditions(World $world, int $chunkX, int $chunkZ) : array{
+	private function checkPreconditions(World $world, int $chunkX, int $chunkZ) : array{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$resolver = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
-		if($resolver !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
+		$resolver = $this->requestMap[$chunkHash] ?? null;
+		if($resolver !== null && isset($this->activeTasks[$chunkHash])){
 			//generation is already running
 			return [$resolver, false];
 		}
@@ -154,24 +154,24 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		if($chunk !== null && $chunk->isPopulated()){
 			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
 			$resolver ??= new PromiseResolver();
-			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			unset($this->requestMap[$chunkHash]);
 			$resolver->resolve($chunk);
 			return [$resolver, false];
 		}
 		return [$resolver, true];
 	}
 
-	private function drainPopulationRequestQueue(World $world) : void{
+	private function drainRequestQueue(World $world) : void{
 		$failed = [];
-		while(count($this->activeChunkPopulationTasks) < $this->maxConcurrentChunkPopulationTasks && !$this->chunkPopulationRequestQueue->isEmpty()){
-			$nextChunkHash = $this->chunkPopulationRequestQueue->dequeue();
-			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
+		while(count($this->activeTasks) < $this->maxConcurrentTasks && !$this->requestQueue->isEmpty()){
+			$nextChunkHash = $this->requestQueue->dequeue();
+			unset($this->requestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
-			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
-				assert(!($this->activeChunkPopulationTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
+			if(isset($this->requestMap[$nextChunkHash])){
+				assert(!($this->activeTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
 				if(
 					!$this->orderChunkPopulation($world, $nextChunkX, $nextChunkZ, null)->isResolved() &&
-					!isset($this->activeChunkPopulationTasks[$nextChunkHash])
+					!isset($this->activeTasks[$nextChunkHash])
 				){
 					$failed[] = $nextChunkHash;
 				}
@@ -181,7 +181,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		//these requests failed even though they weren't rate limited; we can't directly re-add them to the back of the
 		//queue because it would result in an infinite loop
 		foreach($failed as $hash){
-			$this->addChunkHashToPopulationRequestQueue($hash);
+			$this->addChunkHashToRequestQueue($hash);
 		}
 	}
 
@@ -189,7 +189,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @param Chunk[] $adjacentChunks chunkHash => chunk
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	private function generateChunkCallback(World $world, ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
+	private function completeTask(World $world, ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		$timings = $world->timings->chunkPopulationCompletion;
 		$timings->startTiming();
 
@@ -204,12 +204,12 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		}
 
 		$index = World::chunkHash($x, $z);
-		if(!isset($this->activeChunkPopulationTasks[$index])){
+		if(!isset($this->activeTasks[$index])){
 			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
 		}
-		if(!$this->activeChunkPopulationTasks[$index]){
+		if(!$this->activeTasks[$index]){
 			$world->getLogger()->debug("Discarding orphaned population result for chunk x=$x,z=$z");
-			unset($this->activeChunkPopulationTasks[$index]);
+			unset($this->activeTasks[$index]);
 		}else{
 			if($dirtyChunks === 0){
 				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
@@ -237,12 +237,12 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			//We can't remove the promise from the array before setting the chunks in the world because that would lead
 			//to the same problem. Therefore, it's necessary that this code be split into two if/else, with this in the
 			//middle.
-			unset($this->activeChunkPopulationTasks[$index]);
+			unset($this->activeTasks[$index]);
 
 			if($dirtyChunks === 0){
-				$promise = $this->chunkPopulationRequestMap[$index] ?? null;
+				$promise = $this->requestMap[$index] ?? null;
 				if($promise !== null){
-					unset($this->chunkPopulationRequestMap[$index]);
+					unset($this->requestMap[$index]);
 					$promise->resolve($chunk);
 				}else{
 					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
@@ -252,10 +252,10 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and
 				//don't need to be added a second time.
-				$this->addChunkHashToPopulationRequestQueue($index);
+				$this->addChunkHashToRequestQueue($index);
 			}
 
-			$this->drainPopulationRequestQueue($world);
+			$this->drainRequestQueue($world);
 		}
 		$timings->stopTiming();
 	}
@@ -264,7 +264,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @phpstan-param PromiseResolver<Chunk>|null $resolver
 	 * @phpstan-return Promise<Chunk>
 	 */
-	private function internalOrderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
+	private function beginTask(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
 		$timings = $world->timings->chunkPopulationOrder;
@@ -275,15 +275,15 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 				for($zz = -1; $zz <= 1; ++$zz){
 					if($world->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
 						//chunk is already in use by another generation request; queue the request for later
-						return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
+						return $resolver?->getPromise() ?? $this->enqueueRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
 					}
 				}
 			}
 
-			$this->activeChunkPopulationTasks[$chunkHash] = true;
+			$this->activeTasks[$chunkHash] = true;
 			if($resolver === null){
 				$resolver = new PromiseResolver();
-				$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
+				$this->requestMap[$chunkHash] = $resolver;
 			}
 
 			$chunkPopulationLockId = new ChunkLockId();
@@ -310,16 +310,16 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 						return;
 					}
 
-					$this->generateChunkCallback($world, $chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+					$this->completeTask($world, $chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
 				}
 			);
 			$workerId = $this->workerPool->selectWorker();
-			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->registeredWorkers[$workerId])){
 				$world->getLogger()->debug("Selected worker $workerId previously had generator registered, but is now offline");
-				unset($this->generatorRegisteredWorkers[$workerId]);
+				unset($this->registeredWorkers[$workerId]);
 			}
-			if(!isset($this->generatorRegisteredWorkers[$workerId])){
-				$this->registerGeneratorToWorker($world, $workerId);
+			if(!isset($this->registeredWorkers[$workerId])){
+				$this->registerWorker($world, $workerId);
 			}
 			$this->workerPool->submitTaskToWorker($task, $workerId);
 
@@ -341,16 +341,16 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function requestChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
-		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($world, $chunkX, $chunkZ);
+		[$resolver, $proceedWithPopulation] = $this->checkPreconditions($world, $chunkX, $chunkZ);
 		if(!$proceedWithPopulation){
-			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
+			return $resolver?->getPromise() ?? $this->enqueueRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
 		}
 
-		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
+		if(count($this->activeTasks) >= $this->maxConcurrentTasks){
 			//too many chunks are already generating; delay resolution of the request until later
-			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
+			return $resolver?->getPromise() ?? $this->enqueueRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
 		}
-		return $this->internalOrderChunkPopulation($world, $chunkX, $chunkZ, $associatedChunkLoader, $resolver);
+		return $this->beginTask($world, $chunkX, $chunkZ, $associatedChunkLoader, $resolver);
 	}
 
 	/**
@@ -364,23 +364,23 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function orderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
-		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($world, $chunkX, $chunkZ);
+		[$resolver, $proceedWithPopulation] = $this->checkPreconditions($world, $chunkX, $chunkZ);
 		if(!$proceedWithPopulation){
-			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
+			return $resolver?->getPromise() ?? $this->enqueueRequest($world, $chunkX, $chunkZ, $associatedChunkLoader);
 		}
 
-		return $this->internalOrderChunkPopulation($world, $chunkX, $chunkZ, $associatedChunkLoader, $resolver);
+		return $this->beginTask($world, $chunkX, $chunkZ, $associatedChunkLoader, $resolver);
 	}
 
 	public function cancelChunkPopulation(World $world, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
+		if(array_key_exists($chunkHash, $this->requestMap)){
 			$this->logger->debug("Rejecting population promise for chunk $chunkX $chunkZ");
-			$this->chunkPopulationRequestMap[$chunkHash]->reject();
-			unset($this->chunkPopulationRequestMap[$chunkHash]);
-			if(isset($this->activeChunkPopulationTasks[$chunkHash])){
+			$this->requestMap[$chunkHash]->reject();
+			unset($this->requestMap[$chunkHash]);
+			if(isset($this->activeTasks[$chunkHash])){
 				$this->logger->debug("Marking population task for chunk $chunkX $chunkZ as orphaned");
-				$this->activeChunkPopulationTasks[$chunkHash] = false;
+				$this->activeTasks[$chunkHash] = false;
 			}
 		}
 	}
@@ -388,17 +388,17 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	public function shutdown(World $world) : void{
 		$world->getLogger()->debug("Cancelling unfulfilled generation requests");
 
-		foreach($this->chunkPopulationRequestMap as $chunkHash => $promise){
+		foreach($this->requestMap as $chunkHash => $promise){
 			$promise->reject();
-			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			unset($this->requestMap[$chunkHash]);
 		}
-		if(count($this->chunkPopulationRequestMap) !== 0){
+		if(count($this->requestMap) !== 0){
 			//TODO: this might actually get hit because generation rejection callbacks might try to schedule new
 			//requests, and we can't prevent that right now because there's no way to detect "unloading" state
 			throw new AssumptionFailedError("New generation requests scheduled during unload");
 		}
 
-		foreach($this->generatorRegisteredWorkers as $worker => $true){
+		foreach($this->registeredWorkers as $worker => $true){
 			$this->workerPool->submitTaskToWorker(new AsyncGeneratorUnregisterTask($world), $worker);
 		}
 
