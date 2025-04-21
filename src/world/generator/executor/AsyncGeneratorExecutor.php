@@ -53,7 +53,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @var PromiseResolver[] chunkHash => promise
 	 * @phpstan-var array<ChunkPosHash, PromiseResolver<Chunk>>
 	 */
-	private array $requestMap = [];
+	private array $promiseMap = [];
 
 	/**
 	 * @var \SplQueue (queue of chunkHashes)
@@ -122,7 +122,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$this->addChunkHashToRequestQueue($chunkHash);
 		/** @phpstan-var PromiseResolver<Chunk> $resolver */
-		$resolver = $this->requestMap[$chunkHash] = new PromiseResolver();
+		$resolver = $this->promiseMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
 			$world->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
@@ -141,7 +141,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 */
 	private function checkPreconditions(World $world, int $chunkX, int $chunkZ) : array{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$resolver = $this->requestMap[$chunkHash] ?? null;
+		$resolver = $this->promiseMap[$chunkHash] ?? null;
 		if($resolver !== null && isset($this->activeTasks[$chunkHash])){
 			//generation is already running
 			return [$resolver, false];
@@ -154,7 +154,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		if($chunk !== null && $chunk->isPopulated()){
 			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
 			$resolver ??= new PromiseResolver();
-			unset($this->requestMap[$chunkHash]);
+			unset($this->promiseMap[$chunkHash]);
 			$resolver->resolve($chunk);
 			return [$resolver, false];
 		}
@@ -167,7 +167,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			$nextChunkHash = $this->requestQueue->dequeue();
 			unset($this->requestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
-			if(isset($this->requestMap[$nextChunkHash])){
+			if(isset($this->promiseMap[$nextChunkHash])){
 				assert(!($this->activeTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
 				if(
 					!$this->orderChunkPopulation($world, $nextChunkX, $nextChunkZ, null)->isResolved() &&
@@ -240,9 +240,9 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			unset($this->activeTasks[$index]);
 
 			if($dirtyChunks === 0){
-				$promise = $this->requestMap[$index] ?? null;
+				$promise = $this->promiseMap[$index] ?? null;
 				if($promise !== null){
-					unset($this->requestMap[$index]);
+					unset($this->promiseMap[$index]);
 					$promise->resolve($chunk);
 				}else{
 					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
@@ -283,7 +283,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			$this->activeTasks[$chunkHash] = true;
 			if($resolver === null){
 				$resolver = new PromiseResolver();
-				$this->requestMap[$chunkHash] = $resolver;
+				$this->promiseMap[$chunkHash] = $resolver;
 			}
 
 			$chunkPopulationLockId = new ChunkLockId();
@@ -374,10 +374,10 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 
 	public function cancelChunkPopulation(World $world, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(array_key_exists($chunkHash, $this->requestMap)){
+		if(array_key_exists($chunkHash, $this->promiseMap)){
 			$this->logger->debug("Rejecting population promise for chunk $chunkX $chunkZ");
-			$this->requestMap[$chunkHash]->reject();
-			unset($this->requestMap[$chunkHash]);
+			$this->promiseMap[$chunkHash]->reject();
+			unset($this->promiseMap[$chunkHash]);
 			if(isset($this->activeTasks[$chunkHash])){
 				$this->logger->debug("Marking population task for chunk $chunkX $chunkZ as orphaned");
 				$this->activeTasks[$chunkHash] = false;
@@ -388,11 +388,11 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	public function shutdown(World $world) : void{
 		$this->logger->debug("Cancelling unfulfilled generation requests");
 
-		foreach($this->requestMap as $chunkHash => $promise){
+		foreach($this->promiseMap as $chunkHash => $promise){
 			$promise->reject();
-			unset($this->requestMap[$chunkHash]);
+			unset($this->promiseMap[$chunkHash]);
 		}
-		if(count($this->requestMap) !== 0){
+		if(count($this->promiseMap) !== 0){
 			//TODO: this might actually get hit because generation rejection callbacks might try to schedule new
 			//requests, and we can't prevent that right now because there's no way to detect "unloading" state
 			throw new AssumptionFailedError("New generation requests scheduled during unload");
