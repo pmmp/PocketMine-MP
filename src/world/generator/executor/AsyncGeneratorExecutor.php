@@ -34,6 +34,7 @@ use pocketmine\world\ChunkLockId;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorRegisterTask;
+use pocketmine\world\generator\GeneratorUnregisterTask;
 use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\World;
 use function array_key_exists;
@@ -402,6 +403,10 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			//TODO: this might actually get hit because generation rejection callbacks might try to schedule new
 			//requests, and we can't prevent that right now because there's no way to detect "unloading" state
 			throw new AssumptionFailedError("New generation requests scheduled during unload");
+		}
+
+		foreach($this->generatorRegisteredWorkers as $worker => $true){
+			$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($world), $worker);
 		}
 
 		$this->workerPool->removeWorkerStartHook($this->workerStartHook);
