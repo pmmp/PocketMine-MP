@@ -47,7 +47,6 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 
 	public function orderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$temporaryChunkLoader = new class implements ChunkLoader{};
-		$world->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
 
 		//TODO: the following code is basically identical to PopulationTask
 		//we should probably generalize this
