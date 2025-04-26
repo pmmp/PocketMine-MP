@@ -79,19 +79,22 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	private \Closure $workerStartHook;
 
 	/**
+	 * @param int|null $overrideThreadLocalContextId TODO: REMOVE ME in major-next, needed for PopulationTask BC
+	 *
 	 * @phpstan-param \Closure() : Generator $generatorFactory Must be a thread-safe closure
 	 */
 	public function __construct(
 		private readonly AsyncPool $workerPool,
 		private readonly \Logger $logger,
 		private readonly \Closure $generatorFactory,
-		private readonly int $maxConcurrentTasks = 2
+		private readonly int $maxConcurrentTasks = 2,
+		?int $overrideThreadLocalContextId = null
 	){
 		//TODO: we really need a better way to check if a closure is thread-safe :(
 		$temp = new ThreadSafeArray();
 		$temp["dummy"] = $this->generatorFactory;
 
-		$this->threadLocalContextId = self::$nextThreadLocalContextId++;
+		$this->threadLocalContextId = $overrideThreadLocalContextId ?? self::$nextThreadLocalContextId++;
 
 		$this->requestQueue = new \SplQueue();
 		//TODO: don't love the circular reference here, but we need to make sure this gets cleaned up on shutdown

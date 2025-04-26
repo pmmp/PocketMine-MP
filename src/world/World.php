@@ -485,7 +485,8 @@ class World implements ChunkManager{
 				$this->workerPool,
 				$this->logger,
 				static fn() => GeneratorManagerEntry::make($generatorClass, $seed, $generatorOptions),
-				$cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2)
+				$cfg->getPropertyInt(YmlServerProperties::CHUNK_GENERATION_POPULATION_QUEUE_SIZE, 2),
+				$this->worldId //TODO: REMOVE ME in major-next
 			);
 			$this->logger->debug("Using async task generator system for slow generator " . $generatorClass);
 		}
