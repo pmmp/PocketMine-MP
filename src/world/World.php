@@ -2724,7 +2724,7 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
-		if(!EntityFactory::getInstance()->isRegistered($entity::class)){
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
 			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
 			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
 			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");
