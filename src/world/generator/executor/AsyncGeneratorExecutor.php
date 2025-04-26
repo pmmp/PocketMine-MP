@@ -370,6 +370,15 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 
 	public function cancelChunkPopulation(World $world, int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		if(isset($this->promiseMap[$chunkHash]) && !isset($this->activeTasks[$chunkHash])){
+			$this->logger->debug("Removing chunk $chunkX $chunkZ from population queue");
+			$this->promiseMap[$chunkHash]->reject();
+			unset($this->promiseMap[$chunkHash]);
+		}
+	}
+
+	public function abandonChunkPopulation(World $world, int $chunkX, int $chunkZ) : void{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(array_key_exists($chunkHash, $this->promiseMap)){
 			$this->logger->debug("Rejecting population promise for chunk $chunkX $chunkZ");
 			$this->promiseMap[$chunkHash]->reject();

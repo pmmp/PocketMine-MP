@@ -83,6 +83,10 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 		//NOOP
 	}
 
+	public function abandonChunkPopulation(World $world, int $chunkX, int $chunkZ) : void{
+		//NOOP
+	}
+
 	public function shutdown(World $world) : void{
 		//NOOP
 	}

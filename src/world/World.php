@@ -786,6 +786,7 @@ class World implements ChunkManager{
 			if(count($this->chunkLoaders[$chunkHash]) === 1){
 				unset($this->chunkLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
+				//TODO: maybe this should be done in unloadChunkRequest?
 				$this->generatorExecutor->cancelChunkPopulation($this, $chunkX, $chunkZ);
 			}else{
 				unset($this->chunkLoaders[$chunkHash][$loaderId]);
@@ -3080,7 +3081,7 @@ class World implements ChunkManager{
 		unset($this->registeredTickingChunks[$chunkHash]);
 		$this->markTickingChunkForRecheck($x, $z);
 
-		$this->generatorExecutor->cancelChunkPopulation($this, $x, $z);
+		$this->generatorExecutor->abandonChunkPopulation($this, $x, $z);
 
 		$this->timings->doChunkUnload->stopTiming();
 

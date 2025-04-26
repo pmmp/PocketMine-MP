@@ -62,10 +62,17 @@ interface GeneratorExecutor{
 	public function orderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise;
 
 	/**
-	 * Called when the World needs to cancel a previously-requested population request.
-	 * This is typically due to the chunk being unloaded.
+	 * Removes the specified chunk from the queue, if population for the chunk hasn't yet been started.
+	 * Usually called when a chunk has zero loaders attached and will probably be unloaded, but hasn't yet been.
 	 */
 	public function cancelChunkPopulation(World $world, int $chunkX, int $chunkZ) : void;
+
+	/**
+	 * Removes the specified chunk from the queue, and tells the executor to discard any population results if
+	 * population has already been started.
+	 * This is typically called on chunk unload.
+	 */
+	public function abandonChunkPopulation(World $world, int $chunkX, int $chunkZ) : void;
 
 	public function shutdown(World $world) : void;
 }
