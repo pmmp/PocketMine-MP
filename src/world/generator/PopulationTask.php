@@ -25,7 +25,6 @@ namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\generator\executor\ThreadLocalGeneratorContext;
@@ -112,7 +111,7 @@ class PopulationTask extends AsyncTask{
 		$this->adjacentChunks = igbinary_serialize($serialChunks) ?? throw new AssumptionFailedError("igbinary_serialize() returned null");
 	}
 
-	private static function setOrGenerateChunk(ChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
+	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
 		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk([], false));
 		if($chunk === null){
 			$generator->generateChunk($manager, $chunkX, $chunkZ);
