@@ -24,19 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
 
 /**
  * @internal
  */
 class AsyncGeneratorUnregisterTask extends AsyncTask{
-	public int $worldId;
-
-	public function __construct(World $world){
-		$this->worldId = $world->getId();
-	}
+	public function __construct(
+		private readonly int $contextId
+	){}
 
 	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->worldId);
+		ThreadLocalGeneratorContext::unregister($this->contextId);
 	}
 }

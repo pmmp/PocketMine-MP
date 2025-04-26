@@ -26,7 +26,7 @@ namespace pocketmine\world\generator\executor;
 use pocketmine\world\generator\Generator;
 
 /**
- * Manages thread-local caches for generators and the things needed to support them
+ * Manages thread-local caches for AsyncGeneratorExecutor
  *
  * @internal
  */
@@ -37,16 +37,16 @@ final class ThreadLocalGeneratorContext{
 	 */
 	private static array $contexts = [];
 
-	public static function register(self $context, int $worldId) : void{
-		self::$contexts[$worldId] = $context;
+	public static function register(self $context, int $contextId) : void{
+		self::$contexts[$contextId] = $context;
 	}
 
-	public static function unregister(int $worldId) : void{
-		unset(self::$contexts[$worldId]);
+	public static function unregister(int $contextId) : void{
+		unset(self::$contexts[$contextId]);
 	}
 
-	public static function fetch(int $worldId) : ?self{
-		return self::$contexts[$worldId] ?? null;
+	public static function fetch(int $contextId) : ?self{
+		return self::$contexts[$contextId] ?? null;
 	}
 
 	public function __construct(

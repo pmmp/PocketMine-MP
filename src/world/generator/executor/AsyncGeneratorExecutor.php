@@ -43,6 +43,10 @@ use function count;
  * @phpstan-import-type ChunkPosHash from World
  */
 final class AsyncGeneratorExecutor implements GeneratorExecutor{
+	private static int $nextThreadLocalContextId = 1;
+
+	private int $threadLocalContextId;
+
 	/**
 	 * @var bool[] chunkHash => isValid
 	 * @phpstan-var array<ChunkPosHash, bool>
@@ -88,6 +92,8 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		$temp = new ThreadSafeArray();
 		$temp["dummy"] = $this->generatorFactory;
 
+		$this->threadLocalContextId = self::$nextThreadLocalContextId++;
+
 		$this->requestQueue = new \SplQueue();
 		//TODO: don't love the circular reference here, but we need to make sure this gets cleaned up on shutdown
 		$this->workerStartHook = function(int $workerId) : void{
@@ -102,7 +108,9 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	private function registerWorker(World $world, int $worker) : void{
 		$this->logger->debug("Registering generator on worker $worker");
 		$this->workerPool->submitTaskToWorker(new AsyncGeneratorRegisterTask(
-			$world,
+			$this->threadLocalContextId,
+			$world->getMinY(),
+			$world->getMaxY(),
 			$this->generatorFactory,
 		), $worker);
 		$this->registeredWorkers[$worker] = true;
@@ -300,7 +308,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			$centerChunk = $world->loadChunk($chunkX, $chunkZ);
 			$adjacentChunks = $world->getAdjacentChunks($chunkX, $chunkZ);
 			$task = new PopulationTask(
-				$world->getId(),
+				$this->threadLocalContextId,
 				$chunkX,
 				$chunkZ,
 				$centerChunk,
@@ -399,7 +407,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		}
 
 		foreach($this->registeredWorkers as $worker => $true){
-			$this->workerPool->submitTaskToWorker(new AsyncGeneratorUnregisterTask($world), $worker);
+			$this->workerPool->submitTaskToWorker(new AsyncGeneratorUnregisterTask($this->threadLocalContextId), $worker);
 		}
 
 		$this->workerPool->removeWorkerStartHook($this->workerStartHook);
