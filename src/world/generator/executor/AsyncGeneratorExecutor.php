@@ -220,6 +220,8 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			unset($this->activeTasks[$index]);
 		}else{
 			if($dirtyChunks === 0){
+				$world->setChunk($x, $z, $chunk);
+
 				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
 					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
 					if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
