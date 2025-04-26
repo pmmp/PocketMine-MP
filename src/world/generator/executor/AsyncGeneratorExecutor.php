@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\executor;
 
 use pmmp\thread\ThreadSafeArray;
-use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
@@ -197,48 +196,32 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	 * @param Chunk[] $adjacentChunks chunkHash => chunk
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	private function completeTask(World $world, ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
+	private function completeTask(World $world, ChunkLockId $chunkLockId, int $chunkX, int $chunkZ, Chunk $centerChunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		$timings = $world->timings->chunkPopulationCompletion;
 		$timings->startTiming();
 
 		$dirtyChunks = 0;
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
-				$world->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
-				if(!$world->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
+				$world->unregisterChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
+				if(!$world->unlockChunk($chunkX + $xx, $chunkZ + $zz, $chunkLockId)){
 					$dirtyChunks++;
 				}
 			}
 		}
 
-		$index = World::chunkHash($x, $z);
+		$index = World::chunkHash($chunkX, $chunkZ);
 		if(!isset($this->activeTasks[$index])){
 			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
 		}
 		if(!$this->activeTasks[$index]){
-			$this->logger->debug("Discarding orphaned population result for chunk x=$x,z=$z");
+			$this->logger->debug("Discarding orphaned population result for chunk x=$chunkX,z=$chunkZ");
 			unset($this->activeTasks[$index]);
 		}else{
 			if($dirtyChunks === 0){
-				$world->setChunk($x, $z, $chunk);
-
-				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
-					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
-					if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
-						throw new AssumptionFailedError("Adjacent chunks should be in range -1 ... +1 coordinates");
-					}
-					$world->setChunk($x + $relativeX, $z + $relativeZ, $adjacentChunk);
-				}
-
-				if(ChunkPopulateEvent::hasHandlers()){
-					(new ChunkPopulateEvent($world, $x, $z, $chunk))->call();
-				}
-
-				foreach($world->getChunkListeners($x, $z) as $listener){
-					$listener->onChunkPopulated($x, $z, $chunk);
-				}
+				$world->onChunkPopulated($chunkX, $chunkZ, $centerChunk, $adjacentChunks);
 			}else{
-				$this->logger->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
+				$this->logger->debug("Discarding population result for chunk x=$chunkX,z=$chunkZ - terrain was modified on the main thread before async population completed");
 			}
 
 			//This needs to be in this specific spot because user code might call back to orderChunkPopulation().
@@ -253,10 +236,10 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 				$promise = $this->promiseMap[$index] ?? null;
 				if($promise !== null){
 					unset($this->promiseMap[$index]);
-					$promise->resolve($chunk);
+					$promise->resolve($centerChunk);
 				}else{
 					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
-					$this->logger->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
+					$this->logger->debug("Unable to resolve population promise for chunk x=$chunkX,z=$chunkZ - populated chunk was forcibly unloaded while setting modified chunks");
 				}
 			}else{
 				//request failed, stick it back on the queue

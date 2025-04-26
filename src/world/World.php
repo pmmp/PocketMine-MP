@@ -49,6 +49,7 @@ use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\ChunkLoadEvent;
+use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
 use pocketmine\event\world\WorldDifficultyChangeEvent;
@@ -3290,6 +3291,32 @@ class World implements ChunkManager{
 	 */
 	public function orderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		return $this->generatorExecutor->orderChunkPopulation($this, $chunkX, $chunkZ, $associatedChunkLoader);
+	}
+
+	/**
+	 * Called by a GeneratorExecutor when population of a chunk completes.
+	 *
+	 * @param Chunk[] $adjacentChunks
+	 * @phpstan-param array<int, Chunk> $adjacentChunks
+	 */
+	public function onChunkPopulated(int $chunkX, int $chunkZ, Chunk $chunk, array $adjacentChunks) : void{
+		$this->setChunk($chunkX, $chunkZ, $chunk);
+
+		foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
+			World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+			if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
+				throw new AssumptionFailedError("Adjacent chunks should be in range -1 ... +1 coordinates");
+			}
+			$this->setChunk($chunkX + $relativeX, $chunkZ + $relativeZ, $adjacentChunk);
+		}
+
+		if(ChunkPopulateEvent::hasHandlers()){
+			(new ChunkPopulateEvent($this, $chunkX, $chunkZ, $chunk))->call();
+		}
+
+		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+			$listener->onChunkPopulated($chunkX, $chunkZ, $chunk);
+		}
 	}
 
 	public function doChunkGarbageCollection() : void{

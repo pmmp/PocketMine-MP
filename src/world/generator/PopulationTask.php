@@ -25,6 +25,7 @@ namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\generator\executor\ThreadLocalGeneratorContext;
@@ -100,21 +101,7 @@ class PopulationTask extends AsyncTask{
 			$serialChunks
 		);
 
-		self::setOrGenerateChunk($manager, $generator, $this->chunkX, $this->chunkZ, $chunk);
-
-		$resultChunks = []; //this is just to keep phpstan's type inference happy
-		foreach($chunks as $relativeChunkHash => $c){
-			World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
-			$resultChunks[$relativeChunkHash] = self::setOrGenerateChunk($manager, $generator, $this->chunkX + $relativeX, $this->chunkZ + $relativeZ, $c);
-		}
-		$chunks = $resultChunks;
-
-		$generator->populateChunk($manager, $this->chunkX, $this->chunkZ);
-		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-		if($chunk === null){
-			throw new AssumptionFailedError("We just generated this chunk, so it must exist");
-		}
-		$chunk->setPopulated();
+		[$chunk, $chunks] = self::populateChunks($context->getWorldMinY(), $context->getWorldMaxY(), $generator, $this->chunkX, $this->chunkZ, $chunk, $chunks);
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 
@@ -125,7 +112,7 @@ class PopulationTask extends AsyncTask{
 		$this->adjacentChunks = igbinary_serialize($serialChunks) ?? throw new AssumptionFailedError("igbinary_serialize() returned null");
 	}
 
-	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
+	private static function setOrGenerateChunk(ChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
 		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk([], false));
 		if($chunk === null){
 			$generator->generateChunk($manager, $chunkX, $chunkZ);
@@ -135,6 +122,33 @@ class PopulationTask extends AsyncTask{
 			}
 		}
 		return $chunk;
+	}
+
+	/**
+	 * @param Chunk[] $chunks
+	 * @phpstan-param array<int, Chunk|null> $chunks
+	 *
+	 * @return Chunk[]|Chunk[][]
+	 * @phpstan-return array{Chunk, array<int, Chunk>}
+	 */
+	public static function populateChunks(int $minY, int $maxY, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk, array $chunks) : array{
+		$manager = new SimpleChunkManager($minY, $maxY);
+		self::setOrGenerateChunk($manager, $generator, $chunkX, $chunkZ, $chunk);
+
+		$resultChunks = []; //this is just to keep phpstan's type inference happy
+		foreach($chunks as $relativeChunkHash => $c){
+			World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+			$resultChunks[$relativeChunkHash] = self::setOrGenerateChunk($manager, $generator, $chunkX + $relativeX, $chunkZ + $relativeZ, $c);
+		}
+		$chunks = $resultChunks;
+
+		$generator->populateChunk($manager, $chunkX, $chunkZ);
+		$chunk = $manager->getChunk($chunkX, $chunkZ);
+		if($chunk === null){
+			throw new AssumptionFailedError("We just generated this chunk, so it must exist");
+		}
+		$chunk->setPopulated();
+		return [$chunk, $chunks];
 	}
 
 	public function onCompletion() : void{

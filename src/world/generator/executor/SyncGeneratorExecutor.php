@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\executor;
 
-use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\Generator;
+use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\World;
 
 /**
@@ -48,37 +47,25 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 	public function orderChunkPopulation(World $world, int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$temporaryChunkLoader = new class implements ChunkLoader{};
 
-		//TODO: the following code is basically identical to PopulationTask
-		//we should probably generalize this
+		//TODO: annoying boilerplate on multiple executors
+		//this is mainly just needed to suppress warnings and make sure the chunks stay loaded while they're being worked on
 		for($xx = $chunkX - 1; $xx <= $chunkX + 1; ++$xx){
 			for($zz = $chunkZ - 1; $zz <= $chunkZ + 1; ++$zz){
 				$world->registerChunkLoader($temporaryChunkLoader, $xx, $zz);
-				$chunk = $world->loadChunk($xx, $zz);
-				if($chunk === null){
-					$this->generator->generateChunk($world, $xx, $zz);
-				}
 			}
 		}
 
-		$chunk = $world->getChunk($chunkX, $chunkZ);
-		if($chunk === null){
-			throw new AssumptionFailedError("We just loaded and/or generated this chunk, it should not be null");
-		}
+		[$centerChunk, $adjacentChunks] = PopulationTask::populateChunks(
+			$world->getMinY(),
+			$world->getMaxY(),
+			$this->generator,
+			$chunkX,
+			$chunkZ,
+			$world->getChunk($chunkX, $chunkZ),
+			$world->getAdjacentChunks($chunkX, $chunkZ)
+		);
 
-		if(!$chunk->isPopulated()){
-			$this->generator->populateChunk($world, $chunkX, $chunkZ);
-			$chunk->setPopulated();
-
-			//TODO: this is basically identical to the AsyncChunkGenerator generateChunkCallback side
-			//we probably ought to generalize this
-			if(ChunkPopulateEvent::hasHandlers()){
-				(new ChunkPopulateEvent($world, $chunkX, $chunkZ, $chunk))->call();
-			}
-
-			foreach($world->getChunkListeners($chunkX, $chunkZ) as $listener){
-				$listener->onChunkPopulated($chunkX, $chunkZ, $chunk);
-			}
-		}
+		$world->onChunkPopulated($chunkX, $chunkZ, $centerChunk, $adjacentChunks);
 
 		for($xx = $chunkX - 1; $xx <= $chunkX + 1; ++$xx){
 			for($zz = $chunkZ - 1; $zz <= $chunkZ + 1; ++$zz){
@@ -88,7 +75,7 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 
 		/** @phpstan-var PromiseResolver<Chunk> $resolver */
 		$resolver = new PromiseResolver();
-		$resolver->resolve($chunk);
+		$resolver->resolve($centerChunk);
 		return $resolver->getPromise();
 	}
 
