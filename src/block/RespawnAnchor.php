@@ -96,10 +96,6 @@ final class RespawnAnchor extends Opaque{
 					$this->position->getWorld()->addSound($this->position, new RespawnAnchorSetSpawnSound());
 					$player->sendMessage(KnownTranslationFactory::tile_respawn_anchor_respawnSet()->prefix(TextFormat::GRAY));
 					return true;
-
-				case PlayerRespawnAnchorUseEvent::ACTION_NONE:
-				default:
-					return false;
 			}
 		}
 		return false;
