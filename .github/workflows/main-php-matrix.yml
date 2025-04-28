@@ -15,7 +15,7 @@ on:
         type: number
       image:
         description: 'Runner image to use'
-        default: 'ubuntu-20.04'
+        default: 'ubuntu-22.04'
         type: string
 
 jobs:

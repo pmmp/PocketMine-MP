@@ -23,7 +23,7 @@ env:
 jobs:
   skip:
     name: Check whether to ignore this tag
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     outputs:
       skip: ${{ steps.exists.outputs.exists == 'true' }}
@@ -54,7 +54,7 @@ jobs:
     needs: [check]
     if: needs.check.outputs.valid == 'true' && github.ref_type != 'tag' #can't do post-commit for a tag
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Generate access token
@@ -79,7 +79,7 @@ jobs:
     needs: [check]
     if: needs.check.outputs.valid == 'true' || github.ref_type == 'tag' #ignore validity check for tags
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
