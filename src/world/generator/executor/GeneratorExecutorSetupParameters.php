@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\executor;
 
+use pmmp\thread\ThreadSafe;
 use pocketmine\world\generator\Generator;
 
-final class GeneratorExecutorSetupParameters{
+final class GeneratorExecutorSetupParameters extends ThreadSafe{
 
 	/**
 	 * @phpstan-param class-string<covariant \pocketmine\world\generator\Generator> $generatorClass

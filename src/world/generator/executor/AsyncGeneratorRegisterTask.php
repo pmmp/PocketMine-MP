@@ -24,22 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\thread\NonThreadSafeValue;
 
 class AsyncGeneratorRegisterTask extends AsyncTask{
 
-	/** @phpstan-var NonThreadSafeValue<GeneratorExecutorSetupParameters> */
-	private NonThreadSafeValue $setupParameters;
-
 	public function __construct(
-		GeneratorExecutorSetupParameters $setupParameters,
+		private readonly GeneratorExecutorSetupParameters $setupParameters,
 		private readonly int $contextId
-	){
-		$this->setupParameters = new NonThreadSafeValue($setupParameters);
-	}
+	){}
 
 	public function onRun() : void{
-		$setupParameters = $this->setupParameters->deserialize();
+		$setupParameters = $this->setupParameters;
 		$generator = $setupParameters->createGenerator();
 		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $setupParameters->worldMinY, $setupParameters->worldMaxY), $this->contextId);
 	}
