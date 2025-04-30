@@ -93,9 +93,10 @@ use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\SubChunk;
+use pocketmine\world\generator\executor\AsyncGeneratorExecutor;
+use pocketmine\world\generator\executor\GeneratorExecutor;
+use pocketmine\world\generator\executor\GeneratorExecutorSetupParameters;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\GeneratorRegisterTask;
-use pocketmine\world\generator\GeneratorUnregisterTask;
 use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
@@ -336,11 +337,7 @@ class World implements ChunkManager{
 	 */
 	private array $chunkPopulationRequestQueueIndex = [];
 
-	/**
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 */
-	private array $generatorRegisteredWorkers = [];
+	private readonly GeneratorExecutor $generatorExecutor;
 
 	private bool $autoSave = true;
 
@@ -359,9 +356,6 @@ class World implements ChunkManager{
 	public float $tickRateTime = 0;
 
 	private bool $doingTick = false;
-
-	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
-	private string $generator;
 
 	private bool $unloaded = false;
 	/**
@@ -498,7 +492,21 @@ class World implements ChunkManager{
 		$generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator()) ??
 			throw new AssumptionFailedError("WorldManager should already have checked that the generator exists");
 		$generator->validateGeneratorOptions($this->provider->getWorldData()->getGeneratorOptions());
-		$this->generator = $generator->getGeneratorClass();
+
+		$executorSetupParameters = new GeneratorExecutorSetupParameters(
+			worldMinY: $this->minY,
+			worldMaxY: $this->maxY,
+			generatorSeed: $this->getSeed(),
+			generatorClass: $generator->getGeneratorClass(),
+			generatorSettings: $this->provider->getWorldData()->getGeneratorOptions()
+		);
+		$this->generatorExecutor = new AsyncGeneratorExecutor(
+			$this->logger,
+			$this->workerPool,
+			$executorSetupParameters,
+			$this->worldId
+		);
+
 		$this->chunkPopulationRequestQueue = new \SplQueue();
 		$this->addOnUnloadCallback(function() : void{
 			$this->logger->debug("Cancelling unfulfilled generation requests");
@@ -534,17 +542,6 @@ class World implements ChunkManager{
 		$this->initRandomTickBlocksFromConfig($cfg);
 
 		$this->timings = new WorldTimings($this);
-
-		$this->workerPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
-			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
-				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
-				unset($this->generatorRegisteredWorkers[$workerId]);
-			}
-		});
-		$workerPool = $this->workerPool;
-		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
-			$workerPool->removeWorkerStartHook($workerStartHook);
-		});
 	}
 
 	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
@@ -583,21 +580,6 @@ class World implements ChunkManager{
 
 	public function getTickRateTime() : float{
 		return $this->tickRateTime;
-	}
-
-	public function registerGeneratorToWorker(int $worker) : void{
-		$this->logger->debug("Registering generator on worker $worker");
-		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
-		$this->generatorRegisteredWorkers[$worker] = true;
-	}
-
-	public function unregisterGenerator() : void{
-		foreach($this->workerPool->getRunningWorkers() as $i){
-			if(isset($this->generatorRegisteredWorkers[$i])){
-				$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
-			}
-		}
-		$this->generatorRegisteredWorkers = [];
 	}
 
 	public function getServer() : Server{
@@ -657,7 +639,7 @@ class World implements ChunkManager{
 
 		$this->save();
 
-		$this->unregisterGenerator();
+		$this->generatorExecutor->shutdown();
 
 		$this->provider->close();
 		$this->blockCache = [];
@@ -3486,29 +3468,25 @@ class World implements ChunkManager{
 
 			$centerChunk = $this->loadChunk($chunkX, $chunkZ);
 			$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
-			$task = new PopulationTask(
-				$this->worldId,
+
+			$this->generatorExecutor->populate(
 				$chunkX,
 				$chunkZ,
 				$centerChunk,
-				$adjacentChunks,
-				function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+				$adjacentChunks
+			)->onCompletion(
+				function(array $results) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
 					if(!$this->isLoaded()){
 						return;
 					}
+					[$centerChunk, $adjacentChunks] = $results;
 
 					$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+				},
+				function() : void{
+					throw new AssumptionFailedError("Not expecting executor to reject this promise");
 				}
 			);
-			$workerId = $this->workerPool->selectWorker();
-			if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
-				$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
-				unset($this->generatorRegisteredWorkers[$workerId]);
-			}
-			if(!isset($this->generatorRegisteredWorkers[$workerId])){
-				$this->registerGeneratorToWorker($workerId);
-			}
-			$this->workerPool->submitTaskToWorker($task, $workerId);
 
 			return $resolver->getPromise();
 		}finally{

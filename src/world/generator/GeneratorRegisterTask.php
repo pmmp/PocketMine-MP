@@ -24,34 +24,30 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
+use pocketmine\thread\NonThreadSafeValue;
+use pocketmine\world\generator\executor\GeneratorExecutorSetupParameters;
 
 class GeneratorRegisterTask extends AsyncTask{
-	public int $seed;
-	public int $worldId;
-	public int $worldMinY;
-	public int $worldMaxY;
 
+	/** @phpstan-var NonThreadSafeValue<GeneratorExecutorSetupParameters> */
+	private NonThreadSafeValue $setupParameters;
 	/**
 	 * @phpstan-param class-string<Generator> $generatorClass
 	 */
 	public function __construct(
-		World $world,
-		public string $generatorClass,
-		public string $generatorSettings
+		GeneratorExecutorSetupParameters $setupParameters,
+		private readonly int $contextId
 	){
-		$this->seed = $world->getSeed();
-		$this->worldId = $world->getId();
-		$this->worldMinY = $world->getMinY();
-		$this->worldMaxY = $world->getMaxY();
+		$this->setupParameters = new NonThreadSafeValue($setupParameters);
 	}
 
 	public function onRun() : void{
+		$setupParameters = $this->setupParameters->deserialize();
 		/**
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
-		$generator = new $this->generatorClass($this->seed, $this->generatorSettings);
-		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldMinY, $this->worldMaxY), $this->worldId);
+		$generator = new $setupParameters->generatorClass($setupParameters->generatorSeed, $setupParameters->generatorSettings);
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $setupParameters->worldMinY, $setupParameters->worldMaxY), $this->contextId);
 	}
 }

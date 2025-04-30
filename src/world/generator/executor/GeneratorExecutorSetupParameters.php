@@ -21,16 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
-use pocketmine\scheduler\AsyncTask;
+final class GeneratorExecutorSetupParameters{
 
-class GeneratorUnregisterTask extends AsyncTask{
+	/**
+	 * @phpstan-param class-string<covariant \pocketmine\world\generator\Generator> $generatorClass
+	 */
 	public function __construct(
-		private readonly int $contextId
+		public readonly int $worldMinY,
+		public readonly int $worldMaxY,
+		public readonly int $generatorSeed,
+		public readonly string $generatorClass,
+		public readonly string $generatorSettings,
 	){}
-
-	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->contextId);
-	}
 }

@@ -21,16 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
-use pocketmine\scheduler\AsyncTask;
+use pocketmine\promise\Promise;
+use pocketmine\world\format\Chunk;
 
-class GeneratorUnregisterTask extends AsyncTask{
-	public function __construct(
-		private readonly int $contextId
-	){}
+interface GeneratorExecutor{
+	/**
+	 * @param Chunk[]|null[] $adjacentChunks
+	 * @phpstan-param array<int, Chunk|null> $adjacentChunks
+	 *
+	 * @phpstan-return Promise<array{Chunk, array<int, Chunk>}>
+	 */
+	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks) : Promise;
 
-	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->contextId);
-	}
+	public function shutdown() : void;
+
 }
