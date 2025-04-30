@@ -85,19 +85,14 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		$this->generatorRegisteredWorkers = [];
 	}
 
-	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks) : Promise{
-		/** @phpstan-var PromiseResolver<array{Chunk, array<int, Chunk>}> $resolver */
-		$resolver = new PromiseResolver();
-
+	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks, \Closure $onCompletion) : void{
 		$task = new PopulationTask(
 			$this->asyncContextId,
 			$chunkX,
 			$chunkZ,
 			$centerChunk,
 			$adjacentChunks,
-			function(Chunk $centerChunk, array $adjacentChunks) use ($resolver) : void{
-				$resolver->resolve([$centerChunk, $adjacentChunks]);
-			}
+			$onCompletion
 		);
 		$workerId = $this->workerPool->selectWorker();
 		if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
@@ -108,8 +103,6 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 			$this->registerGeneratorToWorker($workerId);
 		}
 		$this->workerPool->submitTaskToWorker($task, $workerId);
-
-		return $resolver->getPromise();
 	}
 
 	public function shutdown() : void{

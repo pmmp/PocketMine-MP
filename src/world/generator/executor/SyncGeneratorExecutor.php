@@ -43,7 +43,7 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 		$this->worldMaxY = $setupParameters->worldMaxY;
 	}
 
-	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks) : Promise{
+	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks, \Closure $onCompletion) : void{
 		[$centerChunk, $adjacentChunks] = PopulationUtils::populateChunkWithAdjacents(
 			$this->worldMinY,
 			$this->worldMaxY,
@@ -54,11 +54,7 @@ final class SyncGeneratorExecutor implements GeneratorExecutor{
 			$adjacentChunks
 		);
 
-		/** @phpstan-var PromiseResolver<array{Chunk, array<int, Chunk>}> $resolver */
-		$resolver = new PromiseResolver();
-		$resolver->resolve([$centerChunk, $adjacentChunks]);
-
-		return $resolver->getPromise();
+		$onCompletion($centerChunk, $adjacentChunks);
 	}
 
 	public function shutdown() : void{

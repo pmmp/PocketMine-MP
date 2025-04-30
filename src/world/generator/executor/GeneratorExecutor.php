@@ -30,10 +30,9 @@ interface GeneratorExecutor{
 	/**
 	 * @param Chunk[]|null[] $adjacentChunks
 	 * @phpstan-param array<int, Chunk|null> $adjacentChunks
-	 *
-	 * @phpstan-return Promise<array{Chunk, array<int, Chunk>}>
+	 * @phpstan-param \Closure(Chunk $centerChunk, array<int, Chunk> $adjacentChunks) : void $onCompletion
 	 */
-	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks) : Promise;
+	public function populate(int $chunkX, int $chunkZ, ?Chunk $centerChunk, array $adjacentChunks, \Closure $onCompletion) : void;
 
 	public function shutdown() : void;
 

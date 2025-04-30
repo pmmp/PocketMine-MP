@@ -3476,18 +3476,13 @@ class World implements ChunkManager{
 				$chunkX,
 				$chunkZ,
 				$centerChunk,
-				$adjacentChunks
-			)->onCompletion(
-				function(array $results) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+				$adjacentChunks,
+				function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
 					if(!$this->isLoaded()){
 						return;
 					}
-					[$centerChunk, $adjacentChunks] = $results;
 
 					$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
-				},
-				function() : void{
-					throw new AssumptionFailedError("Not expecting executor to reject this promise");
 				}
 			);
 
