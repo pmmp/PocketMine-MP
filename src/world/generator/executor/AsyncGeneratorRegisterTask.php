@@ -25,15 +25,12 @@ namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
-use pocketmine\world\generator\Generator;
 
 class AsyncGeneratorRegisterTask extends AsyncTask{
 
 	/** @phpstan-var NonThreadSafeValue<GeneratorExecutorSetupParameters> */
 	private NonThreadSafeValue $setupParameters;
-	/**
-	 * @phpstan-param class-string<Generator> $generatorClass
-	 */
+
 	public function __construct(
 		GeneratorExecutorSetupParameters $setupParameters,
 		private readonly int $contextId

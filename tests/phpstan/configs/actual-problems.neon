@@ -1273,16 +1273,16 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: '#^Dynamic new is not allowed\.$#'
-			identifier: pocketmine.new.dynamic
-			count: 1
-			path: ../../../src/world/generator/GeneratorRegisterTask.php
-
-		-
 			message: '#^Method pocketmine\\world\\generator\\biome\\BiomeSelector\:\:pickBiome\(\) should return pocketmine\\world\\biome\\Biome but returns pocketmine\\world\\biome\\Biome\|null\.$#'
 			identifier: return.type
 			count: 1
 			path: ../../../src/world/generator/biome/BiomeSelector.php
+
+		-
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
+			count: 1
+			path: ../../../src/world/generator/executor/GeneratorExecutorSetupParameters.php
 
 		-
 			message: '#^Cannot call method getBiomeId\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
