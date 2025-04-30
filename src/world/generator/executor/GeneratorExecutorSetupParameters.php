@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\executor;
 
+use pocketmine\world\generator\Generator;
+
 final class GeneratorExecutorSetupParameters{
 
 	/**
@@ -35,4 +37,13 @@ final class GeneratorExecutorSetupParameters{
 		public readonly string $generatorClass,
 		public readonly string $generatorSettings,
 	){}
+
+	public function createGenerator() : Generator{
+		/**
+		 * @var Generator $generator
+		 * @see Generator::__construct()
+		 */
+		$generator = new $this->generatorClass($this->generatorSeed, $this->generatorSettings);
+		return $generator;
+	}
 }

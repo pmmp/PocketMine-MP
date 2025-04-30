@@ -96,6 +96,7 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\executor\AsyncGeneratorExecutor;
 use pocketmine\world\generator\executor\GeneratorExecutor;
 use pocketmine\world\generator\executor\GeneratorExecutorSetupParameters;
+use pocketmine\world\generator\executor\SyncGeneratorExecutor;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\light\BlockLightUpdate;
@@ -500,12 +501,14 @@ class World implements ChunkManager{
 			generatorClass: $generator->getGeneratorClass(),
 			generatorSettings: $this->provider->getWorldData()->getGeneratorOptions()
 		);
-		$this->generatorExecutor = new AsyncGeneratorExecutor(
-			$this->logger,
-			$this->workerPool,
-			$executorSetupParameters,
-			$this->worldId
-		);
+		$this->generatorExecutor = $generator->isFast() ?
+			new SyncGeneratorExecutor($executorSetupParameters) :
+			new AsyncGeneratorExecutor(
+				$this->logger,
+				$this->workerPool,
+				$executorSetupParameters,
+				$this->worldId
+			);
 
 		$this->chunkPopulationRequestQueue = new \SplQueue();
 		$this->addOnUnloadCallback(function() : void{

@@ -43,11 +43,7 @@ class AsyncGeneratorRegisterTask extends AsyncTask{
 
 	public function onRun() : void{
 		$setupParameters = $this->setupParameters->deserialize();
-		/**
-		 * @var Generator $generator
-		 * @see Generator::__construct()
-		 */
-		$generator = new $setupParameters->generatorClass($setupParameters->generatorSeed, $setupParameters->generatorSettings);
+		$generator = $setupParameters->createGenerator();
 		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $setupParameters->worldMinY, $setupParameters->worldMaxY), $this->contextId);
 	}
 }
