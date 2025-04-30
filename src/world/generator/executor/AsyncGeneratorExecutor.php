@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\executor;
 
-use pocketmine\promise\Promise;
-use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\PopulationTask;

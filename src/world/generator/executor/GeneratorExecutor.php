@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\executor;
 
-use pocketmine\promise\Promise;
 use pocketmine\world\format\Chunk;
 
 interface GeneratorExecutor{
