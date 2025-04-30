@@ -382,7 +382,7 @@ class InventoryManager implements InventoryListener{
 		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
 		//if the class isn't final, not to mention being inflexible.
 		if($window instanceof BlockInventoryWindow){
-			$blockPosition = BlockPosition::fromVector3($window->getHolder()->getPosition());
+			$blockPosition = BlockPosition::fromVector3($window->getHolder());
 			$windowType = match(true){
 				$window instanceof LoomInventoryWindow => WindowTypes::LOOM,
 				$window instanceof FurnaceInventoryWindow => match($window->getFurnaceType()){

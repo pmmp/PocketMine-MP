@@ -28,29 +28,32 @@ use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\inventory\Inventory;
 use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 class BlockInventoryWindow extends InventoryWindow{
 
 	public function __construct(
 		Player $viewer,
 		Inventory $inventory,
-		protected Block $holder
+		protected Position $holder
 	){
 		parent::__construct($viewer, $inventory);
 	}
 
-	public function getHolder() : Block{ return $this->holder; }
+	public function getHolder() : Position{ return $this->holder; }
 
 	public function onOpen() : void{
 		parent::onOpen();
-		if($this->holder instanceof AnimatedContainer){
-			$this->holder->onContainerOpen();
+		$block = $this->holder->getWorld()->getBlock($this->holder);
+		if($block instanceof AnimatedContainer){
+			$block->onContainerOpen();
 		}
 	}
 
 	public function onClose() : void{
-		if($this->holder instanceof AnimatedContainer){
-			$this->holder->onContainerClose();
+		$block = $this->holder->getWorld()->getBlock($this->holder);
+		if($block instanceof AnimatedContainer){
+			$block->onContainerClose();
 		}
 		parent::onClose();
 	}
