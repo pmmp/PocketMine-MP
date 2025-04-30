@@ -27,8 +27,6 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\generator\GeneratorRegisterTask;
-use pocketmine\world\generator\GeneratorUnregisterTask;
 use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\World;
 use function array_key_exists;
@@ -74,14 +72,14 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 
 	private function registerGeneratorToWorker(int $worker) : void{
 		$this->logger->debug("Registering generator on worker $worker");
-		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask($this->setupParameters, $this->asyncContextId), $worker);
+		$this->workerPool->submitTaskToWorker(new AsyncGeneratorRegisterTask($this->setupParameters, $this->asyncContextId), $worker);
 		$this->generatorRegisteredWorkers[$worker] = true;
 	}
 
 	private function unregisterGenerator() : void{
 		foreach($this->workerPool->getRunningWorkers() as $i){
 			if(isset($this->generatorRegisteredWorkers[$i])){
-				$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($this->asyncContextId), $i);
+				$this->workerPool->submitTaskToWorker(new AsyncGeneratorUnregisterTask($this->asyncContextId), $i);
 			}
 		}
 		$this->generatorRegisteredWorkers = [];

@@ -21,13 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
-use pocketmine\world\generator\executor\GeneratorExecutorSetupParameters;
+use pocketmine\world\generator\Generator;
 
-class GeneratorRegisterTask extends AsyncTask{
+class AsyncGeneratorRegisterTask extends AsyncTask{
 
 	/** @phpstan-var NonThreadSafeValue<GeneratorExecutorSetupParameters> */
 	private NonThreadSafeValue $setupParameters;

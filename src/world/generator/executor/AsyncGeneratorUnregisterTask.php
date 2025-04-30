@@ -21,11 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
 
-class GeneratorUnregisterTask extends AsyncTask{
+class AsyncGeneratorUnregisterTask extends AsyncTask{
 	public function __construct(
 		private readonly int $contextId
 	){}
