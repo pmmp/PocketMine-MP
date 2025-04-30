@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\inventory\Inventory;
 use pocketmine\player\InventoryWindow;

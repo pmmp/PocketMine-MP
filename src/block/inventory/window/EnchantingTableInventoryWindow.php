@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\event\player\PlayerEnchantingOptionsRequestEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -33,6 +32,7 @@ use pocketmine\item\enchantment\EnchantingHelper as Helper;
 use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 use function array_values;
 use function count;
 
@@ -47,7 +47,7 @@ final class EnchantingTableInventoryWindow extends BlockInventoryWindow{
 
 	public function __construct(
 		Player $viewer,
-		Block $holder
+		Position $holder
 	){
 		parent::__construct($viewer, new SimpleInventory(2), $holder);
 
@@ -75,7 +75,7 @@ final class EnchantingTableInventoryWindow extends BlockInventoryWindow{
 	private function regenerateOptions() : void{
 		$this->options = [];
 		$item = $this->getInput();
-		$options = Helper::generateOptions($this->holder->getPosition(), $item, $this->viewer->getEnchantmentSeed());
+		$options = Helper::generateOptions($this->holder, $item, $this->viewer->getEnchantmentSeed());
 
 		$event = new PlayerEnchantingOptionsRequestEvent($this->viewer, $this, $options);
 		$event->call();

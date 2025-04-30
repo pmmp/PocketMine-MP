@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\player\Player;
 use pocketmine\player\TemporaryInventoryWindow;
+use pocketmine\world\Position;
 
 final class CartographyTableInventoryWindow extends BlockInventoryWindow implements TemporaryInventoryWindow{
 
 	public function __construct(
 		Player $viewer,
-		Block $holder
+		Position $holder
 	){
 		parent::__construct($viewer, new SimpleInventory(2), $holder);
 	}

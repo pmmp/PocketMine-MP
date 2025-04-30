@@ -32,7 +32,7 @@ final class SmithingTable extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
-			$player->setCurrentWindow(new SmithingTableInventoryWindow($player, $this));
+			$player->setCurrentWindow(new SmithingTableInventoryWindow($player, $this->position));
 		}
 
 		return true;

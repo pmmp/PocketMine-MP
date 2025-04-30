@@ -23,15 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 final class CraftingTableInventoryWindow extends BlockInventoryWindow{
 
 	public function __construct(
 		Player $viewer,
-		Block $holder
+		Position $holder
 	){
 		//TODO: generics would be good for this, since it has special methods
 		parent::__construct($viewer, new CraftingGrid(CraftingGrid::SIZE_BIG), $holder);

@@ -32,7 +32,7 @@ class CraftingTable extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
-			$player->setCurrentWindow(new CraftingTableInventoryWindow($player, $this));
+			$player->setCurrentWindow(new CraftingTableInventoryWindow($player, $this->position));
 		}
 
 		return true;

@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\player\Player;
 use pocketmine\player\TemporaryInventoryWindow;
+use pocketmine\world\Position;
 
 final class LoomInventoryWindow extends BlockInventoryWindow implements TemporaryInventoryWindow{
 
@@ -36,7 +36,7 @@ final class LoomInventoryWindow extends BlockInventoryWindow implements Temporar
 
 	public function __construct(
 		Player $viewer,
-		Block $holder
+		Position $holder
 	){
 		parent::__construct($viewer, new SimpleInventory(3), $holder);
 	}

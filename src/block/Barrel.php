@@ -89,7 +89,7 @@ class Barrel extends Opaque implements AnimatedContainer{
 					return true;
 				}
 
-				$player->setCurrentWindow(new BlockInventoryWindow($player, $barrel->getInventory(), $this));
+				$player->setCurrentWindow(new BlockInventoryWindow($player, $barrel->getInventory(), $this->position));
 			}
 		}
 

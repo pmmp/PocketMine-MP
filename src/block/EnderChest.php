@@ -65,7 +65,7 @@ class EnderChest extends Transparent implements AnimatedContainer{
 		if($player instanceof Player){
 			$enderChest = $this->position->getWorld()->getTile($this->position);
 			if($enderChest instanceof TileEnderChest && $this->getSide(Facing::UP)->isTransparent()){
-				$player->setCurrentWindow(new BlockInventoryWindow($player, $player->getEnderInventory(), $this));
+				$player->setCurrentWindow(new BlockInventoryWindow($player, $player->getEnderInventory(), $this->position));
 			}
 		}
 

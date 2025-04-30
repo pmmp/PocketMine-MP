@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 final class FurnaceInventoryWindow extends BlockInventoryWindow{
 	public const SLOT_INPUT = 0;
@@ -37,7 +37,7 @@ final class FurnaceInventoryWindow extends BlockInventoryWindow{
 	public function __construct(
 		Player $viewer,
 		Inventory $inventory,
-		Block $holder,
+		Position $holder,
 		private FurnaceType $furnaceType
 	){
 		parent::__construct($viewer, $inventory, $holder);

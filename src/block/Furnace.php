@@ -62,7 +62,7 @@ class Furnace extends Opaque{
 		if($player instanceof Player){
 			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace && $furnace->canOpenWith($item->getCustomName())){
-				$player->setCurrentWindow(new FurnaceInventoryWindow($player, $furnace->getInventory(), $this, $this->furnaceType));
+				$player->setCurrentWindow(new FurnaceInventoryWindow($player, $furnace->getInventory(), $this->position, $this->furnaceType));
 			}
 		}
 

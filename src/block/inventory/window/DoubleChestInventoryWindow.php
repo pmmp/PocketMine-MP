@@ -23,22 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory\window;
 
-use pocketmine\block\Block;
 use pocketmine\inventory\Inventory;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 final class DoubleChestInventoryWindow extends BlockInventoryWindow{
 
 	public function __construct(
 		Player $viewer,
 		Inventory $inventory,
-		private Block $left,
-		private Block $right
+		private Position $left,
+		private Position $right
 	){
 		parent::__construct($viewer, $inventory, $this->left);
 	}
 
-	public function getLeft() : Block{ return $this->left; }
+	public function getLeft() : Position{ return $this->left; }
 
-	public function getRight() : Block{ return $this->right; }
+	public function getRight() : Position{ return $this->right; }
 }
