@@ -1534,29 +1534,44 @@ class World implements ChunkManager{
 		$collisionInfo = $this->blockStateRegistry->collisionInfo;
 		if($targetFirst){
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				$zOverflow = $z === $minZ || $z === $maxZ;
 				for($x = $minX; $x <= $maxX; ++$x){
+					$zxOverflow = $zOverflow || $x === $minX || $x === $maxX;
 					for($y = $minY; $y <= $maxY; ++$y){
+						$overflow = $zxOverflow || $y === $minY || $y === $maxY;
+
 						$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
-						if(match($stateCollisionInfo){
-							RuntimeBlockStateRegistry::COLLISION_CUBE => true,
-							RuntimeBlockStateRegistry::COLLISION_NONE => false,
-							default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
-						}){
+						if($overflow ?
+							$stateCollisionInfo === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW && $this->getBlockAt($x, $y, $z)->collidesWithBB($bb) :
+							match ($stateCollisionInfo) {
+								RuntimeBlockStateRegistry::COLLISION_CUBE => true,
+								RuntimeBlockStateRegistry::COLLISION_NONE => false,
+								default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
+							}
+						){
 							return [$this->getBlockAt($x, $y, $z)];
 						}
 					}
 				}
 			}
 		}else{
+			//TODO: duplicated code :( this way is better for performance though
 			for($z = $minZ; $z <= $maxZ; ++$z){
+				$zOverflow = $z === $minZ || $z === $maxZ;
 				for($x = $minX; $x <= $maxX; ++$x){
+					$zxOverflow = $zOverflow || $x === $minX || $x === $maxX;
 					for($y = $minY; $y <= $maxY; ++$y){
+						$overflow = $zxOverflow || $y === $minY || $y === $maxY;
+
 						$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
-						if(match($stateCollisionInfo){
-							RuntimeBlockStateRegistry::COLLISION_CUBE => true,
-							RuntimeBlockStateRegistry::COLLISION_NONE => false,
-							default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
-						}){
+						if($overflow ?
+							$stateCollisionInfo === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW && $this->getBlockAt($x, $y, $z)->collidesWithBB($bb) :
+							match ($stateCollisionInfo) {
+								RuntimeBlockStateRegistry::COLLISION_CUBE => true,
+								RuntimeBlockStateRegistry::COLLISION_NONE => false,
+								default => $this->getBlockAt($x, $y, $z)->collidesWithBB($bb)
+							}
+						){
 							$collides[] = $this->getBlockAt($x, $y, $z);
 						}
 					}
@@ -2030,6 +2045,15 @@ class World implements ChunkManager{
 		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
 		if($this->loadChunk($chunkX, $chunkZ) === null){ //current expected behaviour is to try to load the terrain synchronously
 			throw new WorldException("Cannot set a block in un-generated terrain");
+		}
+
+		//TODO: this computes state ID twice (we do it again in writeStateToWorld()). Not great for performance :(
+		$stateId = $block->getStateId();
+		if(!$this->blockStateRegistry->hasStateId($stateId)){
+			throw new \LogicException("Block state ID not known to RuntimeBlockStateRegistry (probably not registered)");
+		}
+		if(!GlobalBlockStateHandlers::getSerializer()->isRegistered($block)){
+			throw new \LogicException("Block not registered with GlobalBlockStateHandlers serializer");
 		}
 
 		$this->timings->setBlock->startTiming();
@@ -2754,6 +2778,11 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
+			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
+			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
+			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");
+		}
 		$pos = $entity->getPosition()->asVector3();
 		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE)][$entity->getId()] = $entity;
 		$this->entityLastKnownPositions[$entity->getId()] = $pos;
@@ -2854,6 +2883,9 @@ class World implements ChunkManager{
 		}
 		if(!$this->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
 			throw new \InvalidArgumentException("Tile position is outside the world bounds");
+		}
+		if(!TileFactory::getInstance()->isRegistered($tile::class)){
+			throw new \LogicException("Tile " . $tile::class . " is not registered for a save ID in TileFactory");
 		}
 
 		$chunkX = $pos->getFloorX() >> Chunk::COORD_BIT_SIZE;

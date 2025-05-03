@@ -59,6 +59,7 @@ final class BlockStateNames{
 	public const COVERED_BIT = "covered_bit";
 	public const CRACKED_STATE = "cracked_state";
 	public const CRAFTING = "crafting";
+	public const CREAKING_HEART_STATE = "creaking_heart_state";
 	public const DEAD_BIT = "dead_bit";
 	public const DEPRECATED = "deprecated";
 	public const DIRECTION = "direction";

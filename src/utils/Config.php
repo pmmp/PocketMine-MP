@@ -54,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const PHP_INT_MAX;
 use const YAML_UTF8_ENCODING;
 
 /**
@@ -339,7 +340,7 @@ class Config{
 	}
 
 	public function setNested(string $key, mixed $value) : void{
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 		$base = array_shift($vars);
 
 		if(!isset($this->config[$base])){
@@ -366,7 +367,7 @@ class Config{
 			return $this->nestedCache[$key];
 		}
 
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 		$base = array_shift($vars);
 		if(isset($this->config[$base])){
 			$base = $this->config[$base];
@@ -390,7 +391,7 @@ class Config{
 		$this->nestedCache = [];
 		$this->changed = true;
 
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 
 		$currentNode = &$this->config;
 		while(count($vars) > 0){
@@ -495,7 +496,7 @@ class Config{
 	 */
 	public static function parseList(string $content) : array{
 		$result = [];
-		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
+		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content)), limit: PHP_INT_MAX) as $v){
 			$v = trim($v);
 			if($v === ""){
 				continue;

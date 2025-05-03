@@ -46,7 +46,8 @@ class EntityLandSound implements Sound{
 			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->blockLandedOn->getStateId()),
 			$this->entity::getNetworkTypeId(),
 			false, //TODO: does isBaby have any relevance here?
-			false
+			false,
+			$this->entity->getId()
 		)];
 	}
 }

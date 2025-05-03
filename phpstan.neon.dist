@@ -11,8 +11,10 @@ includes:
 
 rules:
 	- pocketmine\phpstan\rules\DeprecatedLegacyEnumAccessRule
+	- pocketmine\phpstan\rules\DisallowDynamicNewRule
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
 	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
+	- pocketmine\phpstan\rules\ExplodeLimitRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
