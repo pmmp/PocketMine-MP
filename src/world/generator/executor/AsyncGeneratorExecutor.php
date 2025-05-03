@@ -29,9 +29,6 @@ use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\World;
 use function array_key_exists;
 
-/**
- * @phpstan-import-type ChunkPosHash from World
- */
 final class AsyncGeneratorExecutor implements GeneratorExecutor{
 	private static int $nextAsyncContextId = 1;
 
