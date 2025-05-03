@@ -26,7 +26,6 @@ namespace pocketmine\world\generator\executor;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\PopulationTask;
-use pocketmine\world\World;
 use function array_key_exists;
 
 final class AsyncGeneratorExecutor implements GeneratorExecutor{
