@@ -150,6 +150,9 @@ class SimpleCommandMap implements CommandMap{
 		if(count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
+		if(isset($this->uniqueCommands[spl_object_id($command)])){
+			throw new \InvalidArgumentException("This Command object has already been registered");
+		}
 
 		$preferredAlias = trim($preferredAlias);
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));
