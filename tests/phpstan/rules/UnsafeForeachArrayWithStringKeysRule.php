@@ -41,7 +41,7 @@ use function sprintf;
 /**
  * @implements Rule<Foreach_>
  */
-final class UnsafeForeachArrayOfStringRule implements Rule{
+final class UnsafeForeachArrayWithStringKeysRule implements Rule{
 
 	public function getNodeType() : string{
 		return Foreach_::class;

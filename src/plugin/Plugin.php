@@ -34,7 +34,7 @@ use pocketmine\Server;
  */
 interface Plugin{
 
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, string $resourceFolder);
+	public function __construct(Server $server, PluginDescription $description, string $dataFolder, string $file, string $resourceFolder);
 
 	public function isEnabled() : bool;
 
@@ -59,7 +59,7 @@ interface Plugin{
 
 	public function getLogger() : \AttachableLogger;
 
-	public function getPluginLoader() : PluginLoader;
+	public function getFile() : string;
 
 	public function getScheduler() : TaskScheduler;
 

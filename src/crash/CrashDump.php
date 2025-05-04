@@ -26,7 +26,6 @@ namespace pocketmine\crash;
 use Composer\InstalledVersions;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
 use pocketmine\thread\ThreadCrashInfoFrame;
@@ -259,10 +258,8 @@ class CrashDump{
 			}
 
 			if(file_exists($filePath)){
-				$reflection = new \ReflectionClass(PluginBase::class);
-				$file = $reflection->getProperty("file");
 				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-					$filePath = Filesystem::cleanPath($file->getValue($plugin));
+					$filePath = Filesystem::cleanPath($plugin->getFile());
 					if(str_starts_with($frameCleanPath, $filePath)){
 						$this->data->plugin = $plugin->getName();
 						break;

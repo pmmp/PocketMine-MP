@@ -13,7 +13,7 @@ rules:
 	- pocketmine\phpstan\rules\DisallowDynamicNewRule
 	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
 	- pocketmine\phpstan\rules\ExplodeLimitRule
-	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
+	- pocketmine\phpstan\rules\UnsafeForeachArrayWithStringKeysRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:

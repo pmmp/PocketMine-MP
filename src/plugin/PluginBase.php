@@ -58,7 +58,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private TaskScheduler $scheduler;
 
 	public function __construct(
-		private PluginLoader $loader,
 		private Server $server,
 		private PluginDescription $description,
 		private string $dataFolder,
@@ -66,7 +65,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		private string $resourceFolder,
 	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
-		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
 		$this->resourceFolder = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $resourceFolder), "/") . "/";
 
@@ -301,12 +299,8 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->description->getFullName();
 	}
 
-	protected function getFile() : string{
+	public function getFile() : string{
 		return $this->file;
-	}
-
-	public function getPluginLoader() : PluginLoader{
-		return $this->loader;
 	}
 
 	public function getScheduler() : TaskScheduler{
