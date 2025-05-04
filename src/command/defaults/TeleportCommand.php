@@ -41,10 +41,8 @@ class TeleportCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"tp",
 			KnownTranslationFactory::pocketmine_command_tp_description(),
-			KnownTranslationFactory::commands_tp_usage(),
-			["teleport"]
+			KnownTranslationFactory::commands_tp_usage()
 		);
 		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
@@ -77,7 +75,7 @@ class TeleportCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 		}
 
-		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
+		$subject = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
 		if($subject === null){
 			return true;
 		}

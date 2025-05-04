@@ -36,7 +36,6 @@ class TimeCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"time",
 			KnownTranslationFactory::pocketmine_command_time_description(),
 			KnownTranslationFactory::pocketmine_command_time_usage()
 		);
@@ -53,9 +52,10 @@ class TimeCommand extends VanillaCommand{
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}
+		$testPermissionCtx = $commandLabel . " " . $args[0];
 
 		if($args[0] === "start"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_START)){
+			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_START)){
 				return true;
 			}
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
@@ -64,7 +64,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, "Restarted the time");
 			return true;
 		}elseif($args[0] === "stop"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_STOP)){
+			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_STOP)){
 				return true;
 			}
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
@@ -73,7 +73,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, "Stopped the time");
 			return true;
 		}elseif($args[0] === "query"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_QUERY)){
+			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_QUERY)){
 				return true;
 			}
 			if($sender instanceof Player){
@@ -90,7 +90,7 @@ class TimeCommand extends VanillaCommand{
 		}
 
 		if($args[0] === "set"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_SET)){
+			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_SET)){
 				return true;
 			}
 
@@ -123,7 +123,7 @@ class TimeCommand extends VanillaCommand{
 			}
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $value));
 		}elseif($args[0] === "add"){
-			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_ADD)){
+			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_ADD)){
 				return true;
 			}
 

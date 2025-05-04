@@ -37,7 +37,6 @@ class OpCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"op",
 			KnownTranslationFactory::pocketmine_command_op_description(),
 			KnownTranslationFactory::commands_op_usage()
 		);

@@ -36,7 +36,6 @@ class DifficultyCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"difficulty",
 			KnownTranslationFactory::pocketmine_command_difficulty_description(),
 			KnownTranslationFactory::commands_difficulty_usage()
 		);

@@ -62,7 +62,6 @@ class TimingsCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"timings",
 			KnownTranslationFactory::pocketmine_command_timings_description(),
 			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);

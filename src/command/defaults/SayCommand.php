@@ -37,7 +37,6 @@ class SayCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"say",
 			KnownTranslationFactory::pocketmine_command_say_description(),
 			KnownTranslationFactory::commands_say_usage()
 		);

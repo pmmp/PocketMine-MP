@@ -21,27 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command\defaults;
+namespace pocketmine\command;
 
-use pocketmine\command\Command;
-use pocketmine\command\CommandSender;
-use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\lang\Translatable;
 
-class SaveOnCommand extends VanillaCommand{
+final class CommandMapEntry{
 
-	public function __construct(){
-		parent::__construct(
-			KnownTranslationFactory::pocketmine_command_saveon_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_ENABLE);
+	/**
+	 * @param string[]                       $aliases
+	 * @phpstan-param non-empty-list<string> $aliases
+	 */
+	public function __construct(
+		public readonly Command $command,
+		public readonly array $aliases
+	){}
+
+	public function getPreferredAlias() : string{
+		return $this->aliases[0];
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$sender->getServer()->getWorldManager()->setAutoSave(true);
-
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_enabled());
-
-		return true;
+	public function getUsage() : Translatable|string{
+		//TODO: usage messages ought to use user-specified alias, not command preferred
+		//command-preferred is confusing if the user used a different alias
+		return $this->command->getUsage() ?? "/" . $this->getPreferredAlias();
 	}
 }

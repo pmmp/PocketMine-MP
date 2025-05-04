@@ -37,7 +37,6 @@ class DeopCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"deop",
 			KnownTranslationFactory::pocketmine_command_deop_description(),
 			KnownTranslationFactory::commands_deop_usage()
 		);

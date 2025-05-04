@@ -38,7 +38,6 @@ class EffectCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"effect",
 			KnownTranslationFactory::pocketmine_command_effect_description(),
 			KnownTranslationFactory::commands_effect_usage()
 		);
@@ -53,7 +52,7 @@ class EffectCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_EFFECT_SELF, DefaultPermissionNames::COMMAND_EFFECT_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_EFFECT_SELF, DefaultPermissionNames::COMMAND_EFFECT_OTHER);
 		if($player === null){
 			return true;
 		}

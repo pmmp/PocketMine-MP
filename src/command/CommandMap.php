@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 interface CommandMap{
-
 	/**
-	 * @param Command[] $commands
+	 * @param string[] $otherAliases
+	 *
+	 * @phpstan-param list<string> $otherAliases
 	 */
-	public function registerAll(string $fallbackPrefix, array $commands) : void;
-
-	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool;
+	public function register(string $fallbackPrefix, Command $command, string $preferredAlias, array $otherAliases = []) : CommandMapEntry;
 
 	public function dispatch(CommandSender $sender, string $cmdLine) : bool;
 

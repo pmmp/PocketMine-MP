@@ -35,10 +35,8 @@ class KillCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"kill",
 			KnownTranslationFactory::pocketmine_command_kill_description(),
-			KnownTranslationFactory::pocketmine_command_kill_usage(),
-			["suicide"]
+			KnownTranslationFactory::pocketmine_command_kill_usage()
 		);
 		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
 	}
@@ -48,7 +46,7 @@ class KillCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
 		if($player === null){
 			return true;
 		}

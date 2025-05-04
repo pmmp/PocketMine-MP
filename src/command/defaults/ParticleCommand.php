@@ -76,7 +76,6 @@ class ParticleCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"particle",
 			KnownTranslationFactory::pocketmine_command_particle_description(),
 			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);

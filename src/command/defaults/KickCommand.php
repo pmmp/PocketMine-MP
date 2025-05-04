@@ -39,7 +39,6 @@ class KickCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"kick",
 			KnownTranslationFactory::pocketmine_command_kick_description(),
 			KnownTranslationFactory::commands_kick_usage()
 		);

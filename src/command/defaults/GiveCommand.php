@@ -43,7 +43,6 @@ class GiveCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"give",
 			KnownTranslationFactory::pocketmine_command_give_description(),
 			KnownTranslationFactory::pocketmine_command_give_usage()
 		);
@@ -58,7 +57,7 @@ class GiveCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
 		if($player === null){
 			return true;
 		}

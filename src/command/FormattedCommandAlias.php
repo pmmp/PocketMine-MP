@@ -50,10 +50,9 @@ class FormattedCommandAlias extends Command{
 	 * @param string[] $formatStrings
 	 */
 	public function __construct(
-		string $alias,
 		private array $formatStrings
 	){
-		parent::__construct($alias, KnownTranslationFactory::pocketmine_command_userDefined_description());
+		parent::__construct(KnownTranslationFactory::pocketmine_command_userDefined_description());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -95,12 +94,14 @@ class FormattedCommandAlias extends Command{
 				throw new AssumptionFailedError("This should have been checked before construction");
 			}
 
-			if(($target = $commandMap->getCommand($commandLabel)) !== null){
-				$timings = Timings::getCommandDispatchTimings($target->getLabel());
+			if(($target = $commandMap->getEntry($commandLabel)) !== null){
+				//TODO: using labels for command dispatch is problematic - what if the label changes?
+				//maybe this should use command class instead?
+				$timings = Timings::getCommandDispatchTimings($target->getPreferredAlias());
 				$timings->startTiming();
 
 				try{
-					$target->execute($sender, $commandLabel, $commandArgs);
+					$target->command->execute($sender, $commandLabel, $commandArgs);
 				}catch(InvalidCommandSyntaxException $e){
 					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 				}finally{

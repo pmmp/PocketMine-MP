@@ -38,7 +38,6 @@ class BanIpCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"ban-ip",
 			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
 			KnownTranslationFactory::commands_banip_usage()
 		);

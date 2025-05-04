@@ -34,7 +34,6 @@ class TransferServerCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"transferserver",
 			KnownTranslationFactory::pocketmine_command_transferserver_description(),
 			KnownTranslationFactory::pocketmine_command_transferserver_usage()
 		);

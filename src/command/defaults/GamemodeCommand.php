@@ -35,7 +35,6 @@ class GamemodeCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"gamemode",
 			KnownTranslationFactory::pocketmine_command_gamemode_description(),
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
@@ -56,7 +55,7 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
 		if($target === null){
 			return true;
 		}

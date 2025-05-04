@@ -35,7 +35,6 @@ class DefaultGamemodeCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"defaultgamemode",
 			KnownTranslationFactory::pocketmine_command_defaultgamemode_description(),
 			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);

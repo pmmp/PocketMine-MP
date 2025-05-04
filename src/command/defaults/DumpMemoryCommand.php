@@ -33,7 +33,6 @@ class DumpMemoryCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"dumpmemory",
 			KnownTranslationFactory::pocketmine_command_dumpmemory_description(),
 			"/dumpmemory [path]"
 		);

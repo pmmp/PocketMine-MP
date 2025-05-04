@@ -47,10 +47,8 @@ class HelpCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"help",
 			KnownTranslationFactory::pocketmine_command_help_description(),
-			KnownTranslationFactory::commands_help_usage(),
-			["?"]
+			KnownTranslationFactory::commands_help_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
 	}
@@ -72,11 +70,13 @@ class HelpCommand extends VanillaCommand{
 
 		$pageHeight = $sender->getScreenLineHeight();
 
+		//TODO: maybe inject this in the constructor instead of assuming the server's command map?
+		$commandMap = $sender->getServer()->getCommandMap();
 		if($commandName === ""){
 			$commands = [];
-			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
-				if($command->testPermissionSilent($sender)){
-					$commands[$command->getLabel()] = $command;
+			foreach($commandMap->getUniqueCommands() as $commandEntry){
+				if($commandEntry->command->testPermissionSilent($sender)){
+					$commands[$commandEntry->getPreferredAlias()] = $commandEntry;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
@@ -88,31 +88,31 @@ class HelpCommand extends VanillaCommand{
 			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
 			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
-				foreach($commands[$pageNumber - 1] as $command){
-					$description = $command->getDescription();
+				foreach($commands[$pageNumber - 1] as $commandEntry){
+					$description = $commandEntry->command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::RESET . $descriptionString);
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $commandEntry->getPreferredAlias() . ": " . TextFormat::RESET . $descriptionString);
 				}
 			}
 
 			return true;
 		}else{
-			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
-				if($cmd->testPermissionSilent($sender)){
+			if(($commandEntry = $commandMap->getEntry(strtolower($commandName))) !== null){
+				if($commandEntry->command->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
-					$description = $cmd->getDescription();
+					$description = $commandEntry->command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($commandEntry->getPreferredAlias())
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
 						->prefix(TextFormat::GOLD));
 
-					$usage = $cmd->getUsage();
+					$usage = $commandEntry->getUsage();
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString, limit: PHP_INT_MAX)))
 						->prefix(TextFormat::GOLD));
 
-					$aliases = $cmd->getAliases();
+					$aliases = $commandEntry->aliases;
 					sort($aliases, SORT_NATURAL);
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::RESET . implode(", ", $aliases))
 						->prefix(TextFormat::GOLD));

@@ -38,7 +38,6 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"setworldspawn",
 			KnownTranslationFactory::pocketmine_command_setworldspawn_description(),
 			KnownTranslationFactory::commands_setworldspawn_usage()
 		);

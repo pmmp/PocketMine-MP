@@ -37,7 +37,6 @@ class BanCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"ban",
 			KnownTranslationFactory::pocketmine_command_ban_player_description(),
 			KnownTranslationFactory::commands_ban_usage()
 		);

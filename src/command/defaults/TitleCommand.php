@@ -35,7 +35,6 @@ class TitleCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"title",
 			KnownTranslationFactory::pocketmine_command_title_description(),
 			KnownTranslationFactory::commands_title_usage()
 		);
@@ -50,7 +49,7 @@ class TitleCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_TITLE_SELF, DefaultPermissionNames::COMMAND_TITLE_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_TITLE_SELF, DefaultPermissionNames::COMMAND_TITLE_OTHER);
 		if($player === null){
 			return true;
 		}

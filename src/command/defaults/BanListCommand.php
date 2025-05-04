@@ -39,7 +39,6 @@ class BanListCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"banlist",
 			KnownTranslationFactory::pocketmine_command_banlist_description(),
 			KnownTranslationFactory::commands_banlist_usage()
 		);

@@ -34,7 +34,6 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function copy;
-use function count;
 use function dirname;
 use function file_exists;
 use function fopen;
@@ -146,21 +145,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * Registers commands declared in the plugin manifest
 	 */
 	private function registerYamlCommands() : void{
-		$pluginCmds = [];
-
 		foreach(Utils::stringifyKeys($this->description->getCommands()) as $key => $data){
 			if(str_contains($key, ":")){
 				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->description->getFullName(), ":")));
 				continue;
-			}
-
-			$newCmd = new PluginCommand($key, $this, $this);
-			if(($description = $data->getDescription()) !== null){
-				$newCmd->setDescription($description);
-			}
-
-			if(($usageMessage = $data->getUsageMessage()) !== null){
-				$newCmd->setUsage($usageMessage);
 			}
 
 			$aliasList = [];
@@ -172,7 +160,13 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				$aliasList[] = $alias;
 			}
 
-			$newCmd->setAliases($aliasList);
+			$newCmd = new PluginCommand(
+				$key,
+				$this,
+				$this,
+				$data->getDescription() ?? "",
+				$data->getUsageMessage() ?? ""
+			);
 
 			$newCmd->setPermission($data->getPermission());
 
@@ -180,11 +174,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				$newCmd->setPermissionMessage($permissionDeniedMessage);
 			}
 
-			$pluginCmds[] = $newCmd;
-		}
-
-		if(count($pluginCmds) > 0){
-			$this->server->getCommandMap()->registerAll($this->description->getName(), $pluginCmds);
+			$this->server->getCommandMap()->register($this->description->getName(), $newCmd, $key, $aliasList);
 		}
 	}
 

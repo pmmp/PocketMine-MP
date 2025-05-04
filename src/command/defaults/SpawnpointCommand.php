@@ -38,7 +38,6 @@ class SpawnpointCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"spawnpoint",
 			KnownTranslationFactory::pocketmine_command_spawnpoint_description(),
 			KnownTranslationFactory::commands_spawnpoint_usage()
 		);
@@ -49,7 +48,7 @@ class SpawnpointCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF, DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_SPAWNPOINT_SELF, DefaultPermissionNames::COMMAND_SPAWNPOINT_OTHER);
 		if($target === null){
 			return true;
 		}

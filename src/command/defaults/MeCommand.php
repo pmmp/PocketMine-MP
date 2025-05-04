@@ -36,7 +36,6 @@ class MeCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"me",
 			KnownTranslationFactory::pocketmine_command_me_description(),
 			KnownTranslationFactory::commands_me_usage()
 		);

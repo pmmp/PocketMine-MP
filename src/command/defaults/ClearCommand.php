@@ -41,7 +41,6 @@ class ClearCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"clear",
 			KnownTranslationFactory::pocketmine_command_clear_description(),
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
@@ -53,7 +52,7 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
 		if($target === null){
 			return true;
 		}

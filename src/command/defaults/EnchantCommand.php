@@ -36,7 +36,6 @@ class EnchantCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"enchant",
 			KnownTranslationFactory::pocketmine_command_enchant_description(),
 			KnownTranslationFactory::commands_enchant_usage()
 		);
@@ -51,7 +50,7 @@ class EnchantCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
 		if($player === null){
 			return true;
 		}

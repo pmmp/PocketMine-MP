@@ -40,7 +40,6 @@ class XpCommand extends VanillaCommand{
 
 	public function __construct(){
 		parent::__construct(
-			"xp",
 			KnownTranslationFactory::pocketmine_command_xp_description(),
 			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);
@@ -55,7 +54,7 @@ class XpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
 		if($player === null){
 			return true;
 		}
