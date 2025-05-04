@@ -181,12 +181,23 @@ class SimpleCommandMap implements CommandMap{
 	 * @phpstan-param-out non-empty-list<string> $registeredAliases
 	 */
 	private function mapAlias(string $alias, Command $command, array &$registeredAliases) : void{
-		$this->unmapAlias($alias);
+		$this->unregisterAlias($alias);
 		$this->aliasToCommandMap[$alias] = $command;
 		$registeredAliases[] = $alias;
 	}
 
-	private function unmapAlias(string $alias) : void{
+	public function registerAlias(string $existingAlias, string $newAlias) : void{
+		$existingCommand = $this->aliasToCommandMap[$existingAlias] ?? null;
+		if($existingCommand === null){
+			throw new \InvalidArgumentException("No command is currently using the alias \"$existingAlias\", cannot create an alias to it");
+		}
+		$registration = $this->uniqueCommands[spl_object_id($existingCommand)];
+		$newAliases = $registration->aliases;
+		$this->mapAlias($newAlias, $existingCommand, $newAliases);
+		$this->uniqueCommands[spl_object_id($existingCommand)] = new CommandMapEntry($existingCommand, $newAliases);
+	}
+
+	public function unregisterAlias(string $alias) : void{
 		$oldCommand = $this->aliasToCommandMap[$alias] ?? null;
 		if($oldCommand !== null){
 			unset($this->aliasToCommandMap[$alias]);
@@ -311,7 +322,7 @@ class SimpleCommandMap implements CommandMap{
 
 			//These registered commands have absolute priority
 			$lowerAlias = strtolower($alias);
-			$this->unmapAlias($lowerAlias);
+			$this->unregisterAlias($lowerAlias);
 			if(count($targets) > 0){
 				$aliasInstance = new FormattedCommandAlias($targets);
 				$registeredAliases = [];
