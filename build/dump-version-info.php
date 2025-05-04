@@ -31,8 +31,8 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  */
 
 /**
- * @var string[]|\Closure[] $options
- * @phpstan-var array<string, string|\Closure() : string> $options
+ * @var string[]|Closure[] $options
+ * @phpstan-var array<string, string|Closure() : string> $options
  */
 $options = [
 	"base_version" => VersionInfo::BASE_VERSION,

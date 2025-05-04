@@ -30,8 +30,8 @@ jobs:
       - name: Setup PHP and tools
         uses: shivammathur/setup-php@2.33.0
         with:
-          php-version: 8.2
-          tools: php-cs-fixer:3.49
+          php-version: 8.3
+          tools: php-cs-fixer:3.75
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
