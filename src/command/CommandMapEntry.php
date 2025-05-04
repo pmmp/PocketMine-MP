@@ -28,7 +28,7 @@ use pocketmine\lang\Translatable;
 final class CommandMapEntry{
 
 	/**
-	 * @param string[]                       $aliases
+	 * @param string[] $aliases
 	 * @phpstan-param non-empty-list<string> $aliases
 	 */
 	public function __construct(
