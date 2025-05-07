@@ -26,28 +26,44 @@ namespace pocketmine\world\biome\model;
 /**
  * Model for loading biome definition entries data from JSON.
  */
-final class BiomeDefinitionEntryData implements \JsonSerializable{
+final class BiomeDefinitionEntryData{
+	/** @required */
 	public ?int $id;
+
+	/** @required */
 	public float $temperature;
+
+	/** @required */
 	public float $downfall;
+
+	/** @required */
 	public float $redSporeDensity;
+
+	/** @required */
 	public float $blueSporeDensity;
+
+	/** @required */
 	public float $ashDensity;
+
+	/** @required */
 	public float $whiteAshDensity;
+
+	/** @required */
 	public float $depth;
+
+	/** @required */
 	public float $scale;
+
+	/** @required */
 	public ColorData $mapWaterColour;
+
+	/** @required */
 	public bool $rain;
+
 	/**
+	 * @required
 	 * @var string[]
 	 * @phpstan-var list<string>
 	 */
 	public array $tags;
-
-	/**
-	 * @return mixed[]
-	 */
-	public function jsonSerialize() : array{
-		return (array) $this;
-	}
 }

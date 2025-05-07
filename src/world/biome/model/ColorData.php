@@ -26,16 +26,16 @@ namespace pocketmine\world\biome\model;
 /**
  * Model for loading color data from JSON.
  */
-final class ColorData implements \JsonSerializable{
+final class ColorData{
+	/** @required */
 	public int $r;
-	public int $g;
-	public int $b;
-	public int $a;
 
-	/**
-	 * @return mixed[]
-	 */
-	public function jsonSerialize() : array{
-		return (array) $this;
-	}
+	/** @required */
+	public int $g;
+
+	/** @required */
+	public int $b;
+
+	/** @required */
+	public int $a;
 }
