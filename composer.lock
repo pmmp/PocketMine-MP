@@ -208,12 +208,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "a5f1fc12aa8c7666267e003a66fc58633840e5d0"
+                "reference": "a8932e40388c7280783ab78a8853d9491cb5dd40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/a5f1fc12aa8c7666267e003a66fc58633840e5d0",
-                "reference": "a5f1fc12aa8c7666267e003a66fc58633840e5d0",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/a8932e40388c7280783ab78a8853d9491cb5dd40",
+                "reference": "a8932e40388c7280783ab78a8853d9491cb5dd40",
                 "shasum": ""
             },
             "type": "library",
@@ -226,7 +226,7 @@
                 "issues": "https://github.com/pmmp/BedrockData/issues",
                 "source": "https://github.com/pmmp/BedrockData/tree/feature/1.21.80"
             },
-            "time": "2025-05-06T22:25:16+00:00"
+            "time": "2025-05-07T20:54:24+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",

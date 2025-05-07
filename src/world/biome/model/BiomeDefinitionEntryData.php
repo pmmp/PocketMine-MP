@@ -27,7 +27,6 @@ namespace pocketmine\world\biome\model;
  * Model for loading biome definition entries data from JSON.
  */
 final class BiomeDefinitionEntryData implements \JsonSerializable{
-	public string $name;
 	public ?int $id;
 	public float $temperature;
 	public float $downfall;

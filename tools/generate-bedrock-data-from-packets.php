@@ -583,7 +583,6 @@ class ParserPacketHandler extends PacketHandler{
 			$mapWaterColor->a = $entry->getMapWaterColor()->getA();
 
 			$data = new BiomeDefinitionEntryData();
-			$data->name = $entry->getBiomeName();
 			$data->id = $entry->getId();
 			$data->temperature = round($entry->getTemperature(), 3);
 			$data->downfall = round($entry->getDownfall(), 3);
@@ -597,8 +596,10 @@ class ParserPacketHandler extends PacketHandler{
 			$data->rain = $entry->hasRain();
 			$data->tags = $entry->getTags() ?? [];
 
-			$definitions[] = self::objectToOrderedArray($data);
+			$definitions[$entry->getBiomeName()] = self::objectToOrderedArray($data);
 		}
+
+		ksort($definitions, SORT_STRING);
 
 		file_put_contents($this->bedrockDataPath . '/biome_definitions.json', json_encode($definitions, JSON_PRETTY_PRINT) . "\n");
 

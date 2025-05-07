@@ -64,7 +64,7 @@ class StaticPacketCache{
 		$jsonMapper->bStrictObjectTypeChecking = true;
 
 		$entries = [];
-		foreach($biomeEntries as $entry){
+		foreach($biomeEntries as $biomeName => $entry){
 			if(!is_object($entry)){
 				throw new SavedDataLoadingException("$filePath should be an array of objects, got " . get_debug_type($entry));
 			}
@@ -74,7 +74,7 @@ class StaticPacketCache{
 
 				$mapWaterColour = $biomeDefinition->mapWaterColour;
 				$entries[] = new BiomeDefinitionEntry(
-					$biomeDefinition->name,
+					$biomeName,
 					$biomeDefinition->id,
 					$biomeDefinition->temperature,
 					$biomeDefinition->downfall,
