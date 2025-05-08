@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\protocol\types\biome\BiomeDefinitionEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\biome\model\BiomeDefinitionEntryData;
 use function count;
 use function get_debug_type;
@@ -54,7 +55,7 @@ class StaticPacketCache{
 	 * @return list<BiomeDefinitionEntry>
 	 */
 	private static function loadBiomeDefinitionModel(string $filePath) : array{
-		$biomeEntries = json_decode(Filesystem::fileGetContents($filePath), false);
+		$biomeEntries = json_decode(Filesystem::fileGetContents($filePath), associative: true);
 		if(!is_array($biomeEntries)){
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($biomeEntries));
 		}
@@ -62,10 +63,11 @@ class StaticPacketCache{
 		$jsonMapper = new \JsonMapper();
 		$jsonMapper->bExceptionOnMissingData = true;
 		$jsonMapper->bStrictObjectTypeChecking = true;
+		$jsonMapper->bEnforceMapType = false;
 
 		$entries = [];
-		foreach($biomeEntries as $biomeName => $entry){
-			if(!is_object($entry)){
+		foreach(Utils::promoteKeys($biomeEntries) as $biomeName => $entry){
+			if(!is_array($entry)){
 				throw new SavedDataLoadingException("$filePath should be an array of objects, got " . get_debug_type($entry));
 			}
 
@@ -74,7 +76,7 @@ class StaticPacketCache{
 
 				$mapWaterColour = $biomeDefinition->mapWaterColour;
 				$entries[] = new BiomeDefinitionEntry(
-					$biomeName,
+					(string) $biomeName,
 					$biomeDefinition->id,
 					$biomeDefinition->temperature,
 					$biomeDefinition->downfall,
