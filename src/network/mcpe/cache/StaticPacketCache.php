@@ -38,7 +38,6 @@ use pocketmine\world\biome\model\BiomeDefinitionEntryData;
 use function count;
 use function get_debug_type;
 use function is_array;
-use function is_object;
 use function json_decode;
 
 class StaticPacketCache{
