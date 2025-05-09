@@ -575,7 +575,7 @@ class ParserPacketHandler extends PacketHandler{
 		echo "storing biome definitions" . PHP_EOL;
 
 		$definitions = [];
-		foreach($packet->getEntries() as $entry){
+		foreach($packet->buildDefinitionsFromData() as $entry){
 			$mapWaterColor = new ColorData();
 			$mapWaterColor->r = $entry->getMapWaterColor()->getR();
 			$mapWaterColor->g = $entry->getMapWaterColor()->getG();
