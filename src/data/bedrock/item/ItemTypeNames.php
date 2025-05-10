@@ -68,6 +68,7 @@ final class ItemTypeNames{
 	public const BIRCH_SIGN = "minecraft:birch_sign";
 	public const BLACK_BUNDLE = "minecraft:black_bundle";
 	public const BLACK_DYE = "minecraft:black_dye";
+	public const BLACK_HARNESS = "minecraft:black_harness";
 	public const BLADE_POTTERY_SHERD = "minecraft:blade_pottery_sherd";
 	public const BLAZE_POWDER = "minecraft:blaze_powder";
 	public const BLAZE_ROD = "minecraft:blaze_rod";
@@ -76,6 +77,7 @@ final class ItemTypeNames{
 	public const BLUE_BUNDLE = "minecraft:blue_bundle";
 	public const BLUE_DYE = "minecraft:blue_dye";
 	public const BLUE_EGG = "minecraft:blue_egg";
+	public const BLUE_HARNESS = "minecraft:blue_harness";
 	public const BOARD = "minecraft:board";
 	public const BOAT = "minecraft:boat";
 	public const BOGGED_SPAWN_EGG = "minecraft:bogged_spawn_egg";
@@ -95,6 +97,7 @@ final class ItemTypeNames{
 	public const BROWN_BUNDLE = "minecraft:brown_bundle";
 	public const BROWN_DYE = "minecraft:brown_dye";
 	public const BROWN_EGG = "minecraft:brown_egg";
+	public const BROWN_HARNESS = "minecraft:brown_harness";
 	public const BRUSH = "minecraft:brush";
 	public const BUCKET = "minecraft:bucket";
 	public const BUNDLE = "minecraft:bundle";
@@ -166,6 +169,7 @@ final class ItemTypeNames{
 	public const CROSSBOW = "minecraft:crossbow";
 	public const CYAN_BUNDLE = "minecraft:cyan_bundle";
 	public const CYAN_DYE = "minecraft:cyan_dye";
+	public const CYAN_HARNESS = "minecraft:cyan_harness";
 	public const DANGER_POTTERY_SHERD = "minecraft:danger_pottery_sherd";
 	public const DARK_OAK_BOAT = "minecraft:dark_oak_boat";
 	public const DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
@@ -265,12 +269,15 @@ final class ItemTypeNames{
 	public const GOLDEN_SWORD = "minecraft:golden_sword";
 	public const GRAY_BUNDLE = "minecraft:gray_bundle";
 	public const GRAY_DYE = "minecraft:gray_dye";
+	public const GRAY_HARNESS = "minecraft:gray_harness";
 	public const GREEN_BUNDLE = "minecraft:green_bundle";
 	public const GREEN_DYE = "minecraft:green_dye";
+	public const GREEN_HARNESS = "minecraft:green_harness";
 	public const GUARDIAN_SPAWN_EGG = "minecraft:guardian_spawn_egg";
 	public const GUNPOWDER = "minecraft:gunpowder";
 	public const GUSTER_BANNER_PATTERN = "minecraft:guster_banner_pattern";
 	public const GUSTER_POTTERY_SHERD = "minecraft:guster_pottery_sherd";
+	public const HAPPY_GHAST_SPAWN_EGG = "minecraft:happy_ghast_spawn_egg";
 	public const HARD_STAINED_GLASS = "minecraft:hard_stained_glass";
 	public const HARD_STAINED_GLASS_PANE = "minecraft:hard_stained_glass_pane";
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
@@ -321,10 +328,13 @@ final class ItemTypeNames{
 	public const LIGHT_BLOCK = "minecraft:light_block";
 	public const LIGHT_BLUE_BUNDLE = "minecraft:light_blue_bundle";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
+	public const LIGHT_BLUE_HARNESS = "minecraft:light_blue_harness";
 	public const LIGHT_GRAY_BUNDLE = "minecraft:light_gray_bundle";
 	public const LIGHT_GRAY_DYE = "minecraft:light_gray_dye";
+	public const LIGHT_GRAY_HARNESS = "minecraft:light_gray_harness";
 	public const LIME_BUNDLE = "minecraft:lime_bundle";
 	public const LIME_DYE = "minecraft:lime_dye";
+	public const LIME_HARNESS = "minecraft:lime_harness";
 	public const LINGERING_POTION = "minecraft:lingering_potion";
 	public const LLAMA_SPAWN_EGG = "minecraft:llama_spawn_egg";
 	public const LODESTONE_COMPASS = "minecraft:lodestone_compass";
@@ -333,6 +343,7 @@ final class ItemTypeNames{
 	public const MACE = "minecraft:mace";
 	public const MAGENTA_BUNDLE = "minecraft:magenta_bundle";
 	public const MAGENTA_DYE = "minecraft:magenta_dye";
+	public const MAGENTA_HARNESS = "minecraft:magenta_harness";
 	public const MAGMA_CREAM = "minecraft:magma_cream";
 	public const MAGMA_CUBE_SPAWN_EGG = "minecraft:magma_cube_spawn_egg";
 	public const MANGROVE_BOAT = "minecraft:mangrove_boat";
@@ -400,6 +411,7 @@ final class ItemTypeNames{
 	public const OMINOUS_TRIAL_KEY = "minecraft:ominous_trial_key";
 	public const ORANGE_BUNDLE = "minecraft:orange_bundle";
 	public const ORANGE_DYE = "minecraft:orange_dye";
+	public const ORANGE_HARNESS = "minecraft:orange_harness";
 	public const OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 	public const PAINTING = "minecraft:painting";
 	public const PALE_OAK_BOAT = "minecraft:pale_oak_boat";
@@ -419,6 +431,7 @@ final class ItemTypeNames{
 	public const PILLAGER_SPAWN_EGG = "minecraft:pillager_spawn_egg";
 	public const PINK_BUNDLE = "minecraft:pink_bundle";
 	public const PINK_DYE = "minecraft:pink_dye";
+	public const PINK_HARNESS = "minecraft:pink_harness";
 	public const PITCHER_POD = "minecraft:pitcher_pod";
 	public const PLANKS = "minecraft:planks";
 	public const PLENTY_POTTERY_SHERD = "minecraft:plenty_pottery_sherd";
@@ -439,6 +452,7 @@ final class ItemTypeNames{
 	public const PUMPKIN_SEEDS = "minecraft:pumpkin_seeds";
 	public const PURPLE_BUNDLE = "minecraft:purple_bundle";
 	public const PURPLE_DYE = "minecraft:purple_dye";
+	public const PURPLE_HARNESS = "minecraft:purple_harness";
 	public const QUARTZ = "minecraft:quartz";
 	public const RABBIT = "minecraft:rabbit";
 	public const RABBIT_FOOT = "minecraft:rabbit_foot";
@@ -455,6 +469,7 @@ final class ItemTypeNames{
 	public const RED_BUNDLE = "minecraft:red_bundle";
 	public const RED_DYE = "minecraft:red_dye";
 	public const RED_FLOWER = "minecraft:red_flower";
+	public const RED_HARNESS = "minecraft:red_harness";
 	public const REDSTONE = "minecraft:redstone";
 	public const REPEATER = "minecraft:repeater";
 	public const RESIN_BRICK = "minecraft:resin_brick";
@@ -563,6 +578,7 @@ final class ItemTypeNames{
 	public const WHEAT_SEEDS = "minecraft:wheat_seeds";
 	public const WHITE_BUNDLE = "minecraft:white_bundle";
 	public const WHITE_DYE = "minecraft:white_dye";
+	public const WHITE_HARNESS = "minecraft:white_harness";
 	public const WILD_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:wild_armor_trim_smithing_template";
 	public const WIND_CHARGE = "minecraft:wind_charge";
 	public const WITCH_SPAWN_EGG = "minecraft:witch_spawn_egg";
@@ -583,6 +599,7 @@ final class ItemTypeNames{
 	public const WRITTEN_BOOK = "minecraft:written_book";
 	public const YELLOW_BUNDLE = "minecraft:yellow_bundle";
 	public const YELLOW_DYE = "minecraft:yellow_dye";
+	public const YELLOW_HARNESS = "minecraft:yellow_harness";
 	public const ZOGLIN_SPAWN_EGG = "minecraft:zoglin_spawn_egg";
 	public const ZOMBIE_HORSE_SPAWN_EGG = "minecraft:zombie_horse_spawn_egg";
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = "minecraft:zombie_pigman_spawn_egg";
