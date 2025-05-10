@@ -360,7 +360,7 @@ class World implements ChunkManager{
 
 	private bool $doingTick = false;
 
-	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
+	/** @phpstan-var class-string<generator\Generator> */
 	private string $generator;
 
 	private bool $unloaded = false;

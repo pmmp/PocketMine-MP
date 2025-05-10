@@ -392,6 +392,7 @@ final class BlockTypeNames{
 	public const DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
 	public const DRAGON_EGG = "minecraft:dragon_egg";
 	public const DRAGON_HEAD = "minecraft:dragon_head";
+	public const DRIED_GHAST = "minecraft:dried_ghast";
 	public const DRIED_KELP_BLOCK = "minecraft:dried_kelp_block";
 	public const DRIPSTONE_BLOCK = "minecraft:dripstone_block";
 	public const DROPPER = "minecraft:dropper";
