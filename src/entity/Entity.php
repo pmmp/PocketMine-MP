@@ -1146,7 +1146,7 @@ abstract class Entity{
 		return $block->isSolid() && !$block->isTransparent() && $block->collidesWithBB($this->getBoundingBox());
 	}
 
-	protected function move(float $dx, float $dy, float $dz) : void{
+	protected function move(float $dx, float $dy, float $dz) : void {
 		$this->blocksAround = null;
 
 		Timings::$entityMove->startTiming();
@@ -1156,9 +1156,9 @@ abstract class Entity{
 		$wantedY = $dy;
 		$wantedZ = $dz;
 
-		if($this->keepMovement){
+		if ($this->keepMovement) {
 			$this->boundingBox->offset($dx, $dy, $dz);
-		}else{
+		} else {
 			$this->ySize *= self::STEP_CLIP_MULTIPLIER;
 
 			$moveBB = clone $this->boundingBox;
@@ -1167,7 +1167,7 @@ abstract class Entity{
 
 			$list = $this->getWorld()->getBlockCollisionBoxes($moveBB->addCoord($dx, $dy, $dz));
 
-			foreach($list as $bb){
+			foreach ($list as $bb) {
 				$dy = $bb->calculateYOffset($moveBB, $dy);
 			}
 
@@ -1175,59 +1175,59 @@ abstract class Entity{
 
 			$fallingFlag = ($this->onGround || ($dy !== $wantedY && $wantedY < 0));
 
-			foreach($list as $bb){
+			foreach ($list as $bb) {
 				$dx = $bb->calculateXOffset($moveBB, $dx);
 			}
 
 			$moveBB->offset($dx, 0, 0);
 
-			foreach($list as $bb){
+			foreach ($list as $bb) {
 				$dz = $bb->calculateZOffset($moveBB, $dz);
 			}
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
+			if ($this->getStepHeight() > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)) {
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
 				$dx = $wantedX;
-				$dy = $this->stepHeight;
+				$dy = $this->getStepHeight();
 				$dz = $wantedZ;
 
 				$stepBB = clone $this->boundingBox;
 
 				$list = $this->getWorld()->getBlockCollisionBoxes($stepBB->addCoord($dx, $dy, $dz));
-				foreach($list as $bb){
+				foreach ($list as $bb) {
 					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
 
 				$stepBB->offset(0, $dy, 0);
 
-				foreach($list as $bb){
+				foreach ($list as $bb) {
 					$dx = $bb->calculateXOffset($stepBB, $dx);
 				}
 
 				$stepBB->offset($dx, 0, 0);
 
-				foreach($list as $bb){
+				foreach ($list as $bb) {
 					$dz = $bb->calculateZOffset($stepBB, $dz);
 				}
 
 				$stepBB->offset(0, 0, $dz);
 
 				$reverseDY = -$dy;
-				foreach($list as $bb){
+				foreach ($list as $bb) {
 					$reverseDY = $bb->calculateYOffset($stepBB, $reverseDY);
 				}
 				$dy += $reverseDY;
 				$stepBB->offset(0, $reverseDY, 0);
 
-				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
+				if (($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)) {
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
-				}else{
+				} else {
 					$moveBB = $stepBB;
 					$this->ySize += $dy;
 				}
@@ -1676,6 +1676,14 @@ abstract class Entity{
 			$this->networkPropertiesDirty = false;
 		}
 		return $this->networkProperties->getAll();
+	}
+
+	public function setStepHeight(float $stepHeight) : void {
+		$this->stepHeight = $stepHeight;
+	}
+
+	public function getStepHeight() : float {
+		return $this->stepHeight;
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
