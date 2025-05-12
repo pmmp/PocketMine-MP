@@ -5,6 +5,13 @@ $finder = PhpCsFixer\Finder::create()
 	->in(__DIR__ . '/build')
 	->in(__DIR__ . '/tests')
 	->in(__DIR__ . '/tools')
+
+	//JsonMapper will break if the FQNs in the doc comments for these are shortened :(
+	->notPath('crafting/json')
+	->notPath('inventory/json')
+	->notPath('data/bedrock/block/upgrade/model')
+	->notPath('data/bedrock/item/upgrade/model')
+
 	->notName('PocketMine.php');
 
 return (new PhpCsFixer\Config)

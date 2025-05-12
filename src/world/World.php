@@ -360,7 +360,7 @@ class World implements ChunkManager{
 
 	private bool $doingTick = false;
 
-	/** @phpstan-var class-string<\pocketmine\world\generator\Generator> */
+	/** @phpstan-var class-string<generator\Generator> */
 	private string $generator;
 
 	private bool $unloaded = false;
@@ -2028,6 +2028,15 @@ class World implements ChunkManager{
 			throw new WorldException("Cannot set a block in un-generated terrain");
 		}
 
+		//TODO: this computes state ID twice (we do it again in writeStateToWorld()). Not great for performance :(
+		$stateId = $block->getStateId();
+		if(!$this->blockStateRegistry->hasStateId($stateId)){
+			throw new \LogicException("Block state ID not known to RuntimeBlockStateRegistry (probably not registered)");
+		}
+		if(!GlobalBlockStateHandlers::getSerializer()->isRegistered($block)){
+			throw new \LogicException("Block not registered with GlobalBlockStateHandlers serializer");
+		}
+
 		$this->timings->setBlock->startTiming();
 
 		$this->unlockChunk($chunkX, $chunkZ, null);
@@ -2750,6 +2759,11 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
+			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
+			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
+			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");
+		}
 		$pos = $entity->getPosition()->asVector3();
 		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE)][$entity->getId()] = $entity;
 		$this->entityLastKnownPositions[$entity->getId()] = $pos;
@@ -2850,6 +2864,9 @@ class World implements ChunkManager{
 		}
 		if(!$this->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
 			throw new \InvalidArgumentException("Tile position is outside the world bounds");
+		}
+		if(!TileFactory::getInstance()->isRegistered($tile::class)){
+			throw new \LogicException("Tile " . $tile::class . " is not registered for a save ID in TileFactory");
 		}
 
 		$chunkX = $pos->getFloorX() >> Chunk::COORD_BIT_SIZE;
