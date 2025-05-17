@@ -34,9 +34,9 @@
       "adhocore/json-comment": "~1.2.0",
       "netresearch/jsonmapper": "~v5.0.0",
       "pocketmine/bedrock-block-upgrade-schema": "~5.1.0+bedrock-1.21.60",
-      "pocketmine/bedrock-data": "5.0.0+bedrock-1.21.80",
+      "pocketmine/bedrock-data": "~5.0.0+bedrock-1.21.80",
       "pocketmine/bedrock-item-upgrade-schema": "~1.14.0+bedrock-1.21.50",
-      "pocketmine/bedrock-protocol": "38.0.0+bedrock-1.21.80",
+      "pocketmine/bedrock-protocol": "~38.0.0+bedrock-1.21.80",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/color": "^0.3.0",
@@ -52,10 +52,14 @@
       "symfony/filesystem": "~6.4.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "2.1.11",
+      "phpstan/phpstan": "2.1.16",
       "phpstan/phpstan-phpunit": "^2.0.0",
       "phpstan/phpstan-strict-rules": "^2.0.0",
       "phpunit/phpunit": "^10.5.24"
+   },
+   "provide": {
+      "symfony/polyfill-ctype": "*",
+      "symfony/polyfill-mbstring": "*"
    },
    "autoload": {
       "psr-4": {
