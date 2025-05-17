@@ -30,7 +30,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
-use function array_flip;
+use function array_fill_keys;
 use function get_debug_type;
 use function implode;
 use function is_array;
@@ -106,14 +106,14 @@ class BlockTest extends TestCase{
 		if(!is_array($propertiesTable)){
 			throw new AssumptionFailedError("Block properties table must be an array");
 		}
-		$exceptions = array_flip([
+		$exceptions = array_fill_keys([
 			BlockTypeNames::AIR,
 			BlockTypeNames::WATER,
 			BlockTypeNames::FLOWING_WATER,
 			BlockTypeNames::LAVA,
 			BlockTypeNames::FLOWING_LAVA,
 			BlockTypeNames::MANGROVE_LOG, //For some reason ONLY this wood block has blast resistance 2 instead of 10...
-		]);
+		], true);
 
 		$serializer = GlobalBlockStateHandlers::getSerializer();
 		$testedBlocks = [];
