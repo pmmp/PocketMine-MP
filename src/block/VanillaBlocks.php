@@ -1168,17 +1168,17 @@ final class VanillaBlocks{
 
 		self::register("end_stone_brick_slab", fn(BID $id) => new Slab($id, "End Stone Brick", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 30.0))));
 
-		$stoneSlabBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register("dark_prismarine_slab", fn(BID $id) => new Slab($id, "Dark Prismarine", $stoneSlabBreakInfo));
-		self::register("prismarine_slab", fn(BID $id) => new Slab($id, "Prismarine", $stoneSlabBreakInfo));
-		self::register("prismarine_bricks_slab", fn(BID $id) => new Slab($id, "Prismarine Bricks", $stoneSlabBreakInfo));
-		self::register("andesite_slab", fn(BID $id) => new Slab($id, "Andesite", $stoneSlabBreakInfo));
-		self::register("diorite_slab", fn(BID $id) => new Slab($id, "Diorite", $stoneSlabBreakInfo));
-		self::register("granite_slab", fn(BID $id) => new Slab($id, "Granite", $stoneSlabBreakInfo));
-		self::register("polished_andesite_slab", fn(BID $id) => new Slab($id, "Polished Andesite", $stoneSlabBreakInfo));
-		self::register("polished_diorite_slab", fn(BID $id) => new Slab($id, "Polished Diorite", $stoneSlabBreakInfo));
-		self::register("polished_granite_slab", fn(BID $id) => new Slab($id, "Polished Granite", $stoneSlabBreakInfo));
-		self::register("mossy_stone_brick_slab", fn(BID $id) => new Slab($id, "Mossy Stone Brick", $stoneSlabBreakInfo));
+		$lightStoneSlabBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
+		self::register("dark_prismarine_slab", fn(BID $id) => new Slab($id, "Dark Prismarine", $lightStoneSlabBreakInfo));
+		self::register("prismarine_slab", fn(BID $id) => new Slab($id, "Prismarine", $lightStoneSlabBreakInfo));
+		self::register("prismarine_bricks_slab", fn(BID $id) => new Slab($id, "Prismarine Bricks", $lightStoneSlabBreakInfo));
+		self::register("andesite_slab", fn(BID $id) => new Slab($id, "Andesite", $lightStoneSlabBreakInfo));
+		self::register("diorite_slab", fn(BID $id) => new Slab($id, "Diorite", $lightStoneSlabBreakInfo));
+		self::register("granite_slab", fn(BID $id) => new Slab($id, "Granite", $lightStoneSlabBreakInfo));
+		self::register("polished_andesite_slab", fn(BID $id) => new Slab($id, "Polished Andesite", $lightStoneSlabBreakInfo));
+		self::register("polished_diorite_slab", fn(BID $id) => new Slab($id, "Polished Diorite", $lightStoneSlabBreakInfo));
+		self::register("polished_granite_slab", fn(BID $id) => new Slab($id, "Polished Granite", $lightStoneSlabBreakInfo));
+		self::register("mossy_stone_brick_slab", fn(BID $id) => new Slab($id, "Mossy Stone Brick", $lightStoneSlabBreakInfo));
 
 		self::register("legacy_stonecutter", fn(BID $id) => new Opaque($id, "Legacy Stonecutter", new Info(BreakInfo::pickaxe(3.5, ToolTier::WOOD))));
 		self::register("sugarcane", fn(BID $id) => new Sugarcane($id, "Sugarcane", new Info(BreakInfo::instant())));
@@ -1276,24 +1276,24 @@ final class VanillaBlocks{
 
 		self::register("end_stone_brick_wall", fn(BID $id) => new Wall($id, "End Stone Brick Wall", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 45.0))));
 
-		$wallBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
-		self::register("cobblestone_wall", fn(BID $id) => new Wall($id, "Cobblestone Wall", $wallBreakInfo));
-		self::register("brick_wall", fn(BID $id) => new Wall($id, "Brick Wall", $wallBreakInfo));
-		self::register("mossy_cobblestone_wall", fn(BID $id) => new Wall($id, "Mossy Cobblestone Wall", $wallBreakInfo));
-		self::register("nether_brick_wall", fn(BID $id) => new Wall($id, "Nether Brick Wall", $wallBreakInfo));
-		self::register("red_nether_brick_wall", fn(BID $id) => new Wall($id, "Red Nether Brick Wall", $wallBreakInfo));
+		$brickWallBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
+		self::register("cobblestone_wall", fn(BID $id) => new Wall($id, "Cobblestone Wall", $brickWallBreakInfo));
+		self::register("brick_wall", fn(BID $id) => new Wall($id, "Brick Wall", $brickWallBreakInfo));
+		self::register("mossy_cobblestone_wall", fn(BID $id) => new Wall($id, "Mossy Cobblestone Wall", $brickWallBreakInfo));
+		self::register("nether_brick_wall", fn(BID $id) => new Wall($id, "Nether Brick Wall", $brickWallBreakInfo));
+		self::register("red_nether_brick_wall", fn(BID $id) => new Wall($id, "Red Nether Brick Wall", $brickWallBreakInfo));
 
-		$wallBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
-		self::register("stone_brick_wall", fn(BID $id) => new Wall($id, "Stone Brick Wall", $wallBreakInfo));
-		self::register("mossy_stone_brick_wall", fn(BID $id) => new Wall($id, "Mossy Stone Brick Wall", $wallBreakInfo));
-		self::register("granite_wall", fn(BID $id) => new Wall($id, "Granite Wall", $wallBreakInfo));
-		self::register("diorite_wall", fn(BID $id) => new Wall($id, "Diorite Wall", $wallBreakInfo));
-		self::register("andesite_wall", fn(BID $id) => new Wall($id, "Andesite Wall", $wallBreakInfo));
-		self::register("prismarine_wall", fn(BID $id) => new Wall($id, "Prismarine Wall", $wallBreakInfo));
+		$stoneWallBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
+		self::register("stone_brick_wall", fn(BID $id) => new Wall($id, "Stone Brick Wall", $stoneWallBreakInfo));
+		self::register("mossy_stone_brick_wall", fn(BID $id) => new Wall($id, "Mossy Stone Brick Wall", $stoneWallBreakInfo));
+		self::register("granite_wall", fn(BID $id) => new Wall($id, "Granite Wall", $stoneWallBreakInfo));
+		self::register("diorite_wall", fn(BID $id) => new Wall($id, "Diorite Wall", $stoneWallBreakInfo));
+		self::register("andesite_wall", fn(BID $id) => new Wall($id, "Andesite Wall", $stoneWallBreakInfo));
+		self::register("prismarine_wall", fn(BID $id) => new Wall($id, "Prismarine Wall", $stoneWallBreakInfo));
 
-		$wallBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD, 4.0));
-		self::register("red_sandstone_wall", fn(BID $id) => new Wall($id, "Red Sandstone Wall", $wallBreakInfo));
-		self::register("sandstone_wall", fn(BID $id) => new Wall($id, "Sandstone Wall", $wallBreakInfo));
+		$sandstoneWallBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD, 4.0));
+		self::register("red_sandstone_wall", fn(BID $id) => new Wall($id, "Red Sandstone Wall", $sandstoneWallBreakInfo));
+		self::register("sandstone_wall", fn(BID $id) => new Wall($id, "Sandstone Wall", $sandstoneWallBreakInfo));
 
 		self::registerElements();
 
