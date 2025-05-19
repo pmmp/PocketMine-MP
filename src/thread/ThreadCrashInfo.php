@@ -84,6 +84,6 @@ final class ThreadCrashInfo extends ThreadSafe{
 	public function getThreadName() : string{ return $this->threadName; }
 
 	public function makePrettyMessage() : string{
-		return sprintf("%s: \"%s\" in \"%s\" on line %d", $this->type ?? "Fatal error", $this->message, Filesystem::cleanPath($this->file), $this->line);
+		return sprintf("%s: \"%s\" in \"%s\" on line %d", $this->type, $this->message, Filesystem::cleanPath($this->file), $this->line);
 	}
 }

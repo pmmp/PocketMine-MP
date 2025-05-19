@@ -21,26 +21,49 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\sound;
-
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+namespace pocketmine\world\biome\model;
 
 /**
- * Played when a player attacks a mob, dealing damage.
+ * Model for loading biome definition entries data from JSON.
  */
-class EntityAttackSound implements Sound{
+final class BiomeDefinitionEntryData{
+	/** @required */
+	public ?int $id;
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(
-			LevelSoundEvent::ATTACK_STRONG, //TODO: seems like ATTACK is dysfunctional
-			$pos,
-			-1,
-			"minecraft:player",
-			false,
-			false,
-			-1
-		)];
-	}
+	/** @required */
+	public float $temperature;
+
+	/** @required */
+	public float $downfall;
+
+	/** @required */
+	public float $redSporeDensity;
+
+	/** @required */
+	public float $blueSporeDensity;
+
+	/** @required */
+	public float $ashDensity;
+
+	/** @required */
+	public float $whiteAshDensity;
+
+	/** @required */
+	public float $depth;
+
+	/** @required */
+	public float $scale;
+
+	/** @required */
+	public ColorData $mapWaterColour;
+
+	/** @required */
+	public bool $rain;
+
+	/**
+	 * @required
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	public array $tags;
 }
