@@ -15,19 +15,23 @@ jobs:
         with:
           github-token: ${{ github.token }}
           script: |
-            const [owner, repo] = context.payload.repository.full_name.split('/');
-            try {
-              await github.rest.issues.removeLabel({
-                owner: owner,
-                repo: repo,
-                issue_number: context.payload.number,
-                name: "Status: Waiting on Author",
-              });
-            } catch (error) {
-              if (error.status === 404) {
-                //probably label wasn't set on the issue
-                console.log('Failed to remove label (probably label isn\'t on the PR): ' + error.message);
-              } else {
-                throw error;
+            async function removeLabel(owner, repo, issue_number, name) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: owner,
+                  repo: repo,
+                  issue_number: issue_number,
+                  name: name,
+                });
+              } catch (error) {
+                if (error.status === 404) {
+                  //probably label wasn't set on the issue
+                  console.log('Failed to remove label ' + name + ' (probably label isn\'t on the PR): ' + error.message);
+                } else {
+                  throw error;
+                }
               }
             }
+            const [owner, repo] = context.payload.repository.full_name.split('/');
+            removeLabel(owner, repo, context.payload.number, "Status: Waiting on Author");
+            removeLabel(owner, repo, context.payload.number, "Stale");
