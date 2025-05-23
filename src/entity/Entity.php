@@ -1187,12 +1187,14 @@ abstract class Entity{
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->getStepHeight() > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
+			$stepHeight = $this->getStepHeight();
+
+			if($stepHeight > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
 				$dx = $wantedX;
-				$dy = $this->getStepHeight();
+				$dy = $stepHeight;
 				$dz = $wantedZ;
 
 				$stepBB = clone $this->boundingBox;
@@ -1262,11 +1264,11 @@ abstract class Entity{
 		Timings::$entityMove->stopTiming();
 	}
 
-	public function setStepHeight(float $stepHeight) : void {
+	public function setStepHeight(float $stepHeight) : void{
 		$this->stepHeight = $stepHeight;
 	}
 
-	public function getStepHeight() : float {
+	public function getStepHeight() : float{
 		return $this->stepHeight;
 	}
 
