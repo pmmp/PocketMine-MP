@@ -1004,7 +1004,7 @@ final class VanillaBlocks{
 		self::register("item_frame", fn(BID $id) => new ItemFrame($id, "Item Frame", $itemFrameInfo), TileItemFrame::class);
 		self::register("glowing_item_frame", fn(BID $id) => new ItemFrame($id, "Glow Item Frame", $itemFrameInfo), TileGlowingItemFrame::class);
 
-		self::register("jukebox", fn(BID $id) => new Jukebox($id, "Jukebox", new Info(BreakInfo::axe(2.0, blastResistance: 30.0))), TileJukebox::class); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
+		self::register("jukebox", fn(BID $id) => new Jukebox($id, "Jukebox", new Info(BreakInfo::axe(2.0, blastResistance: 30.0))), TileJukebox::class);
 		self::register("ladder", fn(BID $id) => new Ladder($id, "Ladder", new Info(BreakInfo::axe(0.4))));
 
 		$lanternBreakInfo = new Info(BreakInfo::pickaxe(3.5));
@@ -1068,7 +1068,7 @@ final class VanillaBlocks{
 		self::register("chiseled_quartz", fn(BID $id) => new SimplePillar($id, "Chiseled Quartz Block", $quartzBreakInfo));
 		self::register("quartz_pillar", fn(BID $id) => new SimplePillar($id, "Quartz Pillar", $quartzBreakInfo));
 		self::register("smooth_quartz", fn(BID $id) => new Opaque($id, "Smooth Quartz Block", $smoothQuartzBreakInfo));
-		self::register("quartz_bricks", fn(BID $id) => new Opaque($id, "Quartz Bricks", new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD))));
+		self::register("quartz_bricks", fn(BID $id) => new Opaque($id, "Quartz Bricks", $quartzBreakInfo));
 
 		self::register("quartz_stairs", fn(BID $id) => new Stair($id, "Quartz Stairs", $quartzBreakInfo));
 		self::register("smooth_quartz_stairs", fn(BID $id) => new Stair($id, "Smooth Quartz Stairs", $smoothQuartzBreakInfo));
@@ -1628,7 +1628,6 @@ final class VanillaBlocks{
 		self::register("soul_torch", fn(BID $id) => new Torch($id, "Soul Torch", new Info(BreakInfo::instant())));
 		self::register("soul_fire", fn(BID $id) => new SoulFire($id, "Soul Fire", new Info(BreakInfo::instant(), [Tags::FIRE])));
 
-		//TODO: soul soul ought to have 0.5 hardness (as per java) but it's 1.0 in Bedrock (probably parity bug)
 		self::register("soul_soil", fn(BID $id) => new Opaque($id, "Soul Soil", new Info(BreakInfo::shovel(0.5))));
 
 		self::register("shroomlight", fn(BID $id) => new class($id, "Shroomlight", new Info(new BreakInfo(1.0, ToolType::HOE))) extends Opaque{
