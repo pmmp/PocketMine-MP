@@ -57,7 +57,7 @@
       "phpstan/phpstan-strict-rules": "^2.0.0",
       "phpunit/phpunit": "^10.5.24"
    },
-   "provide": {
+   "replace": {
       "symfony/polyfill-ctype": "*",
       "symfony/polyfill-mbstring": "*"
    },
