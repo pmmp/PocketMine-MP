@@ -100,7 +100,7 @@ class CocoaBlock extends Flowable{
 		}
 	}
 
-	private function grow(?Player $player = null) : bool{
+	protected function grow(?Player $player = null) : bool{
 		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
