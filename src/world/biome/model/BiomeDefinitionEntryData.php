@@ -21,13 +21,49 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\world\biome\model;
+
 /**
- * Events related to the server core, like networking, stop, console commands
+ * Model for loading biome definition entries data from JSON.
  */
-namespace pocketmine\event\server;
+final class BiomeDefinitionEntryData{
+	/** @required */
+	public ?int $id;
 
-use pocketmine\event\Event;
+	/** @required */
+	public float $temperature;
 
-abstract class ServerEvent extends Event{
+	/** @required */
+	public float $downfall;
 
+	/** @required */
+	public float $redSporeDensity;
+
+	/** @required */
+	public float $blueSporeDensity;
+
+	/** @required */
+	public float $ashDensity;
+
+	/** @required */
+	public float $whiteAshDensity;
+
+	/** @required */
+	public float $depth;
+
+	/** @required */
+	public float $scale;
+
+	/** @required */
+	public ColorData $mapWaterColour;
+
+	/** @required */
+	public bool $rain;
+
+	/**
+	 * @required
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	public array $tags;
 }

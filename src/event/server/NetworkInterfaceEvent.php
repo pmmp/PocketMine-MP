@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
+use pocketmine\event\Event;
 use pocketmine\network\NetworkInterface;
 
-class NetworkInterfaceEvent extends ServerEvent{
+class NetworkInterfaceEvent extends Event{
 	public function __construct(
 		protected NetworkInterface $interface
 	){}

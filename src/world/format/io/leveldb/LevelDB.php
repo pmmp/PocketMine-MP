@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
@@ -78,8 +79,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_21_40;
-	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = WorldDataVersions::CHUNK;
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = WorldDataVersions::SUBCHUNK;
 
 	private const CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET = 4;
 

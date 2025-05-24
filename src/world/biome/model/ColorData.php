@@ -21,15 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\server;
+namespace pocketmine\world\biome\model;
 
-use pocketmine\event\Event;
-use pocketmine\network\query\QueryInfo;
+/**
+ * Model for loading color data from JSON.
+ */
+final class ColorData{
+	/** @required */
+	public int $r;
 
-class QueryRegenerateEvent extends Event{
-	public function __construct(private QueryInfo $queryInfo){}
+	/** @required */
+	public int $g;
 
-	public function getQueryInfo() : QueryInfo{
-		return $this->queryInfo;
-	}
+	/** @required */
+	public int $b;
+
+	/** @required */
+	public int $a;
 }
