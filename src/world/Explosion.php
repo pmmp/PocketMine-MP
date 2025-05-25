@@ -63,9 +63,9 @@ class Explosion{
 	private array $excludedBlockTypeIds = [];
 
 	/**
- 	 * @param int[] $excludedBlockTypeIds
+	 * @param int[] $excludedBlockTypeIds
 	 * @phpstan-param array<int, int> $excludedBlockTypeIds
-  	 */
+	 */
 	public function __construct(
 		public Position $source,
 		public float $radius,
