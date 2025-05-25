@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Generate access token
         id: generate-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
           private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}

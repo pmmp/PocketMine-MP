@@ -23,13 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
+use pocketmine\color\Color;
 use pocketmine\data\bedrock\BedrockDataFiles;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\types\biome\BiomeDefinitionEntry;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
+use pocketmine\world\biome\model\BiomeDefinitionEntryData;
+use function count;
+use function get_debug_type;
+use function is_array;
+use function json_decode;
 
 class StaticPacketCache{
 	use SingletonTrait;
@@ -41,9 +50,61 @@ class StaticPacketCache{
 		return new CacheableNbt((new NetworkNbtSerializer())->read(Filesystem::fileGetContents($filePath))->mustGetCompoundTag());
 	}
 
+	/**
+	 * @return list<BiomeDefinitionEntry>
+	 */
+	private static function loadBiomeDefinitionModel(string $filePath) : array{
+		$biomeEntries = json_decode(Filesystem::fileGetContents($filePath), associative: true);
+		if(!is_array($biomeEntries)){
+			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($biomeEntries));
+		}
+
+		$jsonMapper = new \JsonMapper();
+		$jsonMapper->bExceptionOnMissingData = true;
+		$jsonMapper->bStrictObjectTypeChecking = true;
+		$jsonMapper->bEnforceMapType = false;
+
+		$entries = [];
+		foreach(Utils::promoteKeys($biomeEntries) as $biomeName => $entry){
+			if(!is_array($entry)){
+				throw new SavedDataLoadingException("$filePath should be an array of objects, got " . get_debug_type($entry));
+			}
+
+			try{
+				$biomeDefinition = $jsonMapper->map($entry, new BiomeDefinitionEntryData());
+
+				$mapWaterColour = $biomeDefinition->mapWaterColour;
+				$entries[] = new BiomeDefinitionEntry(
+					(string) $biomeName,
+					$biomeDefinition->id,
+					$biomeDefinition->temperature,
+					$biomeDefinition->downfall,
+					$biomeDefinition->redSporeDensity,
+					$biomeDefinition->blueSporeDensity,
+					$biomeDefinition->ashDensity,
+					$biomeDefinition->whiteAshDensity,
+					$biomeDefinition->depth,
+					$biomeDefinition->scale,
+					new Color(
+						$mapWaterColour->r,
+						$mapWaterColour->g,
+						$mapWaterColour->b,
+						$mapWaterColour->a
+					),
+					$biomeDefinition->rain,
+					count($biomeDefinition->tags) > 0 ? $biomeDefinition->tags : null,
+				);
+			}catch(\JsonMapper_Exception $e){
+				throw new \RuntimeException($e->getMessage(), 0, $e);
+			}
+		}
+
+		return $entries;
+	}
+
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(BedrockDataFiles::BIOME_DEFINITIONS_NBT)),
+			BiomeDefinitionListPacket::fromDefinitions(self::loadBiomeDefinitionModel(BedrockDataFiles::BIOME_DEFINITIONS_JSON)),
 			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(BedrockDataFiles::ENTITY_IDENTIFIERS_NBT))
 		);
 	}

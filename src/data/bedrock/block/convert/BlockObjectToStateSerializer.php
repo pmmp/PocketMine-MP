@@ -225,6 +225,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		return $this->cache[$stateId] ??= $this->serializeBlock(RuntimeBlockStateRegistry::getInstance()->fromStateId($stateId));
 	}
 
+	public function isRegistered(Block $block) : bool{
+		return isset($this->serializers[$block->getTypeId()]);
+	}
+
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block

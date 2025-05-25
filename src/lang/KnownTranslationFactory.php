@@ -3035,6 +3035,14 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::TILE_BED_TOOFAR, []);
 	}
 
+	public static function tile_respawn_anchor_notValid() : Translatable{
+		return new Translatable(KnownTranslationKeys::TILE_RESPAWN_ANCHOR_NOTVALID, []);
+	}
+
+	public static function tile_respawn_anchor_respawnSet() : Translatable{
+		return new Translatable(KnownTranslationKeys::TILE_RESPAWN_ANCHOR_RESPAWNSET, []);
+	}
+
 	public static function view_distance() : Translatable{
 		return new Translatable(KnownTranslationKeys::VIEW_DISTANCE, []);
 	}
