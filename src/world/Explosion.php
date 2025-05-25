@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
@@ -41,7 +42,7 @@ use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
-use function array_flip;
+use function array_fill_keys;
 use function ceil;
 use function count;
 use function floor;
@@ -59,12 +60,12 @@ class Explosion{
 
 	private SubChunkExplorer $subChunkExplorer;
 
-	/** @var int[] */
+	/** @var bool[] */
 	private array $excludedBlockTypeIds = [];
 
 	/**
 	 * @param int[] $excludedBlockTypeIds
-	 * @phpstan-param array<int, int> $excludedBlockTypeIds
+	 * @phpstan-param array<int> $excludedBlockTypeIds
 	 */
 	public function __construct(
 		public Position $source,
@@ -82,7 +83,7 @@ class Explosion{
 		}
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 
-		$this->excludedBlockTypeIds = array_flip($excludedBlockTypeIds);
+		$this->excludedBlockTypeIds = array_fill_keys($excludedBlockTypeIds, true);
 	}
 
 	/**
@@ -95,6 +96,7 @@ class Explosion{
 		}
 
 		$blockFactory = RuntimeBlockStateRegistry::getInstance();
+		$waterTypeIds = BlockTypeIds::WATER;
 
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
@@ -134,7 +136,7 @@ class Explosion{
 							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if(count($this->excludedBlockTypeIds) > 0){
 								$typeId = $blockFactory->fromStateId($state)->getTypeId();
-								if(isset($this->excludedBlockTypeIds[$typeId])){
+								if(isset($this->excludedBlockTypeIds[$typeId]) && $typeId === $waterTypeIds){
 									$blastResistance = 0.0;
 								}
 							}
@@ -145,6 +147,11 @@ class Explosion{
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
+											$typeId = $_affectedBlock->getTypeId();
+											if(isset($this->excludedBlockTypeIds[$typeId])){
+												continue;
+											}
+
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
