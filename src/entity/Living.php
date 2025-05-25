@@ -38,6 +38,7 @@ use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\event\entity\EntityFrostWalkerEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -721,19 +722,30 @@ abstract class Living extends Entity{
 		$y = $this->location->getFloorY() - 1;
 		$baseZ = $this->location->getFloorZ();
 
-		$frostedIce = VanillaBlocks::FROSTED_ICE();
+		$liquid = VanillaBlocks::WATER();
+		$targetBlock = VanillaBlocks::FROSTED_ICE();
+		if(EntityFrostWalkerEvent::hasHandlers()){
+			$ev = new EntityFrostWalkerEvent($this, $radius, $liquid, $targetBlock);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
+			$radius = $ev->getRadius();
+			$liquid = $ev->getLiquid();
+			$targetBlock = $ev->getTargetBlock();
+		}
+
 		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
 			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
 				$block = $world->getBlockAt($x, $y, $z);
 				if(
-					!$block instanceof Water ||
-					!$block->isSource() ||
+					!$block->isSameState($liquid) ||
 					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
 					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
 				){
 					continue;
 				}
-				$world->setBlockAt($x, $y, $z, $frostedIce);
+				$world->setBlockAt($x, $y, $z, $targetBlock);
 			}
 		}
 	}
