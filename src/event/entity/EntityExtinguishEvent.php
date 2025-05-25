@@ -21,24 +21,33 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\plugin;
+namespace pocketmine\event\entity;
+
+use pocketmine\entity\Entity;
 
 /**
- * @deprecated
+ * Called when an entity on fire gets extinguished.
+ *
+ * @phpstan-extends EntityEvent<Entity>
  */
-interface ResourceProvider{
-	/**
-	 * Gets an embedded resource on the plugin file.
-	 * WARNING: You must close the resource given using fclose()
-	 *
-	 * @return null|resource Resource data, or null
-	 */
-	public function getResource(string $filename);
+class EntityExtinguishEvent extends EntityEvent{
+	public const CAUSE_CUSTOM = 0;
+	public const CAUSE_WATER = 1;
+	public const CAUSE_WATER_CAULDRON = 2;
+	public const CAUSE_RESPAWN = 3;
+	public const CAUSE_FIRE_PROOF = 4;
+	public const CAUSE_TICKING = 5;
+	public const CAUSE_RAIN = 6;
+	public const CAUSE_POWDER_SNOW = 7;
 
-	/**
-	 * Returns all the resources packaged with the plugin in the form ["path/in/resources" => SplFileInfo]
-	 *
-	 * @return \SplFileInfo[]
-	 */
-	public function getResources() : array;
+	public function __construct(
+		Entity $entity,
+		private int $cause
+	){
+		$this->entity = $entity;
+	}
+
+	public function getCause() : int{
+		return $this->cause;
+	}
 }

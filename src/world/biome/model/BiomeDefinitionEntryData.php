@@ -21,18 +21,49 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\world\biome\model;
 
-use PHPUnit\Framework\TestCase;
+/**
+ * Model for loading biome definition entries data from JSON.
+ */
+final class BiomeDefinitionEntryData{
+	/** @required */
+	public ?int $id;
 
-class EnumTraitTest extends TestCase{
+	/** @required */
+	public float $temperature;
+
+	/** @required */
+	public float $downfall;
+
+	/** @required */
+	public float $redSporeDensity;
+
+	/** @required */
+	public float $blueSporeDensity;
+
+	/** @required */
+	public float $ashDensity;
+
+	/** @required */
+	public float $whiteAshDensity;
+
+	/** @required */
+	public float $depth;
+
+	/** @required */
+	public float $scale;
+
+	/** @required */
+	public ColorData $mapWaterColour;
+
+	/** @required */
+	public bool $rain;
 
 	/**
-	 * @doesNotPerformAssertions
+	 * @required
+	 * @var string[]
+	 * @phpstan-var list<string>
 	 */
-	public function testEnumLazyInit() : void{
-		foreach([TestEnum::ONE(), TestEnum::TWO(), TestEnum::THREE()] as $member){
-			//NOOP
-		}
-	}
+	public array $tags;
 }

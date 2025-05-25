@@ -61,15 +61,6 @@ class AsyncPoolTest extends TestCase{
 		self::assertTrue(LeakTestAsyncTask::$destroyed, "Task was not destroyed after 30 seconds");
 	}
 
-	public function testPublishProgressRace() : void{
-		$task = new PublishProgressRaceAsyncTask();
-		$this->pool->submitTask($task);
-		while($this->pool->collectTasks()){
-			usleep(50 * 1000);
-		}
-		self::assertTrue(PublishProgressRaceAsyncTask::$success, "Progress was not reported before task completion");
-	}
-
 	public function testThreadSafeSetResult() : void{
 		/** @phpstan-var PromiseResolver<ThreadSafeArray<array-key, mixed>> $resolver */
 		$resolver = new PromiseResolver();

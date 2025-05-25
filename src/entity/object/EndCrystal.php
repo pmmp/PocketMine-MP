@@ -47,7 +47,7 @@ class EndCrystal extends Entity implements Explosive{
 	private const TAG_BLOCKTARGET_Y = "BlockTargetY"; //TAG_Int
 	private const TAG_BLOCKTARGET_Z = "BlockTargetZ"; //TAG_Int
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_CRYSTAL; }
+	public function getNetworkTypeId() : string{ return EntityIds::ENDER_CRYSTAL; }
 
 	protected bool $showBase = false;
 	protected ?Vector3 $beamTarget = null;

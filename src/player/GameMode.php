@@ -25,24 +25,13 @@ namespace pocketmine\player;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\utils\LegacyEnumShimTrait;
 use function mb_strtolower;
 use function spl_object_id;
 
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static GameMode ADVENTURE()
- * @method static GameMode CREATIVE()
- * @method static GameMode SPECTATOR()
- * @method static GameMode SURVIVAL()
- *
  * @phpstan-type TMetadata array{0: string, 1: Translatable, 2: list<string>}
  */
 enum GameMode{
-	use LegacyEnumShimTrait;
-
 	case SURVIVAL;
 	case CREATIVE;
 	case ADVENTURE;

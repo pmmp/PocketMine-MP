@@ -58,17 +58,10 @@ class SweetBerryBush extends Flowable{
 		return 0;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	protected function canBeSupportedBy(Block $block) : bool{
-		return $block->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
-			($block->hasTypeTag(BlockTypeTags::DIRT) || $block->hasTypeTag(BlockTypeTags::MUD));
-	}
-
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
-		return $this->canBeSupportedBy($supportBlock);
+		return $supportBlock->getTypeId() !== BlockTypeIds::FARMLAND && //bedrock-specific thing (bug?)
+			($supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD));
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

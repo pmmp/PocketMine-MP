@@ -32,22 +32,8 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 abstract class Spawnable extends Tile{
-	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null */
+	/** @phpstan-var CacheableNbt<CompoundTag>|null */
 	private ?CacheableNbt $spawnCompoundCache = null;
-
-	/**
-	 * @deprecated
-	 */
-	public function isDirty() : bool{
-		return $this->spawnCompoundCache === null;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function setDirty(bool $dirty = true) : void{
-		$this->clearSpawnCompoundCache();
-	}
 
 	public function clearSpawnCompoundCache() : void{
 		$this->spawnCompoundCache = null;
@@ -73,7 +59,7 @@ abstract class Spawnable extends Tile{
 	 * Returns encoded NBT (varint, little-endian) used to spawn this tile to clients. Uses cache where possible,
 	 * populates cache if it is null.
 	 *
-	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 * @phpstan-return CacheableNbt<CompoundTag>
 	 */
 	final public function getSerializedSpawnCompound() : CacheableNbt{
 		if($this->spawnCompoundCache === null){

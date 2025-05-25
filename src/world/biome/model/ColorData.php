@@ -21,11 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\biome\model;
 
 /**
- * @deprecated
+ * Model for loading color data from JSON.
  */
-class WeightedPressurePlateLight extends WeightedPressurePlate{
+final class ColorData{
+	/** @required */
+	public int $r;
 
+	/** @required */
+	public int $g;
+
+	/** @required */
+	public int $b;
+
+	/** @required */
+	public int $a;
 }

@@ -23,32 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static NoteInstrument BANJO()
- * @method static NoteInstrument BASS_DRUM()
- * @method static NoteInstrument BELL()
- * @method static NoteInstrument BIT()
- * @method static NoteInstrument CHIME()
- * @method static NoteInstrument CLICKS_AND_STICKS()
- * @method static NoteInstrument COW_BELL()
- * @method static NoteInstrument DIDGERIDOO()
- * @method static NoteInstrument DOUBLE_BASS()
- * @method static NoteInstrument FLUTE()
- * @method static NoteInstrument GUITAR()
- * @method static NoteInstrument IRON_XYLOPHONE()
- * @method static NoteInstrument PIANO()
- * @method static NoteInstrument PLING()
- * @method static NoteInstrument SNARE()
- * @method static NoteInstrument XYLOPHONE()
- */
 enum NoteInstrument{
-	use LegacyEnumShimTrait;
-
 	case PIANO;
 	case BASS_DRUM;
 	case SNARE;

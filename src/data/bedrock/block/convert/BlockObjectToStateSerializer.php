@@ -166,8 +166,7 @@ use pocketmine\block\WallBanner;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
 use pocketmine\block\Water;
-use pocketmine\block\WeightedPressurePlateHeavy;
-use pocketmine\block\WeightedPressurePlateLight;
+use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\Wheat;
 use pocketmine\block\Wood;
 use pocketmine\block\WoodenButton;
@@ -223,6 +222,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		//TODO: singleton usage not ideal
 		//TODO: we may want to deduplicate cache entries to avoid wasting memory
 		return $this->cache[$stateId] ??= $this->serializeBlock(RuntimeBlockStateRegistry::getInstance()->fromStateId($stateId));
+	}
+
+	public function isRegistered(Block $block) : bool{
+		return isset($this->serializers[$block->getTypeId()]);
 	}
 
 	/**
@@ -1869,11 +1872,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::WEEPING_VINES)
 				->writeInt(StateNames::WEEPING_VINES_AGE, $block->getAge());
 		});
-		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), function(WeightedPressurePlateHeavy $block) : Writer{
+		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), function(WeightedPressurePlate $block) : Writer{
 			return Writer::create(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});
-		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), function(WeightedPressurePlateLight $block) : Writer{
+		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), function(WeightedPressurePlate $block) : Writer{
 			return Writer::create(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)
 				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
 		});

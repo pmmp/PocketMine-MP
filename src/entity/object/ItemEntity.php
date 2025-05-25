@@ -52,7 +52,7 @@ class ItemEntity extends Entity{
 	private const TAG_THROWER = "Thrower"; //TAG_String
 	public const TAG_ITEM = "Item"; //TAG_Compound
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
+	public function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
 	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes

@@ -36,7 +36,7 @@ use pocketmine\world\particle\ItemBreakParticle;
 use pocketmine\world\sound\IceBombHitSound;
 
 class IceBomb extends Throwable{
-	public static function getNetworkTypeId() : string{ return EntityIds::ICE_BOMB; }
+	public function getNetworkTypeId() : string{ return EntityIds::ICE_BOMB; }
 
 	public function getResultDamage() : int{
 		return -1;

@@ -48,13 +48,6 @@ use const PHP_EOL;
 use const STDIN;
 
 class SetupWizard{
-	/** @deprecated */
-	public const DEFAULT_NAME = Server::DEFAULT_SERVER_NAME;
-	/** @deprecated */
-	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
-	/** @deprecated */
-	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
-
 	private Language $lang;
 
 	public function __construct(

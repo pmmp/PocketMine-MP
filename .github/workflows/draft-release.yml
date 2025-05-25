@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Generate access token
         id: generate-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@v2
         with:
           app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
           private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
@@ -87,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.32.0
+        uses: shivammathur/setup-php@2.33.0
         with:
           php-version: ${{ env.PHP_VERSION }}
 

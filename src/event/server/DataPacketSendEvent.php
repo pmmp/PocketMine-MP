@@ -25,6 +25,7 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\utils\Utils;
@@ -32,7 +33,7 @@ use pocketmine\utils\Utils;
 /**
  * Called when packets are sent to network sessions.
  */
-class DataPacketSendEvent extends ServerEvent implements Cancellable{
+class DataPacketSendEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
 	/**
