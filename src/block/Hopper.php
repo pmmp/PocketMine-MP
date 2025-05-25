@@ -99,7 +99,7 @@ class Hopper extends Transparent implements HopperInteractable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return match ($facing) {
+		return match($facing){
 			Facing::UP => SupportType::FULL,
 			Facing::DOWN => $this->facing === Facing::DOWN ? SupportType::CENTER : SupportType::NONE,
 			default => SupportType::NONE

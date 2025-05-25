@@ -39,18 +39,18 @@ class HopperActionEvent extends BlockEvent implements Cancellable{
 	public const ACTION_PULL = 1;
 
 	/**
-	 * @param Block $targetBlock if the action is push, this is the target block. If the action is pull, this is the source block.
+	 * @param Block $actionBlock if the action is push, this is the target block. If the action is pull, this is the source block.
 	 */
 	public function __construct(
 		Block $block,
-		private Block $targetBlock,
+		private Block $actionBlock,
 		private int $action,
 	){
 		parent::__construct($block);
 	}
 
-	public function getTargetBlock() : Block{
-		return $this->targetBlock;
+	public function getActionBlock() : Block{
+		return $this->actionBlock;
 	}
 
 	public function getAction() : int{

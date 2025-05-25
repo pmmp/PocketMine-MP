@@ -94,5 +94,4 @@ class Chest extends Transparent implements HopperInteractable{
 	public function getFuelTime() : int{
 		return 300;
 	}
-
 }
