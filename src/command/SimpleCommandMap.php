@@ -76,6 +76,7 @@ use function array_shift;
 use function array_values;
 use function count;
 use function implode;
+use function preg_split;
 use function str_contains;
 use function strcasecmp;
 use function strtolower;
