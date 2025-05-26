@@ -215,7 +215,7 @@ class SimpleCommandMap implements CommandMap{
 				$timings->startTiming();
 
 				try{
-					$target->execute($sender, $sentCommandLabel, array_slice($parts, 1));
+					$target->executeRaw($sender, $sentCommandLabel, $parts[1] ?? "");
 				}catch(InvalidCommandSyntaxException $e){
 					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 				}finally{
