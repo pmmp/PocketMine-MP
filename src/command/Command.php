@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
+use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
@@ -78,6 +79,13 @@ abstract class Command{
 		$this->setDescription($description);
 		$this->usageMessage = $usageMessage ?? ("/" . $name);
 		$this->setAliases($aliases);
+	}
+
+	public function executeRaw(CommandSender $sender, string $commandLabel, string $argLine) : void{
+		$args = CommandStringHelper::parseQuoteAware($argLine);
+		if($this->testPermission($sender)){
+			$this->execute($sender, $commandLabel, $args);
+		}
 	}
 
 	/**
