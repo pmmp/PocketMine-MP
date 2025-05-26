@@ -82,8 +82,8 @@ abstract class Command{
 	}
 
 	public function executeRaw(CommandSender $sender, string $commandLabel, string $argLine) : void{
-		$args = CommandStringHelper::parseQuoteAware($argLine);
 		if($this->testPermission($sender)){
+			$args = CommandStringHelper::parseQuoteAware($argLine);
 			$this->execute($sender, $commandLabel, $args);
 		}
 	}
