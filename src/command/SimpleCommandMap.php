@@ -208,24 +208,22 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
-		$sentCommandLabel = "";
-		if(($parts = preg_split('/\s+/u', $commandLine, 2)) !== false){
-			$sentCommandLabel = $parts[0];
-			if(($target = $this->getCommand($sentCommandLabel)) !== null){
-				$timings = Timings::getCommandDispatchTimings($target->getLabel());
-				$timings->startTiming();
+		$parts = explode(" ", $commandLine);
+		$sentCommandLabel = $parts[0];
+		if(($target = $this->getCommand($sentCommandLabel)) !== null){
+			$timings = Timings::getCommandDispatchTimings($target->getLabel());
+			$timings->startTiming();
 
-				try{
-					if($target->testPermission($sender)){
-						$target->executeRaw($sender, $sentCommandLabel, $parts[1] ?? "");
-					}
-				}catch(InvalidCommandSyntaxException $e){
-					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
-				}finally{
-					$timings->stopTiming();
+			try{
+				if($target->testPermission($sender)){
+					$target->executeRaw($sender, $sentCommandLabel, trim($parts[1] ?? ""));
 				}
-				return true;
+			}catch(InvalidCommandSyntaxException $e){
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+			}finally{
+				$timings->stopTiming();
 			}
+			return true;
 		}
 
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel, "/help")->prefix(TextFormat::RED));
