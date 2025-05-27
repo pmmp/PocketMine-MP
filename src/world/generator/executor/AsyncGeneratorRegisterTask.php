@@ -21,19 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
 
-class GeneratorUnregisterTask extends AsyncTask{
-	public int $worldId;
+class AsyncGeneratorRegisterTask extends AsyncTask{
 
-	public function __construct(World $world){
-		$this->worldId = $world->getId();
-	}
+	public function __construct(
+		private readonly GeneratorExecutorSetupParameters $setupParameters,
+		private readonly int $contextId
+	){}
 
 	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->worldId);
+		$setupParameters = $this->setupParameters;
+		$generator = $setupParameters->createGenerator();
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $setupParameters->worldMinY, $setupParameters->worldMaxY), $this->contextId);
 	}
 }
