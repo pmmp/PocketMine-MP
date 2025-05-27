@@ -60,7 +60,10 @@ class Explosion{
 
 	private SubChunkExplorer $subChunkExplorer;
 
-	/** @var bool[] */
+	/**
+	 * @var true[] excludedBlockTypeIds => dummy
+	 * @phpstan-var array<int, true>
+	 */
 	private array $excludedBlockTypeIds = [];
 
 	/**
