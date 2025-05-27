@@ -75,8 +75,8 @@ use pocketmine\utils\Utils;
 use function array_shift;
 use function array_values;
 use function count;
+use function explode;
 use function implode;
-use function preg_split;
 use function str_contains;
 use function strcasecmp;
 use function strtolower;
@@ -208,7 +208,7 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
-		$parts = explode(" ", $commandLine);
+		$parts = explode(" ", $commandLine, 2);
 		$sentCommandLabel = $parts[0];
 		if(($target = $this->getCommand($sentCommandLabel)) !== null){
 			$timings = Timings::getCommandDispatchTimings($target->getLabel());
