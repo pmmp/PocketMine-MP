@@ -81,8 +81,8 @@ abstract class Command{
 		$this->setAliases($aliases);
 	}
 
-	public function executeRaw(CommandSender $sender, string $commandLabel, string $argLine) : void{
-		$args = CommandStringHelper::parseQuoteAware($argLine);
+	public function executeRaw(CommandSender $sender, string $commandLabel, string $rawArgs) : void{
+		$args = CommandStringHelper::parseQuoteAware($rawArgs);
 		$this->execute($sender, $commandLabel, $args);
 	}
 
