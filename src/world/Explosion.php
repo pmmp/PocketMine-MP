@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
@@ -99,7 +98,6 @@ class Explosion{
 		}
 
 		$blockFactory = RuntimeBlockStateRegistry::getInstance();
-		$waterTypeIds = BlockTypeIds::WATER;
 
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
@@ -136,13 +134,14 @@ class Explosion{
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if(count($this->excludedBlockTypeIds) > 0){
 								$typeId = $blockFactory->fromStateId($state)->getTypeId();
-								if(isset($this->excludedBlockTypeIds[$typeId]) && $typeId === $waterTypeIds){
-									$blastResistance = 0.0;
+								if(isset($this->excludedBlockTypeIds[$typeId])){
+									continue;
 								}
 							}
+
+							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
@@ -150,11 +149,6 @@ class Explosion{
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
-											$typeId = $_affectedBlock->getTypeId();
-											if(isset($this->excludedBlockTypeIds[$typeId])){
-												continue;
-											}
-
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
