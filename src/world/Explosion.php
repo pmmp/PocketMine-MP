@@ -85,7 +85,7 @@ class Explosion{
 		public float $radius,
 		private Entity|Block|null $what = null,
 		private float $fireChance = 0,
-    array $excludedBlockTypeIds = []
+        array $excludedBlockTypeIds = []
 	){
 		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
