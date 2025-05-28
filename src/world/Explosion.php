@@ -26,16 +26,20 @@ namespace pocketmine\world;
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
+use pocketmine\event\block\BlockExplodeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
@@ -50,12 +54,19 @@ use function mt_rand;
 use function sqrt;
 
 class Explosion{
+	public const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
+
 	private int $rays = 16;
 	public World $world;
 
-	/** @var Block[] */
+	/**
+	 * @var Block[]
+	 * @phpstan-var array<int, Block>
+	 */
 	public array $affectedBlocks = [];
 	public float $stepLen = 0.3;
+	/** @var Block[] */
+	private array $fireIgnitions = [];
 
 	private SubChunkExplorer $subChunkExplorer;
 
@@ -73,13 +84,17 @@ class Explosion{
 		public Position $source,
 		public float $radius,
 		private Entity|Block|null $what = null,
-		array $excludedBlockTypeIds = []
+		private float $fireChance = 0,
+    array $excludedBlockTypeIds = []
 	){
 		if(!$this->source->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}
 		$this->world = $this->source->getWorld();
-
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
+		}
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be greater than 0, got $radius");
 		}
@@ -100,6 +115,7 @@ class Explosion{
 		$blockFactory = RuntimeBlockStateRegistry::getInstance();
 
 		$mRays = $this->rays - 1;
+		$incendiary = $this->fireChance > 0;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
@@ -150,7 +166,12 @@ class Explosion{
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
-											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
+											$posHash = World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z);
+											$this->affectedBlocks[$posHash] = $_affectedBlock;
+
+											if($incendiary && Utils::getRandomFloat() <= $this->fireChance){
+												$this->fireIgnitions[$posHash] = $_affectedBlock;
+											}
 										}
 									}
 								}
@@ -173,13 +194,32 @@ class Explosion{
 		$yield = min(100, (1 / $this->radius) * 100);
 
 		if($this->what instanceof Entity){
-			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
+			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield, $this->fireIgnitions);
+
+			$ev->call();
+			if($ev->isCancelled()){
+				return false;
+			}
+
+			$yield = $ev->getYield();
+			$this->affectedBlocks = $ev->getBlockList();
+			$this->fireIgnitions = $ev->getIgnitions();
+		}elseif($this->what instanceof Block){
+			$ev = new BlockExplodeEvent(
+				$this->what,
+				$this->source,
+				$this->affectedBlocks,
+				$yield,
+				$this->fireIgnitions,
+			);
+
 			$ev->call();
 			if($ev->isCancelled()){
 				return false;
 			}else{
 				$yield = $ev->getYield();
-				$this->affectedBlocks = $ev->getBlockList();
+				$this->affectedBlocks = $ev->getAffectedBlocks();
+				$this->fireIgnitions = $ev->getIgnitions();
 			}
 		}
 
@@ -221,8 +261,9 @@ class Explosion{
 
 		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
+		$fireBlock = VanillaBlocks::FIRE();
 
-		foreach($this->affectedBlocks as $block){
+		foreach($this->affectedBlocks as $hash => $block){
 			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
@@ -235,7 +276,13 @@ class Explosion{
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
+				$targetBlock =
+					isset($this->fireIgnitions[$hash]) &&
+					$block->getSide(Facing::DOWN)->getSupportType(Facing::UP) === SupportType::FULL ?
+						$fireBlock :
+						$airBlock;
+
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $targetBlock);
 			}
 		}
 
@@ -243,5 +290,19 @@ class Explosion{
 		$this->world->addSound($source, new ExplodeSound());
 
 		return true;
+	}
+
+	/**
+	 * Sets a chance between 0 and 1 of creating a fire.
+	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
+	 *
+	 * @param float $fireChance 0 ... 1
+	 */
+	public function setFireChance(float $fireChance) : void{
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
+		}
+		$this->fireChance = $fireChance;
 	}
 }

@@ -21,19 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\sound;
 
-use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class GeneratorUnregisterTask extends AsyncTask{
-	public int $worldId;
+class RespawnAnchorChargeSound implements Sound{
 
-	public function __construct(World $world){
-		$this->worldId = $world->getId();
-	}
-
-	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->worldId);
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::RESPAWN_ANCHOR_CHARGE, $pos, false)];
 	}
 }

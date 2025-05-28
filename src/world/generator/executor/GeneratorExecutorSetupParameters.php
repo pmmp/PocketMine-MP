@@ -21,31 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
-final class GeneratorManagerEntry{
+use pmmp\thread\ThreadSafe;
+use pocketmine\world\generator\Generator;
+
+final class GeneratorExecutorSetupParameters extends ThreadSafe{
 
 	/**
-	 * @phpstan-param class-string<Generator> $generatorClass
-	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
+	 * @phpstan-param class-string<covariant \pocketmine\world\generator\Generator> $generatorClass
 	 */
 	public function __construct(
-		private string $generatorClass,
-		private \Closure $presetValidator,
-		private readonly bool $fast
+		public readonly int $worldMinY,
+		public readonly int $worldMaxY,
+		public readonly int $generatorSeed,
+		public readonly string $generatorClass,
+		public readonly string $generatorSettings,
 	){}
 
-	/** @phpstan-return class-string<Generator> */
-	public function getGeneratorClass() : string{ return $this->generatorClass; }
-
-	public function isFast() : bool{ return $this->fast; }
-
-	/**
-	 * @throws InvalidGeneratorOptionsException
-	 */
-	public function validateGeneratorOptions(string $generatorOptions) : void{
-		if(($exception = ($this->presetValidator)($generatorOptions)) !== null){
-			throw $exception;
-		}
+	public function createGenerator() : Generator{
+		/**
+		 * @var Generator $generator
+		 * @see Generator::__construct()
+		 */
+		$generator = new $this->generatorClass($this->generatorSeed, $this->generatorSettings);
+		return $generator;
 	}
 }
