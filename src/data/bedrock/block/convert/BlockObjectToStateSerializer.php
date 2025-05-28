@@ -122,6 +122,7 @@ use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\ResinClump;
+use pocketmine\block\RespawnAnchor;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Sapling;
 use pocketmine\block\SeaPickle;
@@ -1753,6 +1754,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::RESIN_CLUMP(), function(ResinClump $block) : Writer{
 			return Writer::create(Ids::RESIN_CLUMP)
 				->writeFacingFlags($block->getFaces());
+		});
+		$this->map(Blocks::RESPAWN_ANCHOR(), function(RespawnAnchor $block) : Writer{
+			return Writer::create(Ids::RESPAWN_ANCHOR)
+				->writeInt(StateNames::RESPAWN_ANCHOR_CHARGE, $block->getCharges());
 		});
 		$this->map(Blocks::ROSE_BUSH(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::ROSE_BUSH)));
 		$this->mapSlab(Blocks::SANDSTONE_SLAB(), Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB);

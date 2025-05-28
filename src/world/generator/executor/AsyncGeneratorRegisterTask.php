@@ -21,37 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
 
-class GeneratorRegisterTask extends AsyncTask{
-	public int $seed;
-	public int $worldId;
-	public int $worldMinY;
-	public int $worldMaxY;
+class AsyncGeneratorRegisterTask extends AsyncTask{
 
-	/**
-	 * @phpstan-param class-string<Generator> $generatorClass
-	 */
 	public function __construct(
-		World $world,
-		public string $generatorClass,
-		public string $generatorSettings
-	){
-		$this->seed = $world->getSeed();
-		$this->worldId = $world->getId();
-		$this->worldMinY = $world->getMinY();
-		$this->worldMaxY = $world->getMaxY();
-	}
+		private readonly GeneratorExecutorSetupParameters $setupParameters,
+		private readonly int $contextId
+	){}
 
 	public function onRun() : void{
-		/**
-		 * @var Generator $generator
-		 * @see Generator::__construct()
-		 */
-		$generator = new $this->generatorClass($this->seed, $this->generatorSettings);
-		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldMinY, $this->worldMaxY), $this->worldId);
+		$setupParameters = $this->setupParameters;
+		$generator = $setupParameters->createGenerator();
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $setupParameters->worldMinY, $setupParameters->worldMaxY), $this->contextId);
 	}
 }

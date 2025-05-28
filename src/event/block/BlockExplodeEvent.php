@@ -21,39 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\entity;
+namespace pocketmine\event\block;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
- * Called when an entity explodes, after the explosion's impact has been calculated.
- * No changes have been made to the world at this stage.
+ * Called when a block explodes, after explosion impact has been calculated.
  *
- * @see EntityPreExplodeEvent
- *
- * @phpstan-extends EntityEvent<Entity>
+ * @see BlockPreExplodeEvent
  */
-class EntityExplodeEvent extends EntityEvent implements Cancellable{
+class BlockExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	/**
 	 * @param Block[] $blocks
-	 * @param float   $yield     0-100
 	 * @param Block[] $ignitions
 	 */
 	public function __construct(
-		Entity $entity,
-		protected Position $position,
-		protected array $blocks,
-		protected float $yield,
+		Block $block,
+		private Position $position,
+		private array $blocks,
+		private float $yield,
 		private array $ignitions
 	){
-		$this->entity = $entity;
+		parent::__construct($block);
+
+		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
@@ -64,26 +61,8 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns a list of blocks destroyed by the explosion.
-	 *
-	 * @return Block[]
-	 */
-	public function getBlockList() : array{
-		return $this->blocks;
-	}
-
-	/**
-	 * Sets the blocks destroyed by the explosion.
-	 *
-	 * @param Block[] $blocks
-	 */
-	public function setBlockList(array $blocks) : void{
-		Utils::validateArrayValueType($blocks, function(Block $_) : void{});
-		$this->blocks = $blocks;
-	}
-
-	/**
 	 * Returns the percentage chance of drops from each block destroyed by the explosion.
+	 *
 	 * @return float 0-100
 	 */
 	public function getYield() : float{
@@ -92,13 +71,43 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 
 	/**
 	 * Sets the percentage chance of drops from each block destroyed by the explosion.
+	 *
 	 * @param float $yield 0-100
 	 */
 	public function setYield(float $yield) : void{
+		Utils::checkFloatNotInfOrNaN("yield", $yield);
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
 		$this->yield = $yield;
+	}
+
+	/**
+	 * Returns a list of blocks destroyed by the explosion.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return $this->blocks;
+	}
+
+	/**
+	 * Sets the blocks destroyed by the explosion.
+	 *
+	 * @param Block[] $blocks
+	 */
+	public function setAffectedBlocks(array $blocks) : void{
+		Utils::validateArrayValueType($blocks, fn(Block $block) => null);
+		$this->blocks = $blocks;
+	}
+
+	/**
+	 * Returns a list of affected blocks that will be replaced by fire.
+	 *
+	 * @return Block[]
+	 */
+	public function getIgnitions() : array{
+		return $this->ignitions;
 	}
 
 	/**
@@ -109,14 +118,5 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	public function setIgnitions(array $ignitions) : void{
 		Utils::validateArrayValueType($ignitions, fn(Block $block) => null);
 		$this->ignitions = $ignitions;
-	}
-
-	/**
-	 * Returns a list of affected blocks that will be replaced by fire.
-	 *
-	 * @return Block[]
-	 */
-	public function getIgnitions() : array{
-		return $this->ignitions;
 	}
 }
