@@ -2982,6 +2982,8 @@ class World implements ChunkManager{
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
+
+			$deletedEntities = [];
 			foreach($chunkData->getEntityNBT() as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
@@ -2998,18 +3000,23 @@ class World implements ChunkManager{
 					}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
 						$saveId = "legacy(" . $saveIdTag->getValue() . ")";
 					}
-					$logger->warning("Deleted unknown entity type $saveId");
+					$deletedEntities[$saveId] = ($deletedEntities[$saveId] ?? 0) + 1;
 				}
 				//TODO: we can't prevent entities getting added to unloaded chunks if they were saved in the wrong place
 				//here, because entities currently add themselves to the world
 			}
 
+			foreach(Utils::promoteKeys($deletedEntities) as $saveId => $count){
+				$logger->warning("Deleted unknown entity type $saveId x$count");
+			}
 			$this->timings->syncChunkLoadEntities->stopTiming();
 		}
 
 		if(count($chunkData->getTileNBT()) !== 0){
 			$this->timings->syncChunkLoadTileEntities->startTiming();
 			$tileFactory = TileFactory::getInstance();
+
+			$deletedTiles = [];
 			foreach($chunkData->getTileNBT() as $k => $nbt){
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
@@ -3019,7 +3026,8 @@ class World implements ChunkManager{
 					continue;
 				}
 				if($tile === null){
-					$logger->warning("Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+					$saveId = $nbt->getString("id", "<unknown>");
+					$deletedTiles[$saveId] = ($deletedTiles[$saveId] ?? 0) + 1;
 					continue;
 				}
 
@@ -3033,6 +3041,10 @@ class World implements ChunkManager{
 				}else{
 					$this->addTile($tile);
 				}
+			}
+
+			foreach(Utils::promoteKeys($deletedTiles) as $saveId => $count){
+				$logger->warning("Deleted unknown tile entity type $saveId x$count");
 			}
 
 			$this->timings->syncChunkLoadTileEntities->stopTiming();
