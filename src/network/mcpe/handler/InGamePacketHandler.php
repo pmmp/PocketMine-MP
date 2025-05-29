@@ -266,10 +266,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$itemStackRequest = $packet->getItemStackRequest();
-		if($itemStackRequest !== null){
-			$result = $this->handleSingleItemStackRequest($itemStackRequest);
-			$this->session->sendDataPacket(ItemStackResponsePacket::create([$result]));
-		}
+		$itemStackResponseBuilder = $itemStackRequest !== null ? $this->handleSingleItemStackRequest($itemStackRequest) : null;
 
 		//itemstack request or transaction may set predictions for the outcome of these actions, so these need to be
 		//processed last
@@ -292,6 +289,11 @@ class InGamePacketHandler extends PacketHandler{
 					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
 				}
 			}
+		}
+
+		if($itemStackRequest !== null){
+			$itemStackResponse = $itemStackResponseBuilder?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $itemStackRequest->getRequestId());
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
 		}
 
 		return $packetHandled;
@@ -583,7 +585,7 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
+	private function handleSingleItemStackRequest(ItemStackRequest $request) : ?ItemStackResponseBuilder{
 		if(count($request->getActions()) > 60){
 			//recipe book auto crafting can affect all slots of the inventory when consuming inputs or producing outputs
 			//this means there could be as many as 50 CraftingConsumeInput actions or Place (taking the result) actions
@@ -612,10 +614,7 @@ class InGamePacketHandler extends PacketHandler{
 			$this->inventoryManager->requestSyncAll();
 		}
 
-		if(!$result){
-			return new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
-		}
-		return $executor->buildItemStackResponse();
+		return $result ? $executor->getItemStackResponseBuilder() : null;
 	}
 
 	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
@@ -625,7 +624,7 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
 		}
 		foreach($packet->getRequests() as $request){
-			$responses[] = $this->handleSingleItemStackRequest($request);
+			$responses[] = $this->handleSingleItemStackRequest($request)?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
 		}
 
 		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));

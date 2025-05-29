@@ -405,12 +405,16 @@ class ItemStackRequestExecutor{
 		return $transaction;
 	}
 
-	public function buildItemStackResponse() : ItemStackResponse{
+	public function getItemStackResponseBuilder() : ItemStackResponseBuilder{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
 			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
-		return $builder->build();
+		return $builder;
+	}
+
+	public function buildItemStackResponse() : ItemStackResponse{
+		return $this->getItemStackResponseBuilder()->build();
 	}
 }
