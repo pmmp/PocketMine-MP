@@ -248,26 +248,6 @@ class InGamePacketHandler extends PacketHandler{
 
 		$packetHandled = true;
 
-		$blockActions = $packet->getBlockActions();
-		if($blockActions !== null){
-			if(count($blockActions) > 100){
-				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
-			}
-			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
-				$actionHandled = false;
-				if($blockAction instanceof PlayerBlockActionStopBreak){
-					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
-				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
-					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
-				}
-
-				if(!$actionHandled){
-					$packetHandled = false;
-					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
-				}
-			}
-		}
-
 		$useItemTransaction = $packet->getItemInteractionData();
 		if($useItemTransaction !== null){
 			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
@@ -289,6 +269,29 @@ class InGamePacketHandler extends PacketHandler{
 		if($itemStackRequest !== null){
 			$result = $this->handleSingleItemStackRequest($itemStackRequest);
 			$this->session->sendDataPacket(ItemStackResponsePacket::create([$result]));
+		}
+
+		//itemstack request or transaction may set predictions for the outcome of these actions, so these need to be
+		//processed last
+		$blockActions = $packet->getBlockActions();
+		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
+			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
+				$actionHandled = false;
+				var_dump("player auth input action " . $blockAction->getActionType() . " at offset $k in PlayerAuthInputPacket");
+				if($blockAction instanceof PlayerBlockActionStopBreak){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
+				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
+				}
+
+				if(!$actionHandled){
+					$packetHandled = false;
+					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+				}
+			}
 		}
 
 		return $packetHandled;
@@ -597,7 +600,11 @@ class InGamePacketHandler extends PacketHandler{
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
 		try{
 			$transaction = $executor->generateInventoryTransaction();
-			$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+			if($transaction !== null){
+				$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+			}else{
+				$result = true; //predictions only, just send responses
+			}
 		}catch(ItemStackRequestProcessException $e){
 			$result = false;
 			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
