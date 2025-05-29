@@ -277,7 +277,6 @@ class InGamePacketHandler extends PacketHandler{
 			}
 			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
 				$actionHandled = false;
-				var_dump("player auth input action " . $blockAction->getActionType() . " at offset $k in PlayerAuthInputPacket");
 				if($blockAction instanceof PlayerBlockActionStopBreak){
 					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
 				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
