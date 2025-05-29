@@ -681,6 +681,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($action){
 			case PlayerAction::START_BREAK:
+			case PlayerAction::CONTINUE_DESTROY_BLOCK: //destroy the next block while holding down left click
 				self::validateFacing($face);
 				if(!$this->player->attackBlock($pos, $face)){
 					$this->syncBlocksNearby($pos, $face);
@@ -706,6 +707,8 @@ class InGamePacketHandler extends PacketHandler{
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
+			case PlayerAction::PREDICT_DESTROY_BLOCK:
+				$this->player->breakBlock($pos);
 				break;
 			case PlayerAction::START_ITEM_USE_ON:
 			case PlayerAction::STOP_ITEM_USE_ON:
