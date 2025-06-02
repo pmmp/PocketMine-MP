@@ -105,40 +105,37 @@ abstract class Timezone{
 	public static function detectSystemTimezone() : string|false{
 		switch(Utils::getOS()){
 			case Utils::OS_WINDOWS:
-				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
+				$keyPath = 'HKLM\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation';
 
 				/*
-				 * wmic timezone get Caption
-				 * Get the timezone offset
-				 *
-				 * Sample Output var_dump
-				 * array(3) {
-				 *	  [0] =>
-				 *	  string(7) "Caption"
-				 *	  [1] =>
-				 *	  string(20) "(UTC+09:30) Adelaide"
-				 *	  [2] =>
-				 *	  string(0) ""
-				 *	}
+				 * Get the timezone offset through the registry
 				 */
-				exec("wmic timezone get Caption", $output);
+				exec("reg query " . escapeshellarg($keyPath), $output);
 
-				$string = trim(implode("\n", $output));
+				foreach($output as $line){
+					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches)){
+						$offsetMinutes = -Binary::readInt(hex2bin(trim($matches[1])));
 
-				//Detect the Time Zone string
-				preg_match($regex, $string, $matches);
+						if($offsetMinutes == 0){
+							return "UTC";
+						}
 
-				if(!isset($matches[2])){
-					return false;
+						$sign = $offsetMinutes >= 0 ? '+' : '-';
+						$absMinutes = abs($offsetMinutes);
+						$hours = floor($absMinutes / 60);
+						$minutes = $absMinutes % 60;
+
+						$offset = sprintf(
+							"%s%02d:%02d",
+							$sign,
+							$hours,
+							$minutes
+						);
+
+						return self::parseOffset($offset);
+					}
 				}
-
-				$offset = $matches[2];
-
-				if($offset === ""){
-					return "UTC";
-				}
-
-				return self::parseOffset($offset);
+				return false;
 			case Utils::OS_LINUX:
 				// Ubuntu / Debian.
 				$data = @file_get_contents('/etc/timezone');
