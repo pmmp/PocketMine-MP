@@ -30,7 +30,7 @@ use function escapeshellarg;
 use function exec;
 use function file_get_contents;
 use function floor;
-use function hex2bin;
+use function hexdec;
 use function ini_get;
 use function ini_set;
 use function is_array;
@@ -116,14 +116,17 @@ abstract class Timezone{
 				exec("reg query " . escapeshellarg($keyPath), $output);
 
 				foreach($output as $line){
-					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches) !== false){
-						$offsetMinutes = Binary::readInt(hex2bin(trim($matches[1])));
+					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches) > 0){
+						$offsetMinutes = hexdec(trim($matches[1]));
+						if ($offsetMinutes > 2147483647) {
+							$offsetMinutes -= 4294967296; //signed int
+						}
 
-						if($offsetMinutes === 0 || $offsetMinutes === false){
+						if($offsetMinutes === 0){
 							return "UTC";
 						}
 
-						$sign = $offsetMinutes <= 0 ? '+' : '-';
+						$sign = $offsetMinutes <= 0 ? '+' : '-'; //windows timezone + and - are opposite
 						$absMinutes = abs($offsetMinutes);
 						$hours = floor($absMinutes / 60);
 						$minutes = $absMinutes % 60;
