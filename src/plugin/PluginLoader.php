@@ -35,8 +35,9 @@ interface PluginLoader{
 
 	/**
 	 * Loads the plugin contained in $file
+	 * @param PluginDescription|null $description Optionally provide a preloaded PluginDescription to avoid reloading
 	 */
-	public function loadPlugin(string $file) : void;
+	public function loadPlugin(string $file, ?PluginDescription $description = null) : void;
 
 	/**
 	 * Gets the PluginDescription from the file

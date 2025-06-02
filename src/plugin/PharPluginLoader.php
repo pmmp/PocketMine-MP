@@ -24,8 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\thread\ThreadSafeClassLoader;
+use function date;
+use function file_put_contents;
+use function getcwd;
 use function is_file;
 use function str_ends_with;
+use const FILE_APPEND;
 
 /**
  * Handles different types of plugins
@@ -42,8 +46,10 @@ class PharPluginLoader implements PluginLoader{
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void{
-		$description = $this->getPluginDescription($file);
+	public function loadPlugin(string $file, ?PluginDescription $description = null) : void{
+		if($description === null){
+			$description = $this->getPluginDescription($file);
+		}
 		if($description !== null){
 			$this->loader->addPath($description->getSrcNamespacePrefix(), "$file/src");
 		}
@@ -53,6 +59,8 @@ class PharPluginLoader implements PluginLoader{
 	 * Gets the PluginDescription from the file
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription{
+		// TEMPORARY LOG TO TRACK HOW MANY TIMES getPluginDescription IS CALLED
+		file_put_contents(getcwd() . '/plugin_description_log.txt', date('c') . " : getPluginDescription called for $file\n", FILE_APPEND);
 		$phar = new \Phar($file);
 		if(isset($phar["plugin.yml"])){
 			return new PluginDescription($phar["plugin.yml"]->getContent());

@@ -46,7 +46,7 @@ class ScriptPluginLoader implements PluginLoader{
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void{
+	public function loadPlugin(string $file, ?PluginDescription $description = null) : void{
 		include_once $file;
 	}
 
