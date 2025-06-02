@@ -26,9 +26,11 @@ namespace pocketmine\utils;
 use function abs;
 use function date_default_timezone_set;
 use function date_parse;
+use function escapeshellarg;
 use function exec;
 use function file_get_contents;
-use function implode;
+use function floor;
+use function hex2bin;
 use function ini_get;
 use function ini_set;
 use function is_array;
@@ -37,6 +39,7 @@ use function json_decode;
 use function parse_ini_file;
 use function preg_match;
 use function readlink;
+use function sprintf;
 use function str_contains;
 use function str_replace;
 use function str_starts_with;
@@ -113,14 +116,14 @@ abstract class Timezone{
 				exec("reg query " . escapeshellarg($keyPath), $output);
 
 				foreach($output as $line){
-					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches)){
-						$offsetMinutes = -Binary::readInt(hex2bin(trim($matches[1])));
+					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches) !== false){
+						$offsetMinutes = Binary::readInt(hex2bin(trim($matches[1])));
 
-						if($offsetMinutes == 0){
+						if($offsetMinutes === 0 || $offsetMinutes === false){
 							return "UTC";
 						}
 
-						$sign = $offsetMinutes >= 0 ? '+' : '-';
+						$sign = $offsetMinutes <= 0 ? '+' : '-';
 						$absMinutes = abs($offsetMinutes);
 						$hours = floor($absMinutes / 60);
 						$minutes = $absMinutes % 60;
