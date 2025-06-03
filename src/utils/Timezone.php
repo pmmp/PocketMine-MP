@@ -112,15 +112,42 @@ abstract class Timezone{
 
 				/*
 				 * Get the timezone offset through the registry
+				 *
+				 * Sample Output var_dump
+				 * array(13) {
+				 *   [0]=>
+				 *   string(0) ""
+				 *   [1]=>
+				 *   string(71) "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation"
+				 *   [2]=>
+				 *   string(35) "    Bias    REG_DWORD    0xfffffe20"
+				 *   [3]=>
+				 *   string(43) "    DaylightBias    REG_DWORD    0xffffffc4"
+				 *   [4]=>
+				 *   string(45) "    DaylightName    REG_SZ    @tzres.dll,-571"
+				 *   [5]=>
+				 *   string(67) "    DaylightStart    REG_BINARY    00000000000000000000000000000000"
+				 *   [6]=>
+				 *   string(36) "    StandardBias    REG_DWORD    0x0"
+				 *   [7]=>
+				 *   string(45) "    StandardName    REG_SZ    @tzres.dll,-572"
+				 *   [8]=>
+				 *   string(67) "    StandardStart    REG_BINARY    00000000000000000000000000000000"
+				 *   [9]=>
+				 *   string(52) "    TimeZoneKeyName    REG_SZ    China Standard Time"
+				 *   [10]=>
+				 *   string(51) "    DynamicDaylightTimeDisabled    REG_DWORD    0x0"
+				 *   [11]=>
+				 *   string(45) "    ActiveTimeBias    REG_DWORD    0xfffffe20"
+				 *   [12]=>
+				 *   string(0) ""
+				 * }
 				 */
 				exec("reg query " . escapeshellarg($keyPath), $output);
 
 				foreach($output as $line){
-					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x+([0-9a-fA-F]+)/', $line, $matches) > 0){
-						$offsetMinutes = hexdec(trim($matches[1]));
-						if ($offsetMinutes > 2147483647) {
-							$offsetMinutes -= 4294967296; //signed int
-						}
+					if(preg_match('/ActiveTimeBias\s+REG_DWORD\s+0x([0-9a-fA-F]+)/', $line, $matches) > 0){
+						$offsetMinutes = Binary::signInt((int) hexdec(trim($matches[1])));
 
 						if($offsetMinutes === 0){
 							return "UTC";
