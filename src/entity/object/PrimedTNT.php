@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
-use pocketmine\block\VanillaBlocks;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
