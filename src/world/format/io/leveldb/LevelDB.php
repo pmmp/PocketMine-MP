@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
@@ -35,6 +36,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
@@ -78,8 +80,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_21_40;
-	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = WorldDataVersions::CHUNK;
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = WorldDataVersions::SUBCHUNK;
 
 	private const CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET = 4;
 
@@ -203,23 +205,29 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
 			}catch(BlockStateDeserializeException $e){
 				//while not ideal, this is not a fatal error
-				$blockDecodeErrors[] = "Palette offset $i / Upgrade error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$errorMessage = "Upgrade error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$blockDecodeErrors[$errorMessage][] = $i;
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 				continue;
 			}
 			try{
 				$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
 			}catch(UnsupportedBlockStateException $e){
-				$blockDecodeErrors[] = "Palette offset $i / " . $e->getMessage();
+				$blockDecodeErrors[$e->getMessage()][] = $i;
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}catch(BlockStateDeserializeException $e){
-				$blockDecodeErrors[] = "Palette offset $i / Deserialize error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$errorMessage = "Deserialize error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$blockDecodeErrors[$errorMessage][] = $i;
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
 		}
 
 		if(count($blockDecodeErrors) > 0){
-			$logger->error("Errors decoding blocks:\n - " . implode("\n - ", $blockDecodeErrors));
+			$finalErrors = [];
+			foreach(Utils::promoteKeys($blockDecodeErrors) as $errorMessage => $paletteOffsets){
+				$finalErrors[] = "$errorMessage (palette offsets: " . implode(", ", $paletteOffsets) . ")";
+			}
+			$logger->error("Errors decoding blocks:\n - " . implode("\n - ", $finalErrors));
 		}
 
 		//TODO: exceptions
@@ -711,7 +719,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$nbt = new LittleEndianNbtSerializer();
 
-		/** @var CompoundTag[] $entities */
 		$entities = [];
 		if(($entityData = $this->db->get($index . ChunkDataKey::ENTITIES)) !== false && $entityData !== ""){
 			try{
@@ -721,7 +728,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		/** @var CompoundTag[] $tiles */
 		$tiles = [];
 		if(($tileData = $this->db->get($index . ChunkDataKey::BLOCK_ENTITIES)) !== false && $tileData !== ""){
 			try{

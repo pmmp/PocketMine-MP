@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
 use function is_array;
 use function is_int;
 use function is_string;
@@ -43,7 +44,7 @@ abstract class LegacyToStringIdMap{
 		if(!is_array($stringToLegacyId)){
 			throw new AssumptionFailedError("Invalid format of ID map");
 		}
-		foreach($stringToLegacyId as $stringId => $legacyId){
+		foreach(Utils::promoteKeys($stringToLegacyId) as $stringId => $legacyId){
 			if(!is_string($stringId) || !is_int($legacyId)){
 				throw new AssumptionFailedError("ID map should have string keys and int values");
 			}

@@ -43,7 +43,10 @@ trait CandleTrait{
 		return $this->lit ? 3 : 0;
 	}
 
-	/** @see Block::onInteract() */
+	/**
+	 * @param Item[] &$returnedItems
+	 * @see Block::onInteract()
+	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item->getTypeId() === ItemTypeIds::FIRE_CHARGE || $item->getTypeId() === ItemTypeIds::FLINT_AND_STEEL || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($this->lit){

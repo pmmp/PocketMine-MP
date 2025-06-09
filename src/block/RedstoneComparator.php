@@ -79,9 +79,6 @@ class RedstoneComparator extends Flowable{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
 	}

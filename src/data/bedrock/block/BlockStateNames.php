@@ -59,6 +59,7 @@ final class BlockStateNames{
 	public const COVERED_BIT = "covered_bit";
 	public const CRACKED_STATE = "cracked_state";
 	public const CRAFTING = "crafting";
+	public const CREAKING_HEART_STATE = "creaking_heart_state";
 	public const DEAD_BIT = "dead_bit";
 	public const DEPRECATED = "deprecated";
 	public const DIRECTION = "direction";
@@ -93,12 +94,17 @@ final class BlockStateNames{
 	public const MC_VERTICAL_HALF = "minecraft:vertical_half";
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
+	public const NATURAL = "natural";
 	public const OCCUPIED_BIT = "occupied_bit";
 	public const OMINOUS = "ominous";
 	public const OPEN_BIT = "open_bit";
 	public const ORIENTATION = "orientation";
 	public const OUTPUT_LIT_BIT = "output_lit_bit";
 	public const OUTPUT_SUBTRACT_BIT = "output_subtract_bit";
+	public const PALE_MOSS_CARPET_SIDE_EAST = "pale_moss_carpet_side_east";
+	public const PALE_MOSS_CARPET_SIDE_NORTH = "pale_moss_carpet_side_north";
+	public const PALE_MOSS_CARPET_SIDE_SOUTH = "pale_moss_carpet_side_south";
+	public const PALE_MOSS_CARPET_SIDE_WEST = "pale_moss_carpet_side_west";
 	public const PERSISTENT_BIT = "persistent_bit";
 	public const PILLAR_AXIS = "pillar_axis";
 	public const PORTAL_AXIS = "portal_axis";
@@ -107,6 +113,7 @@ final class BlockStateNames{
 	public const RAIL_DATA_BIT = "rail_data_bit";
 	public const RAIL_DIRECTION = "rail_direction";
 	public const REDSTONE_SIGNAL = "redstone_signal";
+	public const REHYDRATION_LEVEL = "rehydration_level";
 	public const REPEATER_DELAY = "repeater_delay";
 	public const RESPAWN_ANCHOR_CHARGE = "respawn_anchor_charge";
 	public const ROTATION = "rotation";
@@ -116,6 +123,7 @@ final class BlockStateNames{
 	public const STABILITY_CHECK = "stability_check";
 	public const STRUCTURE_BLOCK_TYPE = "structure_block_type";
 	public const SUSPENDED_BIT = "suspended_bit";
+	public const TIP = "tip";
 	public const TOGGLE_BIT = "toggle_bit";
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
 	public const TRIAL_SPAWNER_STATE = "trial_spawner_state";

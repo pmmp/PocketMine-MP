@@ -33,9 +33,11 @@ use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
+use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
@@ -47,6 +49,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestSlotInfo;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\MineBlockStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
@@ -54,6 +57,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResp
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;
 use function spl_object_id;
@@ -361,6 +365,16 @@ class ItemStackRequestExecutor{
 			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
 			//no obvious use
+		}elseif($action instanceof MineBlockStackRequestAction){
+			$slot = $action->getHotbarSlot();
+			$this->requestSlotInfos[] = new ItemStackRequestSlotInfo(new FullContainerName(ContainerUIIds::HOTBAR), $slot, $action->getStackId());
+			$inventory = $this->player->getInventory();
+			$usedItem = $inventory->slotExists($slot) ? $inventory->getItem($slot) : null;
+			$predictedDamage = $action->getPredictedDurability();
+			if($usedItem instanceof Durable && $predictedDamage >= 0 && $predictedDamage <= $usedItem->getMaxDurability()){
+				$usedItem->setDamage($predictedDamage);
+				$this->inventoryManager->addPredictedSlotChange($inventory, $slot, $usedItem);
+			}
 		}else{
 			throw new ItemStackRequestProcessException("Unhandled item stack request action");
 		}
@@ -369,8 +383,8 @@ class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	public function generateInventoryTransaction() : InventoryTransaction{
-		foreach($this->request->getActions() as $k => $action){
+	public function generateInventoryTransaction() : ?InventoryTransaction{
+		foreach(Utils::promoteKeys($this->request->getActions()) as $k => $action){
 			try{
 				$this->processItemStackRequestAction($action);
 			}catch(ItemStackRequestProcessException $e){
@@ -379,6 +393,9 @@ class ItemStackRequestExecutor{
 		}
 		$this->setNextCreatedItem(null);
 		$inventoryActions = $this->builder->generateActions();
+		if(count($inventoryActions) === 0){
+			return null;
+		}
 
 		$transaction = $this->specialTransaction ?? new InventoryTransaction($this->player);
 		foreach($inventoryActions as $action){
@@ -388,12 +405,16 @@ class ItemStackRequestExecutor{
 		return $transaction;
 	}
 
-	public function buildItemStackResponse() : ItemStackResponse{
+	public function getItemStackResponseBuilder() : ItemStackResponseBuilder{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
 			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
-		return $builder->build();
+		return $builder;
+	}
+
+	public function buildItemStackResponse() : ItemStackResponse{
+		return $this->getItemStackResponseBuilder()->build();
 	}
 }

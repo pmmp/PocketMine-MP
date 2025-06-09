@@ -65,6 +65,8 @@ abstract class BaseWorldProvider implements WorldProvider{
 	abstract protected function loadLevelData() : WorldData;
 
 	private function translatePalette(PalettedBlockArray $blockArray, \Logger $logger) : PalettedBlockArray{
+		//TODO: missing type info in stubs
+		/** @phpstan-var list<int> $palette */
 		$palette = $blockArray->getPalette();
 
 		$newPalette = [];
@@ -81,11 +83,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 			}
 
 			try{
-				$newPalette[$k] = $this->blockStateDeserializer->deserialize($newStateData);
+				$newPalette[] = $this->blockStateDeserializer->deserialize($newStateData);
 			}catch(BlockStateDeserializeException $e){
 				//this should never happen anyway - if the upgrader returned an invalid state, we have bigger problems
 				$blockDecodeErrors[] = "Palette offset $k / Failed to deserialize upgraded state $id:$meta: " . $e->getMessage();
-				$newPalette[$k] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
+				$newPalette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
 		}
 

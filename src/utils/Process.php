@@ -174,8 +174,17 @@ final class Process{
 			return -1;
 		}
 
-		$stdout = stream_get_contents($pipes[1]);
-		$stderr = stream_get_contents($pipes[2]);
+		$out = stream_get_contents($pipes[1]);
+		if($out === false){
+			throw new AssumptionFailedError("Presume this can't happen for proc_open ... ???");
+		}
+		$stdout = $out;
+
+		$err = stream_get_contents($pipes[2]);
+		if($err === false){
+			throw new AssumptionFailedError("Presume this can't happen for proc_open ... ???");
+		}
+		$stderr = $err;
 
 		foreach($pipes as $p){
 			fclose($p);

@@ -28,6 +28,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as Tags;
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use function array_filter;
 use function array_values;
 use function count;
@@ -57,6 +58,7 @@ final class AvailableEnchantmentRegistry{
 		$this->register(Enchantments::THORNS(), [Tags::CHESTPLATE], [Tags::HELMET, Tags::LEGGINGS, Tags::BOOTS]);
 		$this->register(Enchantments::RESPIRATION(), [Tags::HELMET], []);
 		$this->register(Enchantments::AQUA_AFFINITY(), [Tags::HELMET], []);
+		$this->register(Enchantments::FROST_WALKER(), [/* no primary items */], [Tags::BOOTS]);
 		$this->register(Enchantments::SHARPNESS(), [Tags::SWORD, Tags::AXE], []);
 		$this->register(Enchantments::KNOCKBACK(), [Tags::SWORD], []);
 		$this->register(Enchantments::FIRE_ASPECT(), [Tags::SWORD], []);
@@ -128,6 +130,7 @@ final class AvailableEnchantmentRegistry{
 		if(!$this->isRegistered($enchantment)){
 			throw new \LogicException("Cannot set primary item tags for non-registered enchantment");
 		}
+		Utils::validateArrayValueType($tags, fn(string $v) => 1);
 		$this->primaryItemTags[spl_object_id($enchantment)] = array_values($tags);
 	}
 
@@ -151,6 +154,7 @@ final class AvailableEnchantmentRegistry{
 		if(!$this->isRegistered($enchantment)){
 			throw new \LogicException("Cannot set secondary item tags for non-registered enchantment");
 		}
+		Utils::validateArrayValueType($tags, fn(string $v) => 1);
 		$this->secondaryItemTags[spl_object_id($enchantment)] = array_values($tags);
 	}
 

@@ -31,10 +31,12 @@ namespace pocketmine\tools\generate_item_upgrade_schema;
 
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function count;
 use function dirname;
 use function file_put_contents;
+use function fwrite;
 use function is_array;
 use function json_decode;
 use function json_encode;
@@ -45,6 +47,7 @@ use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 use const SCANDIR_SORT_ASCENDING;
 use const SORT_STRING;
+use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -56,7 +59,7 @@ if(count($argv) !== 4){
 [, $mappingTableFile, $upgradeSchemasDir, $outputFile] = $argv;
 
 $target = json_decode(Filesystem::fileGetContents($mappingTableFile), true, JSON_THROW_ON_ERROR);
-if(!is_array($target)){
+if(!is_array($target) || !isset($target["simple"]) || !is_array($target["simple"]) || !isset($target["complex"]) || !is_array($target["complex"])){
 	\GlobalLogger::get()->error("Invalid mapping table file");
 	exit(1);
 }
@@ -93,7 +96,7 @@ foreach($files as $file){
 
 $newDiff = [];
 
-foreach($target["simple"] as $oldId => $newId){
+foreach(Utils::promoteKeys($target["simple"]) as $oldId => $newId){
 	$previousNewId = $merged["simple"][$oldId] ?? null;
 	if(
 		$previousNewId === $newId || //if previous schemas already accounted for this
@@ -107,8 +110,12 @@ if(isset($newDiff["renamedIds"])){
 	ksort($newDiff["renamedIds"], SORT_STRING);
 }
 
-foreach($target["complex"] as $oldId => $mappings){
-	foreach($mappings as $meta => $newId){
+foreach(Utils::promoteKeys($target["complex"]) as $oldId => $mappings){
+	if(!is_array($mappings)){
+		fwrite(STDERR, "Complex mapping for $oldId is not an array\n");
+		exit(1);
+	}
+	foreach(Utils::promoteKeys($mappings) as $meta => $newId){
 		if(($merged["complex"][$oldId][$meta] ?? null) !== $newId){
 			if($oldId === "minecraft:spawn_egg" && $meta === 130 && ($newId === "minecraft:axolotl_bucket" || $newId === "minecraft:axolotl_spawn_egg")){
 				//TODO: hack for vanilla bug workaround

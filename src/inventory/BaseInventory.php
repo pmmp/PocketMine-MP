@@ -41,7 +41,10 @@ use function spl_object_id;
  */
 abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
-	/** @var Player[] */
+	/**
+	 * @var Player[]
+	 * @phpstan-var array<int, Player>
+	 */
 	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
@@ -253,7 +256,7 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 					$slotItem->setCount($slotItem->getCount() + $amount);
 					$this->setItem($i, $slotItem);
 					if($newItem->getCount() <= 0){
-						break;
+						return $newItem;
 					}
 				}
 			}
@@ -267,7 +270,7 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 				$slotItem->setCount($amount);
 				$this->setItem($slotIndex, $slotItem);
 				if($newItem->getCount() <= 0){
-					break;
+					return $newItem;
 				}
 			}
 		}
@@ -286,8 +289,6 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	}
 
 	public function removeItem(Item ...$slots) : array{
-		/** @var Item[] $searchItems */
-		/** @var Item[] $slots */
 		$searchItems = [];
 		foreach($slots as $slot){
 			if(!$slot->isNull()){

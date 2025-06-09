@@ -33,7 +33,10 @@ use function spl_object_id;
  * The primary purpose of this trait is providing scope isolation for the methods it contains.
  */
 trait ItemEnchantmentHandlingTrait{
-	/** @var EnchantmentInstance[] */
+	/**
+	 * @var EnchantmentInstance[]
+	 * @phpstan-var array<int, EnchantmentInstance>
+	 */
 	protected array $enchantments = [];
 
 	public function hasEnchantments() : bool{
@@ -79,6 +82,7 @@ trait ItemEnchantmentHandlingTrait{
 
 	/**
 	 * @return EnchantmentInstance[]
+	 * @phpstan-return array<int, EnchantmentInstance>
 	 */
 	public function getEnchantments() : array{
 		return $this->enchantments;

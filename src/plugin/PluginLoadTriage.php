@@ -31,12 +31,12 @@ final class PluginLoadTriage{
 	public array $plugins = [];
 	/**
 	 * @var string[][]
-	 * @phpstan-var array<string, list<string>>
+	 * @phpstan-var array<string, array<string>>
 	 */
 	public array $dependencies = [];
 	/**
 	 * @var string[][]
-	 * @phpstan-var array<string, list<string>>
+	 * @phpstan-var array<string, array<string>>
 	 */
 	public array $softDependencies = [];
 }

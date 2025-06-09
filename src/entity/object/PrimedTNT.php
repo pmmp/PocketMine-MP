@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\VanillaBlocks;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityPreExplodeEvent;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -119,12 +121,16 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new EntityPreExplodeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this, $this->worksUnderwater ? [BlockTypeIds::WATER] : []);
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this, $ev->getFireChance(), $this->worksUnderwater ? [BlockTypeIds::WATER] : []);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}
 			$explosion->explodeB();
 		}
+	}
+
+	public function getPickedItem() : ?Item{
+		return VanillaBlocks::TNT()->setWorksUnderwater($this->worksUnderwater)->asItem();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

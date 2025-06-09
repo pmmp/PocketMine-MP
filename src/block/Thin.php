@@ -56,7 +56,6 @@ class Thin extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		$inset = 7 / 16;
 
-		/** @var AxisAlignedBB[] $bbs */
 		$bbs = [];
 
 		if(isset($this->connections[Facing::WEST]) || isset($this->connections[Facing::EAST])){

@@ -324,8 +324,18 @@ final class ItemTypeIds{
 	public const SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = 20285;
 	public const PITCHER_POD = 20286;
 	public const NAME_TAG = 20287;
+	public const GOAT_HORN = 20288;
+	public const END_CRYSTAL = 20289;
+	public const ICE_BOMB = 20290;
+	public const RECOVERY_COMPASS = 20291;
+	public const PALE_OAK_SIGN = 20292;
+	public const RESIN_BRICK = 20293;
+	public const RECORD_RELIC = 20294;
+	public const RECORD_CREATOR = 20295;
+	public const RECORD_CREATOR_MUSIC_BOX = 20296;
+	public const RECORD_PRECIPICE = 20297;
 
-	public const FIRST_UNUSED_ITEM_ID = 20288;
+	public const FIRST_UNUSED_ITEM_ID = 20298;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

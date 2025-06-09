@@ -35,8 +35,12 @@ class ItemTypeIdsTest extends TestCase{
 
 		$constants = $reflect->getConstants();
 		unset($constants['FIRST_UNUSED_ITEM_ID']);
+		self::assertNotEmpty($constants, "We should never have zero type IDs");
 
-		self::assertSame($reflect->getConstant('FIRST_UNUSED_ITEM_ID'), max($constants) + 1, "FIRST_UNUSED_ITEM_ID must be one higher than the highest fixed type ID");
+		$max = max($constants);
+		self::assertIsInt($max, "Max type ID should always be an integer");
+
+		self::assertSame($reflect->getConstant('FIRST_UNUSED_ITEM_ID'), $max + 1, "FIRST_UNUSED_ITEM_ID must be one higher than the highest fixed type ID");
 	}
 
 	public function testNoDuplicates() : void{
@@ -54,6 +58,7 @@ class ItemTypeIdsTest extends TestCase{
 			}
 			$expected = $item->getTypeId();
 			$actual = $reflect->getConstant($name);
+			self::assertNotFalse($actual, "VanillaItems::$name() does not have an ItemTypeIds constant");
 			self::assertSame($expected, $actual, "VanillaItems::$name() type ID does not match ItemTypeIds::$name");
 		}
 	}

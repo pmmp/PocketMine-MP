@@ -54,6 +54,7 @@ use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
+use const PHP_INT_MAX;
 use const YAML_UTF8_ENCODING;
 
 /**
@@ -72,7 +73,7 @@ class Config{
 
 	/**
 	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
+	 * @phpstan-var array<mixed, mixed>
 	 */
 	private array $config = [];
 
@@ -339,7 +340,7 @@ class Config{
 	}
 
 	public function setNested(string $key, mixed $value) : void{
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 		$base = array_shift($vars);
 
 		if(!isset($this->config[$base])){
@@ -366,7 +367,7 @@ class Config{
 			return $this->nestedCache[$key];
 		}
 
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 		$base = array_shift($vars);
 		if(isset($this->config[$base])){
 			$base = $this->config[$base];
@@ -390,7 +391,7 @@ class Config{
 		$this->nestedCache = [];
 		$this->changed = true;
 
-		$vars = explode(".", $key);
+		$vars = explode(".", $key, limit: PHP_INT_MAX);
 
 		$currentNode = &$this->config;
 		while(count($vars) > 0){
@@ -450,7 +451,7 @@ class Config{
 
 	/**
 	 * @return mixed[]
-	 * @phpstan-return list<string>|array<string, mixed>
+	 * @phpstan-return list<mixed>|array<mixed, mixed>
 	 */
 	public function getAll(bool $keys = false) : array{
 		return ($keys ? array_keys($this->config) : $this->config);
@@ -458,7 +459,6 @@ class Config{
 
 	/**
 	 * @param mixed[] $defaults
-	 * @phpstan-param array<string, mixed> $defaults
 	 */
 	public function setDefaults(array $defaults) : void{
 		$this->fillDefaults($defaults, $this->config);
@@ -467,13 +467,11 @@ class Config{
 	/**
 	 * @param mixed[] $default
 	 * @param mixed[] $data    reference parameter
-	 * @phpstan-param array<string, mixed> $default
-	 * @phpstan-param array<string, mixed> $data
-	 * @phpstan-param-out array<string, mixed> $data
+	 * @phpstan-param-out array<mixed, mixed> $data
 	 */
 	private function fillDefaults(array $default, array &$data) : int{
 		$changed = 0;
-		foreach(Utils::stringifyKeys($default) as $k => $v){
+		foreach(Utils::promoteKeys($default) as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
@@ -498,7 +496,7 @@ class Config{
 	 */
 	public static function parseList(string $content) : array{
 		$result = [];
-		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
+		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content)), limit: PHP_INT_MAX) as $v){
 			$v = trim($v);
 			if($v === ""){
 				continue;
@@ -509,8 +507,8 @@ class Config{
 	}
 
 	/**
-	 * @param string[] $entries
-	 * @phpstan-param list<string> $entries
+	 * @param string[]|int[] $entries
+	 * @phpstan-param list<int|string> $entries
 	 */
 	public static function writeList(array $entries) : string{
 		return implode("\n", $entries);
@@ -518,11 +516,11 @@ class Config{
 
 	/**
 	 * @param string[]|int[]|float[]|bool[] $config
-	 * @phpstan-param array<string, string|int|float|bool> $config
+	 * @phpstan-param array<int|string, string|int|float|bool> $config
 	 */
 	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach(Utils::stringifyKeys($config) as $k => $v){
+		foreach(Utils::promoteKeys($config) as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
 			}
@@ -534,7 +532,7 @@ class Config{
 
 	/**
 	 * @return string[]|int[]|float[]|bool[]
-	 * @phpstan-return array<string, string|int|float|bool>
+	 * @phpstan-return array<int|string, string|int|float|bool>
 	 */
 	public static function parseProperties(string $content) : array{
 		$result = [];
@@ -560,7 +558,7 @@ class Config{
 						};
 						break;
 				}
-				$result[(string) $k] = $v;
+				$result[$k] = $v;
 			}
 		}
 

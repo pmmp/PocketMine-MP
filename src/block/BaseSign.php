@@ -34,7 +34,6 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -95,9 +94,6 @@ abstract class BaseSign extends Transparent{
 		return 16;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

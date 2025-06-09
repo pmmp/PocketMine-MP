@@ -121,6 +121,7 @@ class FormattedCommandAlias extends Command{
 
 	/**
 	 * @param string[] $args
+	 * @phpstan-param list<string> $args
 	 */
 	private function buildCommand(string $formatString, array $args) : ?string{
 		$index = 0;

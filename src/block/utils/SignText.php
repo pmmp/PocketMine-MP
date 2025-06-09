@@ -36,13 +36,17 @@ use function str_contains;
 class SignText{
 	public const LINE_COUNT = 4;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array{0: string, 1: string, 2: string, 3: string}
+	 */
 	private array $lines;
 	private Color $baseColor;
 	private bool $glowing;
 
 	/**
 	 * @param string[]|null $lines index-sensitive; keys 0-3 will be used, regardless of array order
+	 * @phpstan-param array{0?: string, 1?: string, 2?: string, 3?: string}|null $lines
 	 *
 	 * @throws \InvalidArgumentException if the array size is greater than 4
 	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array
@@ -75,13 +79,14 @@ class SignText{
 	 * @throws \InvalidArgumentException if the text is not valid UTF-8
 	 */
 	public static function fromBlob(string $blob, ?Color $baseColor = null, bool $glowing = false) : SignText{
-		return new self(array_slice(array_pad(explode("\n", $blob), self::LINE_COUNT, ""), 0, self::LINE_COUNT), $baseColor, $glowing);
+		return new self(array_slice(array_pad(explode("\n", $blob, limit: self::LINE_COUNT + 1), self::LINE_COUNT, ""), 0, self::LINE_COUNT), $baseColor, $glowing);
 	}
 
 	/**
 	 * Returns an array of lines currently on the sign.
 	 *
 	 * @return string[]
+	 * @phpstan-return array{0: string, 1: string, 2: string, 3: string}
 	 */
 	public function getLines() : array{
 		return $this->lines;

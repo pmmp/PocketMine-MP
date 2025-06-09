@@ -43,9 +43,6 @@ class Cactus extends Transparent{
 		return true;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		$shrinkSize = 1 / 16;
 		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
