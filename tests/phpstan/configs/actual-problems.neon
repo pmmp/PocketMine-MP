@@ -703,12 +703,6 @@ parameters:
 			path: ../../../src/inventory/transaction/InventoryTransaction.php
 
 		-
-			message: '#^Cannot cast mixed to int\.$#'
-			identifier: cast.int
-			count: 2
-			path: ../../../src/item/Item.php
-
-		-
 			message: '#^Parameter \#1 \$buffer of method pocketmine\\nbt\\BaseNbtSerializer\:\:read\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
