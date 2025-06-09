@@ -29,6 +29,7 @@ use pocketmine\block\TNT;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
+use pocketmine\entity\object\PrimedTNT;
 use pocketmine\event\block\BlockExplodeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -45,7 +46,7 @@ use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
-use function array_flip;
+use function array_fill_keys;
 use function ceil;
 use function count;
 use function floor;
@@ -97,7 +98,13 @@ class Explosion{
 		}
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 
-		$this->excludedBlockTypeIds = array_flip($excludedBlockTypeIds);
+		$this->excludedBlockTypeIds = array_fill_keys($excludedBlockTypeIds, true);
+
+		if($this->what instanceof PrimedTNT || $this->what instanceof TNT){
+			if($this->what->worksUnderwater()){
+				$this->source->y += 0.06125;
+			}
+		}
 	}
 
 	/**
