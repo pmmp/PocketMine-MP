@@ -56,6 +56,7 @@ use function sqrt;
 
 class Explosion{
 	public const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
+	public const UNDERWATER_TNT_Y_OFFSET = 0.06125;
 
 	private int $rays = 16;
 	public World $world;
@@ -73,7 +74,7 @@ class Explosion{
 
 	/**
 	 * @var true[]
-	 * phpstan-var array<int, true>
+	 * @phpstan-var array<int, true>
 	 */
 	private array $excludedBlockTypeIds = [];
 
@@ -105,7 +106,7 @@ class Explosion{
 
 		if($this->what instanceof PrimedTNT || $this->what instanceof TNT){
 			if($this->what->worksUnderwater()){
-				$this->source->y += 0.06125;
+				$this->source->y += self::UNDERWATER_TNT_Y_OFFSET;
 			}
 		}
 	}
