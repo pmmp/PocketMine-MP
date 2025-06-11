@@ -3510,7 +3510,9 @@ class World implements ChunkManager{
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
 				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
-				$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId);
+				if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
+					$dirtyChunks++;
+				}
 			}
 		}
 
