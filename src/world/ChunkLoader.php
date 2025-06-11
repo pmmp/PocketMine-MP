@@ -32,4 +32,6 @@ namespace pocketmine\world;
  * WARNING: When moving this object around in the world or destroying it,
  * be sure to unregister the loader from chunks you're not using, otherwise you'll leak memory.
  */
-final class ChunkLoader{}
+final class ChunkLoader{
+
+}
