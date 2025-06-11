@@ -3326,7 +3326,7 @@ class World implements ChunkManager{
 		/** @phpstan-var PromiseResolver<Chunk> $resolver */
 		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
-			$temporaryLoader = new class implements ChunkLoader{};
+			$temporaryLoader = new ChunkLoader();
 			$this->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
 			$resolver->getPromise()->onCompletion(
 				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ),
@@ -3373,7 +3373,7 @@ class World implements ChunkManager{
 			return [$resolver, false];
 		}
 
-		$temporaryChunkLoader = new class implements ChunkLoader{};
+		$temporaryChunkLoader = new ChunkLoader();
 		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
 		$chunk = $this->loadChunk($chunkX, $chunkZ);
 		$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
@@ -3458,8 +3458,7 @@ class World implements ChunkManager{
 
 			$chunkPopulationLockId = new ChunkLockId();
 
-			$temporaryChunkLoader = new class implements ChunkLoader{
-			};
+			$temporaryChunkLoader = new ChunkLoader();
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
@@ -3511,9 +3510,7 @@ class World implements ChunkManager{
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
 				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
-				if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
-					$dirtyChunks++;
-				}
+				$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId);
 			}
 		}
 

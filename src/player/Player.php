@@ -338,7 +338,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
 
-		$this->chunkLoader = new class implements ChunkLoader{};
+		$this->chunkLoader = new ChunkLoader();
 		$this->chunkTicker = new ChunkTicker();
 		$world = $spawnLocation->getWorld();
 		//load the spawn chunk so we can see the terrain
