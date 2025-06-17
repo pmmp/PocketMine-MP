@@ -67,7 +67,7 @@ class LoginPacketHandler extends PacketHandler{
 
 	public function handleLogin(LoginPacket $packet) : bool{
 		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
-		$jwtChain = $this->parseJWTChain($authInfo->Certificate);
+		$jwtChain = $this->parseJwtChain($authInfo->Certificate);
 		$extraData = $this->fetchAuthData($jwtChain);
 
 		if(!Player::isValidUserName($extraData->displayName)){
@@ -180,7 +180,7 @@ class LoginPacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	protected function parseJWTChain(string $chainDataJwt) : JwtChain{
+	protected function parseJwtChain(string $chainDataJwt) : JwtChain{
 		try{
 			$jwtChainJson = json_decode($chainDataJwt, associative: false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
