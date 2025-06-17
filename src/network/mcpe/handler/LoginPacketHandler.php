@@ -33,6 +33,7 @@ use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
+use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
@@ -43,6 +44,8 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
 use function is_array;
+use function json_decode;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
@@ -60,7 +63,9 @@ class LoginPacketHandler extends PacketHandler{
 	){}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		$extraData = $this->fetchAuthData($packet->chainDataJwt);
+		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
+		$jwtChain = $this->parseJWTChain($authInfo->Certificate);
+		$extraData = $this->fetchAuthData($jwtChain);
 
 		if(!Player::isValidUserName($extraData->displayName)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
@@ -139,9 +144,53 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$this->processLogin($packet, $ev->isAuthRequired());
+		$this->processLogin($packet, $jwtChain, $ev->isAuthRequired());
 
 		return true;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	protected function parseAuthInfo(string $authInfo) : AuthenticationInfo{
+		try{
+			$authInfoJson = json_decode($authInfo, associative: false, flags: JSON_THROW_ON_ERROR);
+		}catch(\JsonException $e){
+			throw PacketHandlingException::wrap($e);
+		}
+
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
+		try{
+			$clientData = $mapper->map($authInfoJson, new AuthenticationInfo());
+		}catch(\JsonMapper_Exception $e){
+			throw PacketHandlingException::wrap($e);
+		}
+		return $clientData;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	protected function parseJWTChain(string $chainDataJwt) : JwtChain{
+		try{
+			$jwtChainJson = json_decode($chainDataJwt, associative: false, flags: JSON_THROW_ON_ERROR);
+		}catch(\JsonException $e){
+			throw PacketHandlingException::wrap($e);
+		}
+
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
+		try{
+			$clientData = $mapper->map($jwtChainJson, new JwtChain());
+		}catch(\JsonMapper_Exception $e){
+			throw PacketHandlingException::wrap($e);
+		}
+		return $clientData;
 	}
 
 	/**
@@ -213,8 +262,8 @@ class LoginPacketHandler extends PacketHandler{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
-		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
+	protected function processLogin(LoginPacket $packet, JwtChain $jwtChain, bool $authRequired) : void{
+		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($jwtChain->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
 	}
 }
