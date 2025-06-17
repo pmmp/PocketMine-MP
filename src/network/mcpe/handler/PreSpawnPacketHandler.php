@@ -99,7 +99,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 				$this->server->getMotd(),
 				"",
 				false,
-				new PlayerMovementSettings(ServerAuthMovementMode::SERVER_AUTHORITATIVE_V2, 0, false),
+				new PlayerMovementSettings(0, false),
 				0,
 				0,
 				"",
