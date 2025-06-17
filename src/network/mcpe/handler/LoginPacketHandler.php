@@ -43,7 +43,9 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use function gettype;
 use function is_array;
+use function is_object;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
 
@@ -158,6 +160,9 @@ class LoginPacketHandler extends PacketHandler{
 		}catch(\JsonException $e){
 			throw PacketHandlingException::wrap($e);
 		}
+		if(!is_object($authInfoJson)){
+			throw new \RuntimeException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
+		}
 
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
@@ -179,6 +184,9 @@ class LoginPacketHandler extends PacketHandler{
 			$jwtChainJson = json_decode($chainDataJwt, associative: false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
 			throw PacketHandlingException::wrap($e);
+		}
+		if(!is_object($jwtChainJson)){
+			throw new \RuntimeException("Unexpected type for JWT chain data: " . gettype($jwtChainJson) . ", expected object");
 		}
 
 		$mapper = new \JsonMapper();
