@@ -274,6 +274,9 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws \InvalidArgumentException
 	 */
 	protected function processLogin(string $token, AuthenticationType $authType, ?array $legacyCertificate, string $clientData, bool $authRequired) : void{
+		if($legacyCertificate === null){
+			throw new PacketHandlingException("Legacy certificate cannot be null");
+		}
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($legacyCertificate, $clientData, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
 	}
