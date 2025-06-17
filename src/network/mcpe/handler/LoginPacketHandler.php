@@ -34,6 +34,7 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
+use pocketmine\network\mcpe\protocol\types\login\AuthenticationType;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
@@ -146,7 +147,7 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$this->processLogin($packet, $jwtChain, $ev->isAuthRequired());
+		$this->processLogin($authInfo->Token, AuthenticationType::from($authInfo->AuthenticationType), $jwtChain->chain, $packet->clientDataJwt, $ev->isAuthRequired());
 
 		return true;
 	}
@@ -268,10 +269,12 @@ class LoginPacketHandler extends PacketHandler{
 	 * TODO: This is separated for the purposes of allowing plugins (like Specter) to hack it and bypass authentication.
 	 * In the future this won't be necessary.
 	 *
+	 * @param null|string[] $legacyCertificate
+	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function processLogin(LoginPacket $packet, JwtChain $jwtChain, bool $authRequired) : void{
-		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($jwtChain->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
+	protected function processLogin(string $token, AuthenticationType $authType, ?array $legacyCertificate, string $clientData, bool $authRequired) : void{
+		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($legacyCertificate, $clientData, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
 	}
 }
