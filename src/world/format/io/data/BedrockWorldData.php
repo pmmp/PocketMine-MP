@@ -56,7 +56,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 		1, //major
 		21, //minor
 		90, //patch
-		26, //revision
+		3, //revision
 		0 //is beta
 	];
 
