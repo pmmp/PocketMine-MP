@@ -33,8 +33,6 @@ interface HorizontalFacing{
 	public function getFacing() : int;
 
 	/**
-	 * @throws \InvalidArgumentException if `$facing` is not a `Facing` constant
-	 * or if `$facing` is not horizontal
 	 * @return $this
 	 *
 	 * @see Facing

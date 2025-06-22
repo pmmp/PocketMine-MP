@@ -36,7 +36,6 @@ interface MultiFacing{
 	public function hasFace(int $face) : bool;
 
 	/**
-	 * @throws \InvalidArgumentException if `$face` is not Facing value
 	 * @return $this
 	 *
 	 * @see Facing
@@ -46,7 +45,6 @@ interface MultiFacing{
 	/**
 	 * @param int[] $faces
 	 *
-	 * @throws \InvalidArgumentException if a value in `$faces` is not Facing value
 	 * @return $this
 	 *
 	 * @see Facing
