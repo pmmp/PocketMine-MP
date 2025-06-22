@@ -30,6 +30,6 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 class ThrowSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEvent::THROW, $pos, -1, "minecraft:player", false, false)];
+		return [LevelSoundEventPacket::create(LevelSoundEvent::THROW, $pos, -1, "minecraft:player", false, false, -1)];
 	}
 }

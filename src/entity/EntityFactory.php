@@ -220,6 +220,13 @@ final class EntityFactory{
 	}
 
 	/**
+	 * @phpstan-param class-string<Entity> $class
+	 */
+	public function isRegistered(string $class) : bool{
+		return isset($this->saveNames[$class]);
+	}
+
+	/**
 	 * Creates an entity from data stored on a chunk.
 	 *
 	 * @throws SavedDataLoadingException

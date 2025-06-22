@@ -113,6 +113,7 @@ final class BlockStateNames{
 	public const RAIL_DATA_BIT = "rail_data_bit";
 	public const RAIL_DIRECTION = "rail_direction";
 	public const REDSTONE_SIGNAL = "redstone_signal";
+	public const REHYDRATION_LEVEL = "rehydration_level";
 	public const REPEATER_DELAY = "repeater_delay";
 	public const RESPAWN_ANCHOR_CHARGE = "respawn_anchor_charge";
 	public const ROTATION = "rotation";
