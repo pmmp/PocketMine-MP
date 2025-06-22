@@ -25,11 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CropGrowthHelper;
+use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use function array_rand;
-use function mt_rand;
 
 abstract class Stem extends Crops{
 	protected int $facing = Facing::UP;
@@ -90,8 +91,10 @@ abstract class Stem extends Crops{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
+		//TODO: bit annoying we have to pass an Item instance here
+		//this should not be affected by Fortune, but still follows a binomial distribution
 		return [
-			$this->asItem()->setCount(mt_rand(0, 2))
+			$this->asItem()->setCount(FortuneDropHelper::binomial(VanillaItems::AIR(), 0, chance: ($this->age + 1) / 15))
 		];
 	}
 }

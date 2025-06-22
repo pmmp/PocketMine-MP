@@ -658,6 +658,8 @@ final class KnownTranslationKeys{
 	public const TILE_BED_NOSLEEP = "tile.bed.noSleep";
 	public const TILE_BED_OCCUPIED = "tile.bed.occupied";
 	public const TILE_BED_TOOFAR = "tile.bed.tooFar";
+	public const TILE_RESPAWN_ANCHOR_NOTVALID = "tile.respawn_anchor.notValid";
+	public const TILE_RESPAWN_ANCHOR_RESPAWNSET = "tile.respawn_anchor.respawnSet";
 	public const VIEW_DISTANCE = "view_distance";
 	public const WELCOME_TO_POCKETMINE = "welcome_to_pocketmine";
 	public const WHITELIST_ENABLE = "whitelist_enable";

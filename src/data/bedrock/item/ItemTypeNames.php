@@ -380,6 +380,7 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_RELIC = "minecraft:music_disc_relic";
 	public const MUSIC_DISC_STAL = "minecraft:music_disc_stal";
 	public const MUSIC_DISC_STRAD = "minecraft:music_disc_strad";
+	public const MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
 	public const MUSIC_DISC_WAIT = "minecraft:music_disc_wait";
 	public const MUSIC_DISC_WARD = "minecraft:music_disc_ward";
 	public const MUTTON = "minecraft:mutton";

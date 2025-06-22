@@ -21,31 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\event\player;
 
-final class GeneratorManagerEntry{
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 
-	/**
-	 * @phpstan-param class-string<Generator> $generatorClass
-	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
-	 */
+class PlayerRespawnAnchorUseEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
+	public const ACTION_EXPLODE = 0;
+	public const ACTION_SET_SPAWN = 1;
+
 	public function __construct(
-		private string $generatorClass,
-		private \Closure $presetValidator,
-		private readonly bool $fast
-	){}
+		Player $player,
+		protected Block $block,
+		private int $action = self::ACTION_EXPLODE
+	){
+		$this->player = $player;
+	}
 
-	/** @phpstan-return class-string<Generator> */
-	public function getGeneratorClass() : string{ return $this->generatorClass; }
+	public function getBlock() : Block{
+		return $this->block;
+	}
 
-	public function isFast() : bool{ return $this->fast; }
+	public function getAction() : int{
+		return $this->action;
+	}
 
-	/**
-	 * @throws InvalidGeneratorOptionsException
-	 */
-	public function validateGeneratorOptions(string $generatorOptions) : void{
-		if(($exception = ($this->presetValidator)($generatorOptions)) !== null){
-			throw $exception;
-		}
+	public function setAction(int $action) : void{
+		$this->action = $action;
 	}
 }
