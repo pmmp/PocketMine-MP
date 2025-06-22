@@ -46,7 +46,8 @@ class PlayerResourcePackOfferEvent extends Event{
 		private readonly PlayerInfo $playerInfo,
 		private array $resourcePacks,
 		private array $encryptionKeys,
-		private bool $mustAccept
+		private bool $mustAccept,
+		private bool $forceDisableVibrantVisuals = true
 	){}
 
 	public function getPlayerInfo() : PlayerInfo{
@@ -102,5 +103,19 @@ class PlayerResourcePackOfferEvent extends Event{
 
 	public function mustAccept() : bool{
 		return $this->mustAccept;
+	}
+
+	/**
+	 * Sets whether vibrant visuals should be forcibly disabled.
+	 */
+	public function setForceDisableVibrantVisuals(bool $forceDisable) : void{
+		$this->forceDisableVibrantVisuals = $forceDisable;
+	}
+
+	/**
+	 * Returns whether vibrant visuals should be forcibly disabled.
+	 */
+	public function forceDisableVibrantVisuals() : bool{
+		return $this->forceDisableVibrantVisuals;
 	}
 }
