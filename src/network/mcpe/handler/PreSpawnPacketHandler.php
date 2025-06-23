@@ -57,8 +57,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){
-	}
+	){}
 
 	public function setUp() : void{
 		Timings::$playerNetworkSendPreSpawnGameData->startTiming();
