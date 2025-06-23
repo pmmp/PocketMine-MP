@@ -57,7 +57,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){}
+	){
+	}
 
 	public function setUp() : void{
 		Timings::$playerNetworkSendPreSpawnGameData->startTiming();
@@ -81,7 +82,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$levelSettings->lightningLevel = 0;
 			$levelSettings->commandsEnabled = true;
 			$levelSettings->gameRules = [
-				"naturalregeneration" => new BoolGameRule(false, false) //Hack for client side regeneration
+				"naturalregeneration" => new BoolGameRule(false, false), //Hack for client side regeneration
+				"locatorBar" => new BoolGameRule(false, false) //Disable client-side tracking of nearby players
 			];
 			$levelSettings->experiments = new Experiments([], false);
 
