@@ -993,6 +993,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("resin_brick_wall", fn() => Blocks::RESIN_BRICK_WALL());
 		$result->registerBlock("resin_bricks", fn() => Blocks::RESIN_BRICKS());
 		$result->registerBlock("resin_clump", fn() => Blocks::RESIN_CLUMP());
+		$result->registerBlock("respawn_anchor", fn() => Blocks::RESPAWN_ANCHOR());
 		$result->registerBlock("rooted_dirt", fn() => Blocks::DIRT()->setDirtType(DirtType::ROOTED));
 		$result->registerBlock("rose", fn() => Blocks::POPPY());
 		$result->registerBlock("rose_bush", fn() => Blocks::ROSE_BUSH());

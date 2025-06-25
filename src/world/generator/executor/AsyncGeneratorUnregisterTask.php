@@ -21,31 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
 
-final class GeneratorManagerEntry{
+use pocketmine\scheduler\AsyncTask;
 
-	/**
-	 * @phpstan-param class-string<Generator> $generatorClass
-	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
-	 */
+class AsyncGeneratorUnregisterTask extends AsyncTask{
 	public function __construct(
-		private string $generatorClass,
-		private \Closure $presetValidator,
-		private readonly bool $fast
+		private readonly int $contextId
 	){}
 
-	/** @phpstan-return class-string<Generator> */
-	public function getGeneratorClass() : string{ return $this->generatorClass; }
-
-	public function isFast() : bool{ return $this->fast; }
-
-	/**
-	 * @throws InvalidGeneratorOptionsException
-	 */
-	public function validateGeneratorOptions(string $generatorOptions) : void{
-		if(($exception = ($this->presetValidator)($generatorOptions)) !== null){
-			throw $exception;
-		}
+	public function onRun() : void{
+		ThreadLocalGeneratorContext::unregister($this->contextId);
 	}
 }

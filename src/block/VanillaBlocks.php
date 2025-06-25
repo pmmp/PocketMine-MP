@@ -694,6 +694,7 @@ use function strtolower;
  * @method static Stair RESIN_BRICK_STAIRS()
  * @method static Wall RESIN_BRICK_WALL()
  * @method static ResinClump RESIN_CLUMP()
+ * @method static RespawnAnchor RESPAWN_ANCHOR()
  * @method static DoublePlant ROSE_BUSH()
  * @method static Sand SAND()
  * @method static Opaque SANDSTONE()
@@ -1647,6 +1648,8 @@ final class VanillaBlocks{
 		self::register("warped_roots", fn(BID $id) => new NetherRoots($id, "Warped Roots", $netherRootsInfo));
 
 		self::register("chain", fn(BID $id) => new Chain($id, "Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
+
+		self::register("respawn_anchor", fn(BID $id) => new RespawnAnchor($id, "Respawn Anchor", new Info(BreakInfo::pickaxe(50.0, ToolTier::DIAMOND, 6000.0))));
 	}
 
 	private static function registerBlocksR17() : void{

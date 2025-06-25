@@ -21,40 +21,41 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\entity;
+namespace pocketmine\event\block;
 
-use pocketmine\entity\Entity;
+use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use pocketmine\world\Explosion;
 
 /**
- * Called when an entity decides to explode, before the explosion's impact is calculated.
- * This allows changing the force of the explosion and whether it will destroy blocks.
+ * Called when a block wants to explode, before the explosion impact is calculated.
+ * This allows changing the explosion force, fire chance and whether it will destroy blocks.
  *
- * @see EntityExplodeEvent
- *
- * @phpstan-extends EntityEvent<Entity>
+ * @see BlockExplodeEvent
  */
-class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
+class BlockPreExplodeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	private bool $blockBreaking = true;
 
 	public function __construct(
-		Entity $entity,
-		protected float $radius,
-		private float $fireChance = 0.0,
+		Block $block,
+		private float $radius,
+		private readonly ?Player $player = null,
+		private float $fireChance = 0.0
 	){
+		Utils::checkFloatNotInfOrNaN("radius", $radius);
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
-		$this->entity = $entity;
+		parent::__construct($block);
 	}
 
 	public function getRadius() : float{
@@ -62,10 +63,19 @@ class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setRadius(float $radius) : void{
+		Utils::checkFloatNotInfOrNaN("radius", $radius);
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		$this->radius = $radius;
+	}
+
+	public function isBlockBreaking() : bool{
+		return $this->blockBreaking;
+	}
+
+	public function setBlockBreaking(bool $affectsBlocks) : void{
+		$this->blockBreaking = $affectsBlocks;
 	}
 
 	/**
@@ -104,16 +114,16 @@ class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 	public function setFireChance(float $fireChance) : void{
 		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
 		if($fireChance < 0.0 || $fireChance > 1.0){
-			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
 	}
 
-	public function isBlockBreaking() : bool{
-		return $this->blockBreaking;
-	}
-
-	public function setBlockBreaking(bool $affectsBlocks) : void{
-		$this->blockBreaking = $affectsBlocks;
+	/**
+	 * Returns the player who triggered the block explosion.
+	 * Returns null if the block was exploded by other means.
+	 */
+	public function getPlayer() : ?Player{
+		return $this->player;
 	}
 }
