@@ -81,7 +81,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$levelSettings->lightningLevel = 0;
 			$levelSettings->commandsEnabled = true;
 			$levelSettings->gameRules = [
-				"naturalregeneration" => new BoolGameRule(false, false) //Hack for client side regeneration
+				"naturalregeneration" => new BoolGameRule(false, false), //Hack for client side regeneration
+				"locatorbar" => new BoolGameRule(false, false) //Disable client-side tracking of nearby players
 			];
 			$levelSettings->experiments = new Experiments([], false);
 
