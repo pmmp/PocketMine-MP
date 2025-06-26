@@ -33,13 +33,11 @@ class SubChunk{
 
 	/**
 	 * SubChunk constructor.
-	 *
-	 * @param PalettedBlockArray[] $blockLayers
-	 * @phpstan-param list<PalettedBlockArray> $blockLayers
 	 */
 	public function __construct(
 		private int $emptyBlockId,
-		private array $blockLayers,
+		private ?PalettedBlockArray $blockLayer,
+		private ?PalettedBlockArray $liquidLayer,
 		private PalettedBlockArray $biomes,
 		private ?LightArray $skyLight = null,
 		private ?LightArray $blockLight = null
@@ -60,7 +58,7 @@ class SubChunk{
 	 * This may report non-empty erroneously if the chunk has been modified and not garbage-collected.
 	 */
 	public function isEmptyFast() : bool{
-		return count($this->blockLayers) === 0;
+		return $this->blockLayer === null && $this->liquidLayer === null;
 	}
 
 	/**
@@ -70,33 +68,57 @@ class SubChunk{
 	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
 
 	public function getBlockStateId(int $x, int $y, int $z) : int{
-		if(count($this->blockLayers) === 0){
+		if($this->blockLayer === null){
 			return $this->emptyBlockId;
 		}
-		return $this->blockLayers[0]->get($x, $y, $z);
+		return $this->blockLayer->get($x, $y, $z);
 	}
 
 	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
-		if(count($this->blockLayers) === 0){
-			$this->blockLayers[] = new PalettedBlockArray($this->emptyBlockId);
+		if($this->blockLayer === null){
+			$this->blockLayer = new PalettedBlockArray($this->emptyBlockId);
 		}
-		$this->blockLayers[0]->set($x, $y, $z, $block);
+		$this->blockLayer->set($x, $y, $z, $block);
 	}
 
 	/**
+	 * @deprecated Use getBlockLayer() and getLiquidLayer() instead
 	 * @return PalettedBlockArray[]
 	 * @phpstan-return list<PalettedBlockArray>
 	 */
 	public function getBlockLayers() : array{
-		return $this->blockLayers;
+		$layers = [];
+		if($this->blockLayer !== null){
+			$layers[] = $this->blockLayer;
+		}
+		if($this->liquidLayer !== null){
+			$layers[] = $this->liquidLayer;
+		}
+		return $layers;
+	}
+
+	public function getBlockLayer() : ?PalettedBlockArray{
+		return $this->blockLayer;
+	}
+
+	public function setBlockLayer(?PalettedBlockArray $blockLayer) : void{
+		$this->blockLayer = $blockLayer;
+	}
+
+	public function getLiquidLayer() : ?PalettedBlockArray{
+		return $this->liquidLayer;
+	}
+
+	public function setLiquidLayer(?PalettedBlockArray $liquidLayer) : void{
+		$this->liquidLayer = $liquidLayer;
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : ?int{
-		if(count($this->blockLayers) === 0){
+		if($this->blockLayer === null){
 			return null;
 		}
 		for($y = self::EDGE_LENGTH - 1; $y >= 0; --$y){
-			if($this->blockLayers[0]->get($x, $y, $z) !== $this->emptyBlockId){
+			if($this->blockLayer->get($x, $y, $z) !== $this->emptyBlockId){
 				return $y;
 			}
 		}
@@ -130,15 +152,18 @@ class SubChunk{
 	}
 
 	public function collectGarbage() : void{
-		$cleanedLayers = [];
-		foreach($this->blockLayers as $layer){
-			$layer->collectGarbage();
-
-			if($layer->getBitsPerBlock() !== 0 || $layer->get(0, 0, 0) !== $this->emptyBlockId){
-				$cleanedLayers[] = $layer;
+		if($this->blockLayer !== null){
+			$this->blockLayer->collectGarbage();
+			if($this->blockLayer->getBitsPerBlock() === 0 && $this->blockLayer->get(0, 0, 0) === $this->emptyBlockId){
+				$this->blockLayer = null;
 			}
 		}
-		$this->blockLayers = $cleanedLayers;
+		if($this->liquidLayer !== null){
+			$this->liquidLayer->collectGarbage();
+			if($this->liquidLayer->getBitsPerBlock() === 0 && $this->liquidLayer->get(0, 0, 0) === $this->emptyBlockId){
+				$this->liquidLayer = null;
+			}
+		}
 		$this->biomes->collectGarbage();
 
 		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
@@ -150,9 +175,12 @@ class SubChunk{
 	}
 
 	public function __clone(){
-		$this->blockLayers = array_map(function(PalettedBlockArray $array) : PalettedBlockArray{
-			return clone $array;
-		}, $this->blockLayers);
+		if($this->blockLayer !== null){
+			$this->blockLayer = clone $this->blockLayer;
+		}
+		if($this->liquidLayer !== null){
+			$this->liquidLayer = clone $this->liquidLayer;
+		}
 		$this->biomes = clone $this->biomes;
 
 		if($this->skyLight !== null){

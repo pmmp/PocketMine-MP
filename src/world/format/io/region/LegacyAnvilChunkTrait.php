@@ -96,7 +96,7 @@ trait LegacyAnvilChunkTrait{
 		}
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 			if(!isset($subChunks[$y])){
-				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomes3d);
+				$subChunks[$y] = new SubChunk(Block::EMPTY_STATE_ID, null, null, clone $biomes3d);
 			}
 		}
 
