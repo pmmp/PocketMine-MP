@@ -66,7 +66,7 @@ abstract class Command{
 
 	/** @var string[] */
 	private array $permission = [];
-	private ?string $permissionMessage = null;
+	private Translatable|string|null $permissionMessage = null;
 
 	/**
 	 * @param string[] $aliases
@@ -122,10 +122,11 @@ abstract class Command{
 			return true;
 		}
 
-		if($this->permissionMessage === null){
-			$target->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($this->name)->prefix(TextFormat::RED));
-		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $this->permissionMessage));
+		$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($this->name);
+		if($message instanceof Translatable){
+			$target->sendMessage($message->prefix(TextFormat::RED));
+		}elseif($message !== ""){
+			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $message));
 		}
 
 		return false;
@@ -198,7 +199,7 @@ abstract class Command{
 		return $this->activeAliases;
 	}
 
-	public function getPermissionMessage() : ?string{
+	public function getPermissionMessage() : Translatable|string|null{
 		return $this->permissionMessage;
 	}
 
@@ -226,7 +227,7 @@ abstract class Command{
 		$this->description = $description;
 	}
 
-	public function setPermissionMessage(string $permissionMessage) : void{
+	public function setPermissionMessage(Translatable|string $permissionMessage) : void{
 		$this->permissionMessage = $permissionMessage;
 	}
 

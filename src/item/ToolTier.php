@@ -23,24 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
 /**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static ToolTier DIAMOND()
- * @method static ToolTier GOLD()
- * @method static ToolTier IRON()
- * @method static ToolTier NETHERITE()
- * @method static ToolTier STONE()
- * @method static ToolTier WOOD()
- *
  * @phpstan-type TMetadata array{0: int, 1: int, 2: int, 3: int, 4: int}
  */
 enum ToolTier{
-	use LegacyEnumShimTrait;
-
 	case WOOD;
 	case GOLD;
 	case STONE;

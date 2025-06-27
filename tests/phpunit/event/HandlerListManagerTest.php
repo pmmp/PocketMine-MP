@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pocketmine\event\fixtures\TestAbstractAllowHandleEvent;
 use pocketmine\event\fixtures\TestAbstractEvent;
@@ -63,10 +64,9 @@ class HandlerListManagerTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider isValidClassProvider
-	 *
 	 * @phpstan-param \ReflectionClass<Event> $class
 	 */
+	#[DataProvider("isValidClassProvider")]
 	public function testIsValidClass(\ReflectionClass $class, bool $isValid, string $reason) : void{
 		self::assertSame($isValid, ($this->isValidFunc)($class), $reason);
 	}
@@ -83,11 +83,10 @@ class HandlerListManagerTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider resolveParentClassProvider
-	 *
 	 * @phpstan-param \ReflectionClass<Event>      $class
 	 * @phpstan-param \ReflectionClass<Event>|null $expect
 	 */
+	#[DataProvider("resolveParentClassProvider")]
 	public function testResolveParentClass(\ReflectionClass $class, ?\ReflectionClass $expect) : void{
 		if($expect === null){
 			self::assertNull(($this->resolveParentFunc)($class));

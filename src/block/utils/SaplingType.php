@@ -23,23 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
 use pocketmine\world\generator\object\TreeType;
 
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static SaplingType ACACIA()
- * @method static SaplingType BIRCH()
- * @method static SaplingType DARK_OAK()
- * @method static SaplingType JUNGLE()
- * @method static SaplingType OAK()
- * @method static SaplingType SPRUCE()
- */
 enum SaplingType{
-	use LegacyEnumShimTrait;
-
 	case OAK;
 	case SPRUCE;
 	case BIRCH;

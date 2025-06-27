@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
+use pocketmine\event\Event;
 use pocketmine\utils\Process;
 
 /**
  * Called when the server is in a low-memory state as defined by the properties
  * Plugins should free caches or other non-essential data.
  */
-class LowMemoryEvent extends ServerEvent{
+class LowMemoryEvent extends Event{
 	public function __construct(
 		private int $memory,
 		private int $memoryLimit,

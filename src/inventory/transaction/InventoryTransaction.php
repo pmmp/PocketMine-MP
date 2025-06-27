@@ -110,7 +110,6 @@ class InventoryTransaction{
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
-			$action->onAddToTransaction($this);
 			if($action instanceof SlotChangeAction && !isset($this->inventories[$inventoryId = spl_object_id($action->getInventory())])){
 				$this->inventories[$inventoryId] = $action->getInventory();
 			}

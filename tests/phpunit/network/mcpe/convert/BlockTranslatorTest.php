@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\RuntimeBlockStateRegistry;
 
 class BlockTranslatorTest extends TestCase{
 
-	/**
-	 * @doesNotPerformAssertions
-	 */
+	#[DoesNotPerformAssertions]
 	public function testAllBlockStatesSerialize() : void{
 		$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 		foreach(RuntimeBlockStateRegistry::getInstance()->getAllKnownStates() as $state){

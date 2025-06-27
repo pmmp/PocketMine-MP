@@ -25,12 +25,9 @@ namespace pocketmine\scheduler;
 
 use pmmp\thread\Runnable;
 use pmmp\thread\ThreadSafe;
-use pmmp\thread\ThreadSafeArray;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\timings\Timings;
 use function array_key_exists;
-use function igbinary_serialize;
-use function igbinary_unserialize;
 use function is_null;
 use function is_scalar;
 use function spl_object_id;
@@ -68,12 +65,6 @@ abstract class AsyncTask extends Runnable{
 	 */
 	private static array $threadLocalStorage = [];
 
-	/**
-	 * @phpstan-var ThreadSafeArray<int, string>|null
-	 * @deprecated
-	 */
-	private ?ThreadSafeArray $progressUpdates = null;
-
 	private ThreadSafe|string|int|bool|null|float $result = null;
 
 	private bool $submitted = false;
@@ -94,13 +85,6 @@ abstract class AsyncTask extends Runnable{
 		$this->finished = true;
 		AsyncWorker::getNotifier()->wakeupSleeper();
 		AsyncWorker::maybeCollectCycles();
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function isCrashed() : bool{
-		return $this->isTerminated();
 	}
 
 	/**
@@ -129,20 +113,6 @@ abstract class AsyncTask extends Runnable{
 		$this->result = is_scalar($result) || is_null($result) || $result instanceof ThreadSafe ? $result : new NonThreadSafeValue($result);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public function cancelRun() : void{
-		//NOOP
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function hasCancelledRun() : bool{
-		return false;
-	}
-
 	public function setSubmitted() : void{
 		$this->submitted = true;
 	}
@@ -161,56 +131,6 @@ abstract class AsyncTask extends Runnable{
 	 * Implement this if you want to handle the data in your AsyncTask after it has been processed
 	 */
 	public function onCompletion() : void{
-
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * Call this method from {@link AsyncTask::onRun} (AsyncTask execution thread) to schedule a call to
-	 * {@link AsyncTask::onProgressUpdate} from the main thread with the given progress parameter.
-	 *
-	 * @param mixed $progress A value that can be safely serialize()'ed.
-	 */
-	public function publishProgress(mixed $progress) : void{
-		$progressUpdates = $this->progressUpdates;
-		if($progressUpdates === null){
-			$progressUpdates = $this->progressUpdates = new ThreadSafeArray();
-		}
-		$progressUpdates[] = igbinary_serialize($progress) ?? throw new \InvalidArgumentException("Progress must be serializable");
-	}
-
-	/**
-	 * @deprecated
-	 * @internal Only call from AsyncPool.php on the main thread
-	 */
-	public function checkProgressUpdates() : void{
-		$progressUpdates = $this->progressUpdates;
-		if($progressUpdates !== null){
-			while(($progress = $progressUpdates->shift()) !== null){
-				$this->onProgressUpdate(igbinary_unserialize($progress));
-			}
-		}
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * Called from the main thread after {@link AsyncTask::publishProgress} is called.
-	 * All {@link AsyncTask::publishProgress} calls should result in {@link AsyncTask::onProgressUpdate} calls before
-	 * {@link AsyncTask::onCompletion} is called.
-	 *
-	 * @param mixed $progress The parameter passed to {@link AsyncTask#publishProgress}. It is serialize()'ed
-	 *                        and then unserialize()'ed, as if it has been cloned.
-	 */
-	public function onProgressUpdate($progress) : void{
-
-	}
-
-	/**
-	 * @deprecated No longer used
-	 */
-	public function onError() : void{
 
 	}
 

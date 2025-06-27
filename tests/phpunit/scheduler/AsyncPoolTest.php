@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\promise\PromiseResolver;
@@ -61,15 +62,6 @@ class AsyncPoolTest extends TestCase{
 		self::assertTrue(LeakTestAsyncTask::$destroyed, "Task was not destroyed after 30 seconds");
 	}
 
-	public function testPublishProgressRace() : void{
-		$task = new PublishProgressRaceAsyncTask();
-		$this->pool->submitTask($task);
-		while($this->pool->collectTasks()){
-			usleep(50 * 1000);
-		}
-		self::assertTrue(PublishProgressRaceAsyncTask::$success, "Progress was not reported before task completion");
-	}
-
 	public function testThreadSafeSetResult() : void{
 		/** @phpstan-var PromiseResolver<ThreadSafeArray<array-key, mixed>> $resolver */
 		$resolver = new PromiseResolver();
@@ -93,9 +85,8 @@ class AsyncPoolTest extends TestCase{
 	 *
 	 * Due to an unset() in the function body, other AsyncTask::__destruct() calls could be triggered during
 	 * an AsyncTask's destruction. If done in the wrong way, this could lead to a crash.
-	 *
-	 * @doesNotPerformAssertions This test is checking for a crash condition, not a specific output.
 	 */
+	#[DoesNotPerformAssertions]
 	public function testTaskDestructorReentrancy() : void{
 		$this->pool->submitTask(new class extends AsyncTask{
 			public function __construct(){
