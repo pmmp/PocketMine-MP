@@ -112,7 +112,6 @@ final class ChunkSerializer{
 	}
 
 	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, PacketSerializer $stream, bool $persistentBlockStates) : void{
-		// Create array from non-empty layers
 		$layers = [];
 		if(!$subChunk->isBlockLayerEmpty()){
 			$layers[] = $subChunk->getBlockLayer();
@@ -120,7 +119,7 @@ final class ChunkSerializer{
 		if(!$subChunk->isLiquidLayerEmpty()){
 			$layers[] = $subChunk->getLiquidLayer();
 		}
-		
+
 		$stream->putByte(8); //version
 
 		$stream->putByte(count($layers));

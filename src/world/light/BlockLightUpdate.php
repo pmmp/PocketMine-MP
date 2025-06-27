@@ -74,7 +74,7 @@ class BlockLightUpdate extends LightUpdate{
 					}
 				}
 			}
-			
+
 			if($hasLightEmitter){
 				$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 			}

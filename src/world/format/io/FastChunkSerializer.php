@@ -74,7 +74,7 @@ final class FastChunkSerializer{
 		foreach($subChunks as $y => $subChunk){
 			$stream->putByte($y);
 			$stream->putInt($subChunk->getEmptyBlockId());
-			
+
 			// Write block and liquid layers (always present)
 			self::serializePalettedArray($stream, $subChunk->getBlockLayer());
 			self::serializePalettedArray($stream, $subChunk->getLiquidLayer());
@@ -114,7 +114,7 @@ final class FastChunkSerializer{
 			$blockLayer = self::deserializePalettedArray($stream);
 			$liquidLayer = self::deserializePalettedArray($stream);
 			$biomeArray = self::deserializePalettedArray($stream);
-			
+
 			$subChunks[$y] = new SubChunk($airBlockId, $blockLayer, $liquidLayer, $biomeArray);
 		}
 

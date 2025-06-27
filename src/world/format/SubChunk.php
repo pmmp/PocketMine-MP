@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
-use function array_map;
-use function count;
-
 class SubChunk{
 	public const COORD_BIT_SIZE = 4;
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
