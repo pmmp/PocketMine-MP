@@ -778,8 +778,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$blockLayer = $subChunk->getBlockLayer();
 					$liquidLayer = $subChunk->getLiquidLayer();
 					
-					$isBlockLayerEmpty = $blockLayer->getBitsPerBlock() === 0 && $blockLayer->get(0, 0, 0) === $subChunk->getEmptyBlockId();
-					$isLiquidLayerEmpty = $liquidLayer->getBitsPerBlock() === 0 && $liquidLayer->get(0, 0, 0) === $subChunk->getEmptyBlockId();
+					$isBlockLayerEmpty = $subChunk->isBlockLayerEmpty();
+					$isLiquidLayerEmpty = $subChunk->isLiquidLayerEmpty();
 					
 					$layerCount = 0;
 					if(!$isBlockLayerEmpty) $layerCount++;

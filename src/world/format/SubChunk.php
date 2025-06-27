@@ -77,6 +77,20 @@ class SubChunk{
 	}
 
 	/**
+	 * Returns whether the block layer is empty (contains only empty blocks).
+	 */
+	public function isBlockLayerEmpty() : bool{
+		return $this->blockLayer->getBitsPerBlock() === 0 && $this->blockLayer->get(0, 0, 0) === $this->emptyBlockId;
+	}
+
+	/**
+	 * Returns whether the liquid layer is empty (contains only empty blocks).
+	 */
+	public function isLiquidLayerEmpty() : bool{
+		return $this->liquidLayer->getBitsPerBlock() === 0 && $this->liquidLayer->get(0, 0, 0) === $this->emptyBlockId;
+	}
+
+	/**
 	 * Returns the block used as the default. This is assumed to refer to air.
 	 * If all the blocks in a subchunk layer are equal to this block, the layer is assumed to be empty.
 	 */
