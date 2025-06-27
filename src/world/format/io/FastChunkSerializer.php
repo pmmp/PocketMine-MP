@@ -75,22 +75,10 @@ final class FastChunkSerializer{
 			$stream->putByte($y);
 			$stream->putInt($subChunk->getEmptyBlockId());
 			
-			// Write block layer presence and data
-			$blockLayer = $subChunk->getBlockLayer();
-			$stream->putByte($blockLayer !== null ? 1 : 0);
-			if($blockLayer !== null){
-				self::serializePalettedArray($stream, $blockLayer);
-			}
-			
-			// Write liquid layer presence and data
-			$liquidLayer = $subChunk->getLiquidLayer();
-			$stream->putByte($liquidLayer !== null ? 1 : 0);
-			if($liquidLayer !== null){
-				self::serializePalettedArray($stream, $liquidLayer);
-			}
-			
+			// Write block and liquid layers (always present)
+			self::serializePalettedArray($stream, $subChunk->getBlockLayer());
+			self::serializePalettedArray($stream, $subChunk->getLiquidLayer());
 			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
-
 		}
 
 		return $stream->getBuffer();
@@ -122,19 +110,11 @@ final class FastChunkSerializer{
 			$y = Binary::signByte($stream->getByte());
 			$airBlockId = $stream->getInt();
 
-			// Read block layer
-			$blockLayer = null;
-			if($stream->getByte() !== 0){
-				$blockLayer = self::deserializePalettedArray($stream);
-			}
-			
-			// Read liquid layer
-			$liquidLayer = null;
-			if($stream->getByte() !== 0){
-				$liquidLayer = self::deserializePalettedArray($stream);
-			}
-			
+			// Read block and liquid layers (always present)
+			$blockLayer = self::deserializePalettedArray($stream);
+			$liquidLayer = self::deserializePalettedArray($stream);
 			$biomeArray = self::deserializePalettedArray($stream);
+			
 			$subChunks[$y] = new SubChunk($airBlockId, $blockLayer, $liquidLayer, $biomeArray);
 		}
 
