@@ -775,23 +775,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$subStream = new BinaryStream();
 					$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
 
-					$blockLayer = $subChunk->getBlockLayer();
-					$liquidLayer = $subChunk->getLiquidLayer();
-					
-					$isBlockLayerEmpty = $subChunk->isBlockLayerEmpty();
-					$isLiquidLayerEmpty = $subChunk->isLiquidLayerEmpty();
-					
-					$layerCount = 0;
-					if(!$isBlockLayerEmpty) $layerCount++;
-					if(!$isLiquidLayerEmpty) $layerCount++;
-					
-					$subStream->putByte($layerCount);
-					
-					if(!$isBlockLayerEmpty){
-						$this->serializeBlockPalette($subStream, $blockLayer);
+					$layers = [];
+					if(!$subChunk->isBlockLayerEmpty()){
+						$layers[] = $subChunk->getBlockLayer();
 					}
-					if(!$isLiquidLayerEmpty){
-						$this->serializeBlockPalette($subStream, $liquidLayer);
+					if(!$subChunk->isLiquidLayerEmpty()){
+						$layers[] = $subChunk->getLiquidLayer();
+					}
+					
+					$subStream->putByte(count($layers));
+					
+					foreach($layers as $layer){
+						$this->serializeBlockPalette($subStream, $layer);
 					}
 
 					$write->put($key, $subStream->getBuffer());
