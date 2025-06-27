@@ -65,31 +65,18 @@ class BlockLightUpdate extends LightUpdate{
 		foreach($chunk->getSubChunks() as $subChunkY => $subChunk){
 			$subChunk->setBlockLightArray(LightArray::fill(0));
 
-			$foundLightEmitter = false;
-			
-			// Check block layer for light emitters
-			$blockLayer = $subChunk->getBlockLayer();
-			if($blockLayer !== null){
-				foreach($blockLayer->getPalette() as $state){
+			$hasLightEmitter = false;
+			foreach([$subChunk->getBlockLayer(), $subChunk->getLiquidLayer()] as $layer){
+				foreach($layer->getPalette() as $state){
 					if(($this->lightEmitters[$state] ?? 0) > 0){
-						$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
-						$foundLightEmitter = true;
-						break;
+						$hasLightEmitter = true;
+						break 2;
 					}
 				}
 			}
 			
-			// Check liquid layer for light emitters if not found in block layer
-			if(!$foundLightEmitter){
-				$liquidLayer = $subChunk->getLiquidLayer();
-				if($liquidLayer !== null){
-					foreach($liquidLayer->getPalette() as $state){
-						if(($this->lightEmitters[$state] ?? 0) > 0){
-							$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
-							break;
-						}
-					}
-				}
+			if($hasLightEmitter){
+				$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 			}
 		}
 
