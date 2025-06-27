@@ -104,29 +104,12 @@ class SubChunk{
 		$this->blockLayer->set($x, $y, $z, $block);
 	}
 
-	/**
-	 * @deprecated Use getBlockLayer() and getLiquidLayer() instead
-	 * @return PalettedBlockArray[]
-	 * @phpstan-return list<PalettedBlockArray>
-	 */
-	public function getBlockLayers() : array{
-		return [$this->blockLayer, $this->liquidLayer];
-	}
-
 	public function getBlockLayer() : PalettedBlockArray{
 		return $this->blockLayer;
 	}
 
-	public function setBlockLayer(PalettedBlockArray $blockLayer) : void{
-		$this->blockLayer = $blockLayer;
-	}
-
 	public function getLiquidLayer() : PalettedBlockArray{
 		return $this->liquidLayer;
-	}
-
-	public function setLiquidLayer(PalettedBlockArray $liquidLayer) : void{
-		$this->liquidLayer = $liquidLayer;
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : ?int{
