@@ -87,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.33.0
+        uses: shivammathur/setup-php@2.34.1
         with:
           php-version: ${{ env.PHP_VERSION }}
 
@@ -165,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.18.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
