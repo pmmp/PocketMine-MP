@@ -372,6 +372,7 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_CREATOR = "minecraft:music_disc_creator";
 	public const MUSIC_DISC_CREATOR_MUSIC_BOX = "minecraft:music_disc_creator_music_box";
 	public const MUSIC_DISC_FAR = "minecraft:music_disc_far";
+	public const MUSIC_DISC_LAVA_CHICKEN = "minecraft:music_disc_lava_chicken";
 	public const MUSIC_DISC_MALL = "minecraft:music_disc_mall";
 	public const MUSIC_DISC_MELLOHI = "minecraft:music_disc_mellohi";
 	public const MUSIC_DISC_OTHERSIDE = "minecraft:music_disc_otherside";
