@@ -70,7 +70,7 @@ final class StringToItemParser extends StringToTParser{
 			$register("concrete", fn() => Blocks::CONCRETE()->setColor($color));
 			$register("concrete_powder", fn() => Blocks::CONCRETE_POWDER()->setColor($color));
 			$register("glazed_terracotta", fn() => Blocks::GLAZED_TERRACOTTA()->setColor($color));
-			$register("stained_clay", fn() => Blocks::STAINED_CLAY()->setColor($color));
+			$register("stained_hardened_clay", fn() => Blocks::STAINED_CLAY()->setColor($color));
 			$register("stained_glass", fn() => Blocks::STAINED_GLASS()->setColor($color));
 			$register("stained_glass_pane", fn() => Blocks::STAINED_GLASS_PANE()->setColor($color));
 			$register("stained_hardened_glass", fn() => Blocks::STAINED_HARDENED_GLASS()->setColor($color));
@@ -250,7 +250,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chiseled_tuff_bricks", fn() => Blocks::CHISELED_TUFF_BRICKS());
 		$result->registerBlock("chorus_flower", fn() => Blocks::CHORUS_FLOWER());
 		$result->registerBlock("chorus_plant", fn() => Blocks::CHORUS_PLANT());
-		$result->registerBlock("clay_block", fn() => Blocks::CLAY());
+		$result->registerBlock("clay", fn() => Blocks::CLAY());
 		$result->registerBlock("coal_block", fn() => Blocks::COAL());
 		$result->registerBlock("coal_ore", fn() => Blocks::COAL_ORE());
 		$result->registerBlock("coarse_dirt", fn() => Blocks::DIRT()->setDirtType(DirtType::COARSE));
@@ -687,7 +687,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("granite_slab", fn() => Blocks::GRANITE_SLAB());
 		$result->registerBlock("granite_stairs", fn() => Blocks::GRANITE_STAIRS());
 		$result->registerBlock("granite_wall", fn() => Blocks::GRANITE_WALL());
-		$result->registerBlock("grass", fn() => Blocks::GRASS());
+		$result->registerBlock("grass_block", fn() => Blocks::GRASS());
 		$result->registerBlock("grass_path", fn() => Blocks::GRASS_PATH());
 		$result->registerBlock("gravel", fn() => Blocks::GRAVEL());
 		$result->registerBlock("green_torch", fn() => Blocks::GREEN_TORCH());
@@ -1310,7 +1310,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("chicken", fn() => Items::RAW_CHICKEN());
 		$result->register("chorus_fruit", fn() => Items::CHORUS_FRUIT());
 		$result->register("chorus_fruit_popped", fn() => Items::POPPED_CHORUS_FRUIT());
-		$result->register("clay", fn() => Items::CLAY());
 		$result->register("clay_ball", fn() => Items::CLAY());
 		$result->register("clock", fn() => Items::CLOCK());
 		$result->register("clown_fish", fn() => Items::CLOWNFISH());
