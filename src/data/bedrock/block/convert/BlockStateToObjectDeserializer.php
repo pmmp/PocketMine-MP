@@ -939,6 +939,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::DIORITE, fn() => Blocks::DIORITE());
 		$this->mapSimple(Ids::DRAGON_EGG, fn() => Blocks::DRAGON_EGG());
 		$this->mapSimple(Ids::DRIED_KELP_BLOCK, fn() => Blocks::DRIED_KELP());
+		$this->mapSimple(Ids::DRIPSTONE_BLOCK, fn() => Blocks::DRIPSTONE_BLOCK());
 		$this->mapSimple(Ids::ELEMENT_0, fn() => Blocks::ELEMENT_ZERO());
 		$this->mapSimple(Ids::ELEMENT_1, fn() => Blocks::ELEMENT_HYDROGEN());
 		$this->mapSimple(Ids::ELEMENT_10, fn() => Blocks::ELEMENT_NEON());
@@ -1103,6 +1104,8 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapSimple(Ids::MOB_SPAWNER, fn() => Blocks::MONSTER_SPAWNER());
 		$this->mapSimple(Ids::MOSSY_COBBLESTONE, fn() => Blocks::MOSSY_COBBLESTONE());
 		$this->mapSimple(Ids::MOSSY_STONE_BRICKS, fn() => Blocks::MOSSY_STONE_BRICKS());
+		$this->mapSimple(Ids::MOSS_BLOCK, fn() => Blocks::MOSS_BLOCK());
+		$this->mapSimple(Ids::MOSS_CARPET, fn() => Blocks::MOSS_CARPET());
 		$this->mapSimple(Ids::MUD, fn() => Blocks::MUD());
 		$this->mapSimple(Ids::MUD_BRICKS, fn() => Blocks::MUD_BRICKS());
 		$this->mapSimple(Ids::MYCELIUM, fn() => Blocks::MYCELIUM());

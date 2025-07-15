@@ -165,6 +165,13 @@ class ShapedRecipe implements CraftingRecipe{
 		return $ingredients;
 	}
 
+	/**
+	 * @return array<string, RecipeIngredient>
+	 */
+	public function getIngredientsByChar() : array{
+		return $this->ingredientList;
+	}
+
 	public function getIngredient(int $x, int $y) : ?RecipeIngredient{
 		return $this->ingredientList[$this->shape[$y][$x]] ?? null;
 	}

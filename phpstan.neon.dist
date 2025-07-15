@@ -52,6 +52,7 @@ parameters:
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
 		- tests/phpstan/stubs/pmmpthread.stub
+		- tests/phpstan/stubs/xxhash.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	typeAliases:
 		#variadics don't work for this - mixed probably shouldn't work either, but for now it does

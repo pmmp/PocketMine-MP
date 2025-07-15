@@ -36,6 +36,7 @@ use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 
@@ -67,7 +68,7 @@ final class Cauldron extends Spawnable{
 		$this->customWaterColor = $customWaterColor;
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setShort(self::TAG_POTION_CONTAINER_TYPE, match($this->potionItem?->getTypeId()){
 			ItemTypeIds::POTION => self::POTION_CONTAINER_TYPE_NORMAL,
 			ItemTypeIds::SPLASH_POTION => self::POTION_CONTAINER_TYPE_SPLASH,

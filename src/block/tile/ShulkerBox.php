@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\world\World;
 
 class ShulkerBox extends Spawnable implements Container, Nameable{
@@ -105,8 +106,8 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 		return "Shulker Box";
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setByte(self::TAG_FACING, $this->facing);
-		$this->addNameSpawnData($nbt);
+		$this->addNameSpawnData($nbt, $typeConverter);
 	}
 }

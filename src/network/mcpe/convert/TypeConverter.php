@@ -23,18 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use DaveRandom\CallbackValidator\BuiltInTypes;
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ParameterType;
+use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
 use pocketmine\crafting\RecipeIngredient;
 use pocketmine\crafting\TagWildcardRecipeIngredient;
-use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
+use pocketmine\data\bedrock\item\downgrade\ItemIdMetaDowngrader;
 use pocketmine\data\bedrock\item\ItemTypeNames;
+use pocketmine\event\server\TypeConverterConstructEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\NetworkBroadcastUtils;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
@@ -46,15 +53,19 @@ use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient as ProtocolRe
 use pocketmine\network\mcpe\protocol\types\recipe\StringIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\TagItemDescriptor;
 use pocketmine\player\GameMode;
+use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\SingletonTrait;
-use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use pocketmine\utils\ProtocolSingletonTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
+use function count;
 use function get_class;
+use function spl_object_id;
 
 class TypeConverter{
-	use SingletonTrait;
+	use ProtocolSingletonTrait {
+		ProtocolSingletonTrait::__construct as private __protocolConstruct;
+	}
 
 	private const PM_ID_TAG = "___Id___";
 
@@ -64,22 +75,21 @@ class TypeConverter{
 	private BlockTranslator $blockTranslator;
 	private ItemTranslator $itemTranslator;
 	private ItemTypeDictionary $itemTypeDictionary;
+	private ItemIdMetaDowngrader $itemDataDowngrader;
 	private int $shieldRuntimeId;
 
 	private SkinAdapter $skinAdapter;
 
-	public function __construct(){
+	public function __construct(int $protocolId){
+		$this->__protocolConstruct($protocolId);
+
 		//TODO: inject stuff via constructor
 		$this->blockItemIdMap = BlockItemIdMap::getInstance();
 
-		$canonicalBlockStatesRaw = Filesystem::fileGetContents(BedrockDataFiles::CANONICAL_BLOCK_STATES_NBT);
-		$metaMappingRaw = Filesystem::fileGetContents(BedrockDataFiles::BLOCK_STATE_META_MAP_JSON);
-		$this->blockTranslator = new BlockTranslator(
-			BlockStateDictionary::loadFromString($canonicalBlockStatesRaw, $metaMappingRaw),
-			GlobalBlockStateHandlers::getSerializer()
-		);
+		$this->blockTranslator = BlockTranslator::loadFromProtocolId($protocolId);
 
-		$this->itemTypeDictionary = ItemTypeDictionaryFromDataHelper::loadFromString(Filesystem::fileGetContents(BedrockDataFiles::REQUIRED_ITEM_LIST_JSON));
+		$this->itemTypeDictionary = ItemTypeDictionaryFromDataHelper::loadFromProtocolId($protocolId);
+		$this->itemDataDowngrader = new ItemIdMetaDowngrader($this->itemTypeDictionary, ItemTranslator::getItemSchemaId($protocolId));
 		$this->shieldRuntimeId = $this->itemTypeDictionary->fromStringId(ItemTypeNames::SHIELD);
 
 		$this->itemTranslator = new ItemTranslator(
@@ -87,10 +97,14 @@ class TypeConverter{
 			$this->blockTranslator->getBlockStateDictionary(),
 			GlobalItemDataHandlers::getSerializer(),
 			GlobalItemDataHandlers::getDeserializer(),
-			$this->blockItemIdMap
+			$this->blockItemIdMap,
+			$this->itemDataDowngrader
 		);
 
 		$this->skinAdapter = new LegacySkinAdapter();
+
+		$event = new TypeConverterConstructEvent($this);
+		$event->call();
 	}
 
 	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
@@ -136,8 +150,11 @@ class TypeConverter{
 			return new ProtocolRecipeIngredient(null, 0);
 		}
 		if($ingredient instanceof MetaWildcardRecipeIngredient){
-			$id = $this->itemTypeDictionary->fromStringId($ingredient->getItemId());
-			$meta = self::RECIPE_INPUT_WILDCARD_META;
+			$oldStringId = $ingredient->getItemId();
+			[$stringId, $meta] = $this->itemDataDowngrader->downgrade($oldStringId, 0);
+
+			$id = $this->itemTypeDictionary->fromStringId($stringId);
+			$meta = $meta === 0 && $stringId === $oldStringId ? self::RECIPE_INPUT_WILDCARD_META : $meta; // downgrader returns the same meta
 			$descriptor = new IntIdMetaItemDescriptor($id, $meta);
 		}elseif($ingredient instanceof ExactRecipeIngredient){
 			$item = $ingredient->getItem();
@@ -224,7 +241,7 @@ class TypeConverter{
 		$extraData = $id === $this->shieldRuntimeId ?
 			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
 			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
-		$extraDataSerializer = PacketSerializer::encoder();
+		$extraDataSerializer = PacketSerializer::encoder($this->protocolId);
 		$extraData->write($extraDataSerializer);
 
 		return new ItemStack(
@@ -270,8 +287,50 @@ class TypeConverter{
 		return $itemResult;
 	}
 
+	/**
+	 * @param Player[] $players
+	 *
+	 * @phpstan-return array{array<int, TypeConverter>, array<int, array<int, Player>>}
+	 */
+	public static function sortByConverter(array $players) : array{
+		/** @var TypeConverter[] $typeConverters */
+		$typeConverters = [];
+		/** @var Player[][] $converterRecipients */
+		$converterRecipients = [];
+		foreach($players as $recipient){
+			$typeConverter = $recipient->getNetworkSession()->getTypeConverter();
+			$typeConverters[spl_object_id($typeConverter)] = $typeConverter;
+			$converterRecipients[spl_object_id($typeConverter)][spl_object_id($recipient)] = $recipient;
+		}
+
+		return [
+			$typeConverters,
+			$converterRecipients
+		];
+	}
+
+	/**
+	 * @param Player[] $players
+	 * @phpstan-param \Closure(TypeConverter) : ClientboundPacket[] $closure
+	 */
+	public static function broadcastByTypeConverter(array $players, \Closure $closure) : void{
+		Utils::validateCallableSignature(new CallbackType(
+			new ReturnType(BuiltInTypes::ARRAY, ReturnType::COVARIANT),
+			new ParameterType('typeConverter', TypeConverter::class),
+		), $closure);
+
+		[$typeConverters, $converterRecipients] = self::sortByConverter($players);
+
+		foreach($typeConverters as $key => $typeConverter){
+			$packets = $closure($typeConverter);
+			if(count($packets) > 0){
+				NetworkBroadcastUtils::broadcastPackets($converterRecipients[$key], $packets);
+			}
+		}
+	}
+
 	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
-		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		$extraDataDeserializer = PacketSerializer::decoder($this->protocolId, $extraData, 0);
 		return $id === $this->shieldRuntimeId ?
 			ItemStackExtraDataShield::read($extraDataDeserializer) :
 			ItemStackExtraData::read($extraDataDeserializer);

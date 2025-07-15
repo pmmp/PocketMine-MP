@@ -25,19 +25,20 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
-final class ConsumingItemAnimation implements Animation{
+final class ConsumingItemAnimation extends ItemAnimation{
 
 	public function __construct(
 		private Living $entity,
-		private Item $item
-	){}
+		Item $item
+	){
+		parent::__construct($item);
+	}
 
 	public function encode() : array{
-		[$netId, $netData] = TypeConverter::getInstance()->getItemTranslator()->toNetworkId($this->item);
+		[$netId, $netData] = $this->toNetworkId();
 		return [
 			//TODO: need to check the data values
 			ActorEventPacket::create($this->entity->getId(), ActorEvent::EATING_ITEM, ($netId << 16) | $netData)

@@ -27,10 +27,10 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class SmokeParticle implements Particle{
+class SmokeParticle extends ProtocolParticle{
 	public function __construct(private int $scale = 0){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::SMOKE, $this->scale, $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::SMOKE, $this->scale, $pos, $this->protocolId)];
 	}
 }

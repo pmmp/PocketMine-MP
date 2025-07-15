@@ -25,6 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
@@ -51,7 +52,7 @@ final class Bell extends Spawnable{
 
 	public function setTicks(int $ticks) : void{ $this->ticks = $ticks; }
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setByte(self::TAG_RINGING, $this->ringing ? 1 : 0);
 		$nbt->setInt(self::TAG_DIRECTION, $this->facing);
 		$nbt->setInt(self::TAG_TICKS, $this->ticks);
@@ -77,8 +78,8 @@ final class Bell extends Spawnable{
 	 * simpler as a BlockEventPacket. It's simpler to implement bells with this hack than to follow Mojang's complicated
 	 * mess.
 	 */
-	public function createFakeUpdatePacket(int $bellHitFace) : BlockActorDataPacket{
-		$nbt = $this->getSpawnCompound();
+	public function createFakeUpdatePacket(int $bellHitFace, TypeConverter $typeConverter) : BlockActorDataPacket{
+		$nbt = $this->getSpawnCompound($typeConverter);
 		$nbt->setByte(self::TAG_RINGING, 1);
 		$nbt->setInt(self::TAG_DIRECTION, match($bellHitFace){
 			Facing::SOUTH => 0,

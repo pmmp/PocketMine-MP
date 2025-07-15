@@ -127,7 +127,7 @@ class Campfire extends Spawnable implements Container{
 		}
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		foreach([
 			0 => self::TAG_FIRST_INPUT_ITEM,
 			1 => self::TAG_SECOND_INPUT_ITEM,
@@ -136,7 +136,7 @@ class Campfire extends Spawnable implements Container{
 		] as $slot => $tag){
 			$item = $this->inventory->getItem($slot);
 			if(!$item->isNull()){
-				$nbt->setTag($tag, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($item));
+				$nbt->setTag($tag, $typeConverter->getItemTranslator()->toNetworkNbt($item));
 			}
 		}
 	}

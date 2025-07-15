@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationType;
@@ -45,6 +46,7 @@ use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
 use function gettype;
+use function in_array;
 use function is_array;
 use function is_object;
 use function json_decode;
@@ -66,8 +68,21 @@ class LoginPacketHandler extends PacketHandler{
 	){}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
-		$jwtChain = $this->parseJwtChain($authInfo->Certificate);
+		$protocolVersion = $packet->protocol;
+		if(!$this->isCompatibleProtocol($protocolVersion)){
+			$this->session->disconnectIncompatibleProtocol($protocolVersion);
+
+			return true;
+		}
+		$this->session->setProtocolId($protocolVersion);
+
+		if($protocolVersion >= ProtocolInfo::PROTOCOL_1_21_90){
+			$authInfo = $this->parseAuthInfo($packet->authInfoJson);
+			$jwtChain = $this->parseJwtChain($authInfo->Certificate);
+		}else{
+			$jwtChain = $this->parseJwtChain($packet->authInfoJson);
+		}
+
 		$extraData = $this->fetchAuthData($jwtChain);
 
 		if(!Player::isValidUserName($extraData->displayName)){
@@ -118,8 +133,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		$ev = new PlayerPreLoginEvent(
 			$playerInfo,
-			$this->session->getIp(),
-			$this->session->getPort(),
+			$this->session,
 			$this->server->requiresAuthentication()
 		);
 		if($this->server->getNetwork()->getValidConnectionCount() > $this->server->getMaxPlayers()){
@@ -147,7 +161,11 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$this->processLogin($authInfo->Token, AuthenticationType::from($authInfo->AuthenticationType), $jwtChain->chain, $packet->clientDataJwt, $ev->isAuthRequired());
+		if(isset($authInfo)){
+			$this->processLogin($authInfo->Token, AuthenticationType::from($authInfo->AuthenticationType), $jwtChain->chain, $packet->clientDataJwt, $ev->isAuthRequired());
+		}else{
+			$this->processLogin(null, null, $jwtChain->chain, $packet->clientDataJwt, $ev->isAuthRequired());
+		}
 
 		return true;
 	}
@@ -273,11 +291,15 @@ class LoginPacketHandler extends PacketHandler{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function processLogin(string $token, AuthenticationType $authType, ?array $legacyCertificate, string $clientData, bool $authRequired) : void{
+	protected function processLogin(?string $token, ?AuthenticationType $authType, ?array $legacyCertificate, string $clientData, bool $authRequired) : void{
 		if($legacyCertificate === null){
 			throw new PacketHandlingException("Legacy certificate cannot be null");
 		}
 		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($legacyCertificate, $clientData, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
+	}
+
+	protected function isCompatibleProtocol(int $protocolVersion) : bool{
+		return in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true);
 	}
 }

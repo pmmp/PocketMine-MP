@@ -28,7 +28,7 @@ use function count;
 use function spl_object_id;
 
 /**
- * @phpstan-template TValue
+ * @phpstan-template-covariant TValue
  */
 final class Promise{
 	/**

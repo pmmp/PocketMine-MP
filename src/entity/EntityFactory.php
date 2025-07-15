@@ -35,6 +35,7 @@ use pocketmine\entity\EntityDataHelper as Helper;
 use pocketmine\entity\object\EndCrystal;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
+use pocketmine\entity\object\FireworkRocket;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
@@ -120,6 +121,10 @@ final class EntityFactory{
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
 			return new FallingBlock(Helper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(RuntimeBlockStateRegistry::getInstance(), $nbt), $nbt);
 		}, ['FallingSand', 'minecraft:falling_block']);
+
+		$this->register(FireworkRocket::class, function(World $world, CompoundTag $nbt) : FireworkRocket{
+			return new FireworkRocket(Helper::parseLocation($nbt, $world), 0, [], $nbt);
+		}, ['Firework', 'minecraft:firework']);
 
 		$this->register(IceBomb::class, function(World $world, CompoundTag $nbt) : IceBomb{
 			return new IceBomb(Helper::parseLocation($nbt, $world), null, $nbt);

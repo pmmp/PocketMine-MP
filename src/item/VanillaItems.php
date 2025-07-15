@@ -163,6 +163,8 @@ use function strtolower;
  * @method static Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item FEATHER()
  * @method static Item FERMENTED_SPIDER_EYE()
+ * @method static FireworkRocket FIREWORK_ROCKET()
+ * @method static FireworkStar FIREWORK_STAR()
  * @method static FireCharge FIRE_CHARGE()
  * @method static FishingRod FISHING_ROD()
  * @method static Item FLINT()
@@ -493,6 +495,8 @@ final class VanillaItems{
 		self::register("experience_bottle", fn(IID $id) => new ExperienceBottle($id, "Bottle o' Enchanting"));
 		self::register("feather", fn(IID $id) => new Item($id, "Feather"));
 		self::register("fermented_spider_eye", fn(IID $id) => new Item($id, "Fermented Spider Eye"));
+		self::register("firework_rocket", fn(IID $id) => new FireworkRocket($id, "Firework Rocket"));
+		self::register("firework_star", fn(IID $id) => new FireworkStar($id, "Firework Star"));
 		self::register("fire_charge", fn(IID $id) => new FireCharge($id, "Fire Charge"));
 		self::register("fishing_rod", fn(IID $id) => new FishingRod($id, "Fishing Rod", [EnchantmentTags::FISHING_ROD]));
 		self::register("flint", fn(IID $id) => new Item($id, "Flint"));

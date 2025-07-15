@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 
 /**
  * This exists to force the client to update the spore blossom every tick, which is necessary for it to generate
@@ -31,7 +32,7 @@ use pocketmine\nbt\tag\CompoundTag;
  */
 final class SporeBlossom extends Spawnable{
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		//NOOP
 	}
 

@@ -3,4 +3,4 @@
 	url = https://github.com/pmmp/DevTools.git
 [submodule "build/php"]
 	path = build/php
-	url = https://github.com/pmmp/php-build-scripts.git
+	url = https://github.com/NetherGamesMC/php-build-scripts.git

@@ -261,7 +261,7 @@ JIT_WARNING
 		}
 		require_once($bootstrap);
 
-		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
+		$composerGitHash = InstalledVersions::getReference('nethergamesmc/pocketmine-mp');
 		if($composerGitHash !== null){
 			//we can't verify dependency versions if we were installed without using git
 			$currentGitHash = explode("-", VersionInfo::GIT_HASH(), 2)[0];
@@ -361,7 +361,7 @@ JIT_WARNING
 
 			$logger->info("Stopping other threads");
 
-			$killer = new ServerKiller(8);
+			$killer = new ServerKiller(120);
 			$killer->start();
 			usleep(10000); //Fixes ServerKiller not being able to start on single-core machines
 

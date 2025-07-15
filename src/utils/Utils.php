@@ -35,6 +35,7 @@ use pocketmine\thread\ThreadCrashInfoFrame;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
+use function array_keys;
 use function array_map;
 use function array_reverse;
 use function array_values;
@@ -698,5 +699,19 @@ final class Utils{
 	 */
 	public static function getRandomFloat() : float{
 		return mt_rand() / mt_getrandmax();
+	}
+
+	/**
+	 *  Array map implementation that preserves keys.
+	 *
+	 *  @phpstan-template TKeyType
+	 *  @phpstan-template TValueType
+	 *  @phpstan-template TResultType
+	 *  @phpstan-param callable(TValueType) : TResultType $callback
+	 *  @phpstan-param array<TKeyType, TValueType> $array
+	 *  @phpstan-return array<TKeyType, TResultType>
+	 */
+	public static function arrayMapPreserveKeys(callable $callback, array $array) : array {
+		return array_combine(array_keys($array), array_map($callback, $array));
 	}
 }

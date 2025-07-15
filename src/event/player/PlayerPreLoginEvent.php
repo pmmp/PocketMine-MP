@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Event;
 use pocketmine\lang\Translatable;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
 use function count;
@@ -65,8 +66,7 @@ class PlayerPreLoginEvent extends Event{
 
 	public function __construct(
 		private PlayerInfo $playerInfo,
-		private string $ip,
-		private int $port,
+		private NetworkSession $session,
 		protected bool $authRequired
 	){}
 
@@ -80,11 +80,15 @@ class PlayerPreLoginEvent extends Event{
 	}
 
 	public function getIp() : string{
-		return $this->ip;
+		return $this->session->getIp();
 	}
 
 	public function getPort() : int{
-		return $this->port;
+		return $this->session->getPort();
+	}
+
+	public function getSession() : NetworkSession{
+		return $this->session;
 	}
 
 	public function isAuthRequired() : bool{

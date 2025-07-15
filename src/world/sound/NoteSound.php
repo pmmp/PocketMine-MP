@@ -26,9 +26,10 @@ namespace pocketmine\world\sound;
 use pocketmine\data\bedrock\NoteInstrumentIdMap;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class NoteSound implements Sound{
+class NoteSound extends ProtocolSound{
 	public function __construct(
 		private NoteInstrument $instrument,
 		private int $note
@@ -40,6 +41,15 @@ class NoteSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
 		$instrumentId = NoteInstrumentIdMap::getInstance()->toId($this->instrument);
+
+		if($this->protocolId < ProtocolInfo::PROTOCOL_1_21_50){
+			if($instrumentId === 5 || $instrumentId === 7){
+				$instrumentId++;
+			}elseif($instrumentId === 6 || $instrumentId === 8){
+				$instrumentId--;
+			}
+		}
+
 		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::NOTE, $pos, false, ($instrumentId << 8) | $this->note)];
 	}
 }

@@ -28,18 +28,21 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use function count;
 use function get_class;
+use function spl_object_id;
 
 abstract class Spawnable extends Tile{
-	/** @phpstan-var CacheableNbt<CompoundTag>|null */
-	private ?CacheableNbt $spawnCompoundCache = null;
+	/** @phpstan-var array<int, CacheableNbt<CompoundTag>|null> */
+	private array $spawnCompoundCaches = [];
 
 	/**
 	 * @deprecated
 	 */
 	public function isDirty() : bool{
-		return $this->spawnCompoundCache === null;
+		return count($this->spawnCompoundCaches) === 0;
 	}
 
 	/**
@@ -50,7 +53,7 @@ abstract class Spawnable extends Tile{
 	}
 
 	public function clearSpawnCompoundCache() : void{
-		$this->spawnCompoundCache = null;
+		$this->spawnCompoundCaches = [];
 	}
 
 	/**
@@ -75,21 +78,17 @@ abstract class Spawnable extends Tile{
 	 *
 	 * @phpstan-return CacheableNbt<CompoundTag>
 	 */
-	final public function getSerializedSpawnCompound() : CacheableNbt{
-		if($this->spawnCompoundCache === null){
-			$this->spawnCompoundCache = new CacheableNbt($this->getSpawnCompound());
-		}
-
-		return $this->spawnCompoundCache;
+	final public function getSerializedSpawnCompound(TypeConverter $typeConverter) : CacheableNbt{
+		return $this->spawnCompoundCaches[spl_object_id($typeConverter)] ??= new CacheableNbt($this->getSpawnCompound($typeConverter));
 	}
 
-	final public function getSpawnCompound() : CompoundTag{
+	final public function getSpawnCompound(TypeConverter $typeConverter) : CompoundTag{
 		$nbt = CompoundTag::create()
 			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this))) //TODO: disassociate network ID from save ID
 			->setInt(self::TAG_X, $this->position->x)
 			->setInt(self::TAG_Y, $this->position->y)
 			->setInt(self::TAG_Z, $this->position->z);
-		$this->addAdditionalSpawnData($nbt);
+		$this->addAdditionalSpawnData($nbt, $typeConverter);
 		return $nbt;
 	}
 
@@ -97,5 +96,5 @@ abstract class Spawnable extends Tile{
 	 * An extension to getSpawnCompound() for
 	 * further modifying the generic tile NBT.
 	 */
-	abstract protected function addAdditionalSpawnData(CompoundTag $nbt) : void;
+	abstract protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void;
 }

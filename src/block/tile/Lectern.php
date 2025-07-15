@@ -77,11 +77,11 @@ class Lectern extends Spawnable{
 		$this->book = $book !== null && !$book->isNull() ? clone $book : null;
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
 		if($this->book !== null){
-			$nbt->setTag(self::TAG_BOOK, TypeConverter::getInstance()->getItemTranslator()->toNetworkNbt($this->book));
+			$nbt->setTag(self::TAG_BOOK, $typeConverter->getItemTranslator()->toNetworkNbt($this->book));
 			$nbt->setInt(self::TAG_TOTAL_PAGES, count($this->book->getPages()));
 		}
 	}

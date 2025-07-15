@@ -952,6 +952,11 @@ abstract class Living extends Entity{
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
+		//Keep sending pre-1.21 bubbles potion color cuz multi-version
+		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+
+		//1.21+: send first 8 visible effects to display effect bubbles
 		$visibleEffects = [];
 		foreach ($this->effectManager->all() as $effect) {
 			if (!$effect->isVisible() || !$effect->getType()->hasBubbles()) {

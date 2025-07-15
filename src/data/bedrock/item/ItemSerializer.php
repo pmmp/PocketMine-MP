@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
+use pocketmine\data\bedrock\item\downgrade\ItemIdMetaDowngrader;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\item\CoralFan;
 use pocketmine\item\Item;
@@ -89,7 +90,7 @@ final class ItemSerializer{
 	 *
 	 * @throws ItemTypeSerializeException
 	 */
-	public function serializeType(Item $item) : Data{
+	public function serializeType(Item $item, ?ItemIdMetaDowngrader $downgrader = null) : Data{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
 		}
@@ -126,12 +127,17 @@ final class ItemSerializer{
 			$data = new Data($data->getName(), $data->getMeta(), $data->getBlock(), $resultTag);
 		}
 
+		if($downgrader !== null){
+			[$name, $meta] = $downgrader->downgrade($data->getName(), $data->getMeta());
+			$data = new Data($name, $meta, $data->getBlock(), $data->getTag());
+		}
+
 		return $data;
 	}
 
-	public function serializeStack(Item $item, ?int $slot = null) : SavedItemStackData{
+	public function serializeStack(Item $item, ?int $slot = null, ?ItemIdMetaDowngrader $downgrader = null) : SavedItemStackData{
 		return new SavedItemStackData(
-			$this->serializeType($item),
+			$this->serializeType($item, $downgrader),
 			$item->getCount(),
 			$slot,
 			null,

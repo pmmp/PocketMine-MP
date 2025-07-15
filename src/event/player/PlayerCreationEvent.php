@@ -26,12 +26,16 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
+use pocketmine\promise\Promise;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use function is_a;
 
 /**
  * Allows the use of custom Player classes. This enables overriding built-in Player methods to change behaviour that is
  * not possible to alter any other way.
+ *
+ * Allows the plugins to specify promise that need to be completed before the login sequence take place.
  *
  * You probably don't need this event, and found your way here because you looked at some code in an old plugin that
  * abused it (very common). Instead of using custom player classes, you should consider making session classes instead.
@@ -52,7 +56,11 @@ class PlayerCreationEvent extends Event{
 	/** @phpstan-var class-string<Player> */
 	private string $playerClass = Player::class;
 
-	public function __construct(private NetworkSession $session){}
+	/** @phpstan-param ObjectSet<Promise<null>> $promises */
+	public function __construct(
+		private NetworkSession $session,
+		private ObjectSet $promises
+	){}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
@@ -108,5 +116,16 @@ class PlayerCreationEvent extends Event{
 	public function setPlayerClass(string $class) : void{
 		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
+	}
+
+	/**
+	 * Adds a promise to the waiting list for the login sequence.
+	 * Once all the promises that have been added have been completed,
+	 * the player login sequence will be initiated and the player will be created.
+	 *
+	 * @phpstan-param Promise<null> $promise
+	 */
+	public function addPromise(Promise $promise) : void{
+		$this->promises->add($promise);
 	}
 }

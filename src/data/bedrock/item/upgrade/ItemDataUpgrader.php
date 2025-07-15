@@ -36,7 +36,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\mcpe\convert\BlockStateDictionary;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\utils\Binary;
 use function assert;
 
@@ -48,8 +48,7 @@ final class ItemDataUpgrader{
 		private LegacyItemIdToStringIdMap $legacyIntToStringIdMap,
 		private R12ItemIdToBlockIdMap $r12ItemIdToBlockIdMap,
 		private BlockDataUpgrader $blockDataUpgrader,
-		private BlockItemIdMap $blockItemIdMap,
-		private BlockStateDictionary $blockStateDictionary
+		private BlockItemIdMap $blockItemIdMap
 	){}
 
 	/**
@@ -154,13 +153,14 @@ final class ItemDataUpgrader{
 
 		//TODO: Dirty hack to load old skulls from disk: Put this into item upgrade schema's before Mojang makes something with a non 0 default state
 		if($blockStateData === null && ($blockId = $this->blockItemIdMap->lookupBlockId($newNameId)) !== null){
-			$networkRuntimeId = $this->blockStateDictionary->lookupStateIdFromIdMeta($blockId, 0);
+			$blockStateDictionary = TypeConverter::getInstance()->getBlockTranslator()->getBlockStateDictionary();
+			$networkRuntimeId = $blockStateDictionary->lookupStateIdFromIdMeta($blockId, 0);
 
 			if($networkRuntimeId === null){
 				throw new SavedDataLoadingException("Failed to find blockstate for blockitem $newNameId");
 			}
 
-			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkRuntimeId);
+			$blockStateData = $blockStateDictionary->generateDataFromStateId($networkRuntimeId);
 		}
 
 		//TODO: this won't account for spawn eggs from before 1.16.100 - perhaps we're lucky and they just left the meta in there anyway?

@@ -51,6 +51,7 @@ use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\ItemRegistryPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -191,7 +192,7 @@ class ParserPacketHandler extends PacketHandler{
 
 		$rawExtraData = $itemStack->getRawExtraData();
 		if($rawExtraData !== ""){
-			$decoder = PacketSerializer::decoder($rawExtraData, 0);
+			$decoder = PacketSerializer::decoder(ProtocolInfo::CURRENT_PROTOCOL, $rawExtraData, 0);
 			$extraData = $itemStringId === ItemTypeNames::SHIELD ? ItemStackExtraDataShield::read($decoder) : ItemStackExtraData::read($decoder);
 			$nbt = $extraData->getNbt();
 			if($nbt !== null && count($nbt) > 0){
@@ -642,7 +643,7 @@ function main(array $argv) : int{
 			fwrite(STDERR, "Unknown packet on line " . ($lineNum + 1) . ": " . $parts[1]);
 			continue;
 		}
-		$serializer = PacketSerializer::decoder($raw, 0);
+		$serializer = PacketSerializer::decoder(ProtocolInfo::CURRENT_PROTOCOL, $raw, 0);
 
 		$pk->decode($serializer);
 		$pk->handle($handler);

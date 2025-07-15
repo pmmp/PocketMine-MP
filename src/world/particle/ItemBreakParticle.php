@@ -23,17 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class ItemBreakParticle implements Particle{
-	public function __construct(private Item $item){}
-
+class ItemBreakParticle extends ItemParticle{
 	public function encode(Vector3 $pos) : array{
-		[$id, $meta] = TypeConverter::getInstance()->getItemTranslator()->toNetworkId($this->item);
-		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($id << 16) | $meta, $pos)];
+		[$id, $meta] = $this->toNetworkId();
+		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($id << 16) | $meta, $pos, ProtocolInfo::CURRENT_PROTOCOL)]; // this particle isn't affected
 	}
 }

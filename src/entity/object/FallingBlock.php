@@ -44,6 +44,7 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\player\Player;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\sound\BlockBreakSound;
 use function abs;
@@ -199,11 +200,19 @@ class FallingBlock extends Entity{
 		return $this->block->asItem();
 	}
 
-	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
-		parent::syncNetworkData($properties);
+	protected function sendSpawnPacket(Player $player) : void{
+		$typeConverter = $player->getNetworkSession()->getTypeConverter();
+		$this->getNetworkProperties()->setInt(EntityMetadataProperties::VARIANT, $typeConverter->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
+		$this->getNetworkProperties()->clearDirtyProperties(); //needed for multi protocol
 
-		$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
+		parent::sendSpawnPacket($player);
 	}
+
+	//protected function syncNetworkData(EntityMetadataCollection $properties) : void{ No need due to multi protocol
+	//	parent::syncNetworkData($properties);
+	//
+	//	$properties->setInt(EntityMetadataProperties::VARIANT, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()));
+	//}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 0.49, 0); //TODO: check if height affects this

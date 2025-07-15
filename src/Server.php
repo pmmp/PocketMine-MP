@@ -108,6 +108,7 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Process;
 use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
@@ -230,6 +231,7 @@ class Server{
 	private bool $isRunning = true;
 
 	private bool $hasStopped = false;
+	private bool $hasForceShutdown = false;
 
 	private PluginManager $pluginManager;
 
@@ -306,12 +308,21 @@ class Server{
 	 */
 	private array $broadcastSubscribers = [];
 
+	/** @var array<int, PacketBroadcaster> */
+	private array $packetBroadcasters = [];
+	/** @var array<string, EntityEventBroadcaster> */
+	private array $entityEventBroadcasters = [];
+
 	public function getName() : string{
 		return VersionInfo::NAME;
 	}
 
 	public function isRunning() : bool{
 		return $this->isRunning;
+	}
+
+	public function hasForceShutdown() : bool{
+		return $this->hasForceShutdown;
 	}
 
 	public function getPocketMineVersion() : string{
@@ -558,7 +569,9 @@ class Server{
 	 * @phpstan-return Promise<Player>
 	 */
 	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
-		$ev = new PlayerCreationEvent($session);
+		/** @phpstan-var ObjectSet<Promise<null>> $promises */
+		$promises = new ObjectSet();
+		$ev = new PlayerCreationEvent($session, $promises);
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
@@ -575,6 +588,11 @@ class Server{
 		$playerPromiseResolver = new PromiseResolver();
 
 		$createPlayer = function(Location $location) use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $offlinePlayerData) : void{
+			if(!$session->isConnected()){
+				$playerPromiseResolver->reject();
+				return;
+			}
+
 			/** @see Player::__construct() */
 			$player = new $class($this, $session, $playerInfo, $authenticated, $location, $offlinePlayerData);
 			if(!$player->hasPlayedBefore()){
@@ -583,24 +601,37 @@ class Server{
 			$playerPromiseResolver->resolve($player);
 		};
 
-		if($playerPos === null){ //new player or no valid position due to world not being loaded
-			$world->requestSafeSpawn()->onCompletion(
-				function(Position $spawn) use ($createPlayer, $playerPromiseResolver, $session, $world) : void{
-					if(!$session->isConnected()){
-						$playerPromiseResolver->reject();
-						return;
+		$playerCreationRejected = function (Translatable|string $message) use ($playerPromiseResolver, $session) : void{
+			if($session->isConnected()){
+				$session->disconnectWithError($message);
+			}
+			$playerPromiseResolver->reject();
+		};
+
+		$playerCreationSucceeded = function () use ($playerPos, $world, $createPlayer, $playerCreationRejected) : void{
+			if($playerPos === null){ //new player or no valid position due to world not being loaded
+				$world->requestSafeSpawn()->onCompletion(
+					function(Position $spawn) use ($createPlayer, $world) : void{
+						$createPlayer(Location::fromObject($spawn, $world));
+					},
+					function() use ($playerCreationRejected) : void{
+						$playerCreationRejected(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
 					}
-					$createPlayer(Location::fromObject($spawn, $world));
-				},
-				function() use ($playerPromiseResolver, $session) : void{
-					if($session->isConnected()){
-						$session->disconnectWithError(KnownTranslationFactory::pocketmine_disconnect_error_respawn());
-					}
-					$playerPromiseResolver->reject();
-				}
-			);
-		}else{ //returning player with a valid position - safe spawn not required
-			$createPlayer($playerPos);
+				);
+			}else{ //returning player with a valid position - safe spawn not required
+				$createPlayer($playerPos);
+			}
+		};
+
+		if(count($prs = $promises->toArray()) > 0){
+			/** @phpstan-var non-empty-array<int, Promise<null>> $prs */
+			$promise = Promise::all($prs);
+
+			$promise->onCompletion($playerCreationSucceeded, function () use ($playerCreationRejected) : void{
+				$playerCreationRejected("Failed to create player");
+			});
+		}else{
+			$playerCreationSucceeded();
 		}
 
 		return $playerPromiseResolver->getPromise();
@@ -643,6 +674,19 @@ class Server{
 		$name = strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
 			if(strtolower($player->getName()) === $name){
+				return $player;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Returns an online player with the given xuid, or null if not found.
+	 */
+	public function getPlayerByXuid(string $xuid) : ?Player{
+		foreach($this->getOnlinePlayers() as $player){
+			if($player->getXuid() === $xuid){
 				return $player;
 			}
 		}
@@ -1259,8 +1303,8 @@ class Server{
 		$useQuery = $this->configGroup->getConfigBool(ServerProperties::ENABLE_QUERY, true);
 
 		$typeConverter = TypeConverter::getInstance();
-		$packetBroadcaster = new StandardPacketBroadcaster($this);
-		$entityEventBroadcaster = new StandardEntityEventBroadcaster($packetBroadcaster, $typeConverter);
+		$packetBroadcaster = $this->getPacketBroadcaster(ProtocolInfo::CURRENT_PROTOCOL);
+		$entityEventBroadcaster = $this->getEntityEventBroadcaster($packetBroadcaster, $typeConverter);
 
 		if(
 			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery, $packetBroadcaster, $entityEventBroadcaster, $typeConverter) ||
@@ -1409,13 +1453,13 @@ class Server{
 	 *
 	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
+	public function prepareBatch(string $buffer, int $protocolId, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
 		$timings ??= Timings::$playerNetworkSendCompress;
 		try{
 			$timings->startTiming();
 
 			$threshold = $compressor->getCompressionThreshold();
-			if($threshold === null || strlen($buffer) < $compressor->getCompressionThreshold()){
+			if(($threshold === null || strlen($buffer) < $compressor->getCompressionThreshold()) && $protocolId >= ProtocolInfo::PROTOCOL_1_20_60){
 				$compressionType = CompressionAlgorithm::NONE;
 				$compressed = $buffer;
 
@@ -1424,7 +1468,7 @@ class Server{
 
 				if(!$sync && strlen($buffer) >= $this->networkCompressionAsyncThreshold){
 					$promise = new CompressBatchPromise();
-					$task = new CompressBatchTask($buffer, $promise, $compressor);
+					$task = new CompressBatchTask($buffer, $promise, $compressor, $protocolId);
 					$this->asyncPool->submitTask($task);
 					return $promise;
 				}
@@ -1433,7 +1477,7 @@ class Server{
 				$compressed = $compressor->compress($buffer);
 			}
 
-			return chr($compressionType) . $compressed;
+			return ($protocolId >= ProtocolInfo::PROTOCOL_1_20_60 ? chr($compressionType) : '') . $compressed;
 		}finally{
 			$timings->stopTiming();
 		}
@@ -1499,6 +1543,7 @@ class Server{
 
 		if($this->isRunning){
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
+			$this->hasForceShutdown = true;
 		}
 		try{
 			if(!$this->isRunning()){
@@ -1918,5 +1963,13 @@ class Server{
 		}else{
 			$this->nextTick += self::TARGET_SECONDS_PER_TICK;
 		}
+	}
+
+	public function getPacketBroadcaster(int $protocolId) : PacketBroadcaster{
+		return $this->packetBroadcasters[$protocolId] ??= new StandardPacketBroadcaster($this, $protocolId);
+	}
+
+	public function getEntityEventBroadcaster(PacketBroadcaster $packetBroadcaster, TypeConverter $typeConverter) : EntityEventBroadcaster{
+		return $this->entityEventBroadcasters[spl_object_id($packetBroadcaster) . ':' . spl_object_id($typeConverter)] ??= new StandardEntityEventBroadcaster($packetBroadcaster, $typeConverter);
 	}
 }

@@ -37,8 +37,11 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\AnvilBreakSound;
 use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
+use function assert;
+use function mt_rand;
 use function round;
 
 class Anvil extends Transparent implements Fallable{
@@ -48,6 +51,9 @@ class Anvil extends Transparent implements Fallable{
 	public const UNDAMAGED = 0;
 	public const SLIGHTLY_DAMAGED = 1;
 	public const VERY_DAMAGED = 2;
+
+	/** The percentage chance that the block will be damaged after use */
+	public const DAMAGE_CHANCE = 12;
 
 	private int $damage = self::UNDAMAGED;
 
@@ -114,5 +120,23 @@ class Anvil extends Transparent implements Fallable{
 
 	public function getLandSound() : ?Sound{
 		return new AnvilFallSound();
+	}
+
+	public function attemptDamage() : void{
+		$world = $this->position->world;
+		assert($world !== null);
+		if(!$world->getBlock($this->position)->isSameState(VanillaBlocks::ANVIL())){
+			return;
+		}
+		if(mt_rand(0, 100) > self::DAMAGE_CHANCE){
+			return;
+		}
+		$damage = $this->getDamage();
+		if(++$damage > self::VERY_DAMAGED){
+			$world->useBreakOn($this->position, createParticles: true);
+			$world->addSound($this->position, new AnvilBreakSound());
+			return;
+		}
+		$this->setDamage($damage);
 	}
 }

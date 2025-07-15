@@ -32,13 +32,13 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\ProtocolSingletonTrait;
 use function is_string;
 use function spl_object_id;
 use const PHP_INT_MIN;
 
 final class CreativeInventoryCache{
-	use SingletonTrait;
+	use ProtocolSingletonTrait;
 
 	/**
 	 * @var CreativeInventoryCacheEntry[]
@@ -67,7 +67,7 @@ final class CreativeInventoryCache{
 		$categories = [];
 		$groups = [];
 
-		$typeConverter = TypeConverter::getInstance();
+		$typeConverter = TypeConverter::getInstance($this->getProtocolId());
 
 		$nextIndex = 0;
 		$groupIndexes = [];

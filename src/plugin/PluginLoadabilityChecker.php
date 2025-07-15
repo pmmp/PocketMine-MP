@@ -25,10 +25,8 @@ namespace pocketmine\plugin;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
-use function array_intersect;
 use function count;
 use function extension_loaded;
 use function implode;
@@ -71,12 +69,12 @@ final class PluginLoadabilityChecker{
 			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
 		}
 
-		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-				return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
-			}
-		}
+		//if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+		//	$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+		//	if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
+		//		return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
+		//	}
+		//}
 
 		foreach(Utils::stringifyKeys($description->getRequiredExtensions()) as $extensionName => $versionConstrs){
 			if(!extension_loaded($extensionName)){

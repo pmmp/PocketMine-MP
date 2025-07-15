@@ -1991,7 +1991,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$soundPos = $entity->getPosition()->add(0, $entity->size->getHeight() / 2, 0);
 		if($ev->isCancelled()){
-			$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
+			if(!$this->isSilent() && !$this->isAdventure()){
+				$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
+			}
 			return false;
 		}
 		$this->getWorld()->addSound($soundPos, new EntityAttackSound());
@@ -2101,6 +2103,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$this->setFlying($fly);
 		return true;
+	}
+
+	public function toggleCrawl(bool $crawl) : bool{
+		return false;
 	}
 
 	public function toggleGlide(bool $glide) : bool{

@@ -49,7 +49,8 @@ final class BlockStateDictionaryEntry{
 	public function __construct(
 		private string $stateName,
 		array $stateProperties,
-		private int $meta
+		private int $meta,
+		private ?BlockStateData $oldBlockStateData
 	){
 		$rawStateProperties = self::encodeStateProperties($stateProperties);
 		$this->rawStateProperties = self::$uniqueRawStates[$rawStateProperties] ??= $rawStateProperties;
@@ -60,6 +61,10 @@ final class BlockStateDictionaryEntry{
 	public function getRawStateProperties() : string{ return $this->rawStateProperties; }
 
 	public function generateStateData() : BlockStateData{
+		return $this->oldBlockStateData ?? $this->generateCurrentStateData();
+	}
+
+	public function generateCurrentStateData() : BlockStateData{
 		return new BlockStateData(
 			$this->stateName,
 			self::decodeStateProperties($this->rawStateProperties),

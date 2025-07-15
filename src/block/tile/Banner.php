@@ -30,6 +30,7 @@ use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\convert\TypeConverter;
 
 /**
  * @deprecated
@@ -91,7 +92,7 @@ class Banner extends Spawnable{
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
 	}
 
-	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+	protected function addAdditionalSpawnData(CompoundTag $nbt, TypeConverter $typeConverter) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
 		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));

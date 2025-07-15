@@ -27,10 +27,10 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class RedstoneParticle implements Particle{
+class RedstoneParticle extends ProtocolParticle{
 	public function __construct(private int $lifetime = 1){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::REDSTONE, $this->lifetime, $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::REDSTONE, $this->lifetime, $pos, $this->protocolId)];
 	}
 }

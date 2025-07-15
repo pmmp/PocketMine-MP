@@ -36,7 +36,8 @@ use function strlen;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
 	public function __construct(
-		private Server $server
+		private Server $server,
+		private int $protocolId
 	){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
@@ -65,7 +66,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 		$totalLength = 0;
 		$packetBuffers = [];
 		foreach($packets as $packet){
-			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder(), $packet);
+			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder($this->protocolId), $packet);
 			//varint length prefix + packet buffer
 			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
@@ -81,7 +82,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 				PacketBatch::encodeRaw($stream, $packetBuffers);
 				$batchBuffer = $stream->getBuffer();
 
-				$batch = $this->server->prepareBatch($batchBuffer, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
+				$batch = $this->server->prepareBatch($batchBuffer, $this->protocolId, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
 				foreach($compressorTargets as $target){
 					$target->queueCompressed($batch);
 				}
