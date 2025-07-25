@@ -105,6 +105,7 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\Position;
 use function array_push;
 use function count;
 use function fmod;
@@ -196,22 +197,6 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->setRotation($yaw, $pitch);
 		}
 
-		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
-		$newPos = $rawPos->subtract(0, 1.62, 0)->round(4);
-
-		if($this->forceMoveSync && $hasMoved){
-			$curPos = $this->player->getLocation();
-
-			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
-				//Still getting movements from before teleport, ignore them
-				return true;
-			}
-
-			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-			$this->forceMoveSync = false;
-		}
-
 		$inputFlags = $packet->getInputFlags();
 		if($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)){
 			$this->lastPlayerAuthInputFlags = $inputFlags;
@@ -242,12 +227,8 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
-		if(!$this->forceMoveSync && $hasMoved){
-			$this->lastPlayerAuthInputPosition = $rawPos;
-			//TODO: this packet has WAYYYYY more useful information that we're not using
-			$this->player->handleMovement($newPos);
-		}
 
+		$this->processMovements($packet->getPosition(), fixHeadOffset: true);
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
@@ -298,6 +279,41 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return $packetHandled;
+	}
+
+	/**
+	 * @param Position $position
+	 * @param bool     $fixHeadOffset $
+	 *
+	 * @return void
+	 */
+	private function processMovements(Vector3 $position, bool $fixHeadOffset) : void{
+		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($position);
+
+		$newPos = $position;
+		if($fixHeadOffset) {
+			$headOffset = $this->player->isSneaking() ? 1.54 : 1.62; //TODO: this is a hack, the client doesn't send the head offset, so we assume it's always 1.62 unless sneaking
+			$newPos = $position->subtract(0, $headOffset, 0); //the client sends the head position, but we need the feet position for movement handling
+		}
+
+		if($this->forceMoveSync && $hasMoved){
+			$curPos = $this->player->getLocation();
+
+			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				//Still getting movements from before teleport, ignore them
+				return;
+			}
+
+			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			$this->forceMoveSync = false;
+		}
+
+		if(!$this->forceMoveSync && $hasMoved){
+			$this->lastPlayerAuthInputPosition = $position;
+			//TODO: this packet has WAYYYYY more useful information that we're not using
+			$this->player->handleMovement($newPos);
+		}
 	}
 
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
@@ -474,7 +490,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-
+		$this->processMovements($data->getPlayerPosition(), fixHeadOffset: false);
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
@@ -555,7 +571,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-
+		$this->processMovements($data->getPlayerPosition(), fixHeadOffset: false);
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
@@ -571,6 +587,7 @@ class InGamePacketHandler extends PacketHandler{
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
+		$this->processMovements($data->getHeadPosition(), fixHeadOffset: true);
 		if($data->getActionType() === ReleaseItemTransactionData::ACTION_RELEASE){
 			$this->player->releaseHeldItem();
 			return true;
