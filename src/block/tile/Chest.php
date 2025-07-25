@@ -25,6 +25,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\ChestInventory;
 use pocketmine\block\inventory\DoubleChestInventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -35,8 +36,10 @@ use function abs;
 class Chest extends Spawnable implements Container, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
+		copyDataFromItem as copyNameFromItem;
 	}
 	use ContainerTrait {
+		getCleanedNBT as getContainerNBT;
 		onBlockDestroyedHook as containerTraitBlockDestroyedHook;
 	}
 
@@ -83,12 +86,17 @@ class Chest extends Spawnable implements Container, Nameable{
 	}
 
 	public function getCleanedNBT() : ?CompoundTag{
-		$tag = parent::getCleanedNBT();
+		$tag = $this->getContainerNBT();
 		if($tag !== null){
 			//TODO: replace this with a purpose flag on writeSaveData()
 			$tag->removeTag(self::TAG_PAIRX, self::TAG_PAIRZ);
 		}
 		return $tag;
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		$this->copyNameFromItem($item);
+		$this->copyContentsFromItem($item);
 	}
 
 	public function close() : void{

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\crafting\FurnaceType;
@@ -36,6 +37,7 @@ use function mt_rand;
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
 	use LightableTrait;
+	use ContainerTrait;
 
 	protected FurnaceType $furnaceType;
 

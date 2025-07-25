@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,6 +42,7 @@ use function spl_object_id;
 class ChiseledBookshelf extends Opaque{
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
+	use ContainerTrait;
 
 	/**
 	 * @var ChiseledBookshelfSlot[]

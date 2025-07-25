@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -37,6 +38,7 @@ use function array_key_exists;
 use function spl_object_id;
 
 class BrewingStand extends Transparent{
+	use ContainerTrait;
 
 	/**
 	 * @var BrewingStandSlot[]

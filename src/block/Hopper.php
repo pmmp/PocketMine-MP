@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -36,6 +37,7 @@ use pocketmine\world\BlockTransaction;
 
 class Hopper extends Transparent{
 	use PoweredByRedstoneTrait;
+	use ContainerTrait;
 
 	private int $facing = Facing::DOWN;
 

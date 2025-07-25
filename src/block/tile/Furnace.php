@@ -41,7 +41,9 @@ use function array_map;
 use function max;
 
 abstract class Furnace extends Spawnable implements Container, Nameable{
-	use NameableTrait;
+	use NameableTrait {
+		copyDataFromItem as copyNameFromItem;
+	}
 	use ContainerTrait;
 
 	public const TAG_BURN_TIME = "BurnTime";
@@ -82,6 +84,11 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		if($this->remainingFuelTime > 0){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 		}
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		$this->copyNameFromItem($item);
+		$this->copyContentsFromItem($item);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
