@@ -253,20 +253,21 @@ class CraftingManager{
 		$hash = self::hashOutputs($recipe->getResults());
 
 		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
-			if($r === $recipe){
+			if($r->isSame($recipe)){
 				unset($this->shapelessRecipes[$hash][$i]);
 				if(count($this->shapelessRecipes[$hash]) === 0){
 					unset($this->shapelessRecipes[$hash]);
 					$changed = true;
 				}
-				break;
+				// We don't break as it can have many similar recipes ?
 			}
 		}
 
-		$index = array_search($recipe, $this->craftingRecipeIndex, true);
-		if($index !== false){
-			unset($this->craftingRecipeIndex[$index]);
-			$changed = true;
+		foreach($this->craftingRecipeIndex as $index => $testRecipe){
+			if($testRecipe instanceof ShapelessRecipe && $recipe->isSame($testRecipe)){
+				unset($this->craftingRecipeIndex[$index]);
+				$changed = true;
+			}
 		}
 
 		if($changed){
