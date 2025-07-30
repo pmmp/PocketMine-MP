@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
@@ -36,17 +37,7 @@ use function implode;
  * Contains the common information found in a serialized blockstate.
  */
 final class BlockStateData{
-	/**
-	 * Bedrock version of the most recent backwards-incompatible change to blockstates.
-	 *
-	 * This is *not* the same as current game version. It should match the numbers in the
-	 * newest blockstate upgrade schema used in BedrockBlockUpgradeSchema.
-	 */
-	public const CURRENT_VERSION =
-		(1 << 24) | //major
-		(21 << 16) | //minor
-		(40 << 8) | //patch
-		(1); //revision
+	public const CURRENT_VERSION = WorldDataVersions::BLOCK_STATES;
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";

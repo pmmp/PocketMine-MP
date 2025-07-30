@@ -28,6 +28,7 @@ use PhpParser\Node\Stmt\Foreach_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\ClassStringType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\StringType;
@@ -40,7 +41,7 @@ use function sprintf;
 /**
  * @implements Rule<Foreach_>
  */
-final class UnsafeForeachArrayOfStringRule implements Rule{
+final class UnsafeForeachRule implements Rule{
 
 	public function getNodeType() : string{
 		return Foreach_::class;
@@ -62,7 +63,16 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 
 		$hasCastableKeyTypes = false;
 		$expectsIntKeyTypes = false;
-		TypeTraverser::map($iterableType->getIterableKeyType(), function(Type $type, callable $traverse) use (&$hasCastableKeyTypes, &$expectsIntKeyTypes) : Type{
+		$implicitType = false;
+		$benevolentUnionDepth = 0;
+		TypeTraverser::map($iterableType->getIterableKeyType(), function(Type $type, callable $traverse) use (&$hasCastableKeyTypes, &$expectsIntKeyTypes, &$benevolentUnionDepth, &$implicitType) : Type{
+			if($type instanceof BenevolentUnionType){
+				$implicitType = true;
+				$benevolentUnionDepth++;
+				$result = $traverse($type);
+				$benevolentUnionDepth--;
+				return $result;
+			}
 			if($type instanceof IntegerType){
 				$expectsIntKeyTypes = true;
 				return $type;
@@ -77,16 +87,31 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 			$hasCastableKeyTypes = true;
 			return $type;
 		});
-		if($hasCastableKeyTypes && !$expectsIntKeyTypes){
-			$func = Utils::stringifyKeys(...);
-			return [
-				RuleErrorBuilder::message(sprintf(
-					"Unsafe foreach on array with key type %s (they might be casted to int).",
-					$iterableType->getIterableKeyType()->describe(VerbosityLevel::value())
-				))->tip(sprintf("Use %s() for a safe Generator-based iterator.", Utils::getNiceClosureName($func)))->build()
-			];
+		$errors = [];
+		if($implicitType){
+			$errors[] = RuleErrorBuilder::message("Possible unreported errors in foreach on array with unspecified key type.")
+				->tip(sprintf(
+					<<<TIP
+PHPStan might not be reporting some type errors if the key type is not specified.
+Declare a key type using @phpstan-var or @phpstan-param, or use %s() to force PHPStan to report proper errors.
+TIP,
+					Utils::getNiceClosureName(Utils::promoteKeys(...))
+				))->identifier('pocketmine.foreach.implicitKeys')->build();
 		}
-		return [];
+		if($hasCastableKeyTypes && !$expectsIntKeyTypes){
+			$errors[] = RuleErrorBuilder::message(sprintf(
+				"Unsafe foreach on array with key type %s.",
+				$iterableType->getIterableKeyType()->describe(VerbosityLevel::value())
+			))
+				->tip(sprintf(
+					<<<TIP
+PHP coerces numeric strings to integers when used as array keys, which can lead to unexpected type errors when passing the key to a function.
+Use %s() to wrap the array in a \Generator that will force the keys back to string during iteration.
+TIP,
+					Utils::getNiceClosureName(Utils::stringifyKeys(...))
+				))->identifier('pocketmine.foreach.stringKeys')->build();
+		}
+		return $errors;
 	}
 
 }

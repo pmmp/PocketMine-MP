@@ -129,7 +129,7 @@ function buildPhar(string $pharPath, string $basePath, array $includedPaths, arr
 }
 
 function main() : void{
-	if(ini_get("phar.readonly") == 1){
+	if(ini_get("phar.readonly") === "1"){
 		echo "Set phar.readonly to 0 with -dphar.readonly=0" . PHP_EOL;
 		exit(1);
 	}

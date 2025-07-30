@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 /**
- * @phpstan-template TPriority
+ * @phpstan-template TPriority of numeric
  * @phpstan-template TValue
  * @phpstan-extends \SplPriorityQueue<TPriority, TValue>
  */

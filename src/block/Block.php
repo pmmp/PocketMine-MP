@@ -75,7 +75,10 @@ class Block{
 	protected BlockTypeInfo $typeInfo;
 	protected Position $position;
 
-	/** @var AxisAlignedBB[]|null */
+	/**
+	 * @var AxisAlignedBB[]|null
+	 * @phpstan-var list<AxisAlignedBB>|null
+	 */
 	protected ?array $collisionBoxes = null;
 
 	private int $requiredBlockItemStateDataBits;
@@ -907,6 +910,7 @@ class Block{
 	 * - anti-cheat checks in plugins
 	 *
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
@@ -931,6 +935,7 @@ class Block{
 
 	/**
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()];

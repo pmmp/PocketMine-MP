@@ -53,7 +53,6 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 
 		$compressors = [];
 
-		/** @var NetworkSession[][] $targetsByCompressor */
 		$targetsByCompressor = [];
 		foreach($recipients as $recipient){
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object

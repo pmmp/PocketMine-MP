@@ -38,7 +38,7 @@ use raklib\server\ServerSocket;
 use raklib\server\SimpleProtocolAcceptor;
 use raklib\utils\ExceptionTraceCleaner;
 use raklib\utils\InternetAddress;
-use function gc_enable;
+use function gc_disable;
 use function ini_set;
 
 class RakLibServer extends Thread{
@@ -82,7 +82,10 @@ class RakLibServer extends Thread{
 	}
 
 	protected function onRun() : void{
-		gc_enable();
+		//RakLib has cycles (e.g. ServerSession <-> Server) but these cycles are explicitly cleaned up anyway, and are
+		//very few, so it's pointless to waste CPU time on GC
+		gc_disable();
+
 		ini_set("display_errors", '1');
 		ini_set("display_startup_errors", '1');
 		\GlobalLogger::set($this->logger);

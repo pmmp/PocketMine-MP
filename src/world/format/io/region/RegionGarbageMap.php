@@ -31,7 +31,10 @@ use const SORT_NUMERIC;
 
 final class RegionGarbageMap{
 
-	/** @var RegionLocationTableEntry[] */
+	/**
+	 * @var RegionLocationTableEntry[]
+	 * @phpstan-var array<int, RegionLocationTableEntry>
+	 */
 	private array $entries = [];
 	private bool $clean = false;
 
@@ -48,7 +51,6 @@ final class RegionGarbageMap{
 	 * @param RegionLocationTableEntry[]|null[] $locationTable
 	 */
 	public static function buildFromLocationTable(array $locationTable) : self{
-		/** @var RegionLocationTableEntry[] $usedMap */
 		$usedMap = [];
 		foreach($locationTable as $entry){
 			if($entry === null){
@@ -62,12 +64,10 @@ final class RegionGarbageMap{
 
 		ksort($usedMap, SORT_NUMERIC);
 
-		/** @var RegionLocationTableEntry[] $garbageMap */
 		$garbageMap = [];
 
-		/** @var RegionLocationTableEntry|null $prevEntry */
 		$prevEntry = null;
-		foreach($usedMap as $firstSector => $entry){
+		foreach($usedMap as $entry){
 			$prevEndPlusOne = ($prevEntry !== null ? $prevEntry->getLastSector() + 1 : RegionLoader::FIRST_SECTOR);
 			$currentStart = $entry->getFirstSector();
 			if($prevEndPlusOne < $currentStart){

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\compact_regions;
 
+use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\region\CorruptedRegionException;
 use pocketmine\world\format\io\region\RegionLoader;
@@ -59,6 +60,7 @@ const SUPPORTED_EXTENSIONS = [
 /**
  * @param int[] $files
  * @phpstan-param array<string, int> $files
+ * @phpstan-param-out array<string, int> $files
  */
 function find_regions_recursive(string $dir, array &$files) : void{
 	$dirFiles = scandir($dir, SCANDIR_SORT_NONE);
@@ -74,7 +76,12 @@ function find_regions_recursive(string $dir, array &$files) : void{
 			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) &&
 			is_file($fullPath)
 		){
-			$files[$fullPath] = filesize($fullPath);
+			$size = filesize($fullPath);
+			if($size === false){
+				//If we can't get the size of the file, we probably don't have perms to read it, so ignore it
+				continue;
+			}
+			$files[$fullPath] = $size;
 		}elseif(is_dir($fullPath)){
 			find_regions_recursive($fullPath, $files);
 		}
@@ -112,7 +119,7 @@ function main(array $argv) : int{
 	$corruptedFiles = [];
 	$doneCount = 0;
 	$totalCount = count($files);
-	foreach($files as $file => $size){
+	foreach(Utils::stringifyKeys($files) as $file => $size){
 		try{
 			$oldRegion = RegionLoader::loadExisting($file);
 		}catch(CorruptedRegionException $e){
@@ -162,8 +169,9 @@ function main(array $argv) : int{
 
 	clearstatcache();
 	$newSize = 0;
-	foreach($files as $file => $oldSize){
-		$newSize += file_exists($file) ? filesize($file) : 0;
+	foreach(Utils::stringifyKeys($files) as $file => $oldSize){
+		$size = file_exists($file) ? filesize($file) : 0;
+		$newSize += $size !== false ? $size : 0;
 	}
 	$diff = $currentSize - $newSize;
 	$logger->info("Finished compaction of " . count($files) . " files. Freed " . number_format($diff) . " bytes of space (" . round(($diff / $currentSize) * 100, 2) . "% reduction).");

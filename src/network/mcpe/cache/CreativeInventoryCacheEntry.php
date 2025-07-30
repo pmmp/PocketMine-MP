@@ -21,19 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\network\mcpe\cache;
 
-use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
+use pocketmine\inventory\CreativeCategory;
+use pocketmine\inventory\CreativeGroup;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeItemEntry;
 
-class GeneratorUnregisterTask extends AsyncTask{
-	public int $worldId;
+final class CreativeInventoryCacheEntry{
 
-	public function __construct(World $world){
-		$this->worldId = $world->getId();
-	}
-
-	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->worldId);
+	/**
+	 * @param CreativeCategory[]     $categories
+	 * @param CreativeGroup[]|null[] $groups
+	 * @param CreativeItemEntry[]    $items
+	 *
+	 * @phpstan-param list<CreativeCategory>   $categories
+	 * @phpstan-param list<CreativeGroup|null> $groups
+	 * @phpstan-param list<CreativeItemEntry>  $items
+	 */
+	public function __construct(
+		public readonly array $categories,
+		public readonly array $groups,
+		public readonly array $items,
+	){
+		//NOOP
 	}
 }

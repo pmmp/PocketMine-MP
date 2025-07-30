@@ -62,9 +62,10 @@ class Sign extends Spawnable{
 
 	/**
 	 * @return string[]
+	 * @deprecated
 	 */
 	public static function fixTextBlob(string $blob) : array{
-		return array_slice(array_pad(explode("\n", $blob), 4, ""), 0, 4);
+		return array_slice(array_pad(explode("\n", $blob, limit: 5), 4, ""), 0, 4);
 	}
 
 	protected SignText $text;

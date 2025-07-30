@@ -65,9 +65,6 @@ class SnowLayer extends Flowable implements Fallable{
 		return $this->layers < self::MAX_LAYERS;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: this zero-height BB is intended to stay in lockstep with a MCPE bug
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];

@@ -73,7 +73,7 @@ class BlockBreakInfo{
 		return new self(0.0, $toolType, $toolHarvestLevel, 0.0);
 	}
 
-	public static function indestructible(float $blastResistance = 18000000.0) : self{
+	public static function indestructible(float $blastResistance = 18000003.75) : self{
 		return new self(-1.0, BlockToolType::NONE, 0, $blastResistance);
 	}
 
@@ -95,7 +95,7 @@ class BlockBreakInfo{
 	 * Returns whether this block can be instantly broken.
 	 */
 	public function breaksInstantly() : bool{
-		return $this->hardness == 0.0;
+		return $this->hardness === 0.0;
 	}
 
 	/**
@@ -154,7 +154,7 @@ class BlockBreakInfo{
 
 		$efficiency = $item->getMiningEfficiency(($this->toolType & $item->getBlockToolType()) !== 0);
 		if($efficiency <= 0){
-			throw new \InvalidArgumentException(get_class($item) . " has invalid mining efficiency: expected >= 0, got $efficiency");
+			throw new \InvalidArgumentException(get_class($item) . " must have a positive mining efficiency, but got $efficiency");
 		}
 
 		$base /= $efficiency;

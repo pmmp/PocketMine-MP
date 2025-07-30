@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+/**
+ * @deprecated
+ */
 interface ResourceProvider{
 	/**
 	 * Gets an embedded resource on the plugin file.

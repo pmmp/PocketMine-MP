@@ -36,6 +36,8 @@ use const DIRECTORY_SEPARATOR;
 /**
  * Provides resources from the given plugin directory on disk. The path may be prefixed with a specific access protocol
  * to enable special types of access.
+ *
+ * @deprecated
  */
 class DiskResourceProvider implements ResourceProvider{
 	private string $file;

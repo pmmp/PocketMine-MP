@@ -30,10 +30,16 @@ use function spl_object_id;
 
 class NetworkSessionManager{
 
-	/** @var NetworkSession[] */
+	/**
+	 * @var NetworkSession[]
+	 * @phpstan-var array<int, NetworkSession>
+	 */
 	private array $sessions = [];
 
-	/** @var NetworkSession[] */
+	/**
+	 * @var NetworkSession[]
+	 * @phpstan-var array<int, NetworkSession>
+	 */
 	private array $pendingLoginSessions = [];
 
 	/**

@@ -56,6 +56,10 @@ final class BlockStateStringValues{
 	public const CRACKED_STATE_MAX_CRACKED = "max_cracked";
 	public const CRACKED_STATE_NO_CRACKS = "no_cracks";
 
+	public const CREAKING_HEART_STATE_AWAKE = "awake";
+	public const CREAKING_HEART_STATE_DORMANT = "dormant";
+	public const CREAKING_HEART_STATE_UPROOTED = "uprooted";
+
 	public const DRIPSTONE_THICKNESS_BASE = "base";
 	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
 	public const DRIPSTONE_THICKNESS_MERGE = "merge";
@@ -105,6 +109,22 @@ final class BlockStateStringValues{
 	public const ORIENTATION_UP_SOUTH = "up_south";
 	public const ORIENTATION_UP_WEST = "up_west";
 	public const ORIENTATION_WEST_UP = "west_up";
+
+	public const PALE_MOSS_CARPET_SIDE_EAST_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_EAST_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_EAST_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_NORTH_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_NORTH_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_NORTH_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_SOUTH_TALL = "tall";
+
+	public const PALE_MOSS_CARPET_SIDE_WEST_NONE = "none";
+	public const PALE_MOSS_CARPET_SIDE_WEST_SHORT = "short";
+	public const PALE_MOSS_CARPET_SIDE_WEST_TALL = "tall";
 
 	public const PILLAR_AXIS_X = "x";
 	public const PILLAR_AXIS_Y = "y";

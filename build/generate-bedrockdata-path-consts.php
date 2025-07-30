@@ -28,6 +28,7 @@ use function dirname;
 use function fclose;
 use function fopen;
 use function fwrite;
+use function is_dir;
 use function is_file;
 use function scandir;
 use function str_replace;
@@ -59,7 +60,7 @@ foreach($files as $file){
 		continue;
 	}
 	$path = Path::join(BEDROCK_DATA_PATH, $file);
-	if(!is_file($path)){
+	if(!is_file($path) && !is_dir($path)){
 		continue;
 	}
 
@@ -67,6 +68,7 @@ foreach($files as $file){
 		'README.md',
 		'LICENSE',
 		'composer.json',
+		'.github'
 	] as $ignored){
 		if($file === $ignored){
 			continue 2;

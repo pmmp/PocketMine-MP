@@ -25,6 +25,8 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -36,6 +38,7 @@ use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
+use pocketmine\event\entity\EntityFrostWalkerEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -44,6 +47,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\nbt\tag\CompoundTag;
@@ -58,18 +62,19 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
+use function abs;
 use function array_shift;
 use function atan2;
 use function ceil;
 use function count;
 use function floor;
 use function ksort;
-use function lcg_value;
 use function max;
 use function min;
 use function mt_getrandmax;
@@ -128,6 +133,8 @@ abstract class Living extends Entity{
 	protected bool $gliding = false;
 	protected bool $swimming = false;
 
+	private ?int $frostWalkerLevel = null;
+
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
 	protected function getInitialGravity() : float{ return 0.08; }
@@ -151,6 +158,14 @@ abstract class Living extends Entity{
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
 		)));
+		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+			onSlotChange: function(Inventory $inventory, int $slot) : void{
+				if($slot === ArmorInventory::SLOT_FEET){
+					$this->frostWalkerLevel = null;
+				}
+			},
+			onContentChange: function() : void{ $this->frostWalkerLevel = null; }
+		));
 
 		$health = $this->getMaxHealth();
 
@@ -490,7 +505,7 @@ abstract class Living extends Entity{
 				$helmet = $this->armorInventory->getHelmet();
 				if($helmet instanceof Armor){
 					$finalDamage = $source->getFinalDamage();
-					$this->damageItem($helmet, (int) round($finalDamage * 4 + lcg_value() * $finalDamage * 2));
+					$this->damageItem($helmet, (int) round($finalDamage * 4 + Utils::getRandomFloat() * $finalDamage * 2));
 					$this->armorInventory->setHelmet($helmet);
 				}
 			}
@@ -687,6 +702,58 @@ abstract class Living extends Entity{
 		return $hasUpdate;
 	}
 
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		parent::move($dx, $dy, $dz);
+
+		$frostWalkerLevel = $this->getFrostWalkerLevel();
+		if($frostWalkerLevel > 0 && (abs($this->location->x - $oldX) > self::MOTION_THRESHOLD || abs($this->location->z - $oldZ) > self::MOTION_THRESHOLD)){
+			$this->applyFrostWalker($frostWalkerLevel);
+		}
+	}
+
+	protected function applyFrostWalker(int $level) : void{
+		$radius = $level + 2;
+		$world = $this->getWorld();
+
+		$baseX = $this->location->getFloorX();
+		$y = $this->location->getFloorY() - 1;
+		$baseZ = $this->location->getFloorZ();
+
+		$liquid = VanillaBlocks::WATER();
+		$targetBlock = VanillaBlocks::FROSTED_ICE();
+		if(EntityFrostWalkerEvent::hasHandlers()){
+			$ev = new EntityFrostWalkerEvent($this, $radius, $liquid, $targetBlock);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
+			$radius = $ev->getRadius();
+			$liquid = $ev->getLiquid();
+			$targetBlock = $ev->getTargetBlock();
+		}
+
+		for($x = $baseX - $radius; $x <= $baseX + $radius; $x++){
+			for($z = $baseZ - $radius; $z <= $baseZ + $radius; $z++){
+				$block = $world->getBlockAt($x, $y, $z);
+				if(
+					!$block->isSameState($liquid) ||
+					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
+					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
+				){
+					continue;
+				}
+				$world->setBlockAt($x, $y, $z, $targetBlock);
+			}
+		}
+	}
+
+	public function getFrostWalkerLevel() : int{
+		return $this->frostWalkerLevel ??= $this->armorInventory->getBoots()->getEnchantmentLevel(VanillaEnchantments::FROST_WALKER());
+	}
+
 	/**
 	 * Ticks the entity's air supply, consuming it when underwater and regenerating it when out of water.
 	 */
@@ -697,7 +764,7 @@ abstract class Living extends Entity{
 			$this->setBreathing(false);
 
 			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 ||
-				lcg_value() <= (1 / ($respirationLevel + 1))
+				Utils::getRandomFloat() <= (1 / ($respirationLevel + 1))
 			){
 				$ticks -= $tickDiff;
 				if($ticks <= -20){

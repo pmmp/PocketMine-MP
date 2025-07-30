@@ -31,11 +31,14 @@ final class GeneratorManagerEntry{
 	 */
 	public function __construct(
 		private string $generatorClass,
-		private \Closure $presetValidator
+		private \Closure $presetValidator,
+		private readonly bool $fast
 	){}
 
 	/** @phpstan-return class-string<Generator> */
 	public function getGeneratorClass() : string{ return $this->generatorClass; }
+
+	public function isFast() : bool{ return $this->fast; }
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
