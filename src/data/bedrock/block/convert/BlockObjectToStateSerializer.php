@@ -196,7 +196,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
 	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(never) : Writer|string>
+	 * @phpstan-var array<int, (\Closure(never) : Writer|string)>
 	 */
 	private array $serializers = [];
 
@@ -233,7 +233,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param \Closure(TBlockType) : Writer|string $serializer
+	 * @phpstan-param (\Closure(TBlockType) : Writer|string) $serializer
 	 */
 	public function map(Block $block, \Closure $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
@@ -278,7 +278,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
 		 * @var \Closure $serializer
-		 * @phpstan-var \Closure(TBlockType) : Writer|string $serializer
+		 * @phpstan-var (\Closure(TBlockType) : Writer|string) $serializer
 		 */
 		$serializer = $locatedSerializer;
 
