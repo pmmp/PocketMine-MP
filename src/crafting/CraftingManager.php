@@ -212,7 +212,7 @@ class CraftingManager{
 	}
 
 	public function unregisterShapedRecipe(ShapedRecipe $recipe) : void{
-		$edited = false;
+		$changed = false;
 		$hash = self::hashOutputs($recipe->getResults());
 
 		foreach($this->shapedRecipes[$hash] ?? [] as $i => $r){
@@ -220,7 +220,7 @@ class CraftingManager{
 				unset($this->shapedRecipes[$hash][$i]);
 				if(count($this->shapedRecipes[$hash]) === 0){
 					unset($this->shapedRecipes[$hash]);
-					$edited = true;
+					$changed = true;
 				}
 				break;
 			}
@@ -229,10 +229,10 @@ class CraftingManager{
 		$index = array_search($recipe, $this->craftingRecipeIndex, true);
 		if($index !== false){
 			unset($this->craftingRecipeIndex[$index]);
-			$edited = true;
+			$changed = true;
 		}
 
-		if($edited){
+		if($changed){
 			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
@@ -249,7 +249,7 @@ class CraftingManager{
 	}
 
 	public function unregisterShapelessRecipe(ShapelessRecipe $recipe) : void{
-		$edited = false;
+		$changed = false;
 		$hash = self::hashOutputs($recipe->getResults());
 
 		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
@@ -257,7 +257,7 @@ class CraftingManager{
 				unset($this->shapelessRecipes[$hash][$i]);
 				if(count($this->shapelessRecipes[$hash]) === 0){
 					unset($this->shapelessRecipes[$hash]);
-					$edited = true;
+					$changed = true;
 				}
 				break;
 			}
@@ -266,10 +266,10 @@ class CraftingManager{
 		$index = array_search($recipe, $this->craftingRecipeIndex, true);
 		if($index !== false){
 			unset($this->craftingRecipeIndex[$index]);
-			$edited = true;
+			$changed = true;
 		}
 
-		if($edited){
+		if($changed){
 			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
 			}
