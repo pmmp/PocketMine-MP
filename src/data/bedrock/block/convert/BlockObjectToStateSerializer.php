@@ -195,8 +195,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
-	 * @var \Closure[]
-	 * @phpstan-var array<int, (\Closure(never) : Writer|string)>
+	 * @var (\Closure|string)[]
+	 * @phpstan-var array<int, \Closure(never) : (Writer|string)|string>
 	 */
 	private array $serializers = [];
 
@@ -233,9 +233,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param (\Closure(TBlockType) : Writer|string) $serializer
+	 * @phpstan-param \Closure(TBlockType) : (Writer|string)|string $serializer
 	 */
-	public function map(Block $block, \Closure $serializer) : void{
+	public function map(Block $block, \Closure|string $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
@@ -243,7 +243,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
-		$this->map($block, fn() => $id);
+		$this->map($block, $id);
 	}
 
 	public function mapSlab(Slab $block, string $singleId, string $doubleId) : void{
@@ -277,13 +277,17 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
-		 * @var \Closure $serializer
-		 * @phpstan-var (\Closure(TBlockType) : Writer|string) $serializer
+		 * @var \Closure|string $serializer
+		 * @phpstan-var \Closure(TBlockType) : (Writer|string)|string $serializer
 		 */
 		$serializer = $locatedSerializer;
+		if(is_callable($serializer)){
+			/** @var Writer|string $writerOrId */
+			$writerOrId = $serializer($blockState);
+		}else{
+			$writerOrId = $serializer;
+		}
 
-		/** @var Writer|string $writerOrId */
-		$writerOrId = $serializer($blockState);
 		return $writerOrId instanceof Writer ?
 			$writerOrId->getBlockStateData() :
 			BlockStateData::current($writerOrId, []);
