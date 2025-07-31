@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\HopperInteractableContainerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,7 +34,8 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function abs;
 
-class Barrel extends Opaque{
+class Barrel extends Opaque implements HopperInteractable{
+	use HopperInteractableContainerTrait;
 	use AnyFacingTrait;
 
 	protected bool $open = false;

@@ -76,4 +76,12 @@ class Hopper extends Spawnable implements Container, Nameable{
 	public function getRealInventory() : HopperInventory{
 		return $this->inventory;
 	}
+
+	public function getTransferCooldown() : int{
+		return $this->transferCooldown;
+	}
+
+	public function setTransferCooldown(int $cooldown) : void{
+		$this->transferCooldown = $cooldown;
+	}
 }
