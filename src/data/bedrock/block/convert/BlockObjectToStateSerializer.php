@@ -189,7 +189,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function get_class;
-use function is_callable;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
@@ -278,16 +277,10 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
-		 * @var \Closure|string $serializer
-		 * @phpstan-var \Closure(TBlockType) : (Writer|string)|string $serializer
+		 * @var \Closure|string $locatedSerializer
+		 * @phpstan-var \Closure(TBlockType) : (Writer|string)|string $locatedSerializer
 		 */
-		$serializer = $locatedSerializer;
-		if(is_callable($serializer)){
-			/** @var Writer|string $writerOrId */
-			$writerOrId = $serializer($blockState);
-		}else{
-			$writerOrId = $serializer;
-		}
+		$writerOrId = $locatedSerializer instanceof \Closure ? $locatedSerializer($blockState) : $locatedSerializer;
 
 		return $writerOrId instanceof Writer ?
 			$writerOrId->getBlockStateData() :
