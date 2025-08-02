@@ -90,7 +90,7 @@ class TypeConverter{
 			$this->blockItemIdMap
 		);
 
-		$this->skinAdapter = new LegacySkinAdapter();
+		$this->skinAdapter = new VanillaSkinAdapter();
 	}
 
 	public function getBlockTranslator() : BlockTranslator{ return $this->blockTranslator; }
