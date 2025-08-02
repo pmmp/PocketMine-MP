@@ -712,7 +712,6 @@ class InGamePacketHandler extends PacketHandler{
 					$this->syncBlocksNearby($pos, $face);
 				}
 				$this->lastBlockAttacked = $blockPosition;
-
 				break;
 
 			case PlayerAction::ABORT_BREAK:
@@ -734,7 +733,15 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
-				//TODO: do we need to handle this?
+				if(!$this->player->isCreative()) {
+					$this->player->getNetworkSession()->getLogger()->debug("Ignoring PlayerAction $action on $pos because player isnt in creative");
+					break;
+				}
+
+				if(!$this->player->breakBlock($pos)){
+					$this->syncBlocksNearby($pos, $face);
+				}
+				break;
 			case PlayerAction::PREDICT_DESTROY_BLOCK:
 				if(!$this->player->breakBlock($pos)){
 					$this->syncBlocksNearby($pos, $face);
