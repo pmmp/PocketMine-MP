@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function yaml_parse;
 
@@ -60,10 +61,9 @@ class ConfigTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider fixYamlIndexesProvider
-	 *
 	 * @param mixed[] $expected
 	 */
+	#[DataProvider("fixYamlIndexesProvider")]
 	public function testFixYamlIndexes(string $test, array $expected) : void{
 		$fixed = Config::fixYAMLIndexes($test);
 		$decoded = yaml_parse($fixed);

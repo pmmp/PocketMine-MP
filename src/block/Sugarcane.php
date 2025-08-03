@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
@@ -34,7 +35,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 
-class Sugarcane extends Flowable{
+class Sugarcane extends Flowable implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait {
 		onNearbyBlockChange as onSupportBlockChange;

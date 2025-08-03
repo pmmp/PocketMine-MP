@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class CloningRegistryTraitTest extends TestCase{
@@ -37,9 +38,9 @@ final class CloningRegistryTraitTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider cloningRegistryMembersProvider
 	 * @phpstan-param \Closure() : \stdClass $provider
 	 */
+	#[DataProvider("cloningRegistryMembersProvider")]
 	public function testEachMemberClone(\Closure $provider) : void{
 		self::assertNotSame($provider(), $provider(), "Cloning registry should never return the same object twice");
 	}

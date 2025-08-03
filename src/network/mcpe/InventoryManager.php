@@ -41,6 +41,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -228,17 +229,25 @@ class InventoryManager{
 		return null;
 	}
 
-	private function addPredictedSlotChange(Inventory $inventory, int $slot, ItemStack $item) : void{
+	private function addPredictedSlotChangeInternal(Inventory $inventory, int $slot, ItemStack $item) : void{
 		$this->inventories[spl_object_id($inventory)]->predictions[$slot] = $item;
 	}
 
-	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
+	public function addPredictedSlotChange(Inventory $inventory, int $slot, Item $item) : void{
 		$typeConverter = $this->session->getTypeConverter();
+		$itemStack = $typeConverter->coreItemStackToNet($item);
+		$this->addPredictedSlotChangeInternal($inventory, $slot, $itemStack);
+	}
+
+	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
 			if($action instanceof SlotChangeAction){
 				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
-				$itemStack = $typeConverter->coreItemStackToNet($action->getTargetItem());
-				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $itemStack);
+				$this->addPredictedSlotChange(
+					$action->getInventory(),
+					$action->getSlot(),
+					$action->getTargetItem()
+				);
 			}
 		}
 	}
@@ -267,7 +276,7 @@ class InventoryManager{
 			}
 
 			[$inventory, $slot] = $info;
-			$this->addPredictedSlotChange($inventory, $slot, $action->newItem->getItemStack());
+			$this->addPredictedSlotChangeInternal($inventory, $slot, $action->newItem->getItemStack());
 		}
 	}
 

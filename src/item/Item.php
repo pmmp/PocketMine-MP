@@ -125,7 +125,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * @return $this
 	 */
-	public function clearCustomBlockData(){
+	public function clearCustomBlockData() : Item{
 		$this->blockEntityTag = null;
 		return $this;
 	}
@@ -202,11 +202,12 @@ class Item implements \JsonSerializable{
 	/**
 	 * @param string[] $canPlaceOn
 	 */
-	public function setCanPlaceOn(array $canPlaceOn) : void{
+	public function setCanPlaceOn(array $canPlaceOn) : Item{
 		$this->canPlaceOn = [];
 		foreach($canPlaceOn as $value){
 			$this->canPlaceOn[$value] = $value;
 		}
+		return $this;
 	}
 
 	/**
@@ -220,11 +221,12 @@ class Item implements \JsonSerializable{
 	/**
 	 * @param string[] $canDestroy
 	 */
-	public function setCanDestroy(array $canDestroy) : void{
+	public function setCanDestroy(array $canDestroy) : Item{
 		$this->canDestroy = [];
 		foreach($canDestroy as $value){
 			$this->canDestroy[$value] = $value;
 		}
+		return $this;
 	}
 
 	/**
@@ -234,8 +236,9 @@ class Item implements \JsonSerializable{
 		return $this->keepOnDeath;
 	}
 
-	public function setKeepOnDeath(bool $keepOnDeath) : void{
+	public function setKeepOnDeath(bool $keepOnDeath) : Item{
 		$this->keepOnDeath = $keepOnDeath;
+		return $this;
 	}
 
 	/**

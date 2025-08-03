@@ -150,7 +150,7 @@ class PluginManager{
 		}
 
 		$prefixed = $loader->getAccessProtocol() . $path;
-		$loader->loadPlugin($prefixed);
+		$loader->loadPlugin($prefixed, $description);
 
 		$mainClass = $description->getMain();
 		if(!class_exists($mainClass, true)){

@@ -54,12 +54,12 @@ final class WorldDataVersions{
 	 * This may be lower than the current protocol version if PocketMine-MP does not yet support features of the newer
 	 * version. This allows the protocol to be updated independently of world format support.
 	 */
-	public const NETWORK = 800;
+	public const NETWORK = 818;
 
 	public const LAST_OPENED_IN = [
 		1, //major
 		21, //minor
-		80, //patch
+		90, //patch
 		3, //revision
 		0 //is beta
 	];

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function sort;
 
@@ -47,9 +48,7 @@ class ApiVersionTest extends TestCase{
 		yield ["3.0.0-ALPHA1", "4.0.0-ALPHA1", false];
 	}
 
-	/**
-	 * @dataProvider compatibleApiProvider
-	 */
+	#[DataProvider("compatibleApiProvider")]
 	public function testCompatibleApi(string $myVersion, string $wantVersion, bool $expected) : void{
 		self::assertSame($expected, ApiVersion::isCompatible($myVersion, [$wantVersion]), "my version: $myVersion, their version: $wantVersion, expect " . ($expected ? "yes" : "no"));
 	}
@@ -67,11 +66,10 @@ class ApiVersionTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider ambiguousVersionsProvider
-	 *
 	 * @param string[] $input
 	 * @param string[] $expectedOutput
 	 */
+	#[DataProvider("ambiguousVersionsProvider")]
 	public function testFindAmbiguousVersions(array $input, array $expectedOutput) : void{
 		$ambiguous = ApiVersion::checkAmbiguousVersions($input);
 

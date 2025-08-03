@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-final class Chain extends Transparent{
+final class Chain extends Transparent implements PillarRotation{
 	use PillarRotationTrait;
 
 	public function getSupportType(int $facing) : SupportType{

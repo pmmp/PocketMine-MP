@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use PHPUnit\Framework\TestCase;
 use pmmp\thread\ThreadSafeArray;
 use pocketmine\promise\PromiseResolver;
@@ -84,9 +85,8 @@ class AsyncPoolTest extends TestCase{
 	 *
 	 * Due to an unset() in the function body, other AsyncTask::__destruct() calls could be triggered during
 	 * an AsyncTask's destruction. If done in the wrong way, this could lead to a crash.
-	 *
-	 * @doesNotPerformAssertions This test is checking for a crash condition, not a specific output.
 	 */
+	#[DoesNotPerformAssertions]
 	public function testTaskDestructorReentrancy() : void{
 		$this->pool->submitTask(new class extends AsyncTask{
 			public function __construct(){

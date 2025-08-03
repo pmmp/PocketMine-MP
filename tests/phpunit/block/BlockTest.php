@@ -24,16 +24,22 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\data\bedrock\BedrockDataFiles;
+use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
+use function array_fill_keys;
 use function get_debug_type;
 use function implode;
 use function is_array;
+use function is_float;
 use function is_int;
 use function is_string;
 use function json_decode;
 use function log;
+use function round;
 use const JSON_THROW_ON_ERROR;
 
 class BlockTest extends TestCase{
@@ -93,6 +99,55 @@ class BlockTest extends TestCase{
 			self::assertLessThanOrEqual(15, $value, "Light filter value for $id is larger than the expected 15");
 			self::assertGreaterThan(0, $value, "Light filter value for $id must be larger than 0");
 		}
+	}
+
+	public function testBlockBreakInfo() : void{
+		$propertiesTable = json_decode(Filesystem::fileGetContents(BedrockDataFiles::BLOCK_PROPERTIES_TABLE_JSON), true, 3, JSON_THROW_ON_ERROR);
+		if(!is_array($propertiesTable)){
+			throw new AssumptionFailedError("Block properties table must be an array");
+		}
+		$exceptions = array_fill_keys([
+			BlockTypeNames::AIR,
+			BlockTypeNames::WATER,
+			BlockTypeNames::FLOWING_WATER,
+			BlockTypeNames::LAVA,
+			BlockTypeNames::FLOWING_LAVA,
+			BlockTypeNames::MANGROVE_LOG, //For some reason ONLY this wood block has blast resistance 2 instead of 10...
+		], true);
+
+		$serializer = GlobalBlockStateHandlers::getSerializer();
+		$testedBlocks = [];
+		$hardnessErrors = [];
+		$blastResistanceErrors = [];
+		foreach($this->blockFactory->getAllKnownStates() as $block){
+			$vanillaId = $serializer->serializeBlock($block)->getName();
+			if(isset($exceptions[$vanillaId]) || isset($testedBlocks[$vanillaId])){
+				continue;
+			}
+			if(!isset($propertiesTable[$vanillaId]) || !is_array($propertiesTable[$vanillaId])){
+				throw new AssumptionFailedError("$vanillaId does not exist in the vanilla block properties table or is not an array");
+			}
+			if(!isset($propertiesTable[$vanillaId]["hardness"]) || !is_float($propertiesTable[$vanillaId]["hardness"])){
+				throw new AssumptionFailedError("Hardness property is missing for $vanillaId or is not a float value");
+			}
+			if(!isset($propertiesTable[$vanillaId]["blastResistance"]) || !is_float($propertiesTable[$vanillaId]["blastResistance"])){
+				throw new AssumptionFailedError("Blast resistance property is missing for $vanillaId or is not a float value");
+			}
+			$testedBlocks[$vanillaId] = true;
+
+			$vanillaHardness = round($propertiesTable[$vanillaId]["hardness"], 5);
+			$vanillaBlastResistance = round($propertiesTable[$vanillaId]["blastResistance"], 5) * 5;
+
+			$breakInfo = $block->getBreakInfo();
+			if($breakInfo->getHardness() !== $vanillaHardness){
+				$hardnessErrors[] = "Hardness mismatch for $vanillaId (expected: $vanillaHardness, got " . $breakInfo->getHardness() . ")";
+			}
+			if($breakInfo->getBlastResistance() !== $vanillaBlastResistance){
+				$blastResistanceErrors[] = "Blast resistance mismatch for $vanillaId (expected: $vanillaBlastResistance, got " . $breakInfo->getBlastResistance() . ")";
+			}
+		}
+		self::assertEmpty($hardnessErrors, "Block hardness test failed:\n" . implode("\n", $hardnessErrors));
+		self::assertEmpty($blastResistanceErrors, "Block blast resistance test failed:\n" . implode("\n", $blastResistanceErrors));
 	}
 
 	/**

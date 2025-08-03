@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use function mt_rand;
 use function str_repeat;
@@ -40,9 +41,7 @@ final class ConsoleReaderChildProcessUtilsTest extends TestCase{
 		yield ["give \"Steve\" golden_apple"];
 	}
 
-	/**
-	 * @dataProvider commandStringProvider
-	 */
+	#[DataProvider("commandStringProvider")]
 	public function testCreateParseSymmetry(string $input) : void{
 		$counterCreate = $counterParse = mt_rand();
 		$message = ConsoleReaderChildProcessUtils::createMessage($input, $counterCreate);
@@ -74,9 +73,7 @@ final class ConsoleReaderChildProcessUtilsTest extends TestCase{
 		yield ["a" . ConsoleReaderChildProcessUtils::TOKEN_DELIMITER . "b", false]; //message with delimiter but not a valid IPC message
 	}
 
-	/**
-	 * @dataProvider parseMessageProvider
-	 */
+	#[DataProvider("parseMessageProvider")]
 	public static function testParseMessage(string $message, bool $valid) : void{
 		$counter = $oldCounter = 0;
 
