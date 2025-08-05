@@ -195,8 +195,8 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
-	 * @var (\Closure|string)[]
-	 * @phpstan-var array<int, \Closure(never) : (Writer|string)|string>
+	 * @var (\Closure|BlockStateData)[]
+	 * @phpstan-var array<int, \Closure(never) : (Writer|BlockStateData)|BlockStateData>
 	 */
 	private array $serializers = [];
 
@@ -233,9 +233,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param \Closure(TBlockType) : (Writer|string)|string $serializer
+	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData)|BlockStateData $serializer
 	 */
-	public function map(Block $block, \Closure|string $serializer) : void{
+	public function map(Block $block, \Closure|BlockStateData $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
@@ -243,7 +243,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
-		$this->map($block, $id);
+		$this->map($block, BlockStateData::current($id, []));
 	}
 
 	public function mapSlab(Slab $block, string $singleId, string $doubleId) : void{
@@ -277,14 +277,12 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * the type ID of the block (which never makes sense, even in a world where overriding block types is a thing).
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
-		 * @var \Closure|string $locatedSerializer
-		 * @phpstan-var \Closure(TBlockType) : (Writer|string)|string $locatedSerializer
+		 * @var \Closure|BlockStateData $locatedSerializer
+		 * @phpstan-var \Closure(TBlockType) : (Writer|BlockStateData)|BlockStateData $locatedSerializer
 		 */
-		$writerOrId = $locatedSerializer instanceof \Closure ? $locatedSerializer($blockState) : $locatedSerializer;
+		$writerOrState = $locatedSerializer instanceof \Closure ? $locatedSerializer($blockState) : $locatedSerializer;
 
-		return $writerOrId instanceof Writer ?
-			$writerOrId->getBlockStateData() :
-			BlockStateData::current($writerOrId, []);
+		return $writerOrState instanceof Writer ? $writerOrState->getBlockStateData() : $writerOrState;
 	}
 
 	private function registerCandleSerializers() : void{
@@ -330,43 +328,45 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	public function registerFlatColorBlockSerializers() : void{
-		$this->map(Blocks::STAINED_HARDENED_GLASS(), fn(StainedHardenedGlass $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS,
-			DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS,
-			DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS,
-			DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS,
-			DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS,
-			DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS,
-			DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS,
-			DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS,
-			DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS,
-			DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS,
-			DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS,
-			DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS,
-			DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS,
-			DyeColor::RED => Ids::HARD_RED_STAINED_GLASS,
-			DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS,
-			DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS,
-		});
+		$this->map(Blocks::STAINED_HARDENED_GLASS(), fn(StainedHardenedGlass $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS,
+				DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS,
+				DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS,
+				DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS,
+				DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS,
+				DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS,
+				DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS,
+				DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS,
+				DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS,
+				DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS,
+				DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS,
+				DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS,
+				DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS,
+				DyeColor::RED => Ids::HARD_RED_STAINED_GLASS,
+				DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS,
+				DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS,
+			}, []));
 
-		$this->map(Blocks::STAINED_HARDENED_GLASS_PANE(), fn(StainedHardenedGlassPane $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS_PANE,
-			DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS_PANE,
-			DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS_PANE,
-			DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS_PANE,
-			DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS_PANE,
-			DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS_PANE,
-			DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS_PANE,
-			DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS_PANE,
-			DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS_PANE,
-			DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS_PANE,
-			DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS_PANE,
-			DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS_PANE,
-			DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS_PANE,
-			DyeColor::RED => Ids::HARD_RED_STAINED_GLASS_PANE,
-			DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS_PANE,
-			DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS_PANE,
-		});
+		$this->map(Blocks::STAINED_HARDENED_GLASS_PANE(), fn(StainedHardenedGlassPane $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::HARD_BLACK_STAINED_GLASS_PANE,
+				DyeColor::BLUE => Ids::HARD_BLUE_STAINED_GLASS_PANE,
+				DyeColor::BROWN => Ids::HARD_BROWN_STAINED_GLASS_PANE,
+				DyeColor::CYAN => Ids::HARD_CYAN_STAINED_GLASS_PANE,
+				DyeColor::GRAY => Ids::HARD_GRAY_STAINED_GLASS_PANE,
+				DyeColor::GREEN => Ids::HARD_GREEN_STAINED_GLASS_PANE,
+				DyeColor::LIGHT_BLUE => Ids::HARD_LIGHT_BLUE_STAINED_GLASS_PANE,
+				DyeColor::LIGHT_GRAY => Ids::HARD_LIGHT_GRAY_STAINED_GLASS_PANE,
+				DyeColor::LIME => Ids::HARD_LIME_STAINED_GLASS_PANE,
+				DyeColor::MAGENTA => Ids::HARD_MAGENTA_STAINED_GLASS_PANE,
+				DyeColor::ORANGE => Ids::HARD_ORANGE_STAINED_GLASS_PANE,
+				DyeColor::PINK => Ids::HARD_PINK_STAINED_GLASS_PANE,
+				DyeColor::PURPLE => Ids::HARD_PURPLE_STAINED_GLASS_PANE,
+				DyeColor::RED => Ids::HARD_RED_STAINED_GLASS_PANE,
+				DyeColor::WHITE => Ids::HARD_WHITE_STAINED_GLASS_PANE,
+				DyeColor::YELLOW => Ids::HARD_YELLOW_STAINED_GLASS_PANE,
+			}, []));
 
 		$this->map(Blocks::GLAZED_TERRACOTTA(), function(GlazedTerracotta $block) : Writer{
 			return Writer::create(match($block->getColor()){
@@ -390,168 +390,176 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeHorizontalFacing($block->getFacing());
 		});
 
-		$this->map(Blocks::WOOL(), fn(Wool $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_WOOL,
-			DyeColor::BLUE => Ids::BLUE_WOOL,
-			DyeColor::BROWN => Ids::BROWN_WOOL,
-			DyeColor::CYAN => Ids::CYAN_WOOL,
-			DyeColor::GRAY => Ids::GRAY_WOOL,
-			DyeColor::GREEN => Ids::GREEN_WOOL,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_WOOL,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_WOOL,
-			DyeColor::LIME => Ids::LIME_WOOL,
-			DyeColor::MAGENTA => Ids::MAGENTA_WOOL,
-			DyeColor::ORANGE => Ids::ORANGE_WOOL,
-			DyeColor::PINK => Ids::PINK_WOOL,
-			DyeColor::PURPLE => Ids::PURPLE_WOOL,
-			DyeColor::RED => Ids::RED_WOOL,
-			DyeColor::WHITE => Ids::WHITE_WOOL,
-			DyeColor::YELLOW => Ids::YELLOW_WOOL,
-		});
+		$this->map(Blocks::WOOL(), fn(Wool $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_WOOL,
+				DyeColor::BLUE => Ids::BLUE_WOOL,
+				DyeColor::BROWN => Ids::BROWN_WOOL,
+				DyeColor::CYAN => Ids::CYAN_WOOL,
+				DyeColor::GRAY => Ids::GRAY_WOOL,
+				DyeColor::GREEN => Ids::GREEN_WOOL,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_WOOL,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_WOOL,
+				DyeColor::LIME => Ids::LIME_WOOL,
+				DyeColor::MAGENTA => Ids::MAGENTA_WOOL,
+				DyeColor::ORANGE => Ids::ORANGE_WOOL,
+				DyeColor::PINK => Ids::PINK_WOOL,
+				DyeColor::PURPLE => Ids::PURPLE_WOOL,
+				DyeColor::RED => Ids::RED_WOOL,
+				DyeColor::WHITE => Ids::WHITE_WOOL,
+				DyeColor::YELLOW => Ids::YELLOW_WOOL,
+			}, []));
 
-		$this->map(Blocks::CARPET(), fn(Carpet $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_CARPET,
-			DyeColor::BLUE => Ids::BLUE_CARPET,
-			DyeColor::BROWN => Ids::BROWN_CARPET,
-			DyeColor::CYAN => Ids::CYAN_CARPET,
-			DyeColor::GRAY => Ids::GRAY_CARPET,
-			DyeColor::GREEN => Ids::GREEN_CARPET,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CARPET,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CARPET,
-			DyeColor::LIME => Ids::LIME_CARPET,
-			DyeColor::MAGENTA => Ids::MAGENTA_CARPET,
-			DyeColor::ORANGE => Ids::ORANGE_CARPET,
-			DyeColor::PINK => Ids::PINK_CARPET,
-			DyeColor::PURPLE => Ids::PURPLE_CARPET,
-			DyeColor::RED => Ids::RED_CARPET,
-			DyeColor::WHITE => Ids::WHITE_CARPET,
-			DyeColor::YELLOW => Ids::YELLOW_CARPET,
-		});
+		$this->map(Blocks::CARPET(), fn(Carpet $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_CARPET,
+				DyeColor::BLUE => Ids::BLUE_CARPET,
+				DyeColor::BROWN => Ids::BROWN_CARPET,
+				DyeColor::CYAN => Ids::CYAN_CARPET,
+				DyeColor::GRAY => Ids::GRAY_CARPET,
+				DyeColor::GREEN => Ids::GREEN_CARPET,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CARPET,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CARPET,
+				DyeColor::LIME => Ids::LIME_CARPET,
+				DyeColor::MAGENTA => Ids::MAGENTA_CARPET,
+				DyeColor::ORANGE => Ids::ORANGE_CARPET,
+				DyeColor::PINK => Ids::PINK_CARPET,
+				DyeColor::PURPLE => Ids::PURPLE_CARPET,
+				DyeColor::RED => Ids::RED_CARPET,
+				DyeColor::WHITE => Ids::WHITE_CARPET,
+				DyeColor::YELLOW => Ids::YELLOW_CARPET,
+			}, []));
 
-		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_SHULKER_BOX,
-			DyeColor::BLUE => Ids::BLUE_SHULKER_BOX,
-			DyeColor::BROWN => Ids::BROWN_SHULKER_BOX,
-			DyeColor::CYAN => Ids::CYAN_SHULKER_BOX,
-			DyeColor::GRAY => Ids::GRAY_SHULKER_BOX,
-			DyeColor::GREEN => Ids::GREEN_SHULKER_BOX,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_SHULKER_BOX,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_SHULKER_BOX,
-			DyeColor::LIME => Ids::LIME_SHULKER_BOX,
-			DyeColor::MAGENTA => Ids::MAGENTA_SHULKER_BOX,
-			DyeColor::ORANGE => Ids::ORANGE_SHULKER_BOX,
-			DyeColor::PINK => Ids::PINK_SHULKER_BOX,
-			DyeColor::PURPLE => Ids::PURPLE_SHULKER_BOX,
-			DyeColor::RED => Ids::RED_SHULKER_BOX,
-			DyeColor::WHITE => Ids::WHITE_SHULKER_BOX,
-			DyeColor::YELLOW => Ids::YELLOW_SHULKER_BOX,
-		});
+		$this->map(Blocks::DYED_SHULKER_BOX(), fn(DyedShulkerBox $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_SHULKER_BOX,
+				DyeColor::BLUE => Ids::BLUE_SHULKER_BOX,
+				DyeColor::BROWN => Ids::BROWN_SHULKER_BOX,
+				DyeColor::CYAN => Ids::CYAN_SHULKER_BOX,
+				DyeColor::GRAY => Ids::GRAY_SHULKER_BOX,
+				DyeColor::GREEN => Ids::GREEN_SHULKER_BOX,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_SHULKER_BOX,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_SHULKER_BOX,
+				DyeColor::LIME => Ids::LIME_SHULKER_BOX,
+				DyeColor::MAGENTA => Ids::MAGENTA_SHULKER_BOX,
+				DyeColor::ORANGE => Ids::ORANGE_SHULKER_BOX,
+				DyeColor::PINK => Ids::PINK_SHULKER_BOX,
+				DyeColor::PURPLE => Ids::PURPLE_SHULKER_BOX,
+				DyeColor::RED => Ids::RED_SHULKER_BOX,
+				DyeColor::WHITE => Ids::WHITE_SHULKER_BOX,
+				DyeColor::YELLOW => Ids::YELLOW_SHULKER_BOX,
+			}, []));
 
-		$this->map(Blocks::CONCRETE(), fn(Concrete $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_CONCRETE,
-			DyeColor::BLUE => Ids::BLUE_CONCRETE,
-			DyeColor::BROWN => Ids::BROWN_CONCRETE,
-			DyeColor::CYAN => Ids::CYAN_CONCRETE,
-			DyeColor::GRAY => Ids::GRAY_CONCRETE,
-			DyeColor::GREEN => Ids::GREEN_CONCRETE,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CONCRETE,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CONCRETE,
-			DyeColor::LIME => Ids::LIME_CONCRETE,
-			DyeColor::MAGENTA => Ids::MAGENTA_CONCRETE,
-			DyeColor::ORANGE => Ids::ORANGE_CONCRETE,
-			DyeColor::PINK => Ids::PINK_CONCRETE,
-			DyeColor::PURPLE => Ids::PURPLE_CONCRETE,
-			DyeColor::RED => Ids::RED_CONCRETE,
-			DyeColor::WHITE => Ids::WHITE_CONCRETE,
-			DyeColor::YELLOW => Ids::YELLOW_CONCRETE,
-		});
+		$this->map(Blocks::CONCRETE(), fn(Concrete $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_CONCRETE,
+				DyeColor::BLUE => Ids::BLUE_CONCRETE,
+				DyeColor::BROWN => Ids::BROWN_CONCRETE,
+				DyeColor::CYAN => Ids::CYAN_CONCRETE,
+				DyeColor::GRAY => Ids::GRAY_CONCRETE,
+				DyeColor::GREEN => Ids::GREEN_CONCRETE,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CONCRETE,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CONCRETE,
+				DyeColor::LIME => Ids::LIME_CONCRETE,
+				DyeColor::MAGENTA => Ids::MAGENTA_CONCRETE,
+				DyeColor::ORANGE => Ids::ORANGE_CONCRETE,
+				DyeColor::PINK => Ids::PINK_CONCRETE,
+				DyeColor::PURPLE => Ids::PURPLE_CONCRETE,
+				DyeColor::RED => Ids::RED_CONCRETE,
+				DyeColor::WHITE => Ids::WHITE_CONCRETE,
+				DyeColor::YELLOW => Ids::YELLOW_CONCRETE,
+			}, []));
 
-		$this->map(Blocks::CONCRETE_POWDER(), fn(ConcretePowder $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_CONCRETE_POWDER,
-			DyeColor::BLUE => Ids::BLUE_CONCRETE_POWDER,
-			DyeColor::BROWN => Ids::BROWN_CONCRETE_POWDER,
-			DyeColor::CYAN => Ids::CYAN_CONCRETE_POWDER,
-			DyeColor::GRAY => Ids::GRAY_CONCRETE_POWDER,
-			DyeColor::GREEN => Ids::GREEN_CONCRETE_POWDER,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CONCRETE_POWDER,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CONCRETE_POWDER,
-			DyeColor::LIME => Ids::LIME_CONCRETE_POWDER,
-			DyeColor::MAGENTA => Ids::MAGENTA_CONCRETE_POWDER,
-			DyeColor::ORANGE => Ids::ORANGE_CONCRETE_POWDER,
-			DyeColor::PINK => Ids::PINK_CONCRETE_POWDER,
-			DyeColor::PURPLE => Ids::PURPLE_CONCRETE_POWDER,
-			DyeColor::RED => Ids::RED_CONCRETE_POWDER,
-			DyeColor::WHITE => Ids::WHITE_CONCRETE_POWDER,
-			DyeColor::YELLOW => Ids::YELLOW_CONCRETE_POWDER,
-		});
+		$this->map(Blocks::CONCRETE_POWDER(), fn(ConcretePowder $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_CONCRETE_POWDER,
+				DyeColor::BLUE => Ids::BLUE_CONCRETE_POWDER,
+				DyeColor::BROWN => Ids::BROWN_CONCRETE_POWDER,
+				DyeColor::CYAN => Ids::CYAN_CONCRETE_POWDER,
+				DyeColor::GRAY => Ids::GRAY_CONCRETE_POWDER,
+				DyeColor::GREEN => Ids::GREEN_CONCRETE_POWDER,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_CONCRETE_POWDER,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_CONCRETE_POWDER,
+				DyeColor::LIME => Ids::LIME_CONCRETE_POWDER,
+				DyeColor::MAGENTA => Ids::MAGENTA_CONCRETE_POWDER,
+				DyeColor::ORANGE => Ids::ORANGE_CONCRETE_POWDER,
+				DyeColor::PINK => Ids::PINK_CONCRETE_POWDER,
+				DyeColor::PURPLE => Ids::PURPLE_CONCRETE_POWDER,
+				DyeColor::RED => Ids::RED_CONCRETE_POWDER,
+				DyeColor::WHITE => Ids::WHITE_CONCRETE_POWDER,
+				DyeColor::YELLOW => Ids::YELLOW_CONCRETE_POWDER,
+			}, []));
 
-		$this->map(Blocks::STAINED_CLAY(), fn(StainedHardenedClay $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_TERRACOTTA,
-			DyeColor::BLUE => Ids::BLUE_TERRACOTTA,
-			DyeColor::BROWN => Ids::BROWN_TERRACOTTA,
-			DyeColor::CYAN => Ids::CYAN_TERRACOTTA,
-			DyeColor::GRAY => Ids::GRAY_TERRACOTTA,
-			DyeColor::GREEN => Ids::GREEN_TERRACOTTA,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_TERRACOTTA,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_TERRACOTTA,
-			DyeColor::LIME => Ids::LIME_TERRACOTTA,
-			DyeColor::MAGENTA => Ids::MAGENTA_TERRACOTTA,
-			DyeColor::ORANGE => Ids::ORANGE_TERRACOTTA,
-			DyeColor::PINK => Ids::PINK_TERRACOTTA,
-			DyeColor::PURPLE => Ids::PURPLE_TERRACOTTA,
-			DyeColor::RED => Ids::RED_TERRACOTTA,
-			DyeColor::WHITE => Ids::WHITE_TERRACOTTA,
-			DyeColor::YELLOW => Ids::YELLOW_TERRACOTTA,
-		});
+		$this->map(Blocks::STAINED_CLAY(), fn(StainedHardenedClay $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_TERRACOTTA,
+				DyeColor::BLUE => Ids::BLUE_TERRACOTTA,
+				DyeColor::BROWN => Ids::BROWN_TERRACOTTA,
+				DyeColor::CYAN => Ids::CYAN_TERRACOTTA,
+				DyeColor::GRAY => Ids::GRAY_TERRACOTTA,
+				DyeColor::GREEN => Ids::GREEN_TERRACOTTA,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_TERRACOTTA,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_TERRACOTTA,
+				DyeColor::LIME => Ids::LIME_TERRACOTTA,
+				DyeColor::MAGENTA => Ids::MAGENTA_TERRACOTTA,
+				DyeColor::ORANGE => Ids::ORANGE_TERRACOTTA,
+				DyeColor::PINK => Ids::PINK_TERRACOTTA,
+				DyeColor::PURPLE => Ids::PURPLE_TERRACOTTA,
+				DyeColor::RED => Ids::RED_TERRACOTTA,
+				DyeColor::WHITE => Ids::WHITE_TERRACOTTA,
+				DyeColor::YELLOW => Ids::YELLOW_TERRACOTTA,
+			}, []));
 
-		$this->map(Blocks::STAINED_GLASS(), fn(StainedGlass $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_STAINED_GLASS,
-			DyeColor::BLUE => Ids::BLUE_STAINED_GLASS,
-			DyeColor::BROWN => Ids::BROWN_STAINED_GLASS,
-			DyeColor::CYAN => Ids::CYAN_STAINED_GLASS,
-			DyeColor::GRAY => Ids::GRAY_STAINED_GLASS,
-			DyeColor::GREEN => Ids::GREEN_STAINED_GLASS,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_STAINED_GLASS,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_STAINED_GLASS,
-			DyeColor::LIME => Ids::LIME_STAINED_GLASS,
-			DyeColor::MAGENTA => Ids::MAGENTA_STAINED_GLASS,
-			DyeColor::ORANGE => Ids::ORANGE_STAINED_GLASS,
-			DyeColor::PINK => Ids::PINK_STAINED_GLASS,
-			DyeColor::PURPLE => Ids::PURPLE_STAINED_GLASS,
-			DyeColor::RED => Ids::RED_STAINED_GLASS,
-			DyeColor::WHITE => Ids::WHITE_STAINED_GLASS,
-			DyeColor::YELLOW => Ids::YELLOW_STAINED_GLASS,
-		});
+		$this->map(Blocks::STAINED_GLASS(), fn(StainedGlass $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_STAINED_GLASS,
+				DyeColor::BLUE => Ids::BLUE_STAINED_GLASS,
+				DyeColor::BROWN => Ids::BROWN_STAINED_GLASS,
+				DyeColor::CYAN => Ids::CYAN_STAINED_GLASS,
+				DyeColor::GRAY => Ids::GRAY_STAINED_GLASS,
+				DyeColor::GREEN => Ids::GREEN_STAINED_GLASS,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_STAINED_GLASS,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_STAINED_GLASS,
+				DyeColor::LIME => Ids::LIME_STAINED_GLASS,
+				DyeColor::MAGENTA => Ids::MAGENTA_STAINED_GLASS,
+				DyeColor::ORANGE => Ids::ORANGE_STAINED_GLASS,
+				DyeColor::PINK => Ids::PINK_STAINED_GLASS,
+				DyeColor::PURPLE => Ids::PURPLE_STAINED_GLASS,
+				DyeColor::RED => Ids::RED_STAINED_GLASS,
+				DyeColor::WHITE => Ids::WHITE_STAINED_GLASS,
+				DyeColor::YELLOW => Ids::YELLOW_STAINED_GLASS,
+			}, []));
 
-		$this->map(Blocks::STAINED_GLASS_PANE(), fn(StainedGlassPane $block) => match($block->getColor()){
-			DyeColor::BLACK => Ids::BLACK_STAINED_GLASS_PANE,
-			DyeColor::BLUE => Ids::BLUE_STAINED_GLASS_PANE,
-			DyeColor::BROWN => Ids::BROWN_STAINED_GLASS_PANE,
-			DyeColor::CYAN => Ids::CYAN_STAINED_GLASS_PANE,
-			DyeColor::GRAY => Ids::GRAY_STAINED_GLASS_PANE,
-			DyeColor::GREEN => Ids::GREEN_STAINED_GLASS_PANE,
-			DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_STAINED_GLASS_PANE,
-			DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_STAINED_GLASS_PANE,
-			DyeColor::LIME => Ids::LIME_STAINED_GLASS_PANE,
-			DyeColor::MAGENTA => Ids::MAGENTA_STAINED_GLASS_PANE,
-			DyeColor::ORANGE => Ids::ORANGE_STAINED_GLASS_PANE,
-			DyeColor::PINK => Ids::PINK_STAINED_GLASS_PANE,
-			DyeColor::PURPLE => Ids::PURPLE_STAINED_GLASS_PANE,
-			DyeColor::RED => Ids::RED_STAINED_GLASS_PANE,
-			DyeColor::WHITE => Ids::WHITE_STAINED_GLASS_PANE,
-			DyeColor::YELLOW => Ids::YELLOW_STAINED_GLASS_PANE,
-		});
+		$this->map(Blocks::STAINED_GLASS_PANE(), fn(StainedGlassPane $block) =>
+			BlockStateData::current(match($block->getColor()){
+				DyeColor::BLACK => Ids::BLACK_STAINED_GLASS_PANE,
+				DyeColor::BLUE => Ids::BLUE_STAINED_GLASS_PANE,
+				DyeColor::BROWN => Ids::BROWN_STAINED_GLASS_PANE,
+				DyeColor::CYAN => Ids::CYAN_STAINED_GLASS_PANE,
+				DyeColor::GRAY => Ids::GRAY_STAINED_GLASS_PANE,
+				DyeColor::GREEN => Ids::GREEN_STAINED_GLASS_PANE,
+				DyeColor::LIGHT_BLUE => Ids::LIGHT_BLUE_STAINED_GLASS_PANE,
+				DyeColor::LIGHT_GRAY => Ids::LIGHT_GRAY_STAINED_GLASS_PANE,
+				DyeColor::LIME => Ids::LIME_STAINED_GLASS_PANE,
+				DyeColor::MAGENTA => Ids::MAGENTA_STAINED_GLASS_PANE,
+				DyeColor::ORANGE => Ids::ORANGE_STAINED_GLASS_PANE,
+				DyeColor::PINK => Ids::PINK_STAINED_GLASS_PANE,
+				DyeColor::PURPLE => Ids::PURPLE_STAINED_GLASS_PANE,
+				DyeColor::RED => Ids::RED_STAINED_GLASS_PANE,
+				DyeColor::WHITE => Ids::WHITE_STAINED_GLASS_PANE,
+				DyeColor::YELLOW => Ids::YELLOW_STAINED_GLASS_PANE,
+			}, []));
 	}
 
 	private function registerFlatCoralSerializers() : void{
 		$this->map(Blocks::CORAL(), fn(Coral $block) =>
-			match($block->getCoralType()){
+			BlockStateData::current(match($block->getCoralType()){
 				CoralType::BRAIN => $block->isDead() ? Ids::DEAD_BRAIN_CORAL : Ids::BRAIN_CORAL,
 				CoralType::BUBBLE => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL : Ids::BUBBLE_CORAL,
 				CoralType::FIRE => $block->isDead() ? Ids::DEAD_FIRE_CORAL : Ids::FIRE_CORAL,
 				CoralType::HORN => $block->isDead() ? Ids::DEAD_HORN_CORAL : Ids::HORN_CORAL,
 				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL : Ids::TUBE_CORAL,
-			}
+			}, [])
 		);
 
 		$this->map(Blocks::CORAL_FAN(), fn(FloorCoralFan $block) => Writer::create(
@@ -569,13 +577,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			}));
 
 		$this->map(Blocks::CORAL_BLOCK(), fn(CoralBlock $block) =>
-			match($block->getCoralType()){
+			BlockStateData::current(match($block->getCoralType()){
 				CoralType::BRAIN => $block->isDead() ? Ids::DEAD_BRAIN_CORAL_BLOCK : Ids::BRAIN_CORAL_BLOCK,
 				CoralType::BUBBLE => $block->isDead() ? Ids::DEAD_BUBBLE_CORAL_BLOCK : Ids::BUBBLE_CORAL_BLOCK,
 				CoralType::FIRE => $block->isDead() ? Ids::DEAD_FIRE_CORAL_BLOCK : Ids::FIRE_CORAL_BLOCK,
 				CoralType::HORN => $block->isDead() ? Ids::DEAD_HORN_CORAL_BLOCK : Ids::HORN_CORAL_BLOCK,
 				CoralType::TUBE => $block->isDead() ? Ids::DEAD_TUBE_CORAL_BLOCK : Ids::TUBE_CORAL_BLOCK,
-			}
+			}, [])
 		);
 
 		$this->map(Blocks::WALL_CORAL_FAN(), fn(WallCoralFan $block) => Writer::create(
@@ -591,7 +599,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	private function registerCauldronSerializers() : void{
-		$this->map(Blocks::CAULDRON(), fn() => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
+		$this->map(Blocks::CAULDRON(), Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0)->getBlockStateData());
 		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
 		//potion cauldrons store their real information in the block actor data
 		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
@@ -1275,8 +1283,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::RAIL_DATA_BIT, $block->isPowered())
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
-		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), fn() => Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
+		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM)
+				->getBlockStateData());
 		$this->map(Blocks::AMETHYST_CLUSTER(), fn(AmethystCluster $block) => Writer::create(
 			match($stage = $block->getStage()){
 				AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
@@ -1622,8 +1631,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MUD_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, new Writer(Ids::MUD_BRICK_WALL)));
 		$this->map(Blocks::MUDDY_MANGROVE_ROOTS(), fn(SimplePillar $block) => Writer::create(Ids::MUDDY_MANGROVE_ROOTS)
 				->writePillarAxis($block->getAxis()));
-		$this->map(Blocks::MUSHROOM_STEM(), fn() => Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
+		$this->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM)
+				->getBlockStateData());
 		$this->mapSlab(Blocks::NETHER_BRICK_SLAB(), Ids::NETHER_BRICK_SLAB, Ids::NETHER_BRICK_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::NETHER_BRICK_STAIRS(), Ids::NETHER_BRICK_STAIRS);
 		$this->map(Blocks::NETHER_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::NETHER_BRICK_WALL)));
@@ -1699,7 +1709,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeCardinalHorizontalFacing(Facing::SOUTH); //no longer used
 		});
 		$this->map(Blocks::PUMPKIN_STEM(), fn(PumpkinStem $block) => Helper::encodeStem($block, new Writer(Ids::PUMPKIN_STEM)));
-		$this->map(Blocks::PURPUR(), fn() => Writer::create(Ids::PURPUR_BLOCK)->writePillarAxis(Axis::Y));
+		$this->map(Blocks::PURPUR(), Writer::create(Ids::PURPUR_BLOCK)->writePillarAxis(Axis::Y)->getBlockStateData());
 		$this->map(Blocks::PURPLE_TORCH(), fn(Torch $block) => Helper::encodeTorch($block, Writer::create(Ids::COLORED_TORCH_PURPLE)));
 		$this->map(Blocks::PURPUR_PILLAR(), function(SimplePillar $block) : Writer{
 			return Writer::create(Ids::PURPUR_PILLAR)
@@ -1707,7 +1717,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->mapSlab(Blocks::PURPUR_SLAB(), Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::PURPUR_STAIRS(), Ids::PURPUR_STAIRS);
-		$this->map(Blocks::QUARTZ(), fn() => Helper::encodeQuartz(Axis::Y, Writer::create(Ids::QUARTZ_BLOCK)));
+		$this->map(Blocks::QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::QUARTZ_BLOCK))->getBlockStateData());
 		$this->map(Blocks::QUARTZ_PILLAR(), fn(SimplePillar $block) => Helper::encodeQuartz($block->getAxis(), Writer::create(Ids::QUARTZ_PILLAR)));
 		$this->mapSlab(Blocks::QUARTZ_SLAB(), Ids::QUARTZ_SLAB, Ids::QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::QUARTZ_STAIRS(), Ids::QUARTZ_STAIRS);
@@ -1770,7 +1780,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
-		$this->map(Blocks::SMOOTH_QUARTZ(), fn() => Helper::encodeQuartz(Axis::Y, Writer::create(Ids::SMOOTH_QUARTZ)));
+		$this->map(Blocks::SMOOTH_QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::SMOOTH_QUARTZ))->getBlockStateData());
 		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), Ids::SMOOTH_QUARTZ_SLAB, Ids::SMOOTH_QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::SMOOTH_QUARTZ_STAIRS(), Ids::SMOOTH_QUARTZ_STAIRS);
 		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), Ids::SMOOTH_RED_SANDSTONE_SLAB, Ids::SMOOTH_RED_SANDSTONE_DOUBLE_SLAB);
