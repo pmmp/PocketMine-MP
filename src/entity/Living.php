@@ -446,9 +446,19 @@ abstract class Living extends Entity{
 			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
 		}
-		if($source->canBeReducedByArmor()){
-			//MCPE uses the same system as PC did pre-1.9
-			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
+		if ($source->canBeReducedByArmor()) {
+			// In Minecraft Bedrock Edition, armor reduces incoming damage using a diminishing returns formula:
+			//   reduction = ArmorPoints / (ArmorPoints + 5)
+			// This ensures that each additional armor point provides less protection than the previous one.
+			// The result is capped at 80% maximum damage reduction (20 armor points = full diamond).
+			// Example: 10 points → ~66.6% reduction, 5 points → 50% reduction.
+			// This modifier is applied before other damage reductions such as enchantments or effects.
+
+			$armorPoints = $this->getArmorPoints();
+			$source->setModifier(
+				-$source->getFinalDamage() * min($armorPoints / ($armorPoints + 5), 0.80),
+				EntityDamageEvent::MODIFIER_ARMOR
+			);
 		}
 
 		$cause = $source->getCause();
