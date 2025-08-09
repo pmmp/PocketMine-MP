@@ -99,7 +99,7 @@ final class GarbageCollectorManager{
 		$time = $end - $start;
 		$this->collectionTimeTotalNs += $time;
 		$this->runs++;
-		$this->logger->info(sprintf(
+		$this->logger->debug(sprintf(
 			"Run #%d took %s ms (%s -> %s roots, %s cycles collected) - cumulative GC time: %s ms",
 			$this->runs,
 			number_format($time / 1_000_000, 2),
