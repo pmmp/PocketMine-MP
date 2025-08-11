@@ -4,6 +4,11 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Tag name to build'
+        required: true
 
 jobs:
   build:
@@ -33,11 +38,23 @@ jobs:
           repository: pmmp/PocketMine-Docker
           fetch-depth: 1
 
-      - name: Get tag names
+
+      - name: Get tag name
         id: tag-name
         run: |
-          VERSION=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
-          echo TAG_NAME=$VERSION >> $GITHUB_OUTPUT
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo TAG_NAME="${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo TAG_NAME="${{ github.event.inputs.release }}" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported event type: ${{ github.event_name }}"
+            exit 1
+          fi
+
+      - name: Parse version
+        id: version
+        run: |
+          VERSION="${{ steps.tag-name.outputs.TAG_NAME }}"
           echo MAJOR=$(echo $VERSION | cut -d. -f1) >> $GITHUB_OUTPUT
           echo MINOR=$(echo $VERSION | cut -d. -f1-2) >> $GITHUB_OUTPUT
 
@@ -71,8 +88,8 @@ jobs:
           push: true
           context: ./pocketmine-mp
           tags: |
-            ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MAJOR }}
-            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MAJOR }}
+            ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.version.outputs.MAJOR }}
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.version.outputs.MAJOR }}
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
@@ -84,8 +101,8 @@ jobs:
           push: true
           context: ./pocketmine-mp
           tags: |
-            ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MINOR }}
-            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.tag-name.outputs.MINOR }}
+            ${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.version.outputs.MINOR }}
+            ghcr.io/${{ steps.docker-repo-name.outputs.NAME }}:${{ steps.version.outputs.MINOR }}
           build-args: |
             PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
             PMMP_REPO=${{ github.repository }}
