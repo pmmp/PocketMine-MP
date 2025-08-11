@@ -766,6 +766,10 @@ class InGamePacketHandler extends PacketHandler{
 				$target = $this->player->getWorld()->getBlock($pos);
 				$breakHandler = $this->player->getBlockBreakHandler();
 				if($breakHandler === null && !$target->getBreakInfo()->breaksInstantly()){
+					//the client will send this when it starts to break a block, but also when it continues to break the
+					//currently targeted block, so we need to ignore it if the player has no BlockBreakHandler
+					//this is a hack to prevent the client from spamming this packet when it starts to break a block
+					//this is also sent when the player is not in creative mode, so we need to check that too
 					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because player has no BlockBreakHandler");
 					$this->syncBlocksNearby($pos, $face);
 					break;
@@ -775,7 +779,8 @@ class InGamePacketHandler extends PacketHandler{
 					$this->session->getLogger()->debug("PlayerAction $action on $pos with break progress " . $breakHandler->getBreakProgress() . " (face: $face)");
 					if($breakHandler->getBreakProgress() < 1) {
 						//the client will send this when it starts to break a block, but also when it continues to break the
-						//currently targeted block, so we need to ignore it if we don't have a block that we're currently
+						//currently targeted block, so we need to ignore it if the break progress is less than 1
+						//this is a hack to prevent the client from spamming this packet when it starts to break a block
 						$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because break progress is less than 1");
 						$this->syncBlocksNearby($pos, $face);
 						break;
