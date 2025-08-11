@@ -706,6 +706,7 @@ class InGamePacketHandler extends PacketHandler{
 					//this seems like a bug in the client and would cause spurious left-click events if we allowed it to
 					//be delivered to the player
 					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
+					$this->syncBlocksNearby($pos, $face);
 					break;
 				}
 				if(!$this->player->attackBlock($pos, $face)){
@@ -735,6 +736,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				if(!$this->player->isCreative()) {
 					$this->player->getNetworkSession()->getLogger()->debug("Ignoring PlayerAction $action on $pos because player isnt in creative");
+					$this->syncBlocksNearby($pos, $face);
 					break;
 				}
 
@@ -743,6 +745,43 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				break;
 			case PlayerAction::PREDICT_DESTROY_BLOCK:
+				if($this->player->isCreative()) {
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because player is in creative mode");
+					break;
+				}
+
+				if($this->lastBlockAttacked === null){
+					//the client will send this when it starts to break a block, but also when it continues to break the
+					//currently targeted block, so we need to ignore it if we don't have a block that we're currently
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we have no block being broken");
+					$this->syncBlocksNearby($pos, $face);
+					break;
+				}
+
+				if($pos->distanceSquared($this->player->getLocation()) > 10000){
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because it is too far away from the player");
+					break;
+				}
+
+				$target = $this->player->getWorld()->getBlock($pos);
+				$breakHandler = $this->player->getBlockBreakHandler();
+				if($breakHandler === null && !$target->getBreakInfo()->breaksInstantly()){
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because player has no BlockBreakHandler");
+					$this->syncBlocksNearby($pos, $face);
+					break;
+				} else if($breakHandler !== null && !$target->getBreakInfo()->breaksInstantly()) {
+					$breakHandler->update(); // 1 tick compensation for the client sending this packet before the block break progress is updated
+
+					$this->session->getLogger()->debug("PlayerAction $action on $pos with break progress " . $breakHandler->getBreakProgress() . " (face: $face)");
+					if($breakHandler->getBreakProgress() < 1) {
+						//the client will send this when it starts to break a block, but also when it continues to break the
+						//currently targeted block, so we need to ignore it if we don't have a block that we're currently
+						$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because break progress is less than 1");
+						$this->syncBlocksNearby($pos, $face);
+						break;
+					}
+				}
+
 				if(!$this->player->breakBlock($pos)){
 					$this->syncBlocksNearby($pos, $face);
 				}

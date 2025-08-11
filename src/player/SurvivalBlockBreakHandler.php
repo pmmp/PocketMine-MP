@@ -64,6 +64,9 @@ final class SurvivalBlockBreakHandler{
 	 * Returns the calculated break speed as percentage progress per game tick.
 	 */
 	private function calculateBreakProgressPerTick() : float{
+		if($this->block->getBreakInfo()->breaksInstantly()) {
+			return 1.0;
+		}
 		if(!$this->block->getBreakInfo()->isBreakable()){
 			return 0.0;
 		}
