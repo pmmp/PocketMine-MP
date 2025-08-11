@@ -39,6 +39,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityFrostWalkerEvent;
+use pocketmine\event\player\PlayerSprintKnockBackEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -129,6 +130,7 @@ abstract class Living extends Entity{
 	protected Attribute $moveSpeedAttr;
 
 	protected bool $sprinting = false;
+	protected bool $canSprintKB = false;
 	protected bool $sneaking = false;
 	protected bool $gliding = false;
 	protected bool $swimming = false;
@@ -264,6 +266,19 @@ abstract class Living extends Entity{
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
+	}
+
+	public function consumeSprintHit() : void {
+		// Disable the sprint knockBack bonus
+		// to prevent it from being applied multiple times in a row
+		$this->canSprintKB = false;
+	}
+
+	public function resetSprintState() : void {
+		// Reset the flag to allow
+		// the player to receive the sprint knockBack bonus again
+		// after stopping and restarting sprinting (wtap)
+		$this->canSprintKB = true;
 	}
 
 	public function isGliding() : bool{
@@ -598,6 +613,18 @@ abstract class Living extends Entity{
 				if($e !== null){
 					$deltaX = $this->location->x - $e->location->x;
 					$deltaZ = $this->location->z - $e->location->z;
+
+					if($e instanceof Player && $e->canSprintKB) {
+						$ev = new PlayerSprintKnockBackEvent($e, $this, 0.5, 0.1);
+						$ev->call();
+
+						if(!$ev->isCancelled()) {
+							$source->setKnockBack($source->getKnockBack() + $ev->getKnockBack());
+							$source->setVerticalKnockBackLimit($source->getVerticalKnockBackLimit() + $ev->getVerticalKnockBackLimit());
+							$e->consumeSprintHit();
+						}
+					}
+
 					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 				}
 			}

@@ -2055,6 +2055,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 		$this->setSprinting($sprint);
+
+		if(!$sprint) {
+			$this->resetSprintState();
+		}
+
 		return true;
 	}
 
