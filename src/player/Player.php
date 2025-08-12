@@ -1532,6 +1532,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					// If the block break progress is 100% we break the block
 					// This is a hack for custom block
 					$this->breakBlock($this->blockBreakHandler->getBlockPos());
+					$this->blockBreakHandler = null;
 				}
 			}
 		}
