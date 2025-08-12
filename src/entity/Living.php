@@ -625,7 +625,6 @@ abstract class Living extends Entity{
 						}
 					}
 
-					var_dump("Knockback from entity", $e->getName(), "to", $this->getName(), "with force", $source->getKnockBack(), "and vertical limit", $source->getVerticalKnockBackLimit());
 					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 				}
 			}
