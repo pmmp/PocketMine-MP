@@ -615,7 +615,7 @@ abstract class Living extends Entity{
 					$deltaZ = $this->location->z - $e->location->z;
 
 					if($e instanceof Player && $e->canSprintKB) {
-						$ev = new PlayerSprintKnockBackEvent($e, $this, 0.5, 0.1);
+						$ev = new PlayerSprintKnockBackEvent($e, $this, 0.05, 0.01);
 						$ev->call();
 
 						if(!$ev->isCancelled()) {
@@ -625,6 +625,7 @@ abstract class Living extends Entity{
 						}
 					}
 
+					var_dump("Knockback from entity", $e->getName(), "to", $this->getName(), "with force", $source->getKnockBack(), "and vertical limit", $source->getVerticalKnockBackLimit());
 					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 				}
 			}
