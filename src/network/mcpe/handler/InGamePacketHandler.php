@@ -696,6 +696,7 @@ class InGamePacketHandler extends PacketHandler{
 	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
 		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 
+		$this->session->getLogger()->debug("PlayerAction $action on $pos (face: $face)");
 		switch($action){
 			case PlayerAction::START_BREAK:
 			case PlayerAction::CONTINUE_DESTROY_BLOCK: //destroy the next block while holding down left click
