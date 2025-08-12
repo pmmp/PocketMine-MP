@@ -117,7 +117,6 @@ use function is_nan;
 use function json_decode;
 use function max;
 use function mb_strlen;
-use function microtime;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -128,9 +127,6 @@ use const JSON_THROW_ON_ERROR;
  */
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
-
-	protected float $lastRightClickTime = 0.0;
-	protected ?UseItemTransactionData $lastRightClickData = null;
 
 	protected ?Vector3 $lastPlayerAuthInputPosition = null;
 	protected ?float $lastPlayerAuthInputYaw = null;
@@ -493,27 +489,11 @@ class InGamePacketHandler extends PacketHandler{
 		$this->processMovements($data->getPlayerPosition(), fixHeadOffset: false);
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
-				//TODO: start hack for client spam bug
-				$clickPos = $data->getClickPosition();
-				$spamBug = ($this->lastRightClickData !== null &&
-					microtime(true) - $this->lastRightClickTime < 0.1 && //100ms
-					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 &&
-					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) &&
-					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
-				);
-				//get rid of continued spam if the player clicks and holds right-click
-				$this->lastRightClickData = $data;
-				$this->lastRightClickTime = microtime(true);
-				if($spamBug){
-					return true;
-				}
-				//TODO: end hack for client spam bug
-
 				self::validateFacing($data->getFace());
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
+				$this->player->interactBlock($vBlockPos, $data->getFace(), $data->getClickPosition());
 				//always sync this in case plugins caused a different result than the client expected
 				//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
 				//more information up the stack. For now I think this is good enough.
