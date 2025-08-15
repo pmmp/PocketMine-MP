@@ -82,12 +82,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.34.1
+        uses: shivammathur/setup-php@2.35.3
         with:
           php-version: ${{ env.PHP_VERSION }}
 
