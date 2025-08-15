@@ -234,7 +234,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData|string)|Writer|BlockStateData $serializer
+	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData)|Writer|BlockStateData $serializer
 	 */
 	public function map(Block $block, \Closure|Writer|BlockStateData $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
@@ -284,17 +284,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
 		 * @var \Closure $locatedSerializer
-		 * @phpstan-var \Closure(TBlockType) : (Writer|BlockStateData|string) $locatedSerializer
+		 * @phpstan-var \Closure(TBlockType) : (Writer|BlockStateData) $locatedSerializer
 		 */
 		$result = $locatedSerializer($blockState);
 
-		if($result instanceof Writer){ //builder
-			return $result->getBlockStateData();
-		}
-		if(is_string($result)){ //ID only
-			return BlockStateData::current($result, []);
-		}
-		return $result; //data, no builder
+		return $result instanceof Writer ? $result->getBlockStateData() : $result;
 	}
 
 	private function registerCandleSerializers() : void{
@@ -804,49 +798,61 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	private function registerCopperSerializers() : void{
-		$this->map(Blocks::COPPER(), function(Copper $block) : string{
+		$this->map(Blocks::COPPER(), function(Copper $block) : BlockStateData{
 			$oxidation = $block->getOxidation();
-			return $block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_COPPER, Ids::WAXED_EXPOSED_COPPER, Ids::WAXED_WEATHERED_COPPER, Ids::WAXED_OXIDIZED_COPPER) :
-				Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER);
+			return BlockStateData::current(
+				$block->isWaxed() ?
+					Helper::selectCopperId($oxidation, Ids::WAXED_COPPER, Ids::WAXED_EXPOSED_COPPER, Ids::WAXED_WEATHERED_COPPER, Ids::WAXED_OXIDIZED_COPPER) :
+					Helper::selectCopperId($oxidation, Ids::COPPER_BLOCK, Ids::EXPOSED_COPPER, Ids::WEATHERED_COPPER, Ids::OXIDIZED_COPPER),
+				[]
+			);
 		});
-		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : string{
+		$this->map(Blocks::CHISELED_COPPER(), function(Copper $block) : BlockStateData{
 			$oxidation = $block->getOxidation();
-			return $block->isWaxed() ?
-				Helper::selectCopperId($oxidation,
-					Ids::WAXED_CHISELED_COPPER,
-					Ids::WAXED_EXPOSED_CHISELED_COPPER,
-					Ids::WAXED_WEATHERED_CHISELED_COPPER,
-					Ids::WAXED_OXIDIZED_CHISELED_COPPER
-				) :
-				Helper::selectCopperId($oxidation,
-					Ids::CHISELED_COPPER,
-					Ids::EXPOSED_CHISELED_COPPER,
-					Ids::WEATHERED_CHISELED_COPPER,
-					Ids::OXIDIZED_CHISELED_COPPER
-				);
+			return BlockStateData::current(
+				$block->isWaxed() ?
+					Helper::selectCopperId($oxidation,
+						Ids::WAXED_CHISELED_COPPER,
+						Ids::WAXED_EXPOSED_CHISELED_COPPER,
+						Ids::WAXED_WEATHERED_CHISELED_COPPER,
+						Ids::WAXED_OXIDIZED_CHISELED_COPPER
+					) :
+					Helper::selectCopperId($oxidation,
+						Ids::CHISELED_COPPER,
+						Ids::EXPOSED_CHISELED_COPPER,
+						Ids::WEATHERED_CHISELED_COPPER,
+						Ids::OXIDIZED_CHISELED_COPPER
+					),
+				[]
+			);
 		});
-		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : string{
+		$this->map(Blocks::COPPER_GRATE(), function(CopperGrate $block) : BlockStateData{
 			$oxidation = $block->getOxidation();
-			return$block->isWaxed() ?
-				Helper::selectCopperId($oxidation,
-					Ids::WAXED_COPPER_GRATE,
-					Ids::WAXED_EXPOSED_COPPER_GRATE,
-					Ids::WAXED_WEATHERED_COPPER_GRATE,
-					Ids::WAXED_OXIDIZED_COPPER_GRATE
-				) :
-				Helper::selectCopperId($oxidation,
-					Ids::COPPER_GRATE,
-					Ids::EXPOSED_COPPER_GRATE,
-					Ids::WEATHERED_COPPER_GRATE,
-					Ids::OXIDIZED_COPPER_GRATE
-				);
+			return BlockStateData::current(
+				$block->isWaxed() ?
+					Helper::selectCopperId($oxidation,
+						Ids::WAXED_COPPER_GRATE,
+						Ids::WAXED_EXPOSED_COPPER_GRATE,
+						Ids::WAXED_WEATHERED_COPPER_GRATE,
+						Ids::WAXED_OXIDIZED_COPPER_GRATE
+					) :
+					Helper::selectCopperId($oxidation,
+						Ids::COPPER_GRATE,
+						Ids::EXPOSED_COPPER_GRATE,
+						Ids::WEATHERED_COPPER_GRATE,
+						Ids::OXIDIZED_COPPER_GRATE
+					),
+				[]
+			);
 		});
-		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : string{
+		$this->map(Blocks::CUT_COPPER(), function(Copper $block) : BlockStateData{
 			$oxidation = $block->getOxidation();
-			return $block->isWaxed() ?
-				Helper::selectCopperId($oxidation, Ids::WAXED_CUT_COPPER, Ids::WAXED_EXPOSED_CUT_COPPER, Ids::WAXED_WEATHERED_CUT_COPPER, Ids::WAXED_OXIDIZED_CUT_COPPER) :
-				Helper::selectCopperId($oxidation, Ids::CUT_COPPER, Ids::EXPOSED_CUT_COPPER, Ids::WEATHERED_CUT_COPPER, Ids::OXIDIZED_CUT_COPPER);
+			return BlockStateData::current(
+				$block->isWaxed() ?
+					Helper::selectCopperId($oxidation, Ids::WAXED_CUT_COPPER, Ids::WAXED_EXPOSED_CUT_COPPER, Ids::WAXED_WEATHERED_CUT_COPPER, Ids::WAXED_OXIDIZED_CUT_COPPER) :
+					Helper::selectCopperId($oxidation, Ids::CUT_COPPER, Ids::EXPOSED_CUT_COPPER, Ids::WEATHERED_CUT_COPPER, Ids::OXIDIZED_CUT_COPPER),
+				[]
+			);
 		});
 		$this->map(Blocks::CUT_COPPER_SLAB(), function(CopperSlab $block) : Writer{
 			$oxidation = $block->getOxidation();
@@ -1478,13 +1484,11 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSlab(Blocks::DIORITE_SLAB(), Ids::DIORITE_SLAB, Ids::DIORITE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::DIORITE_STAIRS(), Ids::DIORITE_STAIRS);
 		$this->map(Blocks::DIORITE_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::DIORITE_WALL)));
-		$this->map(Blocks::DIRT(), function(Dirt $block) : string{
-			return match($block->getDirtType()){
-				DirtType::NORMAL => Ids::DIRT,
-				DirtType::COARSE => Ids::COARSE_DIRT,
-				DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
-			};
-		});
+		$this->map(Blocks::DIRT(), fn(Dirt $block) => BlockStateData::current(match($block->getDirtType()){
+			DirtType::NORMAL => Ids::DIRT,
+			DirtType::COARSE => Ids::COARSE_DIRT,
+			DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
+		}, []));
 		$this->map(Blocks::DOUBLE_TALLGRASS(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::TALL_GRASS)));
 		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::ELEMENT_CONSTRUCTOR)));
 		$this->map(Blocks::ENDER_CHEST(), function(EnderChest $block) : Writer{
@@ -1581,27 +1585,25 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 					LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST,
 				});
 		});
-		$this->map(Blocks::LIGHT(), function(Light $block) : string{
-			return match($block->getLightLevel()){
-				0 => Ids::LIGHT_BLOCK_0,
-				1 => Ids::LIGHT_BLOCK_1,
-				2 => Ids::LIGHT_BLOCK_2,
-				3 => Ids::LIGHT_BLOCK_3,
-				4 => Ids::LIGHT_BLOCK_4,
-				5 => Ids::LIGHT_BLOCK_5,
-				6 => Ids::LIGHT_BLOCK_6,
-				7 => Ids::LIGHT_BLOCK_7,
-				8 => Ids::LIGHT_BLOCK_8,
-				9 => Ids::LIGHT_BLOCK_9,
-				10 => Ids::LIGHT_BLOCK_10,
-				11 => Ids::LIGHT_BLOCK_11,
-				12 => Ids::LIGHT_BLOCK_12,
-				13 => Ids::LIGHT_BLOCK_13,
-				14 => Ids::LIGHT_BLOCK_14,
-				15 => Ids::LIGHT_BLOCK_15,
-				default => throw new BlockStateSerializeException("Invalid light level " . $block->getLightLevel()),
-			};
-		});
+		$this->map(Blocks::LIGHT(), fn(Light $block) => BlockStateData::current(match($block->getLightLevel()){
+			0 => Ids::LIGHT_BLOCK_0,
+			1 => Ids::LIGHT_BLOCK_1,
+			2 => Ids::LIGHT_BLOCK_2,
+			3 => Ids::LIGHT_BLOCK_3,
+			4 => Ids::LIGHT_BLOCK_4,
+			5 => Ids::LIGHT_BLOCK_5,
+			6 => Ids::LIGHT_BLOCK_6,
+			7 => Ids::LIGHT_BLOCK_7,
+			8 => Ids::LIGHT_BLOCK_8,
+			9 => Ids::LIGHT_BLOCK_9,
+			10 => Ids::LIGHT_BLOCK_10,
+			11 => Ids::LIGHT_BLOCK_11,
+			12 => Ids::LIGHT_BLOCK_12,
+			13 => Ids::LIGHT_BLOCK_13,
+			14 => Ids::LIGHT_BLOCK_14,
+			15 => Ids::LIGHT_BLOCK_15,
+			default => throw new BlockStateSerializeException("Invalid light level " . $block->getLightLevel()),
+		}, []));
 		$this->map(Blocks::LIGHTNING_ROD(), function(LightningRod $block) : Writer{
 			return Writer::create(Ids::LIGHTNING_ROD)
 				->writeFacingDirection($block->getFacing());
