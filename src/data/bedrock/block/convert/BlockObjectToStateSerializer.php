@@ -189,7 +189,6 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function get_class;
-use function is_string;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
