@@ -189,6 +189,7 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function get_class;
+use function is_string;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
@@ -196,7 +197,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 * describe the bottom type of a type hierarchy only containing Block.
 	 *
 	 * @var (\Closure|BlockStateData)[]
-	 * @phpstan-var array<int, \Closure(never) : (Writer|BlockStateData)|BlockStateData>
+	 * @phpstan-var array<int, \Closure(never) : (Writer|BlockStateData|string)|BlockStateData>
 	 */
 	private array $serializers = [];
 
@@ -233,12 +234,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData)|Writer|BlockStateData $serializer
+	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData|string)|Writer|BlockStateData $serializer
 	 */
 	public function map(Block $block, \Closure|Writer|BlockStateData $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
+		//writer accepted for convenience only
 		$this->serializers[$block->getTypeId()] = $serializer instanceof Writer ? $serializer->getBlockStateData() : $serializer;
 	}
 
@@ -272,7 +274,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			throw new BlockStateSerializeException("No serializer registered for " . get_class($blockState) . " with type ID $typeId");
 		}
 
-		if($locatedSerializer instanceof BlockStateData){
+		if($locatedSerializer instanceof BlockStateData){ //static data, not dependent on state
 			return $locatedSerializer;
 		}
 
@@ -282,11 +284,17 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		 * In the future we'll need some way to guarantee that type IDs are never reused (perhaps spl_object_id()?)
 		 *
 		 * @var \Closure $locatedSerializer
-		 * @phpstan-var \Closure(TBlockType) : (Writer|BlockStateData) $locatedSerializer
+		 * @phpstan-var \Closure(TBlockType) : (Writer|BlockStateData|string) $locatedSerializer
 		 */
-		$writerOrState = $locatedSerializer($blockState);
+		$result = $locatedSerializer($blockState);
 
-		return $writerOrState instanceof Writer ? $writerOrState->getBlockStateData() : $writerOrState;
+		if($result instanceof Writer){ //builder
+			return $result->getBlockStateData();
+		}
+		if(is_string($result)){ //ID only
+			return BlockStateData::current($result, []);
+		}
+		return $result; //data, no builder
 	}
 
 	private function registerCandleSerializers() : void{
