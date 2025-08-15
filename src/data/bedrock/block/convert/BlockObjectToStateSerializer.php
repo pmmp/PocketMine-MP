@@ -233,13 +233,13 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
-	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData)|BlockStateData $serializer
+	 * @phpstan-param \Closure(TBlockType) : (Writer|BlockStateData)|Writer|BlockStateData $serializer
 	 */
-	public function map(Block $block, \Closure|BlockStateData $serializer) : void{
+	public function map(Block $block, \Closure|Writer|BlockStateData $serializer) : void{
 		if(isset($this->serializers[$block->getTypeId()])){
 			throw new \InvalidArgumentException("Block type ID " . $block->getTypeId() . " already has a serializer registered");
 		}
-		$this->serializers[$block->getTypeId()] = $serializer;
+		$this->serializers[$block->getTypeId()] = $serializer instanceof Writer ? $serializer->getBlockStateData() : $serializer;
 	}
 
 	public function mapSimple(Block $block, string $id) : void{
@@ -589,7 +589,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	private function registerCauldronSerializers() : void{
-		$this->map(Blocks::CAULDRON(), Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0)->getBlockStateData());
+		$this->map(Blocks::CAULDRON(), Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
 		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
 		//potion cauldrons store their real information in the block actor data
 		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
@@ -1274,8 +1274,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
 		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM)
-				->getBlockStateData());
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
 		$this->map(Blocks::AMETHYST_CLUSTER(), fn(AmethystCluster $block) => Writer::create(
 			match($stage = $block->getStage()){
 				AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
@@ -1622,8 +1621,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MUDDY_MANGROVE_ROOTS(), fn(SimplePillar $block) => Writer::create(Ids::MUDDY_MANGROVE_ROOTS)
 				->writePillarAxis($block->getAxis()));
 		$this->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM)
-				->getBlockStateData());
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
 		$this->mapSlab(Blocks::NETHER_BRICK_SLAB(), Ids::NETHER_BRICK_SLAB, Ids::NETHER_BRICK_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::NETHER_BRICK_STAIRS(), Ids::NETHER_BRICK_STAIRS);
 		$this->map(Blocks::NETHER_BRICK_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::NETHER_BRICK_WALL)));
@@ -1699,7 +1697,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeCardinalHorizontalFacing(Facing::SOUTH); //no longer used
 		});
 		$this->map(Blocks::PUMPKIN_STEM(), fn(PumpkinStem $block) => Helper::encodeStem($block, new Writer(Ids::PUMPKIN_STEM)));
-		$this->map(Blocks::PURPUR(), Writer::create(Ids::PURPUR_BLOCK)->writePillarAxis(Axis::Y)->getBlockStateData());
+		$this->map(Blocks::PURPUR(), Writer::create(Ids::PURPUR_BLOCK)->writePillarAxis(Axis::Y));
 		$this->map(Blocks::PURPLE_TORCH(), fn(Torch $block) => Helper::encodeTorch($block, Writer::create(Ids::COLORED_TORCH_PURPLE)));
 		$this->map(Blocks::PURPUR_PILLAR(), function(SimplePillar $block) : Writer{
 			return Writer::create(Ids::PURPUR_PILLAR)
@@ -1707,7 +1705,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->mapSlab(Blocks::PURPUR_SLAB(), Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::PURPUR_STAIRS(), Ids::PURPUR_STAIRS);
-		$this->map(Blocks::QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::QUARTZ_BLOCK))->getBlockStateData());
+		$this->map(Blocks::QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::QUARTZ_BLOCK)));
 		$this->map(Blocks::QUARTZ_PILLAR(), fn(SimplePillar $block) => Helper::encodeQuartz($block->getAxis(), Writer::create(Ids::QUARTZ_PILLAR)));
 		$this->mapSlab(Blocks::QUARTZ_SLAB(), Ids::QUARTZ_SLAB, Ids::QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::QUARTZ_STAIRS(), Ids::QUARTZ_STAIRS);
@@ -1770,7 +1768,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
 		$this->map(Blocks::SMOKER(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::SMOKER, Ids::LIT_SMOKER));
-		$this->map(Blocks::SMOOTH_QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::SMOOTH_QUARTZ))->getBlockStateData());
+		$this->map(Blocks::SMOOTH_QUARTZ(), Helper::encodeQuartz(Axis::Y, Writer::create(Ids::SMOOTH_QUARTZ)));
 		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), Ids::SMOOTH_QUARTZ_SLAB, Ids::SMOOTH_QUARTZ_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::SMOOTH_QUARTZ_STAIRS(), Ids::SMOOTH_QUARTZ_STAIRS);
 		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), Ids::SMOOTH_RED_SANDSTONE_SLAB, Ids::SMOOTH_RED_SANDSTONE_DOUBLE_SLAB);
