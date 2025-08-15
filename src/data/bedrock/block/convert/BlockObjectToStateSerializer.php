@@ -1515,10 +1515,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::FIRE)
 				->writeInt(StateNames::AGE, $block->getAge());
 		});
-		$this->map(Blocks::FLOWER_POT(), function() : Writer{
-			return Writer::create(Ids::FLOWER_POT)
-				->writeBool(StateNames::UPDATE_BIT, false); //to keep MCPE happy
-		});
+		$this->map(Blocks::FLOWER_POT(), Writer::create(Ids::FLOWER_POT)
+				->writeBool(StateNames::UPDATE_BIT, false) //to keep MCPE happy
+		);
 		$this->map(Blocks::FROGLIGHT(), function(Froglight $block){
 			return Writer::create(match($block->getFroglightType()){
 				FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
@@ -1701,10 +1700,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->mapSlab(Blocks::PRISMARINE_SLAB(), Ids::PRISMARINE_SLAB, Ids::PRISMARINE_DOUBLE_SLAB);
 		$this->mapStairs(Blocks::PRISMARINE_STAIRS(), Ids::PRISMARINE_STAIRS);
 		$this->map(Blocks::PRISMARINE_WALL(), fn(Wall $block) => Helper::encodeWall($block, Writer::create(Ids::PRISMARINE_WALL)));
-		$this->map(Blocks::PUMPKIN(), function() : Writer{
-			return Writer::create(Ids::PUMPKIN)
-				->writeCardinalHorizontalFacing(Facing::SOUTH); //no longer used
-		});
+		$this->map(Blocks::PUMPKIN(), Writer::create(Ids::PUMPKIN)
+				->writeCardinalHorizontalFacing(Facing::SOUTH) //no longer used
+		);
 		$this->map(Blocks::PUMPKIN_STEM(), fn(PumpkinStem $block) => Helper::encodeStem($block, new Writer(Ids::PUMPKIN_STEM)));
 		$this->map(Blocks::PURPUR(), Writer::create(Ids::PURPUR_BLOCK)->writePillarAxis(Axis::Y));
 		$this->map(Blocks::PURPLE_TORCH(), fn(Torch $block) => Helper::encodeTorch($block, Writer::create(Ids::COLORED_TORCH_PURPLE)));
@@ -1795,10 +1793,9 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeCardinalHorizontalFacing($block->getFacing())
 				->writeBool(StateNames::EXTINGUISHED, !$block->isLit());
 		});
-		$this->map(Blocks::SOUL_FIRE(), function() : Writer{
-			return Writer::create(Ids::SOUL_FIRE)
-				->writeInt(StateNames::AGE, 0); //useless for soul fire, we don't track it
-		});
+		$this->map(Blocks::SOUL_FIRE(), Writer::create(Ids::SOUL_FIRE)
+				->writeInt(StateNames::AGE, 0) //useless for soul fire, we don't track it
+		);
 		$this->map(Blocks::SOUL_LANTERN(), function(Lantern $block) : Writer{
 			return Writer::create(Ids::SOUL_LANTERN)
 				->writeBool(StateNames::HANGING, $block->isHanging());
