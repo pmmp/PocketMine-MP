@@ -280,16 +280,21 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		\Closure $getProperty,
 		?\Closure $extra = null
 	) : void{
-		$this->map($block, function(Block $block) use ($getProperty, $mapProperty, $prefix, $suffix, $extra) : Writer{
-			$property = $getProperty($block);
-			$infix = $mapProperty->enumToValue($property);
-			$id = $prefix . $infix . $suffix;
-			$writer = new Writer($id);
-			if($extra !== null){
+		if($extra !== null){
+			$this->map($block, function(Block $block) use ($getProperty, $mapProperty, $prefix, $suffix, $extra) : Writer{
+				$property = $getProperty($block);
+				$infix = $mapProperty->enumToValue($property);
+				$writer = new Writer($prefix . $infix . $suffix);
 				$extra($block, $writer);
-			}
-			return $writer;
-		});
+				return $writer;
+			});
+		}else{
+			$this->map($block, function(Block $block) use ($getProperty, $mapProperty, $prefix, $suffix) : BlockStateData{
+				$property = $getProperty($block);
+				$infix = $mapProperty->enumToValue($property);
+				return BlockStateData::current($prefix . $infix . $suffix, []);
+			});
+		}
 	}
 
 	/**
