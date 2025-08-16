@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\MobHeadType;
+use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\utils\SingletonTrait;
 
 final class ValueMappings{
@@ -53,6 +55,15 @@ final class ValueMappings{
 			DyeColor::RED => "red",
 			DyeColor::WHITE => "white",
 			DyeColor::YELLOW => "yellow"
+		});
+		$this->addEnum(MobHeadType::class, fn(MobHeadType $case) => match($case){
+			MobHeadType::CREEPER => Ids::CREEPER_HEAD,
+			MobHeadType::DRAGON => Ids::DRAGON_HEAD,
+			MobHeadType::PIGLIN => Ids::PIGLIN_HEAD,
+			MobHeadType::PLAYER => Ids::PLAYER_HEAD,
+			MobHeadType::SKELETON => Ids::SKELETON_SKULL,
+			MobHeadType::WITHER_SKELETON => Ids::WITHER_SKELETON_SKULL,
+			MobHeadType::ZOMBIE => Ids::ZOMBIE_HEAD
 		});
 	}
 

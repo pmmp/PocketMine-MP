@@ -24,8 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
+use pocketmine\block\MobHead;
+use pocketmine\block\Slab;
+use pocketmine\block\Stair;
 use pocketmine\block\utils\Colored;
+use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
@@ -44,11 +49,54 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->registerColoredIdOnlyMappings();
 		$this->registerLeavesMappings();
 		$this->registerSaplingMappings();
+		$this->registerFlattenedEnumMappings();
+		$this->registerStoneLikeSlabMappings();
+		$this->registerStoneLikeStairMappings();
+		$this->registerStoneLikeWallMappings();
+		$this->registerWoodMappings();
 	}
 
 	private function mapSimple(Block $block, string $id) : void{
 		$this->deserializer?->mapSimple($id, fn() => clone $block);
 		$this->serializer?->mapSimple($block, $id);
+	}
+
+	/**
+	 * @phpstan-template TBlock of Block
+	 * @phpstan-template TEnum of \UnitEnum
+	 *
+	 * @phpstan-param TBlock                            $block
+	 * @phpstan-param StringEnumMap<TEnum>              $mapProperty
+	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
+	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
+	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
+	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeExtra
+	 */
+	private function mapFlattenedEnumWithExtra(
+		Block $block,
+		StringEnumMap $mapProperty,
+		string $prefix,
+		string $suffix,
+		\Closure $getProperty,
+		\Closure $setProperty,
+		\Closure $readExtra,
+		\Closure $writeExtra
+	) : void{
+		$this->deserializer?->mapFlattenedEnum(
+			$mapProperty,
+			$prefix,
+			$suffix,
+			fn(\UnitEnum $value) => $setProperty(clone $block, $value),
+			$readExtra
+		);
+		$this->serializer?->mapFlattenedEnum(
+			$block,
+			$mapProperty,
+			$prefix,
+			$suffix,
+			$getProperty,
+			$writeExtra
+		);
 	}
 
 	/**
@@ -62,13 +110,28 @@ final class BlockSerializerDeserializerRegistrar{
 
 	/**
 	 * @phpstan-template TBlock of Block
-	 * @phpstan-param TBlock $block
+	 * @phpstan-param TBlock                            $block
 	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readHelper
 	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeHelper
 	 */
 	private function mapStdHelper(Block $block, string $id, \Closure $readHelper, \Closure $writeHelper) : void{
 		$this->deserializer?->map($id, fn(Reader $in) => $readHelper(clone $block, $in));
 		$this->serializer?->map($block, fn(Block $block) => $writeHelper($block, new Writer($id)));
+	}
+
+	private function mapSlab(Slab $block, string $singleId, string $doubleId) : void{
+		$this->deserializer?->mapSlab($singleId, $doubleId, fn() => clone $block);
+		$this->serializer?->mapSlab($block, $singleId, $doubleId);
+	}
+
+	private function mapStairs(Stair $block, string $id) : void{
+		$this->deserializer?->mapStairs($id, fn() => clone $block);
+		$this->serializer?->mapStairs($block, $id);
+	}
+
+	private function mapLog(Wood $block, string $unstrippedId, string $strippedId) : void{
+		$this->deserializer?->mapLog($unstrippedId, $strippedId, fn() => clone $block);
+		$this->serializer?->mapLog($block, $unstrippedId, $strippedId);
 	}
 
 	private function registerSimpleIdOnlyMappings() : void{
@@ -417,6 +480,361 @@ final class BlockSerializerDeserializerRegistrar{
 			Ids::SPRUCE_SAPLING => Blocks::SPRUCE_SAPLING(),
 		] as $id => $block){
 			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeSapling(...), BlockStateSerializerHelper::encodeSapling(...));
+		}
+	}
+
+	private function registerFlattenedEnumMappings() : void{
+		//the suffixes are different for different variants, so we have to map the whole ID to use the flattened mode
+		//therefore the prefix and suffix are empty
+		$this->mapFlattenedEnumWithExtra(
+			Blocks::MOB_HEAD(),
+			ValueMappings::getInstance()->getEnumMap(MobHeadType::class),
+			"",
+			"",
+			fn(MobHead $block) => $block->getMobHeadType(),
+			fn(MobHead $block, MobHeadType $value) => $block->setMobHeadType($value),
+			fn(MobHead $block, Reader $in) => $block->setFacing($in->readFacingWithoutDown()),
+			fn(MobHead $block, Writer $out) => $out->writeFacingWithoutDown($block->getFacing())
+		);
+	}
+
+	private function registerStoneLikeSlabMappings() : void{
+		$this->mapSlab(Blocks::ANDESITE_SLAB(), Ids::ANDESITE_SLAB, Ids::ANDESITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::BRICK_SLAB(), Ids::BRICK_SLAB, Ids::BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::COBBLED_DEEPSLATE_SLAB(), Ids::COBBLED_DEEPSLATE_SLAB, Ids::COBBLED_DEEPSLATE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::COBBLESTONE_SLAB(), Ids::COBBLESTONE_SLAB, Ids::COBBLESTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::CUT_RED_SANDSTONE_SLAB(), Ids::CUT_RED_SANDSTONE_SLAB, Ids::CUT_RED_SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::CUT_SANDSTONE_SLAB(), Ids::CUT_SANDSTONE_SLAB, Ids::CUT_SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::DARK_PRISMARINE_SLAB(), Ids::DARK_PRISMARINE_SLAB, Ids::DARK_PRISMARINE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::DEEPSLATE_BRICK_SLAB(), Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::DEEPSLATE_TILE_SLAB(), Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::DIORITE_SLAB(), Ids::DIORITE_SLAB, Ids::DIORITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::END_STONE_BRICK_SLAB(), Ids::END_STONE_BRICK_SLAB, Ids::END_STONE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::FAKE_WOODEN_SLAB(), Ids::PETRIFIED_OAK_SLAB, Ids::PETRIFIED_OAK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::GRANITE_SLAB(), Ids::GRANITE_SLAB, Ids::GRANITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::MOSSY_COBBLESTONE_SLAB(), Ids::MOSSY_COBBLESTONE_SLAB, Ids::MOSSY_COBBLESTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::MOSSY_STONE_BRICK_SLAB(), Ids::MOSSY_STONE_BRICK_SLAB, Ids::MOSSY_STONE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::MUD_BRICK_SLAB(), Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::NETHER_BRICK_SLAB(), Ids::NETHER_BRICK_SLAB, Ids::NETHER_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_ANDESITE_SLAB(), Ids::POLISHED_ANDESITE_SLAB, Ids::POLISHED_ANDESITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_BRICK_SLAB(), Ids::POLISHED_BLACKSTONE_BRICK_SLAB, Ids::POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_SLAB(), Ids::POLISHED_BLACKSTONE_SLAB, Ids::POLISHED_BLACKSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_DEEPSLATE_SLAB(), Ids::POLISHED_DEEPSLATE_SLAB, Ids::POLISHED_DEEPSLATE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_DIORITE_SLAB(), Ids::POLISHED_DIORITE_SLAB, Ids::POLISHED_DIORITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_GRANITE_SLAB(), Ids::POLISHED_GRANITE_SLAB, Ids::POLISHED_GRANITE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::POLISHED_TUFF_SLAB(), Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::PRISMARINE_BRICKS_SLAB(), Ids::PRISMARINE_BRICK_SLAB, Ids::PRISMARINE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::PRISMARINE_SLAB(), Ids::PRISMARINE_SLAB, Ids::PRISMARINE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::PURPUR_SLAB(), Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::QUARTZ_SLAB(), Ids::QUARTZ_SLAB, Ids::QUARTZ_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::RED_NETHER_BRICK_SLAB(), Ids::RED_NETHER_BRICK_SLAB, Ids::RED_NETHER_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::RED_SANDSTONE_SLAB(), Ids::RED_SANDSTONE_SLAB, Ids::RED_SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::RESIN_BRICK_SLAB(), Ids::RESIN_BRICK_SLAB, Ids::RESIN_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::SANDSTONE_SLAB(), Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), Ids::SMOOTH_QUARTZ_SLAB, Ids::SMOOTH_QUARTZ_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), Ids::SMOOTH_RED_SANDSTONE_SLAB, Ids::SMOOTH_RED_SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::SMOOTH_SANDSTONE_SLAB(), Ids::SMOOTH_SANDSTONE_SLAB, Ids::SMOOTH_SANDSTONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::SMOOTH_STONE_SLAB(), Ids::SMOOTH_STONE_SLAB, Ids::SMOOTH_STONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::STONE_BRICK_SLAB(), Ids::STONE_BRICK_SLAB, Ids::STONE_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::STONE_SLAB(), Ids::NORMAL_STONE_SLAB, Ids::NORMAL_STONE_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::TUFF_BRICK_SLAB(), Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::TUFF_SLAB(), Ids::TUFF_SLAB, Ids::TUFF_DOUBLE_SLAB);
+	}
+
+	private function registerStoneLikeStairMappings() : void{
+		$this->mapStairs(Blocks::ANDESITE_STAIRS(), Ids::ANDESITE_STAIRS);
+		$this->mapStairs(Blocks::BLACKSTONE_STAIRS(), Ids::BLACKSTONE_STAIRS);
+		$this->mapStairs(Blocks::BRICK_STAIRS(), Ids::BRICK_STAIRS);
+		$this->mapStairs(Blocks::COBBLED_DEEPSLATE_STAIRS(), Ids::COBBLED_DEEPSLATE_STAIRS);
+		$this->mapStairs(Blocks::COBBLESTONE_STAIRS(), Ids::STONE_STAIRS);
+		$this->mapStairs(Blocks::DARK_PRISMARINE_STAIRS(), Ids::DARK_PRISMARINE_STAIRS);
+		$this->mapStairs(Blocks::DEEPSLATE_BRICK_STAIRS(), Ids::DEEPSLATE_BRICK_STAIRS);
+		$this->mapStairs(Blocks::DEEPSLATE_TILE_STAIRS(), Ids::DEEPSLATE_TILE_STAIRS);
+		$this->mapStairs(Blocks::DIORITE_STAIRS(), Ids::DIORITE_STAIRS);
+		$this->mapStairs(Blocks::END_STONE_BRICK_STAIRS(), Ids::END_BRICK_STAIRS);
+		$this->mapStairs(Blocks::GRANITE_STAIRS(), Ids::GRANITE_STAIRS);
+		$this->mapStairs(Blocks::MOSSY_COBBLESTONE_STAIRS(), Ids::MOSSY_COBBLESTONE_STAIRS);
+		$this->mapStairs(Blocks::MOSSY_STONE_BRICK_STAIRS(), Ids::MOSSY_STONE_BRICK_STAIRS);
+		$this->mapStairs(Blocks::MUD_BRICK_STAIRS(), Ids::MUD_BRICK_STAIRS);
+		$this->mapStairs(Blocks::NETHER_BRICK_STAIRS(), Ids::NETHER_BRICK_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_ANDESITE_STAIRS(), Ids::POLISHED_ANDESITE_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_BLACKSTONE_BRICK_STAIRS(), Ids::POLISHED_BLACKSTONE_BRICK_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_BLACKSTONE_STAIRS(), Ids::POLISHED_BLACKSTONE_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_DEEPSLATE_STAIRS(), Ids::POLISHED_DEEPSLATE_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_DIORITE_STAIRS(), Ids::POLISHED_DIORITE_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_GRANITE_STAIRS(), Ids::POLISHED_GRANITE_STAIRS);
+		$this->mapStairs(Blocks::POLISHED_TUFF_STAIRS(), Ids::POLISHED_TUFF_STAIRS);
+		$this->mapStairs(Blocks::PRISMARINE_BRICKS_STAIRS(), Ids::PRISMARINE_BRICKS_STAIRS);
+		$this->mapStairs(Blocks::PRISMARINE_STAIRS(), Ids::PRISMARINE_STAIRS);
+		$this->mapStairs(Blocks::PURPUR_STAIRS(), Ids::PURPUR_STAIRS);
+		$this->mapStairs(Blocks::QUARTZ_STAIRS(), Ids::QUARTZ_STAIRS);
+		$this->mapStairs(Blocks::RED_NETHER_BRICK_STAIRS(), Ids::RED_NETHER_BRICK_STAIRS);
+		$this->mapStairs(Blocks::RED_SANDSTONE_STAIRS(), Ids::RED_SANDSTONE_STAIRS);
+		$this->mapStairs(Blocks::RESIN_BRICK_STAIRS(), Ids::RESIN_BRICK_STAIRS);
+		$this->mapStairs(Blocks::SANDSTONE_STAIRS(), Ids::SANDSTONE_STAIRS);
+		$this->mapStairs(Blocks::SMOOTH_QUARTZ_STAIRS(), Ids::SMOOTH_QUARTZ_STAIRS);
+		$this->mapStairs(Blocks::SMOOTH_RED_SANDSTONE_STAIRS(), Ids::SMOOTH_RED_SANDSTONE_STAIRS);
+		$this->mapStairs(Blocks::SMOOTH_SANDSTONE_STAIRS(), Ids::SMOOTH_SANDSTONE_STAIRS);
+		$this->mapStairs(Blocks::STONE_BRICK_STAIRS(), Ids::STONE_BRICK_STAIRS);
+		$this->mapStairs(Blocks::STONE_STAIRS(), Ids::NORMAL_STONE_STAIRS);
+		$this->mapStairs(Blocks::TUFF_BRICK_STAIRS(), Ids::TUFF_BRICK_STAIRS);
+		$this->mapStairs(Blocks::TUFF_STAIRS(), Ids::TUFF_STAIRS);
+	}
+
+	private function registerStoneLikeWallMappings() : void{
+		foreach([
+			Ids::ANDESITE_WALL => Blocks::ANDESITE_WALL(),
+			Ids::BLACKSTONE_WALL => Blocks::BLACKSTONE_WALL(),
+			Ids::BRICK_WALL => Blocks::BRICK_WALL(),
+			Ids::COBBLED_DEEPSLATE_WALL => Blocks::COBBLED_DEEPSLATE_WALL(),
+			Ids::COBBLESTONE_WALL => Blocks::COBBLESTONE_WALL(),
+			Ids::DEEPSLATE_BRICK_WALL => Blocks::DEEPSLATE_BRICK_WALL(),
+			Ids::DEEPSLATE_TILE_WALL => Blocks::DEEPSLATE_TILE_WALL(),
+			Ids::DIORITE_WALL => Blocks::DIORITE_WALL(),
+			Ids::END_STONE_BRICK_WALL => Blocks::END_STONE_BRICK_WALL(),
+			Ids::GRANITE_WALL => Blocks::GRANITE_WALL(),
+			Ids::MOSSY_COBBLESTONE_WALL => Blocks::MOSSY_COBBLESTONE_WALL(),
+			Ids::MOSSY_STONE_BRICK_WALL => Blocks::MOSSY_STONE_BRICK_WALL(),
+			Ids::MUD_BRICK_WALL => Blocks::MUD_BRICK_WALL(),
+			Ids::NETHER_BRICK_WALL => Blocks::NETHER_BRICK_WALL(),
+			Ids::POLISHED_BLACKSTONE_BRICK_WALL => Blocks::POLISHED_BLACKSTONE_BRICK_WALL(),
+			Ids::POLISHED_BLACKSTONE_WALL => Blocks::POLISHED_BLACKSTONE_WALL(),
+			Ids::POLISHED_DEEPSLATE_WALL => Blocks::POLISHED_DEEPSLATE_WALL(),
+			Ids::POLISHED_TUFF_WALL => Blocks::POLISHED_TUFF_WALL(),
+			Ids::PRISMARINE_WALL => Blocks::PRISMARINE_WALL(),
+			Ids::RED_NETHER_BRICK_WALL => Blocks::RED_NETHER_BRICK_WALL(),
+			Ids::RED_SANDSTONE_WALL => Blocks::RED_SANDSTONE_WALL(),
+			Ids::RESIN_BRICK_WALL => Blocks::RESIN_BRICK_WALL(),
+			Ids::SANDSTONE_WALL => Blocks::SANDSTONE_WALL(),
+			Ids::STONE_BRICK_WALL => Blocks::STONE_BRICK_WALL(),
+			Ids::TUFF_BRICK_WALL => Blocks::TUFF_BRICK_WALL(),
+			Ids::TUFF_WALL => Blocks::TUFF_WALL()
+		] as $id => $block){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeWall(...), BlockStateSerializerHelper::encodeWall(...));
+		}
+	}
+
+	private function registerWoodMappings() : void{
+		//buttons
+		foreach([
+			[Blocks::ACACIA_BUTTON(), Ids::ACACIA_BUTTON],
+			[Blocks::BIRCH_BUTTON(), Ids::BIRCH_BUTTON],
+			[Blocks::CHERRY_BUTTON(), Ids::CHERRY_BUTTON],
+			[Blocks::CRIMSON_BUTTON(), Ids::CRIMSON_BUTTON],
+			[Blocks::DARK_OAK_BUTTON(), Ids::DARK_OAK_BUTTON],
+			[Blocks::JUNGLE_BUTTON(), Ids::JUNGLE_BUTTON],
+			[Blocks::MANGROVE_BUTTON(), Ids::MANGROVE_BUTTON],
+			[Blocks::OAK_BUTTON(), Ids::WOODEN_BUTTON],
+			[Blocks::PALE_OAK_BUTTON(), Ids::PALE_OAK_BUTTON],
+			[Blocks::SPRUCE_BUTTON(), Ids::SPRUCE_BUTTON],
+			[Blocks::WARPED_BUTTON(), Ids::WARPED_BUTTON]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeButton(...), BlockStateSerializerHelper::encodeButton(...));
+		}
+
+		//doors
+		foreach([
+			[Blocks::ACACIA_DOOR(), Ids::ACACIA_DOOR],
+			[Blocks::BIRCH_DOOR(), Ids::BIRCH_DOOR],
+			[Blocks::CHERRY_DOOR(), Ids::CHERRY_DOOR],
+			[Blocks::CRIMSON_DOOR(), Ids::CRIMSON_DOOR],
+			[Blocks::DARK_OAK_DOOR(), Ids::DARK_OAK_DOOR],
+			[Blocks::JUNGLE_DOOR(), Ids::JUNGLE_DOOR],
+			[Blocks::MANGROVE_DOOR(), Ids::MANGROVE_DOOR],
+			[Blocks::OAK_DOOR(), Ids::WOODEN_DOOR],
+			[Blocks::PALE_OAK_DOOR(), Ids::PALE_OAK_DOOR],
+			[Blocks::SPRUCE_DOOR(), Ids::SPRUCE_DOOR],
+			[Blocks::WARPED_DOOR(), Ids::WARPED_DOOR]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeDoor(...), BlockStateSerializerHelper::encodeDoor(...));
+		}
+
+		//fences
+		foreach([
+			[Blocks::ACACIA_FENCE(), Ids::ACACIA_FENCE],
+			[Blocks::BIRCH_FENCE(), Ids::BIRCH_FENCE],
+			[Blocks::CHERRY_FENCE(), Ids::CHERRY_FENCE],
+			[Blocks::DARK_OAK_FENCE(), Ids::DARK_OAK_FENCE],
+			[Blocks::JUNGLE_FENCE(), Ids::JUNGLE_FENCE],
+			[Blocks::MANGROVE_FENCE(), Ids::MANGROVE_FENCE],
+			[Blocks::OAK_FENCE(), Ids::OAK_FENCE],
+			[Blocks::PALE_OAK_FENCE(), Ids::PALE_OAK_FENCE],
+			[Blocks::SPRUCE_FENCE(), Ids::SPRUCE_FENCE],
+			[Blocks::CRIMSON_FENCE(), Ids::CRIMSON_FENCE],
+			[Blocks::WARPED_FENCE(), Ids::WARPED_FENCE]
+		] as [$block, $id]){
+			$this->mapSimple($block, $id);
+		}
+
+		//fence gates
+		foreach([
+			[Blocks::ACACIA_FENCE_GATE(), Ids::ACACIA_FENCE_GATE],
+			[Blocks::BIRCH_FENCE_GATE(), Ids::BIRCH_FENCE_GATE],
+			[Blocks::CHERRY_FENCE_GATE(), Ids::CHERRY_FENCE_GATE],
+			[Blocks::DARK_OAK_FENCE_GATE(), Ids::DARK_OAK_FENCE_GATE],
+			[Blocks::JUNGLE_FENCE_GATE(), Ids::JUNGLE_FENCE_GATE],
+			[Blocks::MANGROVE_FENCE_GATE(), Ids::MANGROVE_FENCE_GATE],
+			[Blocks::OAK_FENCE_GATE(), Ids::FENCE_GATE],
+			[Blocks::PALE_OAK_FENCE_GATE(), Ids::PALE_OAK_FENCE_GATE],
+			[Blocks::SPRUCE_FENCE_GATE(), Ids::SPRUCE_FENCE_GATE],
+			[Blocks::CRIMSON_FENCE_GATE(), Ids::CRIMSON_FENCE_GATE],
+			[Blocks::WARPED_FENCE_GATE(), Ids::WARPED_FENCE_GATE]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeFenceGate(...), BlockStateSerializerHelper::encodeFenceGate(...));
+		}
+
+		//floor signs
+		foreach([
+			[Blocks::ACACIA_SIGN(), Ids::ACACIA_STANDING_SIGN],
+			[Blocks::BIRCH_SIGN(), Ids::BIRCH_STANDING_SIGN],
+			[Blocks::CHERRY_SIGN(), Ids::CHERRY_STANDING_SIGN],
+			[Blocks::DARK_OAK_SIGN(), Ids::DARKOAK_STANDING_SIGN],
+			[Blocks::JUNGLE_SIGN(), Ids::JUNGLE_STANDING_SIGN],
+			[Blocks::MANGROVE_SIGN(), Ids::MANGROVE_STANDING_SIGN],
+			[Blocks::OAK_SIGN(), Ids::STANDING_SIGN],
+			[Blocks::PALE_OAK_SIGN(), Ids::PALE_OAK_STANDING_SIGN],
+			[Blocks::SPRUCE_SIGN(), Ids::SPRUCE_STANDING_SIGN],
+			[Blocks::CRIMSON_SIGN(), Ids::CRIMSON_STANDING_SIGN],
+			[Blocks::WARPED_SIGN(), Ids::WARPED_STANDING_SIGN]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeFloorSign(...), BlockStateSerializerHelper::encodeFloorSign(...));
+		}
+
+		//logs
+		foreach([
+			[Blocks::ACACIA_LOG(), Ids::ACACIA_LOG, Ids::STRIPPED_ACACIA_LOG],
+			[Blocks::BIRCH_LOG(), Ids::BIRCH_LOG, Ids::STRIPPED_BIRCH_LOG],
+			[Blocks::CHERRY_LOG(), Ids::CHERRY_LOG, Ids::STRIPPED_CHERRY_LOG],
+			[Blocks::DARK_OAK_LOG(), Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG],
+			[Blocks::JUNGLE_LOG(), Ids::JUNGLE_LOG, Ids::STRIPPED_JUNGLE_LOG],
+			[Blocks::MANGROVE_LOG(), Ids::MANGROVE_LOG, Ids::STRIPPED_MANGROVE_LOG],
+			[Blocks::OAK_LOG(), Ids::OAK_LOG, Ids::STRIPPED_OAK_LOG],
+			[Blocks::PALE_OAK_LOG(), Ids::PALE_OAK_LOG, Ids::STRIPPED_PALE_OAK_LOG],
+			[Blocks::SPRUCE_LOG(), Ids::SPRUCE_LOG, Ids::STRIPPED_SPRUCE_LOG],
+			[Blocks::CRIMSON_STEM(), Ids::CRIMSON_STEM, Ids::STRIPPED_CRIMSON_STEM],
+			[Blocks::WARPED_STEM(), Ids::WARPED_STEM, Ids::STRIPPED_WARPED_STEM]
+		] as [$block, $unstrippedId, $strippedId]){
+			$this->mapLog($block, $unstrippedId, $strippedId);
+		}
+
+		//logs all-sided
+		foreach([
+			[Blocks::ACACIA_WOOD(), Ids::ACACIA_WOOD, Ids::STRIPPED_ACACIA_WOOD],
+			[Blocks::BIRCH_WOOD(), Ids::BIRCH_WOOD, Ids::STRIPPED_BIRCH_WOOD],
+			[Blocks::CHERRY_WOOD(), Ids::CHERRY_WOOD, Ids::STRIPPED_CHERRY_WOOD],
+			[Blocks::DARK_OAK_WOOD(), Ids::DARK_OAK_WOOD, Ids::STRIPPED_DARK_OAK_WOOD],
+			[Blocks::JUNGLE_WOOD(), Ids::JUNGLE_WOOD, Ids::STRIPPED_JUNGLE_WOOD],
+			[Blocks::MANGROVE_WOOD(), Ids::MANGROVE_WOOD, Ids::STRIPPED_MANGROVE_WOOD],
+			[Blocks::OAK_WOOD(), Ids::OAK_WOOD, Ids::STRIPPED_OAK_WOOD],
+			[Blocks::PALE_OAK_WOOD(), Ids::PALE_OAK_WOOD, Ids::STRIPPED_PALE_OAK_WOOD],
+			[Blocks::SPRUCE_WOOD(), Ids::SPRUCE_WOOD, Ids::STRIPPED_SPRUCE_WOOD],
+			[Blocks::CRIMSON_HYPHAE(), Ids::CRIMSON_HYPHAE, Ids::STRIPPED_CRIMSON_HYPHAE],
+			[Blocks::WARPED_HYPHAE(), Ids::WARPED_HYPHAE, Ids::STRIPPED_WARPED_HYPHAE]
+		] as [$block, $unstrippedId, $strippedId]){
+			$this->mapLog($block, $unstrippedId, $strippedId);
+		}
+
+		//planks
+		foreach([
+			[Blocks::ACACIA_PLANKS(), Ids::ACACIA_PLANKS],
+			[Blocks::BIRCH_PLANKS(), Ids::BIRCH_PLANKS],
+			[Blocks::CHERRY_PLANKS(), Ids::CHERRY_PLANKS],
+			[Blocks::DARK_OAK_PLANKS(), Ids::DARK_OAK_PLANKS],
+			[Blocks::JUNGLE_PLANKS(), Ids::JUNGLE_PLANKS],
+			[Blocks::MANGROVE_PLANKS(), Ids::MANGROVE_PLANKS],
+			[Blocks::OAK_PLANKS(), Ids::OAK_PLANKS],
+			[Blocks::PALE_OAK_PLANKS(), Ids::PALE_OAK_PLANKS],
+			[Blocks::SPRUCE_PLANKS(), Ids::SPRUCE_PLANKS],
+			[Blocks::CRIMSON_PLANKS(), Ids::CRIMSON_PLANKS],
+			[Blocks::WARPED_PLANKS(), Ids::WARPED_PLANKS]
+		] as [$block, $id]){
+			$this->mapSimple($block, $id);
+		}
+
+		//pressure plates
+		foreach([
+			[Blocks::ACACIA_PRESSURE_PLATE(), Ids::ACACIA_PRESSURE_PLATE],
+			[Blocks::BIRCH_PRESSURE_PLATE(), Ids::BIRCH_PRESSURE_PLATE],
+			[Blocks::CHERRY_PRESSURE_PLATE(), Ids::CHERRY_PRESSURE_PLATE],
+			[Blocks::DARK_OAK_PRESSURE_PLATE(), Ids::DARK_OAK_PRESSURE_PLATE],
+			[Blocks::JUNGLE_PRESSURE_PLATE(), Ids::JUNGLE_PRESSURE_PLATE],
+			[Blocks::MANGROVE_PRESSURE_PLATE(), Ids::MANGROVE_PRESSURE_PLATE],
+			[Blocks::OAK_PRESSURE_PLATE(), Ids::WOODEN_PRESSURE_PLATE],
+			[Blocks::PALE_OAK_PRESSURE_PLATE(), Ids::PALE_OAK_PRESSURE_PLATE],
+			[Blocks::SPRUCE_PRESSURE_PLATE(), Ids::SPRUCE_PRESSURE_PLATE],
+			[Blocks::CRIMSON_PRESSURE_PLATE(), Ids::CRIMSON_PRESSURE_PLATE],
+			[Blocks::WARPED_PRESSURE_PLATE(), Ids::WARPED_PRESSURE_PLATE]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeSimplePressurePlate(...), BlockStateSerializerHelper::encodeSimplePressurePlate(...));
+		}
+
+		//slabs
+		foreach([
+			[Blocks::ACACIA_SLAB(), Ids::ACACIA_SLAB, Ids::ACACIA_DOUBLE_SLAB],
+			[Blocks::BIRCH_SLAB(), Ids::BIRCH_SLAB, Ids::BIRCH_DOUBLE_SLAB],
+			[Blocks::CHERRY_SLAB(), Ids::CHERRY_SLAB, Ids::CHERRY_DOUBLE_SLAB],
+			[Blocks::DARK_OAK_SLAB(), Ids::DARK_OAK_SLAB, Ids::DARK_OAK_DOUBLE_SLAB],
+			[Blocks::JUNGLE_SLAB(), Ids::JUNGLE_SLAB, Ids::JUNGLE_DOUBLE_SLAB],
+			[Blocks::MANGROVE_SLAB(), Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB],
+			[Blocks::OAK_SLAB(), Ids::OAK_SLAB, Ids::OAK_DOUBLE_SLAB],
+			[Blocks::PALE_OAK_SLAB(), Ids::PALE_OAK_SLAB, Ids::PALE_OAK_DOUBLE_SLAB],
+			[Blocks::SPRUCE_SLAB(), Ids::SPRUCE_SLAB, Ids::SPRUCE_DOUBLE_SLAB],
+			[Blocks::CRIMSON_SLAB(), Ids::CRIMSON_SLAB, Ids::CRIMSON_DOUBLE_SLAB],
+			[Blocks::WARPED_SLAB(), Ids::WARPED_SLAB, Ids::WARPED_DOUBLE_SLAB]
+		] as [$block, $singleId, $doubleId]){
+			$this->mapSlab($block, $singleId, $doubleId);
+		}
+
+		//stairs
+		foreach([
+			[Blocks::ACACIA_STAIRS(), Ids::ACACIA_STAIRS],
+			[Blocks::BIRCH_STAIRS(), Ids::BIRCH_STAIRS],
+			[Blocks::CHERRY_STAIRS(), Ids::CHERRY_STAIRS],
+			[Blocks::DARK_OAK_STAIRS(), Ids::DARK_OAK_STAIRS],
+			[Blocks::JUNGLE_STAIRS(), Ids::JUNGLE_STAIRS],
+			[Blocks::MANGROVE_STAIRS(), Ids::MANGROVE_STAIRS],
+			[Blocks::OAK_STAIRS(), Ids::OAK_STAIRS],
+			[Blocks::PALE_OAK_STAIRS(), Ids::PALE_OAK_STAIRS],
+			[Blocks::SPRUCE_STAIRS(), Ids::SPRUCE_STAIRS],
+			[Blocks::CRIMSON_STAIRS(), Ids::CRIMSON_STAIRS],
+			[Blocks::WARPED_STAIRS(), Ids::WARPED_STAIRS]
+		] as [$block, $id]){
+			$this->mapStairs($block, $id);
+		}
+
+		//trapdoors
+		foreach([
+			[Blocks::ACACIA_TRAPDOOR(), Ids::ACACIA_TRAPDOOR],
+			[Blocks::BIRCH_TRAPDOOR(), Ids::BIRCH_TRAPDOOR],
+			[Blocks::CHERRY_TRAPDOOR(), Ids::CHERRY_TRAPDOOR],
+			[Blocks::DARK_OAK_TRAPDOOR(), Ids::DARK_OAK_TRAPDOOR],
+			[Blocks::JUNGLE_TRAPDOOR(), Ids::JUNGLE_TRAPDOOR],
+			[Blocks::MANGROVE_TRAPDOOR(), Ids::MANGROVE_TRAPDOOR],
+			[Blocks::OAK_TRAPDOOR(), Ids::TRAPDOOR],
+			[Blocks::PALE_OAK_TRAPDOOR(), Ids::PALE_OAK_TRAPDOOR],
+			[Blocks::SPRUCE_TRAPDOOR(), Ids::SPRUCE_TRAPDOOR],
+			[Blocks::CRIMSON_TRAPDOOR(), Ids::CRIMSON_TRAPDOOR],
+			[Blocks::WARPED_TRAPDOOR(), Ids::WARPED_TRAPDOOR]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeTrapdoor(...), BlockStateSerializerHelper::encodeTrapdoor(...));
+		}
+
+		//wall signs
+		foreach([
+			[Blocks::ACACIA_WALL_SIGN(), Ids::ACACIA_WALL_SIGN],
+			[Blocks::BIRCH_WALL_SIGN(), Ids::BIRCH_WALL_SIGN],
+			[Blocks::CHERRY_WALL_SIGN(), Ids::CHERRY_WALL_SIGN],
+			[Blocks::DARK_OAK_WALL_SIGN(), Ids::DARKOAK_WALL_SIGN],
+			[Blocks::JUNGLE_WALL_SIGN(), Ids::JUNGLE_WALL_SIGN],
+			[Blocks::MANGROVE_WALL_SIGN(), Ids::MANGROVE_WALL_SIGN],
+			[Blocks::OAK_WALL_SIGN(), Ids::WALL_SIGN],
+			[Blocks::PALE_OAK_WALL_SIGN(), Ids::PALE_OAK_WALL_SIGN],
+			[Blocks::SPRUCE_WALL_SIGN(), Ids::SPRUCE_WALL_SIGN],
+			[Blocks::CRIMSON_WALL_SIGN(), Ids::CRIMSON_WALL_SIGN],
+			[Blocks::WARPED_WALL_SIGN(), Ids::WARPED_WALL_SIGN]
+		] as [$block, $id]){
+			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeWallSign(...), BlockStateSerializerHelper::encodeWallSign(...));
 		}
 	}
 }
