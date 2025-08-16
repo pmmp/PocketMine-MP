@@ -23,8 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
+use pocketmine\block\utils\BellAttachmentType;
+use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\FroglightType;
+use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
+use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\utils\SingletonTrait;
 
@@ -38,6 +44,7 @@ final class ValueMappings{
 	private array $enumMappings = [];
 
 	public function __construct(){
+		//flattened ID components - we can't generate constants for these
 		$this->addEnum(DyeColor::class, fn(DyeColor $case) => match ($case) {
 			DyeColor::BLACK => "black",
 			DyeColor::BLUE => "blue",
@@ -56,6 +63,9 @@ final class ValueMappings{
 			DyeColor::WHITE => "white",
 			DyeColor::YELLOW => "yellow"
 		});
+
+		//full ID mappings - these don't benefit from prefix/suffix generation because of different suffixes, or
+		//because they're only used by a single block type
 		$this->addEnum(MobHeadType::class, fn(MobHeadType $case) => match($case){
 			MobHeadType::CREEPER => Ids::CREEPER_HEAD,
 			MobHeadType::DRAGON => Ids::DRAGON_HEAD,
@@ -64,6 +74,40 @@ final class ValueMappings{
 			MobHeadType::SKELETON => Ids::SKELETON_SKULL,
 			MobHeadType::WITHER_SKELETON => Ids::WITHER_SKELETON_SKULL,
 			MobHeadType::ZOMBIE => Ids::ZOMBIE_HEAD
+		});
+		$this->addEnum(FroglightType::class, fn(FroglightType $case) => match($case){
+			FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
+			FroglightType::PEARLESCENT => Ids::PEARLESCENT_FROGLIGHT,
+			FroglightType::VERDANT => Ids::VERDANT_FROGLIGHT,
+		});
+		$this->addEnum(DirtType::class, fn(DirtType $case) => match($case){
+			DirtType::NORMAL => Ids::DIRT,
+			DirtType::COARSE => Ids::COARSE_DIRT,
+			DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
+		});
+
+		//state value mappings
+		$this->addEnum(DripleafState::class, fn(DripleafState $case) => match($case){
+			DripleafState::STABLE => StringValues::BIG_DRIPLEAF_TILT_NONE,
+			DripleafState::UNSTABLE => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
+			DripleafState::PARTIAL_TILT => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
+			DripleafState::FULL_TILT => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT
+		});
+		$this->addEnum(BellAttachmentType::class, fn(BellAttachmentType $case) => match($case){
+			BellAttachmentType::FLOOR => StringValues::ATTACHMENT_STANDING,
+			BellAttachmentType::CEILING => StringValues::ATTACHMENT_HANGING,
+			BellAttachmentType::ONE_WALL => StringValues::ATTACHMENT_SIDE,
+			BellAttachmentType::TWO_WALLS => StringValues::ATTACHMENT_MULTIPLE,
+		});
+		$this->addEnum(LeverFacing::class, fn(LeverFacing $case) => match($case){
+			LeverFacing::DOWN_AXIS_Z => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
+			LeverFacing::DOWN_AXIS_X => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
+			LeverFacing::UP_AXIS_Z => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
+			LeverFacing::UP_AXIS_X => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
+			LeverFacing::NORTH => StringValues::LEVER_DIRECTION_NORTH,
+			LeverFacing::SOUTH => StringValues::LEVER_DIRECTION_SOUTH,
+			LeverFacing::WEST => StringValues::LEVER_DIRECTION_WEST,
+			LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST
 		});
 	}
 

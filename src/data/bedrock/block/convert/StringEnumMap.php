@@ -64,6 +64,9 @@ class StringEnumMap{
 		return $this->enumToValue[spl_object_id($enum)];
 	}
 
+	/**
+	 * @phpstan-return TEnum|null
+	 */
 	public function valueToEnum(string $string) : ?\UnitEnum{
 		return $this->valueToEnum[$string] ?? throw new BlockStateDeserializeException("No $this->class enum mapping for \"$string\"");
 	}

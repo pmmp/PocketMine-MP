@@ -38,6 +38,7 @@ use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
+use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\Colored;
@@ -47,7 +48,6 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
@@ -550,19 +550,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::TOGGLE_BIT); //only useful at runtime
 			return Blocks::BELL()
 				->setFacing($in->readLegacyHorizontalFacing())
-				->setAttachmentType($in->readBellAttachmentType());
+				->setAttachmentType($in->readUnitEnum(StateNames::ATTACHMENT, BellAttachmentType::class));
 		});
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
 				return Blocks::BIG_DRIPLEAF_HEAD()
 					->setFacing($in->readCardinalHorizontalFacing())
-					->setLeafState(match($type = $in->readString(StateNames::BIG_DRIPLEAF_TILT)){
-						StringValues::BIG_DRIPLEAF_TILT_NONE => DripleafState::STABLE,
-						StringValues::BIG_DRIPLEAF_TILT_UNSTABLE => DripleafState::UNSTABLE,
-						StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT => DripleafState::PARTIAL_TILT,
-						StringValues::BIG_DRIPLEAF_TILT_FULL_TILT => DripleafState::FULL_TILT,
-						default => throw $in->badValueException(StateNames::BIG_DRIPLEAF_TILT, $type),
-					});
+					->setLeafState($in->readUnitEnum(StateNames::BIG_DRIPLEAF_TILT, DripleafState::class));
 			}else{
 				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
 				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readCardinalHorizontalFacing());
@@ -773,17 +767,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::LEVER, function(Reader $in) : Block{
 			return Blocks::LEVER()
 				->setActivated($in->readBool(StateNames::OPEN_BIT))
-				->setFacing(match($value = $in->readString(StateNames::LEVER_DIRECTION)){
-					StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH => LeverFacing::DOWN_AXIS_Z,
-					StringValues::LEVER_DIRECTION_DOWN_EAST_WEST => LeverFacing::DOWN_AXIS_X,
-					StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH => LeverFacing::UP_AXIS_Z,
-					StringValues::LEVER_DIRECTION_UP_EAST_WEST => LeverFacing::UP_AXIS_X,
-					StringValues::LEVER_DIRECTION_NORTH => LeverFacing::NORTH,
-					StringValues::LEVER_DIRECTION_SOUTH => LeverFacing::SOUTH,
-					StringValues::LEVER_DIRECTION_WEST => LeverFacing::WEST,
-					StringValues::LEVER_DIRECTION_EAST => LeverFacing::EAST,
-					default => throw $in->badValueException(StateNames::LEVER_DIRECTION, $value),
-				});
+				->setFacing($in->readUnitEnum(StateNames::LEVER_DIRECTION, LeverFacing::class));
 		});
 		$this->map(Ids::LIGHTNING_ROD, function(Reader $in) : Block{
 			return Blocks::LIGHTNING_ROD()
@@ -839,8 +823,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::NETHER_WART()
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
 		});
-		$this->map(Ids::OCHRE_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::OCHRE)->setAxis($in->readPillarAxis()));
-		$this->map(Ids::PEARLESCENT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::PEARLESCENT)->setAxis($in->readPillarAxis()));
 		$this->map(Ids::PINK_PETALS, function(Reader $in) : Block{
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
@@ -1046,7 +1028,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::UNPOWERED_COMPARATOR, fn(Reader $in) => Helper::decodeComparator(Blocks::REDSTONE_COMPARATOR(), $in));
 		$this->map(Ids::UNPOWERED_REPEATER, fn(Reader $in) => Helper::decodeRepeater(Blocks::REDSTONE_REPEATER(), $in)
 				->setPowered(false));
-		$this->map(Ids::VERDANT_FROGLIGHT, fn(Reader $in) => Blocks::FROGLIGHT()->setFroglightType(FroglightType::VERDANT)->setAxis($in->readPillarAxis()));
 		$this->map(Ids::VINE, function(Reader $in) : Block{
 			$vineDirectionFlags = $in->readBoundedInt(StateNames::VINE_DIRECTION_BITS, 0, 15);
 			return Blocks::VINES()

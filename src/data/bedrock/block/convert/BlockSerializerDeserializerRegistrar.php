@@ -24,10 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
+use pocketmine\block\Froglight;
 use pocketmine\block\MobHead;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\utils\Colored;
+use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
@@ -66,15 +68,15 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-template TEnum of \UnitEnum
 	 *
 	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param StringEnumMap<TEnum>              $mapProperty
+	 * @phpstan-param class-string<TEnum>               $enumClass
 	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
 	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
 	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
 	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeExtra
 	 */
-	private function mapFlattenedEnumWithExtra(
+	private function mapFlattenedIdEnumWithExtra(
 		Block $block,
-		StringEnumMap $mapProperty,
+		string $enumClass,
 		string $prefix,
 		string $suffix,
 		\Closure $getProperty,
@@ -82,6 +84,7 @@ final class BlockSerializerDeserializerRegistrar{
 		\Closure $readExtra,
 		\Closure $writeExtra
 	) : void{
+		$mapProperty = ValueMappings::getInstance()->getEnumMap($enumClass);
 		$this->deserializer?->mapFlattenedEnum(
 			$mapProperty,
 			$prefix,
@@ -97,6 +100,28 @@ final class BlockSerializerDeserializerRegistrar{
 			$getProperty,
 			$writeExtra
 		);
+	}
+
+	/**
+	 * @phpstan-template TBlock of Block
+	 * @phpstan-template TEnum of \UnitEnum
+	 *
+	 * @phpstan-param TBlock                            $block
+	 * @phpstan-param class-string<TEnum>               $enumClass
+	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
+	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
+	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
+	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeExtra
+	 */
+	private function mapSwitchedIdEnumWithExtra(
+		Block $block,
+		string $enumClass,
+		\Closure $getProperty,
+		\Closure $setProperty,
+		\Closure $readExtra,
+		\Closure $writeExtra
+	) : void{
+		$this->mapFlattenedIdEnumWithExtra($block, $enumClass, "", "", $getProperty, $setProperty, $readExtra, $writeExtra);
 	}
 
 	/**
@@ -486,15 +511,21 @@ final class BlockSerializerDeserializerRegistrar{
 	private function registerFlattenedEnumMappings() : void{
 		//the suffixes are different for different variants, so we have to map the whole ID to use the flattened mode
 		//therefore the prefix and suffix are empty
-		$this->mapFlattenedEnumWithExtra(
+		$this->mapSwitchedIdEnumWithExtra(
 			Blocks::MOB_HEAD(),
-			ValueMappings::getInstance()->getEnumMap(MobHeadType::class),
-			"",
-			"",
+			MobHeadType::class,
 			fn(MobHead $block) => $block->getMobHeadType(),
 			fn(MobHead $block, MobHeadType $value) => $block->setMobHeadType($value),
 			fn(MobHead $block, Reader $in) => $block->setFacing($in->readFacingWithoutDown()),
 			fn(MobHead $block, Writer $out) => $out->writeFacingWithoutDown($block->getFacing())
+		);
+		$this->mapSwitchedIdEnumWithExtra(
+			Blocks::FROGLIGHT(),
+			FroglightType::class,
+			fn(Froglight $block) => $block->getFroglightType(),
+			fn(Froglight $block, FroglightType $value) => $block->setFroglightType($value),
+			fn(Froglight $block, Reader $in) => $block->setAxis($in->readPillarAxis()),
+			fn(Froglight $block, Writer $out) => $out->writePillarAxis($block->getAxis())
 		);
 	}
 

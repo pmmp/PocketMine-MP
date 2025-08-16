@@ -78,7 +78,6 @@ use pocketmine\block\FillableCauldron;
 use pocketmine\block\Fire;
 use pocketmine\block\FloorBanner;
 use pocketmine\block\FloorCoralFan;
-use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Furnace;
 use pocketmine\block\GlazedTerracotta;
@@ -141,10 +140,7 @@ use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
-use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\FroglightType;
-use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\block\WallBanner;
@@ -659,7 +655,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BEETROOTS(), fn(Beetroot $block) => Helper::encodeCrops($block, new Writer(Ids::BEETROOT)));
 		$this->map(Blocks::BELL(), function(Bell $block) : Writer{
 			return Writer::create(Ids::BELL)
-				->writeBellAttachmentType($block->getAttachmentType())
+				->writeUnitEnum(StateNames::ATTACHMENT, $block->getAttachmentType())
 				->writeBool(StateNames::TOGGLE_BIT, false) //we don't care about this; it's just to keep MCPE happy
 				->writeLegacyHorizontalFacing($block->getFacing());
 
@@ -667,12 +663,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeString(StateNames::BIG_DRIPLEAF_TILT, match($block->getLeafState()){
-					DripleafState::STABLE => StringValues::BIG_DRIPLEAF_TILT_NONE,
-					DripleafState::UNSTABLE => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
-					DripleafState::PARTIAL_TILT => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
-					DripleafState::FULL_TILT => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT,
-				})
+				->writeUnitEnum(StateNames::BIG_DRIPLEAF_TILT, $block->getLeafState())
 				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
 		});
 		$this->map(Blocks::BIG_DRIPLEAF_STEM(), function(BigDripleafStem $block) : Writer{
@@ -797,14 +788,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::FLOWER_POT(), Writer::create(Ids::FLOWER_POT)
 				->writeBool(StateNames::UPDATE_BIT, false) //to keep MCPE happy
 		);
-		$this->map(Blocks::FROGLIGHT(), function(Froglight $block){
-			return Writer::create(match($block->getFroglightType()){
-				FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
-				FroglightType::PEARLESCENT => Ids::PEARLESCENT_FROGLIGHT,
-				FroglightType::VERDANT => Ids::VERDANT_FROGLIGHT,
-			})
-				->writePillarAxis($block->getAxis());
-		});
 		$this->map(Blocks::FROSTED_ICE(), function(FrostedIce $block) : Writer{
 			return Writer::create(Ids::FROSTED_ICE)
 				->writeInt(StateNames::AGE, $block->getAge());
@@ -848,16 +831,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::LEVER(), function(Lever $block) : Writer{
 			return Writer::create(Ids::LEVER)
 				->writeBool(StateNames::OPEN_BIT, $block->isActivated())
-				->writeString(StateNames::LEVER_DIRECTION, match($block->getFacing()){
-					LeverFacing::DOWN_AXIS_Z => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
-					LeverFacing::DOWN_AXIS_X => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
-					LeverFacing::UP_AXIS_Z => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
-					LeverFacing::UP_AXIS_X => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
-					LeverFacing::NORTH => StringValues::LEVER_DIRECTION_NORTH,
-					LeverFacing::SOUTH => StringValues::LEVER_DIRECTION_SOUTH,
-					LeverFacing::WEST => StringValues::LEVER_DIRECTION_WEST,
-					LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST,
-				});
+				->writeUnitEnum(StateNames::LEVER_DIRECTION, $block->getFacing());
 		});
 		$this->map(Blocks::LIGHT(), fn(Light $block) => BlockStateData::current(match($block->getLightLevel()){
 			0 => Ids::LIGHT_BLOCK_0,

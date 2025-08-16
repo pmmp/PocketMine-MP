@@ -255,15 +255,12 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated Use {@see writeUnitEnum()} instead
+	 * @return $this
+	 */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
-		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType){
-			BellAttachmentType::FLOOR => StringValues::ATTACHMENT_STANDING,
-			BellAttachmentType::CEILING => StringValues::ATTACHMENT_HANGING,
-			BellAttachmentType::ONE_WALL => StringValues::ATTACHMENT_SIDE,
-			BellAttachmentType::TWO_WALLS => StringValues::ATTACHMENT_MULTIPLE,
-		});
-		return $this;
+		return $this->writeUnitEnum(BlockStateNames::ATTACHMENT, $attachmentType);
 	}
 
 	/** @return $this */
@@ -273,6 +270,15 @@ final class BlockStateWriter{
 			WallConnectionType::SHORT => StringValues::WALL_CONNECTION_TYPE_EAST_SHORT,
 			WallConnectionType::TALL => StringValues::WALL_CONNECTION_TYPE_EAST_TALL,
 		});
+		return $this;
+	}
+
+	/** @return $this */
+	public function writeUnitEnum(string $name, \UnitEnum $case) : self{
+		$mapping = ValueMappings::getInstance()->getEnumMap($case::class);
+		$value = $mapping->enumToValue($case);
+		$this->writeString($name, $value);
+
 		return $this;
 	}
 

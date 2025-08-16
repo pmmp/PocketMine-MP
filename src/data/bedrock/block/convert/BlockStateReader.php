@@ -308,15 +308,12 @@ final class BlockStateReader{
 		};
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated Use {@see readUnitEnum()} instead
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readBellAttachmentType() : BellAttachmentType{
-		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
-			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING,
-			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR,
-			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL,
-			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS,
-			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
-		};
+		return $this->readUnitEnum(BlockStateNames::ATTACHMENT, BellAttachmentType::class);
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -330,6 +327,23 @@ final class BlockStateReader{
 			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL,
 			default => throw $this->badValueException($name, $type),
 		};
+	}
+
+	/**
+	 * @phpstan-template TEnum of \UnitEnum
+	 * @phpstan-param class-string<TEnum> $enumClass
+	 * @phpstan-return TEnum
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readUnitEnum(string $name, string $enumClass) : \UnitEnum{
+		$mapping = ValueMappings::getInstance()->getEnumMap($enumClass);
+		$value = $this->readString($name);
+
+		$mapped = $mapping->valueToEnum($value);
+		if($mapped === null){
+			throw $this->badValueException($name, $value);
+		}
+		return $mapped;
 	}
 
 	/**
