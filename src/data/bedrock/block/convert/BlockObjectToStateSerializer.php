@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
-use pocketmine\block\ActivatorRail;
 use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
-use pocketmine\block\BambooSapling;
 use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
@@ -39,7 +37,6 @@ use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\BrownMushroomBlock;
 use pocketmine\block\Button;
-use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\CakeWithCandle;
 use pocketmine\block\CakeWithDyedCandle;
@@ -96,7 +93,6 @@ use pocketmine\block\LitPumpkin;
 use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherPortal;
-use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
@@ -146,8 +142,6 @@ use pocketmine\block\Vine;
 use pocketmine\block\WallBanner;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\Water;
-use pocketmine\block\WeightedPressurePlateHeavy;
-use pocketmine\block\WeightedPressurePlateLight;
 use pocketmine\block\Wheat;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -588,11 +582,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	}
 
 	private function registerSerializers() : void{
-		$this->map(Blocks::ACTIVATOR_RAIL(), function(ActivatorRail $block) : Writer{
-			return Writer::create(Ids::ACTIVATOR_RAIL)
-				->writeBool(StateNames::RAIL_DATA_BIT, $block->isPowered())
-				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
-		});
 		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
 		$this->map(Blocks::AMETHYST_CLUSTER(), fn(AmethystCluster $block) => Writer::create(
@@ -625,10 +614,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				})
 				->writeString(StateNames::BAMBOO_STALK_THICKNESS, $block->isThick() ? StringValues::BAMBOO_STALK_THICKNESS_THICK : StringValues::BAMBOO_STALK_THICKNESS_THIN);
 		});
-		$this->map(Blocks::BAMBOO_SAPLING(), function(BambooSapling $block) : Writer{
-			return Writer::create(Ids::BAMBOO_SAPLING)
-				->writeBool(StateNames::AGE_BIT, $block->isReady());
-		});
 		$this->map(Blocks::BANNER(), function(FloorBanner $block) : Writer{
 			return Writer::create(Ids::STANDING_BANNER)
 				->writeInt(StateNames::GROUND_SIGN_DIRECTION, $block->getRotation());
@@ -647,10 +632,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::HEAD_PIECE_BIT, $block->isHeadPart())
 				->writeBool(StateNames::OCCUPIED_BIT, $block->isOccupied())
 				->writeLegacyHorizontalFacing($block->getFacing());
-		});
-		$this->map(Blocks::BEDROCK(), function(Block $block) : Writer{
-			return Writer::create(Ids::BEDROCK)
-				->writeBool(StateNames::INFINIBURN_BIT, $block->burnsForever());
 		});
 		$this->map(Blocks::BEETROOTS(), fn(Beetroot $block) => Helper::encodeCrops($block, new Writer(Ids::BEETROOT)));
 		$this->map(Blocks::BELL(), function(Bell $block) : Writer{
@@ -686,10 +667,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST));
 		});
 		$this->map(Blocks::BROWN_MUSHROOM_BLOCK(), fn(BrownMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::BROWN_MUSHROOM_BLOCK)));
-		$this->map(Blocks::CACTUS(), function(Cactus $block) : Writer{
-			return Writer::create(Ids::CACTUS)
-				->writeInt(StateNames::AGE, $block->getAge());
-		});
 		$this->map(Blocks::CAKE(), function(Cake $block) : Writer{
 			return Writer::create(Ids::CAKE)
 				->writeInt(StateNames::BITE_COUNTER, $block->getBites());
@@ -1038,10 +1015,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
-		$this->map(Blocks::TWISTING_VINES(), function(NetherVines $block) : Writer{
-			return Writer::create(Ids::TWISTING_VINES)
-				->writeInt(StateNames::TWISTING_VINES_AGE, $block->getAge());
-		});
 		$this->map(Blocks::UNDERWATER_TORCH(), function(UnderwaterTorch $block) : Writer{
 			return Writer::create(Ids::UNDERWATER_TORCH)
 				->writeTorchFacing($block->getFacing());
@@ -1055,18 +1028,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::WATER(), fn(Water $block) => Helper::encodeLiquid($block, Ids::WATER, Ids::FLOWING_WATER));
-		$this->map(Blocks::WEEPING_VINES(), function(NetherVines $block) : Writer{
-			return Writer::create(Ids::WEEPING_VINES)
-				->writeInt(StateNames::WEEPING_VINES_AGE, $block->getAge());
-		});
-		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), function(WeightedPressurePlateHeavy $block) : Writer{
-			return Writer::create(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)
-				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
-		});
-		$this->map(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), function(WeightedPressurePlateLight $block) : Writer{
-			return Writer::create(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)
-				->writeInt(StateNames::REDSTONE_SIGNAL, $block->getOutputSignalStrength());
-		});
 		$this->map(Blocks::WHEAT(), fn(Wheat $block) => Helper::encodeCrops($block, new Writer(Ids::WHEAT)));
 	}
 }

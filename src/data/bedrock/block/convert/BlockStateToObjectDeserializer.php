@@ -483,11 +483,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	}
 
 	private function registerDeserializers() : void{
-		$this->map(Ids::ACTIVATOR_RAIL, function(Reader $in) : Block{
-			return Blocks::ACTIVATOR_RAIL()
-				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
-				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
-		});
 		$this->map(Ids::AMETHYST_CLUSTER, function(Reader $in) : Block{
 			return Blocks::AMETHYST_CLUSTER()
 				->setStage(AmethystCluster::STAGE_CLUSTER)
@@ -523,9 +518,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 					default => throw $in->badValueException(StateNames::BAMBOO_STALK_THICKNESS, $value),
 				});
 		});
-		$this->map(Ids::BAMBOO_SAPLING, function(Reader $in) : Block{
-			return Blocks::BAMBOO_SAPLING()->setReady($in->readBool(StateNames::AGE_BIT));
-		});
 		$this->map(Ids::BARREL, function(Reader $in) : Block{
 			return Blocks::BARREL()
 				->setFacing($in->readFacingDirection())
@@ -540,10 +532,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setHead($in->readBool(StateNames::HEAD_PIECE_BIT))
 				->setOccupied($in->readBool(StateNames::OCCUPIED_BIT));
-		});
-		$this->map(Ids::BEDROCK, function(Reader $in) : Block{
-			return Blocks::BEDROCK()
-				->setBurnsForever($in->readBool(StateNames::INFINIBURN_BIT));
 		});
 		$this->map(Ids::BEETROOT, fn(Reader $in) => Helper::decodeCrops(Blocks::BEETROOTS(), $in));
 		$this->map(Ids::BELL, function(Reader $in) : Block{
@@ -583,10 +571,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
 		$this->map(Ids::BROWN_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::BROWN_MUSHROOM_BLOCK(), $in));
-		$this->map(Ids::CACTUS, function(Reader $in) : Block{
-			return Blocks::CACTUS()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 15));
-		});
 		$this->map(Ids::CAKE, function(Reader $in) : Block{
 			return Blocks::CAKE()
 				->setBites($in->readBoundedInt(StateNames::BITE_COUNTER, 0, 6));
@@ -734,7 +718,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
-		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
 			return Blocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
@@ -773,7 +756,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LIGHTNING_ROD()
 				->setFacing($in->readFacingDirection());
 		});
-		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), $in));
 		$this->map(Ids::LIT_BLAST_FURNACE, function(Reader $in) : Block{
 			return Blocks::BLAST_FURNACE()
 				->setFacing($in->readCardinalHorizontalFacing())
@@ -1007,10 +989,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setPowered($in->readBool(StateNames::POWERED_BIT));
 		});
-		$this->map(Ids::TWISTING_VINES, function(Reader $in) : Block{
-			return Blocks::TWISTING_VINES()
-				->setAge($in->readBoundedInt(StateNames::TWISTING_VINES_AGE, 0, 25));
-		});
 		$this->map(Ids::UNDERWATER_TNT, function(Reader $in) : Block{
 			return Blocks::TNT()
 				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
@@ -1041,11 +1019,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
-
-		$this->map(Ids::WEEPING_VINES, function(Reader $in) : Block{
-			return Blocks::WEEPING_VINES()
-				->setAge($in->readBoundedInt(StateNames::WEEPING_VINES_AGE, 0, 25));
-		});
 		$this->mapSimple(Ids::WET_SPONGE, fn() => Blocks::SPONGE()->setWet(true));
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 	}

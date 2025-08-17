@@ -326,6 +326,10 @@ final class BlockStateDeserializerHelper{
 			->setFacing($in->readHorizontalFacing());
 	}
 
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeWeightedPressurePlate(WeightedPressurePlate $block, BlockStateReader $in) : WeightedPressurePlate{
 		return $block
 			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
