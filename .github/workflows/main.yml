@@ -25,10 +25,10 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.34.1
+        uses: shivammathur/setup-php@2.35.3
         with:
           php-version: 8.3
           tools: php-cs-fixer:3.75
@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
