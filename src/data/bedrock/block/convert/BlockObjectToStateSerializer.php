@@ -27,14 +27,10 @@ use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
 use pocketmine\block\Barrel;
-use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
-use pocketmine\block\Bell;
 use pocketmine\block\BigDripleafHead;
 use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
-use pocketmine\block\BoneBlock;
-use pocketmine\block\BrewingStand;
 use pocketmine\block\BrownMushroomBlock;
 use pocketmine\block\Button;
 use pocketmine\block\CakeWithCandle;
@@ -73,13 +69,10 @@ use pocketmine\block\Hopper;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Ladder;
 use pocketmine\block\Lava;
-use pocketmine\block\Lever;
 use pocketmine\block\Light;
 use pocketmine\block\LightningRod;
-use pocketmine\block\Loom;
 use pocketmine\block\MelonStem;
 use pocketmine\block\NetherPortal;
-use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\Potato;
 use pocketmine\block\PumpkinStem;
@@ -105,9 +98,7 @@ use pocketmine\block\TNT;
 use pocketmine\block\Torch;
 use pocketmine\block\TorchflowerCrop;
 use pocketmine\block\Trapdoor;
-use pocketmine\block\TripwireHook;
 use pocketmine\block\UnderwaterTorch;
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
@@ -594,20 +585,7 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeBool(StateNames::OPEN_BIT, $block->isOpen())
 				->writeFacingDirection($block->getFacing());
 		});
-		$this->map(Blocks::BED(), function(Bed $block) : Writer{
-			return Writer::create(Ids::BED)
-				->writeBool(StateNames::HEAD_PIECE_BIT, $block->isHeadPart())
-				->writeBool(StateNames::OCCUPIED_BIT, $block->isOccupied())
-				->writeLegacyHorizontalFacing($block->getFacing());
-		});
 		$this->map(Blocks::BEETROOTS(), fn(Beetroot $block) => Helper::encodeCrops($block, new Writer(Ids::BEETROOT)));
-		$this->map(Blocks::BELL(), function(Bell $block) : Writer{
-			return Writer::create(Ids::BELL)
-				->writeUnitEnum(StateNames::ATTACHMENT, $block->getAttachmentType())
-				->writeBool(StateNames::TOGGLE_BIT, false) //we don't care about this; it's just to keep MCPE happy
-				->writeLegacyHorizontalFacing($block->getFacing());
-
-		});
 		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
 			return Writer::create(Ids::BIG_DRIPLEAF)
 				->writeCardinalHorizontalFacing($block->getFacing())
@@ -622,17 +600,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::BLAST_FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::BLAST_FURNACE, Ids::LIT_BLAST_FURNACE));
 		$this->map(Blocks::BLUE_TORCH(), fn(Torch $block) => Helper::encodeTorch($block, Writer::create(Ids::COLORED_TORCH_BLUE)));
-		$this->map(Blocks::BONE_BLOCK(), function(BoneBlock $block) : Writer{
-			return Writer::create(Ids::BONE_BLOCK)
-				->writeInt(StateNames::DEPRECATED, 0)
-				->writePillarAxis($block->getAxis());
-		});
-		$this->map(Blocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
-			return Writer::create(Ids::BREWING_STAND)
-				->writeBool(StateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST))
-				->writeBool(StateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST))
-				->writeBool(StateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST));
-		});
 		$this->map(Blocks::BROWN_MUSHROOM_BLOCK(), fn(BrownMushroomBlock $block) => Helper::encodeMushroomBlock($block, new Writer(Ids::BROWN_MUSHROOM_BLOCK)));
 		$this->map(Blocks::CAMPFIRE(), function(Campfire $block) : Writer{
 			return Writer::create(Ids::CAMPFIRE)
@@ -682,9 +649,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 			return Writer::create(Ids::END_ROD)
 				->writeEndRodFacingDirection($block->getFacing());
 		});
-		$this->map(Blocks::FLOWER_POT(), Writer::create(Ids::FLOWER_POT)
-				->writeBool(StateNames::UPDATE_BIT, false) //to keep MCPE happy
-		);
 		$this->map(Blocks::FURNACE(), fn(Furnace $block) => Helper::encodeFurnace($block, Ids::FURNACE, Ids::LIT_FURNACE));
 		$this->map(Blocks::GLOW_LICHEN(), function(GlowLichen $block) : Writer{
 			return Writer::create(Ids::GLOW_LICHEN)
@@ -712,11 +676,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		});
 		$this->map(Blocks::LARGE_FERN(), fn(DoubleTallGrass $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::LARGE_FERN)));
 		$this->map(Blocks::LAVA(), fn(Lava $block) => Helper::encodeLiquid($block, Ids::LAVA, Ids::FLOWING_LAVA));
-		$this->map(Blocks::LEVER(), function(Lever $block) : Writer{
-			return Writer::create(Ids::LEVER)
-				->writeBool(StateNames::OPEN_BIT, $block->isActivated())
-				->writeUnitEnum(StateNames::LEVER_DIRECTION, $block->getFacing());
-		});
 		$this->map(Blocks::LIGHT(), fn(Light $block) => BlockStateData::current(match($block->getLightLevel()){
 			0 => Ids::LIGHT_BLOCK_0,
 			1 => Ids::LIGHT_BLOCK_1,
@@ -741,10 +700,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeFacingDirection($block->getFacing());
 		});
 		$this->map(Blocks::LILAC(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::LILAC)));
-		$this->map(Blocks::LOOM(), function(Loom $block) : Writer{
-			return Writer::create(Ids::LOOM)
-				->writeLegacyHorizontalFacing($block->getFacing());
-		});
 		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::MATERIAL_REDUCER)));
 		$this->map(Blocks::MELON_STEM(), fn(MelonStem $block) => Helper::encodeStem($block, new Writer(Ids::MELON_STEM)));
 		$this->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
@@ -758,11 +713,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				});
 		});
 		$this->map(Blocks::PEONY(), fn(DoublePlant $block) => Helper::encodeDoublePlant($block, Writer::create(Ids::PEONY)));
-		$this->map(Blocks::PINK_PETALS(), function(PinkPetals $block) : Writer{
-			return Writer::create(Ids::PINK_PETALS)
-				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeInt(StateNames::GROWTH, $block->getCount() - 1);
-		});
 		$this->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
 			return Writer::create(Ids::PITCHER_CROP)
 				->writeInt(StateNames::GROWTH, $block->getAge())
@@ -849,12 +799,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::TORCHFLOWER_CROP(), function(TorchflowerCrop $block){
 			return Writer::create(Ids::TORCHFLOWER_CROP)
 				->writeInt(StateNames::GROWTH, $block->isReady() ? 1 : 0);
-		});
-		$this->map(Blocks::TRIPWIRE_HOOK(), function(TripwireHook $block) : Writer{
-			return Writer::create(Ids::TRIPWIRE_HOOK)
-				->writeBool(StateNames::ATTACHED_BIT, $block->isConnected())
-				->writeBool(StateNames::POWERED_BIT, $block->isPowered())
-				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::UNDERWATER_TORCH(), function(UnderwaterTorch $block) : Writer{
 			return Writer::create(Ids::UNDERWATER_TORCH)

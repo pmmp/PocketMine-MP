@@ -23,14 +23,36 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
+use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\utils\SingletonTrait;
 
-final class CardinalHorizontalFacingProperty extends BaseHorizontalFacingProperty{
-	use SingletonTrait;
+/**
+ * @phpstan-template TBlock of Block
+ * @phpstan-template TEnum of \UnitEnum
+ * @phpstan-implements Property<TBlock>
+ */
+final class EnumProperty implements Property{
 
-	protected function read(BlockStateReader $in) : int{ return $in->readCardinalHorizontalFacing();}
+	/**
+	 * @phpstan-param class-string<TEnum> $enumClass
+	 * @phpstan-param \Closure(TBlock) : TEnum $getter
+	 * @phpstan-param \Closure(TBlock, TEnum) : mixed $setter
+	 */
+	public function __construct(
+		private string $name,
+		private string $enumClass,
+		private \Closure $getter,
+		private \Closure $setter
+	){}
 
-	protected function write(BlockStateWriter $out, int $value) : void{ $out->writeCardinalHorizontalFacing($value); }
+	public function deserialize(Block $block, BlockStateReader $in) : void{
+		$value = $in->readUnitEnum($this->name, $this->enumClass);
+		($this->setter)($block, $value);
+	}
+
+	public function serialize(Block $block, BlockStateWriter $out) : void{
+		$value = ($this->getter)($block);
+		$out->writeUnitEnum($this->name, $value);
+	}
 }

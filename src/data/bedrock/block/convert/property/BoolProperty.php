@@ -43,6 +43,13 @@ final class BoolProperty implements Property{
 	){}
 
 	/**
+	 * @phpstan-return self<Block>
+	 */
+	public static function unused(string $name, bool $serializedValue) : self{
+		return new self($name, fn() => $serializedValue, fn() => null);
+	}
+
+	/**
 	 * @phpstan-param TBlock $block
 	 */
 	public function deserialize(Block $block, BlockStateReader $in) : void{

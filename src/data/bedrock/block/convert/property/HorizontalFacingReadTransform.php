@@ -23,14 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\data\bedrock\block\convert\BlockStateReader;
-use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\utils\SingletonTrait;
-
-final class CardinalHorizontalFacingProperty extends BaseHorizontalFacingProperty{
-	use SingletonTrait;
-
-	protected function read(BlockStateReader $in) : int{ return $in->readCardinalHorizontalFacing();}
-
-	protected function write(BlockStateWriter $out, int $value) : void{ $out->writeCardinalHorizontalFacing($value); }
+enum HorizontalFacingReadTransform{
+	case NONE;
+	case CLOCKWISE;
+	case COUNTER_CLOCKWISE;
+	case OPPOSITE;
 }

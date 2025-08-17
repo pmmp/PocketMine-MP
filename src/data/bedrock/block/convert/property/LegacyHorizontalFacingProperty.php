@@ -27,10 +27,14 @@ use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\utils\SingletonTrait;
 
-final class CardinalHorizontalFacingProperty extends BaseHorizontalFacingProperty{
+final class LegacyHorizontalFacingProperty extends BaseHorizontalFacingProperty{
 	use SingletonTrait;
 
-	protected function read(BlockStateReader $in) : int{ return $in->readCardinalHorizontalFacing();}
+	protected function read(BlockStateReader $in) : int{
+		return $in->readLegacyHorizontalFacing();
+	}
 
-	protected function write(BlockStateWriter $out, int $value) : void{ $out->writeCardinalHorizontalFacing($value); }
+	protected function write(BlockStateWriter $out, int $value) : void{
+		$out->writeLegacyHorizontalFacing($value);
+	}
 }

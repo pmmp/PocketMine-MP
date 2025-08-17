@@ -31,14 +31,11 @@ use pocketmine\block\CakeWithDyedCandle;
 use pocketmine\block\CaveVines;
 use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Opaque;
-use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\SweetBerryBush;
-use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\CopperMaterial;
@@ -47,7 +44,6 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -522,19 +518,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readFacingDirection())
 				->setOpen($in->readBool(StateNames::OPEN_BIT));
 		});
-		$this->map(Ids::BED, function(Reader $in) : Block{
-			return Blocks::BED()
-				->setFacing($in->readLegacyHorizontalFacing())
-				->setHead($in->readBool(StateNames::HEAD_PIECE_BIT))
-				->setOccupied($in->readBool(StateNames::OCCUPIED_BIT));
-		});
 		$this->map(Ids::BEETROOT, fn(Reader $in) => Helper::decodeCrops(Blocks::BEETROOTS(), $in));
-		$this->map(Ids::BELL, function(Reader $in) : Block{
-			$in->ignored(StateNames::TOGGLE_BIT); //only useful at runtime
-			return Blocks::BELL()
-				->setFacing($in->readLegacyHorizontalFacing())
-				->setAttachmentType($in->readUnitEnum(StateNames::ATTACHMENT, BellAttachmentType::class));
-		});
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
 				return Blocks::BIG_DRIPLEAF_HEAD()
@@ -549,16 +533,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::BLAST_FURNACE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(false);
-		});
-		$this->map(Ids::BONE_BLOCK, function(Reader $in) : Block{
-			$in->ignored(StateNames::DEPRECATED);
-			return Blocks::BONE_BLOCK()->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::BREWING_STAND, function(Reader $in) : Block{
-			return Blocks::BREWING_STAND()
-				->setSlot(BrewingStandSlot::EAST, $in->readBool(StateNames::BREWING_STAND_SLOT_A_BIT))
-				->setSlot(BrewingStandSlot::SOUTHWEST, $in->readBool(StateNames::BREWING_STAND_SLOT_B_BIT))
-				->setSlot(BrewingStandSlot::NORTHWEST, $in->readBool(StateNames::BREWING_STAND_SLOT_C_BIT));
 		});
 		$this->map(Ids::MUSHROOM_STEM, fn(Reader $in) => match($in->readBoundedInt(StateNames::HUGE_MUSHROOM_BITS, 0, 15)){
 			BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => Blocks::ALL_SIDED_MUSHROOM_STEM(),
@@ -635,10 +609,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::END_ROD()
 				->setFacing($in->readEndRodFacingDirection());
 		});
-		$this->map(Ids::FLOWER_POT, function(Reader $in) : Block{
-			$in->ignored(StateNames::UPDATE_BIT);
-			return Blocks::FLOWER_POT();
-		});
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
@@ -673,11 +643,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LEVER, function(Reader $in) : Block{
-			return Blocks::LEVER()
-				->setActivated($in->readBool(StateNames::OPEN_BIT))
-				->setFacing($in->readUnitEnum(StateNames::LEVER_DIRECTION, LeverFacing::class));
-		});
 		$this->map(Ids::LIGHTNING_ROD, function(Reader $in) : Block{
 			return Blocks::LIGHTNING_ROD()
 				->setFacing($in->readFacingDirection());
@@ -706,10 +671,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(true);
 		});
-		$this->map(Ids::LOOM, function(Reader $in) : Block{
-			return Blocks::LOOM()
-				->setFacing($in->readLegacyHorizontalFacing());
-		});
 		$this->map(Ids::MATERIAL_REDUCER, fn(Reader $in) => Blocks::MATERIAL_REDUCER()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
@@ -719,13 +680,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
-		$this->map(Ids::PINK_PETALS, function(Reader $in) : Block{
-			//Pink petals only uses 0-3, but GROWTH state can go up to 7
-			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
-			return Blocks::PINK_PETALS()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setCount(min($growth + 1, PinkPetals::MAX_COUNT));
-		});
 		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
 			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
@@ -839,12 +793,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::TORCHFLOWER_CROP()
 				//this property can have values 0-7, but only 0-1 are valid
 				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
-		});
-		$this->map(Ids::TRIPWIRE_HOOK, function(Reader $in) : Block{
-			return Blocks::TRIPWIRE_HOOK()
-				->setConnected($in->readBool(StateNames::ATTACHED_BIT))
-				->setFacing($in->readLegacyHorizontalFacing())
-				->setPowered($in->readBool(StateNames::POWERED_BIT));
 		});
 		$this->map(Ids::UNDERWATER_TNT, function(Reader $in) : Block{
 			return Blocks::TNT()

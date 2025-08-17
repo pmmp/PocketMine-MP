@@ -25,8 +25,11 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\BambooSapling;
+use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
+use pocketmine\block\Bell;
 use pocketmine\block\Block;
+use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\ChorusFlower;
@@ -40,9 +43,11 @@ use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Lantern;
 use pocketmine\block\Lectern;
+use pocketmine\block\Lever;
 use pocketmine\block\MobHead;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
+use pocketmine\block\PinkPetals;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\Rail;
 use pocketmine\block\RedstoneWire;
@@ -53,8 +58,12 @@ use pocketmine\block\Stair;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\Tripwire;
+use pocketmine\block\TripwireHook;
+use pocketmine\block\utils\BellAttachmentType;
+use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\FroglightType;
+use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\WeightedPressurePlate;
@@ -66,8 +75,12 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\block\convert\property\AxisProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\CardinalHorizontalFacingProperty;
+use pocketmine\data\bedrock\block\convert\property\EnumProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
+use pocketmine\data\bedrock\block\convert\property\LegacyHorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
+use function array_map;
+use function min;
 
 /**
  * Registers serializers and deserializers for block data in a unified style, to avoid code duplication.
@@ -943,9 +956,29 @@ final class BlockSerializerDeserializerRegistrar{
 			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorBanner $b) => $b->getRotation(), fn(FloorBanner $b, int $v) => $b->setRotation($v))
 		]));
 		$this->mapModel(Model::create(Blocks::BASALT(), Ids::BASALT)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::BED(), Ids::BED)->properties([
+			new BoolProperty(StateNames::HEAD_PIECE_BIT, fn(Bed $b) => $b->isHeadPart(), fn(Bed $b, bool $v) => $b->setHead($v)),
+			new BoolProperty(StateNames::OCCUPIED_BIT, fn(Bed $b) => $b->isOccupied(), fn(Bed $b, bool $v) => $b->setOccupied($v)),
+			LegacyHorizontalFacingProperty::getInstance()
+		]));
 		$this->mapModel(Model::create(Blocks::BEDROCK(), Ids::BEDROCK)->properties([
 			new BoolProperty(StateNames::INFINIBURN_BIT, fn(Bedrock $b) => $b->burnsForever(), fn(Bedrock $b, bool $v) => $b->setBurnsForever($v))
 		]));
+		$this->mapModel(Model::create(Blocks::BELL(), Ids::BELL)->properties([
+			BoolProperty::unused(StateNames::TOGGLE_BIT, false),
+			new EnumProperty(StateNames::ATTACHMENT, BellAttachmentType::class, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
+			LegacyHorizontalFacingProperty::getInstance()
+		]));
+		$this->mapModel(Model::create(Blocks::BONE_BLOCK(), Ids::BONE_BLOCK)->properties([
+			IntProperty::unused(StateNames::DEPRECATED, 0),
+			AxisProperty::getInstance()
+		]));
+
+		$this->mapModel(Model::create(Blocks::BREWING_STAND(), Ids::BREWING_STAND)->properties(array_map(fn(BrewingStandSlot $slot) => new BoolProperty(match($slot){
+			BrewingStandSlot::EAST => StateNames::BREWING_STAND_SLOT_A_BIT,
+			BrewingStandSlot::SOUTHWEST => StateNames::BREWING_STAND_SLOT_B_BIT,
+			BrewingStandSlot::NORTHWEST => StateNames::BREWING_STAND_SLOT_C_BIT
+		}, fn(BrewingStand $b) => $b->hasSlot($slot), fn(BrewingStand $b, bool $v) => $b->setSlot($slot, $v)), BrewingStandSlot::cases())));
 
 		//C
 		$this->mapModel(Model::create(Blocks::CAKE(), Ids::CAKE)->properties([
@@ -985,6 +1018,9 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::FIRE(), Ids::FIRE)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Fire $b) => $b->getAge(), fn(Fire $b, int $v) => $b->setAge($v))
 		]));
+		$this->mapModel(Model::create(Blocks::FLOWER_POT(), Ids::FLOWER_POT)->properties([
+			BoolProperty::unused(StateNames::UPDATE_BIT, false)
+		]));
 		$this->mapModel(Model::create(Blocks::FROSTED_ICE(), Ids::FROSTED_ICE)->properties([
 			new IntProperty(StateNames::AGE, 0, 3, fn(FrostedIce $b) => $b->getAge(), fn(FrostedIce $b, int $v) => $b->setAge($v))
 		]));
@@ -997,8 +1033,15 @@ final class BlockSerializerDeserializerRegistrar{
 			new BoolProperty(StateNames::POWERED_BIT, fn(Lectern $b) => $b->isProducingSignal(), fn(Lectern $b, bool $v) => $b->setProducingSignal($v)),
 			CardinalHorizontalFacingProperty::getInstance()
 		]));
+		$this->mapModel(Model::create(Blocks::LEVER(), Ids::LEVER)->properties([
+			new EnumProperty(StateNames::LEVER_DIRECTION, LeverFacing::class, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
+			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
+		]));
 		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([
 			CardinalHorizontalFacingProperty::getInstance()
+		]));
+		$this->mapModel(Model::create(Blocks::LOOM(), Ids::LOOM)->properties([
+			LegacyHorizontalFacingProperty::getInstance()
 		]));
 
 		//M
@@ -1008,6 +1051,11 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//P
+		$this->mapModel(Model::create(Blocks::PINK_PETALS(), Ids::PINK_PETALS)->properties([
+			//Pink petals only uses 0-3, but GROWTH state can go up to 7
+			new IntProperty(StateNames::GROWTH, 0, 7, fn(PinkPetals $b) => $b->getCount(), fn(PinkPetals $b, int $v) => $b->setCount(min($v, PinkPetals::MAX_COUNT)), offset: 1),
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
 		$this->mapModel(Model::create(Blocks::POWERED_RAIL(), Ids::GOLDEN_RAIL)->properties([
 			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(PoweredRail $b) => $b->isPowered(), fn(PoweredRail $b, bool $v) => $b->setPowered($v)), //TODO: shared with ActivatorRail
 			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(StraightOnlyRail $b) => $b->getShape(), fn(StraightOnlyRail $b, int $v) => $b->setShape($v)) //TODO: shared with ActivatorRail
@@ -1051,12 +1099,16 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::TRAPPED_CHEST(), Ids::TRAPPED_CHEST)->properties([
 			CardinalHorizontalFacingProperty::getInstance()
 		]));
-		//tripwire connected disarmed suspended triggered
 		$this->mapModel(Model::create(Blocks::TRIPWIRE(), Ids::TRIP_WIRE)->properties([
 			new BoolProperty(StateNames::ATTACHED_BIT, fn(Tripwire $b) => $b->isConnected(), fn(Tripwire $b, bool $v) => $b->setConnected($v)),
 			new BoolProperty(StateNames::DISARMED_BIT, fn(Tripwire $b) => $b->isDisarmed(), fn(Tripwire $b, bool $v) => $b->setDisarmed($v)),
 			new BoolProperty(StateNames::SUSPENDED_BIT, fn(Tripwire $b) => $b->isSuspended(), fn(Tripwire $b, bool $v) => $b->setSuspended($v)),
 			new BoolProperty(StateNames::POWERED_BIT, fn(Tripwire $b) => $b->isTriggered(), fn(Tripwire $b, bool $v) => $b->setTriggered($v)),
+		]));
+		$this->mapModel(Model::create(Blocks::TRIPWIRE_HOOK(), Ids::TRIPWIRE_HOOK)->properties([
+			new BoolProperty(StateNames::ATTACHED_BIT, fn(TripwireHook $b) => $b->isConnected(), fn(TripwireHook $b, bool $v) => $b->setConnected($v)),
+			new BoolProperty(StateNames::POWERED_BIT, fn(TripwireHook $b) => $b->isPowered(), fn(TripwireHook $b, bool $v) => $b->setPowered($v)),
+			LegacyHorizontalFacingProperty::getInstance()
 		]));
 
 		$this->mapModel(Model::create(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES)->properties([

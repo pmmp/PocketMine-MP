@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\utils\Limits;
 
 /**
  * @phpstan-template TBlock of Block
@@ -33,7 +34,7 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter;
  */
 final class IntProperty implements Property{
 	/**
-	 * @phpstan-param \Closure(TBlock) : int $getter
+	 * @phpstan-param \Closure(TBlock) : int        $getter
 	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
 	 */
 	public function __construct(
@@ -42,19 +43,27 @@ final class IntProperty implements Property{
 		private int $max,
 		private \Closure $getter,
 		private \Closure $setter,
+		private int $offset = 0
 	){
-		if ($min > $max) {
+		if($min > $max){
 			throw new \InvalidArgumentException("Min value cannot be greater than max value");
 		}
 	}
 
+	/**
+	 * @phpstan-return self<Block>
+	 */
+	public static function unused(string $name, int $serializedValue) : self{
+		return new self($name, Limits::INT32_MIN, Limits::INT32_MAX, fn() => $serializedValue, fn() => null);
+	}
+
 	public function deserialize(Block $block, BlockStateReader $in) : void{
 		$value = $in->readBoundedInt($this->name, $this->min, $this->max);
-		($this->setter)($block, $value);
+		($this->setter)($block, $value + $this->offset);
 	}
 
 	public function serialize(Block $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
-		$out->writeInt($this->name, $value);
+		$out->writeInt($this->name, $value - $this->offset);
 	}
 }
