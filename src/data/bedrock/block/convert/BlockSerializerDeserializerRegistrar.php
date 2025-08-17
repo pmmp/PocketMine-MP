@@ -43,7 +43,9 @@ use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
-use pocketmine\data\bedrock\block\convert\property\BlockDataModel;
+use pocketmine\data\bedrock\block\convert\property\BoolProperty;
+use pocketmine\data\bedrock\block\convert\property\IntProperty;
+use pocketmine\data\bedrock\block\convert\property\Property;
 
 /**
  * Registers serializers and deserializers for block data in a unified style, to avoid code duplication.
@@ -879,47 +881,54 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	/**
+	 * @param Property[] $propertyDescriptors
+	 *
 	 * @phpstan-template TBlock of Block
-	 * @phpstan-param BlockDataModel<TBlock> $unifiedBlockSerializer
+	 * @phpstan-param TBlock                 $block
+	 * @phpstan-param list<Property<TBlock>> $propertyDescriptors
 	 */
-	private function mapModel(BlockDataModel $unifiedBlockSerializer) : void{
-		$this->deserializer?->map($unifiedBlockSerializer->getId(), $unifiedBlockSerializer->deserialize(...));
-		$this->serializer?->map($unifiedBlockSerializer->getBlockTemplate(), $unifiedBlockSerializer->serialize(...));
+	private function mapModel(Block $block, string $id, array $propertyDescriptors) : void{
+		$this->deserializer?->map($id, static function(Reader $in) use ($block, $propertyDescriptors) : Block{
+			$newBlock = clone $block;
+			foreach($propertyDescriptors as $descriptor){
+				$descriptor->deserialize($newBlock, $in);
+			}
+			return $newBlock;
+		});
+		$this->serializer?->map($block, static function(Block $block) use ($id, $propertyDescriptors) : Writer{
+			$writer = new Writer($id);
+			foreach($propertyDescriptors as $descriptor){
+				$descriptor->serialize($block, $writer);
+			}
+			return $writer;
+		});
 	}
 
 	private function register1to1CustomMappings() : void{
-		$this->mapModel(
-			BlockDataModel::create(Blocks::ACTIVATOR_RAIL(), Ids::ACTIVATOR_RAIL)
-				->bool(StateNames::RAIL_DATA_BIT, fn(ActivatorRail $b) => $b->isPowered(), fn(ActivatorRail $b, bool $v) => $b->setPowered($v))
-				->int(StateNames::RAIL_DIRECTION, 0, 5, fn(ActivatorRail $b) => $b->getShape(), fn(ActivatorRail $b, int $v) => $b->setShape($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING)
-				->bool(StateNames::AGE_BIT, fn(BambooSapling $b) => $b->isReady(), fn(BambooSapling $b, bool $v) => $b->setReady($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::BEDROCK(), Ids::BEDROCK)
-				->bool(StateNames::INFINIBURN_BIT, fn(Bedrock $b) => $b->burnsForever(), fn(Bedrock $b, bool $v) => $b->setBurnsForever($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::CACTUS(), Ids::CACTUS)
-				->int(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES)
-				->int(StateNames::TWISTING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES)
-				->int(StateNames::WEEPING_VINES_AGE, 0, 25,  fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)
-				->int(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		);
-		$this->mapModel(
-			BlockDataModel::create(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)
-				->int(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		);
+		$this->mapModel(Blocks::ACTIVATOR_RAIL(), Ids::ACTIVATOR_RAIL, [
+			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(ActivatorRail $b) => $b->isPowered(), fn(ActivatorRail $b, bool $v) => $b->setPowered($v)),
+			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(ActivatorRail $b) => $b->getShape(), fn(ActivatorRail $b, int $v) => $b->setShape($v))
+		]);
+		$this->mapModel(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING, [
+			new BoolProperty(StateNames::AGE_BIT, fn(BambooSapling $b) => $b->isReady(), fn(BambooSapling $b, bool $v) => $b->setReady($v))
+		]);
+		$this->mapModel(Blocks::BEDROCK(), Ids::BEDROCK, [
+			new BoolProperty(StateNames::INFINIBURN_BIT, fn(Bedrock $b) => $b->burnsForever(), fn(Bedrock $b, bool $v) => $b->setBurnsForever($v))
+		]);
+		$this->mapModel(Blocks::CACTUS(), Ids::CACTUS, [
+			new IntProperty(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
+		]);
+		$this->mapModel(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES, [
+			new IntProperty(StateNames::TWISTING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
+		]);
+		$this->mapModel(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES, [
+			new IntProperty(StateNames::WEEPING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
+		]);
+		$this->mapModel(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, [
+			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
+		]);
+		$this->mapModel(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, [
+			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
+		]);
 	}
 }
