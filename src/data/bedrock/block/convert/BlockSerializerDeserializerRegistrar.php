@@ -28,11 +28,31 @@ use pocketmine\block\BambooSapling;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Block;
 use pocketmine\block\Cactus;
+use pocketmine\block\Cake;
+use pocketmine\block\ChorusFlower;
+use pocketmine\block\DetectorRail;
+use pocketmine\block\DoublePlant;
+use pocketmine\block\EndPortalFrame;
+use pocketmine\block\Farmland;
+use pocketmine\block\Fire;
+use pocketmine\block\FloorBanner;
 use pocketmine\block\Froglight;
+use pocketmine\block\FrostedIce;
+use pocketmine\block\Lantern;
+use pocketmine\block\Lectern;
 use pocketmine\block\MobHead;
 use pocketmine\block\NetherVines;
+use pocketmine\block\NetherWartPlant;
+use pocketmine\block\PoweredRail;
+use pocketmine\block\Rail;
+use pocketmine\block\RedstoneWire;
+use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Slab;
+use pocketmine\block\SmallDripleaf;
 use pocketmine\block\Stair;
+use pocketmine\block\StraightOnlyRail;
+use pocketmine\block\Sugarcane;
+use pocketmine\block\Tripwire;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\MobHeadType;
@@ -43,9 +63,11 @@ use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
+use pocketmine\data\bedrock\block\convert\property\AxisProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
+use pocketmine\data\bedrock\block\convert\property\CardinalHorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
-use pocketmine\data\bedrock\block\convert\property\Property;
+use pocketmine\data\bedrock\block\convert\property\Model;
 
 /**
  * Registers serializers and deserializers for block data in a unified style, to avoid code duplication.
@@ -881,13 +903,14 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	/**
-	 * @param Property[] $propertyDescriptors
-	 *
 	 * @phpstan-template TBlock of Block
-	 * @phpstan-param TBlock                 $block
-	 * @phpstan-param list<Property<TBlock>> $propertyDescriptors
+	 * @phpstan-param Model<TBlock> $model
 	 */
-	private function mapModel(Block $block, string $id, array $propertyDescriptors) : void{
+	private function mapModel(Model $model) : void{
+		$id = $model->getId();
+		$block = $model->getBlock();
+		$propertyDescriptors = $model->getProperties();
+
 		$this->deserializer?->map($id, static function(Reader $in) use ($block, $propertyDescriptors) : Block{
 			$newBlock = clone $block;
 			foreach($propertyDescriptors as $descriptor){
@@ -905,30 +928,150 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function register1to1CustomMappings() : void{
-		$this->mapModel(Blocks::ACTIVATOR_RAIL(), Ids::ACTIVATOR_RAIL, [
+		//TODO: some of these have repeated accessor refs, we might be able to deduplicate them
+		//A
+		$this->mapModel(Model::create(Blocks::ACTIVATOR_RAIL(), Ids::ACTIVATOR_RAIL)->properties([
 			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(ActivatorRail $b) => $b->isPowered(), fn(ActivatorRail $b, bool $v) => $b->setPowered($v)),
 			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(ActivatorRail $b) => $b->getShape(), fn(ActivatorRail $b, int $v) => $b->setShape($v))
-		]);
-		$this->mapModel(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING, [
+		]));
+
+		//B
+		$this->mapModel(Model::create(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING)->properties([
 			new BoolProperty(StateNames::AGE_BIT, fn(BambooSapling $b) => $b->isReady(), fn(BambooSapling $b, bool $v) => $b->setReady($v))
-		]);
-		$this->mapModel(Blocks::BEDROCK(), Ids::BEDROCK, [
+		]));
+		$this->mapModel(Model::create(Blocks::BANNER(), Ids::STANDING_BANNER)->properties([
+			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorBanner $b) => $b->getRotation(), fn(FloorBanner $b, int $v) => $b->setRotation($v))
+		]));
+		$this->mapModel(Model::create(Blocks::BASALT(), Ids::BASALT)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::BEDROCK(), Ids::BEDROCK)->properties([
 			new BoolProperty(StateNames::INFINIBURN_BIT, fn(Bedrock $b) => $b->burnsForever(), fn(Bedrock $b, bool $v) => $b->setBurnsForever($v))
-		]);
-		$this->mapModel(Blocks::CACTUS(), Ids::CACTUS, [
+		]));
+
+		//C
+		$this->mapModel(Model::create(Blocks::CAKE(), Ids::CAKE)->properties([
+			new IntProperty(StateNames::BITE_COUNTER, 0, 6, fn(Cake $b) => $b->getBites(), fn(Cake $b, int $v) => $b->setBites($v))
+		]));
+		$this->mapModel(Model::create(Blocks::CACTUS(), Ids::CACTUS)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
-		]);
-		$this->mapModel(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES, [
+		]));
+		$this->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::CHISELED_QUARTZ(), Ids::CHISELED_QUARTZ_BLOCK)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([CardinalHorizontalFacingProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::CHORUS_FLOWER(), Ids::CHORUS_FLOWER)->properties([
+			new IntProperty(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE, fn(ChorusFlower $b) => $b->getAge(), fn(ChorusFlower $b, int $v) => $b->setAge($v))
+		]));
+
+		//D
+		$this->mapModel(Model::create(Blocks::DEEPSLATE(), Ids::DEEPSLATE)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::DETECTOR_RAIL(), Ids::DETECTOR_RAIL)->properties([
+			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(DetectorRail $b) => $b->isActivated(), fn(DetectorRail $b, bool $v) => $b->setActivated($v)),
+			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(StraightOnlyRail $b) => $b->getShape(), fn(StraightOnlyRail $b, int $v) => $b->setShape($v)) //TODO: shared with ActivatorRail
+		]));
+
+		//E
+		$this->mapModel(Model::create(Blocks::ENDER_CHEST(), Ids::ENDER_CHEST)->properties([CardinalHorizontalFacingProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::END_PORTAL_FRAME(), Ids::END_PORTAL_FRAME)->properties([
+			new BoolProperty(StateNames::END_PORTAL_EYE_BIT, fn(EndPortalFrame $b) => $b->hasEye(), fn(EndPortalFrame $b, bool $v) => $b->setEye($v)),
+			CardinalHorizontalFacingProperty::getInstance(),
+		]));
+
+		//F
+		$this->mapModel(Model::create(Blocks::FARMLAND(), Ids::FARMLAND)->properties([
+			new IntProperty(StateNames::MOISTURIZED_AMOUNT, 0, 7, fn(Farmland $b) => $b->getWetness(), fn(Farmland $b, int $v) => $b->setWetness($v))
+		]));
+		$this->mapModel(Model::create(Blocks::FIRE(), Ids::FIRE)->properties([
+			new IntProperty(StateNames::AGE, 0, 15, fn(Fire $b) => $b->getAge(), fn(Fire $b, int $v) => $b->setAge($v))
+		]));
+		$this->mapModel(Model::create(Blocks::FROSTED_ICE(), Ids::FROSTED_ICE)->properties([
+			new IntProperty(StateNames::AGE, 0, 3, fn(FrostedIce $b) => $b->getAge(), fn(FrostedIce $b, int $v) => $b->setAge($v))
+		]));
+
+		//L
+		$this->mapModel(Model::create(Blocks::LANTERN(), Ids::LANTERN)->properties([
+			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v))
+		]));
+		$this->mapModel(Model::create(Blocks::LECTERN(), Ids::LECTERN)->properties([
+			new BoolProperty(StateNames::POWERED_BIT, fn(Lectern $b) => $b->isProducingSignal(), fn(Lectern $b, bool $v) => $b->setProducingSignal($v)),
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+
+		//M
+		$this->mapModel(Model::create(Blocks::MUDDY_MANGROVE_ROOTS(), Ids::MUDDY_MANGROVE_ROOTS)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::NETHER_WART(), Ids::NETHER_WART)->properties([
+			new IntProperty(StateNames::AGE, 0, 3, fn(NetherWartPlant $b) => $b->getAge(), fn(NetherWartPlant $b, int $v) => $b->setAge($v))
+		]));
+
+		//P
+		$this->mapModel(Model::create(Blocks::POWERED_RAIL(), Ids::GOLDEN_RAIL)->properties([
+			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(PoweredRail $b) => $b->isPowered(), fn(PoweredRail $b, bool $v) => $b->setPowered($v)), //TODO: shared with ActivatorRail
+			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(StraightOnlyRail $b) => $b->getShape(), fn(StraightOnlyRail $b, int $v) => $b->setShape($v)) //TODO: shared with ActivatorRail
+		]));
+		$this->mapModel(Model::create(Blocks::PITCHER_PLANT(), Ids::PITCHER_PLANT)->properties([
+			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(DoublePlant $b) => $b->isTop(), fn(DoublePlant $b, bool $v) => $b->setTop($v)), //TODO: don't we have helpers for this?
+		]));
+		$this->mapModel(Model::create(Blocks::POLISHED_BASALT(), Ids::POLISHED_BASALT)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::PURPUR_PILLAR(), Ids::PURPUR_PILLAR)->properties([AxisProperty::getInstance()]));
+
+		//Q
+		$this->mapModel(Model::create(Blocks::QUARTZ_PILLAR(), Ids::QUARTZ_PILLAR)->properties([AxisProperty::getInstance()]));
+
+		//R
+		$this->mapModel(Model::create(Blocks::RAIL(), Ids::RAIL)->properties([
+			new IntProperty(StateNames::RAIL_DIRECTION, 0, 9, fn(Rail $b) => $b->getShape(), fn(Rail $b, int $v) => $b->setShape($v))
+		]));
+		$this->mapModel(Model::create(Blocks::REDSTONE_WIRE(), Ids::REDSTONE_WIRE)->properties([
+			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(RedstoneWire $b) => $b->getOutputSignalStrength(), fn(RedstoneWire $b, int $v) => $b->setOutputSignalStrength($v))
+		]));
+		$this->mapModel(Model::create(Blocks::RESPAWN_ANCHOR(), Ids::RESPAWN_ANCHOR)->properties([
+			new IntProperty(StateNames::RESPAWN_ANCHOR_CHARGE, 0, 4, fn(RespawnAnchor $b) => $b->getCharges(), fn(RespawnAnchor $b, int $v) => $b->setCharges($v))
+		]));
+
+		//S
+		$this->mapModel(Model::create(Blocks::SUGARCANE(), Ids::REEDS)->properties([
+			new IntProperty(StateNames::AGE, 0, 15, fn(Sugarcane $b) => $b->getAge(), fn(Sugarcane $b, int $v) => $b->setAge($v))
+		]));
+		$this->mapModel(Model::create(Blocks::SMALL_DRIPLEAF(), Ids::SMALL_DRIPLEAF_BLOCK)->properties([
+			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(SmallDripleaf $b) => $b->isTop(), fn(SmallDripleaf $b, bool $v) => $b->setTop($v)),
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+		$this->mapModel(Model::create(Blocks::SOUL_LANTERN(), Ids::SOUL_LANTERN)->properties([
+			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v)) //TODO: repeated
+		]));
+		$this->mapModel(Model::create(Blocks::STONECUTTER(), Ids::STONECUTTER_BLOCK)->properties([
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+
+		//T
+		$this->mapModel(Model::create(Blocks::TRAPPED_CHEST(), Ids::TRAPPED_CHEST)->properties([
+			CardinalHorizontalFacingProperty::getInstance()
+		]));
+		//tripwire connected disarmed suspended triggered
+		$this->mapModel(Model::create(Blocks::TRIPWIRE(), Ids::TRIP_WIRE)->properties([
+			new BoolProperty(StateNames::ATTACHED_BIT, fn(Tripwire $b) => $b->isConnected(), fn(Tripwire $b, bool $v) => $b->setConnected($v)),
+			new BoolProperty(StateNames::DISARMED_BIT, fn(Tripwire $b) => $b->isDisarmed(), fn(Tripwire $b, bool $v) => $b->setDisarmed($v)),
+			new BoolProperty(StateNames::SUSPENDED_BIT, fn(Tripwire $b) => $b->isSuspended(), fn(Tripwire $b, bool $v) => $b->setSuspended($v)),
+			new BoolProperty(StateNames::POWERED_BIT, fn(Tripwire $b) => $b->isTriggered(), fn(Tripwire $b, bool $v) => $b->setTriggered($v)),
+		]));
+
+		$this->mapModel(Model::create(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES)->properties([
 			new IntProperty(StateNames::TWISTING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
-		]);
-		$this->mapModel(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES, [
+		]));
+
+		//W
+		$this->mapModel(Model::create(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES)->properties([
 			new IntProperty(StateNames::WEEPING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
-		]);
-		$this->mapModel(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, [
+		]));
+		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)->properties([
 			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		]);
-		$this->mapModel(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, [
+		]));
+		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)->properties([
 			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		]);
+		]));
 	}
 }

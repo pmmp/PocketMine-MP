@@ -49,12 +49,12 @@ final class BlockSerializerDeserializerTest extends TestCase{
 			try{
 				$blockStateData = $this->serializer->serializeBlock($block);
 			}catch(BlockStateSerializeException $e){
-				self::fail($e->getMessage());
+				self::fail("Failed to serialize " . $block->getName() . ": " . $e->getMessage());
 			}
 			try{
 				$newBlock = $this->deserializer->deserializeBlock($blockStateData);
 			}catch(BlockStateDeserializeException $e){
-				self::fail($e->getMessage());
+				self::fail("Failed to deserialize " . $blockStateData->getName() . ": " . $e->getMessage() . " with data " . $blockStateData->toNbt());
 			}
 
 			if($block->getTypeId() === BlockTypeIds::POTION_CAULDRON){

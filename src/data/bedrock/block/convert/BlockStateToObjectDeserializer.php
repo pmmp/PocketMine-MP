@@ -29,7 +29,6 @@ use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
 use pocketmine\block\CakeWithDyedCandle;
 use pocketmine\block\CaveVines;
-use pocketmine\block\ChorusFlower;
 use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\Opaque;
 use pocketmine\block\PinkPetals;
@@ -523,10 +522,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readFacingDirection())
 				->setOpen($in->readBool(StateNames::OPEN_BIT));
 		});
-		$this->map(Ids::BASALT, function(Reader $in){
-			return Blocks::BASALT()
-				->setAxis($in->readPillarAxis());
-		});
 		$this->map(Ids::BED, function(Reader $in) : Block{
 			return Blocks::BED()
 				->setFacing($in->readLegacyHorizontalFacing())
@@ -571,20 +566,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
 		$this->map(Ids::BROWN_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::BROWN_MUSHROOM_BLOCK(), $in));
-		$this->map(Ids::CAKE, function(Reader $in) : Block{
-			return Blocks::CAKE()
-				->setBites($in->readBoundedInt(StateNames::BITE_COUNTER, 0, 6));
-		});
 		$this->map(Ids::CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::CAMPFIRE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
 		});
 		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
-		$this->map(Ids::CARVED_PUMPKIN, function(Reader $in) : Block{
-			return Blocks::CARVED_PUMPKIN()
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
 		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
 				->setBerries(false)
@@ -603,10 +590,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setHead(true)
 				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
 		});
-		$this->map(Ids::CHAIN, function(Reader $in) : Block{
-			return Blocks::CHAIN()
-				->setAxis($in->readPillarAxis());
-		});
 		$this->map(Ids::CHISELED_BOOKSHELF, function(Reader $in) : Block{
 			$block = Blocks::CHISELED_BOOKSHELF()
 				->setFacing($in->readLegacyHorizontalFacing());
@@ -620,18 +603,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return $block;
 		});
 		$this->map(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE));
-		$this->map(Ids::CHISELED_QUARTZ_BLOCK, function(Reader $in) : Block{
-			return Blocks::CHISELED_QUARTZ()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::CHEST, function(Reader $in) : Block{
-			return Blocks::CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
-		$this->map(Ids::CHORUS_FLOWER, function(Reader $in) : Block{
-			return Blocks::CHORUS_FLOWER()
-				->setAge($in->readBoundedInt(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE));
-		});
 		$this->map(Ids::COARSE_DIRT, fn() => Blocks::DIRT()->setDirtType(DirtType::COARSE));
 		$this->map(Ids::COCOA, function(Reader $in) : Block{
 			return Blocks::COCOA_POD()
@@ -649,16 +620,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setInverted(false));
 		$this->map(Ids::DAYLIGHT_DETECTOR_INVERTED, fn(Reader $in) => Helper::decodeDaylightSensor(Blocks::DAYLIGHT_SENSOR(), $in)
 				->setInverted(true));
-		$this->map(Ids::DEEPSLATE, function(Reader $in) : Block{
-			return Blocks::DEEPSLATE()
-				->setAxis($in->readPillarAxis());
-		});
 		$this->map(Ids::DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(false));
-		$this->map(Ids::DETECTOR_RAIL, function(Reader $in) : Block{
-			return Blocks::DETECTOR_RAIL()
-				->setActivated($in->readBool(StateNames::RAIL_DATA_BIT))
-				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
-		});
 		$this->map(Ids::DIRT, fn() => Blocks::DIRT()->setDirtType(DirtType::NORMAL));
 		$this->map(Ids::DIRT_WITH_ROOTS, fn() => Blocks::DIRT()->setDirtType(DirtType::ROOTED));
 		$this->map(Ids::LARGE_FERN, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::LARGE_FERN(), $in));
@@ -670,26 +632,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::ELEMENT_CONSTRUCTOR, fn(Reader $in) => Blocks::ELEMENT_CONSTRUCTOR()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
-		$this->map(Ids::END_PORTAL_FRAME, function(Reader $in) : Block{
-			return Blocks::END_PORTAL_FRAME()
-				->setEye($in->readBool(StateNames::END_PORTAL_EYE_BIT))
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
 		$this->map(Ids::END_ROD, function(Reader $in) : Block{
 			return Blocks::END_ROD()
 				->setFacing($in->readEndRodFacingDirection());
-		});
-		$this->map(Ids::ENDER_CHEST, function(Reader $in) : Block{
-			return Blocks::ENDER_CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
-		$this->map(Ids::FARMLAND, function(Reader $in) : Block{
-			return Blocks::FARMLAND()
-				->setWetness($in->readBoundedInt(StateNames::MOISTURIZED_AMOUNT, 0, 7));
-		});
-		$this->map(Ids::FIRE, function(Reader $in) : Block{
-			return Blocks::FIRE()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 15));
 		});
 		$this->map(Ids::FLOWER_POT, function(Reader $in) : Block{
 			$in->ignored(StateNames::UPDATE_BIT);
@@ -698,10 +643,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
-		$this->map(Ids::FROSTED_ICE, function(Reader $in) : Block{
-			return Blocks::FROSTED_ICE()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
-		});
 		$this->map(Ids::FURNACE, function(Reader $in) : Block{
 			return Blocks::FURNACE()
 				->setFacing($in->readCardinalHorizontalFacing())
@@ -709,11 +650,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
-		$this->map(Ids::GOLDEN_RAIL, function(Reader $in) : Block{
-			return Blocks::POWERED_RAIL()
-				->setPowered($in->readBool(StateNames::RAIL_DATA_BIT))
-				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 5));
-		});
 		$this->map(Ids::HAY_BLOCK, function(Reader $in) : Block{
 			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
@@ -732,21 +668,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::LADDER()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::LANTERN, function(Reader $in) : Block{
-			return Blocks::LANTERN()
-				->setHanging($in->readBool(StateNames::HANGING));
-		});
 		$this->map(Ids::LARGE_AMETHYST_BUD, function(Reader $in) : Block{
 			return Blocks::AMETHYST_CLUSTER()
 				->setStage(AmethystCluster::STAGE_LARGE_BUD)
 				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LECTERN, function(Reader $in) : Block{
-			return Blocks::LECTERN()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setProducingSignal($in->readBool(StateNames::POWERED_BIT));
-		});
 		$this->map(Ids::LEVER, function(Reader $in) : Block{
 			return Blocks::LEVER()
 				->setActivated($in->readBool(StateNames::OPEN_BIT))
@@ -766,10 +693,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::FURNACE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(true);
-		});
-		$this->map(Ids::LIT_PUMPKIN, function(Reader $in) : Block{
-			return Blocks::LIT_PUMPKIN()
-				->setFacing($in->readCardinalHorizontalFacing());
 		});
 		$this->map(Ids::LIT_REDSTONE_LAMP, function() : Block{
 			return Blocks::REDSTONE_LAMP()
@@ -797,14 +720,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
-		$this->map(Ids::MUDDY_MANGROVE_ROOTS, function(Reader $in) : Block{
-			return Blocks::MUDDY_MANGROVE_ROOTS()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::NETHER_WART, function(Reader $in) : Block{
-			return Blocks::NETHER_WART()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 3));
-		});
 		$this->map(Ids::PINK_PETALS, function(Reader $in) : Block{
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
@@ -823,14 +738,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::DOUBLE_PITCHER_CROP()
 				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
 				->setTop($top);
-		});
-		$this->map(Ids::PITCHER_PLANT, function(Reader $in) : Block{
-			return Blocks::PITCHER_PLANT()
-				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
-		});
-		$this->map(Ids::POLISHED_BASALT, function(Reader $in) : Block{
-			return Blocks::POLISHED_BASALT()
-				->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::POLISHED_BLACKSTONE_BUTTON(), $in));
 		$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), $in));
@@ -856,18 +763,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::PILLAR_AXIS); //???
 			return Blocks::PURPUR();
 		});
-		$this->map(Ids::PURPUR_PILLAR, fn(Reader $in) => Blocks::PURPUR_PILLAR()->setAxis($in->readPillarAxis()));
 		$this->map(Ids::QUARTZ_BLOCK, function(Reader $in) : Opaque{
 			$in->ignored(StateNames::PILLAR_AXIS);
 			return Blocks::QUARTZ();
-		});
-		$this->map(Ids::QUARTZ_PILLAR, function(Reader $in) : Block{
-			return Blocks::QUARTZ_PILLAR()
-				->setAxis($in->readPillarAxis());
-		});
-		$this->map(Ids::RAIL, function(Reader $in) : Block{
-			return Blocks::RAIL()
-				->setShape($in->readBoundedInt(StateNames::RAIL_DIRECTION, 0, 9));
 		});
 		$this->map(Ids::RED_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::RED_MUSHROOM_BLOCK(), $in));
 		$this->map(Ids::REDSTONE_LAMP, function() : Block{
@@ -883,19 +781,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFacing($in->readTorchFacing())
 				->setLit(true);
 		});
-		$this->map(Ids::REDSTONE_WIRE, function(Reader $in) : Block{
-			return Blocks::REDSTONE_WIRE()
-				->setOutputSignalStrength($in->readBoundedInt(StateNames::REDSTONE_SIGNAL, 0, 15));
-		});
-		$this->map(Ids::REEDS, function(Reader $in) : Block{
-			return Blocks::SUGARCANE()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 15));
-		});
 		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
-		$this->map(Ids::RESPAWN_ANCHOR, function(Reader $in) : Block{
-			return Blocks::RESPAWN_ANCHOR()
-				->setCharges($in->readBoundedInt(StateNames::RESPAWN_ANCHOR_CHARGE, 0, 4));
-		});
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
@@ -910,11 +796,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::AMETHYST_CLUSTER()
 				->setStage(AmethystCluster::STAGE_SMALL_BUD)
 				->setFacing($in->readBlockFace());
-		});
-		$this->map(Ids::SMALL_DRIPLEAF_BLOCK, function(Reader $in) : Block{
-			return Blocks::SMALL_DRIPLEAF()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->map(Ids::SMOOTH_QUARTZ, function(Reader $in) : Block{
 			$in->ignored(StateNames::PILLAR_AXIS);
@@ -933,25 +814,13 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
 			return Blocks::SOUL_FIRE();
 		});
-		$this->map(Ids::SOUL_LANTERN, function(Reader $in) : Block{
-			return Blocks::SOUL_LANTERN()
-				->setHanging($in->readBool(StateNames::HANGING));
-		});
 		$this->map(Ids::SOUL_TORCH, function(Reader $in) : Block{
 			return Blocks::SOUL_TORCH()
 				->setFacing($in->readTorchFacing());
 		});
 		$this->mapSimple(Ids::SPONGE, fn() => Blocks::SPONGE());
-		$this->map(Ids::STANDING_BANNER, function(Reader $in) : Block{
-			return Blocks::BANNER()
-				->setRotation($in->readBoundedInt(StateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
 		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::STONECUTTER_BLOCK, function(Reader $in) : Block{
-			return Blocks::STONECUTTER()
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
 			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
@@ -971,17 +840,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::TORCHFLOWER_CROP()
 				//this property can have values 0-7, but only 0-1 are valid
 				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
-		});
-		$this->map(Ids::TRAPPED_CHEST, function(Reader $in) : Block{
-			return Blocks::TRAPPED_CHEST()
-				->setFacing($in->readCardinalHorizontalFacing());
-		});
-		$this->map(Ids::TRIP_WIRE, function(Reader $in) : Block{
-			return Blocks::TRIPWIRE()
-				->setConnected($in->readBool(StateNames::ATTACHED_BIT))
-				->setDisarmed($in->readBool(StateNames::DISARMED_BIT))
-				->setSuspended($in->readBool(StateNames::SUSPENDED_BIT))
-				->setTriggered($in->readBool(StateNames::POWERED_BIT));
 		});
 		$this->map(Ids::TRIPWIRE_HOOK, function(Reader $in) : Block{
 			return Blocks::TRIPWIRE_HOOK()
