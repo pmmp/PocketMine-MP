@@ -97,6 +97,9 @@ final class BlockStateSerializerHelper{
 		};
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeDoor(Door $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop())
@@ -111,6 +114,9 @@ final class BlockStateSerializerHelper{
 			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeFenceGate(FenceGate $block, Writer $out) : Writer{
 		return $out
 			->writeCardinalHorizontalFacing($block->getFacing())
@@ -118,6 +124,9 @@ final class BlockStateSerializerHelper{
 			->writeBool(BlockStateNames::OPEN_BIT, $block->isOpen());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeFloorSign(FloorSign $block, Writer $out) : Writer{
 		return $out
 			->writeInt(BlockStateNames::GROUND_SIGN_DIRECTION, $block->getRotation());
@@ -135,6 +144,9 @@ final class BlockStateSerializerHelper{
 			->writeFacingDirection($block->getFacing());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeLeaves(Leaves $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::PERSISTENT_BIT, $block->isNoDecay())
@@ -164,6 +176,9 @@ final class BlockStateSerializerHelper{
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeSapling(Sapling $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::AGE_BIT, $block->isReady());

@@ -103,6 +103,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
@@ -115,6 +116,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
@@ -133,6 +135,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TDoor of Door
 	 * @phpstan-param TDoor $block
 	 * @phpstan-return TDoor
@@ -155,7 +158,10 @@ final class BlockStateDeserializerHelper{
 			->setTop($in->readBool(BlockStateNames::UPPER_BLOCK_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFenceGate(FenceGate $block, BlockStateReader $in) : FenceGate{
 		return $block
 			->setFacing($in->readCardinalHorizontalFacing())
@@ -173,7 +179,10 @@ final class BlockStateDeserializerHelper{
 			});
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFloorSign(FloorSign $block, BlockStateReader $in) : FloorSign{
 		return $block
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
@@ -186,7 +195,10 @@ final class BlockStateDeserializerHelper{
 			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @throws BlockStateDeserializeException
+	 * @deprecated
+	 */
 	public static function decodeLeaves(Leaves $block, BlockStateReader $in) : Leaves{
 		return $block
 			->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
@@ -236,7 +248,10 @@ final class BlockStateDeserializerHelper{
 			->setDelay($in->readBoundedInt(BlockStateNames::REPEATER_DELAY, 0, 3) + 1);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @throws BlockStateDeserializeException
+	 * @deprecated
+	 */
 	public static function decodeSapling(Sapling $block, BlockStateReader $in) : Sapling{
 		return $block
 			->setReady($in->readBool(BlockStateNames::AGE_BIT));

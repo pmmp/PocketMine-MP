@@ -34,14 +34,18 @@ use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\DetectorRail;
+use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\EndPortalFrame;
 use pocketmine\block\Farmland;
+use pocketmine\block\FenceGate;
 use pocketmine\block\Fire;
 use pocketmine\block\FloorBanner;
+use pocketmine\block\FloorSign;
 use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\Lantern;
+use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\MobHead;
@@ -52,6 +56,7 @@ use pocketmine\block\PoweredRail;
 use pocketmine\block\Rail;
 use pocketmine\block\RedstoneWire;
 use pocketmine\block\RespawnAnchor;
+use pocketmine\block\Sapling;
 use pocketmine\block\Slab;
 use pocketmine\block\SmallDripleaf;
 use pocketmine\block\Stair;
@@ -76,6 +81,7 @@ use pocketmine\data\bedrock\block\convert\property\AxisProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\CardinalHorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumProperty;
+use pocketmine\data\bedrock\block\convert\property\HorizontalFacingReadTransform;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
 use pocketmine\data\bedrock\block\convert\property\LegacyHorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
@@ -524,6 +530,10 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function registerLeavesMappings() : void{
+		$properties = [
+			new BoolProperty(StateNames::PERSISTENT_BIT, fn(Leaves $b) => $b->isNoDecay(), fn(Leaves $b, bool $v) => $b->setNoDecay($v)),
+			new BoolProperty(StateNames::UPDATE_BIT, fn(Leaves $b) => $b->isCheckDecay(), fn(Leaves $b, bool $v) => $b->setCheckDecay($v)),
+		];
 		foreach([
 			Ids::ACACIA_LEAVES => Blocks::ACACIA_LEAVES(),
 			Ids::AZALEA_LEAVES => Blocks::AZALEA_LEAVES(),
@@ -537,11 +547,14 @@ final class BlockSerializerDeserializerRegistrar{
 			Ids::PALE_OAK_LEAVES => Blocks::PALE_OAK_LEAVES(),
 			Ids::SPRUCE_LEAVES => Blocks::SPRUCE_LEAVES()
 		] as $id => $block){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeLeaves(...), BlockStateSerializerHelper::encodeLeaves(...));
+			$this->mapModel(Model::create($block, $id)->properties($properties));
 		}
 	}
 
 	private function registerSaplingMappings() : void{
+		$properties = [
+			new BoolProperty(StateNames::AGE_BIT, fn(Sapling $b) => $b->isReady(), fn(Sapling $b, bool $v) => $b->setReady($v)),
+		];
 		foreach([
 			Ids::ACACIA_SAPLING => Blocks::ACACIA_SAPLING(),
 			Ids::BIRCH_SAPLING => Blocks::BIRCH_SAPLING(),
@@ -550,13 +563,14 @@ final class BlockSerializerDeserializerRegistrar{
 			Ids::OAK_SAPLING => Blocks::OAK_SAPLING(),
 			Ids::SPRUCE_SAPLING => Blocks::SPRUCE_SAPLING(),
 		] as $id => $block){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeSapling(...), BlockStateSerializerHelper::encodeSapling(...));
+			$this->mapModel(Model::create($block, $id)->properties($properties));
 		}
 	}
 
 	private function registerFlattenedEnumMappings() : void{
 		//the suffixes are different for different variants, so we have to map the whole ID to use the flattened mode
 		//therefore the prefix and suffix are empty
+		//TODO: migrate these to use property models
 		$this->mapSwitchedIdEnumWithExtra(
 			Blocks::MOB_HEAD(),
 			MobHeadType::class,
@@ -711,6 +725,13 @@ final class BlockSerializerDeserializerRegistrar{
 		}
 
 		//doors
+		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
+		$properties = [
+			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(Door $b) => $b->isTop(), fn(Door $b, bool $v) => $b->setTop($v)),
+			new BoolProperty(StateNames::DOOR_HINGE_BIT, fn(Door $b) => $b->isHingeRight(), fn(Door $b, bool $v) => $b->setHingeRight($v)),
+			new BoolProperty(StateNames::OPEN_BIT, fn(Door $b) => $b->isOpen(), fn(Door $b, bool $v) => $b->setOpen($v)),
+			new CardinalHorizontalFacingProperty(HorizontalFacingReadTransform::COUNTER_CLOCKWISE),
+		];
 		foreach([
 			[Blocks::ACACIA_DOOR(), Ids::ACACIA_DOOR],
 			[Blocks::BIRCH_DOOR(), Ids::BIRCH_DOOR],
@@ -724,7 +745,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::SPRUCE_DOOR(), Ids::SPRUCE_DOOR],
 			[Blocks::WARPED_DOOR(), Ids::WARPED_DOOR]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeDoor(...), BlockStateSerializerHelper::encodeDoor(...));
+			$this->mapModel(Model::create($block, $id)->properties($properties));
 		}
 
 		//fences
@@ -745,6 +766,11 @@ final class BlockSerializerDeserializerRegistrar{
 		}
 
 		//fence gates
+		$properties = [
+			new BoolProperty(StateNames::IN_WALL_BIT, fn(FenceGate $b) => $b->isInWall(), fn(FenceGate $b, bool $v) => $b->setInWall($v)),
+			new BoolProperty(StateNames::OPEN_BIT, fn(FenceGate $b) => $b->isOpen(), fn(FenceGate $b, bool $v) => $b->setOpen($v)),
+			CardinalHorizontalFacingProperty::getInstance()
+		];
 		foreach([
 			[Blocks::ACACIA_FENCE_GATE(), Ids::ACACIA_FENCE_GATE],
 			[Blocks::BIRCH_FENCE_GATE(), Ids::BIRCH_FENCE_GATE],
@@ -758,10 +784,14 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_FENCE_GATE(), Ids::CRIMSON_FENCE_GATE],
 			[Blocks::WARPED_FENCE_GATE(), Ids::WARPED_FENCE_GATE]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeFenceGate(...), BlockStateSerializerHelper::encodeFenceGate(...));
+			$this->mapModel(Model::create($block, $id)->properties($properties));
 		}
 
 		//floor signs
+		$properties = [
+			//TODO: same property descriptor as banners, minus the accessors
+			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorSign $b) => $b->getRotation(), fn(FloorSign $b, int $v) => $b->setRotation($v)),
+		];
 		foreach([
 			[Blocks::ACACIA_SIGN(), Ids::ACACIA_STANDING_SIGN],
 			[Blocks::BIRCH_SIGN(), Ids::BIRCH_STANDING_SIGN],
@@ -775,7 +805,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_SIGN(), Ids::CRIMSON_STANDING_SIGN],
 			[Blocks::WARPED_SIGN(), Ids::WARPED_STANDING_SIGN]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeFloorSign(...), BlockStateSerializerHelper::encodeFloorSign(...));
+			$this->mapModel(Model::create($block, $id)->properties($properties));
 		}
 
 		//logs
