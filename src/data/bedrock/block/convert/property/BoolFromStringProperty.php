@@ -24,26 +24,24 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\block\Block;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromStringStateMap;
-use function array_keys;
-use function array_map;
-use function strval;
 
 /**
  * @phpstan-template TBlock of Block
  * @phpstan-implements StringProperty<TBlock>
  */
-class IntFromStringProperty implements StringProperty{
+final class BoolFromStringProperty implements StringProperty{
 
 	/**
-	 * @phpstan-param \Closure(TBlock) : int $getter
-	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
+	 * @param \Closure(TBlock) : bool        $getter
+	 * @param \Closure(TBlock, bool) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromStringStateMap $map,
+		private string $falseValue,
+		private string $trueValue,
 		private \Closure $getter,
 		private \Closure $setter
 	){}
@@ -53,16 +51,22 @@ class IntFromStringProperty implements StringProperty{
 	}
 
 	public function getPossibleValues() : array{
-		return array_map(strval(...), array_keys($this->map->getDeserializeMap()));
+		return [$this->falseValue, $this->trueValue];
 	}
 
 	public function deserialize(Block $block, BlockStateReader $in) : void{
-		$value = $in->mapIntFromString($this->name, $this->map);
+		$raw = $in->readString($this->name);
+		$value = match($raw){
+			$this->falseValue => false,
+			$this->trueValue => true,
+			default => throw new BlockStateSerializeException("Invalid value for {$this->name}: $raw"),
+		};
+
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(Block $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
-		$out->mapIntToString($this->name, $this->map, $value);
+		$out->writeString($this->name, $value ? $this->trueValue : $this->falseValue);
 	}
 }

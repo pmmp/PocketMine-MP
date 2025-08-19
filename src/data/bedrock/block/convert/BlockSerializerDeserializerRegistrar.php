@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\ActivatorRail;
+use pocketmine\block\AmethystCluster;
+use pocketmine\block\Anvil;
 use pocketmine\block\BambooSapling;
 use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
@@ -33,23 +35,26 @@ use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
+use pocketmine\block\CakeWithCandle;
+use pocketmine\block\Candle;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
+use pocketmine\block\Copper;
 use pocketmine\block\DetectorRail;
-use pocketmine\block\Door;
+use pocketmine\block\Dirt;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\EndPortalFrame;
 use pocketmine\block\Farmland;
-use pocketmine\block\FenceGate;
 use pocketmine\block\Fire;
-use pocketmine\block\FloorBanner;
-use pocketmine\block\FloorSign;
+use pocketmine\block\FloorCoralFan;
 use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
+use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Lantern;
 use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
+use pocketmine\block\Light;
 use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
@@ -66,15 +71,19 @@ use pocketmine\block\SnowLayer;
 use pocketmine\block\Stair;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\Sugarcane;
-use pocketmine\block\Trapdoor;
 use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\Colored;
+use pocketmine\block\utils\CopperOxidation;
+use pocketmine\block\utils\DirtType;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\MobHeadType;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\Wood;
@@ -82,16 +91,24 @@ use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
+use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumProperty;
+use pocketmine\data\bedrock\block\convert\property\FlattenedIdModel;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
-use pocketmine\data\bedrock\block\convert\property\HorizontalFacingReadTransform;
+use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
+use pocketmine\data\bedrock\block\convert\property\StringProperty;
+use function array_filter;
 use function array_map;
+use function count;
+use function implode;
+use function is_string;
 use function min;
+use function range;
 
 /**
  * Registers serializers and deserializers for block data in a unified style, to avoid code duplication.
@@ -103,16 +120,20 @@ final class BlockSerializerDeserializerRegistrar{
 		private ?BlockStateToObjectDeserializer $deserializer,
 		private ?BlockObjectToStateSerializer $serializer
 	){
+		$commonProperties = CommonProperties::getInstance();
+
 		$this->registerSimpleIdOnlyMappings();
-		$this->registerColoredIdOnlyMappings();
+		$this->registerColoredMappings($commonProperties);
+		$this->registerCandleMappings($commonProperties);
 		$this->registerLeavesMappings();
 		$this->registerSaplingMappings();
-		$this->registerFlattenedEnumMappings();
+		$this->registerCoralMappings($commonProperties);
+		$this->registerCopperMappings($commonProperties);
+		$this->registerFlattenedEnumMappings($commonProperties);
 		$this->registerStoneLikeSlabMappings();
 		$this->registerStoneLikeStairMappings();
 		$this->registerStoneLikeWallMappings();
 
-		$commonProperties = CommonProperties::getInstance();
 		$this->registerWoodMappings($commonProperties);
 		$this->registerTorchMappings($commonProperties);
 		$this->register1to1CustomMappings($commonProperties);
@@ -124,63 +145,117 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	/**
-	 * @phpstan-template TBlock of Block
-	 * @phpstan-template TEnum of \UnitEnum
+	 * @param string[]|StringProperty[] $components
 	 *
-	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param EnumFromStringStateMap<TEnum>     $mapProperty
-	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
-	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
-	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
-	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeExtra
+	 * @phpstan-param list<string|StringProperty<*>> $components
+	 *
+	 * @return string[][]
 	 */
-	private function mapFlattenedIdEnumWithExtra(
-		Block $block,
-		EnumFromStringStateMap $mapProperty,
-		string $prefix,
-		string $suffix,
-		\Closure $getProperty,
-		\Closure $setProperty,
-		\Closure $readExtra,
-		\Closure $writeExtra
-	) : void{
-		$this->deserializer?->mapFlattenedEnum(
-			$mapProperty,
-			$prefix,
-			$suffix,
-			fn(\UnitEnum $value) => $setProperty(clone $block, $value),
-			$readExtra
-		);
-		$this->serializer?->mapFlattenedEnum(
-			$block,
-			$mapProperty,
-			$prefix,
-			$suffix,
-			$getProperty,
-			$writeExtra
-		);
+	private static function compilePermutations(array $components) : array{
+		$result = [];
+		foreach($components as $component){
+			$column = is_string($component) ? [$component] : $component->getPossibleValues();
+
+			if(count($result) === 0){
+				$result = array_map(fn($value) => [$value], $column);
+			}else{
+				$stepResult = [];
+				foreach($result as $parts){
+					foreach($column as $value){
+						$stepPart = $parts;
+						$stepPart[] = $value;
+						$stepResult[] = $stepPart;
+					}
+				}
+
+				$result = $stepResult;
+			}
+		}
+
+		return $result;
 	}
 
 	/**
 	 * @phpstan-template TBlock of Block
-	 * @phpstan-template TEnum of \UnitEnum
-	 *
-	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param EnumFromStringStateMap<TEnum>     $mapProperty
-	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
-	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
-	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
-	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeExtra
+	 * @phpstan-param FlattenedIdModel<TBlock, true> $model
 	 */
-	private function mapSwitchedIdEnumWithExtra(
-		Block $block,
-		EnumFromStringStateMap $mapProperty,
-		\Closure $getProperty,
-		\Closure $setProperty,
-		\Closure $readExtra,
-		\Closure $writeExtra
+	private function mapMatrixFlattened(
+		FlattenedIdModel $model,
 	) : void{
-		$this->mapFlattenedIdEnumWithExtra($block, $mapProperty, "", "", $getProperty, $setProperty, $readExtra, $writeExtra);
+		$block = $model->getBlock();
+
+		$idComponents = $model->getIdComponents();
+		if(count($idComponents) === 0){
+			throw new \InvalidArgumentException("No ID components provided");
+		}
+		$properties = $model->getProperties();
+
+		//This is a really cursed hack that lets us essentially write flattened properties as blockstate properties, and
+		//then pull them out to compile an ID :D
+		//This works surprisingly well and is much more elegant than I would've expected
+
+		$idProperties = array_filter($idComponents, fn($c) => !is_string($c));
+
+		//serialize actual properties
+		$realWriter = new Writer("dummy");
+		foreach($properties as $property){
+			$property->serialize($block, $realWriter);
+		}
+
+		$this->serializer?->map($block, function(Block $block) use ($idComponents, $idProperties, $properties) : Writer{
+			//serialize properties into the ID
+			$idWriter = new Writer("dummy");
+			foreach($idProperties as $idProperty){
+				$idProperty->serialize($block, $idWriter);
+			}
+			$flattenedReader = new Reader($idWriter->getBlockStateData());
+
+			$id = "";
+			foreach($idComponents as $infix){
+				$id .= is_string($infix) ? $infix : $flattenedReader->readString($infix->getName());
+			}
+
+			//serialize actual properties
+			$realWriter = new Writer($id);
+			foreach($properties as $property){
+				$property->serialize($block, $realWriter);
+			}
+
+			return $realWriter;
+		});
+
+		if($this->deserializer !== null){
+			$idPermutations = self::compilePermutations($idComponents);
+			foreach($idPermutations as $idParts){
+				//deconstruct the ID into a fake state
+				//we can do this at registration time since there will be multiple deserializers
+				$id = implode("", $idParts);
+				$flattenedWriter = new Writer("dummy");
+				foreach($idComponents as $k => $component){
+					if($component instanceof StringProperty){
+						$fakeValue = $idParts[$k];
+						$flattenedWriter->writeString($component->getName(), $fakeValue);
+					}
+				}
+				$idReader = new Reader($flattenedWriter->getBlockStateData());
+
+				//deserialize properties from the ID
+				//this can also be done at registration time since we already know the values
+				$preparedBlock = clone $block;
+				foreach($idProperties as $component){
+					$component->deserialize($preparedBlock, $idReader);
+				}
+				$this->deserializer->map($id, function(Reader $reader) use ($preparedBlock, $properties) : Block{
+					$block = clone $preparedBlock;
+
+					//deserialize actual properties
+					foreach($properties as $property){
+						$property->deserialize($block, $reader);
+					}
+					return $block;
+				});
+			}
+		}
 	}
 
 	/**
@@ -188,8 +263,13 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-param TBlock $block
 	 */
 	private function mapColored(Block $block, string $idPrefix, string $idSuffix) : void{
-		$this->deserializer?->mapColored($idPrefix, $idSuffix, fn() => clone $block);
-		$this->serializer?->mapColored($block, $idPrefix, $idSuffix);
+		$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+			->idComponents([
+				$idPrefix,
+				CommonProperties::getInstance()->dyeColorIdInfix,
+				$idSuffix
+			])
+		);
 	}
 
 	/**
@@ -209,12 +289,7 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function mapStairs(Stair $block, string $id) : void{
-		$this->mapModel(Model::create($block, $id)->properties([
-			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Stair $b) => $b->isUpsideDown(), fn(Stair $b, bool $v) => $b->setUpsideDown($v)),
-
-			//same values as trapdoors, but different state name
-			new HorizontalFacingProperty(StateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus),
-		]));
+		$this->mapModel(Model::create($block, $id)->properties(CommonProperties::getInstance()->stairProperties));
 	}
 
 	private function mapLog(Wood $block, string $unstrippedId, string $strippedId) : void{
@@ -526,7 +601,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapSimple(Blocks::WHITE_TULIP(), Ids::WHITE_TULIP);
 	}
 
-	private function registerColoredIdOnlyMappings() : void{
+	private function registerColoredMappings(CommonProperties $commonProperties) : void{
 		$this->mapColored(Blocks::STAINED_HARDENED_GLASS(), "minecraft:hard_", "_stained_glass");
 		$this->mapColored(Blocks::STAINED_HARDENED_GLASS_PANE(), "minecraft:hard_", "_stained_glass_pane");
 
@@ -538,6 +613,44 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapColored(Blocks::STAINED_GLASS(), "minecraft:", "_stained_glass");
 		$this->mapColored(Blocks::STAINED_GLASS_PANE(), "minecraft:", "_stained_glass_pane");
 		$this->mapColored(Blocks::WOOL(), "minecraft:", "_wool");
+
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
+			->idComponents([
+				"minecraft:",
+				new EnumProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
+				"_glazed_terracotta"
+			])
+			->properties([$commonProperties->horizontalFacingClassic])
+		);
+	}
+
+	private function registerCandleMappings(CommonProperties $commonProperties) : void{
+		$candleProperties = [
+			new BoolProperty(StateNames::LIT, fn(Candle $b) => $b->isLit(), fn(Candle $b, bool $v) => $b->setLit($v)),
+			new IntProperty(StateNames::CANDLES, 0, 3, fn(Candle $b) => $b->getCount(), fn(Candle $b, int $v) => $b->setCount($v), offset: 1),
+		];
+		$cakeWithCandleProperties = [
+			new BoolProperty(StateNames::LIT, fn(CakeWithCandle $b) => $b->isLit(), fn(CakeWithCandle $b, bool $v) => $b->setLit($v)),
+		];
+		$this->mapModel(Model::create(Blocks::CANDLE(), Ids::CANDLE)->properties($candleProperties));
+		$this->mapModel(Model::create(Blocks::CAKE_WITH_CANDLE(), Ids::CANDLE_CAKE)->properties($cakeWithCandleProperties));
+
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DYED_CANDLE())
+			->idComponents([
+				"minecraft:",
+				$commonProperties->dyeColorIdInfix,
+				"_candle"
+			])
+			->properties($candleProperties)
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CAKE_WITH_DYED_CANDLE())
+			->idComponents([
+				"minecraft:",
+				$commonProperties->dyeColorIdInfix,
+				"_candle_cake"
+			])
+			->properties($cakeWithCandleProperties)
+		);
 	}
 
 	private function registerLeavesMappings() : void{
@@ -578,25 +691,122 @@ final class BlockSerializerDeserializerRegistrar{
 		}
 	}
 
-	private function registerFlattenedEnumMappings() : void{
-		//the suffixes are different for different variants, so we have to map the whole ID to use the flattened mode
-		//therefore the prefix and suffix are empty
-		//TODO: migrate these to use property models
-		$this->mapSwitchedIdEnumWithExtra(
-			Blocks::MOB_HEAD(),
-			ValueMappings::getInstance()->mobHeadType,
-			fn(MobHead $block) => $block->getMobHeadType(),
-			fn(MobHead $block, MobHeadType $value) => $block->setMobHeadType($value),
-			fn(MobHead $block, Reader $in) => $block->setFacing($in->readFacingWithoutDown()),
-			fn(MobHead $block, Writer $out) => $out->writeFacingWithoutDown($block->getFacing())
+	private function registerCoralMappings(CommonProperties $commonProperties) : void{
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL())->idComponents([...$commonProperties->coralIdPrefixes, "_coral"]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL_BLOCK())->idComponents([...$commonProperties->coralIdPrefixes, "_coral_block"]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL_FAN())
+			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_fan"])
+			->properties([
+				new IntFromIntProperty(StateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis, fn(FloorCoralFan $b) => $b->getAxis(), fn(FloorCoralFan $b, int $v) => $b->setAxis($v))
+			])
 		);
-		$this->mapSwitchedIdEnumWithExtra(
-			Blocks::FROGLIGHT(),
-			ValueMappings::getInstance()->froglightType,
-			fn(Froglight $block) => $block->getFroglightType(),
-			fn(Froglight $block, FroglightType $value) => $block->setFroglightType($value),
-			fn(Froglight $block, Reader $in) => $block->setAxis($in->readPillarAxis()),
-			fn(Froglight $block, Writer $out) => $out->writePillarAxis($block->getAxis())
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::WALL_CORAL_FAN())
+			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_wall_fan"])
+			->properties([
+				new HorizontalFacingProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral)
+			])
+		);
+	}
+
+	private function registerCopperMappings(CommonProperties $commonProperties) : void{
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_BULB())
+			->idComponents([...$commonProperties->copperIdPrefixes, "copper_bulb"])
+			->properties([
+				new BoolProperty(StateNames::LIT, fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v)),
+				new BoolProperty(StateNames::POWERED_BIT, fn(Block&PoweredByRedstone $b) => $b->isPowered(), fn(Block&PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
+			])
+		);
+		//copper skipped because of copper_block :(
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER())
+			->idComponents([
+				...$commonProperties->copperIdPrefixes,
+				"copper",
+				//HACK: the non-waxed, non-oxidised variant has a _block suffix, but none of the others do
+				new BoolFromStringProperty("bruhhhh", "", "_block", fn(Copper $b) => !$b->isWaxed() && $b->getOxidation() === CopperOxidation::NONE, fn() => null)
+			])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CHISELED_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "chiseled_copper"]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_GRATE())->idComponents([...$commonProperties->copperIdPrefixes, "copper_grate"]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "cut_copper"]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER_STAIRS())
+			->idComponents([...$commonProperties->copperIdPrefixes, "cut_copper_stairs"])
+			->properties($commonProperties->stairProperties)
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_TRAPDOOR())
+			->idComponents([...$commonProperties->copperIdPrefixes, "copper_trapdoor"])
+			->properties($commonProperties->trapdoorProperties)
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_DOOR())
+			->idComponents([...$commonProperties->copperIdPrefixes, "copper_door"])
+			->properties($commonProperties->doorProperties)
+		);
+	}
+
+	private function registerFlattenedEnumMappings(CommonProperties $commonProperties) : void{
+		//A
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::ANVIL())
+			->idComponents([
+				new IntFromStringProperty("id", new IntFromStringStateMap([
+					0 => Ids::ANVIL,
+					1 => Ids::CHIPPED_ANVIL,
+					2 => Ids::DAMAGED_ANVIL,
+				]), fn(Anvil $b) => $b->getDamage(), fn(Anvil $b, int $v) => $b->setDamage($v))
+			])
+			->properties([$commonProperties->cardinalDirection])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
+			->idComponents([
+				new IntFromStringProperty("id", new IntFromStringStateMap([
+					AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
+					AmethystCluster::STAGE_MEDIUM_BUD => Ids::MEDIUM_AMETHYST_BUD,
+					AmethystCluster::STAGE_LARGE_BUD => Ids::LARGE_AMETHYST_BUD,
+					AmethystCluster::STAGE_CLUSTER => Ids::AMETHYST_CLUSTER
+				]), fn(AmethystCluster $b) => $b->getStage(), fn(AmethystCluster $b, int $v) => $b->setStage($v))
+			])
+			->properties([$commonProperties->blockFace])
+		);
+
+		//D
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DIRT())
+			->idComponents([
+				new EnumProperty("id", new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match ($case) {
+					DirtType::NORMAL => Ids::DIRT,
+					DirtType::COARSE => Ids::COARSE_DIRT,
+					DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
+				}), fn(Dirt $b) => $b->getDirtType(), fn(Dirt $b, DirtType $v) => $b->setDirtType($v))
+			])
+		);
+
+		//F
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::FROGLIGHT())
+			->idComponents([
+				new EnumProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
+			])
+			->properties([$commonProperties->pillarAxis])
+		);
+
+		//L
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::LIGHT())
+			->idComponents([
+				"minecraft:light_block_",
+				//this is a bit shit but it's easier than adapting IntProperty to support flattening :D
+				new IntFromStringProperty(
+					"light_level",
+					new IntFromStringStateMap(array_map(strval(...), range(0, 15))),
+					fn(Light $b) => $b->getLightLevel(),
+					fn(Light $b, int $v) => $b->setLightLevel($v)
+				)
+			])
+		);
+
+		//M
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::MOB_HEAD())
+			->idComponents([
+				new EnumProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
+			])
+			->properties([
+				new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptDown, fn(MobHead $b) => $b->getFacing(), fn(MobHead $b, int $v) => $b->setFacing($v))
+			])
 		);
 	}
 
@@ -732,21 +942,10 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::SPRUCE_BUTTON(), Ids::SPRUCE_BUTTON],
 			[Blocks::WARPED_BUTTON(), Ids::WARPED_BUTTON]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeButton(...), BlockStateSerializerHelper::encodeButton(...));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->buttonProperties));
 		}
 
 		//doors
-		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
-		$properties = [
-			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(Door $b) => $b->isTop(), fn(Door $b, bool $v) => $b->setTop($v)),
-			new BoolProperty(StateNames::DOOR_HINGE_BIT, fn(Door $b) => $b->isHingeRight(), fn(Door $b, bool $v) => $b->setHingeRight($v)),
-			new BoolProperty(StateNames::OPEN_BIT, fn(Door $b) => $b->isOpen(), fn(Door $b, bool $v) => $b->setOpen($v)),
-			new HorizontalFacingProperty(
-				StateNames::MC_CARDINAL_DIRECTION,
-				ValueMappings::getInstance()->cardinalDirection,
-				HorizontalFacingReadTransform::COUNTER_CLOCKWISE
-			)
-		];
 		foreach([
 			[Blocks::ACACIA_DOOR(), Ids::ACACIA_DOOR],
 			[Blocks::BIRCH_DOOR(), Ids::BIRCH_DOOR],
@@ -760,7 +959,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::SPRUCE_DOOR(), Ids::SPRUCE_DOOR],
 			[Blocks::WARPED_DOOR(), Ids::WARPED_DOOR]
 		] as [$block, $id]){
-			$this->mapModel(Model::create($block, $id)->properties($properties));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->doorProperties));
 		}
 
 		//fences
@@ -780,12 +979,6 @@ final class BlockSerializerDeserializerRegistrar{
 			$this->mapSimple($block, $id);
 		}
 
-		//fence gates
-		$properties = [
-			new BoolProperty(StateNames::IN_WALL_BIT, fn(FenceGate $b) => $b->isInWall(), fn(FenceGate $b, bool $v) => $b->setInWall($v)),
-			new BoolProperty(StateNames::OPEN_BIT, fn(FenceGate $b) => $b->isOpen(), fn(FenceGate $b, bool $v) => $b->setOpen($v)),
-			$commonProperties->cardinalDirection,
-		];
 		foreach([
 			[Blocks::ACACIA_FENCE_GATE(), Ids::ACACIA_FENCE_GATE],
 			[Blocks::BIRCH_FENCE_GATE(), Ids::BIRCH_FENCE_GATE],
@@ -799,14 +992,9 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_FENCE_GATE(), Ids::CRIMSON_FENCE_GATE],
 			[Blocks::WARPED_FENCE_GATE(), Ids::WARPED_FENCE_GATE]
 		] as [$block, $id]){
-			$this->mapModel(Model::create($block, $id)->properties($properties));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->fenceGateProperties));
 		}
 
-		//floor signs
-		$properties = [
-			//TODO: same property descriptor as banners, minus the accessors
-			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorSign $b) => $b->getRotation(), fn(FloorSign $b, int $v) => $b->setRotation($v)),
-		];
 		foreach([
 			[Blocks::ACACIA_SIGN(), Ids::ACACIA_STANDING_SIGN],
 			[Blocks::BIRCH_SIGN(), Ids::BIRCH_STANDING_SIGN],
@@ -820,7 +1008,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_SIGN(), Ids::CRIMSON_STANDING_SIGN],
 			[Blocks::WARPED_SIGN(), Ids::WARPED_STANDING_SIGN]
 		] as [$block, $id]){
-			$this->mapModel(Model::create($block, $id)->properties($properties));
+			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->floorSignLikeRotation]));
 		}
 
 		//logs
@@ -939,13 +1127,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_TRAPDOOR(), Ids::CRIMSON_TRAPDOOR],
 			[Blocks::WARPED_TRAPDOOR(), Ids::WARPED_TRAPDOOR]
 		] as [$block, $id]){
-			$this->mapModel(Model::create($block, $id)->properties([
-				//this uses the same values as stairs, but the state is named differently
-				new HorizontalFacingProperty(StateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus),
-
-				new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Trapdoor $b) => $b->isTop(), fn(Trapdoor $b, bool $v) => $b->setTop($v)),
-				new BoolProperty(StateNames::OPEN_BIT, fn(Trapdoor $b) => $b->isOpen(), fn(Trapdoor $b, bool $v) => $b->setOpen($v))
-			]));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->trapdoorProperties));
 		}
 
 		//wall signs
@@ -1017,9 +1199,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING)->properties([
 			new BoolProperty(StateNames::AGE_BIT, fn(BambooSapling $b) => $b->isReady(), fn(BambooSapling $b, bool $v) => $b->setReady($v))
 		]));
-		$this->mapModel(Model::create(Blocks::BANNER(), Ids::STANDING_BANNER)->properties([
-			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorBanner $b) => $b->getRotation(), fn(FloorBanner $b, int $v) => $b->setRotation($v))
-		]));
+		$this->mapModel(Model::create(Blocks::BANNER(), Ids::STANDING_BANNER)->properties([$commonProperties->floorSignLikeRotation]));
 		$this->mapModel(Model::create(Blocks::BARREL(), Ids::BARREL)->properties([
 			$commonProperties->anyFacingClassic,
 			new BoolProperty(StateNames::OPEN_BIT, fn(Barrel $b) => $b->isOpen(), fn(Barrel $b, bool $v) => $b->setOpen($v))
@@ -1043,7 +1223,7 @@ final class BlockSerializerDeserializerRegistrar{
 			$commonProperties->pillarAxis
 		]));
 
-		$this->mapModel(Model::create(Blocks::BREWING_STAND(), Ids::BREWING_STAND)->properties(array_map(fn(BrewingStandSlot $slot) => new BoolProperty(match($slot){
+		$this->mapModel(Model::create(Blocks::BREWING_STAND(), Ids::BREWING_STAND)->properties(array_map(fn(BrewingStandSlot $slot) => new BoolProperty(match ($slot) {
 			BrewingStandSlot::EAST => StateNames::BREWING_STAND_SLOT_A_BIT,
 			BrewingStandSlot::SOUTHWEST => StateNames::BREWING_STAND_SLOT_B_BIT,
 			BrewingStandSlot::NORTHWEST => StateNames::BREWING_STAND_SLOT_C_BIT

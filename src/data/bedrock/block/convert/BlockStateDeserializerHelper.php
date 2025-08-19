@@ -69,6 +69,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TCandle of Candle
 	 * @phpstan-param TCandle $block
 	 * @phpstan-return TCandle

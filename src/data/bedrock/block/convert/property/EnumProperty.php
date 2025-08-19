@@ -27,13 +27,16 @@ use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\EnumFromStringStateMap;
+use function array_keys;
+use function array_map;
+use function strval;
 
 /**
  * @phpstan-template TBlock of Block
  * @phpstan-template TEnum of \UnitEnum
- * @phpstan-implements Property<TBlock>
+ * @phpstan-implements StringProperty<TBlock>
  */
-final class EnumProperty implements Property{
+final class EnumProperty implements StringProperty{
 
 	/**
 	 * @phpstan-param EnumFromStringStateMap<TEnum>   $map
@@ -50,10 +53,12 @@ final class EnumProperty implements Property{
 	public function getName() : string{ return $this->name; }
 
 	/**
-	 * @phpstan-return EnumFromStringStateMap<TEnum>
+	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
-	public function getEnumMap() : EnumFromStringStateMap{
-		return $this->map;
+	public function getPossibleValues() : array{
+		//PHP sucks
+		return array_map(strval(...), array_keys($this->map->getValueToEnum()));
 	}
 
 	public function deserialize(Block $block, BlockStateReader $in) : void{

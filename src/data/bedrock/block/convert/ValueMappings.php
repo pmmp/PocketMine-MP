@@ -42,6 +42,8 @@ final class ValueMappings{
 
 	/** @var EnumFromStringStateMap<DyeColor> */
 	public readonly EnumFromStringStateMap $dyeColor;
+	/** @var EnumFromStringStateMap<DyeColor> */
+	public readonly EnumFromStringStateMap $dyeColorWithSilver;
 	/** @var EnumFromStringStateMap<MobHeadType> */
 	public readonly EnumFromStringStateMap $mobHeadType;
 	/** @var EnumFromStringStateMap<FroglightType> */
@@ -70,6 +72,9 @@ final class ValueMappings{
 	public readonly IntFromIntStateMap $facing;
 	public readonly IntFromIntStateMap $coralAxis;
 
+	public readonly IntFromIntStateMap $facingExceptDown;
+	public readonly IntFromIntStateMap $facingExceptUp;
+
 	public function __construct(){
 		//flattened ID components - we can't generate constants for these
 		$this->dyeColor = new EnumFromStringStateMap(DyeColor::class, fn(DyeColor $case) => match ($case) {
@@ -90,8 +95,12 @@ final class ValueMappings{
 			DyeColor::WHITE => "white",
 			DyeColor::YELLOW => "yellow"
 		});
+		$this->dyeColorWithSilver = new EnumFromStringStateMap(DyeColor::class, fn(DyeColor $case) => match ($case) {
+			DyeColor::LIGHT_GRAY => "silver",
+			default => $this->dyeColor->enumToValue($case)
+		});
 
-		$this->mobHeadType = new EnumFromStringStateMap(MobHeadType::class, fn(MobHeadType $case) => match($case){
+		$this->mobHeadType = new EnumFromStringStateMap(MobHeadType::class, fn(MobHeadType $case) => match ($case) {
 			MobHeadType::CREEPER => Ids::CREEPER_HEAD,
 			MobHeadType::DRAGON => Ids::DRAGON_HEAD,
 			MobHeadType::PIGLIN => Ids::PIGLIN_HEAD,
@@ -100,31 +109,31 @@ final class ValueMappings{
 			MobHeadType::WITHER_SKELETON => Ids::WITHER_SKELETON_SKULL,
 			MobHeadType::ZOMBIE => Ids::ZOMBIE_HEAD
 		});
-		$this->froglightType = new EnumFromStringStateMap(FroglightType::class, fn(FroglightType $case) => match($case){
+		$this->froglightType = new EnumFromStringStateMap(FroglightType::class, fn(FroglightType $case) => match ($case) {
 			FroglightType::OCHRE => Ids::OCHRE_FROGLIGHT,
 			FroglightType::PEARLESCENT => Ids::PEARLESCENT_FROGLIGHT,
 			FroglightType::VERDANT => Ids::VERDANT_FROGLIGHT,
 		});
-		$this->dirtType = new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match($case){
+		$this->dirtType = new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match ($case) {
 			DirtType::NORMAL => Ids::DIRT,
 			DirtType::COARSE => Ids::COARSE_DIRT,
 			DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
 		});
 
 		//state value mappings
-		$this->dripleafState = new EnumFromStringStateMap(DripleafState::class, fn(DripleafState $case) => match($case){
+		$this->dripleafState = new EnumFromStringStateMap(DripleafState::class, fn(DripleafState $case) => match ($case) {
 			DripleafState::STABLE => StringValues::BIG_DRIPLEAF_TILT_NONE,
 			DripleafState::UNSTABLE => StringValues::BIG_DRIPLEAF_TILT_UNSTABLE,
 			DripleafState::PARTIAL_TILT => StringValues::BIG_DRIPLEAF_TILT_PARTIAL_TILT,
 			DripleafState::FULL_TILT => StringValues::BIG_DRIPLEAF_TILT_FULL_TILT
 		});
-		$this->bellAttachmentType = new EnumFromStringStateMap(BellAttachmentType::class, fn(BellAttachmentType $case) => match($case){
+		$this->bellAttachmentType = new EnumFromStringStateMap(BellAttachmentType::class, fn(BellAttachmentType $case) => match ($case) {
 			BellAttachmentType::FLOOR => StringValues::ATTACHMENT_STANDING,
 			BellAttachmentType::CEILING => StringValues::ATTACHMENT_HANGING,
 			BellAttachmentType::ONE_WALL => StringValues::ATTACHMENT_SIDE,
 			BellAttachmentType::TWO_WALLS => StringValues::ATTACHMENT_MULTIPLE,
 		});
-		$this->leverFacing = new EnumFromStringStateMap(LeverFacing::class, fn(LeverFacing $case) => match($case){
+		$this->leverFacing = new EnumFromStringStateMap(LeverFacing::class, fn(LeverFacing $case) => match ($case) {
 			LeverFacing::DOWN_AXIS_Z => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
 			LeverFacing::DOWN_AXIS_X => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
 			LeverFacing::UP_AXIS_Z => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
@@ -214,6 +223,26 @@ final class ValueMappings{
 		$this->coralAxis = new IntFromIntStateMap([
 			Axis::X => 0,
 			Axis::Z => 1,
+		]);
+
+		//TODO: shitty copy pasta job, we can do this better but this is good enough for now
+		$this->facingExceptDown = new IntFromIntStateMap([
+			Facing::UP => 1,
+			Facing::NORTH => 2,
+			Facing::SOUTH => 3,
+			Facing::WEST => 4,
+			Facing::EAST => 5
+		], deserializeAliases: [
+			Facing::UP => 0
+		]);
+		$this->facingExceptUp = new IntFromIntStateMap([
+			Facing::DOWN => 0,
+			Facing::NORTH => 2,
+			Facing::SOUTH => 3,
+			Facing::WEST => 4,
+			Facing::EAST => 5
+		], deserializeAliases: [
+			Facing::DOWN => 1
 		]);
 	}
 }

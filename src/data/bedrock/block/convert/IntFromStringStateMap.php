@@ -67,4 +67,12 @@ final class IntFromStringStateMap{
 	public function serialize(int $pmValue) : string{
 		return $this->serializeMap[$pmValue] ?? throw new \LogicException("No mapping for $pmValue");
 	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array<string, int>
+	 */
+	public function getDeserializeMap() : array{
+		return $this->deserializeMap;
+	}
 }
