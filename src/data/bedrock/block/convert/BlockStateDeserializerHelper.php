@@ -57,9 +57,7 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 
 final class BlockStateDeserializerHelper{
 
@@ -169,14 +167,13 @@ final class BlockStateDeserializerHelper{
 			->setOpen($in->readBool(BlockStateNames::OPEN_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFloorCoralFan(FloorCoralFan $block, BlockStateReader $in) : FloorCoralFan{
 		return $block
-			->setAxis(match($in->readBoundedInt(BlockStateNames::CORAL_FAN_DIRECTION, 0, 1)){
-				0 => Axis::X,
-				1 => Axis::Z,
-				default => throw new AssumptionFailedError("readBoundedInt() should have prevented this"),
-			});
+			->setAxis($in->mapIntFromInt(BlockStateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis));
 	}
 
 	/**
@@ -288,6 +285,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TStair of Stair
 	 * @phpstan-param TStair $block
 	 * @phpstan-return TStair
@@ -311,6 +309,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TTrapdoor of Trapdoor
 	 * @phpstan-param TTrapdoor $block
 	 * @phpstan-return TTrapdoor
@@ -335,7 +334,10 @@ final class BlockStateDeserializerHelper{
 		return $block;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeWallSign(WallSign $block, BlockStateReader $in) : WallSign{
 		return $block
 			->setFacing($in->readHorizontalFacing());

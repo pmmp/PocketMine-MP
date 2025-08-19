@@ -29,7 +29,7 @@ use function spl_object_id;
 /**
  * @phpstan-template TEnum of \UnitEnum
  */
-class StringEnumMap{
+class EnumFromStringStateMap{
 	/**
 	 * @var string[]
 	 * @phpstan-var array<int, string>

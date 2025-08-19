@@ -24,28 +24,40 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\PillarRotation;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
 
 /**
- * @phpstan-implements Property<Block&PillarRotation>
+ * TODO: would be nice if we didn't have to pretty much copy-paste this from the int->string variant :(
+ *
+ * @phpstan-template TBlock of Block
+ * @phpstan-implements Property<TBlock>
  */
-final class AxisProperty implements Property{
-	use SingletonTrait;
+class IntFromIntProperty implements Property{
 
-	private function __construct(){
-		//NOOP
+	/**
+	 * @phpstan-param \Closure(TBlock) : int $getter
+	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
+	 */
+	public function __construct(
+		private string $name,
+		private IntFromIntStateMap $map,
+		private \Closure $getter,
+		private \Closure $setter
+	){}
+
+	public function getName() : string{
+		return $this->name;
 	}
 
 	public function deserialize(Block $block, BlockStateReader $in) : void{
-		$value = $in->readPillarAxis();
-		$block->setAxis($value);
+		$value = $in->mapIntFromInt($this->name, $this->map);
+		($this->setter)($block, $value);
 	}
 
 	public function serialize(Block $block, BlockStateWriter $out) : void{
-		$value = $block->getAxis();
-		$out->writePillarAxis($value);
+		$value = ($this->getter)($block);
+		$out->mapIntToInt($this->name, $this->map, $value);
 	}
 }

@@ -31,6 +31,8 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter;
  * @phpstan-template TBlock of Block
  */
 interface Property{
+	public function getName() : string;
+
 	/**
 	 * @phpstan-param TBlock $block
 	 */

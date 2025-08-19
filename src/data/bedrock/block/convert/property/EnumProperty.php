@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\data\bedrock\block\convert\EnumFromStringStateMap;
 
 /**
  * @phpstan-template TBlock of Block
@@ -35,24 +36,33 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 final class EnumProperty implements Property{
 
 	/**
-	 * @phpstan-param class-string<TEnum> $enumClass
-	 * @phpstan-param \Closure(TBlock) : TEnum $getter
+	 * @phpstan-param EnumFromStringStateMap<TEnum>   $map
+	 * @phpstan-param \Closure(TBlock) : TEnum        $getter
 	 * @phpstan-param \Closure(TBlock, TEnum) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private string $enumClass,
+		private EnumFromStringStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}
 
+	public function getName() : string{ return $this->name; }
+
+	/**
+	 * @phpstan-return EnumFromStringStateMap<TEnum>
+	 */
+	public function getEnumMap() : EnumFromStringStateMap{
+		return $this->map;
+	}
+
 	public function deserialize(Block $block, BlockStateReader $in) : void{
-		$value = $in->readUnitEnum($this->name, $this->enumClass);
+		$value = $in->readUnitEnum($this->name, $this->map);
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(Block $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
-		$out->writeUnitEnum($this->name, $value);
+		$out->writeUnitEnum($this->name, $this->map, $value);
 	}
 }

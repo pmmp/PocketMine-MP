@@ -25,12 +25,10 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
-use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
 use pocketmine\block\CakeWithDyedCandle;
 use pocketmine\block\CaveVines;
 use pocketmine\block\DoublePitcherCrop;
-use pocketmine\block\Opaque;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
@@ -42,7 +40,6 @@ use pocketmine\block\utils\CopperMaterial;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DirtType;
-use pocketmine\block\utils\DripleafState;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
@@ -55,7 +52,6 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\utils\Utils;
 use function array_key_exists;
@@ -153,12 +149,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	 * @phpstan-template TBlock of Block
 	 * @phpstan-template TEnum of \UnitEnum
 	 *
-	 * @phpstan-param StringEnumMap<TEnum> $mapProperty
-	 * @phpstan-param \Closure(TEnum) : TBlock $getBlock
+	 * @phpstan-param EnumFromStringStateMap<TEnum> $mapProperty
+	 * @phpstan-param \Closure(TEnum) : TBlock      $getBlock
 	 * @phpstan-param ?\Closure(TBlock, Reader) : TBlock $extra
 	 */
 	public function mapFlattenedEnum(
-		StringEnumMap $mapProperty,
+		EnumFromStringStateMap $mapProperty,
 		string $prefix,
 		string $suffix,
 		\Closure $getBlock,
@@ -185,7 +181,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	 */
 	public function mapColored(string $prefix, string $suffix, \Closure $getBlock, ?\Closure $extra = null) : void{
 		$this->mapFlattenedEnum(
-			ValueMappings::getInstance()->getEnumMap(DyeColor::class),
+			ValueMappings::getInstance()->dyeColor,
 			$prefix,
 			$suffix,
 			fn(DyeColor $color) => $getBlock()->setColor($color),
@@ -500,12 +496,7 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
 			return Blocks::BAMBOO()
-				->setLeafSize(match($value = $in->readString(StateNames::BAMBOO_LEAF_SIZE)){
-					StringValues::BAMBOO_LEAF_SIZE_NO_LEAVES => Bamboo::NO_LEAVES,
-					StringValues::BAMBOO_LEAF_SIZE_SMALL_LEAVES => Bamboo::SMALL_LEAVES,
-					StringValues::BAMBOO_LEAF_SIZE_LARGE_LEAVES => Bamboo::LARGE_LEAVES,
-					default => throw $in->badValueException(StateNames::BAMBOO_LEAF_SIZE, $value),
-				})
+				->setLeafSize($in->mapIntFromString(StateNames::BAMBOO_LEAF_SIZE, ValueMappings::getInstance()->bambooLeafSize))
 				->setReady($in->readBool(StateNames::AGE_BIT))
 				->setThick(match($value = $in->readString(StateNames::BAMBOO_STALK_THICKNESS)){
 					StringValues::BAMBOO_STALK_THICKNESS_THIN => false,
@@ -513,17 +504,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 					default => throw $in->badValueException(StateNames::BAMBOO_STALK_THICKNESS, $value),
 				});
 		});
-		$this->map(Ids::BARREL, function(Reader $in) : Block{
-			return Blocks::BARREL()
-				->setFacing($in->readFacingDirection())
-				->setOpen($in->readBool(StateNames::OPEN_BIT));
-		});
 		$this->map(Ids::BEETROOT, fn(Reader $in) => Helper::decodeCrops(Blocks::BEETROOTS(), $in));
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
 				return Blocks::BIG_DRIPLEAF_HEAD()
 					->setFacing($in->readCardinalHorizontalFacing())
-					->setLeafState($in->readUnitEnum(StateNames::BIG_DRIPLEAF_TILT, DripleafState::class));
+					->setLeafState($in->readUnitEnum(StateNames::BIG_DRIPLEAF_TILT, ValueMappings::getInstance()->dripleafState));
 			}else{
 				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
 				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readCardinalHorizontalFacing());
@@ -577,15 +563,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return $block;
 		});
 		$this->map(Ids::COARSE_DIRT, fn() => Blocks::DIRT()->setDirtType(DirtType::COARSE));
-		$this->map(Ids::COCOA, function(Reader $in) : Block{
-			return Blocks::COCOA_POD()
-				->setAge($in->readBoundedInt(StateNames::AGE, 0, 2))
-				->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()));
-		});
-		$this->map(Ids::COLORED_TORCH_BLUE, fn(Reader $in) => Blocks::BLUE_TORCH()->setFacing($in->readTorchFacing()));
-		$this->map(Ids::COLORED_TORCH_GREEN, fn(Reader $in) => Blocks::GREEN_TORCH()->setFacing($in->readTorchFacing()));
-		$this->map(Ids::COLORED_TORCH_PURPLE, fn(Reader $in) => Blocks::PURPLE_TORCH()->setFacing($in->readTorchFacing()));
-		$this->map(Ids::COLORED_TORCH_RED, fn(Reader $in) => Blocks::RED_TORCH()->setFacing($in->readTorchFacing()));
 		$this->map(Ids::COMPOUND_CREATOR, fn(Reader $in) => Blocks::COMPOUND_CREATOR()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
@@ -619,10 +596,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
-		$this->map(Ids::HAY_BLOCK, function(Reader $in) : Block{
-			$in->ignored(StateNames::DEPRECATED);
-			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
-		});
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
 			return Blocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
@@ -633,20 +606,12 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::LAB_TABLE, fn(Reader $in) => Blocks::LAB_TABLE()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
-		$this->map(Ids::LADDER, function(Reader $in) : Block{
-			return Blocks::LADDER()
-				->setFacing($in->readHorizontalFacing());
-		});
 		$this->map(Ids::LARGE_AMETHYST_BUD, function(Reader $in) : Block{
 			return Blocks::AMETHYST_CLUSTER()
 				->setStage(AmethystCluster::STAGE_LARGE_BUD)
 				->setFacing($in->readBlockFace());
 		});
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LIGHTNING_ROD, function(Reader $in) : Block{
-			return Blocks::LIGHTNING_ROD()
-				->setFacing($in->readFacingDirection());
-		});
 		$this->map(Ids::LIT_BLAST_FURNACE, function(Reader $in) : Block{
 			return Blocks::BLAST_FURNACE()
 				->setFacing($in->readCardinalHorizontalFacing())
@@ -694,32 +659,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::POLISHED_BLACKSTONE_BUTTON(), $in));
 		$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::PORTAL, function(Reader $in) : Block{
-			return Blocks::NETHER_PORTAL()
-				->setAxis(match($value = $in->readString(StateNames::PORTAL_AXIS)){
-					StringValues::PORTAL_AXIS_UNKNOWN => Axis::X,
-					StringValues::PORTAL_AXIS_X => Axis::X,
-					StringValues::PORTAL_AXIS_Z => Axis::Z,
-					default => throw $in->badValueException(StateNames::PORTAL_AXIS, $value),
-				});
-		});
 		$this->map(Ids::POTATOES, fn(Reader $in) => Helper::decodeCrops(Blocks::POTATOES(), $in));
 		$this->map(Ids::POWERED_COMPARATOR, fn(Reader $in) => Helper::decodeComparator(Blocks::REDSTONE_COMPARATOR(), $in));
 		$this->map(Ids::POWERED_REPEATER, fn(Reader $in) => Helper::decodeRepeater(Blocks::REDSTONE_REPEATER(), $in)
 				->setPowered(true));
-		$this->map(Ids::PUMPKIN, function(Reader $in) : Block{
-			$in->ignored(StateNames::MC_CARDINAL_DIRECTION); //obsolete
-			return Blocks::PUMPKIN();
-		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
-		$this->map(Ids::PURPUR_BLOCK, function(Reader $in) : Block{
-			$in->ignored(StateNames::PILLAR_AXIS); //???
-			return Blocks::PURPUR();
-		});
-		$this->map(Ids::QUARTZ_BLOCK, function(Reader $in) : Opaque{
-			$in->ignored(StateNames::PILLAR_AXIS);
-			return Blocks::QUARTZ();
-		});
 		$this->map(Ids::RED_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::RED_MUSHROOM_BLOCK(), $in));
 		$this->map(Ids::REDSTONE_LAMP, function() : Block{
 			return Blocks::REDSTONE_LAMP()
@@ -750,26 +694,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setStage(AmethystCluster::STAGE_SMALL_BUD)
 				->setFacing($in->readBlockFace());
 		});
-		$this->map(Ids::SMOOTH_QUARTZ, function(Reader $in) : Block{
-			$in->ignored(StateNames::PILLAR_AXIS);
-			return Blocks::SMOOTH_QUARTZ();
-		});
-		$this->map(Ids::SNOW_LAYER, function(Reader $in) : Block{
-			$in->ignored(StateNames::COVERED_BIT); //seems to be useless
-			return Blocks::SNOW_LAYER()->setLayers($in->readBoundedInt(StateNames::HEIGHT, 0, 7) + 1);
-		});
 		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::SOUL_CAMPFIRE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
-		});
-		$this->map(Ids::SOUL_FIRE, function(Reader $in) : Block{
-			$in->ignored(StateNames::AGE); //this is useless for soul fire, since it doesn't have the logic associated
-			return Blocks::SOUL_FIRE();
-		});
-		$this->map(Ids::SOUL_TORCH, function(Reader $in) : Block{
-			return Blocks::SOUL_TORCH()
-				->setFacing($in->readTorchFacing());
 		});
 		$this->mapSimple(Ids::SPONGE, fn() => Blocks::SPONGE());
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
@@ -785,10 +713,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
 				->setWorksUnderwater(false);
 		});
-		$this->map(Ids::TORCH, function(Reader $in) : Block{
-			return Blocks::TORCH()
-				->setFacing($in->readTorchFacing());
-		});
 		$this->map(Ids::TORCHFLOWER_CROP, function(Reader $in) : Block{
 			return Blocks::TORCHFLOWER_CROP()
 				//this property can have values 0-7, but only 0-1 are valid
@@ -798,10 +722,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::TNT()
 				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
 				->setWorksUnderwater(true);
-		});
-		$this->map(Ids::UNDERWATER_TORCH, function(Reader $in) : Block{
-			return Blocks::UNDERWATER_TORCH()
-				->setFacing($in->readTorchFacing());
 		});
 		$this->map(Ids::UNLIT_REDSTONE_TORCH, function(Reader $in) : Block{
 			return Blocks::REDSTONE_TORCH()
@@ -818,10 +738,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFace(Facing::SOUTH, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_SOUTH) !== 0)
 				->setFace(Facing::WEST, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_WEST) !== 0)
 				->setFace(Facing::EAST, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_EAST) !== 0);
-		});
-		$this->map(Ids::WALL_BANNER, function(Reader $in) : Block{
-			return Blocks::WALL_BANNER()
-				->setFacing($in->readHorizontalFacing());
 		});
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
 		$this->mapSimple(Ids::WET_SPONGE, fn() => Blocks::SPONGE()->setWet(true));

@@ -23,18 +23,40 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
+use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\AssumptionFailedError;
+use function is_bool;
+use function is_int;
+use function is_string;
 
-final class LegacyHorizontalFacingProperty extends BaseHorizontalFacingProperty{
-	use SingletonTrait;
+/**
+ * @phpstan-implements Property<Block>
+ */
+final class DummyProperty implements Property{
+	public function __construct(
+		private string $name,
+		private bool|int|string $value
+	){}
 
-	protected function read(BlockStateReader $in) : int{
-		return $in->readLegacyHorizontalFacing();
+	public function getName() : string{
+		return $this->name;
 	}
 
-	protected function write(BlockStateWriter $out, int $value) : void{
-		$out->writeLegacyHorizontalFacing($value);
+	public function deserialize(Block $block, BlockStateReader $in) : void{
+		$in->ignored($this->name);
+	}
+
+	public function serialize(Block $block, BlockStateWriter $out) : void{
+		if(is_bool($this->value)){
+			$out->writeBool($this->name, $this->value);
+		}elseif(is_int($this->value)){
+			$out->writeInt($this->name, $this->value);
+		}elseif(is_string($this->value)){
+			$out->writeString($this->name, $this->value);
+		}else{
+			throw new AssumptionFailedError();
+		}
 	}
 }

@@ -77,6 +77,9 @@ final class BlockStateSerializerHelper{
 		return $out->writeInt(BlockStateNames::GROWTH, $block->getAge());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeTorch(Torch $block, Writer $out) : Writer{
 		return $out
 			->writeTorchFacing($block->getFacing());
@@ -171,6 +174,9 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::HUGE_MUSHROOM_BITS, MushroomBlockTypeIdMap::getInstance()->toId($block->getMushroomBlockType()));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeQuartz(int $axis, Writer $out) : Writer{
 		return $out
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
@@ -208,6 +214,9 @@ final class BlockStateSerializerHelper{
 			self::encodeSingleSlab($block, $singleId);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeStairs(Stair $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::UPSIDE_DOWN_BIT, $block->isUpsideDown())
@@ -223,6 +232,9 @@ final class BlockStateSerializerHelper{
 			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeTrapdoor(Trapdoor $block, Writer $out) : Writer{
 		return $out
 			->write5MinusHorizontalFacing($block->getFacing())
@@ -239,6 +251,9 @@ final class BlockStateSerializerHelper{
 			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_WEST, $block->getConnection(Facing::WEST));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeWallSign(WallSign $block, Writer $out) : Writer{
 		return $out
 			->writeHorizontalFacing($block->getFacing());

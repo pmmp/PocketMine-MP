@@ -50,6 +50,8 @@ final class IntProperty implements Property{
 		}
 	}
 
+	public function getName() : string{ return $this->name; }
+
 	/**
 	 * @phpstan-return self<Block>
 	 */

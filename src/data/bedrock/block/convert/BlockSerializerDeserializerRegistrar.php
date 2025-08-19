@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\BambooSapling;
+use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Bell;
@@ -33,6 +34,7 @@ use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\ChorusFlower;
+use pocketmine\block\CocoaBlock;
 use pocketmine\block\DetectorRail;
 use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
@@ -49,6 +51,7 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\MobHead;
+use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
@@ -59,9 +62,11 @@ use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Sapling;
 use pocketmine\block\Slab;
 use pocketmine\block\SmallDripleaf;
+use pocketmine\block\SnowLayer;
 use pocketmine\block\Stair;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\Sugarcane;
+use pocketmine\block\Trapdoor;
 use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
@@ -77,13 +82,13 @@ use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
-use pocketmine\data\bedrock\block\convert\property\AxisProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
-use pocketmine\data\bedrock\block\convert\property\CardinalHorizontalFacingProperty;
+use pocketmine\data\bedrock\block\convert\property\DummyProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumProperty;
+use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingReadTransform;
+use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
-use pocketmine\data\bedrock\block\convert\property\LegacyHorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
 use function array_map;
 use function min;
@@ -106,8 +111,11 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->registerStoneLikeSlabMappings();
 		$this->registerStoneLikeStairMappings();
 		$this->registerStoneLikeWallMappings();
-		$this->registerWoodMappings();
-		$this->register1to1CustomMappings();
+
+		$commonProperties = CommonProperties::getInstance();
+		$this->registerWoodMappings($commonProperties);
+		$this->registerTorchMappings($commonProperties);
+		$this->register1to1CustomMappings($commonProperties);
 	}
 
 	private function mapSimple(Block $block, string $id) : void{
@@ -120,7 +128,7 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-template TEnum of \UnitEnum
 	 *
 	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param class-string<TEnum>               $enumClass
+	 * @phpstan-param EnumFromStringStateMap<TEnum>     $mapProperty
 	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
 	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
 	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
@@ -128,7 +136,7 @@ final class BlockSerializerDeserializerRegistrar{
 	 */
 	private function mapFlattenedIdEnumWithExtra(
 		Block $block,
-		string $enumClass,
+		EnumFromStringStateMap $mapProperty,
 		string $prefix,
 		string $suffix,
 		\Closure $getProperty,
@@ -136,7 +144,6 @@ final class BlockSerializerDeserializerRegistrar{
 		\Closure $readExtra,
 		\Closure $writeExtra
 	) : void{
-		$mapProperty = ValueMappings::getInstance()->getEnumMap($enumClass);
 		$this->deserializer?->mapFlattenedEnum(
 			$mapProperty,
 			$prefix,
@@ -159,7 +166,7 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-template TEnum of \UnitEnum
 	 *
 	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param class-string<TEnum>               $enumClass
+	 * @phpstan-param EnumFromStringStateMap<TEnum>     $mapProperty
 	 * @phpstan-param \Closure(TBlock) : TEnum          $getProperty
 	 * @phpstan-param \Closure(TBlock, TEnum) : TBlock  $setProperty
 	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readExtra
@@ -167,13 +174,13 @@ final class BlockSerializerDeserializerRegistrar{
 	 */
 	private function mapSwitchedIdEnumWithExtra(
 		Block $block,
-		string $enumClass,
+		EnumFromStringStateMap $mapProperty,
 		\Closure $getProperty,
 		\Closure $setProperty,
 		\Closure $readExtra,
 		\Closure $writeExtra
 	) : void{
-		$this->mapFlattenedIdEnumWithExtra($block, $enumClass, "", "", $getProperty, $setProperty, $readExtra, $writeExtra);
+		$this->mapFlattenedIdEnumWithExtra($block, $mapProperty, "", "", $getProperty, $setProperty, $readExtra, $writeExtra);
 	}
 
 	/**
@@ -202,8 +209,12 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function mapStairs(Stair $block, string $id) : void{
-		$this->deserializer?->mapStairs($id, fn() => clone $block);
-		$this->serializer?->mapStairs($block, $id);
+		$this->mapModel(Model::create($block, $id)->properties([
+			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Stair $b) => $b->isUpsideDown(), fn(Stair $b, bool $v) => $b->setUpsideDown($v)),
+
+			//same values as trapdoors, but different state name
+			new HorizontalFacingProperty(StateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus),
+		]));
 	}
 
 	private function mapLog(Wood $block, string $unstrippedId, string $strippedId) : void{
@@ -573,7 +584,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//TODO: migrate these to use property models
 		$this->mapSwitchedIdEnumWithExtra(
 			Blocks::MOB_HEAD(),
-			MobHeadType::class,
+			ValueMappings::getInstance()->mobHeadType,
 			fn(MobHead $block) => $block->getMobHeadType(),
 			fn(MobHead $block, MobHeadType $value) => $block->setMobHeadType($value),
 			fn(MobHead $block, Reader $in) => $block->setFacing($in->readFacingWithoutDown()),
@@ -581,7 +592,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 		$this->mapSwitchedIdEnumWithExtra(
 			Blocks::FROGLIGHT(),
-			FroglightType::class,
+			ValueMappings::getInstance()->froglightType,
 			fn(Froglight $block) => $block->getFroglightType(),
 			fn(Froglight $block, FroglightType $value) => $block->setFroglightType($value),
 			fn(Froglight $block, Reader $in) => $block->setAxis($in->readPillarAxis()),
@@ -706,7 +717,7 @@ final class BlockSerializerDeserializerRegistrar{
 		}
 	}
 
-	private function registerWoodMappings() : void{
+	private function registerWoodMappings(CommonProperties $commonProperties) : void{
 		//buttons
 		foreach([
 			[Blocks::ACACIA_BUTTON(), Ids::ACACIA_BUTTON],
@@ -730,7 +741,11 @@ final class BlockSerializerDeserializerRegistrar{
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(Door $b) => $b->isTop(), fn(Door $b, bool $v) => $b->setTop($v)),
 			new BoolProperty(StateNames::DOOR_HINGE_BIT, fn(Door $b) => $b->isHingeRight(), fn(Door $b, bool $v) => $b->setHingeRight($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Door $b) => $b->isOpen(), fn(Door $b, bool $v) => $b->setOpen($v)),
-			new CardinalHorizontalFacingProperty(HorizontalFacingReadTransform::COUNTER_CLOCKWISE),
+			new HorizontalFacingProperty(
+				StateNames::MC_CARDINAL_DIRECTION,
+				ValueMappings::getInstance()->cardinalDirection,
+				HorizontalFacingReadTransform::COUNTER_CLOCKWISE
+			)
 		];
 		foreach([
 			[Blocks::ACACIA_DOOR(), Ids::ACACIA_DOOR],
@@ -769,7 +784,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$properties = [
 			new BoolProperty(StateNames::IN_WALL_BIT, fn(FenceGate $b) => $b->isInWall(), fn(FenceGate $b, bool $v) => $b->setInWall($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(FenceGate $b) => $b->isOpen(), fn(FenceGate $b, bool $v) => $b->setOpen($v)),
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection,
 		];
 		foreach([
 			[Blocks::ACACIA_FENCE_GATE(), Ids::ACACIA_FENCE_GATE],
@@ -924,7 +939,13 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_TRAPDOOR(), Ids::CRIMSON_TRAPDOOR],
 			[Blocks::WARPED_TRAPDOOR(), Ids::WARPED_TRAPDOOR]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeTrapdoor(...), BlockStateSerializerHelper::encodeTrapdoor(...));
+			$this->mapModel(Model::create($block, $id)->properties([
+				//this uses the same values as stairs, but the state is named differently
+				new HorizontalFacingProperty(StateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus),
+
+				new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Trapdoor $b) => $b->isTop(), fn(Trapdoor $b, bool $v) => $b->setTop($v)),
+				new BoolProperty(StateNames::OPEN_BIT, fn(Trapdoor $b) => $b->isOpen(), fn(Trapdoor $b, bool $v) => $b->setOpen($v))
+			]));
 		}
 
 		//wall signs
@@ -941,7 +962,21 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_WALL_SIGN(), Ids::CRIMSON_WALL_SIGN],
 			[Blocks::WARPED_WALL_SIGN(), Ids::WARPED_WALL_SIGN]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeWallSign(...), BlockStateSerializerHelper::encodeWallSign(...));
+			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->horizontalFacingClassic]));
+		}
+	}
+
+	private function registerTorchMappings(CommonProperties $commonProperties) : void{
+		foreach([
+			[Blocks::BLUE_TORCH(), Ids::COLORED_TORCH_BLUE],
+			[Blocks::GREEN_TORCH(), Ids::COLORED_TORCH_GREEN],
+			[Blocks::PURPLE_TORCH(), Ids::COLORED_TORCH_PURPLE],
+			[Blocks::RED_TORCH(), Ids::COLORED_TORCH_RED],
+			[Blocks::SOUL_TORCH(), Ids::SOUL_TORCH],
+			[Blocks::TORCH(), Ids::TORCH],
+			[Blocks::UNDERWATER_TORCH(), Ids::UNDERWATER_TORCH]
+		] as [$block, $id]){
+			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->torchFacing]));
 		}
 	}
 
@@ -970,7 +1005,7 @@ final class BlockSerializerDeserializerRegistrar{
 		});
 	}
 
-	private function register1to1CustomMappings() : void{
+	private function register1to1CustomMappings(CommonProperties $commonProperties) : void{
 		//TODO: some of these have repeated accessor refs, we might be able to deduplicate them
 		//A
 		$this->mapModel(Model::create(Blocks::ACTIVATOR_RAIL(), Ids::ACTIVATOR_RAIL)->properties([
@@ -985,23 +1020,27 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::BANNER(), Ids::STANDING_BANNER)->properties([
 			new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(FloorBanner $b) => $b->getRotation(), fn(FloorBanner $b, int $v) => $b->setRotation($v))
 		]));
-		$this->mapModel(Model::create(Blocks::BASALT(), Ids::BASALT)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::BARREL(), Ids::BARREL)->properties([
+			$commonProperties->anyFacingClassic,
+			new BoolProperty(StateNames::OPEN_BIT, fn(Barrel $b) => $b->isOpen(), fn(Barrel $b, bool $v) => $b->setOpen($v))
+		]));
+		$this->mapModel(Model::create(Blocks::BASALT(), Ids::BASALT)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::BED(), Ids::BED)->properties([
 			new BoolProperty(StateNames::HEAD_PIECE_BIT, fn(Bed $b) => $b->isHeadPart(), fn(Bed $b, bool $v) => $b->setHead($v)),
 			new BoolProperty(StateNames::OCCUPIED_BIT, fn(Bed $b) => $b->isOccupied(), fn(Bed $b, bool $v) => $b->setOccupied($v)),
-			LegacyHorizontalFacingProperty::getInstance()
+			$commonProperties->horizontalFacingSWNE
 		]));
 		$this->mapModel(Model::create(Blocks::BEDROCK(), Ids::BEDROCK)->properties([
 			new BoolProperty(StateNames::INFINIBURN_BIT, fn(Bedrock $b) => $b->burnsForever(), fn(Bedrock $b, bool $v) => $b->setBurnsForever($v))
 		]));
 		$this->mapModel(Model::create(Blocks::BELL(), Ids::BELL)->properties([
 			BoolProperty::unused(StateNames::TOGGLE_BIT, false),
-			new EnumProperty(StateNames::ATTACHMENT, BellAttachmentType::class, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
-			LegacyHorizontalFacingProperty::getInstance()
+			new EnumProperty(StateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
+			$commonProperties->horizontalFacingSWNE
 		]));
 		$this->mapModel(Model::create(Blocks::BONE_BLOCK(), Ids::BONE_BLOCK)->properties([
 			IntProperty::unused(StateNames::DEPRECATED, 0),
-			AxisProperty::getInstance()
+			$commonProperties->pillarAxis
 		]));
 
 		$this->mapModel(Model::create(Blocks::BREWING_STAND(), Ids::BREWING_STAND)->properties(array_map(fn(BrewingStandSlot $slot) => new BoolProperty(match($slot){
@@ -1018,27 +1057,31 @@ final class BlockSerializerDeserializerRegistrar{
 			new IntProperty(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
 		]));
 		$this->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection
 		]));
-		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([AxisProperty::getInstance()]));
-		$this->mapModel(Model::create(Blocks::CHISELED_QUARTZ(), Ids::CHISELED_QUARTZ_BLOCK)->properties([AxisProperty::getInstance()]));
-		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([CardinalHorizontalFacingProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
+		$this->mapModel(Model::create(Blocks::CHISELED_QUARTZ(), Ids::CHISELED_QUARTZ_BLOCK)->properties([$commonProperties->pillarAxis]));
+		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([$commonProperties->cardinalDirection]));
 		$this->mapModel(Model::create(Blocks::CHORUS_FLOWER(), Ids::CHORUS_FLOWER)->properties([
 			new IntProperty(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE, fn(ChorusFlower $b) => $b->getAge(), fn(ChorusFlower $b, int $v) => $b->setAge($v))
 		]));
+		$this->mapModel(Model::create(Blocks::COCOA_POD(), Ids::COCOA)->properties([
+			new IntProperty(StateNames::AGE, 0, 2, fn(CocoaBlock $b) => $b->getAge(), fn(CocoaBlock $b, int $v) => $b->setAge($v)),
+			$commonProperties->horizontalFacingSWNEInverted
+		]));
 
 		//D
-		$this->mapModel(Model::create(Blocks::DEEPSLATE(), Ids::DEEPSLATE)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::DEEPSLATE(), Ids::DEEPSLATE)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::DETECTOR_RAIL(), Ids::DETECTOR_RAIL)->properties([
 			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(DetectorRail $b) => $b->isActivated(), fn(DetectorRail $b, bool $v) => $b->setActivated($v)),
 			new IntProperty(StateNames::RAIL_DIRECTION, 0, 5, fn(StraightOnlyRail $b) => $b->getShape(), fn(StraightOnlyRail $b, int $v) => $b->setShape($v)) //TODO: shared with ActivatorRail
 		]));
 
 		//E
-		$this->mapModel(Model::create(Blocks::ENDER_CHEST(), Ids::ENDER_CHEST)->properties([CardinalHorizontalFacingProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::ENDER_CHEST(), Ids::ENDER_CHEST)->properties([$commonProperties->cardinalDirection]));
 		$this->mapModel(Model::create(Blocks::END_PORTAL_FRAME(), Ids::END_PORTAL_FRAME)->properties([
 			new BoolProperty(StateNames::END_PORTAL_EYE_BIT, fn(EndPortalFrame $b) => $b->hasEye(), fn(EndPortalFrame $b, bool $v) => $b->setEye($v)),
-			CardinalHorizontalFacingProperty::getInstance(),
+			$commonProperties->cardinalDirection
 		]));
 
 		//F
@@ -1055,36 +1098,43 @@ final class BlockSerializerDeserializerRegistrar{
 			new IntProperty(StateNames::AGE, 0, 3, fn(FrostedIce $b) => $b->getAge(), fn(FrostedIce $b, int $v) => $b->setAge($v))
 		]));
 
+		//H
+		$this->mapModel(Model::create(Blocks::HAY_BALE(), Ids::HAY_BLOCK)->properties([
+			IntProperty::unused(StateNames::DEPRECATED, 0),
+			$commonProperties->pillarAxis
+		]));
+
 		//L
+		$this->mapModel(Model::create(Blocks::LADDER(), Ids::LADDER)->properties([$commonProperties->horizontalFacingClassic]));
 		$this->mapModel(Model::create(Blocks::LANTERN(), Ids::LANTERN)->properties([
 			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v))
 		]));
 		$this->mapModel(Model::create(Blocks::LECTERN(), Ids::LECTERN)->properties([
 			new BoolProperty(StateNames::POWERED_BIT, fn(Lectern $b) => $b->isProducingSignal(), fn(Lectern $b, bool $v) => $b->setProducingSignal($v)),
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection,
 		]));
 		$this->mapModel(Model::create(Blocks::LEVER(), Ids::LEVER)->properties([
-			new EnumProperty(StateNames::LEVER_DIRECTION, LeverFacing::class, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
+			new EnumProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
 		]));
-		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([
-			CardinalHorizontalFacingProperty::getInstance()
-		]));
-		$this->mapModel(Model::create(Blocks::LOOM(), Ids::LOOM)->properties([
-			LegacyHorizontalFacingProperty::getInstance()
-		]));
+		$this->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([$commonProperties->anyFacingClassic]));
+		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([$commonProperties->cardinalDirection]));
+		$this->mapModel(Model::create(Blocks::LOOM(), Ids::LOOM)->properties([$commonProperties->horizontalFacingSWNE]));
 
 		//M
-		$this->mapModel(Model::create(Blocks::MUDDY_MANGROVE_ROOTS(), Ids::MUDDY_MANGROVE_ROOTS)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::MUDDY_MANGROVE_ROOTS(), Ids::MUDDY_MANGROVE_ROOTS)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::NETHER_WART(), Ids::NETHER_WART)->properties([
 			new IntProperty(StateNames::AGE, 0, 3, fn(NetherWartPlant $b) => $b->getAge(), fn(NetherWartPlant $b, int $v) => $b->setAge($v))
+		]));
+		$this->mapModel(Model::create(Blocks::NETHER_PORTAL(), Ids::PORTAL)->properties([
+			new IntFromStringProperty(StateNames::PORTAL_AXIS, ValueMappings::getInstance()->portalAxis, fn(NetherPortal $b) => $b->getAxis(), fn(NetherPortal $b, int $v) => $b->setAxis($v))
 		]));
 
 		//P
 		$this->mapModel(Model::create(Blocks::PINK_PETALS(), Ids::PINK_PETALS)->properties([
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7
 			new IntProperty(StateNames::GROWTH, 0, 7, fn(PinkPetals $b) => $b->getCount(), fn(PinkPetals $b, int $v) => $b->setCount(min($v, PinkPetals::MAX_COUNT)), offset: 1),
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection
 		]));
 		$this->mapModel(Model::create(Blocks::POWERED_RAIL(), Ids::GOLDEN_RAIL)->properties([
 			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(PoweredRail $b) => $b->isPowered(), fn(PoweredRail $b, bool $v) => $b->setPowered($v)), //TODO: shared with ActivatorRail
@@ -1093,11 +1143,21 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::PITCHER_PLANT(), Ids::PITCHER_PLANT)->properties([
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(DoublePlant $b) => $b->isTop(), fn(DoublePlant $b, bool $v) => $b->setTop($v)), //TODO: don't we have helpers for this?
 		]));
-		$this->mapModel(Model::create(Blocks::POLISHED_BASALT(), Ids::POLISHED_BASALT)->properties([AxisProperty::getInstance()]));
-		$this->mapModel(Model::create(Blocks::PURPUR_PILLAR(), Ids::PURPUR_PILLAR)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::POLISHED_BASALT(), Ids::POLISHED_BASALT)->properties([$commonProperties->pillarAxis]));
+		$this->mapModel(Model::create(Blocks::PUMPKIN(), Ids::PUMPKIN)->properties([
+			//not used, has no visible effect
+			$commonProperties->dummyCardinalDirection
+		]));
+		$this->mapModel(Model::create(Blocks::PURPUR(), Ids::PURPUR_BLOCK)->properties([
+			$commonProperties->dummyPillarAxis
+		]));
+		$this->mapModel(Model::create(Blocks::PURPUR_PILLAR(), Ids::PURPUR_PILLAR)->properties([$commonProperties->pillarAxis]));
 
 		//Q
-		$this->mapModel(Model::create(Blocks::QUARTZ_PILLAR(), Ids::QUARTZ_PILLAR)->properties([AxisProperty::getInstance()]));
+		$this->mapModel(Model::create(Blocks::QUARTZ(), Ids::QUARTZ_BLOCK)->properties([
+			$commonProperties->dummyPillarAxis
+		]));
+		$this->mapModel(Model::create(Blocks::QUARTZ_PILLAR(), Ids::QUARTZ_PILLAR)->properties([$commonProperties->pillarAxis]));
 
 		//R
 		$this->mapModel(Model::create(Blocks::RAIL(), Ids::RAIL)->properties([
@@ -1111,23 +1171,33 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//S
+		$this->mapModel(Model::create(Blocks::SMOOTH_QUARTZ(), Ids::SMOOTH_QUARTZ)->properties([
+			$commonProperties->dummyPillarAxis
+		]));
 		$this->mapModel(Model::create(Blocks::SUGARCANE(), Ids::REEDS)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Sugarcane $b) => $b->getAge(), fn(Sugarcane $b, int $v) => $b->setAge($v))
 		]));
 		$this->mapModel(Model::create(Blocks::SMALL_DRIPLEAF(), Ids::SMALL_DRIPLEAF_BLOCK)->properties([
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(SmallDripleaf $b) => $b->isTop(), fn(SmallDripleaf $b, bool $v) => $b->setTop($v)),
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection
+		]));
+		$this->mapModel(Model::create(Blocks::SNOW_LAYER(), Ids::SNOW_LAYER)->properties([
+			new DummyProperty(StateNames::COVERED_BIT, false),
+			new IntProperty(StateNames::HEIGHT, 0, 7, fn(SnowLayer $b) => $b->getLayers(), fn(SnowLayer $b, int $v) => $b->setLayers($v), offset: 1)
+		]));
+		$this->mapModel(Model::create(Blocks::SOUL_FIRE(), Ids::SOUL_FIRE)->properties([
+			new DummyProperty(StateNames::AGE, 0)
 		]));
 		$this->mapModel(Model::create(Blocks::SOUL_LANTERN(), Ids::SOUL_LANTERN)->properties([
 			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v)) //TODO: repeated
 		]));
 		$this->mapModel(Model::create(Blocks::STONECUTTER(), Ids::STONECUTTER_BLOCK)->properties([
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection
 		]));
 
 		//T
 		$this->mapModel(Model::create(Blocks::TRAPPED_CHEST(), Ids::TRAPPED_CHEST)->properties([
-			CardinalHorizontalFacingProperty::getInstance()
+			$commonProperties->cardinalDirection
 		]));
 		$this->mapModel(Model::create(Blocks::TRIPWIRE(), Ids::TRIP_WIRE)->properties([
 			new BoolProperty(StateNames::ATTACHED_BIT, fn(Tripwire $b) => $b->isConnected(), fn(Tripwire $b, bool $v) => $b->setConnected($v)),
@@ -1138,7 +1208,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::TRIPWIRE_HOOK(), Ids::TRIPWIRE_HOOK)->properties([
 			new BoolProperty(StateNames::ATTACHED_BIT, fn(TripwireHook $b) => $b->isConnected(), fn(TripwireHook $b, bool $v) => $b->setConnected($v)),
 			new BoolProperty(StateNames::POWERED_BIT, fn(TripwireHook $b) => $b->isPowered(), fn(TripwireHook $b, bool $v) => $b->setPowered($v)),
-			LegacyHorizontalFacingProperty::getInstance()
+			$commonProperties->horizontalFacingSWNE
 		]));
 
 		$this->mapModel(Model::create(Blocks::TWISTING_VINES(), Ids::TWISTING_VINES)->properties([
@@ -1146,6 +1216,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//W
+		$this->mapModel(Model::create(Blocks::WALL_BANNER(), Ids::WALL_BANNER)->properties([$commonProperties->horizontalFacingClassic]));
 		$this->mapModel(Model::create(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES)->properties([
 			new IntProperty(StateNames::WEEPING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
 		]));

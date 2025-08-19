@@ -74,30 +74,27 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
-	public function writeFacingDirection(int $value) : self{
-		$this->writeInt(BlockStateNames::FACING_DIRECTION, match($value){
-			Facing::DOWN => 0,
-			Facing::UP => 1,
-			Facing::NORTH => 2,
-			Facing::SOUTH => 3,
-			Facing::WEST => 4,
-			Facing::EAST => 5,
-			default => throw new BlockStateSerializeException("Invalid Facing $value")
-		});
+	public function mapIntToString(string $name, IntFromStringStateMap $map, int $value) : self{
+		$raw = $map->serialize($value);
+		$this->writeString($name, $raw);
 		return $this;
 	}
 
 	/** @return $this */
+	public function mapIntToInt(string $name, IntFromIntStateMap $map, int $value) : self{
+		$raw = $map->serialize($value);
+		$this->writeInt($name, $raw);
+		return $this;
+	}
+
+	/** @return $this */
+	public function writeFacingDirection(int $value) : self{
+		return $this->mapIntToInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->facing, $value);
+	}
+
+	/** @return $this */
 	public function writeBlockFace(int $value) : self{
-		$this->writeString(BlockStateNames::MC_BLOCK_FACE, match($value){
-			Facing::DOWN => StringValues::MC_BLOCK_FACE_DOWN,
-			Facing::UP => StringValues::MC_BLOCK_FACE_UP,
-			Facing::NORTH => StringValues::MC_BLOCK_FACE_NORTH,
-			Facing::SOUTH => StringValues::MC_BLOCK_FACE_SOUTH,
-			Facing::WEST => StringValues::MC_BLOCK_FACE_WEST,
-			Facing::EAST => StringValues::MC_BLOCK_FACE_EAST,
-			default => throw new BlockStateSerializeException("Invalid Facing $value")
-		});
+		$this->mapIntToString(BlockStateNames::MC_BLOCK_FACE, ValueMappings::getInstance()->blockFace, $value);
 		return $this;
 	}
 
@@ -131,35 +128,23 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeHorizontalFacing(int $value) : self{
-		if($value === Facing::UP || $value === Facing::DOWN){
-			throw new BlockStateSerializeException("Y-axis facing is not allowed");
-		}
-
-		return $this->writeFacingDirection($value);
+		return $this->mapIntToInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->horizontalFacingClassic, $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeWeirdoHorizontalFacing(int $value) : self{
-		$this->writeInt(BlockStateNames::WEIRDO_DIRECTION, match($value){
-			Facing::EAST => 0,
-			Facing::WEST => 1,
-			Facing::SOUTH => 2,
-			Facing::NORTH => 3,
-			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
-		});
-		return $this;
+		return $this->mapIntToInt(BlockStateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus, $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeLegacyHorizontalFacing(int $value) : self{
-		$this->writeInt(BlockStateNames::DIRECTION, match($value){
-			Facing::SOUTH => 0,
-			Facing::WEST => 1,
-			Facing::NORTH => 2,
-			Facing::EAST => 3,
-			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
-		});
-		return $this;
+		return $this->mapIntToInt(BlockStateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacingSWNE, $value);
 	}
 
 	/**
@@ -167,13 +152,7 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function write5MinusHorizontalFacing(int $value) : self{
-		return $this->writeInt(BlockStateNames::DIRECTION, match($value){
-			Facing::EAST => 0,
-			Facing::WEST => 1,
-			Facing::SOUTH => 2,
-			Facing::NORTH => 3,
-			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
-		});
+		return $this->mapIntToInt(BlockStateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus, $value);
 	}
 
 	/**
@@ -181,25 +160,12 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function writeCardinalHorizontalFacing(int $value) : self{
-		return $this->writeString(BlockStateNames::MC_CARDINAL_DIRECTION, match($value){
-			Facing::SOUTH => StringValues::MC_CARDINAL_DIRECTION_SOUTH,
-			Facing::WEST => StringValues::MC_CARDINAL_DIRECTION_WEST,
-			Facing::NORTH => StringValues::MC_CARDINAL_DIRECTION_NORTH,
-			Facing::EAST => StringValues::MC_CARDINAL_DIRECTION_EAST,
-			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
-		});
+		return $this->mapIntToString(BlockStateNames::MC_CARDINAL_DIRECTION, ValueMappings::getInstance()->cardinalDirection, $value);
 	}
 
 	/** @return $this */
 	public function writeCoralFacing(int $value) : self{
-		$this->writeInt(BlockStateNames::CORAL_DIRECTION, match($value){
-			Facing::WEST => 0,
-			Facing::EAST => 1,
-			Facing::NORTH => 2,
-			Facing::SOUTH => 3,
-			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
-		});
-		return $this;
+		return $this->mapIntToInt(BlockStateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, $value);
 	}
 
 	/** @return $this */
@@ -222,12 +188,7 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writePillarAxis(int $axis) : self{
-		$this->writeString(BlockStateNames::PILLAR_AXIS, match($axis){
-			Axis::X => StringValues::PILLAR_AXIS_X,
-			Axis::Y => StringValues::PILLAR_AXIS_Y,
-			Axis::Z => StringValues::PILLAR_AXIS_Z,
-			default => throw new BlockStateSerializeException("Invalid axis $axis")
-		});
+		$this->mapIntToString(BlockStateNames::PILLAR_AXIS, ValueMappings::getInstance()->pillarAxis, $axis);
 		return $this;
 	}
 
@@ -241,17 +202,12 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeTorchFacing(int $facing) : self{
-		//TODO: horizontal directions are flipped (MCPE bug: https://bugs.mojang.com/browse/MCPE-152036)
-		$this->writeString(BlockStateNames::TORCH_FACING_DIRECTION, match($facing){
-			Facing::UP => StringValues::TORCH_FACING_DIRECTION_TOP,
-			Facing::SOUTH => StringValues::TORCH_FACING_DIRECTION_NORTH,
-			Facing::NORTH => StringValues::TORCH_FACING_DIRECTION_SOUTH,
-			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_WEST,
-			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_EAST,
-			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
-		});
+		$this->mapIntToString(BlockStateNames::TORCH_FACING_DIRECTION, ValueMappings::getInstance()->torchFacing, $facing);
 		return $this;
 	}
 
@@ -260,7 +216,7 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
-		return $this->writeUnitEnum(BlockStateNames::ATTACHMENT, $attachmentType);
+		return $this->writeUnitEnum(BlockStateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, $attachmentType);
 	}
 
 	/** @return $this */
@@ -273,10 +229,15 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
-	public function writeUnitEnum(string $name, \UnitEnum $case) : self{
-		$mapping = ValueMappings::getInstance()->getEnumMap($case::class);
-		$value = $mapping->enumToValue($case);
+	/**
+	 * @phpstan-template TEnum of \UnitEnum
+	 * @phpstan-param EnumFromStringStateMap<TEnum> $map
+	 * @phpstan-param TEnum                         $case
+	 *
+	 * @return $this
+	 */
+	public function writeUnitEnum(string $name, EnumFromStringStateMap $map, \UnitEnum $case) : self{
+		$value = $map->enumToValue($case);
 		$this->writeString($name, $value);
 
 		return $this;

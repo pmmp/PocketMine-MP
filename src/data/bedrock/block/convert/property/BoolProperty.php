@@ -49,6 +49,8 @@ final class BoolProperty implements Property{
 		return new self($name, fn() => $serializedValue, fn() => null);
 	}
 
+	public function getName() : string{ return $this->name; }
+
 	/**
 	 * @phpstan-param TBlock $block
 	 */

@@ -27,20 +27,35 @@ use pocketmine\block\Block;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
+use pocketmine\data\bedrock\block\convert\IntFromStringStateMap;
 use pocketmine\math\Facing;
 
 /**
+ * TODO: this could just wrap around IntFromStringProperty / IntFromIntProperty if the design of Property were changed
+ *
  * @phpstan-implements Property<Block&HorizontalFacing>
  */
-abstract class BaseHorizontalFacingProperty implements Property{
-
+class HorizontalFacingProperty implements Property{
 	public function __construct(
-		private HorizontalFacingReadTransform $readTransform = HorizontalFacingReadTransform::NONE
+		private string $name,
+		private IntFromStringStateMap|IntFromIntStateMap $map,
+		private HorizontalFacingReadTransform $readTransform = HorizontalFacingReadTransform::NONE,
 	){}
 
-	abstract protected function read(BlockStateReader $in) : int;
+	public function getName() : string{ return $this->name; }
 
-	abstract protected function write(BlockStateWriter $out, int $value) : void;
+	protected function read(BlockStateReader $in) : int{
+		return $this->map instanceof IntFromIntStateMap ?
+			$in->mapIntFromInt($this->name, $this->map) :
+			$in->mapIntFromString($this->name, $this->map);
+	}
+
+	protected function write(BlockStateWriter $out, int $value) : void{
+		$this->map instanceof IntFromIntStateMap ?
+			$out->mapIntToInt($this->name, $this->map, $value) :
+			$out->mapIntToString($this->name, $this->map, $value);
+	}
 
 	public function deserialize(Block $block, BlockStateReader $in) : void{
 		$value = $this->read($in);
