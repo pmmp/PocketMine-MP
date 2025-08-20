@@ -416,7 +416,7 @@ final class CommonProperties{
 		] as $facing => $stateName){
 			$wallProperties[] = new EnumFromStringProperty(
 				$stateName,
-				new EnumFromStringStateMap(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->value),
+				new EnumFromStringStateMap(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()),
 				fn(Wall $b) => WallConnectionTypeShim::serialize($b->getConnection($facing)),
 				fn(Wall $b, WallConnectionTypeShim $v) => $b->setConnection($facing, $v->deserialize())
 			);
