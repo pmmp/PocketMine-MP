@@ -829,7 +829,7 @@ final class BlockSerializerDeserializerRegistrar{
 					2 => Ids::DAMAGED_ANVIL,
 				]), fn(Anvil $b) => $b->getDamage(), fn(Anvil $b, int $v) => $b->setDamage($v))
 			])
-			->properties([$commonProperties->cardinalDirection])
+			->properties([$commonProperties->horizontalFacingCardinal])
 		);
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
 			->idComponents([
@@ -931,7 +931,7 @@ final class BlockSerializerDeserializerRegistrar{
 		] as [$block, $idSuffix]){
 			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
 				->idComponents([...$commonProperties->furnaceIdPrefixes, $idSuffix])
-				->properties([$commonProperties->cardinalDirection])
+				->properties([$commonProperties->horizontalFacingCardinal])
 			);
 		}
 
@@ -957,7 +957,7 @@ final class BlockSerializerDeserializerRegistrar{
 				"powered_repeater"
 			])
 			->properties([
-				$commonProperties->cardinalDirection,
+				$commonProperties->horizontalFacingCardinal,
 				new IntProperty(StateNames::REPEATER_DELAY, 0, 3, fn(RedstoneRepeater $b) => $b->getDelay(), fn(RedstoneRepeater $b, int $v) => $b->setDelay($v), offset: 1),
 			])
 		);
@@ -970,7 +970,7 @@ final class BlockSerializerDeserializerRegistrar{
 				"powered_comparator"
 			])
 			->properties([
-				$commonProperties->cardinalDirection,
+				$commonProperties->horizontalFacingCardinal,
 				new BoolProperty(StateNames::OUTPUT_LIT_BIT, fn(RedstoneComparator $b) => $b->isPowered(), fn(RedstoneComparator $b, bool $v) => $b->setPowered($v)),
 				new BoolProperty(StateNames::OUTPUT_SUBTRACT_BIT, fn(RedstoneComparator $b) => $b->isSubtractMode(), fn(RedstoneComparator $b, bool $v) => $b->setSubtractMode($v)),
 			])
@@ -1443,7 +1443,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::CAMPFIRE(), Ids::CAMPFIRE)->properties($commonProperties->campfireProperties));
 		$this->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::CHISELED_BOOKSHELF(), Ids::CHISELED_BOOKSHELF)->properties([
@@ -1464,7 +1464,7 @@ final class BlockSerializerDeserializerRegistrar{
 			)
 		]));
 		$this->mapModel(Model::create(Blocks::CHISELED_QUARTZ(), Ids::CHISELED_QUARTZ_BLOCK)->properties([$commonProperties->pillarAxis]));
-		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([$commonProperties->cardinalDirection]));
+		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([$commonProperties->horizontalFacingCardinal]));
 		$this->mapModel(Model::create(Blocks::CHORUS_FLOWER(), Ids::CHORUS_FLOWER)->properties([
 			new IntProperty(StateNames::AGE, ChorusFlower::MIN_AGE, ChorusFlower::MAX_AGE, fn(ChorusFlower $b) => $b->getAge(), fn(ChorusFlower $b, int $v) => $b->setAge($v))
 		]));
@@ -1481,10 +1481,10 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//E
-		$this->mapModel(Model::create(Blocks::ENDER_CHEST(), Ids::ENDER_CHEST)->properties([$commonProperties->cardinalDirection]));
+		$this->mapModel(Model::create(Blocks::ENDER_CHEST(), Ids::ENDER_CHEST)->properties([$commonProperties->horizontalFacingCardinal]));
 		$this->mapModel(Model::create(Blocks::END_PORTAL_FRAME(), Ids::END_PORTAL_FRAME)->properties([
 			new BoolProperty(StateNames::END_PORTAL_EYE_BIT, fn(EndPortalFrame $b) => $b->hasEye(), fn(EndPortalFrame $b, bool $v) => $b->setEye($v)),
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::END_ROD(), Ids::END_ROD)->properties([
 			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingEndRod, fn(EndRod $b) => $b->getFacing(), fn(EndRod $b, int $v) => $b->setFacing($v)),
@@ -1530,14 +1530,14 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::LECTERN(), Ids::LECTERN)->properties([
 			new BoolProperty(StateNames::POWERED_BIT, fn(Lectern $b) => $b->isProducingSignal(), fn(Lectern $b, bool $v) => $b->setProducingSignal($v)),
-			$commonProperties->cardinalDirection,
+			$commonProperties->horizontalFacingCardinal,
 		]));
 		$this->mapModel(Model::create(Blocks::LEVER(), Ids::LEVER)->properties([
 			new EnumFromStringProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
 		]));
 		$this->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([$commonProperties->anyFacingClassic]));
-		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([$commonProperties->cardinalDirection]));
+		$this->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([$commonProperties->horizontalFacingCardinal]));
 		$this->mapModel(Model::create(Blocks::LOOM(), Ids::LOOM)->properties([$commonProperties->horizontalFacingSWNE]));
 
 		//M
@@ -1553,7 +1553,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::PINK_PETALS(), Ids::PINK_PETALS)->properties([
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7
 			new IntProperty(StateNames::GROWTH, 0, 7, fn(PinkPetals $b) => $b->getCount(), fn(PinkPetals $b, int $v) => $b->setCount(min($v, PinkPetals::MAX_COUNT)), offset: 1),
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::POWERED_RAIL(), Ids::GOLDEN_RAIL)->properties([
 			new BoolProperty(StateNames::RAIL_DATA_BIT, fn(PoweredRail $b) => $b->isPowered(), fn(PoweredRail $b, bool $v) => $b->setPowered($v)), //TODO: shared with ActivatorRail
@@ -1596,7 +1596,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::SMALL_DRIPLEAF(), Ids::SMALL_DRIPLEAF_BLOCK)->properties([
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(SmallDripleaf $b) => $b->isTop(), fn(SmallDripleaf $b, bool $v) => $b->setTop($v)),
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::SMOOTH_QUARTZ(), Ids::SMOOTH_QUARTZ)->properties([
 			$commonProperties->dummyPillarAxis
@@ -1615,7 +1615,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::STONE_BUTTON(), Ids::STONE_BUTTON)->properties($commonProperties->buttonProperties));
 		$this->mapModel(Model::create(Blocks::STONE_PRESSURE_PLATE(), Ids::STONE_PRESSURE_PLATE)->properties($commonProperties->simplePressurePlateProperties));
 		$this->mapModel(Model::create(Blocks::STONECUTTER(), Ids::STONECUTTER_BLOCK)->properties([
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::SUGARCANE(), Ids::REEDS)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Sugarcane $b) => $b->getAge(), fn(Sugarcane $b, int $v) => $b->setAge($v))
@@ -1623,7 +1623,7 @@ final class BlockSerializerDeserializerRegistrar{
 
 		//T
 		$this->mapModel(Model::create(Blocks::TRAPPED_CHEST(), Ids::TRAPPED_CHEST)->properties([
-			$commonProperties->cardinalDirection
+			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::TRIPWIRE(), Ids::TRIP_WIRE)->properties([
 			new BoolProperty(StateNames::ATTACHED_BIT, fn(Tripwire $b) => $b->isConnected(), fn(Tripwire $b, bool $v) => $b->setConnected($v)),

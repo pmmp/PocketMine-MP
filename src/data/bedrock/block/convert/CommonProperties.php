@@ -77,8 +77,6 @@ use pocketmine\utils\SingletonTrait;
 final class CommonProperties{
 	use SingletonTrait;
 
-	/** @phpstan-var IntFromStringProperty<Block&HorizontalFacing> */
-	public readonly IntFromStringProperty $cardinalDirection;
 	/** @phpstan-var IntFromStringProperty<Block&AnyFacing> */
 	public readonly IntFromStringProperty $blockFace;
 	/** @phpstan-var IntFromStringProperty<Block&PillarRotation> */
@@ -86,12 +84,10 @@ final class CommonProperties{
 	/** @phpstan-var IntFromStringProperty<Torch> */
 	public readonly IntFromStringProperty $torchFacing;
 
-	/** @phpstan-var IntFromIntProperty<Block&HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingSWNE;
-	/** @phpstan-var IntFromIntProperty<Block&HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingSWNEInverted;
-	/** @phpstan-var IntFromIntProperty<Block&HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingClassic;
+	public readonly HorizontalFacingProperty $horizontalFacingCardinal;
+	public readonly HorizontalFacingProperty $horizontalFacingSWNE;
+	public readonly HorizontalFacingProperty $horizontalFacingSWNEInverted;
+	public readonly HorizontalFacingProperty $horizontalFacingClassic;
 
 	/** @phpstan-var IntFromIntProperty<Block&AnyFacing> */
 	public readonly IntFromIntProperty $anyFacingClassic;
@@ -219,12 +215,7 @@ final class CommonProperties{
 	private function __construct(){
 		$vm = ValueMappings::getInstance();
 
-		$this->cardinalDirection = new IntFromStringProperty(
-			StateNames::MC_CARDINAL_DIRECTION,
-			$vm->cardinalDirection,
-			fn(Block&HorizontalFacing $b) => $b->getFacing(),
-			fn(Block&HorizontalFacing $b, int $v) => $b->setFacing($v)
-		);
+		$this->horizontalFacingCardinal = new HorizontalFacingProperty(StateNames::MC_CARDINAL_DIRECTION, $vm->cardinalDirection);
 
 		$this->blockFace = new IntFromStringProperty(
 			StateNames::MC_BLOCK_FACE,
@@ -247,26 +238,9 @@ final class CommonProperties{
 			fn(Torch $b, int $v) => $b->setFacing($v)
 		);
 
-		$this->horizontalFacingSWNE = new IntFromIntProperty(
-			StateNames::DIRECTION,
-			$vm->horizontalFacingSWNE,
-			fn(Block&HorizontalFacing $b) => $b->getFacing(),
-			fn(Block&HorizontalFacing $b, int $v) => $b->setFacing($v)
-		);
-		//TODO: baking the inversion logic into the getters and setters is opaque and not good for programmatic analysis
-		//we might want to set up a value mapping instead
-		$this->horizontalFacingSWNEInverted = new IntFromIntProperty(
-			StateNames::DIRECTION,
-			$vm->horizontalFacingSWNE,
-			fn(Block&HorizontalFacing $b) => Facing::opposite($b->getFacing()),
-			fn(Block&HorizontalFacing $b, int $v) => $b->setFacing(Facing::opposite($v))
-		);
-		$this->horizontalFacingClassic = new IntFromIntProperty(
-			StateNames::FACING_DIRECTION,
-			$vm->horizontalFacingClassic,
-			fn(Block&HorizontalFacing $b) => $b->getFacing(),
-			fn(Block&HorizontalFacing $b, int $v) => $b->setFacing($v)
-		);
+		$this->horizontalFacingSWNE = new HorizontalFacingProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE);
+		$this->horizontalFacingSWNEInverted = new HorizontalFacingProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE, HorizontalFacingReadTransform::OPPOSITE);
+		$this->horizontalFacingClassic = new HorizontalFacingProperty(StateNames::FACING_DIRECTION, $vm->horizontalFacingClassic);
 
 		$this->anyFacingClassic = new IntFromIntProperty(
 			StateNames::FACING_DIRECTION,
@@ -373,7 +347,7 @@ final class CommonProperties{
 		];
 
 		$this->campfireProperties = [
-			$this->cardinalDirection,
+			$this->horizontalFacingCardinal,
 			new BoolProperty(StateNames::EXTINGUISHED, fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v), inverted: true),
 		];
 
@@ -392,7 +366,7 @@ final class CommonProperties{
 		$this->fenceGateProperties = [
 			new BoolProperty(StateNames::IN_WALL_BIT, fn(FenceGate $b) => $b->isInWall(), fn(FenceGate $b, bool $v) => $b->setInWall($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(FenceGate $b) => $b->isOpen(), fn(FenceGate $b, bool $v) => $b->setOpen($v)),
-			$this->cardinalDirection,
+			$this->horizontalFacingCardinal,
 		];
 
 		$this->itemFrameProperties = [
