@@ -36,7 +36,7 @@ use function strval;
  * @phpstan-template TEnum of \UnitEnum
  * @phpstan-implements StringProperty<TBlock>
  */
-final class EnumProperty implements StringProperty{
+final class EnumFromStringProperty implements StringProperty{
 
 	/**
 	 * @phpstan-param EnumFromStringStateMap<TEnum>   $map

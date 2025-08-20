@@ -252,17 +252,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	}
 
 	private function registerDeserializers() : void{
-		$this->map(Ids::BAMBOO, function(Reader $in) : Block{
-			return Blocks::BAMBOO()
-				->setLeafSize($in->mapIntFromString(StateNames::BAMBOO_LEAF_SIZE, ValueMappings::getInstance()->bambooLeafSize))
-				->setReady($in->readBool(StateNames::AGE_BIT))
-				->setThick(match($value = $in->readString(StateNames::BAMBOO_STALK_THICKNESS)){
-					StringValues::BAMBOO_STALK_THICKNESS_THIN => false,
-					StringValues::BAMBOO_STALK_THICKNESS_THICK => true,
-					default => throw $in->badValueException(StateNames::BAMBOO_STALK_THICKNESS, $value),
-				});
-		});
-		$this->map(Ids::BEETROOT, fn(Reader $in) => Helper::decodeCrops(Blocks::BEETROOTS(), $in));
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
 				return Blocks::BIG_DRIPLEAF_HEAD()
@@ -273,23 +262,16 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readCardinalHorizontalFacing());
 			}
 		});
-		$this->map(Ids::BLAST_FURNACE, function(Reader $in) : Block{
-			return Blocks::BLAST_FURNACE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(false);
-		});
 		$this->map(Ids::MUSHROOM_STEM, fn(Reader $in) => match($in->readBoundedInt(StateNames::HUGE_MUSHROOM_BITS, 0, 15)){
 			BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => Blocks::ALL_SIDED_MUSHROOM_STEM(),
 			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => Blocks::MUSHROOM_STEM(),
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
-		$this->map(Ids::BROWN_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::BROWN_MUSHROOM_BLOCK(), $in));
 		$this->map(Ids::CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::CAMPFIRE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
 		});
-		$this->map(Ids::CARROTS, fn(Reader $in) => Helper::decodeCrops(Blocks::CARROTS(), $in));
 		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
 			return Blocks::CAVE_VINES()
 				->setBerries(false)
@@ -323,17 +305,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::COMPOUND_CREATOR, fn(Reader $in) => Blocks::COMPOUND_CREATOR()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
-		$this->map(Ids::DAYLIGHT_DETECTOR, fn(Reader $in) => Helper::decodeDaylightSensor(Blocks::DAYLIGHT_SENSOR(), $in)
-				->setInverted(false));
-		$this->map(Ids::DAYLIGHT_DETECTOR_INVERTED, fn(Reader $in) => Helper::decodeDaylightSensor(Blocks::DAYLIGHT_SENSOR(), $in)
-				->setInverted(true));
-		$this->map(Ids::DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(false));
-		$this->map(Ids::LARGE_FERN, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::LARGE_FERN(), $in));
-		$this->map(Ids::TALL_GRASS, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::DOUBLE_TALLGRASS(), $in));
-		$this->map(Ids::PEONY, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::PEONY(), $in));
-		$this->map(Ids::ROSE_BUSH, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::ROSE_BUSH(), $in));
-		$this->map(Ids::SUNFLOWER, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::SUNFLOWER(), $in));
-		$this->map(Ids::LILAC, fn(Reader $in) => Helper::decodeDoublePlant(Blocks::LILAC(), $in));
 		$this->map(Ids::ELEMENT_CONSTRUCTOR, fn(Reader $in) => Blocks::ELEMENT_CONSTRUCTOR()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
@@ -344,11 +315,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
-		$this->map(Ids::FURNACE, function(Reader $in) : Block{
-			return Blocks::FURNACE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(false);
-		});
 		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
 		$this->map(Ids::HOPPER, function(Reader $in) : Block{
@@ -362,34 +328,9 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
 		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::LIT_BLAST_FURNACE, function(Reader $in) : Block{
-			return Blocks::BLAST_FURNACE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(true);
-		});
-		$this->map(Ids::LIT_DEEPSLATE_REDSTONE_ORE, fn() => Blocks::DEEPSLATE_REDSTONE_ORE()->setLit(true));
-		$this->map(Ids::LIT_FURNACE, function(Reader $in) : Block{
-			return Blocks::FURNACE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(true);
-		});
-		$this->map(Ids::LIT_REDSTONE_LAMP, function() : Block{
-			return Blocks::REDSTONE_LAMP()
-				->setPowered(true);
-		});
-		$this->map(Ids::LIT_REDSTONE_ORE, function() : Block{
-			return Blocks::REDSTONE_ORE()
-				->setLit(true);
-		});
-		$this->map(Ids::LIT_SMOKER, function(Reader $in) : Block{
-			return Blocks::SMOKER()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(true);
-		});
 		$this->map(Ids::MATERIAL_REDUCER, fn(Reader $in) => Blocks::MATERIAL_REDUCER()
 			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
 		);
-		$this->map(Ids::MELON_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::MELON_STEM(), $in));
 		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
 			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
@@ -404,42 +345,17 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		});
 		$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::POLISHED_BLACKSTONE_BUTTON(), $in));
 		$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::POTATOES, fn(Reader $in) => Helper::decodeCrops(Blocks::POTATOES(), $in));
-		$this->map(Ids::POWERED_COMPARATOR, fn(Reader $in) => Helper::decodeComparator(Blocks::REDSTONE_COMPARATOR(), $in));
-		$this->map(Ids::POWERED_REPEATER, fn(Reader $in) => Helper::decodeRepeater(Blocks::REDSTONE_REPEATER(), $in)
-				->setPowered(true));
-		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
-		$this->map(Ids::RED_MUSHROOM_BLOCK, fn(Reader $in) => Helper::decodeMushroomBlock(Blocks::RED_MUSHROOM_BLOCK(), $in));
-		$this->map(Ids::REDSTONE_LAMP, function() : Block{
-			return Blocks::REDSTONE_LAMP()
-				->setPowered(false);
-		});
-		$this->map(Ids::REDSTONE_ORE, function() : Block{
-			return Blocks::REDSTONE_ORE()
-				->setLit(false);
-		});
-		$this->map(Ids::REDSTONE_TORCH, function(Reader $in) : Block{
-			return Blocks::REDSTONE_TORCH()
-				->setFacing($in->readTorchFacing())
-				->setLit(true);
-		});
 		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
 				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
 		});
-		$this->map(Ids::SMOKER, function(Reader $in) : Block{
-			return Blocks::SMOKER()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(false);
-		});
 		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
 			return Blocks::SOUL_CAMPFIRE()
 				->setFacing($in->readCardinalHorizontalFacing())
 				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
 		});
-		$this->mapSimple(Ids::SPONGE, fn() => Blocks::SPONGE());
 		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
 		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
@@ -448,29 +364,11 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			return Blocks::SWEET_BERRY_BUSH()
 				->setAge(min($growth, SweetBerryBush::STAGE_MATURE));
 		});
-		$this->map(Ids::TNT, function(Reader $in) : Block{
-			return Blocks::TNT()
-				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
-				->setWorksUnderwater(false);
-		});
 		$this->map(Ids::TORCHFLOWER_CROP, function(Reader $in) : Block{
 			return Blocks::TORCHFLOWER_CROP()
 				//this property can have values 0-7, but only 0-1 are valid
 				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
 		});
-		$this->map(Ids::UNDERWATER_TNT, function(Reader $in) : Block{
-			return Blocks::TNT()
-				->setUnstable($in->readBool(StateNames::EXPLODE_BIT))
-				->setWorksUnderwater(true);
-		});
-		$this->map(Ids::UNLIT_REDSTONE_TORCH, function(Reader $in) : Block{
-			return Blocks::REDSTONE_TORCH()
-				->setFacing($in->readTorchFacing())
-				->setLit(false);
-		});
-		$this->map(Ids::UNPOWERED_COMPARATOR, fn(Reader $in) => Helper::decodeComparator(Blocks::REDSTONE_COMPARATOR(), $in));
-		$this->map(Ids::UNPOWERED_REPEATER, fn(Reader $in) => Helper::decodeRepeater(Blocks::REDSTONE_REPEATER(), $in)
-				->setPowered(false));
 		$this->map(Ids::VINE, function(Reader $in) : Block{
 			$vineDirectionFlags = $in->readBoundedInt(StateNames::VINE_DIRECTION_BITS, 0, 15);
 			return Blocks::VINES()
@@ -480,8 +378,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setFace(Facing::EAST, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_EAST) !== 0);
 		});
 		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
-		$this->mapSimple(Ids::WET_SPONGE, fn() => Blocks::SPONGE()->setWet(true));
-		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 	}
 
 	/** @throws BlockStateDeserializeException */

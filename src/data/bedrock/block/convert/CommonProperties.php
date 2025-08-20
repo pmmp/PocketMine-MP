@@ -26,10 +26,15 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Door;
+use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
+use pocketmine\block\Furnace;
 use pocketmine\block\Stair;
+use pocketmine\block\Stem;
 use pocketmine\block\Torch;
 use pocketmine\block\Trapdoor;
+use pocketmine\block\utils\Ageable;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\CopperMaterial;
@@ -38,6 +43,7 @@ use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\SignLikeRotation;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
@@ -45,7 +51,7 @@ use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumProperty;
+use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingReadTransform;
 use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
@@ -81,11 +87,22 @@ final class CommonProperties{
 	/** @phpstan-var IntProperty<Block&SignLikeRotation> */
 	public readonly IntProperty $floorSignLikeRotation;
 
+	/** @phpstan-var IntProperty<Block&AnalogRedstoneSignalEmitter> */
+	public readonly IntProperty $analogRedstoneSignal;
+
+	/** @phpstan-var IntProperty<Block&Ageable> */
+	public readonly IntProperty $cropAgeMax7;
+	/** @phpstan-var BoolProperty<DoublePlant> */
+	public readonly BoolProperty $doublePlantHalf;
+
 	public readonly DummyProperty $dummyCardinalDirection;
 	public readonly DummyProperty $dummyPillarAxis;
 
-	/** @phpstan-var EnumProperty<Block&Colored, DyeColor> */
-	public readonly EnumProperty $dyeColorIdInfix;
+	/** @phpstan-var EnumFromStringProperty<Block&Colored, DyeColor> */
+	public readonly EnumFromStringProperty $dyeColorIdInfix;
+
+	/** @phpstan-var BoolFromStringProperty<Block&Lightable> */
+	public readonly BoolFromStringProperty $litIdInfix;
 
 	/**
 	 * @var StringProperty[]
@@ -97,6 +114,12 @@ final class CommonProperties{
 	 * @phpstan-var non-empty-list<string|StringProperty<Block&CopperMaterial>>
 	 */
 	public readonly array $copperIdPrefixes;
+
+	/**
+	 * @var StringProperty[]
+	 * @phpstan-var non-empty-list<string|StringProperty<contravariant Furnace>>
+	 */
+	public readonly array $furnaceIdPrefixes;
 
 	/**
 	 * @var Property[]
@@ -121,6 +144,12 @@ final class CommonProperties{
 	 * @phpstan-var non-empty-list<Property<contravariant Stair>>
 	 */
 	public readonly array $stairProperties;
+
+	/**
+	 * @var Property[]
+	 * @phpstan-var non-empty-list<Property<contravariant Stem>>
+	 */
+	public readonly array $stemProperties;
 
 	/**
 	 * @var Property[]
@@ -189,15 +218,21 @@ final class CommonProperties{
 
 		$this->floorSignLikeRotation = new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(Block&SignLikeRotation $b) => $b->getRotation(), fn(Block&SignLikeRotation $b, int $v) => $b->setRotation($v));
 
+		$this->analogRedstoneSignal = new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(Block&AnalogRedstoneSignalEmitter $b) => $b->getOutputSignalStrength(), fn(Block&AnalogRedstoneSignalEmitter $b, int $v) => $b->setOutputSignalStrength($v));
+
+		$this->cropAgeMax7 = new IntProperty(StateNames::GROWTH, 0, 7, fn(Block&Ageable $b) => $b->getAge(), fn(Block&Ageable $b, int $v) => $b->setAge($v));
+		$this->doublePlantHalf = new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(DoublePlant $b) => $b->isTop(), fn(DoublePlant $b, bool $v) => $b->setTop($v));
+
 		$this->dummyCardinalDirection = new DummyProperty(StateNames::MC_CARDINAL_DIRECTION, BlockStateStringValues::MC_CARDINAL_DIRECTION_SOUTH);
 		$this->dummyPillarAxis = new DummyProperty(StateNames::PILLAR_AXIS, BlockStateStringValues::PILLAR_AXIS_Y);
 
-		$this->dyeColorIdInfix = new EnumProperty("color", ValueMappings::getInstance()->dyeColor, fn(Block&Colored $b) => $b->getColor(), fn(Block&Colored $b, DyeColor $v) => $b->setColor($v));
+		$this->dyeColorIdInfix = new EnumFromStringProperty("color", $vm->dyeColor, fn(Block&Colored $b) => $b->getColor(), fn(Block&Colored $b, DyeColor $v) => $b->setColor($v));
+		$this->litIdInfix = new BoolFromStringProperty("lit", "", "lit_", fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v));
 
 		$this->coralIdPrefixes = [
 			"minecraft:",
 			new BoolFromStringProperty("dead", "", "dead_", fn(Block&CoralMaterial $b) => $b->isDead(), fn(Block&CoralMaterial $b, bool $v) => $b->setDead($v)),
-			new EnumProperty("type", new EnumFromStringStateMap(CoralType::class, fn(CoralType $case) => match ($case) {
+			new EnumFromStringProperty("type", new EnumFromStringStateMap(CoralType::class, fn(CoralType $case) => match ($case) {
 				CoralType::BRAIN => "brain",
 				CoralType::BUBBLE => "bubble",
 				CoralType::FIRE => "fire",
@@ -208,13 +243,15 @@ final class CommonProperties{
 		$this->copperIdPrefixes = [
 			"minecraft:",
 			new BoolFromStringProperty("waxed", "", "waxed_", fn(Block&CopperMaterial $b) => $b->isWaxed(), fn(Block&CopperMaterial $b, bool $v) => $b->setWaxed($v)),
-			new EnumProperty("oxidation", new EnumFromStringStateMap(CopperOxidation::class, fn(CopperOxidation $case) => match ($case) {
+			new EnumFromStringProperty("oxidation", new EnumFromStringStateMap(CopperOxidation::class, fn(CopperOxidation $case) => match ($case) {
 				CopperOxidation::NONE => "",
 				CopperOxidation::EXPOSED => "exposed_",
 				CopperOxidation::WEATHERED => "weathered_",
 				CopperOxidation::OXIDIZED => "oxidized_",
 			}), fn(Block&CopperMaterial $b) => $b->getOxidation(), fn(Block&CopperMaterial $b, CopperOxidation $v) => $b->setOxidation($v))
 		];
+
+		$this->furnaceIdPrefixes = ["minecraft:", $this->litIdInfix];
 
 		$this->buttonProperties = [
 			$this->anyFacingClassic,
@@ -228,7 +265,7 @@ final class CommonProperties{
 			new BoolProperty(StateNames::OPEN_BIT, fn(Door $b) => $b->isOpen(), fn(Door $b, bool $v) => $b->setOpen($v)),
 			new HorizontalFacingProperty(
 				StateNames::MC_CARDINAL_DIRECTION,
-				ValueMappings::getInstance()->cardinalDirection,
+				$vm->cardinalDirection,
 				HorizontalFacingReadTransform::COUNTER_CLOCKWISE
 			)
 		];
@@ -241,12 +278,17 @@ final class CommonProperties{
 
 		$this->stairProperties = [
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Stair $b) => $b->isUpsideDown(), fn(Stair $b, bool $v) => $b->setUpsideDown($v)),
-			new HorizontalFacingProperty(StateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus)
+			new HorizontalFacingProperty(StateNames::WEIRDO_DIRECTION, $vm->horizontalFacing5Minus)
+		];
+
+		$this->stemProperties = [
+			new IntFromIntProperty(StateNames::FACING_DIRECTION, $vm->facingStem, fn(Stem $b) => $b->getFacing(), fn(Stem $b, int $v) => $b->setFacing($v)),
+			$this->cropAgeMax7
 		];
 
 		$this->trapdoorProperties = [
 			//this uses the same values as stairs, but the state is named differently
-			new HorizontalFacingProperty(StateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus),
+			new HorizontalFacingProperty(StateNames::DIRECTION, $vm->horizontalFacing5Minus),
 
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Trapdoor $b) => $b->isTop(), fn(Trapdoor $b, bool $v) => $b->setTop($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Trapdoor $b) => $b->isOpen(), fn(Trapdoor $b, bool $v) => $b->setOpen($v)),

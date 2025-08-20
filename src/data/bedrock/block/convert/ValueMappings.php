@@ -31,6 +31,8 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
+use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata as LegacyMeta;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
@@ -58,6 +60,9 @@ final class ValueMappings{
 	/** @var EnumFromStringStateMap<LeverFacing> */
 	public readonly EnumFromStringStateMap $leverFacing;
 
+	/** @var EnumFromIntStateMap<MushroomBlockType> */
+	public readonly EnumFromIntStateMap $mushroomBlockType;
+
 	public readonly IntFromStringStateMap $cardinalDirection;
 	public readonly IntFromStringStateMap $blockFace;
 	public readonly IntFromStringStateMap $pillarAxis;
@@ -74,6 +79,7 @@ final class ValueMappings{
 
 	public readonly IntFromIntStateMap $facingExceptDown;
 	public readonly IntFromIntStateMap $facingExceptUp;
+	public readonly IntFromIntStateMap $facingStem;
 
 	public function __construct(){
 		//flattened ID components - we can't generate constants for these
@@ -144,6 +150,27 @@ final class ValueMappings{
 			LeverFacing::EAST => StringValues::LEVER_DIRECTION_EAST
 		});
 
+		$this->mushroomBlockType = new EnumFromIntStateMap(
+			MushroomBlockType::class,
+			fn(MushroomBlockType $case) => match($case){
+				MushroomBlockType::PORES => LegacyMeta::MUSHROOM_BLOCK_ALL_PORES,
+				MushroomBlockType::CAP_NORTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
+				MushroomBlockType::CAP_NORTH => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
+				MushroomBlockType::CAP_NORTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
+				MushroomBlockType::CAP_WEST => LegacyMeta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
+				MushroomBlockType::CAP_MIDDLE => LegacyMeta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
+				MushroomBlockType::CAP_EAST => LegacyMeta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
+				MushroomBlockType::CAP_SOUTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
+				MushroomBlockType::CAP_SOUTH => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
+				MushroomBlockType::CAP_SOUTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
+				MushroomBlockType::ALL_CAP => LegacyMeta::MUSHROOM_BLOCK_ALL_CAP,
+			},
+			fn(MushroomBlockType $case) => match($case){
+				MushroomBlockType::ALL_CAP => [11, 12, 13],
+				default => []
+			}
+		);
+
 		$this->cardinalDirection = new IntFromStringStateMap([
 			Facing::NORTH => StringValues::MC_CARDINAL_DIRECTION_NORTH,
 			Facing::SOUTH => StringValues::MC_CARDINAL_DIRECTION_SOUTH,
@@ -203,22 +230,20 @@ final class ValueMappings{
 			Facing::NORTH => 2,
 			Facing::SOUTH => 3
 		]);
-		$this->horizontalFacingClassic = new IntFromIntStateMap([
+		$horizontalFacingClassicTable = [
 			Facing::NORTH => 2,
 			Facing::SOUTH => 3,
 			Facing::WEST => 4,
 			Facing::EAST => 5
-		], deserializeAliases: [
+		];
+		$this->horizontalFacingClassic = new IntFromIntStateMap($horizontalFacingClassicTable, deserializeAliases: [
 			Facing::NORTH => [0, 1] //should be illegal but still technically possible
 		]);
 
 		$this->facing = new IntFromIntStateMap([
 			Facing::DOWN => 0,
 			Facing::UP => 1,
-			Facing::NORTH => 2,
-			Facing::SOUTH => 3,
-			Facing::WEST => 4,
-			Facing::EAST => 5
+			...$horizontalFacingClassicTable
 		]);
 		$this->coralAxis = new IntFromIntStateMap([
 			Axis::X => 0,
@@ -228,21 +253,25 @@ final class ValueMappings{
 		//TODO: shitty copy pasta job, we can do this better but this is good enough for now
 		$this->facingExceptDown = new IntFromIntStateMap([
 			Facing::UP => 1,
-			Facing::NORTH => 2,
-			Facing::SOUTH => 3,
-			Facing::WEST => 4,
-			Facing::EAST => 5
+			...$horizontalFacingClassicTable
 		], deserializeAliases: [
 			Facing::UP => 0
 		]);
 		$this->facingExceptUp = new IntFromIntStateMap([
 			Facing::DOWN => 0,
-			Facing::NORTH => 2,
-			Facing::SOUTH => 3,
-			Facing::WEST => 4,
-			Facing::EAST => 5
+			...$horizontalFacingClassicTable
 		], deserializeAliases: [
 			Facing::DOWN => 1
+		]);
+
+		$this->facingStem = new IntFromIntStateMap([
+			//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+			//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+			//is absurd, and I refuse to make our API similarly absurd.
+			Facing::UP => 0,
+			...$horizontalFacingClassicTable
+		], deserializeAliases: [
+			Facing::UP => 1
 		]);
 	}
 }

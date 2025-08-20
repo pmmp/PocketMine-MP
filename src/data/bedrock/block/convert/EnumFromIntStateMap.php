@@ -27,25 +27,26 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use function spl_object_id;
 
 /**
+ * TODO: it would be nice not to duplicate this code from EnumFromStringStateMap, but this will do for now
  * @phpstan-template TEnum of \UnitEnum
  */
-class EnumFromStringStateMap{
+class EnumFromIntStateMap{
 	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
+	 * @var int[]
+	 * @phpstan-var array<int, int>
 	 */
 	private array $enumToValue = [];
 
 	/**
 	 * @var \UnitEnum[]
-	 * @phpstan-var array<string, TEnum>
+	 * @phpstan-var array<int, TEnum>
 	 */
 	private array $valueToEnum = [];
 
 	/**
 	 * @phpstan-param class-string<TEnum> $class
-	 * @phpstan-param \Closure(TEnum) : string $mapper
-	 * @phpstan-param ?\Closure(TEnum) : list<string> $aliasMapper
+	 * @phpstan-param \Closure(TEnum) : int $mapper
+	 * @phpstan-param ?\Closure(TEnum) : list<int> $aliasMapper
 	 */
 	public function __construct(
 		private string $class,
@@ -53,9 +54,9 @@ class EnumFromStringStateMap{
 		?\Closure $aliasMapper = null
 	){
 		foreach($class::cases() as $case){
-			$string = $mapper($case);
-			$this->valueToEnum[$string] = $case;
-			$this->enumToValue[spl_object_id($case)] = $string;
+			$int = $mapper($case);
+			$this->valueToEnum[$int] = $case;
+			$this->enumToValue[spl_object_id($case)] = $int;
 
 			if($aliasMapper !== null){
 				$aliases = $aliasMapper($case);
@@ -69,20 +70,20 @@ class EnumFromStringStateMap{
 	/**
 	 * @phpstan-param TEnum $enum
 	 */
-	public function enumToValue(\UnitEnum $enum) : string{
+	public function enumToValue(\UnitEnum $enum) : int{
 		return $this->enumToValue[spl_object_id($enum)];
 	}
 
 	/**
 	 * @phpstan-return TEnum|null
 	 */
-	public function valueToEnum(string $string) : ?\UnitEnum{
-		return $this->valueToEnum[$string] ?? throw new BlockStateDeserializeException("No $this->class enum mapping for \"$string\"");
+	public function valueToEnum(int $int) : ?\UnitEnum{
+		return $this->valueToEnum[$int] ?? throw new BlockStateDeserializeException("No $this->class enum mapping for value $int");
 	}
 
 	/**
 	 * @return \UnitEnum[]
-	 * @phpstan-return array<string, TEnum>
+	 * @phpstan-return array<int, TEnum>
 	 */
 	public function getValueToEnum() : array{
 		return $this->valueToEnum;

@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
+use pocketmine\block\Bamboo;
 use pocketmine\block\BambooSapling;
 use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
@@ -40,6 +41,7 @@ use pocketmine\block\Candle;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\Copper;
+use pocketmine\block\DaylightSensor;
 use pocketmine\block\DetectorRail;
 use pocketmine\block\Dirt;
 use pocketmine\block\DoublePlant;
@@ -62,15 +64,20 @@ use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\Rail;
-use pocketmine\block\RedstoneWire;
+use pocketmine\block\RedMushroomBlock;
+use pocketmine\block\RedstoneComparator;
+use pocketmine\block\RedstoneRepeater;
+use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Sapling;
 use pocketmine\block\Slab;
 use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
+use pocketmine\block\Sponge;
 use pocketmine\block\Stair;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\Sugarcane;
+use pocketmine\block\TNT;
 use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
@@ -83,18 +90,20 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\MobHeadType;
+use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\block\WeightedPressurePlate;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
+use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumProperty;
+use pocketmine\data\bedrock\block\convert\property\EnumFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\FlattenedIdModel;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
@@ -127,9 +136,11 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->registerCandleMappings($commonProperties);
 		$this->registerLeavesMappings();
 		$this->registerSaplingMappings();
+		$this->registerPlantMappings($commonProperties);
 		$this->registerCoralMappings($commonProperties);
 		$this->registerCopperMappings($commonProperties);
 		$this->registerFlattenedEnumMappings($commonProperties);
+		$this->registerFlattenedBoolMappings($commonProperties);
 		$this->registerStoneLikeSlabMappings();
 		$this->registerStoneLikeStairMappings();
 		$this->registerStoneLikeWallMappings();
@@ -617,7 +628,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
 			->idComponents([
 				"minecraft:",
-				new EnumProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
+				new EnumFromStringProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
 				"_glazed_terracotta"
 			])
 			->properties([$commonProperties->horizontalFacingClassic])
@@ -688,6 +699,36 @@ final class BlockSerializerDeserializerRegistrar{
 			Ids::SPRUCE_SAPLING => Blocks::SPRUCE_SAPLING(),
 		] as $id => $block){
 			$this->mapModel(Model::create($block, $id)->properties($properties));
+		}
+	}
+
+	private function registerPlantMappings(CommonProperties $commonProperties) : void{
+		$this->mapModel(Model::create(Blocks::BEETROOTS(), Ids::BEETROOT)->properties([$commonProperties->cropAgeMax7]));
+		$this->mapModel(Model::create(Blocks::CARROTS(), Ids::CARROTS)->properties([$commonProperties->cropAgeMax7]));
+		$this->mapModel(Model::create(Blocks::POTATOES(), Ids::POTATOES)->properties([$commonProperties->cropAgeMax7]));
+		$this->mapModel(Model::create(Blocks::WHEAT(), Ids::WHEAT)->properties([$commonProperties->cropAgeMax7]));
+
+		$this->mapModel(Model::create(Blocks::MELON_STEM(), Ids::MELON_STEM)->properties($commonProperties->stemProperties));
+		$this->mapModel(Model::create(Blocks::PUMPKIN_STEM(), Ids::PUMPKIN_STEM)->properties($commonProperties->stemProperties));
+
+		foreach([
+			[Blocks::DOUBLE_TALLGRASS(), Ids::TALL_GRASS],
+			[Blocks::LARGE_FERN(), Ids::LARGE_FERN],
+			[Blocks::LILAC(), Ids::LILAC],
+			[Blocks::PEONY(), Ids::PEONY],
+			[Blocks::ROSE_BUSH(), Ids::ROSE_BUSH],
+			[Blocks::SUNFLOWER(), Ids::SUNFLOWER],
+		] as [$block, $id]){
+			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->doublePlantHalf]));
+		}
+
+		foreach([
+			[Blocks::BROWN_MUSHROOM_BLOCK(), Ids::BROWN_MUSHROOM_BLOCK],
+			[Blocks::RED_MUSHROOM_BLOCK(), Ids::RED_MUSHROOM_BLOCK]
+		] as [$block, $id]){
+			$this->mapModel(Model::create($block, $id)->properties([
+				new EnumFromIntProperty(StateNames::HUGE_MUSHROOM_BITS, ValueMappings::getInstance()->mushroomBlockType, fn(RedMushroomBlock $b) => $b->getMushroomBlockType(), fn(RedMushroomBlock $b, MushroomBlockType $v) => $b->setMushroomBlockType($v)),
+			]));
 		}
 	}
 
@@ -769,7 +810,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//D
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DIRT())
 			->idComponents([
-				new EnumProperty("id", new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match ($case) {
+				new EnumFromStringProperty("id", new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match ($case) {
 					DirtType::NORMAL => Ids::DIRT,
 					DirtType::COARSE => Ids::COARSE_DIRT,
 					DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
@@ -780,7 +821,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//F
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::FROGLIGHT())
 			->idComponents([
-				new EnumProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
+				new EnumFromStringProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
 			])
 			->properties([$commonProperties->pillarAxis])
 		);
@@ -802,10 +843,87 @@ final class BlockSerializerDeserializerRegistrar{
 		//M
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::MOB_HEAD())
 			->idComponents([
-				new EnumProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
+				new EnumFromStringProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
 			])
 			->properties([
 				new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptDown, fn(MobHead $b) => $b->getFacing(), fn(MobHead $b, int $v) => $b->setFacing($v))
+			])
+		);
+	}
+
+	private function registerFlattenedBoolMappings(CommonProperties $commonProperties) : void{
+		foreach([
+			[Blocks::BLAST_FURNACE(), "blast_furnace"],
+			[Blocks::FURNACE(), "furnace"],
+			[Blocks::SMOKER(), "smoker"]
+		] as [$block, $idSuffix]){
+			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+				->idComponents([...$commonProperties->furnaceIdPrefixes, $idSuffix])
+				->properties([$commonProperties->cardinalDirection])
+			);
+		}
+
+		foreach([
+			[Blocks::REDSTONE_LAMP(), "redstone_lamp"],
+			[Blocks::REDSTONE_ORE(), "redstone_ore"],
+			[Blocks::DEEPSLATE_REDSTONE_ORE(), "deepslate_redstone_ore"]
+		] as [$block, $idSuffix]){
+			$this->mapMatrixFlattened(FlattenedIdModel::create($block)->idComponents(["minecraft:", $commonProperties->litIdInfix, $idSuffix]));
+		}
+
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DAYLIGHT_SENSOR())
+			->idComponents([
+				"minecraft:daylight_detector",
+				new BoolFromStringProperty("inverted", "", "_inverted", fn(DaylightSensor $b) => $b->isInverted(), fn(DaylightSensor $b, bool $v) => $b->setInverted($v))
+			])
+			->properties([$commonProperties->analogRedstoneSignal])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_REPEATER())
+			->idComponents([
+				"minecraft:",
+				new BoolFromStringProperty("powered", "un", "", fn(RedstoneRepeater $b) => $b->isPowered(), fn(RedstoneRepeater $b, bool $v) => $b->setPowered($v)),
+				"powered_repeater"
+			])
+			->properties([
+				$commonProperties->cardinalDirection,
+				new IntProperty(StateNames::REPEATER_DELAY, 0, 3, fn(RedstoneRepeater $b) => $b->getDelay(), fn(RedstoneRepeater $b, int $v) => $b->setDelay($v), offset: 1),
+			])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_COMPARATOR())
+			->idComponents([
+				"minecraft:",
+				//this property also appears in the state, so we ignore it in the ID
+				//this is baked here purely to keep minecraft happy
+				new BoolFromStringProperty("dummy_powered", "un", "", fn(RedstoneComparator $b) => $b->isPowered(), fn() => null),
+				"powered_comparator"
+			])
+			->properties([
+				$commonProperties->cardinalDirection,
+				new BoolProperty(StateNames::OUTPUT_LIT_BIT, fn(RedstoneComparator $b) => $b->isPowered(), fn(RedstoneComparator $b, bool $v) => $b->setPowered($v)),
+				new BoolProperty(StateNames::OUTPUT_SUBTRACT_BIT, fn(RedstoneComparator $b) => $b->isSubtractMode(), fn(RedstoneComparator $b, bool $v) => $b->setSubtractMode($v)),
+			])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_TORCH())
+			->idComponents([
+				"minecraft:",
+				new BoolFromStringProperty("lit", "unlit_", "", fn(RedstoneTorch $b) => $b->isLit(), fn(RedstoneTorch $b, bool $v) => $b->setLit($v)),
+				"redstone_torch"
+			])
+			->properties([$commonProperties->torchFacing])
+		);
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::SPONGE())->idComponents([
+			"minecraft:",
+			new BoolFromStringProperty("wet", "", "wet_", fn(Sponge $b) => $b->isWet(), fn(Sponge $b, bool $v) => $b->setWet($v)),
+			"sponge"
+		]));
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::TNT())
+			->idComponents([
+				"minecraft:",
+				new BoolFromStringProperty("underwater", "", "underwater_", fn(TNT $b) => $b->worksUnderwater(), fn(TNT $b, bool $v) => $b->setWorksUnderwater($v)),
+				"tnt"
+			])
+			->properties([
+				new BoolProperty(StateNames::EXPLODE_BIT, fn(TNT $b) => $b->isUnstable(), fn(TNT $b, bool $v) => $b->setUnstable($v)),
 			])
 		);
 	}
@@ -1196,6 +1314,11 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//B
+		$this->mapModel(Model::create(Blocks::BAMBOO(), Ids::BAMBOO)->properties([
+			new IntFromStringProperty(StateNames::BAMBOO_LEAF_SIZE, ValueMappings::getInstance()->bambooLeafSize, fn(Bamboo $b) => $b->getLeafSize(), fn(Bamboo $b, int $v) => $b->setLeafSize($v)),
+			new BoolProperty(StateNames::AGE_BIT, fn(Bamboo $b) => $b->isReady(), fn(Bamboo $b, bool $v) => $b->setReady($v)),
+			new BoolFromStringProperty(StateNames::BAMBOO_STALK_THICKNESS, StringValues::BAMBOO_STALK_THICKNESS_THIN, StringValues::BAMBOO_STALK_THICKNESS_THICK, fn(Bamboo $b) => $b->isThick(), fn(Bamboo $b, bool $v) => $b->setThick($v))
+		]));
 		$this->mapModel(Model::create(Blocks::BAMBOO_SAPLING(), Ids::BAMBOO_SAPLING)->properties([
 			new BoolProperty(StateNames::AGE_BIT, fn(BambooSapling $b) => $b->isReady(), fn(BambooSapling $b, bool $v) => $b->setReady($v))
 		]));
@@ -1215,7 +1338,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::BELL(), Ids::BELL)->properties([
 			BoolProperty::unused(StateNames::TOGGLE_BIT, false),
-			new EnumProperty(StateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
+			new EnumFromStringProperty(StateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
 			$commonProperties->horizontalFacingSWNE
 		]));
 		$this->mapModel(Model::create(Blocks::BONE_BLOCK(), Ids::BONE_BLOCK)->properties([
@@ -1294,7 +1417,7 @@ final class BlockSerializerDeserializerRegistrar{
 			$commonProperties->cardinalDirection,
 		]));
 		$this->mapModel(Model::create(Blocks::LEVER(), Ids::LEVER)->properties([
-			new EnumProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
+			new EnumFromStringProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
 		]));
 		$this->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([$commonProperties->anyFacingClassic]));
@@ -1343,9 +1466,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::RAIL(), Ids::RAIL)->properties([
 			new IntProperty(StateNames::RAIL_DIRECTION, 0, 9, fn(Rail $b) => $b->getShape(), fn(Rail $b, int $v) => $b->setShape($v))
 		]));
-		$this->mapModel(Model::create(Blocks::REDSTONE_WIRE(), Ids::REDSTONE_WIRE)->properties([
-			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(RedstoneWire $b) => $b->getOutputSignalStrength(), fn(RedstoneWire $b, int $v) => $b->setOutputSignalStrength($v))
-		]));
+		$this->mapModel(Model::create(Blocks::REDSTONE_WIRE(), Ids::REDSTONE_WIRE)->properties([$commonProperties->analogRedstoneSignal]));
 		$this->mapModel(Model::create(Blocks::RESPAWN_ANCHOR(), Ids::RESPAWN_ANCHOR)->properties([
 			new IntProperty(StateNames::RESPAWN_ANCHOR_CHARGE, 0, 4, fn(RespawnAnchor $b) => $b->getCharges(), fn(RespawnAnchor $b, int $v) => $b->setCharges($v))
 		]));
@@ -1400,11 +1521,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::WEEPING_VINES(), Ids::WEEPING_VINES)->properties([
 			new IntProperty(StateNames::WEEPING_VINES_AGE, 0, 25, fn(NetherVines $b) => $b->getAge(), fn(NetherVines $b, int $v) => $b->setAge($v))
 		]));
-		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)->properties([
-			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		]));
-		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)->properties([
-			new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(WeightedPressurePlate $b) => $b->getOutputSignalStrength(), fn(WeightedPressurePlate $b, int $v) => $b->setOutputSignalStrength($v))
-		]));
+		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)->properties([$commonProperties->analogRedstoneSignal]));
+		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)->properties([$commonProperties->analogRedstoneSignal]));
 	}
 }
