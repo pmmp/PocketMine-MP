@@ -32,7 +32,6 @@ use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
-use pocketmine\block\utils\Colored;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -136,61 +135,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$result = $locatedSerializer($blockState);
 
 		return $result instanceof Writer ? $result->getBlockStateData() : $result;
-	}
-
-	/**
-	 * @phpstan-template TBlock of Block
-	 * @phpstan-template TEnum of \UnitEnum
-	 *
-	 * @phpstan-param TBlock                        $block
-	 * @phpstan-param EnumFromStringStateMap<TEnum> $mapProperty
-	 * @phpstan-param \Closure(TBlock) : TEnum      $getProperty
-	 * @phpstan-param ?\Closure(TBlock, Writer) : Writer $extra
-	 */
-	public function mapFlattenedEnum(
-		Block $block,
-		EnumFromStringStateMap $mapProperty,
-		string $prefix,
-		string $suffix,
-		\Closure $getProperty,
-		?\Closure $extra = null
-	) : void{
-		if($extra !== null){
-			$this->map($block, function(Block $block) use ($getProperty, $mapProperty, $prefix, $suffix, $extra) : Writer{
-				$property = $getProperty($block);
-				$infix = $mapProperty->enumToValue($property);
-				$writer = new Writer($prefix . $infix . $suffix);
-				$extra($block, $writer);
-				return $writer;
-			});
-		}else{
-			$this->map($block, function(Block $block) use ($getProperty, $mapProperty, $prefix, $suffix) : BlockStateData{
-				$property = $getProperty($block);
-				$infix = $mapProperty->enumToValue($property);
-				return BlockStateData::current($prefix . $infix . $suffix, []);
-			});
-		}
-	}
-
-	/**
-	 * @phpstan-template TBlock of Block&Colored
-	 * @phpstan-param TBlock $block
-	 * @phpstan-param ?\Closure(TBlock, Writer) : Writer $extra
-	 */
-	public function mapColored(
-		Block $block,
-		string $prefix,
-		string $suffix,
-		?\Closure $extra = null
-	) : void{
-		$this->mapFlattenedEnum(
-			$block,
-			ValueMappings::getInstance()->dyeColor,
-			$prefix,
-			$suffix,
-			fn(Colored $block) => $block->getColor(),
-			$extra
-		);
 	}
 
 	private function registerCauldronSerializers() : void{

@@ -29,8 +29,6 @@ use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
-use pocketmine\block\utils\Colored;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -42,7 +40,6 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
-use pocketmine\utils\Utils;
 use function array_key_exists;
 use function count;
 use function min;
@@ -127,50 +124,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	public function mapLog(string $unstrippedId, string $strippedId, \Closure $getBlock) : void{
 		$this->map($unstrippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), false, $in));
 		$this->map($strippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), true, $in));
-	}
-
-	/**
-	 * @phpstan-template TBlock of Block
-	 * @phpstan-template TEnum of \UnitEnum
-	 *
-	 * @phpstan-param EnumFromStringStateMap<TEnum> $mapProperty
-	 * @phpstan-param \Closure(TEnum) : TBlock      $getBlock
-	 * @phpstan-param ?\Closure(TBlock, Reader) : TBlock $extra
-	 */
-	public function mapFlattenedEnum(
-		EnumFromStringStateMap $mapProperty,
-		string $prefix,
-		string $suffix,
-		\Closure $getBlock,
-		?\Closure $extra = null
-	) : void{
-		foreach(Utils::stringifyKeys($mapProperty->getValueToEnum()) as $infix => $enumCase){
-			$id = $prefix . $infix . $suffix;
-			if($extra === null){
-				$this->map($id, fn() => $getBlock($enumCase));
-			}else{
-				$this->map($id, function(Reader $in) use ($enumCase, $getBlock, $extra) : Block{
-					$block = $getBlock($enumCase);
-					$extra($block, $in);
-					return $block;
-				});
-			}
-		}
-	}
-
-	/**
-	 * @phpstan-template TBlock of Block&Colored
-	 * @phpstan-param \Closure() : TBlock $getBlock
-	 * @phpstan-param ?\Closure(TBlock, Reader) : TBlock $extra
-	 */
-	public function mapColored(string $prefix, string $suffix, \Closure $getBlock, ?\Closure $extra = null) : void{
-		$this->mapFlattenedEnum(
-			ValueMappings::getInstance()->dyeColor,
-			$prefix,
-			$suffix,
-			fn(DyeColor $color) => $getBlock()->setColor($color),
-			$extra
-		);
 	}
 
 	private function registerCauldronDeserializers() : void{
