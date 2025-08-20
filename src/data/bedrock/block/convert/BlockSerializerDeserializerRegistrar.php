@@ -784,7 +784,6 @@ final class BlockSerializerDeserializerRegistrar{
 				new BoolProperty(StateNames::POWERED_BIT, fn(Block&PoweredByRedstone $b) => $b->isPowered(), fn(Block&PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
 			])
 		);
-		//copper skipped because of copper_block :(
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER())
 			->idComponents([
 				...$commonProperties->copperIdPrefixes,
