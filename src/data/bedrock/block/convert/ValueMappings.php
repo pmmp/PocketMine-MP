@@ -242,36 +242,29 @@ final class ValueMappings{
 
 		$this->facing = new IntFromIntStateMap([
 			Facing::DOWN => 0,
-			Facing::UP => 1,
-			...$horizontalFacingClassicTable
-		]);
+			Facing::UP => 1
+		] + $horizontalFacingClassicTable);
+
 		$this->coralAxis = new IntFromIntStateMap([
 			Axis::X => 0,
 			Axis::Z => 1,
 		]);
 
 		//TODO: shitty copy pasta job, we can do this better but this is good enough for now
-		$this->facingExceptDown = new IntFromIntStateMap([
-			Facing::UP => 1,
-			...$horizontalFacingClassicTable
-		], deserializeAliases: [
-			Facing::UP => 0
-		]);
-		$this->facingExceptUp = new IntFromIntStateMap([
-			Facing::DOWN => 0,
-			...$horizontalFacingClassicTable
-		], deserializeAliases: [
-			Facing::DOWN => 1
-		]);
+		$this->facingExceptDown = new IntFromIntStateMap(
+			[Facing::UP => 1] + $horizontalFacingClassicTable,
+			deserializeAliases: [Facing::UP => 0]);
+		$this->facingExceptUp = new IntFromIntStateMap(
+			[Facing::DOWN => 0] + $horizontalFacingClassicTable,
+			deserializeAliases: [Facing::DOWN => 1]
+		);
 
-		$this->facingStem = new IntFromIntStateMap([
-			//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
-			//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
-			//is absurd, and I refuse to make our API similarly absurd.
-			Facing::UP => 0,
-			...$horizontalFacingClassicTable
-		], deserializeAliases: [
-			Facing::UP => 1
-		]);
+		//In PM, we use Facing::UP to indicate that the stem is not attached to a pumpkin/melon, since this makes the
+		//most intuitive sense (the stem is pointing at the sky). However, Bedrock uses the DOWN state for this, which
+		//is absurd, and I refuse to make our API similarly absurd.
+		$this->facingStem = new IntFromIntStateMap(
+			[Facing::UP => 0] + $horizontalFacingClassicTable,
+			deserializeAliases: [Facing::UP => 1]
+		);
 	}
 }
