@@ -55,6 +55,9 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
 
+/**
+ * @deprecated
+ */
 final class BlockStateSerializerHelper{
 	public static function encodeButton(Button $block, Writer $out) : Writer{
 		return $out

@@ -24,17 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
-use pocketmine\block\CaveVines;
 use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
-use pocketmine\block\SweetBerryBush;
-use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\Colored;
-use pocketmine\block\utils\CopperMaterial;
-use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
@@ -47,7 +42,6 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
-use pocketmine\math\Facing;
 use pocketmine\utils\Utils;
 use function array_key_exists;
 use function count;
@@ -69,7 +63,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 	public function __construct(){
 		$this->registerCauldronDeserializers();
-		$this->registerCopperDeserializers();
 		$this->registerDeserializers();
 		new BlockSerializerDeserializerRegistrar($this, null);
 	}
@@ -198,59 +191,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->map(Ids::CAULDRON, $deserializer);
 	}
 
-	/**
-	 * @phpstan-param \Closure(Reader) : (CopperMaterial&Block) $deserializer
-	 */
-	private function mapCopper(
-		string $normalId,
-		string $waxedNormalId,
-		string $exposedId,
-		string $waxedExposedId,
-		string $weatheredId,
-		string $waxedWeatheredId,
-		string $oxidizedId,
-		string $waxedOxidizedId,
-		\Closure $deserializer
-	) : void{
-		foreach(Utils::stringifyKeys([
-			$normalId => [CopperOxidation::NONE, false],
-			$waxedNormalId => [CopperOxidation::NONE, true],
-			$exposedId => [CopperOxidation::EXPOSED, false],
-			$waxedExposedId => [CopperOxidation::EXPOSED, true],
-			$weatheredId => [CopperOxidation::WEATHERED, false],
-			$waxedWeatheredId => [CopperOxidation::WEATHERED, true],
-			$oxidizedId => [CopperOxidation::OXIDIZED, false],
-			$waxedOxidizedId => [CopperOxidation::OXIDIZED, true],
-		]) as $id => [$oxidation, $waxed]){
-			$this->map($id, fn(Reader $in) => $deserializer($in)->setOxidation($oxidation)->setWaxed($waxed));
-		}
-	}
-
-	private function registerCopperDeserializers() : void{
-		$this->mapCopper(
-			Ids::CUT_COPPER_SLAB,
-			Ids::WAXED_CUT_COPPER_SLAB,
-			Ids::EXPOSED_CUT_COPPER_SLAB,
-			Ids::WAXED_EXPOSED_CUT_COPPER_SLAB,
-			Ids::WEATHERED_CUT_COPPER_SLAB,
-			Ids::WAXED_WEATHERED_CUT_COPPER_SLAB,
-			Ids::OXIDIZED_CUT_COPPER_SLAB,
-			Ids::WAXED_OXIDIZED_CUT_COPPER_SLAB,
-			fn(Reader $in) => Helper::decodeSingleSlab(Blocks::CUT_COPPER_SLAB(), $in)
-		);
-		$this->mapCopper(
-			Ids::DOUBLE_CUT_COPPER_SLAB,
-			Ids::WAXED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB,
-			Ids::WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB,
-			fn(Reader $in) => Helper::decodeDoubleSlab(Blocks::CUT_COPPER_SLAB(), $in)
-		);
-	}
-
 	private function registerDeserializers() : void{
 		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
 			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
@@ -267,70 +207,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => Blocks::MUSHROOM_STEM(),
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
-		$this->map(Ids::CAMPFIRE, function(Reader $in) : Block{
-			return Blocks::CAMPFIRE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
-		});
-		$this->map(Ids::CAVE_VINES, function(Reader $in) : CaveVines{
-			return Blocks::CAVE_VINES()
-				->setBerries(false)
-				->setHead(false)
-				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
-		});
-		$this->map(Ids::CAVE_VINES_BODY_WITH_BERRIES, function(Reader $in) : CaveVines{
-			return Blocks::CAVE_VINES()
-				->setBerries(true)
-				->setHead(false)
-				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
-		});
-		$this->map(Ids::CAVE_VINES_HEAD_WITH_BERRIES, function(Reader $in) : CaveVines{
-			return Blocks::CAVE_VINES()
-				->setBerries(true)
-				->setHead(true)
-				->setAge($in->readBoundedInt(StateNames::GROWING_PLANT_AGE, 0, 25));
-		});
-		$this->map(Ids::CHISELED_BOOKSHELF, function(Reader $in) : Block{
-			$block = Blocks::CHISELED_BOOKSHELF()
-				->setFacing($in->readLegacyHorizontalFacing());
-
-			//we don't use API constant for bounds here as the data bounds might be different to what we support internally
-			$flags = $in->readBoundedInt(StateNames::BOOKS_STORED, 0, (1 << 6) - 1);
-			foreach(ChiseledBookshelfSlot::cases() as $slot){
-				$block->setSlot($slot, ($flags & (1 << $slot->value)) !== 0);
-			}
-
-			return $block;
-		});
-		$this->map(Ids::COMPOUND_CREATOR, fn(Reader $in) => Blocks::COMPOUND_CREATOR()
-			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
-		);
-		$this->map(Ids::ELEMENT_CONSTRUCTOR, fn(Reader $in) => Blocks::ELEMENT_CONSTRUCTOR()
-			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
-		);
-		$this->map(Ids::END_ROD, function(Reader $in) : Block{
-			return Blocks::END_ROD()
-				->setFacing($in->readEndRodFacingDirection());
-		});
-		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
-		$this->map(Ids::FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::ITEM_FRAME(), $in));
-		$this->map(Ids::GLOW_LICHEN, fn(Reader $in) => Blocks::GLOW_LICHEN()->setFaces($in->readFacingFlags()));
-		$this->map(Ids::GLOW_FRAME, fn(Reader $in) => Helper::decodeItemFrame(Blocks::GLOWING_ITEM_FRAME(), $in));
-		$this->map(Ids::HOPPER, function(Reader $in) : Block{
-			return Blocks::HOPPER()
-				->setFacing($in->readFacingWithoutUp())
-				->setPowered($in->readBool(StateNames::TOGGLE_BIT));
-		});
-		$this->map(Ids::IRON_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::IRON_DOOR(), $in));
-		$this->map(Ids::IRON_TRAPDOOR, fn(Reader $in) => Helper::decodeTrapdoor(Blocks::IRON_TRAPDOOR(), $in));
-		$this->map(Ids::LAB_TABLE, fn(Reader $in) => Blocks::LAB_TABLE()
-			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
-		);
-		$this->map(Ids::LAVA, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::LAVA(), $in));
-		$this->map(Ids::MATERIAL_REDUCER, fn(Reader $in) => Blocks::MATERIAL_REDUCER()
-			->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()))
-		);
 		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
 			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
 			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
@@ -343,41 +219,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
 				->setTop($top);
 		});
-		$this->map(Ids::POLISHED_BLACKSTONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::POLISHED_BLACKSTONE_BUTTON(), $in));
-		$this->map(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
-		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
-			return Blocks::SEA_PICKLE()
-				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
-				->setUnderwater(!$in->readBool(StateNames::DEAD_BIT));
-		});
-		$this->map(Ids::SOUL_CAMPFIRE, function(Reader $in) : Block{
-			return Blocks::SOUL_CAMPFIRE()
-				->setFacing($in->readCardinalHorizontalFacing())
-				->setLit(!$in->readBool(StateNames::EXTINGUISHED));
-		});
-		$this->map(Ids::STONE_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::STONE_BUTTON(), $in));
-		$this->map(Ids::STONE_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeSimplePressurePlate(Blocks::STONE_PRESSURE_PLATE(), $in));
-		$this->map(Ids::SWEET_BERRY_BUSH, function(Reader $in) : Block{
-			//berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
-			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
-			return Blocks::SWEET_BERRY_BUSH()
-				->setAge(min($growth, SweetBerryBush::STAGE_MATURE));
-		});
-		$this->map(Ids::TORCHFLOWER_CROP, function(Reader $in) : Block{
-			return Blocks::TORCHFLOWER_CROP()
-				//this property can have values 0-7, but only 0-1 are valid
-				->setReady($in->readBoundedInt(StateNames::GROWTH, 0, 7) !== 0);
-		});
-		$this->map(Ids::VINE, function(Reader $in) : Block{
-			$vineDirectionFlags = $in->readBoundedInt(StateNames::VINE_DIRECTION_BITS, 0, 15);
-			return Blocks::VINES()
-				->setFace(Facing::NORTH, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_NORTH) !== 0)
-				->setFace(Facing::SOUTH, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_SOUTH) !== 0)
-				->setFace(Facing::WEST, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_WEST) !== 0)
-				->setFace(Facing::EAST, ($vineDirectionFlags & BlockLegacyMetadata::VINE_FLAG_EAST) !== 0);
-		});
-		$this->map(Ids::WATER, fn(Reader $in) => Helper::decodeStillLiquid(Blocks::WATER(), $in));
 	}
 
 	/** @throws BlockStateDeserializeException */

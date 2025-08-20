@@ -60,6 +60,12 @@ final class IntFromIntStateMap{
 		}
 	}
 
+	/**
+	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 */
+	public function getDeserializeMap() : array{ return $this->deserializeMap; }
+
 	public function deserialize(int $mcValue) : ?int{
 		return $this->deserializeMap[$mcValue] ?? null;
 	}

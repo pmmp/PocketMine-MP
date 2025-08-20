@@ -38,6 +38,8 @@ use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
 use pocketmine\block\CakeWithCandle;
 use pocketmine\block\Candle;
+use pocketmine\block\CaveVines;
+use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
 use pocketmine\block\Copper;
@@ -46,12 +48,14 @@ use pocketmine\block\DetectorRail;
 use pocketmine\block\Dirt;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\EndPortalFrame;
+use pocketmine\block\EndRod;
 use pocketmine\block\Farmland;
 use pocketmine\block\Fire;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\Froglight;
 use pocketmine\block\FrostedIce;
 use pocketmine\block\GlazedTerracotta;
+use pocketmine\block\Hopper;
 use pocketmine\block\Lantern;
 use pocketmine\block\Leaves;
 use pocketmine\block\Lectern;
@@ -70,6 +74,7 @@ use pocketmine\block\RedstoneRepeater;
 use pocketmine\block\RedstoneTorch;
 use pocketmine\block\RespawnAnchor;
 use pocketmine\block\Sapling;
+use pocketmine\block\SeaPickle;
 use pocketmine\block\Slab;
 use pocketmine\block\SmallDripleaf;
 use pocketmine\block\SnowLayer;
@@ -77,11 +82,14 @@ use pocketmine\block\Sponge;
 use pocketmine\block\Stair;
 use pocketmine\block\StraightOnlyRail;
 use pocketmine\block\Sugarcane;
+use pocketmine\block\SweetBerryBush;
 use pocketmine\block\TNT;
+use pocketmine\block\TorchflowerCrop;
 use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DirtType;
@@ -93,8 +101,10 @@ use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\block\Wood;
+use pocketmine\block\Vine;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
+use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
@@ -104,13 +114,17 @@ use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
+use pocketmine\data\bedrock\block\convert\property\EnumSetFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\FlattenedCaveVinesVariant;
 use pocketmine\data\bedrock\block\convert\property\FlattenedIdModel;
 use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
+use pocketmine\data\bedrock\block\convert\property\IntSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
 use pocketmine\data\bedrock\block\convert\property\StringProperty;
+use pocketmine\math\Facing;
 use function array_filter;
 use function array_map;
 use function count;
@@ -143,10 +157,11 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->registerFlattenedBoolMappings($commonProperties);
 		$this->registerStoneLikeSlabMappings();
 		$this->registerStoneLikeStairMappings();
-		$this->registerStoneLikeWallMappings();
+		$this->registerStoneLikeWallMappings($commonProperties);
 
 		$this->registerWoodMappings($commonProperties);
 		$this->registerTorchMappings($commonProperties);
+		$this->registerChemistryMappings($commonProperties);
 		$this->register1to1CustomMappings($commonProperties);
 	}
 
@@ -283,29 +298,16 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 	}
 
-	/**
-	 * @phpstan-template TBlock of Block
-	 * @phpstan-param TBlock                            $block
-	 * @phpstan-param \Closure(TBlock, Reader) : TBlock $readHelper
-	 * @phpstan-param \Closure(TBlock, Writer) : Writer $writeHelper
-	 */
-	private function mapStdHelper(Block $block, string $id, \Closure $readHelper, \Closure $writeHelper) : void{
-		$this->deserializer?->map($id, fn(Reader $in) => $readHelper(clone $block, $in));
-		$this->serializer?->map($block, fn(Block $block) => $writeHelper($block, new Writer($id)));
-	}
-
-	private function mapSlab(Slab $block, string $singleId, string $doubleId) : void{
-		$this->deserializer?->mapSlab($singleId, $doubleId, fn() => clone $block);
-		$this->serializer?->mapSlab($block, $singleId, $doubleId);
+	private function mapSlab(Slab $block, string $type) : void{
+		$commonProperties = CommonProperties::getInstance();
+		$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+			->idComponents(["minecraft:", $type, "_", $commonProperties->slabIdInfix, "slab"])
+			->properties([$commonProperties->slabPositionProperty])
+		);
 	}
 
 	private function mapStairs(Stair $block, string $id) : void{
 		$this->mapModel(Model::create($block, $id)->properties(CommonProperties::getInstance()->stairProperties));
-	}
-
-	private function mapLog(Wood $block, string $unstrippedId, string $strippedId) : void{
-		$this->deserializer?->mapLog($unstrippedId, $strippedId, fn() => clone $block);
-		$this->serializer?->mapLog($block, $unstrippedId, $strippedId);
 	}
 
 	private function registerSimpleIdOnlyMappings() : void{
@@ -730,6 +732,32 @@ final class BlockSerializerDeserializerRegistrar{
 				new EnumFromIntProperty(StateNames::HUGE_MUSHROOM_BITS, ValueMappings::getInstance()->mushroomBlockType, fn(RedMushroomBlock $b) => $b->getMushroomBlockType(), fn(RedMushroomBlock $b, MushroomBlockType $v) => $b->setMushroomBlockType($v)),
 			]));
 		}
+
+		$this->mapModel(Model::create(Blocks::GLOW_LICHEN(), Ids::GLOW_LICHEN)->properties([$commonProperties->multiFacingFlags]));
+		$this->mapModel(Model::create(Blocks::RESIN_CLUMP(), Ids::RESIN_CLUMP)->properties([$commonProperties->multiFacingFlags]));
+
+		$this->mapModel(Model::create(Blocks::VINES(), Ids::VINE)->properties([
+			new IntSetFromIntProperty(
+				StateNames::VINE_DIRECTION_BITS,
+				new IntFromIntStateMap([
+					Facing::NORTH => BlockLegacyMetadata::VINE_FLAG_NORTH,
+					Facing::SOUTH => BlockLegacyMetadata::VINE_FLAG_SOUTH,
+					Facing::WEST => BlockLegacyMetadata::VINE_FLAG_WEST,
+					Facing::EAST => BlockLegacyMetadata::VINE_FLAG_EAST,
+				]),
+				fn(Vine $b) => $b->getFaces(),
+				fn(Vine $b, array $v) => $b->setFaces($v)
+			)
+		]));
+
+		$this->mapModel(Model::create(Blocks::SWEET_BERRY_BUSH(), Ids::SWEET_BERRY_BUSH)->properties([
+			//TODO: berry bush only wants 0-3, but it can be bigger in MCPE due to misuse of GROWTH state which goes up to 7
+			new IntProperty(StateNames::GROWTH, 0, 7, fn(SweetBerryBush $b) => $b->getAge(), fn(SweetBerryBush $b, int $v) => $b->setAge(min($v, SweetBerryBush::STAGE_MATURE)))
+		]));
+		$this->mapModel(Model::create(Blocks::TORCHFLOWER_CROP(), Ids::TORCHFLOWER_CROP)->properties([
+			//TODO: this property can have values 0-7, but only 0-1 are valid
+			new IntProperty(StateNames::GROWTH, 0, 7, fn(TorchflowerCrop $b) => $b->isReady() ? 1 : 0, fn(TorchflowerCrop $b, int $v) => $b->setReady($v !== 0))
+		]));
 	}
 
 	private function registerCoralMappings(CommonProperties $commonProperties) : void{
@@ -781,6 +809,15 @@ final class BlockSerializerDeserializerRegistrar{
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_door"])
 			->properties($commonProperties->doorProperties)
 		);
+
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER_SLAB())
+			->idComponents([
+				...$commonProperties->copperIdPrefixes,
+				$commonProperties->slabIdInfix,
+				"cut_copper_slab"
+			])
+			->properties([$commonProperties->slabPositionProperty])
+		);
 	}
 
 	private function registerFlattenedEnumMappings(CommonProperties $commonProperties) : void{
@@ -805,6 +842,32 @@ final class BlockSerializerDeserializerRegistrar{
 				]), fn(AmethystCluster $b) => $b->getStage(), fn(AmethystCluster $b, int $v) => $b->setStage($v))
 			])
 			->properties([$commonProperties->blockFace])
+		);
+
+		//C
+		//This one is a special offender :<
+		//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
+		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CAVE_VINES())
+			->idComponents([
+				"minecraft:cave_vines",
+				new EnumFromStringProperty(
+					"variant",
+					new EnumFromStringStateMap(FlattenedCaveVinesVariant::class, fn(FlattenedCaveVinesVariant $case) => $case->value),
+					fn(CaveVines $b) => $b->hasBerries() ?
+						($b->isHead() ?
+							FlattenedCaveVinesVariant::HEAD_WITH_BERRIES :
+							FlattenedCaveVinesVariant::BODY_WITH_BERRIES) :
+						FlattenedCaveVinesVariant::NO_BERRIES,
+					fn(CaveVines $b, FlattenedCaveVinesVariant $v) => match($v){
+						FlattenedCaveVinesVariant::HEAD_WITH_BERRIES => $b->setBerries(true)->setHead(true),
+						FlattenedCaveVinesVariant::BODY_WITH_BERRIES => $b->setBerries(true)->setHead(false),
+						FlattenedCaveVinesVariant::NO_BERRIES => $b->setBerries(false)->setHead(false), //assume this isn't a head, since we don't have enough information
+					}
+				)
+			])
+			->properties([
+				new IntProperty(StateNames::GROWING_PLANT_AGE, 0, 25, fn(CaveVines $b) => $b->getAge(), fn(CaveVines $b, int $v) => $b->setAge($v)),
+			])
 		);
 
 		//D
@@ -849,6 +912,16 @@ final class BlockSerializerDeserializerRegistrar{
 				new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptDown, fn(MobHead $b) => $b->getFacing(), fn(MobHead $b, int $v) => $b->setFacing($v))
 			])
 		);
+
+		foreach([
+			[Blocks::LAVA(), "lava"],
+			[Blocks::WATER(), "water"]
+		] as [$block, $idSuffix]){
+			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+				->idComponents([...$commonProperties->liquidIdPrefixes, $idSuffix])
+				->properties([$commonProperties->liquidData])
+			);
+		}
 	}
 
 	private function registerFlattenedBoolMappings(CommonProperties $commonProperties) : void{
@@ -929,47 +1002,47 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function registerStoneLikeSlabMappings() : void{
-		$this->mapSlab(Blocks::ANDESITE_SLAB(), Ids::ANDESITE_SLAB, Ids::ANDESITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), Ids::BLACKSTONE_SLAB, Ids::BLACKSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::BRICK_SLAB(), Ids::BRICK_SLAB, Ids::BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::COBBLED_DEEPSLATE_SLAB(), Ids::COBBLED_DEEPSLATE_SLAB, Ids::COBBLED_DEEPSLATE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::COBBLESTONE_SLAB(), Ids::COBBLESTONE_SLAB, Ids::COBBLESTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::CUT_RED_SANDSTONE_SLAB(), Ids::CUT_RED_SANDSTONE_SLAB, Ids::CUT_RED_SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::CUT_SANDSTONE_SLAB(), Ids::CUT_SANDSTONE_SLAB, Ids::CUT_SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::DARK_PRISMARINE_SLAB(), Ids::DARK_PRISMARINE_SLAB, Ids::DARK_PRISMARINE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::DEEPSLATE_BRICK_SLAB(), Ids::DEEPSLATE_BRICK_SLAB, Ids::DEEPSLATE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::DEEPSLATE_TILE_SLAB(), Ids::DEEPSLATE_TILE_SLAB, Ids::DEEPSLATE_TILE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::DIORITE_SLAB(), Ids::DIORITE_SLAB, Ids::DIORITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::END_STONE_BRICK_SLAB(), Ids::END_STONE_BRICK_SLAB, Ids::END_STONE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::FAKE_WOODEN_SLAB(), Ids::PETRIFIED_OAK_SLAB, Ids::PETRIFIED_OAK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::GRANITE_SLAB(), Ids::GRANITE_SLAB, Ids::GRANITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::MOSSY_COBBLESTONE_SLAB(), Ids::MOSSY_COBBLESTONE_SLAB, Ids::MOSSY_COBBLESTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::MOSSY_STONE_BRICK_SLAB(), Ids::MOSSY_STONE_BRICK_SLAB, Ids::MOSSY_STONE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::MUD_BRICK_SLAB(), Ids::MUD_BRICK_SLAB, Ids::MUD_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::NETHER_BRICK_SLAB(), Ids::NETHER_BRICK_SLAB, Ids::NETHER_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_ANDESITE_SLAB(), Ids::POLISHED_ANDESITE_SLAB, Ids::POLISHED_ANDESITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_BRICK_SLAB(), Ids::POLISHED_BLACKSTONE_BRICK_SLAB, Ids::POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_SLAB(), Ids::POLISHED_BLACKSTONE_SLAB, Ids::POLISHED_BLACKSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_DEEPSLATE_SLAB(), Ids::POLISHED_DEEPSLATE_SLAB, Ids::POLISHED_DEEPSLATE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_DIORITE_SLAB(), Ids::POLISHED_DIORITE_SLAB, Ids::POLISHED_DIORITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_GRANITE_SLAB(), Ids::POLISHED_GRANITE_SLAB, Ids::POLISHED_GRANITE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::POLISHED_TUFF_SLAB(), Ids::POLISHED_TUFF_SLAB, Ids::POLISHED_TUFF_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::PRISMARINE_BRICKS_SLAB(), Ids::PRISMARINE_BRICK_SLAB, Ids::PRISMARINE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::PRISMARINE_SLAB(), Ids::PRISMARINE_SLAB, Ids::PRISMARINE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::PURPUR_SLAB(), Ids::PURPUR_SLAB, Ids::PURPUR_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::QUARTZ_SLAB(), Ids::QUARTZ_SLAB, Ids::QUARTZ_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::RED_NETHER_BRICK_SLAB(), Ids::RED_NETHER_BRICK_SLAB, Ids::RED_NETHER_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::RED_SANDSTONE_SLAB(), Ids::RED_SANDSTONE_SLAB, Ids::RED_SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::RESIN_BRICK_SLAB(), Ids::RESIN_BRICK_SLAB, Ids::RESIN_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::SANDSTONE_SLAB(), Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), Ids::SMOOTH_QUARTZ_SLAB, Ids::SMOOTH_QUARTZ_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), Ids::SMOOTH_RED_SANDSTONE_SLAB, Ids::SMOOTH_RED_SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::SMOOTH_SANDSTONE_SLAB(), Ids::SMOOTH_SANDSTONE_SLAB, Ids::SMOOTH_SANDSTONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::SMOOTH_STONE_SLAB(), Ids::SMOOTH_STONE_SLAB, Ids::SMOOTH_STONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::STONE_BRICK_SLAB(), Ids::STONE_BRICK_SLAB, Ids::STONE_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::STONE_SLAB(), Ids::NORMAL_STONE_SLAB, Ids::NORMAL_STONE_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::TUFF_BRICK_SLAB(), Ids::TUFF_BRICK_SLAB, Ids::TUFF_BRICK_DOUBLE_SLAB);
-		$this->mapSlab(Blocks::TUFF_SLAB(), Ids::TUFF_SLAB, Ids::TUFF_DOUBLE_SLAB);
+		$this->mapSlab(Blocks::ANDESITE_SLAB(), "andesite");
+		$this->mapSlab(Blocks::BLACKSTONE_SLAB(), "blackstone");
+		$this->mapSlab(Blocks::BRICK_SLAB(), "brick");
+		$this->mapSlab(Blocks::COBBLED_DEEPSLATE_SLAB(), "cobbled_deepslate");
+		$this->mapSlab(Blocks::COBBLESTONE_SLAB(), "cobblestone");
+		$this->mapSlab(Blocks::CUT_RED_SANDSTONE_SLAB(), "cut_red_sandstone");
+		$this->mapSlab(Blocks::CUT_SANDSTONE_SLAB(), "cut_sandstone");
+		$this->mapSlab(Blocks::DARK_PRISMARINE_SLAB(), "dark_prismarine");
+		$this->mapSlab(Blocks::DEEPSLATE_BRICK_SLAB(), "deepslate_brick");
+		$this->mapSlab(Blocks::DEEPSLATE_TILE_SLAB(), "deepslate_tile");
+		$this->mapSlab(Blocks::DIORITE_SLAB(), "diorite");
+		$this->mapSlab(Blocks::END_STONE_BRICK_SLAB(), "end_stone_brick");
+		$this->mapSlab(Blocks::FAKE_WOODEN_SLAB(), "petrified_oak");
+		$this->mapSlab(Blocks::GRANITE_SLAB(), "granite");
+		$this->mapSlab(Blocks::MOSSY_COBBLESTONE_SLAB(), "mossy_cobblestone");
+		$this->mapSlab(Blocks::MOSSY_STONE_BRICK_SLAB(), "mossy_stone_brick");
+		$this->mapSlab(Blocks::MUD_BRICK_SLAB(), "mud_brick");
+		$this->mapSlab(Blocks::NETHER_BRICK_SLAB(), "nether_brick");
+		$this->mapSlab(Blocks::POLISHED_ANDESITE_SLAB(), "polished_andesite");
+		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_BRICK_SLAB(), "polished_blackstone_brick");
+		$this->mapSlab(Blocks::POLISHED_BLACKSTONE_SLAB(), "polished_blackstone");
+		$this->mapSlab(Blocks::POLISHED_DEEPSLATE_SLAB(), "polished_deepslate");
+		$this->mapSlab(Blocks::POLISHED_DIORITE_SLAB(), "polished_diorite");
+		$this->mapSlab(Blocks::POLISHED_GRANITE_SLAB(), "polished_granite");
+		$this->mapSlab(Blocks::POLISHED_TUFF_SLAB(), "polished_tuff");
+		$this->mapSlab(Blocks::PRISMARINE_BRICKS_SLAB(), "prismarine_brick");
+		$this->mapSlab(Blocks::PRISMARINE_SLAB(), "prismarine");
+		$this->mapSlab(Blocks::PURPUR_SLAB(), "purpur");
+		$this->mapSlab(Blocks::QUARTZ_SLAB(), "quartz");
+		$this->mapSlab(Blocks::RED_NETHER_BRICK_SLAB(), "red_nether_brick");
+		$this->mapSlab(Blocks::RED_SANDSTONE_SLAB(), "red_sandstone");
+		$this->mapSlab(Blocks::RESIN_BRICK_SLAB(), "resin_brick");
+		$this->mapSlab(Blocks::SANDSTONE_SLAB(), "sandstone");
+		$this->mapSlab(Blocks::SMOOTH_QUARTZ_SLAB(), "smooth_quartz");
+		$this->mapSlab(Blocks::SMOOTH_RED_SANDSTONE_SLAB(), "smooth_red_sandstone");
+		$this->mapSlab(Blocks::SMOOTH_SANDSTONE_SLAB(), "smooth_sandstone");
+		$this->mapSlab(Blocks::SMOOTH_STONE_SLAB(), "smooth_stone");
+		$this->mapSlab(Blocks::STONE_BRICK_SLAB(), "stone_brick");
+		$this->mapSlab(Blocks::STONE_SLAB(), "normal_stone");
+		$this->mapSlab(Blocks::TUFF_BRICK_SLAB(), "tuff_brick");
+		$this->mapSlab(Blocks::TUFF_SLAB(), "tuff");
 	}
 
 	private function registerStoneLikeStairMappings() : void{
@@ -1012,7 +1085,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapStairs(Blocks::TUFF_STAIRS(), Ids::TUFF_STAIRS);
 	}
 
-	private function registerStoneLikeWallMappings() : void{
+	private function registerStoneLikeWallMappings(CommonProperties $commonProperties) : void{
 		foreach([
 			Ids::ANDESITE_WALL => Blocks::ANDESITE_WALL(),
 			Ids::BLACKSTONE_WALL => Blocks::BLACKSTONE_WALL(),
@@ -1041,7 +1114,7 @@ final class BlockSerializerDeserializerRegistrar{
 			Ids::TUFF_BRICK_WALL => Blocks::TUFF_BRICK_WALL(),
 			Ids::TUFF_WALL => Blocks::TUFF_WALL()
 		] as $id => $block){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeWall(...), BlockStateSerializerHelper::encodeWall(...));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->wallProperties));
 		}
 	}
 
@@ -1131,36 +1204,35 @@ final class BlockSerializerDeserializerRegistrar{
 
 		//logs
 		foreach([
-			[Blocks::ACACIA_LOG(), Ids::ACACIA_LOG, Ids::STRIPPED_ACACIA_LOG],
-			[Blocks::BIRCH_LOG(), Ids::BIRCH_LOG, Ids::STRIPPED_BIRCH_LOG],
-			[Blocks::CHERRY_LOG(), Ids::CHERRY_LOG, Ids::STRIPPED_CHERRY_LOG],
-			[Blocks::DARK_OAK_LOG(), Ids::DARK_OAK_LOG, Ids::STRIPPED_DARK_OAK_LOG],
-			[Blocks::JUNGLE_LOG(), Ids::JUNGLE_LOG, Ids::STRIPPED_JUNGLE_LOG],
-			[Blocks::MANGROVE_LOG(), Ids::MANGROVE_LOG, Ids::STRIPPED_MANGROVE_LOG],
-			[Blocks::OAK_LOG(), Ids::OAK_LOG, Ids::STRIPPED_OAK_LOG],
-			[Blocks::PALE_OAK_LOG(), Ids::PALE_OAK_LOG, Ids::STRIPPED_PALE_OAK_LOG],
-			[Blocks::SPRUCE_LOG(), Ids::SPRUCE_LOG, Ids::STRIPPED_SPRUCE_LOG],
-			[Blocks::CRIMSON_STEM(), Ids::CRIMSON_STEM, Ids::STRIPPED_CRIMSON_STEM],
-			[Blocks::WARPED_STEM(), Ids::WARPED_STEM, Ids::STRIPPED_WARPED_STEM]
-		] as [$block, $unstrippedId, $strippedId]){
-			$this->mapLog($block, $unstrippedId, $strippedId);
-		}
+			[Blocks::ACACIA_LOG(), "acacia_log"],
+			[Blocks::BIRCH_LOG(), "birch_log"],
+			[Blocks::CHERRY_LOG(), "cherry_log"],
+			[Blocks::DARK_OAK_LOG(), "dark_oak_log"],
+			[Blocks::JUNGLE_LOG(), "jungle_log"],
+			[Blocks::MANGROVE_LOG(), "mangrove_log"],
+			[Blocks::OAK_LOG(), "oak_log"],
+			[Blocks::PALE_OAK_LOG(), "pale_oak_log"],
+			[Blocks::SPRUCE_LOG(), "spruce_log"],
+			[Blocks::CRIMSON_STEM(), "crimson_stem"],
+			[Blocks::WARPED_STEM(), "warped_stem"],
 
-		//logs all-sided
-		foreach([
-			[Blocks::ACACIA_WOOD(), Ids::ACACIA_WOOD, Ids::STRIPPED_ACACIA_WOOD],
-			[Blocks::BIRCH_WOOD(), Ids::BIRCH_WOOD, Ids::STRIPPED_BIRCH_WOOD],
-			[Blocks::CHERRY_WOOD(), Ids::CHERRY_WOOD, Ids::STRIPPED_CHERRY_WOOD],
-			[Blocks::DARK_OAK_WOOD(), Ids::DARK_OAK_WOOD, Ids::STRIPPED_DARK_OAK_WOOD],
-			[Blocks::JUNGLE_WOOD(), Ids::JUNGLE_WOOD, Ids::STRIPPED_JUNGLE_WOOD],
-			[Blocks::MANGROVE_WOOD(), Ids::MANGROVE_WOOD, Ids::STRIPPED_MANGROVE_WOOD],
-			[Blocks::OAK_WOOD(), Ids::OAK_WOOD, Ids::STRIPPED_OAK_WOOD],
-			[Blocks::PALE_OAK_WOOD(), Ids::PALE_OAK_WOOD, Ids::STRIPPED_PALE_OAK_WOOD],
-			[Blocks::SPRUCE_WOOD(), Ids::SPRUCE_WOOD, Ids::STRIPPED_SPRUCE_WOOD],
-			[Blocks::CRIMSON_HYPHAE(), Ids::CRIMSON_HYPHAE, Ids::STRIPPED_CRIMSON_HYPHAE],
-			[Blocks::WARPED_HYPHAE(), Ids::WARPED_HYPHAE, Ids::STRIPPED_WARPED_HYPHAE]
-		] as [$block, $unstrippedId, $strippedId]){
-			$this->mapLog($block, $unstrippedId, $strippedId);
+			//all-sided logs
+			[Blocks::ACACIA_WOOD(), "acacia_wood"],
+			[Blocks::BIRCH_WOOD(), "birch_wood"],
+			[Blocks::CHERRY_WOOD(), "cherry_wood"],
+			[Blocks::DARK_OAK_WOOD(), "dark_oak_wood"],
+			[Blocks::JUNGLE_WOOD(), "jungle_wood"],
+			[Blocks::MANGROVE_WOOD(), "mangrove_wood"],
+			[Blocks::OAK_WOOD(), "oak_wood"],
+			[Blocks::PALE_OAK_WOOD(), "pale_oak_wood"],
+			[Blocks::SPRUCE_WOOD(), "spruce_wood"],
+			[Blocks::CRIMSON_HYPHAE(), "crimson_hyphae"],
+			[Blocks::WARPED_HYPHAE(), "warped_hyphae"]
+		] as [$block, $idSuffix]){
+			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+				->idComponents([...$commonProperties->woodIdPrefixes, $idSuffix])
+				->properties([$commonProperties->pillarAxis])
+			);
 		}
 
 		//planks
@@ -1194,24 +1266,24 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_PRESSURE_PLATE(), Ids::CRIMSON_PRESSURE_PLATE],
 			[Blocks::WARPED_PRESSURE_PLATE(), Ids::WARPED_PRESSURE_PLATE]
 		] as [$block, $id]){
-			$this->mapStdHelper($block, $id, BlockStateDeserializerHelper::decodeSimplePressurePlate(...), BlockStateSerializerHelper::encodeSimplePressurePlate(...));
+			$this->mapModel(Model::create($block, $id)->properties($commonProperties->simplePressurePlateProperties));
 		}
 
 		//slabs
 		foreach([
-			[Blocks::ACACIA_SLAB(), Ids::ACACIA_SLAB, Ids::ACACIA_DOUBLE_SLAB],
-			[Blocks::BIRCH_SLAB(), Ids::BIRCH_SLAB, Ids::BIRCH_DOUBLE_SLAB],
-			[Blocks::CHERRY_SLAB(), Ids::CHERRY_SLAB, Ids::CHERRY_DOUBLE_SLAB],
-			[Blocks::DARK_OAK_SLAB(), Ids::DARK_OAK_SLAB, Ids::DARK_OAK_DOUBLE_SLAB],
-			[Blocks::JUNGLE_SLAB(), Ids::JUNGLE_SLAB, Ids::JUNGLE_DOUBLE_SLAB],
-			[Blocks::MANGROVE_SLAB(), Ids::MANGROVE_SLAB, Ids::MANGROVE_DOUBLE_SLAB],
-			[Blocks::OAK_SLAB(), Ids::OAK_SLAB, Ids::OAK_DOUBLE_SLAB],
-			[Blocks::PALE_OAK_SLAB(), Ids::PALE_OAK_SLAB, Ids::PALE_OAK_DOUBLE_SLAB],
-			[Blocks::SPRUCE_SLAB(), Ids::SPRUCE_SLAB, Ids::SPRUCE_DOUBLE_SLAB],
-			[Blocks::CRIMSON_SLAB(), Ids::CRIMSON_SLAB, Ids::CRIMSON_DOUBLE_SLAB],
-			[Blocks::WARPED_SLAB(), Ids::WARPED_SLAB, Ids::WARPED_DOUBLE_SLAB]
-		] as [$block, $singleId, $doubleId]){
-			$this->mapSlab($block, $singleId, $doubleId);
+			[Blocks::ACACIA_SLAB(), "acacia"],
+			[Blocks::BIRCH_SLAB(), "birch"],
+			[Blocks::CHERRY_SLAB(), "cherry"],
+			[Blocks::DARK_OAK_SLAB(), "dark_oak"],
+			[Blocks::JUNGLE_SLAB(), "jungle"],
+			[Blocks::MANGROVE_SLAB(), "mangrove"],
+			[Blocks::OAK_SLAB(), "oak"],
+			[Blocks::PALE_OAK_SLAB(), "pale_oak"],
+			[Blocks::SPRUCE_SLAB(), "spruce"],
+			[Blocks::CRIMSON_SLAB(), "crimson"],
+			[Blocks::WARPED_SLAB(), "warped"]
+		] as [$block, $type]){
+			$this->mapSlab($block, $type);
 		}
 
 		//stairs
@@ -1277,6 +1349,17 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::UNDERWATER_TORCH(), Ids::UNDERWATER_TORCH]
 		] as [$block, $id]){
 			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->torchFacing]));
+		}
+	}
+
+	private function registerChemistryMappings(CommonProperties $commonProperties) : void{
+		foreach([
+			[Blocks::COMPOUND_CREATOR(), Ids::COMPOUND_CREATOR],
+			[Blocks::ELEMENT_CONSTRUCTOR(), Ids::ELEMENT_CONSTRUCTOR],
+			[Blocks::LAB_TABLE(), Ids::LAB_TABLE],
+			[Blocks::MATERIAL_REDUCER(), Ids::MATERIAL_REDUCER],
+		] as [$block, $id]){
+			$this->mapModel(Model::create($block, $id)->properties([$commonProperties->horizontalFacingSWNEInverted]));
 		}
 	}
 
@@ -1353,16 +1436,34 @@ final class BlockSerializerDeserializerRegistrar{
 		}, fn(BrewingStand $b) => $b->hasSlot($slot), fn(BrewingStand $b, bool $v) => $b->setSlot($slot, $v)), BrewingStandSlot::cases())));
 
 		//C
-		$this->mapModel(Model::create(Blocks::CAKE(), Ids::CAKE)->properties([
-			new IntProperty(StateNames::BITE_COUNTER, 0, 6, fn(Cake $b) => $b->getBites(), fn(Cake $b, int $v) => $b->setBites($v))
-		]));
 		$this->mapModel(Model::create(Blocks::CACTUS(), Ids::CACTUS)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
 		]));
+		$this->mapModel(Model::create(Blocks::CAKE(), Ids::CAKE)->properties([
+			new IntProperty(StateNames::BITE_COUNTER, 0, 6, fn(Cake $b) => $b->getBites(), fn(Cake $b, int $v) => $b->setBites($v))
+		]));
+		$this->mapModel(Model::create(Blocks::CAMPFIRE(), Ids::CAMPFIRE)->properties($commonProperties->campfireProperties));
 		$this->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
 			$commonProperties->cardinalDirection
 		]));
 		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
+		$this->mapModel(Model::create(Blocks::CHISELED_BOOKSHELF(), Ids::CHISELED_BOOKSHELF)->properties([
+			$commonProperties->horizontalFacingSWNE,
+			new EnumSetFromIntProperty(
+				StateNames::BOOKS_STORED,
+				new EnumFromIntStateMap(ChiseledBookshelfSlot::class, fn(ChiseledBookshelfSlot $case) => match($case){
+					//these are (currently) the same as the internal values, but it's best not to rely on those in case Mojang mess with the flags
+					ChiseledBookshelfSlot::TOP_LEFT => 1 << 0,
+					ChiseledBookshelfSlot::TOP_MIDDLE => 1 << 1,
+					ChiseledBookshelfSlot::TOP_RIGHT => 1 << 2,
+					ChiseledBookshelfSlot::BOTTOM_LEFT => 1 << 3,
+					ChiseledBookshelfSlot::BOTTOM_MIDDLE => 1 << 4,
+					ChiseledBookshelfSlot::BOTTOM_RIGHT => 1 << 5
+				}),
+				fn(ChiseledBookshelf $b) => $b->getSlots(),
+				fn(ChiseledBookshelf $b, array $v) => $b->setSlots($v)
+			)
+		]));
 		$this->mapModel(Model::create(Blocks::CHISELED_QUARTZ(), Ids::CHISELED_QUARTZ_BLOCK)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::CHEST(), Ids::CHEST)->properties([$commonProperties->cardinalDirection]));
 		$this->mapModel(Model::create(Blocks::CHORUS_FLOWER(), Ids::CHORUS_FLOWER)->properties([
@@ -1386,6 +1487,9 @@ final class BlockSerializerDeserializerRegistrar{
 			new BoolProperty(StateNames::END_PORTAL_EYE_BIT, fn(EndPortalFrame $b) => $b->hasEye(), fn(EndPortalFrame $b, bool $v) => $b->setEye($v)),
 			$commonProperties->cardinalDirection
 		]));
+		$this->mapModel(Model::create(Blocks::END_ROD(), Ids::END_ROD)->properties([
+			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingEndRod, fn(EndRod $b) => $b->getFacing(), fn(EndRod $b, int $v) => $b->setFacing($v)),
+		]));
 
 		//F
 		$this->mapModel(Model::create(Blocks::FARMLAND(), Ids::FARMLAND)->properties([
@@ -1401,11 +1505,24 @@ final class BlockSerializerDeserializerRegistrar{
 			new IntProperty(StateNames::AGE, 0, 3, fn(FrostedIce $b) => $b->getAge(), fn(FrostedIce $b, int $v) => $b->setAge($v))
 		]));
 
+		//G
+		$this->mapModel(Model::create(Blocks::GLOWING_ITEM_FRAME(), Ids::GLOW_FRAME)->properties($commonProperties->itemFrameProperties));
+
 		//H
 		$this->mapModel(Model::create(Blocks::HAY_BALE(), Ids::HAY_BLOCK)->properties([
 			IntProperty::unused(StateNames::DEPRECATED, 0),
 			$commonProperties->pillarAxis
 		]));
+		$this->mapModel(Model::create(Blocks::HOPPER(), Ids::HOPPER)->properties([
+			//kinda weird this doesn't use powered_bit?
+			new BoolProperty(StateNames::TOGGLE_BIT, fn(Block&PoweredByRedstone $b) => $b->isPowered(), fn(Block&PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
+			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptUp, fn(Hopper $b) => $b->getFacing(), fn(Hopper $b, int $v) => $b->setFacing($v)),
+		]));
+
+		//I
+		$this->mapModel(Model::create(Blocks::IRON_DOOR(), Ids::IRON_DOOR)->properties($commonProperties->doorProperties));
+		$this->mapModel(Model::create(Blocks::IRON_TRAPDOOR(), Ids::IRON_TRAPDOOR)->properties($commonProperties->trapdoorProperties));
+		$this->mapModel(Model::create(Blocks::ITEM_FRAME(), Ids::FRAME)->properties($commonProperties->itemFrameProperties));
 
 		//L
 		$this->mapModel(Model::create(Blocks::LADDER(), Ids::LADDER)->properties([$commonProperties->horizontalFacingClassic]));
@@ -1447,6 +1564,8 @@ final class BlockSerializerDeserializerRegistrar{
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(DoublePlant $b) => $b->isTop(), fn(DoublePlant $b, bool $v) => $b->setTop($v)), //TODO: don't we have helpers for this?
 		]));
 		$this->mapModel(Model::create(Blocks::POLISHED_BASALT(), Ids::POLISHED_BASALT)->properties([$commonProperties->pillarAxis]));
+		$this->mapModel(Model::create(Blocks::POLISHED_BLACKSTONE_BUTTON(), Ids::POLISHED_BLACKSTONE_BUTTON)->properties($commonProperties->buttonProperties));
+		$this->mapModel(Model::create(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE)->properties($commonProperties->simplePressurePlateProperties));
 		$this->mapModel(Model::create(Blocks::PUMPKIN(), Ids::PUMPKIN)->properties([
 			//not used, has no visible effect
 			$commonProperties->dummyCardinalDirection
@@ -1472,28 +1591,35 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 
 		//S
-		$this->mapModel(Model::create(Blocks::SMOOTH_QUARTZ(), Ids::SMOOTH_QUARTZ)->properties([
-			$commonProperties->dummyPillarAxis
-		]));
-		$this->mapModel(Model::create(Blocks::SUGARCANE(), Ids::REEDS)->properties([
-			new IntProperty(StateNames::AGE, 0, 15, fn(Sugarcane $b) => $b->getAge(), fn(Sugarcane $b, int $v) => $b->setAge($v))
+		$this->mapModel(Model::create(Blocks::SEA_PICKLE(), Ids::SEA_PICKLE)->properties([
+			new IntProperty(StateNames::CLUSTER_COUNT, 0, 3, fn(SeaPickle $b) => $b->getCount(), fn(SeaPickle $b, int $v) => $b->setCount($v), offset: 1),
+			new BoolProperty(StateNames::DEAD_BIT, fn(SeaPickle $b) => $b->isUnderwater(), fn(SeaPickle $b, bool $v) => $b->setUnderwater($v), inverted: true)
 		]));
 		$this->mapModel(Model::create(Blocks::SMALL_DRIPLEAF(), Ids::SMALL_DRIPLEAF_BLOCK)->properties([
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(SmallDripleaf $b) => $b->isTop(), fn(SmallDripleaf $b, bool $v) => $b->setTop($v)),
 			$commonProperties->cardinalDirection
 		]));
+		$this->mapModel(Model::create(Blocks::SMOOTH_QUARTZ(), Ids::SMOOTH_QUARTZ)->properties([
+			$commonProperties->dummyPillarAxis
+		]));
 		$this->mapModel(Model::create(Blocks::SNOW_LAYER(), Ids::SNOW_LAYER)->properties([
 			new DummyProperty(StateNames::COVERED_BIT, false),
 			new IntProperty(StateNames::HEIGHT, 0, 7, fn(SnowLayer $b) => $b->getLayers(), fn(SnowLayer $b, int $v) => $b->setLayers($v), offset: 1)
 		]));
+		$this->mapModel(Model::create(Blocks::SOUL_CAMPFIRE(), Ids::SOUL_CAMPFIRE)->properties($commonProperties->campfireProperties));
 		$this->mapModel(Model::create(Blocks::SOUL_FIRE(), Ids::SOUL_FIRE)->properties([
-			new DummyProperty(StateNames::AGE, 0)
+			new DummyProperty(StateNames::AGE, 0) //this is useless for soul fire, since it doesn't have the logic associated
 		]));
 		$this->mapModel(Model::create(Blocks::SOUL_LANTERN(), Ids::SOUL_LANTERN)->properties([
 			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v)) //TODO: repeated
 		]));
+		$this->mapModel(Model::create(Blocks::STONE_BUTTON(), Ids::STONE_BUTTON)->properties($commonProperties->buttonProperties));
+		$this->mapModel(Model::create(Blocks::STONE_PRESSURE_PLATE(), Ids::STONE_PRESSURE_PLATE)->properties($commonProperties->simplePressurePlateProperties));
 		$this->mapModel(Model::create(Blocks::STONECUTTER(), Ids::STONECUTTER_BLOCK)->properties([
 			$commonProperties->cardinalDirection
+		]));
+		$this->mapModel(Model::create(Blocks::SUGARCANE(), Ids::REEDS)->properties([
+			new IntProperty(StateNames::AGE, 0, 15, fn(Sugarcane $b) => $b->getAge(), fn(Sugarcane $b, int $v) => $b->setAge($v))
 		]));
 
 		//T

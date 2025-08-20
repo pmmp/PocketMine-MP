@@ -59,6 +59,9 @@ use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
 
+/**
+ * @deprecated
+ */
 final class BlockStateDeserializerHelper{
 
 	/** @throws BlockStateDeserializeException */

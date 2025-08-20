@@ -26,37 +26,14 @@ namespace pocketmine\data\bedrock\block\convert;
 use pocketmine\block\BigDripleafHead;
 use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
-use pocketmine\block\Button;
-use pocketmine\block\Campfire;
-use pocketmine\block\CaveVines;
-use pocketmine\block\ChemistryTable;
-use pocketmine\block\ChiseledBookshelf;
-use pocketmine\block\CopperSlab;
-use pocketmine\block\Door;
 use pocketmine\block\DoublePitcherCrop;
-use pocketmine\block\EndRod;
 use pocketmine\block\FillableCauldron;
-use pocketmine\block\GlowLichen;
-use pocketmine\block\Hopper;
-use pocketmine\block\ItemFrame;
-use pocketmine\block\Lava;
 use pocketmine\block\PitcherCrop;
-use pocketmine\block\ResinClump;
 use pocketmine\block\RuntimeBlockStateRegistry;
-use pocketmine\block\SeaPickle;
-use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\Slab;
-use pocketmine\block\SoulCampfire;
 use pocketmine\block\Stair;
-use pocketmine\block\StoneButton;
-use pocketmine\block\StonePressurePlate;
-use pocketmine\block\SweetBerryBush;
-use pocketmine\block\TorchflowerCrop;
-use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\Colored;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\block\Vine;
-use pocketmine\block\Water;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -67,7 +44,6 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
-use pocketmine\math\Facing;
 use function get_class;
 
 final class BlockObjectToStateSerializer implements BlockStateSerializer{
@@ -88,7 +64,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 
 	public function __construct(){
 		$this->registerCauldronSerializers();
-		$this->registerCopperSerializers();
 		$this->registerSerializers();
 		new BlockSerializerDeserializerRegistrar(null, $this);
 	}
@@ -226,47 +201,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
 	}
 
-	private function registerCopperSerializers() : void{
-		$this->map(Blocks::CUT_COPPER_SLAB(), function(CopperSlab $block) : Writer{
-			$oxidation = $block->getOxidation();
-			return Helper::encodeSlab(
-				$block,
-				($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_CUT_COPPER_SLAB,
-						Ids::WAXED_EXPOSED_CUT_COPPER_SLAB,
-						Ids::WAXED_WEATHERED_CUT_COPPER_SLAB,
-						Ids::WAXED_OXIDIZED_CUT_COPPER_SLAB
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::CUT_COPPER_SLAB,
-						Ids::EXPOSED_CUT_COPPER_SLAB,
-						Ids::WEATHERED_CUT_COPPER_SLAB,
-						Ids::OXIDIZED_CUT_COPPER_SLAB
-					)
-				),
-				($block->isWaxed() ?
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::WAXED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB
-					) :
-					Helper::selectCopperId(
-						$oxidation,
-						Ids::DOUBLE_CUT_COPPER_SLAB,
-						Ids::EXPOSED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::WEATHERED_DOUBLE_CUT_COPPER_SLAB,
-						Ids::OXIDIZED_DOUBLE_CUT_COPPER_SLAB
-					)
-				)
-			);
-		});
-	}
-
 	private function registerSerializers() : void{
 		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
@@ -282,53 +216,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::BIG_DRIPLEAF_TILT, StringValues::BIG_DRIPLEAF_TILT_NONE)
 				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, false);
 		});
-		$this->map(Blocks::CAMPFIRE(), function(Campfire $block) : Writer{
-			return Writer::create(Ids::CAMPFIRE)
-				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeBool(StateNames::EXTINGUISHED, !$block->isLit());
-		});
-		$this->map(Blocks::CAVE_VINES(), function(CaveVines $block) : Writer{
-			//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
-			return Writer::create($block->hasBerries() ?
-				($block->isHead() ?
-					Ids::CAVE_VINES_HEAD_WITH_BERRIES :
-					Ids::CAVE_VINES_BODY_WITH_BERRIES
-				) :
-				Ids::CAVE_VINES
-			)
-				->writeInt(StateNames::GROWING_PLANT_AGE, $block->getAge());
-		});
-		$this->map(Blocks::CHISELED_BOOKSHELF(), function(ChiseledBookshelf $block) : Writer{
-			$flags = 0;
-			foreach($block->getSlots() as $slot){
-				$flags |= 1 << $slot->value;
-			}
-			return Writer::create(Ids::CHISELED_BOOKSHELF)
-				->writeLegacyHorizontalFacing($block->getFacing())
-				->writeInt(StateNames::BOOKS_STORED, $flags);
-		});
-		$this->map(Blocks::COMPOUND_CREATOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::COMPOUND_CREATOR)));
-		$this->map(Blocks::ELEMENT_CONSTRUCTOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::ELEMENT_CONSTRUCTOR)));
-		$this->map(Blocks::END_ROD(), function(EndRod $block) : Writer{
-			return Writer::create(Ids::END_ROD)
-				->writeEndRodFacingDirection($block->getFacing());
-		});
-		$this->map(Blocks::GLOW_LICHEN(), function(GlowLichen $block) : Writer{
-			return Writer::create(Ids::GLOW_LICHEN)
-				->writeFacingFlags($block->getFaces());
-		});
-		$this->map(Blocks::GLOWING_ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::GLOW_FRAME));
-		$this->map(Blocks::HOPPER(), function(Hopper $block) : Writer{
-			return Writer::create(Ids::HOPPER)
-				->writeBool(StateNames::TOGGLE_BIT, $block->isPowered())
-				->writeFacingWithoutUp($block->getFacing());
-		});
-		$this->map(Blocks::IRON_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::IRON_DOOR)));
-		$this->map(Blocks::IRON_TRAPDOOR(), fn(Trapdoor $block) => Helper::encodeTrapdoor($block, new Writer(Ids::IRON_TRAPDOOR)));
-		$this->map(Blocks::ITEM_FRAME(), fn(ItemFrame $block) => Helper::encodeItemFrame($block, Ids::FRAME));
-		$this->map(Blocks::LAB_TABLE(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::LAB_TABLE)));
-		$this->map(Blocks::LAVA(), fn(Lava $block) => Helper::encodeLiquid($block, Ids::LAVA, Ids::FLOWING_LAVA));
-		$this->map(Blocks::MATERIAL_REDUCER(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, Writer::create(Ids::MATERIAL_REDUCER)));
 		$this->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
 				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
 		$this->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
@@ -341,36 +228,5 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 				->writeInt(StateNames::GROWTH, $block->getAge() + 1 + PitcherCrop::MAX_AGE)
 				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
 		});
-		$this->map(Blocks::POLISHED_BLACKSTONE_BUTTON(), fn(Button $block) => Helper::encodeButton($block, new Writer(Ids::POLISHED_BLACKSTONE_BUTTON)));
-		$this->map(Blocks::POLISHED_BLACKSTONE_PRESSURE_PLATE(), fn(SimplePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::POLISHED_BLACKSTONE_PRESSURE_PLATE)));
-		$this->map(Blocks::RESIN_CLUMP(), function(ResinClump $block) : Writer{
-			return Writer::create(Ids::RESIN_CLUMP)
-				->writeFacingFlags($block->getFaces());
-		});
-		$this->map(Blocks::SEA_PICKLE(), function(SeaPickle $block) : Writer{
-			return Writer::create(Ids::SEA_PICKLE)
-				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
-				->writeInt(StateNames::CLUSTER_COUNT, $block->getCount() - 1);
-		});
-		$this->map(Blocks::SOUL_CAMPFIRE(), function(SoulCampfire $block) : Writer{
-			return Writer::create(Ids::SOUL_CAMPFIRE)
-				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeBool(StateNames::EXTINGUISHED, !$block->isLit());
-		});
-		$this->map(Blocks::STONE_BUTTON(), fn(StoneButton $block) => Helper::encodeButton($block, new Writer(Ids::STONE_BUTTON)));
-		$this->map(Blocks::STONE_PRESSURE_PLATE(), fn(StonePressurePlate $block) => Helper::encodeSimplePressurePlate($block, new Writer(Ids::STONE_PRESSURE_PLATE)));
-		$this->map(Blocks::SWEET_BERRY_BUSH(), function(SweetBerryBush $block) : Writer{
-			return Writer::create(Ids::SWEET_BERRY_BUSH)
-				->writeInt(StateNames::GROWTH, $block->getAge());
-		});
-		$this->map(Blocks::TORCHFLOWER_CROP(), function(TorchflowerCrop $block){
-			return Writer::create(Ids::TORCHFLOWER_CROP)
-				->writeInt(StateNames::GROWTH, $block->isReady() ? 1 : 0);
-		});
-		$this->map(Blocks::VINES(), function(Vine $block) : Writer{
-			return Writer::create(Ids::VINE)
-				->writeInt(StateNames::VINE_DIRECTION_BITS, ($block->hasFace(Facing::NORTH) ? BlockLegacyMetadata::VINE_FLAG_NORTH : 0) | ($block->hasFace(Facing::SOUTH) ? BlockLegacyMetadata::VINE_FLAG_SOUTH : 0) | ($block->hasFace(Facing::WEST) ? BlockLegacyMetadata::VINE_FLAG_WEST : 0) | ($block->hasFace(Facing::EAST) ? BlockLegacyMetadata::VINE_FLAG_EAST : 0));
-		});
-		$this->map(Blocks::WATER(), fn(Water $block) => Helper::encodeLiquid($block, Ids::WATER, Ids::FLOWING_WATER));
 	}
 }

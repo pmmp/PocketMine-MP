@@ -75,6 +75,7 @@ final class ValueMappings{
 	public readonly IntFromIntStateMap $horizontalFacingCoral;
 	public readonly IntFromIntStateMap $horizontalFacingClassic;
 	public readonly IntFromIntStateMap $facing;
+	public readonly IntFromIntStateMap $facingEndRod;
 	public readonly IntFromIntStateMap $coralAxis;
 
 	public readonly IntFromIntStateMap $facingExceptDown;
@@ -152,7 +153,7 @@ final class ValueMappings{
 
 		$this->mushroomBlockType = new EnumFromIntStateMap(
 			MushroomBlockType::class,
-			fn(MushroomBlockType $case) => match($case){
+			fn(MushroomBlockType $case) => match ($case) {
 				MushroomBlockType::PORES => LegacyMeta::MUSHROOM_BLOCK_ALL_PORES,
 				MushroomBlockType::CAP_NORTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
 				MushroomBlockType::CAP_NORTH => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
@@ -165,7 +166,7 @@ final class ValueMappings{
 				MushroomBlockType::CAP_SOUTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
 				MushroomBlockType::ALL_CAP => LegacyMeta::MUSHROOM_BLOCK_ALL_CAP,
 			},
-			fn(MushroomBlockType $case) => match($case){
+			fn(MushroomBlockType $case) => match ($case) {
 				MushroomBlockType::ALL_CAP => [11, 12, 13],
 				default => []
 			}
@@ -244,6 +245,16 @@ final class ValueMappings{
 			Facing::DOWN => 0,
 			Facing::UP => 1
 		] + $horizontalFacingClassicTable);
+
+		//end rods have all the horizontal facing values opposite to classic facing
+		$this->facingEndRod = new IntFromIntStateMap([
+			Facing::DOWN => 0,
+			Facing::UP => 1,
+			Facing::SOUTH => 2,
+			Facing::NORTH => 3,
+			Facing::EAST => 4,
+			Facing::WEST => 5,
+		]);
 
 		$this->coralAxis = new IntFromIntStateMap([
 			Axis::X => 0,

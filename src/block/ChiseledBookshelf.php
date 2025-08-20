@@ -115,6 +115,18 @@ class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 	}
 
 	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @return $this
+	 */
+	public function setSlots(array $slots) : self{
+		$this->slots = [];
+		foreach($slots as $slot){
+			$this->setSlot($slot, true);
+		}
+		return $this;
+	}
+
+	/**
 	 * Returns the last slot interacted by a player or null if no slot has been interacted with yet.
 	 */
 	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{

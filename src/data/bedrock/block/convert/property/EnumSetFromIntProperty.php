@@ -26,47 +26,68 @@ namespace pocketmine\data\bedrock\block\convert\property;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\data\bedrock\block\convert\EnumFromIntStateMap;
+use pocketmine\utils\AssumptionFailedError;
 
 /**
  * @phpstan-template TBlock of Block
+ * @phpstan-template TEnum of \UnitEnum
  * @phpstan-implements Property<TBlock>
  */
-final class BoolProperty implements Property{
+final class EnumSetFromIntProperty implements Property{
+
+	private int $maxValue = 0;
+
 	/**
-	 * @phpstan-param \Closure(TBlock) : bool $getter
-	 * @phpstan-param \Closure(TBlock, bool) : mixed $setter
+	 * @phpstan-param EnumFromIntStateMap<TEnum> $map
+	 * @phpstan-param \Closure(TBlock) : array<TEnum> $getter
+	 * @phpstan-param \Closure(TBlock, array<TEnum>) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
+		private EnumFromIntStateMap $map,
 		private \Closure $getter,
-		private \Closure $setter,
-		private bool $inverted = false //we don't *need* this, but it avoids accidentally forgetting a ! in the getter/setter closures (and makes it analysable)
-	){}
+		private \Closure $setter
+	){
+		$flagsToCases = $this->map->getValueToEnum();
+		foreach($flagsToCases as $possibleFlag => $option){
+			if(($this->maxValue & $possibleFlag) !== 0){
+				foreach($flagsToCases as $otherFlag => $otherOption){
+					if(($possibleFlag & $otherFlag) === $otherFlag && $otherOption !== $option){
+						throw new \InvalidArgumentException("Flag for $option->name overlaps with other flag $otherOption->name in property $this->name");
+					}
+				}
 
-	/**
-	 * @phpstan-return self<Block>
-	 */
-	public static function unused(string $name, bool $serializedValue) : self{
-		return new self($name, fn() => $serializedValue, fn() => null);
+				throw new AssumptionFailedError("Unreachable");
+			}
+
+			$this->maxValue |= $possibleFlag;
+		}
 	}
 
 	public function getName() : string{ return $this->name; }
 
-	/**
-	 * @phpstan-param TBlock $block
-	 */
 	public function deserialize(Block $block, BlockStateReader $in) : void{
-		$raw = $in->readBool($this->name);
-		$value = $raw !== $this->inverted;
+		$flags = $in->readBoundedInt($this->name, 0, $this->maxValue);
+
+		$value = [];
+		foreach($this->map->getValueToEnum() as $possibleFlag => $option){
+			if(($flags & $possibleFlag) === $possibleFlag){
+				$value[] = $option;
+			}
+		}
+
 		($this->setter)($block, $value);
 	}
 
-	/**
-	 * @phpstan-param TBlock $block
-	 */
 	public function serialize(Block $block, BlockStateWriter $out) : void{
+		$flags = 0;
+
 		$value = ($this->getter)($block);
-		$raw = $value !== $this->inverted;
-		$out->writeBool($this->name, $raw);
+		foreach($value as $option){
+			$flags |= $this->map->enumToValue($option);
+		}
+
+		$out->writeInt($this->name, $flags);
 	}
 }

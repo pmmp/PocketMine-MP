@@ -29,6 +29,10 @@ use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
 use pocketmine\block\Furnace;
+use pocketmine\block\ItemFrame;
+use pocketmine\block\Liquid;
+use pocketmine\block\SimplePressurePlate;
+use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\Stem;
 use pocketmine\block\Torch;
@@ -44,10 +48,16 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\Lightable;
+use pocketmine\block\utils\MultiFacing;
 use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\SignLikeRotation;
+use pocketmine\block\utils\SlabType;
+use pocketmine\block\Wall;
+use pocketmine\block\Wood;
+use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues;
+use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
@@ -57,8 +67,10 @@ use pocketmine\data\bedrock\block\convert\property\HorizontalFacingReadTransform
 use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
+use pocketmine\data\bedrock\block\convert\property\IntSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\Property;
 use pocketmine\data\bedrock\block\convert\property\StringProperty;
+use pocketmine\data\bedrock\block\convert\property\WallConnectionTypeShim;
 use pocketmine\math\Facing;
 use pocketmine\utils\SingletonTrait;
 
@@ -84,6 +96,9 @@ final class CommonProperties{
 	/** @phpstan-var IntFromIntProperty<Block&AnyFacing> */
 	public readonly IntFromIntProperty $anyFacingClassic;
 
+	/** @phpstan-var IntSetFromIntProperty<Block&MultiFacing> */
+	public readonly IntSetFromIntProperty $multiFacingFlags;
+
 	/** @phpstan-var IntProperty<Block&SignLikeRotation> */
 	public readonly IntProperty $floorSignLikeRotation;
 
@@ -95,6 +110,9 @@ final class CommonProperties{
 	/** @phpstan-var BoolProperty<DoublePlant> */
 	public readonly BoolProperty $doublePlantHalf;
 
+	/** @phpstan-var IntProperty<Liquid> */
+	public readonly IntProperty $liquidData;
+
 	public readonly DummyProperty $dummyCardinalDirection;
 	public readonly DummyProperty $dummyPillarAxis;
 
@@ -103,6 +121,11 @@ final class CommonProperties{
 
 	/** @phpstan-var BoolFromStringProperty<Block&Lightable> */
 	public readonly BoolFromStringProperty $litIdInfix;
+
+	/** @phpstan-var BoolFromStringProperty<Slab> */
+	public readonly BoolFromStringProperty $slabIdInfix;
+	/** @phpstan-var BoolFromStringProperty<Slab> */
+	public readonly BoolFromStringProperty $slabPositionProperty;
 
 	/**
 	 * @var StringProperty[]
@@ -122,10 +145,28 @@ final class CommonProperties{
 	public readonly array $furnaceIdPrefixes;
 
 	/**
+	 * @var StringProperty[]|string[]
+	 * @phpstan-var non-empty-list<string|StringProperty<contravariant Liquid>>
+	 */
+	public readonly array $liquidIdPrefixes;
+
+	/**
+	 * @var StringProperty[]
+	 * @phpstan-var non-empty-list<string|StringProperty<contravariant Wood>>
+	 */
+	public readonly array $woodIdPrefixes;
+
+	/**
 	 * @var Property[]
 	 * @phpstan-var non-empty-list<Property<contravariant Button>>
 	 */
 	public readonly array $buttonProperties;
+
+	/**
+	 * @var Property[]
+	 * @phpstan-var non-empty-list<Property<contravariant Block & Lightable & HorizontalFacing>>
+	 */
+	public readonly array $campfireProperties;
 
 	/**
 	 * @var Property[]
@@ -138,6 +179,18 @@ final class CommonProperties{
 	 * @phpstan-var non-empty-list<Property<contravariant FenceGate>>
 	 */
 	public readonly array $fenceGateProperties;
+
+	/**
+	 * @var Property[]
+	 * @phpstan-var non-empty-list<Property<contravariant ItemFrame>>
+	 */
+	public readonly array $itemFrameProperties;
+
+	/**
+	 * @var Property[]
+	 * @phpstan-var non-empty-list<Property<contravariant SimplePressurePlate>>
+	 */
+	public readonly array $simplePressurePlateProperties;
 
 	/**
 	 * @var Property[]
@@ -156,6 +209,12 @@ final class CommonProperties{
 	 * @phpstan-var non-empty-list<Property<contravariant Trapdoor>>
 	 */
 	public readonly array $trapdoorProperties;
+
+	/**
+	 * @var Property[]
+	 * @phpstan-var non-empty-list<Property<contravariant Wall>>
+	 */
+	public readonly array $wallProperties;
 
 	private function __construct(){
 		$vm = ValueMappings::getInstance();
@@ -216,6 +275,20 @@ final class CommonProperties{
 			fn(Block&AnyFacing $b, int $v) => $b->setFacing($v)
 		);
 
+		$this->multiFacingFlags = new IntSetFromIntProperty(
+			StateNames::MULTI_FACE_DIRECTION_BITS,
+			new IntFromIntStateMap([
+				Facing::DOWN => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN,
+				Facing::UP => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_UP,
+				Facing::NORTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_NORTH,
+				Facing::SOUTH => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_SOUTH,
+				Facing::WEST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_WEST,
+				Facing::EAST => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_EAST
+			]),
+			fn(Block&MultiFacing $b) => $b->getFaces(),
+			fn(Block&MultiFacing $b, array $v) => $b->setFaces($v)
+		);
+
 		$this->floorSignLikeRotation = new IntProperty(StateNames::GROUND_SIGN_DIRECTION, 0, 15, fn(Block&SignLikeRotation $b) => $b->getRotation(), fn(Block&SignLikeRotation $b, int $v) => $b->setRotation($v));
 
 		$this->analogRedstoneSignal = new IntProperty(StateNames::REDSTONE_SIGNAL, 0, 15, fn(Block&AnalogRedstoneSignalEmitter $b) => $b->getOutputSignalStrength(), fn(Block&AnalogRedstoneSignalEmitter $b, int $v) => $b->setOutputSignalStrength($v));
@@ -223,11 +296,42 @@ final class CommonProperties{
 		$this->cropAgeMax7 = new IntProperty(StateNames::GROWTH, 0, 7, fn(Block&Ageable $b) => $b->getAge(), fn(Block&Ageable $b, int $v) => $b->setAge($v));
 		$this->doublePlantHalf = new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(DoublePlant $b) => $b->isTop(), fn(DoublePlant $b, bool $v) => $b->setTop($v));
 
+		$fallingFlag = BlockLegacyMetadata::LIQUID_FALLING_FLAG;
+		$this->liquidData = new IntProperty(
+			StateNames::LIQUID_DEPTH,
+			0,
+			15,
+			fn(Liquid $b) => $b->getDecay() | ($b->isFalling() ? $fallingFlag : 0),
+			fn(Liquid $b, int $v) => $b->setDecay($v & ~$fallingFlag)->setFalling(($v & $fallingFlag) !== 0)
+		);
+
 		$this->dummyCardinalDirection = new DummyProperty(StateNames::MC_CARDINAL_DIRECTION, BlockStateStringValues::MC_CARDINAL_DIRECTION_SOUTH);
 		$this->dummyPillarAxis = new DummyProperty(StateNames::PILLAR_AXIS, BlockStateStringValues::PILLAR_AXIS_Y);
 
 		$this->dyeColorIdInfix = new EnumFromStringProperty("color", $vm->dyeColor, fn(Block&Colored $b) => $b->getColor(), fn(Block&Colored $b, DyeColor $v) => $b->setColor($v));
 		$this->litIdInfix = new BoolFromStringProperty("lit", "", "lit_", fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v));
+
+		$this->slabIdInfix = new BoolFromStringProperty(
+			"double",
+			"",
+			"double_",
+			fn(Slab $b) => $b->getSlabType() === SlabType::DOUBLE,
+
+			//we don't know this is actually a bottom slab yet but we don't have enough information to set the
+			//correct type in this handler
+			//BOTTOM serves as a signal value for the state deserializer to decide whether to ignore the
+			//upper_block_bit property
+			fn(Slab $b, bool $v) => $b->setSlabType($v ? SlabType::DOUBLE : SlabType::BOTTOM)
+		);
+		$this->slabPositionProperty = new BoolFromStringProperty(
+			StateNames::MC_VERTICAL_HALF,
+			StringValues::MC_VERTICAL_HALF_BOTTOM,
+			StringValues::MC_VERTICAL_HALF_TOP,
+			fn(Slab $b) => $b->getSlabType() === SlabType::TOP,
+
+			//Ignore the value for double slabs (should be set by ID component before this is reached)
+			fn(Slab $b, bool $v) => $b->getSlabType() !== SlabType::DOUBLE ? $b->setSlabType($v ? SlabType::TOP : SlabType::BOTTOM) : null
+		);
 
 		$this->coralIdPrefixes = [
 			"minecraft:",
@@ -253,9 +357,24 @@ final class CommonProperties{
 
 		$this->furnaceIdPrefixes = ["minecraft:", $this->litIdInfix];
 
+		$this->liquidIdPrefixes = [
+			"minecraft:",
+			new BoolFromStringProperty("still", "flowing_", "", fn(Liquid $b) => $b->isStill(), fn(Liquid $b, bool $v) => $b->setStill($v))
+		];
+
+		$this->woodIdPrefixes = [
+			"minecraft:",
+			new BoolFromStringProperty("stripped", "", "stripped_", fn(Wood $b) => $b->isStripped(), fn(Wood $b, bool $v) => $b->setStripped($v)),
+		];
+
 		$this->buttonProperties = [
 			$this->anyFacingClassic,
 			new BoolProperty(StateNames::BUTTON_PRESSED_BIT, fn(Button $b) => $b->isPressed(), fn(Button $b, bool $v) => $b->setPressed($v)),
+		];
+
+		$this->campfireProperties = [
+			$this->cardinalDirection,
+			new BoolProperty(StateNames::EXTINGUISHED, fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v), inverted: true),
 		];
 
 		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
@@ -276,6 +395,24 @@ final class CommonProperties{
 			$this->cardinalDirection,
 		];
 
+		$this->itemFrameProperties = [
+			new DummyProperty(StateNames::ITEM_FRAME_PHOTO_BIT, false), //TODO: not sure what the point of this is
+			new BoolProperty(StateNames::ITEM_FRAME_MAP_BIT, fn(ItemFrame $b) => $b->hasMap(), fn(ItemFrame $b, bool $v) => $b->setHasMap($v)),
+			$this->anyFacingClassic
+		];
+
+		$this->simplePressurePlateProperties = [
+			//TODO: not sure what the deal is here ... seems like a mojang bug / artifact of bad implementation?
+			//best to keep this separate from weighted plates anyway...
+			new IntProperty(
+				StateNames::REDSTONE_SIGNAL,
+				0,
+				15,
+				fn(SimplePressurePlate $b) => $b->isPressed() ? 15 : 0,
+				fn(SimplePressurePlate $b, int $v) => $b->setPressed($v !== 0)
+			)
+		];
+
 		$this->stairProperties = [
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Stair $b) => $b->isUpsideDown(), fn(Stair $b, bool $v) => $b->setUpsideDown($v)),
 			new HorizontalFacingProperty(StateNames::WEIRDO_DIRECTION, $vm->horizontalFacing5Minus)
@@ -293,5 +430,23 @@ final class CommonProperties{
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Trapdoor $b) => $b->isTop(), fn(Trapdoor $b, bool $v) => $b->setTop($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Trapdoor $b) => $b->isOpen(), fn(Trapdoor $b, bool $v) => $b->setOpen($v)),
 		];
+
+		$wallProperties = [
+			new BoolProperty(StateNames::WALL_POST_BIT, fn(Wall $b) => $b->isPost(), fn(Wall $b, bool $v) => $b->setPost($v)),
+		];
+		foreach([
+			Facing::NORTH => StateNames::WALL_CONNECTION_TYPE_NORTH,
+			Facing::SOUTH => StateNames::WALL_CONNECTION_TYPE_SOUTH,
+			Facing::WEST => StateNames::WALL_CONNECTION_TYPE_WEST,
+			Facing::EAST => StateNames::WALL_CONNECTION_TYPE_EAST
+		] as $facing => $stateName){
+			$wallProperties[] = new EnumFromStringProperty(
+				$stateName,
+				new EnumFromStringStateMap(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->value),
+				fn(Wall $b) => WallConnectionTypeShim::serialize($b->getConnection($facing)),
+				fn(Wall $b, WallConnectionTypeShim $v) => $b->setConnection($facing, $v->deserialize())
+			);
+		}
+		$this->wallProperties = $wallProperties;
 	}
 }
