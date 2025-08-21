@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
@@ -34,7 +33,7 @@ use pocketmine\math\Facing;
 /**
  * TODO: this could just wrap around IntFromStringProperty / IntFromIntProperty if the design of Property were changed
  *
- * @phpstan-implements Property<Block&HorizontalFacing>
+ * @phpstan-implements Property<HorizontalFacing>
  */
 class HorizontalFacingProperty implements Property{
 	public function __construct(
@@ -57,7 +56,7 @@ class HorizontalFacingProperty implements Property{
 			$out->mapIntToString($this->name, $this->map, $value);
 	}
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$value = $this->read($in);
 		$transformed = match($this->readTransform){
 			HorizontalFacingReadTransform::NONE => $value,
@@ -67,7 +66,7 @@ class HorizontalFacingProperty implements Property{
 		$block->setFacing($transformed);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$value = $block->getFacing();
 		$transformed = match($this->readTransform){
 			HorizontalFacingReadTransform::NONE => $value,

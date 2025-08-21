@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-implements Property<TBlock>
  */
 final class BoolProperty implements Property{
@@ -44,7 +43,7 @@ final class BoolProperty implements Property{
 	){}
 
 	/**
-	 * @phpstan-return self<Block>
+	 * @phpstan-return self<object>
 	 */
 	public static function unused(string $name, bool $serializedValue) : self{
 		return new self($name, fn() => $serializedValue, fn() => null);
@@ -55,7 +54,7 @@ final class BoolProperty implements Property{
 	/**
 	 * @phpstan-param TBlock $block
 	 */
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$raw = $in->readBool($this->name);
 		$value = $raw !== $this->inverted;
 		($this->setter)($block, $value);
@@ -64,7 +63,7 @@ final class BoolProperty implements Property{
 	/**
 	 * @phpstan-param TBlock $block
 	 */
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
 		$raw = $value !== $this->inverted;
 		$out->writeBool($this->name, $raw);

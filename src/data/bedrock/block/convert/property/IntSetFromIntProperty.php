@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
 use pocketmine\utils\AssumptionFailedError;
 
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-implements Property<TBlock>
  */
 final class IntSetFromIntProperty implements Property{
@@ -65,7 +64,7 @@ final class IntSetFromIntProperty implements Property{
 
 	public function getName() : string{ return $this->name; }
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$flags = $in->readBoundedInt($this->name, 0, $this->maxValue);
 
 		$value = [];
@@ -78,7 +77,7 @@ final class IntSetFromIntProperty implements Property{
 		($this->setter)($block, $value);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$flags = 0;
 
 		$value = ($this->getter)($block);

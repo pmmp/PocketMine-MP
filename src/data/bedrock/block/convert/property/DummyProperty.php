@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\utils\AssumptionFailedError;
@@ -32,7 +31,7 @@ use function is_int;
 use function is_string;
 
 /**
- * @phpstan-implements Property<Block>
+ * @phpstan-implements Property<object>
  */
 final class DummyProperty implements Property{
 	public function __construct(
@@ -44,11 +43,11 @@ final class DummyProperty implements Property{
 		return $this->name;
 	}
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$in->ignored($this->name);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		if(is_bool($this->value)){
 			$out->writeBool($this->name, $this->value);
 		}elseif(is_int($this->value)){

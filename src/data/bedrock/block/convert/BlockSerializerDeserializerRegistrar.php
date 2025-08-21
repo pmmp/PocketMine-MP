@@ -36,7 +36,6 @@ use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
 use pocketmine\block\Cake;
-use pocketmine\block\CakeWithCandle;
 use pocketmine\block\Candle;
 use pocketmine\block\CaveVines;
 use pocketmine\block\ChiseledBookshelf;
@@ -96,7 +95,6 @@ use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\LeverFacing;
-use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\PoweredByRedstone;
@@ -638,12 +636,10 @@ final class BlockSerializerDeserializerRegistrar{
 
 	private function registerCandleMappings(CommonProperties $commonProperties) : void{
 		$candleProperties = [
-			new BoolProperty(StateNames::LIT, fn(Candle $b) => $b->isLit(), fn(Candle $b, bool $v) => $b->setLit($v)),
+			$commonProperties->lit,
 			new IntProperty(StateNames::CANDLES, 0, 3, fn(Candle $b) => $b->getCount(), fn(Candle $b, int $v) => $b->setCount($v), offset: 1),
 		];
-		$cakeWithCandleProperties = [
-			new BoolProperty(StateNames::LIT, fn(CakeWithCandle $b) => $b->isLit(), fn(CakeWithCandle $b, bool $v) => $b->setLit($v)),
-		];
+		$cakeWithCandleProperties = [$commonProperties->lit];
 		$this->mapModel(Model::create(Blocks::CANDLE(), Ids::CANDLE)->properties($candleProperties));
 		$this->mapModel(Model::create(Blocks::CAKE_WITH_CANDLE(), Ids::CANDLE_CAKE)->properties($cakeWithCandleProperties));
 
@@ -780,8 +776,8 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_BULB())
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_bulb"])
 			->properties([
-				new BoolProperty(StateNames::LIT, fn(Block&Lightable $b) => $b->isLit(), fn(Block&Lightable $b, bool $v) => $b->setLit($v)),
-				new BoolProperty(StateNames::POWERED_BIT, fn(Block&PoweredByRedstone $b) => $b->isPowered(), fn(Block&PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
+				$commonProperties->lit,
+				new BoolProperty(StateNames::POWERED_BIT, fn(PoweredByRedstone $b) => $b->isPowered(), fn(PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
 			])
 		);
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER())
@@ -1513,7 +1509,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::HOPPER(), Ids::HOPPER)->properties([
 			//kinda weird this doesn't use powered_bit?
-			new BoolProperty(StateNames::TOGGLE_BIT, fn(Block&PoweredByRedstone $b) => $b->isPowered(), fn(Block&PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
+			new BoolProperty(StateNames::TOGGLE_BIT, fn(PoweredByRedstone $b) => $b->isPowered(), fn(PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
 			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptUp, fn(Hopper $b) => $b->getFacing(), fn(Hopper $b, int $v) => $b->setFacing($v)),
 		]));
 

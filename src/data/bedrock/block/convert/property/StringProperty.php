@@ -23,10 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
-
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-extends Property<TBlock>
  */
 interface StringProperty extends Property{

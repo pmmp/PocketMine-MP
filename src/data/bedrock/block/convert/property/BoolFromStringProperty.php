@@ -23,13 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-implements StringProperty<TBlock>
  */
 final class BoolFromStringProperty implements StringProperty{
@@ -54,7 +53,7 @@ final class BoolFromStringProperty implements StringProperty{
 		return [$this->falseValue, $this->trueValue];
 	}
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$raw = $in->readString($this->name);
 		$value = match($raw){
 			$this->falseValue => false,
@@ -65,7 +64,7 @@ final class BoolFromStringProperty implements StringProperty{
 		($this->setter)($block, $value);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
 		$out->writeString($this->name, $value ? $this->trueValue : $this->falseValue);
 	}

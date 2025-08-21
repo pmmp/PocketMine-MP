@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\EnumFromIntStateMap;
 use function array_keys;
 
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-template TEnum of \UnitEnum
  * @phpstan-implements Property<TBlock>
  */
@@ -59,7 +58,7 @@ final class EnumFromIntProperty implements Property{
 		return array_keys($this->map->getValueToEnum());
 	}
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$raw = $in->readInt($this->name);
 		$value = $this->map->valueToEnum($raw);
 
@@ -69,7 +68,7 @@ final class EnumFromIntProperty implements Property{
 		($this->setter)($block, $value);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
 		$raw = $this->map->enumToValue($value);
 

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\IntFromStringStateMap;
@@ -32,7 +31,7 @@ use function array_map;
 use function strval;
 
 /**
- * @phpstan-template TBlock of Block
+ * @phpstan-template TBlock of object
  * @phpstan-implements StringProperty<TBlock>
  */
 class IntFromStringProperty implements StringProperty{
@@ -56,12 +55,12 @@ class IntFromStringProperty implements StringProperty{
 		return array_map(strval(...), array_keys($this->map->getDeserializeMap()));
 	}
 
-	public function deserialize(Block $block, BlockStateReader $in) : void{
+	public function deserialize(object $block, BlockStateReader $in) : void{
 		$value = $in->mapIntFromString($this->name, $this->map);
 		($this->setter)($block, $value);
 	}
 
-	public function serialize(Block $block, BlockStateWriter $out) : void{
+	public function serialize(object $block, BlockStateWriter $out) : void{
 		$value = ($this->getter)($block);
 		$out->mapIntToString($this->name, $this->map, $value);
 	}
