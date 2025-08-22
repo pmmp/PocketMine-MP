@@ -292,7 +292,7 @@ abstract class Living extends Entity{
 			$width = $size->getWidth();
 			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
 		}elseif($this->isSneaking()){
-			$this->setSize((new EntitySizeInfo(53 / 64 * $size->getHeight(), $size->getWidth(), 3 / 4 * $size->getEyeHeight()))->scale($this->getScale()));
+			$this->setSize((new EntitySizeInfo(53 / 64 * $size->getHeight(), $size->getWidth(), 53 / 64 * $size->getEyeHeight()))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
