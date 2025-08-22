@@ -243,7 +243,7 @@ abstract class Living extends Entity{
 	}
 
 	public function getSneakOffset() : float{
-		return 0.0
+		return 0.0;
 	}
 
 	public function isSneaking() : bool{
