@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
+use pocketmine\data\bedrock\block\convert\IntFromRawStateMap;
 use pocketmine\utils\AssumptionFailedError;
 
 /**
@@ -37,12 +37,13 @@ final class IntSetFromIntProperty implements Property{
 	private int $maxValue = 0;
 
 	/**
+	 * @phpstan-param IntFromRawStateMap<int> $map
 	 * @phpstan-param \Closure(TBlock) : array<int> $getter
 	 * @phpstan-param \Closure(TBlock, array<int>) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromIntStateMap $map,
+		private IntFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){

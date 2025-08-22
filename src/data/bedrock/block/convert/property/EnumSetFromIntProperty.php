@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\EnumFromIntStateMap;
+use pocketmine\data\bedrock\block\convert\EnumFromRawStateMap;
 use pocketmine\utils\AssumptionFailedError;
 
 /**
@@ -38,13 +38,13 @@ final class EnumSetFromIntProperty implements Property{
 	private int $maxValue = 0;
 
 	/**
-	 * @phpstan-param EnumFromIntStateMap<TEnum> $map
+	 * @phpstan-param EnumFromRawStateMap<TEnum, int> $map
 	 * @phpstan-param \Closure(TBlock) : array<TEnum> $getter
 	 * @phpstan-param \Closure(TBlock, array<TEnum>) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private EnumFromIntStateMap $map,
+		private EnumFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){

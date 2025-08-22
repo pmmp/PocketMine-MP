@@ -111,15 +111,21 @@ final class BlockStateReader{
 		throw $this->missingOrWrongTypeException($name, $tag);
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public function mapIntFromString(string $name, IntFromStringStateMap $map) : int{
+	/**
+	 * @phpstan-param IntFromRawStateMap<string> $map
+	 * @throws BlockStateDeserializeException
+	 */
+	public function mapIntFromString(string $name, IntFromRawStateMap $map) : int{
 		$raw = $this->readString($name);
 
 		return $map->deserialize($raw) ?? throw $this->badValueException($name, $raw);
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public function mapIntFromInt(string $name, IntFromIntStateMap $map) : int{
+	/**
+	 * @phpstan-param IntFromRawStateMap<int> $map
+	 * @throws BlockStateDeserializeException
+	 */
+	public function mapIntFromInt(string $name, IntFromRawStateMap $map) : int{
 		$raw = $this->readInt($name);
 
 		return $map->deserialize($raw) ?? throw $this->badValueException($name, (string) $raw);
@@ -267,11 +273,11 @@ final class BlockStateReader{
 
 	/**
 	 * @phpstan-template TEnum of \UnitEnum
-	 * @phpstan-param EnumFromStringStateMap<TEnum> $map
+	 * @phpstan-param EnumFromRawStateMap<TEnum, string> $map
 	 * @phpstan-return TEnum
 	 * @throws BlockStateDeserializeException
 	 */
-	public function readUnitEnum(string $name, EnumFromStringStateMap $map) : \UnitEnum{
+	public function readUnitEnum(string $name, EnumFromRawStateMap $map) : \UnitEnum{
 		$value = $this->readString($name);
 
 		$mapped = $map->valueToEnum($value);

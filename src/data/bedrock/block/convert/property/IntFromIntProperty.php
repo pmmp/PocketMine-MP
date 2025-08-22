@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
+use pocketmine\data\bedrock\block\convert\IntFromRawStateMap;
 
 /**
  * TODO: would be nice if we didn't have to pretty much copy-paste this from the int->string variant :(
@@ -36,12 +36,13 @@ use pocketmine\data\bedrock\block\convert\IntFromIntStateMap;
 class IntFromIntProperty implements Property{
 
 	/**
+	 * @phpstan-param IntFromRawStateMap<int> $map
 	 * @phpstan-param \Closure(TBlock) : int $getter
 	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromIntStateMap $map,
+		private IntFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}

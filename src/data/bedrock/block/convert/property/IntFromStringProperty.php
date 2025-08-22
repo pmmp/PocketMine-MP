@@ -26,7 +26,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromStringStateMap;
+use pocketmine\data\bedrock\block\convert\IntFromRawStateMap;
 use function array_keys;
 use function array_map;
 use function strval;
@@ -38,12 +38,13 @@ use function strval;
 class IntFromStringProperty implements StringProperty{
 
 	/**
+	 * @phpstan-param IntFromRawStateMap<string> $map
 	 * @phpstan-param \Closure(TBlock) : int $getter
 	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromStringStateMap $map,
+		private IntFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}

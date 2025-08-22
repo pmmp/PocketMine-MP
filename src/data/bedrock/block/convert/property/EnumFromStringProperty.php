@@ -26,7 +26,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\EnumFromStringStateMap;
+use pocketmine\data\bedrock\block\convert\EnumFromRawStateMap;
 use function array_keys;
 use function array_map;
 use function strval;
@@ -39,13 +39,13 @@ use function strval;
 final class EnumFromStringProperty implements StringProperty{
 
 	/**
-	 * @phpstan-param EnumFromStringStateMap<TEnum>   $map
+	 * @phpstan-param EnumFromRawStateMap<TEnum, string>   $map
 	 * @phpstan-param \Closure(TBlock) : TEnum        $getter
 	 * @phpstan-param \Closure(TBlock, TEnum) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private EnumFromStringStateMap $map,
+		private EnumFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}

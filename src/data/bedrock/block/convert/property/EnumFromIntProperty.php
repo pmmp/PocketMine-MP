@@ -25,7 +25,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\EnumFromIntStateMap;
+use pocketmine\data\bedrock\block\convert\EnumFromRawStateMap;
 use function array_keys;
 
 /**
@@ -36,13 +36,13 @@ use function array_keys;
 final class EnumFromIntProperty implements Property{
 
 	/**
-	 * @phpstan-param EnumFromIntStateMap<TEnum>   $map
+	 * @phpstan-param EnumFromRawStateMap<TEnum, int>   $map
 	 * @phpstan-param \Closure(TBlock) : TEnum        $getter
 	 * @phpstan-param \Closure(TBlock, TEnum) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private EnumFromIntStateMap $map,
+		private EnumFromRawStateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}

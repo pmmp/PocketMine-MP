@@ -94,6 +94,7 @@ use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\FroglightType;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
@@ -115,7 +116,6 @@ use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\EnumSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\FlattenedCaveVinesVariant;
 use pocketmine\data\bedrock\block\convert\property\FlattenedIdModel;
-use pocketmine\data\bedrock\block\convert\property\HorizontalFacingProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
@@ -755,7 +755,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::VINES(), Ids::VINE)->properties([
 			new IntSetFromIntProperty(
 				StateNames::VINE_DIRECTION_BITS,
-				new IntFromIntStateMap([
+				IntFromRawStateMap::int([
 					Facing::NORTH => BlockLegacyMetadata::VINE_FLAG_NORTH,
 					Facing::SOUTH => BlockLegacyMetadata::VINE_FLAG_SOUTH,
 					Facing::WEST => BlockLegacyMetadata::VINE_FLAG_WEST,
@@ -788,7 +788,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::WALL_CORAL_FAN())
 			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_wall_fan"])
 			->properties([
-				new HorizontalFacingProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral)
+				new IntFromIntProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, fn(HorizontalFacing $b) => $b->getFacing(), fn(HorizontalFacing $b, int $v) => $b->setFacing($v)),
 			])
 		);
 	}
@@ -839,7 +839,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//A
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::ANVIL())
 			->idComponents([
-				new IntFromStringProperty("id", new IntFromStringStateMap([
+				new IntFromStringProperty("id", IntFromRawStateMap::string([
 					0 => Ids::ANVIL,
 					1 => Ids::CHIPPED_ANVIL,
 					2 => Ids::DAMAGED_ANVIL,
@@ -849,7 +849,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
 			->idComponents([
-				new IntFromStringProperty("id", new IntFromStringStateMap([
+				new IntFromStringProperty("id", IntFromRawStateMap::string([
 					AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
 					AmethystCluster::STAGE_MEDIUM_BUD => Ids::MEDIUM_AMETHYST_BUD,
 					AmethystCluster::STAGE_LARGE_BUD => Ids::LARGE_AMETHYST_BUD,
@@ -867,7 +867,7 @@ final class BlockSerializerDeserializerRegistrar{
 				"minecraft:cave_vines",
 				new EnumFromStringProperty(
 					"variant",
-					new EnumFromStringStateMap(FlattenedCaveVinesVariant::class, fn(FlattenedCaveVinesVariant $case) => $case->value),
+					EnumFromRawStateMap::string(FlattenedCaveVinesVariant::class, fn(FlattenedCaveVinesVariant $case) => $case->value),
 					fn(CaveVines $b) => $b->hasBerries() ?
 						($b->isHead() ?
 							FlattenedCaveVinesVariant::HEAD_WITH_BERRIES :
@@ -888,7 +888,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//D
 		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DIRT())
 			->idComponents([
-				new EnumFromStringProperty("id", new EnumFromStringStateMap(DirtType::class, fn(DirtType $case) => match ($case) {
+				new EnumFromStringProperty("id", EnumFromRawStateMap::string(DirtType::class, fn(DirtType $case) => match ($case) {
 					DirtType::NORMAL => Ids::DIRT,
 					DirtType::COARSE => Ids::COARSE_DIRT,
 					DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
@@ -911,7 +911,7 @@ final class BlockSerializerDeserializerRegistrar{
 				//this is a bit shit but it's easier than adapting IntProperty to support flattening :D
 				new IntFromStringProperty(
 					"light_level",
-					new IntFromStringStateMap(array_map(strval(...), range(0, 15))),
+					IntFromRawStateMap::string(array_map(strval(...), range(0, 15))),
 					fn(Light $b) => $b->getLightLevel(),
 					fn(Light $b, int $v) => $b->setLightLevel($v)
 				)
@@ -1466,7 +1466,7 @@ final class BlockSerializerDeserializerRegistrar{
 			$commonProperties->horizontalFacingSWNE,
 			new EnumSetFromIntProperty(
 				StateNames::BOOKS_STORED,
-				new EnumFromIntStateMap(ChiseledBookshelfSlot::class, fn(ChiseledBookshelfSlot $case) => match($case){
+				EnumFromRawStateMap::int(ChiseledBookshelfSlot::class, fn(ChiseledBookshelfSlot $case) => match($case){
 					//these are (currently) the same as the internal values, but it's best not to rely on those in case Mojang mess with the flags
 					ChiseledBookshelfSlot::TOP_LEFT => 1 << 0,
 					ChiseledBookshelfSlot::TOP_MIDDLE => 1 << 1,

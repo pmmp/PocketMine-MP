@@ -73,15 +73,21 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
-	public function mapIntToString(string $name, IntFromStringStateMap $map, int $value) : self{
+	/**
+	 * @phpstan-param IntFromRawStateMap<string> $map
+	 * @return $this
+	 */
+	public function mapIntToString(string $name, IntFromRawStateMap $map, int $value) : self{
 		$raw = $map->serialize($value);
 		$this->writeString($name, $raw);
 		return $this;
 	}
 
-	/** @return $this */
-	public function mapIntToInt(string $name, IntFromIntStateMap $map, int $value) : self{
+	/**
+	 * @phpstan-param IntFromRawStateMap<int> $map
+	 * @return $this
+	 */
+	public function mapIntToInt(string $name, IntFromRawStateMap $map, int $value) : self{
 		$raw = $map->serialize($value);
 		$this->writeInt($name, $raw);
 		return $this;
@@ -231,12 +237,12 @@ final class BlockStateWriter{
 
 	/**
 	 * @phpstan-template TEnum of \UnitEnum
-	 * @phpstan-param EnumFromStringStateMap<TEnum> $map
+	 * @phpstan-param EnumFromRawStateMap<TEnum, string> $map
 	 * @phpstan-param TEnum                         $case
 	 *
 	 * @return $this
 	 */
-	public function writeUnitEnum(string $name, EnumFromStringStateMap $map, \UnitEnum $case) : self{
+	public function writeUnitEnum(string $name, EnumFromRawStateMap $map, \UnitEnum $case) : self{
 		$value = $map->enumToValue($case);
 		$this->writeString($name, $value);
 

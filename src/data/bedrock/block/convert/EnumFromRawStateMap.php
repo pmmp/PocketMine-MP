@@ -23,33 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
-use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use function spl_object_id;
 
 /**
- * TODO: it would be nice not to duplicate this code from EnumFromStringStateMap, but this will do for now
  * @phpstan-template TEnum of \UnitEnum
+ * @phpstan-template TRaw of int|string
  */
-class EnumFromIntStateMap{
+class EnumFromRawStateMap{
 	/**
 	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @phpstan-var array<int, TRaw>
 	 */
 	private array $enumToValue = [];
 
 	/**
 	 * @var \UnitEnum[]
-	 * @phpstan-var array<int, TEnum>
+	 * @phpstan-var array<TRaw, TEnum>
 	 */
 	private array $valueToEnum = [];
 
 	/**
 	 * @phpstan-param class-string<TEnum> $class
-	 * @phpstan-param \Closure(TEnum) : int $mapper
-	 * @phpstan-param ?\Closure(TEnum) : list<int> $aliasMapper
+	 * @phpstan-param \Closure(TEnum) : TRaw $mapper
+	 * @phpstan-param ?\Closure(TEnum) : list<TRaw> $aliasMapper
 	 */
 	public function __construct(
-		private string $class,
+		string $class,
 		\Closure $mapper,
 		?\Closure $aliasMapper = null
 	){
@@ -68,22 +67,48 @@ class EnumFromIntStateMap{
 	}
 
 	/**
-	 * @phpstan-param TEnum $enum
+	 * Workaround PHPStan too-specific literal type inference - if it ever gets fixed we can get rid of these functions
+	 *
+	 * @phpstan-template TEnum_ of \UnitEnum
+	 * @phpstan-param class-string<TEnum_> $class
+	 * @param \Closure(TEnum_) : string        $mapper
+	 * @param ?\Closure(TEnum_) : list<string> $aliasMapper
+	 *
+	 * @phpstan-return EnumFromRawStateMap<TEnum_, string>
 	 */
-	public function enumToValue(\UnitEnum $enum) : int{
+	public static function string(string $class, \Closure $mapper, ?\Closure $aliasMapper = null) : self{ return new self($class, $mapper, $aliasMapper); }
+
+	/**
+	 * Workaround PHPStan too-specific literal type inference - if it ever gets fixed we can get rid of these functions
+	 *
+	 * @phpstan-template TEnum_ of \UnitEnum
+	 * @phpstan-param class-string<TEnum_> $class
+	 * @param \Closure(TEnum_) : int        $mapper
+	 * @param ?\Closure(TEnum_) : list<int> $aliasMapper
+	 *
+	 * @phpstan-return EnumFromRawStateMap<TEnum_, int>
+	 */
+	public static function int(string $class, \Closure $mapper, ?\Closure $aliasMapper = null) : self{ return new self($class, $mapper, $aliasMapper); }
+
+	/**
+	 * @phpstan-param TEnum $enum
+	 * @phpstan-return TRaw
+	 */
+	public function enumToValue(\UnitEnum $enum) : int|string{
 		return $this->enumToValue[spl_object_id($enum)];
 	}
 
 	/**
+	 * @phpstan-param TRaw $raw
 	 * @phpstan-return TEnum|null
 	 */
-	public function valueToEnum(int $int) : ?\UnitEnum{
-		return $this->valueToEnum[$int] ?? throw new BlockStateDeserializeException("No $this->class enum mapping for value $int");
+	public function valueToEnum(int|string $raw) : ?\UnitEnum{
+		return $this->valueToEnum[$raw] ?? null;
 	}
 
 	/**
 	 * @return \UnitEnum[]
-	 * @phpstan-return array<int, TEnum>
+	 * @phpstan-return array<TRaw, TEnum>
 	 */
 	public function getValueToEnum() : array{
 		return $this->valueToEnum;

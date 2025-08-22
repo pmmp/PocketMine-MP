@@ -24,13 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use function array_flip;
-use function is_int;
+use function is_array;
 
-final class IntFromIntStateMap{
+/**
+ * @phpstan-template TRaw of int|string
+ */
+class IntFromRawStateMap{
 
 	/**
 	 * @var int[]
-	 * @phpstan-var array<int, int>
+	 * @phpstan-var array<TRaw, int>
 	 */
 	private array $deserializeMap;
 
@@ -38,11 +41,11 @@ final class IntFromIntStateMap{
 	 * Constructs a bidirectional mapping, given a mapping of internal values -> serialized values, and an optional set
 	 * of aliases per internal value (used for deserializing invalid serialized values).
 	 *
-	 * @param int[] $serializeMap
-	 * @param int[] $deserializeAliases
+	 * @param (int|string)[]                $serializeMap
+	 * @param (int|int[])|(string|string[]) $deserializeAliases
 	 *
-	 * @phpstan-param array<int, int>              $serializeMap
-	 * @phpstan-param array<int, int|list<int>> $deserializeAliases
+	 * @phpstan-param array<int, TRaw>              $serializeMap
+	 * @phpstan-param array<int, TRaw|list<TRaw>> $deserializeAliases
 	 */
 	public function __construct(
 		private array $serializeMap,
@@ -50,7 +53,7 @@ final class IntFromIntStateMap{
 	){
 		$this->deserializeMap = array_flip($this->serializeMap);
 		foreach($deserializeAliases as $pmValue => $mcValues){
-			if(is_int($mcValues)){
+			if(!is_array($mcValues)){
 				$this->deserializeMap[$mcValues] = $pmValue;
 			}else{
 				foreach($mcValues as $mcValue){
@@ -61,16 +64,44 @@ final class IntFromIntStateMap{
 	}
 
 	/**
+	 * @param int[]       $serializeMap
+	 * @param (int|int[]) $deserializeAliases
+	 *
+	 * @phpstan-param array<int, int>              $serializeMap
+	 * @phpstan-param array<int, int|list<int>> $deserializeAliases
+	 *
+	 * @phpstan-return self<int>
+	 */
+	public static function int(array $serializeMap, array $deserializeAliases = []) : self{ return new self($serializeMap, $deserializeAliases); }
+
+	/**
+	 * @param string[]          $serializeMap
+	 * @param (string|string[]) $deserializeAliases
+	 *
+	 * @phpstan-param array<int, string>              $serializeMap
+	 * @phpstan-param array<int, string|list<string>> $deserializeAliases
+	 *
+	 * @phpstan-return self<string>
+	 */
+	public static function string(array $serializeMap, array $deserializeAliases = []) : self{ return new self($serializeMap, $deserializeAliases); }
+
+	/**
 	 * @return int[]
-	 * @phpstan-return array<int, int>
+	 * @phpstan-return array<TRaw, int>
 	 */
 	public function getDeserializeMap() : array{ return $this->deserializeMap; }
 
-	public function deserialize(int $mcValue) : ?int{
+	/**
+	 * @phpstan-param TRaw $mcValue
+	 */
+	public function deserialize(int|string $mcValue) : ?int{
 		return $this->deserializeMap[$mcValue] ?? null;
 	}
 
-	public function serialize(int $pmValue) : int{
-		return $this->serializeMap[$pmValue] ?? throw new \LogicException("No mapping for $pmValue");
+	/**
+	 * @phpstan-return TRaw
+	 */
+	public function serialize(int $pmValue) : int|string{
+		return $this->serializeMap[$pmValue];
 	}
 }
