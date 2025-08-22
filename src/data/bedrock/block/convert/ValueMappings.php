@@ -81,6 +81,8 @@ final class ValueMappings{
 	/** @phpstan-var IntFromRawStateMap<int> */
 	public readonly IntFromRawStateMap $horizontalFacingSWNE;
 	/** @phpstan-var IntFromRawStateMap<int> */
+	public readonly IntFromRawStateMap $horizontalFacingSWNEInverted;
+	/** @phpstan-var IntFromRawStateMap<int> */
 	public readonly IntFromRawStateMap $horizontalFacingCoral;
 	/** @phpstan-var IntFromRawStateMap<int> */
 	public readonly IntFromRawStateMap $horizontalFacingClassic;
@@ -240,6 +242,12 @@ final class ValueMappings{
 			Facing::WEST => 1,
 			Facing::NORTH => 2,
 			Facing::EAST => 3
+		]);
+		$this->horizontalFacingSWNEInverted = IntFromRawStateMap::int([
+			Facing::NORTH => 0,
+			Facing::EAST => 1,
+			Facing::SOUTH => 2,
+			Facing::WEST => 3,
 		]);
 		$this->horizontalFacingCoral = IntFromRawStateMap::int([
 			Facing::WEST => 0,

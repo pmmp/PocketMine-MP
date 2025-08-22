@@ -246,7 +246,7 @@ final class CommonProperties{
 		);
 
 		$this->horizontalFacingSWNE = new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE, $hfGet, $hfSet);
-		$this->horizontalFacingSWNEInverted = new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE, $hfGet, $hfSet);
+		$this->horizontalFacingSWNEInverted = new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNEInverted, $hfGet, $hfSet);
 		$this->horizontalFacingClassic = new IntFromIntProperty(StateNames::FACING_DIRECTION, $vm->horizontalFacingClassic, $hfGet, $hfSet);
 
 		$this->anyFacingClassic = new IntFromIntProperty(
