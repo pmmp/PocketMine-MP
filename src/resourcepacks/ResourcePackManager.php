@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
-//use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Ramsey\Uuid\Uuid;
