@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ece58966f203ee6605789017e8e1e46d",
+    "content-hash": "e243fa4a34dca21585910d2157b6f159",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -127,16 +127,16 @@
         },
         {
             "name": "celestifyx/stellaris",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://gitlab.com/celestifyx/stellaris.git",
-                "reference": "ad6c026a30693186dddf410d2e9ca2b36ed32836"
+                "reference": "7f8c3d3e9969ff640ef5bc8941bb8c5774339105"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/celestifyx%2Fstellaris/repository/archive.zip?sha=ad6c026a30693186dddf410d2e9ca2b36ed32836",
-                "reference": "ad6c026a30693186dddf410d2e9ca2b36ed32836",
+                "url": "https://gitlab.com/api/v4/projects/celestifyx%2Fstellaris/repository/archive.zip?sha=7f8c3d3e9969ff640ef5bc8941bb8c5774339105",
+                "reference": "7f8c3d3e9969ff640ef5bc8941bb8c5774339105",
                 "shasum": ""
             },
             "require": {
@@ -179,11 +179,13 @@
                 "hjson",
                 "ini",
                 "json",
+                "list",
                 "php",
                 "properties",
                 "serialized",
                 "stellaris",
                 "toml",
+                "txt",
                 "xml",
                 "yaml"
             ],
@@ -191,7 +193,7 @@
                 "issues": "https://gitlab.com/celestifyx/stellaris/-/issues",
                 "source": "https://gitlab.com/celestifyx/stellaris"
             },
-            "time": "2025-08-17T23:14:20+00:00"
+            "time": "2025-08-22T19:54:03+00:00"
         },
         {
             "name": "colinodell/json5",
