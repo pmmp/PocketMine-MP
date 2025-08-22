@@ -54,7 +54,10 @@ final class BoolFromStringProperty implements StringProperty{
 	}
 
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$raw = $in->readString($this->name);
+		$this->deserializePlain($block, $in->readString($this->name));
+	}
+
+	public function deserializePlain(object $block, string $raw) : void{
 		$value = match($raw){
 			$this->falseValue => false,
 			$this->trueValue => true,
@@ -65,7 +68,11 @@ final class BoolFromStringProperty implements StringProperty{
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{
+		$out->writeString($this->name, $this->serializePlain($block));
+	}
+
+	public function serializePlain(object $block) : string{
 		$value = ($this->getter)($block);
-		$out->writeString($this->name, $value ? $this->trueValue : $this->falseValue);
+		return $value ? $this->trueValue : $this->falseValue;
 	}
 }

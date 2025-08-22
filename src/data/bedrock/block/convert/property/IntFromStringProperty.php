@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\IntFromStringStateMap;
@@ -56,12 +57,20 @@ class IntFromStringProperty implements StringProperty{
 	}
 
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$value = $in->mapIntFromString($this->name, $this->map);
+		$this->deserializePlain($block, $in->readString($this->name));
+	}
+
+	public function deserializePlain(object $block, string $raw) : void{
+		$value = $this->map->deserialize($raw) ?? throw new BlockStateDeserializeException("Property \"$this->name\" has invalid value \"$raw\"");
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{
+		$out->writeString($this->name, $this->serializePlain($block));
+	}
+
+	public function serializePlain(object $block) : string{
 		$value = ($this->getter)($block);
-		$out->mapIntToString($this->name, $this->map, $value);
+		return $this->map->serialize($value);
 	}
 }

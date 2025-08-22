@@ -33,4 +33,18 @@ interface StringProperty extends Property{
 	 * @phpstan-return list<string>
 	 */
 	public function getPossibleValues() : array;
+
+	/**
+	 * TODO: These are only used for flattened IDs for now, we should expand their use to all properties
+	 * in the future and remove the dependencies on BlockStateReader and BlockStateWriter
+	 * @phpstan-param TBlock $block
+	 */
+	public function deserializePlain(object $block, string $raw) : void;
+
+	/**
+	 * TODO: These are only used for flattened IDs for now, we should expand their use to all properties
+	 * in the future and remove the dependencies on BlockStateReader and BlockStateWriter
+	 * @phpstan-param TBlock $block
+	 */
+	public function serializePlain(object $block) : string;
 }

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
 use pocketmine\data\bedrock\block\convert\EnumFromStringStateMap;
@@ -61,12 +62,21 @@ final class EnumFromStringProperty implements StringProperty{
 	}
 
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$value = $in->readUnitEnum($this->name, $this->map);
+		$this->deserializePlain($block, $in->readString($this->name));
+	}
+
+	public function deserializePlain(object $block, string $raw) : void{
+		//TODO: duplicated code from BlockStateReader :(
+		$value = $this->map->valueToEnum($raw) ?? throw new BlockStateDeserializeException("Property \"$this->name\" has invalid value \"$raw\"");
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{
+		$out->writeString($this->name, $this->serializePlain($block));
+	}
+
+	public function serializePlain(object $block) : string{
 		$value = ($this->getter)($block);
-		$out->writeUnitEnum($this->name, $this->map, $value);
+		return $this->map->enumToValue($value);
 	}
 }

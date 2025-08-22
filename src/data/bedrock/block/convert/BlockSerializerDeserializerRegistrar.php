@@ -101,6 +101,7 @@ use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
+use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
@@ -122,7 +123,6 @@ use pocketmine\data\bedrock\block\convert\property\IntSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
 use pocketmine\data\bedrock\block\convert\property\StringProperty;
 use pocketmine\math\Facing;
-use function array_filter;
 use function array_map;
 use function count;
 use function implode;
@@ -173,8 +173,9 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-param list<string|StringProperty<*>> $components
 	 *
 	 * @return string[][]
+	 * @phpstan-return list<list<string>>
 	 */
-	private static function compilePermutations(array $components) : array{
+	private static function compileFlattenedIdPartMatrix(array $components) : array{
 		$result = [];
 		foreach($components as $component){
 			$column = is_string($component) ? [$component] : $component->getPossibleValues();
@@ -199,12 +200,50 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	/**
+	 * @param string[]|StringProperty[] $idComponents
+	 *
+	 * @phpstan-template TBlock of Block
+	 *
+	 * @phpstan-param TBlock            $block
+	 * @phpstan-param list<string|StringProperty<contravariant TBlock>> $idComponents
+	 */
+	private static function serializeFlattenedId(Block $block, array $idComponents) : string{
+		$id = "";
+		foreach($idComponents as $infix){
+			$id .= is_string($infix) ? $infix : $infix->serializePlain($block);
+		}
+		return $id;
+	}
+
+	/**
+	 * @param string[]|StringProperty[] $idComponents
+	 * @param string[]                  $idPropertyValues
+	 *
+	 * @phpstan-template TBlock of Block
+	 *
+	 * @phpstan-param TBlock            $baseBlock
+	 * @phpstan-param list<string|StringProperty<contravariant TBlock>> $idComponents
+	 * @phpstan-param list<string>      $idPropertyValues
+	 *
+	 * @phpstan-return TBlock
+	 */
+	private static function deserializeFlattenedId(Block $baseBlock, array $idComponents, array $idPropertyValues) : Block{
+		$preparedBlock = clone $baseBlock;
+		foreach($idComponents as $k => $component){
+			if($component instanceof StringProperty){
+				$fakeValue = $idPropertyValues[$k];
+				$component->deserializePlain($preparedBlock, $fakeValue);
+			}
+		}
+
+		return $preparedBlock;
+	}
+
+	/**
 	 * @phpstan-template TBlock of Block
 	 * @phpstan-param FlattenedIdModel<TBlock, true> $model
 	 */
-	private function mapMatrixFlattened(
-		FlattenedIdModel $model,
-	) : void{
+	private function mapMatrixFlattened(FlattenedIdModel $model) : void{
 		$block = $model->getBlock();
 
 		$idComponents = $model->getIdComponents();
@@ -217,66 +256,48 @@ final class BlockSerializerDeserializerRegistrar{
 		//then pull them out to compile an ID :D
 		//This works surprisingly well and is much more elegant than I would've expected
 
-		$idProperties = array_filter($idComponents, fn($c) => !is_string($c));
+		if($this->serializer !== null){
+			if(count($properties) > 0){
+				$this->serializer->map($block, function(Block $block) use ($idComponents, $properties) : Writer{
+					$id = self::serializeFlattenedId($block, $idComponents);
 
-		//serialize actual properties
-		$realWriter = new Writer("dummy");
-		foreach($properties as $property){
-			$property->serialize($block, $realWriter);
+					$writer = new Writer($id);
+					foreach($properties as $property){
+						$property->serialize($block, $writer);
+					}
+
+					return $writer;
+				});
+			}else{
+				$this->serializer->map($block, function(Block $block) use ($idComponents) : BlockStateData{
+					//fast path for blocks with no state properties
+					$id = self::serializeFlattenedId($block, $idComponents);
+					return BlockStateData::current($id, []);
+				});
+			}
 		}
 
-		$this->serializer?->map($block, function(Block $block) use ($idComponents, $idProperties, $properties) : Writer{
-			//serialize properties into the ID
-			$idWriter = new Writer("dummy");
-			foreach($idProperties as $idProperty){
-				$idProperty->serialize($block, $idWriter);
-			}
-			$flattenedReader = new Reader($idWriter->getBlockStateData());
-
-			$id = "";
-			foreach($idComponents as $infix){
-				$id .= is_string($infix) ? $infix : $flattenedReader->readString($infix->getName());
-			}
-
-			//serialize actual properties
-			$realWriter = new Writer($id);
-			foreach($properties as $property){
-				$property->serialize($block, $realWriter);
-			}
-
-			return $realWriter;
-		});
-
 		if($this->deserializer !== null){
-			$idPermutations = self::compilePermutations($idComponents);
+			$idPermutations = self::compileFlattenedIdPartMatrix($idComponents);
 			foreach($idPermutations as $idParts){
-				//deconstruct the ID into a fake state
+				//deconstruct the ID into a partial state
 				//we can do this at registration time since there will be multiple deserializers
+				$preparedBlock = self::deserializeFlattenedId($block, $idComponents, $idParts);
 				$id = implode("", $idParts);
-				$flattenedWriter = new Writer("dummy");
-				foreach($idComponents as $k => $component){
-					if($component instanceof StringProperty){
-						$fakeValue = $idParts[$k];
-						$flattenedWriter->writeString($component->getName(), $fakeValue);
-					}
-				}
-				$idReader = new Reader($flattenedWriter->getBlockStateData());
 
-				//deserialize properties from the ID
-				//this can also be done at registration time since we already know the values
-				$preparedBlock = clone $block;
-				foreach($idProperties as $component){
-					$component->deserialize($preparedBlock, $idReader);
-				}
-				$this->deserializer->map($id, function(Reader $reader) use ($preparedBlock, $properties) : Block{
-					$block = clone $preparedBlock;
+				if(count($properties) > 0){
+					$this->deserializer->map($id, function(Reader $reader) use ($preparedBlock, $properties) : Block{
+						$block = clone $preparedBlock;
 
-					//deserialize actual properties
-					foreach($properties as $property){
-						$property->deserialize($block, $reader);
-					}
-					return $block;
-				});
+						foreach($properties as $property){
+							$property->deserialize($block, $reader);
+						}
+						return $block;
+					});
+				}else{
+					//fast path for blocks with no state properties
+					$this->deserializer->map($id, fn() => clone $preparedBlock);
+				}
 			}
 		}
 	}
