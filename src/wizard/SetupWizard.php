@@ -34,12 +34,13 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
 use pocketmine\ServerProperties;
-use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Symfony\Component\Filesystem\Path;
+use Stellaris\ConfigManager;
+use Stellaris\Enum\ConfigFormat;
 use function fgets;
 use function sleep;
 use function strtolower;
@@ -93,7 +94,7 @@ class SetupWizard{
 		}
 
 		//this has to happen here to prevent user avoiding agreeing to license
-		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
+		$config = (new ConfigManager())->load(Path::join($this->dataPath, "server.properties"), format: ConfigFormat::PROPERTIES);
 		$config->set(ServerProperties::LANGUAGE, $lang);
 		$config->save();
 
@@ -156,7 +157,7 @@ LICENSE;
 		}
 	}
 
-	private function generateBaseConfig(Config $config) : void{
+	private function generateBaseConfig(ConfigManager $config) : void{
 		$config->set(ServerProperties::MOTD, ($name = $this->getInput($this->lang->translate(KnownTranslationFactory::name_your_server()), Server::DEFAULT_SERVER_NAME)));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
@@ -182,14 +183,14 @@ LICENSE;
 		$config->set(ServerProperties::VIEW_DISTANCE, (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
-	private function generateUserFiles(Config $config) : void{
+	private function generateUserFiles(ConfigManager $config) : void{
 		$this->message($this->lang->translate(KnownTranslationFactory::op_info()));
 
 		$op = strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::op_who()), ""));
 		if($op === ""){
 			$this->error($this->lang->translate(KnownTranslationFactory::op_warning()));
 		}else{
-			$ops = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
+			$ops = (new ConfigManager())->load(Path::join($this->dataPath, "ops.txt"), format: ConfigFormat::LIST);
 			$ops->set($op, true);
 			$ops->save();
 		}
@@ -204,7 +205,7 @@ LICENSE;
 		}
 	}
 
-	private function networkFunctions(Config $config) : void{
+	private function networkFunctions(ConfigManager $config) : void{
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning1()));
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning2()));
 		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::query_disable()), "n", "y/N")) === "y"){

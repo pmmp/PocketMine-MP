@@ -102,7 +102,6 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\BroadcastLoggerForwarder;
-use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
@@ -125,6 +124,8 @@ use pocketmine\world\WorldManager;
 use pocketmine\YmlServerProperties as Yml;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Filesystem\Path;
+use Stellaris\ConfigManager;
+use Stellaris\Enum\ConfigFormat;
 use function array_fill;
 use function array_sum;
 use function base64_encode;
@@ -223,9 +224,9 @@ class Server{
 
 	private BanList $banByIP;
 
-	private Config $operators;
+	private ConfigManager $operators;
 
-	private Config $whitelist;
+	private ConfigManager $whitelist;
 
 	private bool $isRunning = true;
 
@@ -699,7 +700,7 @@ class Server{
 
 	public function removeOp(string $name) : void{
 		$lowercaseName = strtolower($name);
-		foreach(Utils::promoteKeys($this->operators->getAll()) as $operatorName => $_){
+		foreach(Utils::promoteKeys($this->operators->all()) as $operatorName => $_){
 			$operatorName = (string) $operatorName;
 			if($lowercaseName === strtolower($operatorName)){
 				$this->operators->remove($operatorName);
@@ -723,18 +724,18 @@ class Server{
 	}
 
 	public function isWhitelisted(string $name) : bool{
-		return !$this->hasWhitelist() || $this->operators->exists($name, true) || $this->whitelist->exists($name, true);
+		return !$this->hasWhitelist() || $this->operators->has($name, true) || $this->whitelist->has($name, true);
 	}
 
 	public function isOp(string $name) : bool{
-		return $this->operators->exists($name, true);
+		return $this->operators->has($name, true);
 	}
 
-	public function getWhitelisted() : Config{
+	public function getWhitelisted() : ConfigManager{
 		return $this->whitelist;
 	}
 
-	public function getOps() : Config{
+	public function getOps() : ConfigManager{
 		return $this->operators;
 	}
 
@@ -818,8 +819,8 @@ class Server{
 			}
 
 			$this->configGroup = new ServerConfigGroup(
-				new Config($pocketmineYmlPath, Config::YAML, []),
-				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
+				(new ConfigManager())->load($pocketmineYmlPath, format: ConfigFormat::YAML),
+				(new ConfigManager())->load(Path::join($this->dataPath, "server.properties"), format: ConfigFormat::PROPERTIES)->setAll([
 					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
 					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
 					ServerProperties::SERVER_PORT_IPV6 => self::DEFAULT_PORT_IPV6,
@@ -955,8 +956,8 @@ class Server{
 
 			$this->doTitleTick = $this->configGroup->getPropertyBool(Yml::CONSOLE_TITLE_TICK, true) && Terminal::hasFormattingCodes();
 
-			$this->operators = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
-			$this->whitelist = new Config(Path::join($this->dataPath, "white-list.txt"), Config::ENUM);
+			$this->operators = (new ConfigManager())->load(Path::join($this->dataPath, "ops.txt"), format: ConfigFormat::LIST);
+			$this->whitelist = (new ConfigManager())->load(Path::join($this->dataPath, "white-list.txt"), format: ConfigFormat::LIST);
 
 			$bannedTxt = Path::join($this->dataPath, "banned.txt");
 			$bannedPlayersTxt = Path::join($this->dataPath, "banned-players.txt");

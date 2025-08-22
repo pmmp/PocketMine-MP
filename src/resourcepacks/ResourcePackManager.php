@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks;
 
-use pocketmine\utils\Config;
+//use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Path;
+use Stellaris\ConfigManager;
+use Stellaris\Enum\ConfigFormat;
 use function array_keys;
 use function copy;
 use function count;
@@ -84,7 +86,7 @@ class ResourcePackManager{
 			copy(Path::join(\pocketmine\RESOURCE_PATH, "resource_packs.yml"), $resourcePacksYml);
 		}
 
-		$resourcePacksConfig = new Config($resourcePacksYml, Config::YAML, []);
+		$resourcePacksConfig = (new ConfigManager())->load($resourcePacksYml, format: ConfigFormat::YAML);
 
 		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 

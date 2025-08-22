@@ -59,6 +59,8 @@ use const YAML_UTF8_ENCODING;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
+ *
+ * @deprecated Use Stellaris framework instead. See https://gitlab.com/celestifyx/stellaris for details.
  */
 class Config{
 	public const DETECT = -1; //Detect by file extension

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use pocketmine\utils\Config;
+use Stellaris\ConfigManager;
 use function array_key_exists;
 use function getopt;
 use function is_bool;
@@ -39,8 +39,8 @@ final class ServerConfigGroup{
 	private array $propertyCache = [];
 
 	public function __construct(
-		private Config $pocketmineYml,
-		private Config $serverProperties
+		private ConfigManager $pocketmineYml,
+		private ConfigManager $serverProperties
 	){}
 
 	public function getProperty(string $variable, mixed $defaultValue = null) : mixed{
@@ -49,7 +49,7 @@ final class ServerConfigGroup{
 			if(isset($v[$variable])){
 				$this->propertyCache[$variable] = $v[$variable];
 			}else{
-				$this->propertyCache[$variable] = $this->pocketmineYml->getNested($variable);
+				$this->propertyCache[$variable] = $this->pocketmineYml->get($variable);
 			}
 		}
 
@@ -74,7 +74,7 @@ final class ServerConfigGroup{
 			return (string) $v[$variable];
 		}
 
-		return $this->serverProperties->exists($variable) ? (string) $this->serverProperties->get($variable) : $defaultValue;
+		return $this->serverProperties->has($variable) ? (string) $this->serverProperties->get($variable) : $defaultValue;
 	}
 
 	public function setConfigString(string $variable, string $value) : void{
@@ -87,7 +87,7 @@ final class ServerConfigGroup{
 			return (int) $v[$variable];
 		}
 
-		return $this->serverProperties->exists($variable) ? (int) $this->serverProperties->get($variable) : $defaultValue;
+		return $this->serverProperties->has($variable) ? (int) $this->serverProperties->get($variable) : $defaultValue;
 	}
 
 	public function setConfigInt(string $variable, int $value) : void{
@@ -99,7 +99,7 @@ final class ServerConfigGroup{
 		if(isset($v[$variable])){
 			$value = $v[$variable];
 		}else{
-			$value = $this->serverProperties->exists($variable) ? $this->serverProperties->get($variable) : $defaultValue;
+			$value = $this->serverProperties->has($variable) ? $this->serverProperties->get($variable) : $defaultValue;
 		}
 		if(is_bool($value)){
 			return $value;

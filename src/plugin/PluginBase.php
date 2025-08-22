@@ -30,9 +30,10 @@ use pocketmine\command\PluginCommand;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
-use pocketmine\utils\Config;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
+use Stellaris\ConfigManager;
+use Stellaris\Enum\ConfigFormat;
 use function copy;
 use function count;
 use function dirname;
@@ -49,7 +50,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	private string $resourceFolder;
 
-	private ?Config $config = null;
+	private ?ConfigManager $config = null;
 	private string $configFile;
 
 	private PluginLogger $logger;
@@ -274,7 +275,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->resourceProvider->getResources();
 	}
 
-	public function getConfig() : Config{
+	public function getConfig() : ConfigManager{
 		if($this->config === null){
 			$this->reloadConfig();
 		}
@@ -295,7 +296,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	public function reloadConfig() : void{
 		$this->saveDefaultConfig();
-		$this->config = new Config($this->configFile);
+		$this->config = (new ConfigManager())->load($this->configFile, format: ConfigFormat::YAML);
 	}
 
 	final public function getServer() : Server{
