@@ -61,13 +61,12 @@ use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
-use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
-use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
-use pocketmine\data\bedrock\block\convert\property\IntSetFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\OptionSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\Property;
 use pocketmine\data\bedrock\block\convert\property\StringProperty;
+use pocketmine\data\bedrock\block\convert\property\ValueFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\ValueFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\WallConnectionTypeShim;
 use pocketmine\math\Facing;
 use pocketmine\utils\SingletonTrait;
@@ -75,27 +74,27 @@ use pocketmine\utils\SingletonTrait;
 final class CommonProperties{
 	use SingletonTrait;
 
-	/** @phpstan-var IntFromStringProperty<AnyFacing> */
-	public readonly IntFromStringProperty $blockFace;
-	/** @phpstan-var IntFromStringProperty<PillarRotation> */
-	public readonly IntFromStringProperty $pillarAxis;
-	/** @phpstan-var IntFromStringProperty<Torch> */
-	public readonly IntFromStringProperty $torchFacing;
+	/** @phpstan-var ValueFromStringProperty<AnyFacing, int> */
+	public readonly ValueFromStringProperty $blockFace;
+	/** @phpstan-var ValueFromStringProperty<PillarRotation, int> */
+	public readonly ValueFromStringProperty $pillarAxis;
+	/** @phpstan-var ValueFromStringProperty<Torch, int> */
+	public readonly ValueFromStringProperty $torchFacing;
 
-	/** @phpstan-var IntFromStringProperty<HorizontalFacing> */
-	public readonly IntFromStringProperty $horizontalFacingCardinal;
-	/** @phpstan-var IntFromIntProperty<HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingSWNE;
-	/** @phpstan-var IntFromIntProperty<HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingSWNEInverted;
-	/** @phpstan-var IntFromIntProperty<HorizontalFacing> */
-	public readonly IntFromIntProperty $horizontalFacingClassic;
+	/** @phpstan-var ValueFromStringProperty<HorizontalFacing, int> */
+	public readonly ValueFromStringProperty $horizontalFacingCardinal;
+	/** @phpstan-var ValueFromIntProperty<HorizontalFacing, int> */
+	public readonly ValueFromIntProperty $horizontalFacingSWNE;
+	/** @phpstan-var ValueFromIntProperty<HorizontalFacing, int> */
+	public readonly ValueFromIntProperty $horizontalFacingSWNEInverted;
+	/** @phpstan-var ValueFromIntProperty<HorizontalFacing, int> */
+	public readonly ValueFromIntProperty $horizontalFacingClassic;
 
-	/** @phpstan-var IntFromIntProperty<AnyFacing> */
-	public readonly IntFromIntProperty $anyFacingClassic;
+	/** @phpstan-var ValueFromIntProperty<AnyFacing, int> */
+	public readonly ValueFromIntProperty $anyFacingClassic;
 
-	/** @phpstan-var IntSetFromIntProperty<MultiFacing> */
-	public readonly IntSetFromIntProperty $multiFacingFlags;
+	/** @phpstan-var OptionSetFromIntProperty<MultiFacing, int> */
+	public readonly OptionSetFromIntProperty $multiFacingFlags;
 
 	/** @phpstan-var IntProperty<SignLikeRotation> */
 	public readonly IntProperty $floorSignLikeRotation;
@@ -117,8 +116,8 @@ final class CommonProperties{
 	public readonly DummyProperty $dummyCardinalDirection;
 	public readonly DummyProperty $dummyPillarAxis;
 
-	/** @phpstan-var EnumFromStringProperty<Colored, DyeColor> */
-	public readonly EnumFromStringProperty $dyeColorIdInfix;
+	/** @phpstan-var ValueFromStringProperty<Colored, DyeColor> */
+	public readonly ValueFromStringProperty $dyeColorIdInfix;
 
 	/** @phpstan-var BoolFromStringProperty<Lightable> */
 	public readonly BoolFromStringProperty $litIdInfix;
@@ -222,41 +221,41 @@ final class CommonProperties{
 
 		$hfGet = fn(HorizontalFacing $v) => $v->getFacing();
 		$hfSet = fn(HorizontalFacing $v, int $facing) => $v->setFacing($facing);
-		$this->horizontalFacingCardinal = new IntFromStringProperty(StateNames::MC_CARDINAL_DIRECTION, $vm->cardinalDirection, $hfGet, $hfSet);
+		$this->horizontalFacingCardinal = new ValueFromStringProperty(StateNames::MC_CARDINAL_DIRECTION, $vm->cardinalDirection, $hfGet, $hfSet);
 
-		$this->blockFace = new IntFromStringProperty(
+		$this->blockFace = new ValueFromStringProperty(
 			StateNames::MC_BLOCK_FACE,
 			$vm->blockFace,
 			fn(AnyFacing $b) => $b->getFacing(),
 			fn(AnyFacing $b, int $v) => $b->setFacing($v)
 		);
 
-		$this->pillarAxis = new IntFromStringProperty(
+		$this->pillarAxis = new ValueFromStringProperty(
 			StateNames::PILLAR_AXIS,
 			$vm->pillarAxis,
 			fn(PillarRotation $b) => $b->getAxis(),
 			fn(PillarRotation $b, int $v) => $b->setAxis($v)
 		);
 
-		$this->torchFacing = new IntFromStringProperty(
+		$this->torchFacing = new ValueFromStringProperty(
 			StateNames::TORCH_FACING_DIRECTION,
 			$vm->torchFacing,
 			fn(Torch $b) => $b->getFacing(),
 			fn(Torch $b, int $v) => $b->setFacing($v)
 		);
 
-		$this->horizontalFacingSWNE = new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE, $hfGet, $hfSet);
-		$this->horizontalFacingSWNEInverted = new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNEInverted, $hfGet, $hfSet);
-		$this->horizontalFacingClassic = new IntFromIntProperty(StateNames::FACING_DIRECTION, $vm->horizontalFacingClassic, $hfGet, $hfSet);
+		$this->horizontalFacingSWNE = new ValueFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNE, $hfGet, $hfSet);
+		$this->horizontalFacingSWNEInverted = new ValueFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacingSWNEInverted, $hfGet, $hfSet);
+		$this->horizontalFacingClassic = new ValueFromIntProperty(StateNames::FACING_DIRECTION, $vm->horizontalFacingClassic, $hfGet, $hfSet);
 
-		$this->anyFacingClassic = new IntFromIntProperty(
+		$this->anyFacingClassic = new ValueFromIntProperty(
 			StateNames::FACING_DIRECTION,
 			$vm->facing,
 			fn(AnyFacing $b) => $b->getFacing(),
 			fn(AnyFacing $b, int $v) => $b->setFacing($v)
 		);
 
-		$this->multiFacingFlags = new IntSetFromIntProperty(
+		$this->multiFacingFlags = new OptionSetFromIntProperty(
 			StateNames::MULTI_FACE_DIRECTION_BITS,
 			IntFromRawStateMap::int([
 				Facing::DOWN => BlockLegacyMetadata::MULTI_FACE_DIRECTION_FLAG_DOWN,
@@ -291,7 +290,7 @@ final class CommonProperties{
 		$this->dummyCardinalDirection = new DummyProperty(StateNames::MC_CARDINAL_DIRECTION, BlockStateStringValues::MC_CARDINAL_DIRECTION_SOUTH);
 		$this->dummyPillarAxis = new DummyProperty(StateNames::PILLAR_AXIS, BlockStateStringValues::PILLAR_AXIS_Y);
 
-		$this->dyeColorIdInfix = new EnumFromStringProperty("color", $vm->dyeColor, fn(Colored $b) => $b->getColor(), fn(Colored $b, DyeColor $v) => $b->setColor($v));
+		$this->dyeColorIdInfix = new ValueFromStringProperty("color", $vm->dyeColor, fn(Colored $b) => $b->getColor(), fn(Colored $b, DyeColor $v) => $b->setColor($v));
 		$this->litIdInfix = new BoolFromStringProperty("lit", "", "lit_", fn(Lightable $b) => $b->isLit(), fn(Lightable $b, bool $v) => $b->setLit($v));
 
 		$this->slabIdInfix = new BoolFromStringProperty(
@@ -319,7 +318,7 @@ final class CommonProperties{
 		$this->coralIdPrefixes = [
 			"minecraft:",
 			new BoolFromStringProperty("dead", "", "dead_", fn(CoralMaterial $b) => $b->isDead(), fn(CoralMaterial $b, bool $v) => $b->setDead($v)),
-			new EnumFromStringProperty("type", EnumFromRawStateMap::string(CoralType::class, fn(CoralType $case) => match ($case) {
+			new ValueFromStringProperty("type", EnumFromRawStateMap::string(CoralType::class, fn(CoralType $case) => match ($case) {
 				CoralType::BRAIN => "brain",
 				CoralType::BUBBLE => "bubble",
 				CoralType::FIRE => "fire",
@@ -330,7 +329,7 @@ final class CommonProperties{
 		$this->copperIdPrefixes = [
 			"minecraft:",
 			new BoolFromStringProperty("waxed", "", "waxed_", fn(CopperMaterial $b) => $b->isWaxed(), fn(CopperMaterial $b, bool $v) => $b->setWaxed($v)),
-			new EnumFromStringProperty("oxidation", EnumFromRawStateMap::string(CopperOxidation::class, fn(CopperOxidation $case) => match ($case) {
+			new ValueFromStringProperty("oxidation", EnumFromRawStateMap::string(CopperOxidation::class, fn(CopperOxidation $case) => match ($case) {
 				CopperOxidation::NONE => "",
 				CopperOxidation::EXPOSED => "exposed_",
 				CopperOxidation::WEATHERED => "weathered_",
@@ -365,7 +364,7 @@ final class CommonProperties{
 			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(Door $b) => $b->isTop(), fn(Door $b, bool $v) => $b->setTop($v)),
 			new BoolProperty(StateNames::DOOR_HINGE_BIT, fn(Door $b) => $b->isHingeRight(), fn(Door $b, bool $v) => $b->setHingeRight($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Door $b) => $b->isOpen(), fn(Door $b, bool $v) => $b->setOpen($v)),
-			new IntFromStringProperty(
+			new ValueFromStringProperty(
 				StateNames::MC_CARDINAL_DIRECTION,
 				IntFromRawStateMap::string([
 					//a door facing "east" is actually facing north - thanks mojang
@@ -405,17 +404,17 @@ final class CommonProperties{
 
 		$this->stairProperties = [
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Stair $b) => $b->isUpsideDown(), fn(Stair $b, bool $v) => $b->setUpsideDown($v)),
-			new IntFromIntProperty(StateNames::WEIRDO_DIRECTION, $vm->horizontalFacing5Minus, $hfGet, $hfSet),
+			new ValueFromIntProperty(StateNames::WEIRDO_DIRECTION, $vm->horizontalFacing5Minus, $hfGet, $hfSet),
 		];
 
 		$this->stemProperties = [
-			new IntFromIntProperty(StateNames::FACING_DIRECTION, $vm->facingStem, fn(Stem $b) => $b->getFacing(), fn(Stem $b, int $v) => $b->setFacing($v)),
+			new ValueFromIntProperty(StateNames::FACING_DIRECTION, $vm->facingStem, fn(Stem $b) => $b->getFacing(), fn(Stem $b, int $v) => $b->setFacing($v)),
 			$this->cropAgeMax7
 		];
 
 		$this->trapdoorProperties = [
 			//this uses the same values as stairs, but the state is named differently
-			new IntFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacing5Minus, $hfGet, $hfSet),
+			new ValueFromIntProperty(StateNames::DIRECTION, $vm->horizontalFacing5Minus, $hfGet, $hfSet),
 
 			new BoolProperty(StateNames::UPSIDE_DOWN_BIT, fn(Trapdoor $b) => $b->isTop(), fn(Trapdoor $b, bool $v) => $b->setTop($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Trapdoor $b) => $b->isOpen(), fn(Trapdoor $b, bool $v) => $b->setOpen($v)),
@@ -430,7 +429,7 @@ final class CommonProperties{
 			Facing::WEST => StateNames::WALL_CONNECTION_TYPE_WEST,
 			Facing::EAST => StateNames::WALL_CONNECTION_TYPE_EAST
 		] as $facing => $stateName){
-			$wallProperties[] = new EnumFromStringProperty(
+			$wallProperties[] = new ValueFromStringProperty(
 				$stateName,
 				EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()),
 				fn(Wall $b) => WallConnectionTypeShim::serialize($b->getConnection($facing)),

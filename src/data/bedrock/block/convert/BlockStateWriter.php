@@ -78,7 +78,7 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function mapIntToString(string $name, IntFromRawStateMap $map, int $value) : self{
-		$raw = $map->serialize($value);
+		$raw = $map->valueToRaw($value);
 		$this->writeString($name, $raw);
 		return $this;
 	}
@@ -88,7 +88,7 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function mapIntToInt(string $name, IntFromRawStateMap $map, int $value) : self{
-		$raw = $map->serialize($value);
+		$raw = $map->valueToRaw($value);
 		$this->writeInt($name, $raw);
 		return $this;
 	}
@@ -243,7 +243,7 @@ final class BlockStateWriter{
 	 * @return $this
 	 */
 	public function writeUnitEnum(string $name, EnumFromRawStateMap $map, \UnitEnum $case) : self{
-		$value = $map->enumToValue($case);
+		$value = $map->valueToRaw($case);
 		$this->writeString($name, $value);
 
 		return $this;

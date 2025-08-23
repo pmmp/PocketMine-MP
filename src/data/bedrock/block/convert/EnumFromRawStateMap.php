@@ -28,8 +28,9 @@ use function spl_object_id;
 /**
  * @phpstan-template TEnum of \UnitEnum
  * @phpstan-template TRaw of int|string
+ * @phpstan-implements StateMap<TEnum, TRaw>
  */
-class EnumFromRawStateMap{
+class EnumFromRawStateMap implements StateMap{
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, TRaw>
@@ -90,27 +91,19 @@ class EnumFromRawStateMap{
 	 */
 	public static function int(string $class, \Closure $mapper, ?\Closure $aliasMapper = null) : self{ return new self($class, $mapper, $aliasMapper); }
 
-	/**
-	 * @phpstan-param TEnum $enum
-	 * @phpstan-return TRaw
-	 */
-	public function enumToValue(\UnitEnum $enum) : int|string{
-		return $this->enumToValue[spl_object_id($enum)];
+	public function getRawToValueMap() : array{
+		return $this->valueToEnum;
 	}
 
-	/**
-	 * @phpstan-param TRaw $raw
-	 * @phpstan-return TEnum|null
-	 */
-	public function valueToEnum(int|string $raw) : ?\UnitEnum{
+	public function valueToRaw(mixed $value) : int|string{
+		return $this->enumToValue[spl_object_id($value)];
+	}
+
+	public function rawToValue(int|string $raw) : ?\UnitEnum{
 		return $this->valueToEnum[$raw] ?? null;
 	}
 
-	/**
-	 * @return \UnitEnum[]
-	 * @phpstan-return array<TRaw, TEnum>
-	 */
-	public function getValueToEnum() : array{
-		return $this->valueToEnum;
+	public function printableValue(mixed $value) : string{
+		return $value::class . "::" . $value->name;
 	}
 }

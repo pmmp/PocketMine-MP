@@ -21,24 +21,33 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
-
-use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\block\convert\ValueMappings;
-use pocketmine\utils\SingletonTrait;
+namespace pocketmine\data\bedrock\block\convert;
 
 /**
- * @deprecated
+ * @phpstan-template TValue
+ * @phpstan-template TRaw of int|string
  */
-final class MushroomBlockTypeIdMap{
-	use SingletonTrait;
-	/** @phpstan-use IntSaveIdMapTrait<MushroomBlockType> */
-	use IntSaveIdMapTrait;
+interface StateMap{
 
-	public function __construct(){
-		$newMapping = ValueMappings::getInstance()->mushroomBlockType;
-		foreach(MushroomBlockType::cases() as $case){
-			$this->register($newMapping->valueToRaw($case), $case);
-		}
-	}
+	/**
+	 * @phpstan-return array<TRaw, TValue>
+	 */
+	public function getRawToValueMap() : array;
+
+	/**
+	 * @phpstan-param TValue $value
+	 * @phpstan-return TRaw
+	 */
+	public function valueToRaw(mixed $value) : int|string;
+
+	/**
+	 * @phpstan-param TRaw $raw
+	 * @phpstan-return TValue|null
+	 */
+	public function rawToValue(int|string $raw) : mixed;
+
+	/**
+	 * @phpstan-param TValue $value
+	 */
+	public function printableValue(mixed $value) : string;
 }

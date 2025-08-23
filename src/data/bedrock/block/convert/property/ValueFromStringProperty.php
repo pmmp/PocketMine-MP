@@ -23,41 +23,60 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert\property;
 
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromRawStateMap;
+use pocketmine\data\bedrock\block\convert\StateMap;
+use function array_keys;
+use function array_map;
+use function strval;
 
 /**
- * TODO: would be nice if we didn't have to pretty much copy-paste this from the int->string variant :(
- *
  * @phpstan-template TBlock of object
- * @phpstan-implements Property<TBlock>
+ * @phpstan-template TValue of int|\UnitEnum
+ * @phpstan-implements StringProperty<TBlock>
  */
-class IntFromIntProperty implements Property{
+final class ValueFromStringProperty implements StringProperty{
 
 	/**
-	 * @phpstan-param IntFromRawStateMap<int> $map
-	 * @phpstan-param \Closure(TBlock) : int $getter
-	 * @phpstan-param \Closure(TBlock, int) : mixed $setter
+	 * @phpstan-param StateMap<TValue, string>   $map
+	 * @phpstan-param \Closure(TBlock) : TValue        $getter
+	 * @phpstan-param \Closure(TBlock, TValue) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromRawStateMap $map,
+		private StateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){}
 
-	public function getName() : string{
-		return $this->name;
+	public function getName() : string{ return $this->name; }
+
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getPossibleValues() : array{
+		//PHP sucks
+		return array_map(strval(...), array_keys($this->map->getRawToValueMap()));
 	}
 
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$value = $in->mapIntFromInt($this->name, $this->map);
+		$this->deserializePlain($block, $in->readString($this->name));
+	}
+
+	public function deserializePlain(object $block, string $raw) : void{
+		//TODO: duplicated code from BlockStateReader :(
+		$value = $this->map->rawToValue($raw) ?? throw new BlockStateDeserializeException("Property \"$this->name\" has invalid value \"$raw\"");
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{
+		$out->writeString($this->name, $this->serializePlain($block));
+	}
+
+	public function serializePlain(object $block) : string{
 		$value = ($this->getter)($block);
-		$out->mapIntToInt($this->name, $this->map, $value);
+		return $this->map->valueToRaw($value);
 	}
 }

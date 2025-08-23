@@ -118,17 +118,14 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
 use pocketmine\data\bedrock\block\convert\property\DummyProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumFromIntProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumFromStringProperty;
-use pocketmine\data\bedrock\block\convert\property\EnumSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\FlattenedCaveVinesVariant;
 use pocketmine\data\bedrock\block\convert\property\FlattenedIdModel;
-use pocketmine\data\bedrock\block\convert\property\IntFromIntProperty;
-use pocketmine\data\bedrock\block\convert\property\IntFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\IntProperty;
-use pocketmine\data\bedrock\block\convert\property\IntSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\Model;
+use pocketmine\data\bedrock\block\convert\property\OptionSetFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\StringProperty;
+use pocketmine\data\bedrock\block\convert\property\ValueFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\ValueFromStringProperty;
 use pocketmine\math\Facing;
 use function array_map;
 use function count;
@@ -657,7 +654,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
 			->idComponents([
 				"minecraft:",
-				new EnumFromStringProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
+				new ValueFromStringProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
 				"_glazed_terracotta"
 			])
 			->properties([$commonProperties->horizontalFacingClassic])
@@ -754,7 +751,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::RED_MUSHROOM_BLOCK(), Ids::RED_MUSHROOM_BLOCK]
 		] as [$block, $id]){
 			$this->mapModel(Model::create($block, $id)->properties([
-				new EnumFromIntProperty(StateNames::HUGE_MUSHROOM_BITS, ValueMappings::getInstance()->mushroomBlockType, fn(RedMushroomBlock $b) => $b->getMushroomBlockType(), fn(RedMushroomBlock $b, MushroomBlockType $v) => $b->setMushroomBlockType($v)),
+				new ValueFromIntProperty(StateNames::HUGE_MUSHROOM_BITS, ValueMappings::getInstance()->mushroomBlockType, fn(RedMushroomBlock $b) => $b->getMushroomBlockType(), fn(RedMushroomBlock $b, MushroomBlockType $v) => $b->setMushroomBlockType($v)),
 			]));
 		}
 
@@ -762,7 +759,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::RESIN_CLUMP(), Ids::RESIN_CLUMP)->properties([$commonProperties->multiFacingFlags]));
 
 		$this->mapModel(Model::create(Blocks::VINES(), Ids::VINE)->properties([
-			new IntSetFromIntProperty(
+			new OptionSetFromIntProperty(
 				StateNames::VINE_DIRECTION_BITS,
 				IntFromRawStateMap::int([
 					Facing::NORTH => BlockLegacyMetadata::VINE_FLAG_NORTH,
@@ -791,13 +788,13 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CORAL_FAN())
 			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_fan"])
 			->properties([
-				new IntFromIntProperty(StateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis, fn(FloorCoralFan $b) => $b->getAxis(), fn(FloorCoralFan $b, int $v) => $b->setAxis($v))
+				new ValueFromIntProperty(StateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis, fn(FloorCoralFan $b) => $b->getAxis(), fn(FloorCoralFan $b, int $v) => $b->setAxis($v))
 			])
 		);
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::WALL_CORAL_FAN())
 			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_wall_fan"])
 			->properties([
-				new IntFromIntProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, fn(HorizontalFacing $b) => $b->getFacing(), fn(HorizontalFacing $b, int $v) => $b->setFacing($v)),
+				new ValueFromIntProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, fn(HorizontalFacing $b) => $b->getFacing(), fn(HorizontalFacing $b, int $v) => $b->setFacing($v)),
 			])
 		);
 	}
@@ -848,7 +845,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//A
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::ANVIL())
 			->idComponents([
-				new IntFromStringProperty("id", IntFromRawStateMap::string([
+				new ValueFromStringProperty("id", IntFromRawStateMap::string([
 					0 => Ids::ANVIL,
 					1 => Ids::CHIPPED_ANVIL,
 					2 => Ids::DAMAGED_ANVIL,
@@ -858,7 +855,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
 			->idComponents([
-				new IntFromStringProperty("id", IntFromRawStateMap::string([
+				new ValueFromStringProperty("id", IntFromRawStateMap::string([
 					AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
 					AmethystCluster::STAGE_MEDIUM_BUD => Ids::MEDIUM_AMETHYST_BUD,
 					AmethystCluster::STAGE_LARGE_BUD => Ids::LARGE_AMETHYST_BUD,
@@ -874,7 +871,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CAVE_VINES())
 			->idComponents([
 				"minecraft:cave_vines",
-				new EnumFromStringProperty(
+				new ValueFromStringProperty(
 					"variant",
 					EnumFromRawStateMap::string(FlattenedCaveVinesVariant::class, fn(FlattenedCaveVinesVariant $case) => $case->value),
 					fn(CaveVines $b) => $b->hasBerries() ?
@@ -897,7 +894,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//D
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::DIRT())
 			->idComponents([
-				new EnumFromStringProperty("id", EnumFromRawStateMap::string(DirtType::class, fn(DirtType $case) => match ($case) {
+				new ValueFromStringProperty("id", EnumFromRawStateMap::string(DirtType::class, fn(DirtType $case) => match ($case) {
 					DirtType::NORMAL => Ids::DIRT,
 					DirtType::COARSE => Ids::COARSE_DIRT,
 					DirtType::ROOTED => Ids::DIRT_WITH_ROOTS,
@@ -908,7 +905,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//F
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::FROGLIGHT())
 			->idComponents([
-				new EnumFromStringProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
+				new ValueFromStringProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
 			])
 			->properties([$commonProperties->pillarAxis])
 		);
@@ -918,7 +915,7 @@ final class BlockSerializerDeserializerRegistrar{
 			->idComponents([
 				"minecraft:light_block_",
 				//this is a bit shit but it's easier than adapting IntProperty to support flattening :D
-				new IntFromStringProperty(
+				new ValueFromStringProperty(
 					"light_level",
 					IntFromRawStateMap::string(array_map(strval(...), range(0, 15))),
 					fn(Light $b) => $b->getLightLevel(),
@@ -930,10 +927,10 @@ final class BlockSerializerDeserializerRegistrar{
 		//M
 		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::MOB_HEAD())
 			->idComponents([
-				new EnumFromStringProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
+				new ValueFromStringProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
 			])
 			->properties([
-				new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptDown, fn(MobHead $b) => $b->getFacing(), fn(MobHead $b, int $v) => $b->setFacing($v))
+				new ValueFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptDown, fn(MobHead $b) => $b->getFacing(), fn(MobHead $b, int $v) => $b->setFacing($v))
 			])
 		);
 
@@ -1422,7 +1419,7 @@ final class BlockSerializerDeserializerRegistrar{
 
 		//B
 		$this->mapModel(Model::create(Blocks::BAMBOO(), Ids::BAMBOO)->properties([
-			new IntFromStringProperty(StateNames::BAMBOO_LEAF_SIZE, ValueMappings::getInstance()->bambooLeafSize, fn(Bamboo $b) => $b->getLeafSize(), fn(Bamboo $b, int $v) => $b->setLeafSize($v)),
+			new ValueFromStringProperty(StateNames::BAMBOO_LEAF_SIZE, ValueMappings::getInstance()->bambooLeafSize, fn(Bamboo $b) => $b->getLeafSize(), fn(Bamboo $b, int $v) => $b->setLeafSize($v)),
 			new BoolProperty(StateNames::AGE_BIT, fn(Bamboo $b) => $b->isReady(), fn(Bamboo $b, bool $v) => $b->setReady($v)),
 			new BoolFromStringProperty(StateNames::BAMBOO_STALK_THICKNESS, StringValues::BAMBOO_STALK_THICKNESS_THIN, StringValues::BAMBOO_STALK_THICKNESS_THICK, fn(Bamboo $b) => $b->isThick(), fn(Bamboo $b, bool $v) => $b->setThick($v))
 		]));
@@ -1445,7 +1442,7 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::BELL(), Ids::BELL)->properties([
 			BoolProperty::unused(StateNames::TOGGLE_BIT, false),
-			new EnumFromStringProperty(StateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
+			new ValueFromStringProperty(StateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, fn(Bell $b) => $b->getAttachmentType(), fn(Bell $b, BellAttachmentType $v) => $b->setAttachmentType($v)),
 			$commonProperties->horizontalFacingSWNE
 		]));
 		$this->mapModel(Model::create(Blocks::BONE_BLOCK(), Ids::BONE_BLOCK)->properties([
@@ -1473,7 +1470,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
 		$this->mapModel(Model::create(Blocks::CHISELED_BOOKSHELF(), Ids::CHISELED_BOOKSHELF)->properties([
 			$commonProperties->horizontalFacingSWNE,
-			new EnumSetFromIntProperty(
+			new OptionSetFromIntProperty(
 				StateNames::BOOKS_STORED,
 				EnumFromRawStateMap::int(ChiseledBookshelfSlot::class, fn(ChiseledBookshelfSlot $case) => match($case){
 					//these are (currently) the same as the internal values, but it's best not to rely on those in case Mojang mess with the flags
@@ -1512,7 +1509,7 @@ final class BlockSerializerDeserializerRegistrar{
 			$commonProperties->horizontalFacingCardinal
 		]));
 		$this->mapModel(Model::create(Blocks::END_ROD(), Ids::END_ROD)->properties([
-			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingEndRod, fn(EndRod $b) => $b->getFacing(), fn(EndRod $b, int $v) => $b->setFacing($v)),
+			new ValueFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingEndRod, fn(EndRod $b) => $b->getFacing(), fn(EndRod $b, int $v) => $b->setFacing($v)),
 		]));
 
 		//F
@@ -1540,7 +1537,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::HOPPER(), Ids::HOPPER)->properties([
 			//kinda weird this doesn't use powered_bit?
 			new BoolProperty(StateNames::TOGGLE_BIT, fn(PoweredByRedstone $b) => $b->isPowered(), fn(PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
-			new IntFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptUp, fn(Hopper $b) => $b->getFacing(), fn(Hopper $b, int $v) => $b->setFacing($v)),
+			new ValueFromIntProperty(StateNames::FACING_DIRECTION, ValueMappings::getInstance()->facingExceptUp, fn(Hopper $b) => $b->getFacing(), fn(Hopper $b, int $v) => $b->setFacing($v)),
 		]));
 
 		//I
@@ -1558,7 +1555,7 @@ final class BlockSerializerDeserializerRegistrar{
 			$commonProperties->horizontalFacingCardinal,
 		]));
 		$this->mapModel(Model::create(Blocks::LEVER(), Ids::LEVER)->properties([
-			new EnumFromStringProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
+			new ValueFromStringProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
 		]));
 		$this->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([$commonProperties->anyFacingClassic]));
@@ -1571,7 +1568,7 @@ final class BlockSerializerDeserializerRegistrar{
 			new IntProperty(StateNames::AGE, 0, 3, fn(NetherWartPlant $b) => $b->getAge(), fn(NetherWartPlant $b, int $v) => $b->setAge($v))
 		]));
 		$this->mapModel(Model::create(Blocks::NETHER_PORTAL(), Ids::PORTAL)->properties([
-			new IntFromStringProperty(StateNames::PORTAL_AXIS, ValueMappings::getInstance()->portalAxis, fn(NetherPortal $b) => $b->getAxis(), fn(NetherPortal $b, int $v) => $b->setAxis($v))
+			new ValueFromStringProperty(StateNames::PORTAL_AXIS, ValueMappings::getInstance()->portalAxis, fn(NetherPortal $b) => $b->getAxis(), fn(NetherPortal $b, int $v) => $b->setAxis($v))
 		]));
 
 		//P

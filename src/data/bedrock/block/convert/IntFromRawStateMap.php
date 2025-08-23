@@ -28,8 +28,9 @@ use function is_array;
 
 /**
  * @phpstan-template TRaw of int|string
+ * @phpstan-implements StateMap<int, TRaw>
  */
-class IntFromRawStateMap{
+class IntFromRawStateMap implements StateMap{
 
 	/**
 	 * @var int[]
@@ -85,23 +86,19 @@ class IntFromRawStateMap{
 	 */
 	public static function string(array $serializeMap, array $deserializeAliases = []) : self{ return new self($serializeMap, $deserializeAliases); }
 
-	/**
-	 * @return int[]
-	 * @phpstan-return array<TRaw, int>
-	 */
-	public function getDeserializeMap() : array{ return $this->deserializeMap; }
-
-	/**
-	 * @phpstan-param TRaw $mcValue
-	 */
-	public function deserialize(int|string $mcValue) : ?int{
-		return $this->deserializeMap[$mcValue] ?? null;
+	public function getRawToValueMap() : array{
+		return $this->deserializeMap;
 	}
 
-	/**
-	 * @phpstan-return TRaw
-	 */
-	public function serialize(int $pmValue) : int|string{
-		return $this->serializeMap[$pmValue];
+	public function valueToRaw(mixed $value) : int|string{
+		return $this->serializeMap[$value];
+	}
+
+	public function rawToValue(int|string $raw) : mixed{
+		return $this->deserializeMap[$raw] ?? null;
+	}
+
+	public function printableValue(mixed $value) : string{
+		return "$value";
 	}
 }

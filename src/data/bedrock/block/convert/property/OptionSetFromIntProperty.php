@@ -25,35 +25,37 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\EnumFromRawStateMap;
+use pocketmine\data\bedrock\block\convert\StateMap;
 use pocketmine\utils\AssumptionFailedError;
 
 /**
  * @phpstan-template TBlock of object
- * @phpstan-template TEnum of \UnitEnum
+ * @phpstan-template TOption of int|\UnitEnum
  * @phpstan-implements Property<TBlock>
  */
-final class EnumSetFromIntProperty implements Property{
+class OptionSetFromIntProperty implements Property{
 
 	private int $maxValue = 0;
 
 	/**
-	 * @phpstan-param EnumFromRawStateMap<TEnum, int> $map
-	 * @phpstan-param \Closure(TBlock) : array<TEnum> $getter
-	 * @phpstan-param \Closure(TBlock, array<TEnum>) : mixed $setter
+	 * @phpstan-param StateMap<TOption, int> $map
+	 * @phpstan-param \Closure(TBlock) : array<TOption> $getter
+	 * @phpstan-param \Closure(TBlock, array<TOption>) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private EnumFromRawStateMap $map,
+		private StateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
 	){
-		$flagsToCases = $this->map->getValueToEnum();
+		$flagsToCases = $this->map->getRawToValueMap();
 		foreach($flagsToCases as $possibleFlag => $option){
 			if(($this->maxValue & $possibleFlag) !== 0){
 				foreach($flagsToCases as $otherFlag => $otherOption){
 					if(($possibleFlag & $otherFlag) === $otherFlag && $otherOption !== $option){
-						throw new \InvalidArgumentException("Flag for $option->name overlaps with other flag $otherOption->name in property $this->name");
+						$printableOption = $this->map->printableValue($option);
+						$printableOtherOption = $this->map->printableValue($otherOption);
+						throw new \InvalidArgumentException("Flag for option $printableOption overlaps with flag for option $printableOtherOption in property $this->name");
 					}
 				}
 
@@ -70,7 +72,7 @@ final class EnumSetFromIntProperty implements Property{
 		$flags = $in->readBoundedInt($this->name, 0, $this->maxValue);
 
 		$value = [];
-		foreach($this->map->getValueToEnum() as $possibleFlag => $option){
+		foreach($this->map->getRawToValueMap() as $possibleFlag => $option){
 			if(($flags & $possibleFlag) === $possibleFlag){
 				$value[] = $option;
 			}
@@ -84,7 +86,7 @@ final class EnumSetFromIntProperty implements Property{
 
 		$value = ($this->getter)($block);
 		foreach($value as $option){
-			$flags |= $this->map->enumToValue($option);
+			$flags |= $this->map->valueToRaw($option);
 		}
 
 		$out->writeInt($this->name, $flags);

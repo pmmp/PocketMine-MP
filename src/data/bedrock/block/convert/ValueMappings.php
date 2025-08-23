@@ -122,7 +122,7 @@ final class ValueMappings{
 		});
 		$this->dyeColorWithSilver = EnumFromRawStateMap::string(DyeColor::class, fn(DyeColor $case) => match ($case) {
 			DyeColor::LIGHT_GRAY => "silver",
-			default => $this->dyeColor->enumToValue($case)
+			default => $this->dyeColor->valueToRaw($case)
 		});
 
 		$this->mobHeadType = EnumFromRawStateMap::string(MobHeadType::class, fn(MobHeadType $case) => match ($case) {

@@ -25,67 +25,52 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\IntFromRawStateMap;
-use pocketmine\utils\AssumptionFailedError;
+use pocketmine\data\bedrock\block\convert\StateMap;
+use function array_keys;
 
 /**
  * @phpstan-template TBlock of object
+ * @phpstan-template TValue of int|\UnitEnum
  * @phpstan-implements Property<TBlock>
  */
-final class IntSetFromIntProperty implements Property{
-
-	private int $maxValue = 0;
+final class ValueFromIntProperty implements Property{
 
 	/**
-	 * @phpstan-param IntFromRawStateMap<int> $map
-	 * @phpstan-param \Closure(TBlock) : array<int> $getter
-	 * @phpstan-param \Closure(TBlock, array<int>) : mixed $setter
+	 * @phpstan-param StateMap<TValue, int>            $map
+	 * @phpstan-param \Closure(TBlock) : TValue        $getter
+	 * @phpstan-param \Closure(TBlock, TValue) : mixed $setter
 	 */
 	public function __construct(
 		private string $name,
-		private IntFromRawStateMap $map,
+		private StateMap $map,
 		private \Closure $getter,
 		private \Closure $setter
-	){
-		$flagsToCases = $this->map->getDeserializeMap();
-		foreach($flagsToCases as $possibleFlag => $option){
-			if(($this->maxValue & $possibleFlag) !== 0){
-				foreach($flagsToCases as $otherFlag => $otherOption){
-					if(($possibleFlag & $otherFlag) === $otherFlag && $otherOption !== $option){
-						throw new \InvalidArgumentException("Flag for option $option overlaps with flag for option $otherOption in property $this->name");
-					}
-				}
-
-				throw new AssumptionFailedError("Unreachable");
-			}
-
-			$this->maxValue |= $possibleFlag;
-		}
-	}
+	){}
 
 	public function getName() : string{ return $this->name; }
 
+	/**
+	 * @return int[]
+	 * @phpstan-return list<int>
+	 */
+	public function getPossibleValues() : array{
+		return array_keys($this->map->getRawToValueMap());
+	}
+
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$flags = $in->readBoundedInt($this->name, 0, $this->maxValue);
+		$raw = $in->readInt($this->name);
+		$value = $this->map->rawToValue($raw);
 
-		$value = [];
-		foreach($this->map->getDeserializeMap() as $possibleFlag => $option){
-			if(($flags & $possibleFlag) === $possibleFlag){
-				$value[] = $option;
-			}
+		if($value === null){
+			throw $in->badValueException($this->name, (string) $raw);
 		}
-
 		($this->setter)($block, $value);
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{
-		$flags = 0;
-
 		$value = ($this->getter)($block);
-		foreach($value as $option){
-			$flags |= $this->map->serialize($option);
-		}
+		$raw = $this->map->valueToRaw($value);
 
-		$out->writeInt($this->name, $flags);
+		$out->writeInt($this->name, $raw);
 	}
 }

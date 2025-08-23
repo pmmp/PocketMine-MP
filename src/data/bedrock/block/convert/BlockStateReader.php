@@ -118,7 +118,7 @@ final class BlockStateReader{
 	public function mapIntFromString(string $name, IntFromRawStateMap $map) : int{
 		$raw = $this->readString($name);
 
-		return $map->deserialize($raw) ?? throw $this->badValueException($name, $raw);
+		return $map->rawToValue($raw) ?? throw $this->badValueException($name, $raw);
 	}
 
 	/**
@@ -128,7 +128,7 @@ final class BlockStateReader{
 	public function mapIntFromInt(string $name, IntFromRawStateMap $map) : int{
 		$raw = $this->readInt($name);
 
-		return $map->deserialize($raw) ?? throw $this->badValueException($name, (string) $raw);
+		return $map->rawToValue($raw) ?? throw $this->badValueException($name, (string) $raw);
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -280,7 +280,7 @@ final class BlockStateReader{
 	public function readUnitEnum(string $name, EnumFromRawStateMap $map) : \UnitEnum{
 		$value = $this->readString($name);
 
-		$mapped = $map->valueToEnum($value);
+		$mapped = $map->rawToValue($value);
 		if($mapped === null){
 			throw $this->badValueException($name, $value);
 		}
