@@ -252,7 +252,7 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-template TBlock of Block
 	 * @phpstan-param FlattenedIdModel<TBlock, true> $model
 	 */
-	private function mapMatrixFlattened(FlattenedIdModel $model) : void{
+	private function mapFlattenedId(FlattenedIdModel $model) : void{
 		$block = $model->getBlock();
 
 		$idComponents = $model->getIdComponents();
@@ -316,7 +316,7 @@ final class BlockSerializerDeserializerRegistrar{
 	 * @phpstan-param TBlock $block
 	 */
 	private function mapColored(Block $block, string $idPrefix, string $idSuffix) : void{
-		$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+		$this->mapFlattenedId(FlattenedIdModel::create($block)
 			->idComponents([
 				$idPrefix,
 				CommonProperties::getInstance()->dyeColorIdInfix,
@@ -327,7 +327,7 @@ final class BlockSerializerDeserializerRegistrar{
 
 	private function mapSlab(Slab $block, string $type) : void{
 		$commonProperties = CommonProperties::getInstance();
-		$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+		$this->mapFlattenedId(FlattenedIdModel::create($block)
 			->idComponents(["minecraft:", $type, "_", $commonProperties->slabIdInfix, "slab"])
 			->properties([$commonProperties->slabPositionProperty])
 		);
@@ -654,7 +654,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapColored(Blocks::STAINED_GLASS_PANE(), "minecraft:", "_stained_glass_pane");
 		$this->mapColored(Blocks::WOOL(), "minecraft:", "_wool");
 
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::GLAZED_TERRACOTTA())
 			->idComponents([
 				"minecraft:",
 				new EnumFromStringProperty("color", ValueMappings::getInstance()->dyeColorWithSilver, fn(GlazedTerracotta $b) => $b->getColor(), fn(GlazedTerracotta $b, DyeColor $v) => $b->setColor($v)),
@@ -673,7 +673,7 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->mapModel(Model::create(Blocks::CANDLE(), Ids::CANDLE)->properties($candleProperties));
 		$this->mapModel(Model::create(Blocks::CAKE_WITH_CANDLE(), Ids::CANDLE_CAKE)->properties($cakeWithCandleProperties));
 
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DYED_CANDLE())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::DYED_CANDLE())
 			->idComponents([
 				"minecraft:",
 				$commonProperties->dyeColorIdInfix,
@@ -681,7 +681,7 @@ final class BlockSerializerDeserializerRegistrar{
 			])
 			->properties($candleProperties)
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CAKE_WITH_DYED_CANDLE())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CAKE_WITH_DYED_CANDLE())
 			->idComponents([
 				"minecraft:",
 				$commonProperties->dyeColorIdInfix,
@@ -786,15 +786,15 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function registerCoralMappings(CommonProperties $commonProperties) : void{
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL())->idComponents([...$commonProperties->coralIdPrefixes, "_coral"]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL_BLOCK())->idComponents([...$commonProperties->coralIdPrefixes, "_coral_block"]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CORAL_FAN())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CORAL())->idComponents([...$commonProperties->coralIdPrefixes, "_coral"]));
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CORAL_BLOCK())->idComponents([...$commonProperties->coralIdPrefixes, "_coral_block"]));
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CORAL_FAN())
 			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_fan"])
 			->properties([
 				new IntFromIntProperty(StateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis, fn(FloorCoralFan $b) => $b->getAxis(), fn(FloorCoralFan $b, int $v) => $b->setAxis($v))
 			])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::WALL_CORAL_FAN())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::WALL_CORAL_FAN())
 			->idComponents([...$commonProperties->coralIdPrefixes, "_coral_wall_fan"])
 			->properties([
 				new IntFromIntProperty(StateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, fn(HorizontalFacing $b) => $b->getFacing(), fn(HorizontalFacing $b, int $v) => $b->setFacing($v)),
@@ -803,14 +803,14 @@ final class BlockSerializerDeserializerRegistrar{
 	}
 
 	private function registerCopperMappings(CommonProperties $commonProperties) : void{
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_BULB())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER_BULB())
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_bulb"])
 			->properties([
 				$commonProperties->lit,
 				new BoolProperty(StateNames::POWERED_BIT, fn(PoweredByRedstone $b) => $b->isPowered(), fn(PoweredByRedstone $b, bool $v) => $b->setPowered($v)),
 			])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER())
 			->idComponents([
 				...$commonProperties->copperIdPrefixes,
 				"copper",
@@ -818,23 +818,23 @@ final class BlockSerializerDeserializerRegistrar{
 				new BoolFromStringProperty("bruhhhh", "", "_block", fn(Copper $b) => !$b->isWaxed() && $b->getOxidation() === CopperOxidation::NONE, fn() => null)
 			])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CHISELED_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "chiseled_copper"]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_GRATE())->idComponents([...$commonProperties->copperIdPrefixes, "copper_grate"]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "cut_copper"]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER_STAIRS())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CHISELED_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "chiseled_copper"]));
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER_GRATE())->idComponents([...$commonProperties->copperIdPrefixes, "copper_grate"]));
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CUT_COPPER())->idComponents([...$commonProperties->copperIdPrefixes, "cut_copper"]));
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CUT_COPPER_STAIRS())
 			->idComponents([...$commonProperties->copperIdPrefixes, "cut_copper_stairs"])
 			->properties($commonProperties->stairProperties)
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_TRAPDOOR())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER_TRAPDOOR())
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_trapdoor"])
 			->properties($commonProperties->trapdoorProperties)
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::COPPER_DOOR())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::COPPER_DOOR())
 			->idComponents([...$commonProperties->copperIdPrefixes, "copper_door"])
 			->properties($commonProperties->doorProperties)
 		);
 
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CUT_COPPER_SLAB())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CUT_COPPER_SLAB())
 			->idComponents([
 				...$commonProperties->copperIdPrefixes,
 				$commonProperties->slabIdInfix,
@@ -846,7 +846,7 @@ final class BlockSerializerDeserializerRegistrar{
 
 	private function registerFlattenedEnumMappings(CommonProperties $commonProperties) : void{
 		//A
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::ANVIL())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::ANVIL())
 			->idComponents([
 				new IntFromStringProperty("id", IntFromRawStateMap::string([
 					0 => Ids::ANVIL,
@@ -856,7 +856,7 @@ final class BlockSerializerDeserializerRegistrar{
 			])
 			->properties([$commonProperties->horizontalFacingCardinal])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::AMETHYST_CLUSTER())
 			->idComponents([
 				new IntFromStringProperty("id", IntFromRawStateMap::string([
 					AmethystCluster::STAGE_SMALL_BUD => Ids::SMALL_AMETHYST_BUD,
@@ -871,7 +871,7 @@ final class BlockSerializerDeserializerRegistrar{
 		//C
 		//This one is a special offender :<
 		//I have no idea why this only has 3 IDs - there are 4 in Java and 4 visually distinct states in Bedrock
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::CAVE_VINES())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::CAVE_VINES())
 			->idComponents([
 				"minecraft:cave_vines",
 				new EnumFromStringProperty(
@@ -895,7 +895,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 
 		//D
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DIRT())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::DIRT())
 			->idComponents([
 				new EnumFromStringProperty("id", EnumFromRawStateMap::string(DirtType::class, fn(DirtType $case) => match ($case) {
 					DirtType::NORMAL => Ids::DIRT,
@@ -906,7 +906,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 
 		//F
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::FROGLIGHT())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::FROGLIGHT())
 			->idComponents([
 				new EnumFromStringProperty("id", ValueMappings::getInstance()->froglightType, fn(Froglight $b) => $b->getFroglightType(), fn(Froglight $b, FroglightType $v) => $b->setFroglightType($v)),
 			])
@@ -914,7 +914,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 
 		//L
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::LIGHT())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::LIGHT())
 			->idComponents([
 				"minecraft:light_block_",
 				//this is a bit shit but it's easier than adapting IntProperty to support flattening :D
@@ -928,7 +928,7 @@ final class BlockSerializerDeserializerRegistrar{
 		);
 
 		//M
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::MOB_HEAD())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::MOB_HEAD())
 			->idComponents([
 				new EnumFromStringProperty("id", ValueMappings::getInstance()->mobHeadType, fn(MobHead $b) => $b->getMobHeadType(), fn(MobHead $b, MobHeadType $v) => $b->setMobHeadType($v)),
 			])
@@ -941,7 +941,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::LAVA(), "lava"],
 			[Blocks::WATER(), "water"]
 		] as [$block, $idSuffix]){
-			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+			$this->mapFlattenedId(FlattenedIdModel::create($block)
 				->idComponents([...$commonProperties->liquidIdPrefixes, $idSuffix])
 				->properties([$commonProperties->liquidData])
 			);
@@ -954,7 +954,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::FURNACE(), "furnace"],
 			[Blocks::SMOKER(), "smoker"]
 		] as [$block, $idSuffix]){
-			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+			$this->mapFlattenedId(FlattenedIdModel::create($block)
 				->idComponents([...$commonProperties->furnaceIdPrefixes, $idSuffix])
 				->properties([$commonProperties->horizontalFacingCardinal])
 			);
@@ -965,17 +965,17 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::REDSTONE_ORE(), "redstone_ore"],
 			[Blocks::DEEPSLATE_REDSTONE_ORE(), "deepslate_redstone_ore"]
 		] as [$block, $idSuffix]){
-			$this->mapMatrixFlattened(FlattenedIdModel::create($block)->idComponents(["minecraft:", $commonProperties->litIdInfix, $idSuffix]));
+			$this->mapFlattenedId(FlattenedIdModel::create($block)->idComponents(["minecraft:", $commonProperties->litIdInfix, $idSuffix]));
 		}
 
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::DAYLIGHT_SENSOR())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::DAYLIGHT_SENSOR())
 			->idComponents([
 				"minecraft:daylight_detector",
 				new BoolFromStringProperty("inverted", "", "_inverted", fn(DaylightSensor $b) => $b->isInverted(), fn(DaylightSensor $b, bool $v) => $b->setInverted($v))
 			])
 			->properties([$commonProperties->analogRedstoneSignal])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_REPEATER())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::REDSTONE_REPEATER())
 			->idComponents([
 				"minecraft:",
 				new BoolFromStringProperty("powered", "un", "", fn(RedstoneRepeater $b) => $b->isPowered(), fn(RedstoneRepeater $b, bool $v) => $b->setPowered($v)),
@@ -986,7 +986,7 @@ final class BlockSerializerDeserializerRegistrar{
 				new IntProperty(StateNames::REPEATER_DELAY, 0, 3, fn(RedstoneRepeater $b) => $b->getDelay(), fn(RedstoneRepeater $b, int $v) => $b->setDelay($v), offset: 1),
 			])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_COMPARATOR())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::REDSTONE_COMPARATOR())
 			->idComponents([
 				"minecraft:",
 				//this property also appears in the state, so we ignore it in the ID
@@ -1000,7 +1000,7 @@ final class BlockSerializerDeserializerRegistrar{
 				new BoolProperty(StateNames::OUTPUT_SUBTRACT_BIT, fn(RedstoneComparator $b) => $b->isSubtractMode(), fn(RedstoneComparator $b, bool $v) => $b->setSubtractMode($v)),
 			])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::REDSTONE_TORCH())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::REDSTONE_TORCH())
 			->idComponents([
 				"minecraft:",
 				new BoolFromStringProperty("lit", "unlit_", "", fn(RedstoneTorch $b) => $b->isLit(), fn(RedstoneTorch $b, bool $v) => $b->setLit($v)),
@@ -1008,12 +1008,12 @@ final class BlockSerializerDeserializerRegistrar{
 			])
 			->properties([$commonProperties->torchFacing])
 		);
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::SPONGE())->idComponents([
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::SPONGE())->idComponents([
 			"minecraft:",
 			new BoolFromStringProperty("wet", "", "wet_", fn(Sponge $b) => $b->isWet(), fn(Sponge $b, bool $v) => $b->setWet($v)),
 			"sponge"
 		]));
-		$this->mapMatrixFlattened(FlattenedIdModel::create(Blocks::TNT())
+		$this->mapFlattenedId(FlattenedIdModel::create(Blocks::TNT())
 			->idComponents([
 				"minecraft:",
 				new BoolFromStringProperty("underwater", "", "underwater_", fn(TNT $b) => $b->worksUnderwater(), fn(TNT $b, bool $v) => $b->setWorksUnderwater($v)),
@@ -1253,7 +1253,7 @@ final class BlockSerializerDeserializerRegistrar{
 			[Blocks::CRIMSON_HYPHAE(), "crimson_hyphae"],
 			[Blocks::WARPED_HYPHAE(), "warped_hyphae"]
 		] as [$block, $idSuffix]){
-			$this->mapMatrixFlattened(FlattenedIdModel::create($block)
+			$this->mapFlattenedId(FlattenedIdModel::create($block)
 				->idComponents([...$commonProperties->woodIdPrefixes, $idSuffix])
 				->properties([$commonProperties->pillarAxis])
 			);
