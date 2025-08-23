@@ -23,23 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\convert;
 
-use pocketmine\block\BigDripleafHead;
-use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
-use pocketmine\block\DoublePitcherCrop;
-use pocketmine\block\FillableCauldron;
-use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
-use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
-use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateSerializeException;
 use pocketmine\data\bedrock\block\BlockStateSerializer;
-use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
@@ -62,8 +53,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	private array $cache = [];
 
 	public function __construct(){
-		$this->registerCauldronSerializers();
-		$this->registerSerializers();
 		new BlockSerializerDeserializerRegistrar(null, $this);
 	}
 
@@ -135,42 +124,5 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$result = $locatedSerializer($blockState);
 
 		return $result instanceof Writer ? $result->getBlockStateData() : $result;
-	}
-
-	private function registerCauldronSerializers() : void{
-		$this->map(Blocks::CAULDRON(), Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
-		$this->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
-		//potion cauldrons store their real information in the block actor data
-		$this->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
-		$this->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
-	}
-
-	private function registerSerializers() : void{
-		$this->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
-		$this->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
-			return Writer::create(Ids::BIG_DRIPLEAF)
-				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeUnitEnum(StateNames::BIG_DRIPLEAF_TILT, ValueMappings::getInstance()->dripleafState, $block->getLeafState())
-				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
-		});
-		$this->map(Blocks::BIG_DRIPLEAF_STEM(), function(BigDripleafStem $block) : Writer{
-			return Writer::create(Ids::BIG_DRIPLEAF)
-				->writeCardinalHorizontalFacing($block->getFacing())
-				->writeString(StateNames::BIG_DRIPLEAF_TILT, StringValues::BIG_DRIPLEAF_TILT_NONE)
-				->writeBool(StateNames::BIG_DRIPLEAF_HEAD, false);
-		});
-		$this->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
-				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
-		$this->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
-			return Writer::create(Ids::PITCHER_CROP)
-				->writeInt(StateNames::GROWTH, $block->getAge())
-				->writeBool(StateNames::UPPER_BLOCK_BIT, false);
-		});
-		$this->map(Blocks::DOUBLE_PITCHER_CROP(), function(DoublePitcherCrop $block) : Writer{
-			return Writer::create(Ids::PITCHER_CROP)
-				->writeInt(StateNames::GROWTH, $block->getAge() + 1 + PitcherCrop::MAX_AGE)
-				->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
-		});
 	}
 }

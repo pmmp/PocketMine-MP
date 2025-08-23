@@ -32,6 +32,8 @@ use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Bell;
+use pocketmine\block\BigDripleafHead;
+use pocketmine\block\BigDripleafStem;
 use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
 use pocketmine\block\Cactus;
@@ -45,10 +47,12 @@ use pocketmine\block\Copper;
 use pocketmine\block\DaylightSensor;
 use pocketmine\block\DetectorRail;
 use pocketmine\block\Dirt;
+use pocketmine\block\DoublePitcherCrop;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\EndPortalFrame;
 use pocketmine\block\EndRod;
 use pocketmine\block\Farmland;
+use pocketmine\block\FillableCauldron;
 use pocketmine\block\Fire;
 use pocketmine\block\FloorCoralFan;
 use pocketmine\block\Froglight;
@@ -65,6 +69,7 @@ use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
 use pocketmine\block\PinkPetals;
+use pocketmine\block\PitcherCrop;
 use pocketmine\block\PoweredRail;
 use pocketmine\block\Rail;
 use pocketmine\block\RedMushroomBlock;
@@ -103,10 +108,12 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
+use pocketmine\data\bedrock\block\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\BoolProperty;
@@ -160,6 +167,8 @@ final class BlockSerializerDeserializerRegistrar{
 		$this->registerTorchMappings($commonProperties);
 		$this->registerChemistryMappings($commonProperties);
 		$this->register1to1CustomMappings($commonProperties);
+
+		$this->registerSplitMappings();
 	}
 
 	private function mapSimple(Block $block, string $id) : void{
@@ -1664,5 +1673,102 @@ final class BlockSerializerDeserializerRegistrar{
 		]));
 		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), Ids::HEAVY_WEIGHTED_PRESSURE_PLATE)->properties([$commonProperties->analogRedstoneSignal]));
 		$this->mapModel(Model::create(Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), Ids::LIGHT_WEIGHTED_PRESSURE_PLATE)->properties([$commonProperties->analogRedstoneSignal]));
+	}
+
+	/**
+	 * All mappings that still use the split form of serializer/deserializer registration
+	 * This is typically only used by blocks with one ID but multiple PM types (split by property)
+	 * These currently can't be registered in a unified way, and due to their small number it may not be worth the
+	 * effort to implement a unified way to deal with them
+	 */
+	private function registerSplitMappings() : void{
+		//big dripleaf - split into head / stem variants, as stems don't have tilt or leaf state
+		if($this->serializer !== null){
+			$this->serializer->map(Blocks::BIG_DRIPLEAF_HEAD(), function(BigDripleafHead $block) : Writer{
+				return Writer::create(Ids::BIG_DRIPLEAF)
+					->writeCardinalHorizontalFacing($block->getFacing())
+					->writeUnitEnum(StateNames::BIG_DRIPLEAF_TILT, ValueMappings::getInstance()->dripleafState, $block->getLeafState())
+					->writeBool(StateNames::BIG_DRIPLEAF_HEAD, true);
+			});
+			$this->serializer->map(Blocks::BIG_DRIPLEAF_STEM(), function(BigDripleafStem $block) : Writer{
+				return Writer::create(Ids::BIG_DRIPLEAF)
+					->writeCardinalHorizontalFacing($block->getFacing())
+					->writeString(StateNames::BIG_DRIPLEAF_TILT, StringValues::BIG_DRIPLEAF_TILT_NONE)
+					->writeBool(StateNames::BIG_DRIPLEAF_HEAD, false);
+			});
+		}
+		$this->deserializer?->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
+			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
+				return Blocks::BIG_DRIPLEAF_HEAD()
+					->setFacing($in->readCardinalHorizontalFacing())
+					->setLeafState($in->readUnitEnum(StateNames::BIG_DRIPLEAF_TILT, ValueMappings::getInstance()->dripleafState));
+			}else{
+				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
+				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readCardinalHorizontalFacing());
+			}
+		});
+
+		//cauldrons - split into liquid variants, as each have different behaviour
+		if($this->serializer !== null){
+			$this->serializer->map(Blocks::CAULDRON(), Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, 0));
+			$this->serializer->map(Blocks::LAVA_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_LAVA, $b->getFillLevel()));
+			//potion cauldrons store their real information in the block actor data
+			$this->serializer->map(Blocks::POTION_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
+			$this->serializer->map(Blocks::WATER_CAULDRON(), fn(FillableCauldron $b) => Helper::encodeCauldron(StringValues::CAULDRON_LIQUID_WATER, $b->getFillLevel()));
+		}
+		$this->deserializer?->map(Ids::CAULDRON, function(Reader $in) : Block{
+			$level = $in->readBoundedInt(StateNames::FILL_LEVEL, 0, 6);
+			if($level === 0){
+				$in->ignored(StateNames::CAULDRON_LIQUID);
+				return Blocks::CAULDRON();
+			}
+
+			return (match ($liquid = $in->readString(StateNames::CAULDRON_LIQUID)) {
+				StringValues::CAULDRON_LIQUID_WATER => Blocks::WATER_CAULDRON(),
+				StringValues::CAULDRON_LIQUID_LAVA => Blocks::LAVA_CAULDRON(),
+				StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
+				default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
+			})->setFillLevel($level);
+		});
+
+		//mushroom stems, split for consistency with all-sided logs vs normal logs
+		if($this->serializer !== null){
+			$this->serializer->map(Blocks::ALL_SIDED_MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM));
+			$this->serializer->map(Blocks::MUSHROOM_STEM(), Writer::create(Ids::MUSHROOM_STEM)
+				->writeInt(StateNames::HUGE_MUSHROOM_BITS, BlockLegacyMetadata::MUSHROOM_BLOCK_STEM));
+		}
+		$this->deserializer?->map(Ids::MUSHROOM_STEM, fn(Reader $in) => match ($in->readBoundedInt(StateNames::HUGE_MUSHROOM_BITS, 0, 15)) {
+			BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => Blocks::ALL_SIDED_MUSHROOM_STEM(),
+			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => Blocks::MUSHROOM_STEM(),
+			default => throw new BlockStateDeserializeException("This state does not exist"),
+		});
+
+		//pitcher crop, split into single and double variants as double has different properties and behaviour
+		//this will probably be the most annoying to unify
+		if($this->serializer !== null){
+			$this->serializer->map(Blocks::PITCHER_CROP(), function(PitcherCrop $block) : Writer{
+				return Writer::create(Ids::PITCHER_CROP)
+					->writeInt(StateNames::GROWTH, $block->getAge())
+					->writeBool(StateNames::UPPER_BLOCK_BIT, false);
+			});
+			$this->serializer->map(Blocks::DOUBLE_PITCHER_CROP(), function(DoublePitcherCrop $block) : Writer{
+				return Writer::create(Ids::PITCHER_CROP)
+					->writeInt(StateNames::GROWTH, $block->getAge() + 1 + PitcherCrop::MAX_AGE)
+					->writeBool(StateNames::UPPER_BLOCK_BIT, $block->isTop());
+			});
+		}
+		$this->deserializer?->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
+			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
+			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
+			if($growth <= PitcherCrop::MAX_AGE){
+				//top pitcher crop with age 0-2 is an invalid state
+				//only the bottom half should exist in this case
+				return $top ? Blocks::AIR() : Blocks::PITCHER_CROP()->setAge($growth);
+			}
+			return Blocks::DOUBLE_PITCHER_CROP()
+				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
+				->setTop($top);
+		});
 	}
 }

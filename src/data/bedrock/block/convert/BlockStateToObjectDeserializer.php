@@ -24,25 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
-use pocketmine\block\DoublePitcherCrop;
-use pocketmine\block\PitcherCrop;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateDeserializer;
-use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
-use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
-use pocketmine\data\bedrock\block\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\block\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\block\convert\BlockStateReader as Reader;
 use function array_key_exists;
 use function count;
-use function min;
 
 final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
@@ -59,8 +52,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	private array $simpleCache = [];
 
 	public function __construct(){
-		$this->registerCauldronDeserializers();
-		$this->registerDeserializers();
 		new BlockSerializerDeserializerRegistrar($this, null);
 	}
 
@@ -124,54 +115,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	public function mapLog(string $unstrippedId, string $strippedId, \Closure $getBlock) : void{
 		$this->map($unstrippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), false, $in));
 		$this->map($strippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), true, $in));
-	}
-
-	private function registerCauldronDeserializers() : void{
-		$deserializer = function(Reader $in) : Block{
-			$level = $in->readBoundedInt(StateNames::FILL_LEVEL, 0, 6);
-			if($level === 0){
-				$in->ignored(StateNames::CAULDRON_LIQUID);
-				return Blocks::CAULDRON();
-			}
-
-			return (match($liquid = $in->readString(StateNames::CAULDRON_LIQUID)){
-				StringValues::CAULDRON_LIQUID_WATER => Blocks::WATER_CAULDRON(),
-				StringValues::CAULDRON_LIQUID_LAVA => Blocks::LAVA_CAULDRON(),
-				StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
-				default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
-			})->setFillLevel($level);
-		};
-		$this->map(Ids::CAULDRON, $deserializer);
-	}
-
-	private function registerDeserializers() : void{
-		$this->map(Ids::BIG_DRIPLEAF, function(Reader $in) : Block{
-			if($in->readBool(StateNames::BIG_DRIPLEAF_HEAD)){
-				return Blocks::BIG_DRIPLEAF_HEAD()
-					->setFacing($in->readCardinalHorizontalFacing())
-					->setLeafState($in->readUnitEnum(StateNames::BIG_DRIPLEAF_TILT, ValueMappings::getInstance()->dripleafState));
-			}else{
-				$in->ignored(StateNames::BIG_DRIPLEAF_TILT);
-				return Blocks::BIG_DRIPLEAF_STEM()->setFacing($in->readCardinalHorizontalFacing());
-			}
-		});
-		$this->map(Ids::MUSHROOM_STEM, fn(Reader $in) => match($in->readBoundedInt(StateNames::HUGE_MUSHROOM_BITS, 0, 15)){
-			BlockLegacyMetadata::MUSHROOM_BLOCK_ALL_STEM => Blocks::ALL_SIDED_MUSHROOM_STEM(),
-			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => Blocks::MUSHROOM_STEM(),
-			default => throw new BlockStateDeserializeException("This state does not exist"),
-		});
-		$this->map(Ids::PITCHER_CROP, function(Reader $in) : Block{
-			$growth = $in->readBoundedInt(StateNames::GROWTH, 0, 7);
-			$top = $in->readBool(StateNames::UPPER_BLOCK_BIT);
-			if($growth <= PitcherCrop::MAX_AGE){
-				//top pitcher crop with age 0-2 is an invalid state
-				//only the bottom half should exist in this case
-				return $top ? Blocks::AIR() : Blocks::PITCHER_CROP()->setAge($growth);
-			}
-			return Blocks::DOUBLE_PITCHER_CROP()
-				->setAge(min($growth - PitcherCrop::MAX_AGE - 1, DoublePitcherCrop::MAX_AGE))
-				->setTop($top);
-		});
 	}
 
 	/** @throws BlockStateDeserializeException */
