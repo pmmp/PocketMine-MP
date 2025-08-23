@@ -25,7 +25,6 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
-use pocketmine\data\bedrock\block\convert\StateMap;
 use function array_keys;
 
 /**

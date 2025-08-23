@@ -21,14 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\convert;
+namespace pocketmine\data\bedrock\block\convert\property;
 
-use pocketmine\block\Block;
 use pocketmine\block\Button;
 use pocketmine\block\Door;
 use pocketmine\block\DoublePlant;
 use pocketmine\block\FenceGate;
-use pocketmine\block\Furnace;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Liquid;
 use pocketmine\block\SimplePressurePlate;
@@ -57,17 +55,7 @@ use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues;
-use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
-use pocketmine\data\bedrock\block\convert\property\BoolFromStringProperty;
-use pocketmine\data\bedrock\block\convert\property\BoolProperty;
-use pocketmine\data\bedrock\block\convert\property\DummyProperty;
-use pocketmine\data\bedrock\block\convert\property\IntProperty;
-use pocketmine\data\bedrock\block\convert\property\OptionSetFromIntProperty;
-use pocketmine\data\bedrock\block\convert\property\Property;
-use pocketmine\data\bedrock\block\convert\property\StringProperty;
-use pocketmine\data\bedrock\block\convert\property\ValueFromIntProperty;
-use pocketmine\data\bedrock\block\convert\property\ValueFromStringProperty;
-use pocketmine\data\bedrock\block\convert\property\WallConnectionTypeShim;
+use pocketmine\data\bedrock\block\convert\non;
 use pocketmine\math\Facing;
 use pocketmine\utils\SingletonTrait;
 
@@ -140,7 +128,7 @@ final class CommonProperties{
 
 	/**
 	 * @var StringProperty[]
-	 * @phpstan-var non-empty-list<string|StringProperty<contravariant Furnace>>
+	 * @phpstan-var non-empty-list<string|StringProperty<contravariant Lightable>>
 	 */
 	public readonly array $furnaceIdPrefixes;
 
@@ -307,8 +295,8 @@ final class CommonProperties{
 		);
 		$this->slabPositionProperty = new BoolFromStringProperty(
 			StateNames::MC_VERTICAL_HALF,
-			StringValues::MC_VERTICAL_HALF_BOTTOM,
-			StringValues::MC_VERTICAL_HALF_TOP,
+			BlockStateStringValues::MC_VERTICAL_HALF_BOTTOM,
+			BlockStateStringValues::MC_VERTICAL_HALF_TOP,
 			fn(Slab $b) => $b->getSlabType() === SlabType::TOP,
 
 			//Ignore the value for double slabs (should be set by ID component before this is reached)

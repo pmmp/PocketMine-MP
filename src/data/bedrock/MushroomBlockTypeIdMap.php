@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\block\convert\ValueMappings;
+use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\utils\SingletonTrait;
 
 /**

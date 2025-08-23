@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\convert;
+namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\utils\BellAttachmentType;

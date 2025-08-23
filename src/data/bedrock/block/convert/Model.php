@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\block\convert\property;
+namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\Block;
+use pocketmine\data\bedrock\block\convert\property\Property;
 
 /**
  * This class works around a limitation in PHPStan.
@@ -32,15 +33,8 @@ use pocketmine\block\Block;
  * However, there's no way to tell PHPStan to ignore $properties for inference, so we're stuck with this hack.
  *
  * @phpstan-template TBlock of Block
- * @phpstan-template THasIdComponents of bool
  */
-final class FlattenedIdModel{
-
-	/**
-	 * @var string[]|StringProperty[]
-	 * @phpstan-var list<string|StringProperty<contravariant TBlock>>
-	 */
-	private array $idComponents = [];
+final class Model{
 
 	/**
 	 * @var Property[]
@@ -52,28 +46,14 @@ final class FlattenedIdModel{
 	 * @phpstan-param TBlock $block
 	 */
 	private function __construct(
-		private Block $block
+		private Block $block,
+		private string $id
 	){}
-
-	/**
-	 * @phpstan-template TBlock_ of Block
-	 * @phpstan-param TBlock_ $block
-	 * @return self<TBlock_, false>
-	 */
-	public static function create(Block $block) : self{
-		/** @phpstan-var self<TBlock_, false> $result */
-		$result = new self($block);
-		return $result;
-	}
 
 	/** @phpstan-return TBlock */
 	public function getBlock() : Block{ return $this->block; }
 
-	/**
-	 * @return string[]|StringProperty[]
-	 * @phpstan-return list<string|StringProperty<contravariant TBlock>>
-	 */
-	public function getIdComponents() : array{ return $this->idComponents; }
+	public function getId() : string{ return $this->id; }
 
 	/**
 	 * @return Property[]
@@ -82,21 +62,18 @@ final class FlattenedIdModel{
 	public function getProperties() : array{ return $this->properties; }
 
 	/**
-	 * @param string[]|StringProperty[] $components
-	 * @phpstan-param non-empty-list<string|StringProperty<contravariant TBlock>> $components
-	 * @return $this
-	 * @phpstan-this-out self<TBlock, true>
+	 * @phpstan-template TBlock_ of Block
+	 * @phpstan-param TBlock_ $block
+	 * @phpstan-return self<TBlock_>
 	 */
-	public function idComponents(array $components) : self{
-		$this->idComponents = $components;
-		return $this;
+	public static function create(Block $block, string $id) : self{
+		return new self($block, $id);
 	}
 
 	/**
 	 * @param Property[] $properties
-	 * @phpstan-param non-empty-list<Property<contravariant TBlock>> $properties
-	 * @return $this
-	 * @phpstan-this-out self<TBlock, THasIdComponents>
+	 * @phpstan-param list<Property<contravariant TBlock>> $properties
+	 * @phpstan-return $this
 	 */
 	public function properties(array $properties) : self{
 		$this->properties = $properties;
