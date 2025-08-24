@@ -42,6 +42,8 @@ final class BlockSerializerDeserializerTest extends TestCase{
 	public function setUp() : void{
 		$this->deserializer = new BlockStateToObjectDeserializer();
 		$this->serializer = new BlockObjectToStateSerializer();
+		$registrar = new BlockSerializerDeserializerRegistrar($this->deserializer, $this->serializer);
+		VanillaBlockMappings::init($registrar);
 	}
 
 	public function testAllKnownBlockStatesSerializableAndDeserializable() : void{
