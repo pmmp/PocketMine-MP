@@ -115,6 +115,7 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param IntFromRawStateMap<string> $map
 	 * @throws BlockStateDeserializeException
 	 */
@@ -125,6 +126,7 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param IntFromRawStateMap<int> $map
 	 * @throws BlockStateDeserializeException
 	 */
@@ -134,17 +136,24 @@ final class BlockStateReader{
 		return $map->rawToValue($raw) ?? throw $this->badValueException($name, (string) $raw);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readFacingDirection() : int{
 		return $this->mapIntFromInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->facing);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readBlockFace() : int{
 		return $this->mapIntFromString(BlockStateNames::MC_BLOCK_FACE, ValueMappings::getInstance()->blockFace);
 	}
 
 	/**
+	 * @deprecated
 	 * @return int[]
 	 * @phpstan-return array<int, int>
 	 */
@@ -167,13 +176,19 @@ final class BlockStateReader{
 		return $result;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readEndRodFacingDirection() : int{
 		$result = $this->readFacingDirection();
 		return Facing::axis($result) !== Axis::Y ? Facing::opposite($result) : $result;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readHorizontalFacing() : int{
 		return $this->mapIntFromInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->horizontalFacingClassic);
 	}
@@ -186,7 +201,10 @@ final class BlockStateReader{
 		return $this->mapIntFromInt(BlockStateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readLegacyHorizontalFacing() : int{
 		return $this->mapIntFromInt(BlockStateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacingSWNE);
 	}
@@ -201,6 +219,7 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * Used by pumpkins as of 1.20.0.23 beta
 	 * @throws BlockStateDeserializeException
 	 */
@@ -208,12 +227,18 @@ final class BlockStateReader{
 		return $this->mapIntFromString(BlockStateNames::MC_CARDINAL_DIRECTION, ValueMappings::getInstance()->cardinalDirection);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readCoralFacing() : int{
 		return $this->mapIntFromInt(BlockStateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readFacingWithoutDown() : int{
 		$result = $this->readFacingDirection();
 		if($result === Facing::DOWN){ //shouldn't be legal, but 1.13 allows it
@@ -222,6 +247,10 @@ final class BlockStateReader{
 		return $result;
 	}
 
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readFacingWithoutUp() : int{
 		$result = $this->readFacingDirection();
 		if($result === Facing::UP){
@@ -231,13 +260,17 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readPillarAxis() : int{
 		return $this->mapIntFromString(BlockStateNames::PILLAR_AXIS, ValueMappings::getInstance()->pillarAxis);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readSlabPosition() : SlabType{
 		return match($rawValue = $this->readString(BlockStateNames::MC_VERTICAL_HALF)){
 			StringValues::MC_VERTICAL_HALF_BOTTOM => SlabType::BOTTOM,
@@ -247,6 +280,7 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readTorchFacing() : int{
@@ -254,14 +288,17 @@ final class BlockStateReader{
 	}
 
 	/**
-	 * @deprecated Use {@see readUnitEnum()} instead
+	 * @deprecated
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readBellAttachmentType() : BellAttachmentType{
 		return $this->readUnitEnum(BlockStateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readWallConnectionType(string $name) : ?WallConnectionType{
 		return match($type = $this->readString($name)){
 			//TODO: this looks a bit confusing due to use of EAST, but the values are the same for all connections
@@ -275,6 +312,7 @@ final class BlockStateReader{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TEnum of \UnitEnum
 	 * @phpstan-param EnumFromRawStateMap<TEnum, string> $map
 	 * @phpstan-return TEnum

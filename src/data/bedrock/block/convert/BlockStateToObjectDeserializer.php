@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
-use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -50,10 +49,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	 * @phpstan-var array<string, int>
 	 */
 	private array $simpleCache = [];
-
-	public function __construct(){
-		new BlockSerializerDeserializerRegistrar($this, null);
-	}
 
 	public function deserialize(BlockStateData $stateData) : int{
 		if(count($stateData->getStates()) === 0){
@@ -91,12 +86,16 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		return $this->deserializeFuncs[$id] ?? null;
 	}
 
-	/** @phpstan-param \Closure() : Block $getBlock */
+	/**
+	 * @deprecated
+	 * @phpstan-param \Closure() : Block $getBlock
+	 */
 	public function mapSimple(string $id, \Closure $getBlock) : void{
 		$this->map($id, $getBlock);
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param \Closure(Reader) : Slab $getBlock
 	 */
 	public function mapSlab(string $singleId, string $doubleId, \Closure $getBlock) : void{
@@ -105,13 +104,17 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param \Closure() : Stair $getBlock
 	 */
 	public function mapStairs(string $id, \Closure $getBlock) : void{
 		$this->map($id, fn(Reader $in) : Stair => Helper::decodeStairs($getBlock(), $in));
 	}
 
-	/** @phpstan-param \Closure() : Wood $getBlock */
+	/**
+	 * @deprecated
+	 * @phpstan-param \Closure() : Wood $getBlock
+	 */
 	public function mapLog(string $unstrippedId, string $strippedId, \Closure $getBlock) : void{
 		$this->map($unstrippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), false, $in));
 		$this->map($strippedId, fn(Reader $in) => Helper::decodeLog($getBlock(), true, $in));

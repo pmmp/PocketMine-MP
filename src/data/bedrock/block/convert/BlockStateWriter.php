@@ -77,6 +77,7 @@ final class BlockStateWriter{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param IntFromRawStateMap<string> $map
 	 * @return $this
 	 */
@@ -87,6 +88,7 @@ final class BlockStateWriter{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-param IntFromRawStateMap<int> $map
 	 * @return $this
 	 */
@@ -96,18 +98,25 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeFacingDirection(int $value) : self{
 		return $this->mapIntToInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->facing, $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeBlockFace(int $value) : self{
 		$this->mapIntToString(BlockStateNames::MC_BLOCK_FACE, ValueMappings::getInstance()->blockFace, $value);
 		return $this;
 	}
 
 	/**
+	 * @deprecated
 	 * @param int[] $faces
 	 * @phpstan-param array<int, int> $faces
 	 * @return $this
@@ -129,13 +138,19 @@ final class BlockStateWriter{
 		return $this->writeInt(BlockStateNames::MULTI_FACE_DIRECTION_BITS, $result);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeEndRodFacingDirection(int $value) : self{
 		//end rods are stupid in bedrock and have everything except up/down the wrong way round
 		return $this->writeFacingDirection(Facing::axis($value) !== Axis::Y ? Facing::opposite($value) : $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeHorizontalFacing(int $value) : self{
 		return $this->mapIntToInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->horizontalFacingClassic, $value);
 	}
@@ -157,6 +172,7 @@ final class BlockStateWriter{
 	}
 
 	/**
+	 * @deprecated
 	 * This is for trapdoors, because Mojang botched the conversion in 1.13
 	 * @return $this
 	 */
@@ -165,6 +181,7 @@ final class BlockStateWriter{
 	}
 
 	/**
+	 * @deprecated
 	 * Used by pumpkins as of 1.20.0.23 beta
 	 * @return $this
 	 */
@@ -172,12 +189,18 @@ final class BlockStateWriter{
 		return $this->mapIntToString(BlockStateNames::MC_CARDINAL_DIRECTION, ValueMappings::getInstance()->cardinalDirection, $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeCoralFacing(int $value) : self{
 		return $this->mapIntToInt(BlockStateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral, $value);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeFacingWithoutDown(int $value) : self{
 		if($value === Facing::DOWN){
 			throw new BlockStateSerializeException("Invalid facing DOWN");
@@ -186,7 +209,10 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeFacingWithoutUp(int $value) : self{
 		if($value === Facing::UP){
 			throw new BlockStateSerializeException("Invalid facing UP");
@@ -195,13 +221,19 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writePillarAxis(int $axis) : self{
 		$this->mapIntToString(BlockStateNames::PILLAR_AXIS, ValueMappings::getInstance()->pillarAxis, $axis);
 		return $this;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeSlabPosition(SlabType $slabType) : self{
 		$this->writeString(BlockStateNames::MC_VERTICAL_HALF, match($slabType){
 			SlabType::TOP => StringValues::MC_VERTICAL_HALF_TOP,
@@ -221,14 +253,17 @@ final class BlockStateWriter{
 	}
 
 	/**
-	 * @deprecated Use {@see writeUnitEnum()} instead
+	 * @deprecated
 	 * @return $this
 	 */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
 		return $this->writeUnitEnum(BlockStateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType, $attachmentType);
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @return $this
+	 */
 	public function writeWallConnectionType(string $name, ?WallConnectionType $wallConnectionType) : self{
 		$this->writeString($name, match($wallConnectionType){
 			null => StringValues::WALL_CONNECTION_TYPE_EAST_NONE,
@@ -239,6 +274,7 @@ final class BlockStateWriter{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TEnum of \UnitEnum
 	 * @phpstan-param EnumFromRawStateMap<TEnum, string> $map
 	 * @phpstan-param TEnum                         $case

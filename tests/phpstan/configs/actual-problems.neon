@@ -604,7 +604,7 @@ parameters:
 			message: '#^Parameter \#1 \$faces of method pocketmine\\block\\Vine\:\:setFaces\(\) expects list\<2\|3\|4\|5\>, array\<int\> given\.$#'
 			identifier: argument.type
 			count: 1
-			path: ../../../src/data/bedrock/block/convert/BlockSerializerDeserializerRegistrar.php
+			path: ../../../src/data/bedrock/block/convert/VanillaBlockMappings.php
 
 		-
 			message: '#^Parameter \#1 \$blockToItemId of class pocketmine\\data\\bedrock\\item\\BlockItemIdMap constructor expects array\<string, string\>, array\<mixed, mixed\> given\.$#'

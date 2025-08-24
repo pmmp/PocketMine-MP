@@ -52,10 +52,6 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 	 */
 	private array $cache = [];
 
-	public function __construct(){
-		new BlockSerializerDeserializerRegistrar(null, $this);
-	}
-
 	public function serialize(int $stateId) : BlockStateData{
 		//TODO: singleton usage not ideal
 		//TODO: we may want to deduplicate cache entries to avoid wasting memory
@@ -79,18 +75,30 @@ final class BlockObjectToStateSerializer implements BlockStateSerializer{
 		$this->serializers[$block->getTypeId()] = $serializer instanceof Writer ? $serializer->getBlockStateData() : $serializer;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function mapSimple(Block $block, string $id) : void{
 		$this->map($block, BlockStateData::current($id, []));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function mapSlab(Slab $block, string $singleId, string $doubleId) : void{
 		$this->map($block, fn(Slab $block) => Helper::encodeSlab($block, $singleId, $doubleId));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function mapStairs(Stair $block, string $id) : void{
 		$this->map($block, fn(Stair $block) => Helper::encodeStairs($block, Writer::create($id)));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function mapLog(Wood $block, string $unstrippedId, string $strippedId) : void{
 		$this->map($block, fn(Wood $block) => Helper::encodeLog($block, $unstrippedId, $strippedId));
 	}
