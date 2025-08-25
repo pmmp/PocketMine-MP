@@ -55,19 +55,12 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 			return false;
 		}
 		$attachFace = Facing::axis($face) === Axis::Y ? Facing::rotateY($player->getHorizontalFacing(), clockwise: true) : $face;
-		$direction = null;
 
-		foreach([
-			$attachFace,
-			Facing::opposite($attachFace)
-		] as $side){
-			if($this->canBeSupportedAt($blockReplace->getSide($side), $side)){
-				$direction = $side;
-				break;
-			}
-		}
-
-		if($direction === null){
+		if($this->canBeSupportedAt($blockReplace->getSide($attachFace), $attachFace)){
+			$direction = $attachFace;
+		}elseif($this->canBeSupportedAt($blockReplace->getSide($opposite = Facing::opposite($attachFace)), $opposite)){
+			$direction = $opposite;
+		}else{
 			return false;
 		}
 

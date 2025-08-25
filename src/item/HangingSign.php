@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\CeilingCenterHangingSign;
 use pocketmine\block\CeilingEdgesHangingSign;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\WallHangingSign;
@@ -50,11 +51,16 @@ final class HangingSign extends Item{
 				return clone $this->centerPointCeilingVariant;
 			}
 
+			//we select the center variant when support is edge/wall sign with perpendicular player facing,
+			//support is a center sign itself, or support provides center support.
+			//otherwise use the edge variant.
 			$support = $blockReplace->getSide(Facing::UP);
-			$result = (($support instanceof CeilingEdgesHangingSign || $support instanceof WallHangingSign) && ($player === null || Facing::axis($player->getHorizontalFacing()) !== Facing::axis($support->getFacing()))) ||
-			$support->getSupportType(Facing::DOWN) === SupportType::CENTER ?
-				$this->centerPointCeilingVariant :
-				$this->edgePointCeilingVariant;
+			$result =
+				(($support instanceof CeilingEdgesHangingSign || $support instanceof WallHangingSign) && ($player === null || Facing::axis($player->getHorizontalFacing()) !== Facing::axis($support->getFacing()))) ||
+				$support instanceof CeilingCenterHangingSign ||
+				$support->getSupportType(Facing::DOWN) === SupportType::CENTER ?
+					$this->centerPointCeilingVariant :
+					$this->edgePointCeilingVariant;
 		}else{
 			$result = $this->wallVariant;
 		}

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SignLikeRotation;
 use pocketmine\block\utils\SignLikeRotationTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -33,6 +34,7 @@ use pocketmine\world\BlockTransaction;
 
 final class CeilingCenterHangingSign extends BaseSign implements SignLikeRotation{
 	use SignLikeRotationTrait;
+	use StaticSupportTrait;
 
 	protected function getSupportingFace() : int{
 		return Facing::UP;
@@ -44,19 +46,18 @@ final class CeilingCenterHangingSign extends BaseSign implements SignLikeRotatio
 			return false;
 		}
 
-		$supportBlock = $blockReplace->getSide(Facing::UP);
-		if(
-			!$supportBlock->getSupportType(Facing::UP)->hasCenterSupport() &&
-			!$supportBlock instanceof WallHangingSign &&
-			!$supportBlock instanceof CeilingEdgesHangingSign &&
-			!$supportBlock instanceof CeilingCenterHangingSign
-		){
-			return false;
-		}
-
 		if($player !== null){
 			$this->rotation = self::getRotationFromYaw($player->getLocation()->getYaw());
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::UP);
+		return
+			$supportBlock->getSupportType(Facing::DOWN)->hasCenterSupport() ||
+			$supportBlock instanceof WallHangingSign ||
+			$supportBlock instanceof CeilingEdgesHangingSign ||
+			$supportBlock instanceof CeilingCenterHangingSign;
 	}
 }

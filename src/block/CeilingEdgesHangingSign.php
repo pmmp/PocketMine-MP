@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -34,6 +35,7 @@ use pocketmine\world\BlockTransaction;
 
 final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing{
 	use HorizontalFacingTrait;
+	use StaticSupportTrait;
 
 	protected function getSupportingFace() : int{
 		return Facing::UP;
@@ -47,15 +49,14 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 
-		$supportBlock = $blockReplace->getSide(Facing::UP);
-		if(
-			$supportBlock->getSupportType(Facing::UP) !== SupportType::FULL &&
-			(!$supportBlock instanceof WallHangingSign || Facing::axis($supportBlock->getFacing()) !== Facing::axis($this->facing)) &&
-			!$supportBlock instanceof CeilingEdgesHangingSign
-		){
-			return false;
-		}
-
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::UP);
+		return
+			$supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL ||
+			($supportBlock instanceof WallHangingSign && Facing::axis($supportBlock->getFacing()) === Facing::axis($this->facing)) ||
+			$supportBlock instanceof CeilingEdgesHangingSign;
 	}
 }
