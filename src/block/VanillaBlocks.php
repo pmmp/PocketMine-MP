@@ -1444,8 +1444,8 @@ final class VanillaBlocks{
 				WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
 				WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
 			};
-			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . "Center Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
-			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . "Edges Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 		}
 	}
