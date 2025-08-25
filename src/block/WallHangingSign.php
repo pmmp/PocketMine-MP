@@ -30,6 +30,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
 final class WallHangingSign extends BaseSign implements HorizontalFacing{
@@ -59,5 +60,15 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	protected function getFacingDegrees() : float{
+		return match ($this->facing) {
+			Facing::SOUTH => 0,
+			Facing::WEST => 90,
+			Facing::NORTH => 180,
+			Facing::EAST => 270,
+			default => throw new AssumptionFailedError("Invalid facing direction for WallSign: " . $this->facing),
+		};
 	}
 }

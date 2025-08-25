@@ -49,4 +49,8 @@ final class CeilingCenterHangingSign extends BaseSign implements SignLikeRotatio
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
+
+	protected function getFacingDegrees() : float{
+		return $this->rotation * 22.5;
+	}
 }
