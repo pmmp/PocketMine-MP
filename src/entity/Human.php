@@ -248,7 +248,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function getSneakOffset() : float{
-		return 1.49;
+		return 0.31;
 	}
 
 	/**
