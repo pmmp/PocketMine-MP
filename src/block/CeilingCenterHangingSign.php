@@ -56,8 +56,6 @@ final class CeilingCenterHangingSign extends BaseSign implements SignLikeRotatio
 		$supportBlock = $block->getSide(Facing::UP);
 		return
 			$supportBlock->getSupportType(Facing::DOWN)->hasCenterSupport() ||
-			$supportBlock instanceof WallHangingSign ||
-			$supportBlock instanceof CeilingEdgesHangingSign ||
-			$supportBlock instanceof CeilingCenterHangingSign;
+			$supportBlock->hasTypeTag(BlockTypeTags::HANGING_SIGN);
 	}
 }
