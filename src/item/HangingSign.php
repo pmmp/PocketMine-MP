@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\CeilingEdgesHangingSign;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\WallHangingSign;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -50,7 +51,7 @@ final class HangingSign extends Item{
 			}
 
 			$support = $blockReplace->getSide(Facing::UP);
-			$result = ($support instanceof CeilingEdgesHangingSign && $player?->getHorizontalFacing() !== $support->getFacing()) ||
+			$result = (($support instanceof CeilingEdgesHangingSign || $support instanceof WallHangingSign) && ($player === null || Facing::axis($player->getHorizontalFacing()) !== Facing::axis($support->getFacing()))) ||
 			$support->getSupportType(Facing::DOWN) === SupportType::CENTER ?
 				$this->centerPointCeilingVariant :
 				$this->edgePointCeilingVariant;

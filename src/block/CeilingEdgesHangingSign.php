@@ -44,13 +44,17 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 			return false;
 		}
 
-		$supportBlock = $blockReplace->getSide(Facing::UP);
-		if($supportBlock->getSupportType(Facing::UP) !== SupportType::FULL && !$supportBlock instanceof CeilingEdgesHangingSign){
-			return false;
-		}
-
 		if($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
+		}
+
+		$supportBlock = $blockReplace->getSide(Facing::UP);
+		if(
+			$supportBlock->getSupportType(Facing::UP) !== SupportType::FULL &&
+			(!$supportBlock instanceof WallHangingSign || Facing::axis($supportBlock->getFacing()) !== Facing::axis($this->facing)) &&
+			!$supportBlock instanceof CeilingEdgesHangingSign
+		){
+			return false;
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
