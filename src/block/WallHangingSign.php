@@ -51,7 +51,7 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) === Axis::Y && $player === null){
+		if($player === null){
 			return false;
 		}
 		$attachFace = Facing::axis($face) === Axis::Y ? Facing::rotateY($player->getHorizontalFacing(), clockwise: true) : $face;
@@ -73,7 +73,7 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 
 		$this->facing = Facing::rotateY(Facing::opposite($direction), clockwise: true);
 		//the front should always face the player if possible
-		if($player !== null && $this->facing === $player->getHorizontalFacing()){
+		if($this->facing === $player->getHorizontalFacing()){
 			$this->facing = Facing::opposite($this->facing);
 		}
 
