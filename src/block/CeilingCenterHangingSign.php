@@ -44,6 +44,15 @@ final class CeilingCenterHangingSign extends BaseSign implements SignLikeRotatio
 			return false;
 		}
 
+		$supportBlock = $blockReplace->getSide(Facing::UP);
+		if(
+			!$supportBlock->getSupportType(Facing::UP)->hasCenterSupport() &&
+			!$supportBlock instanceof CeilingEdgesHangingSign &&
+			!$supportBlock instanceof CeilingCenterHangingSign
+		){
+			return false;
+		}
+
 		if($player !== null){
 			$this->rotation = self::getRotationFromYaw($player->getLocation()->getYaw());
 		}

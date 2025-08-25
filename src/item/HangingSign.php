@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\CeilingEdgesHangingSign;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 final class HangingSign extends Item{
 
@@ -40,13 +42,21 @@ final class HangingSign extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getPlacementBlock(Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : Block{
+	public function getPlacementBlock(?Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : Block{
 		//we don't verify valid placement conditions here, only decide which block to return
-		$result = $face === Facing::DOWN ?
-			$blockReplace->getSide(Facing::UP)->getSupportType(Facing::DOWN) === SupportType::CENTER ?
+		if($face === Facing::DOWN){
+			if($player !== null && $player->isSneaking()){
+				return clone $this->centerPointCeilingVariant;
+			}
+
+			$support = $blockReplace->getSide(Facing::UP);
+			$result = ($support instanceof CeilingEdgesHangingSign && $player?->getHorizontalFacing() !== $support->getFacing()) ||
+			$support->getSupportType(Facing::DOWN) === SupportType::CENTER ?
 				$this->centerPointCeilingVariant :
-				$this->edgePointCeilingVariant
-			: $this->wallVariant;
+				$this->edgePointCeilingVariant;
+		}else{
+			$result = $this->wallVariant;
+		}
 		return clone $result;
 	}
 

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -50,16 +51,38 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) === Axis::Y){
+		if(Facing::axis($face) === Axis::Y && $player === null){
+			return false;
+		}
+		$attachFace = Facing::axis($face) === Axis::Y ? Facing::rotateY($player->getHorizontalFacing(), clockwise: true) : $face;
+		$direction = null;
+
+		foreach([
+			$attachFace,
+			Facing::opposite($attachFace)
+		] as $side){
+			if($this->canBeSupportedAt($blockReplace->getSide($side), $side)){
+				$direction = $side;
+				break;
+			}
+		}
+
+		if($direction === null){
 			return false;
 		}
 
-		$this->facing = Facing::rotateY($face, clockwise: true);
+		$this->facing = Facing::rotateY(Facing::opposite($direction), clockwise: true);
 		//the front should always face the player if possible
 		if($player !== null && $this->facing === $player->getHorizontalFacing()){
 			$this->facing = Facing::opposite($this->facing);
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return
+			($block instanceof WallHangingSign && Facing::axis(Facing::rotateY($block->getFacing(), clockwise: true)) === Facing::axis($face)) ||
+			$block->getSupportType(Facing::opposite($face)) === SupportType::FULL;
 	}
 }

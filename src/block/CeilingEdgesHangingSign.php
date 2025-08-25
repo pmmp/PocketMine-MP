@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -42,6 +43,12 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 		if($face !== Facing::DOWN){
 			return false;
 		}
+
+		$supportBlock = $blockReplace->getSide(Facing::UP);
+		if($supportBlock->getSupportType(Facing::UP) !== SupportType::FULL && !$supportBlock instanceof CeilingEdgesHangingSign){
+			return false;
+		}
+
 		if($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
