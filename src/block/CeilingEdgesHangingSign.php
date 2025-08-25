@@ -43,7 +43,6 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 		if($face !== Facing::DOWN){
 			return false;
 		}
-
 		if($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
