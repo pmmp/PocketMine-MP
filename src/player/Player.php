@@ -1505,6 +1505,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($blockIntersections) {
 			$this->checkBlockIntersections();
 		}
+
+		$postFallVerticalVelocity = $this->updateFallState($dy, $this->onGround);
+		$this->motion = $this->motion->withComponents(
+			null,
+			$postFallVerticalVelocity ?? null,
+			null
+		);
 	}
 
 	public function jump() : void{
@@ -2031,7 +2038,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
-		if(!$this->isSprinting() && !$this->isFlying() && !$this->onGround && $this->delta->getY() < 0 && !$this->effectManager->has(VanillaEffects::BLINDNESS()) && !$this->isUnderwater()){
+		if(!$this->isSprinting() && !$this->isFlying() && $this->fallDistance > 0 && !$this->effectManager->has(VanillaEffects::BLINDNESS()) && !$this->isUnderwater()){
 			$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 		}
 

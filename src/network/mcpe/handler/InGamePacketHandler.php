@@ -225,7 +225,6 @@ class InGamePacketHandler extends PacketHandler{
 
 		$delta = round($packet->getDelta()->getY(), 4);
 		$this->player->onGround = ($delta == -0.0784 /*onGround*/ || $delta == -0.005 /* on ground in water*/);
-		$this->player->delta = $packet->getDelta();
 		$this->processMovements($packet->getPosition(), fixHeadOffset: true);
 		$packetHandled = true;
 
