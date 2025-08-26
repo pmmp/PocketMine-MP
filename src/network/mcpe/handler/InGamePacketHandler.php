@@ -223,8 +223,15 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
+		/**
+		 * The client sends -0.0784 when on ground
+		 * Unfortunately, someone with malicious intent could falsify the data,
+		 * as it is not possible to detect whether the player is on the ground or not on the server side,
+		 * because this causes the server to lag.
+		 */
 		$delta = round($packet->getDelta()->getY(), 4);
-		$this->player->onGround = ($delta == -0.0784 /*onGround*/ || $delta == -0.005 /* on ground in water*/);
+		$this->player->onGround = $delta == -0.0784;
+
 		$this->processMovements($packet->getPosition(), fixHeadOffset: true);
 		$packetHandled = true;
 
