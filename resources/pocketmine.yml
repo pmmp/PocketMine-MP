@@ -4,7 +4,8 @@
 # New settings/defaults won't appear automatically in this file when upgrading.
 
 performance:
-  collisions: true # if its false disable pocketmine calculation
+  collisions: true # if its false disable pocketmine collisions calculation (impacts player grounding)
+  block-intersections: true # if its false disable pocketmine calculation
 
 settings:
   #Whether to send all strings translated to server locale or let the device handle them
