@@ -1355,7 +1355,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 			return $block;
 		});
-		$this->map(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE));
 		$this->map(Ids::CHISELED_QUARTZ_BLOCK, function(Reader $in) : Block{
 			return Blocks::CHISELED_QUARTZ()
 				->setAxis($in->readPillarAxis());
