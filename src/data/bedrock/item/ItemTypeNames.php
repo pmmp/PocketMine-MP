@@ -153,8 +153,19 @@ final class ItemTypeNames{
 	public const COOKED_RABBIT = "minecraft:cooked_rabbit";
 	public const COOKED_SALMON = "minecraft:cooked_salmon";
 	public const COOKIE = "minecraft:cookie";
+	public const COPPER_AXE = "minecraft:copper_axe";
+	public const COPPER_BOOTS = "minecraft:copper_boots";
+	public const COPPER_CHESTPLATE = "minecraft:copper_chestplate";
 	public const COPPER_DOOR = "minecraft:copper_door";
+	public const COPPER_GOLEM_SPAWN_EGG = "minecraft:copper_golem_spawn_egg";
+	public const COPPER_HELMET = "minecraft:copper_helmet";
+	public const COPPER_HOE = "minecraft:copper_hoe";
 	public const COPPER_INGOT = "minecraft:copper_ingot";
+	public const COPPER_LEGGINGS = "minecraft:copper_leggings";
+	public const COPPER_NUGGET = "minecraft:copper_nugget";
+	public const COPPER_PICKAXE = "minecraft:copper_pickaxe";
+	public const COPPER_SHOVEL = "minecraft:copper_shovel";
+	public const COPPER_SWORD = "minecraft:copper_sword";
 	public const CORAL = "minecraft:coral";
 	public const CORAL_BLOCK = "minecraft:coral_block";
 	public const CORAL_FAN = "minecraft:coral_fan";
@@ -372,6 +383,7 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_CREATOR = "minecraft:music_disc_creator";
 	public const MUSIC_DISC_CREATOR_MUSIC_BOX = "minecraft:music_disc_creator_music_box";
 	public const MUSIC_DISC_FAR = "minecraft:music_disc_far";
+	public const MUSIC_DISC_LAVA_CHICKEN = "minecraft:music_disc_lava_chicken";
 	public const MUSIC_DISC_MALL = "minecraft:music_disc_mall";
 	public const MUSIC_DISC_MELLOHI = "minecraft:music_disc_mellohi";
 	public const MUSIC_DISC_OTHERSIDE = "minecraft:music_disc_otherside";
@@ -380,6 +392,7 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_RELIC = "minecraft:music_disc_relic";
 	public const MUSIC_DISC_STAL = "minecraft:music_disc_stal";
 	public const MUSIC_DISC_STRAD = "minecraft:music_disc_strad";
+	public const MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
 	public const MUSIC_DISC_WAIT = "minecraft:music_disc_wait";
 	public const MUSIC_DISC_WARD = "minecraft:music_disc_ward";
 	public const MUTTON = "minecraft:mutton";

@@ -82,12 +82,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.33.0
+        uses: shivammathur/setup-php@2.35.3
         with:
           php-version: ${{ env.PHP_VERSION }}
 
@@ -165,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.16.0
+        uses: ncipollo/release-action@v1.18.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
@@ -188,4 +188,4 @@ jobs:
         if: github.event_name == 'pull_request_target'
         uses: thollander/actions-comment-pull-request@v3
         with:
-          message: "[Draft release ${{ steps.get-pm-version.outputs.PM_VERSION }}](${{ steps.create-draft.outputs.html_url }}) has been created for commit ${{ github.sha }}. Please review and publish it."
+          message: "${{ vars.DRAFT_RELEASE_NOTIFICATION_MENTION }} [Draft release ${{ steps.get-pm-version.outputs.PM_VERSION }}](${{ steps.create-draft.outputs.html_url }}) has been created for commit ${{ github.sha }}. Please review and publish it."

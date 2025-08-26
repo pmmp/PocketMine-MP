@@ -21,7 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\generator\executor;
+
+use pocketmine\world\generator\Generator;
 
 /**
  * Manages thread-local caches for generators and the things needed to support them

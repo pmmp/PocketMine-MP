@@ -1355,7 +1355,6 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 
 			return $block;
 		});
-		$this->map(Ids::CHISELED_COPPER, fn() => Helper::decodeCopper(Blocks::CHISELED_COPPER(), CopperOxidation::NONE));
 		$this->map(Ids::CHISELED_QUARTZ_BLOCK, function(Reader $in) : Block{
 			return Blocks::CHISELED_QUARTZ()
 				->setAxis($in->readPillarAxis());
@@ -1717,6 +1716,10 @@ final class BlockStateToObjectDeserializer implements BlockStateDeserializer{
 		$this->mapStairs(Ids::RESIN_BRICK_STAIRS, fn() => Blocks::RESIN_BRICK_STAIRS());
 		$this->map(Ids::RESIN_BRICK_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::RESIN_BRICK_WALL(), $in));
 		$this->map(Ids::RESIN_CLUMP, fn(Reader $in) => Blocks::RESIN_CLUMP()->setFaces($in->readFacingFlags()));
+		$this->map(Ids::RESPAWN_ANCHOR, function(Reader $in) : Block{
+			return Blocks::RESPAWN_ANCHOR()
+				->setCharges($in->readBoundedInt(StateNames::RESPAWN_ANCHOR_CHARGE, 0, 4));
+		});
 		$this->mapSlab(Ids::SANDSTONE_SLAB, Ids::SANDSTONE_DOUBLE_SLAB, fn() => Blocks::SANDSTONE_SLAB());
 		$this->mapStairs(Ids::SANDSTONE_STAIRS, fn() => Blocks::SANDSTONE_STAIRS());
 		$this->map(Ids::SANDSTONE_WALL, fn(Reader $in) => Helper::decodeWall(Blocks::SANDSTONE_WALL(), $in));

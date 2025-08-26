@@ -37,6 +37,7 @@ use function array_slice;
 use function explode;
 use function implode;
 use function mb_scrub;
+use function rtrim;
 use function sprintf;
 
 /**
@@ -117,7 +118,7 @@ class Sign extends Spawnable{
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
-			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
+			->setString(self::TAG_TEXT_BLOB, rtrim(implode("\n", $this->text->getLines()), "\n"))
 			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
 			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
 			->setByte(self::TAG_PERSIST_FORMATTING, 1)
@@ -162,7 +163,7 @@ class Sign extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
-			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
+			->setString(self::TAG_TEXT_BLOB, rtrim(implode("\n", $this->text->getLines()), "\n"))
 			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
 			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
 			->setByte(self::TAG_PERSIST_FORMATTING, 1) //TODO: not sure what this is used for

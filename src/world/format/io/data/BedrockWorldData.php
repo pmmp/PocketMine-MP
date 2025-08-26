@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\data;
 
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -50,15 +51,9 @@ use function time;
 
 class BedrockWorldData extends BaseNbtWorldData{
 
-	public const CURRENT_STORAGE_VERSION = 10;
-	public const CURRENT_STORAGE_NETWORK_VERSION = 800;
-	public const CURRENT_CLIENT_VERSION_TARGET = [
-		1, //major
-		21, //minor
-		80, //patch
-		3, //revision
-		0 //is beta
-	];
+	public const CURRENT_STORAGE_VERSION = WorldDataVersions::STORAGE;
+	public const CURRENT_STORAGE_NETWORK_VERSION = WorldDataVersions::NETWORK;
+	public const CURRENT_CLIENT_VERSION_TARGET = WorldDataVersions::LAST_OPENED_IN;
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;

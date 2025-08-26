@@ -1618,7 +1618,7 @@ class Server{
 		if(!is_dir($crashFolder)){
 			mkdir($crashFolder);
 		}
-		$crashDumpPath = Path::join($crashFolder, date("D_M_j-H.i.s-T_Y", (int) $dump->getData()->time) . ".log");
+		$crashDumpPath = Path::join($crashFolder, date("Y-m-d_H.i.s_T", (int) $dump->getData()->time) . ".log");
 
 		$fp = @fopen($crashDumpPath, "wb");
 		if(!is_resource($fp)){

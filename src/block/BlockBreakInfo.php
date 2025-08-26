@@ -73,7 +73,7 @@ class BlockBreakInfo{
 		return new self(0.0, $toolType, $toolHarvestLevel, 0.0);
 	}
 
-	public static function indestructible(float $blastResistance = 18000000.0) : self{
+	public static function indestructible(float $blastResistance = 18000003.75) : self{
 		return new self(-1.0, BlockToolType::NONE, 0, $blastResistance);
 	}
 
