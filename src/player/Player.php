@@ -1456,6 +1456,44 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->flying ? 0 : parent::calculateFallDamage($fallDistance);
 	}
 
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$collisions = Server::getInstance()->getConfigGroup()->getPropertyBool("performance.collisions", true);
+		if($collisions) {
+			parent::move($dx, $dy, $dz);
+			return; // Use the default entity collision handling
+		}
+
+		Timings::$entityMove->startTiming();
+
+		// Simplified movement handling without collision checks
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		Timings::$entityMoveCollision->startTiming();
+		$this->processMovement(new Vector3($dx, $dy, $dz));
+		Timings::$entityMoveCollision->stopTiming();
+
+		$frostWalkerLevel = $this->getFrostWalkerLevel();
+		if($frostWalkerLevel > 0 && (abs($this->location->x - $oldX) > self::MOTION_THRESHOLD || abs($this->location->z - $oldZ) > self::MOTION_THRESHOLD)){
+			$this->applyFrostWalker($frostWalkerLevel);
+		}
+
+		Timings::$entityMove->stopTiming();
+	}
+
+	private function processMovement(Vector3 $pos) : void{
+		$this->location = new Location(
+			$pos->x,
+			$pos->y,
+			$pos->z,
+			$this->location->world,
+			$this->location->yaw,
+			$this->location->pitch
+		);
+		$this->getWorld()->onEntityMoved($this);
+		$this->checkBlockIntersections();
+	}
+
 	public function jump() : void{
 		(new PlayerJumpEvent($this))->call();
 		parent::jump();

@@ -3,6 +3,9 @@
 # Some of these settings are safe, others can break your server if modified incorrectly
 # New settings/defaults won't appear automatically in this file when upgrading.
 
+performance:
+  collisions: true # if its false disable pocketmine calculation
+
 settings:
   #Whether to send all strings translated to server locale or let the device handle them
   force-language: false
