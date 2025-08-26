@@ -1490,6 +1490,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->location->yaw,
 			$this->location->pitch
 		);
+		$this->recalculateBoundingBox(); // Update bounding box to new position
 		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockIntersections();
 	}
