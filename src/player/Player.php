@@ -1326,7 +1326,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//the old and new positions (running down stairs necessitates this)
 			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
 
+			// Allows you to see the significant difference between collisions enabled or disabled.
+			Timings::$entityMoveCollision->startTiming();
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
+			Timings::$entityMoveCollision->stopTiming();
 		}
 	}
 
