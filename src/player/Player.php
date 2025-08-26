@@ -123,9 +123,11 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\player\chat\StandardChatFormatter;
 use pocketmine\Server;
+use pocketmine\ServerConfigGroup;
 use pocketmine\ServerProperties;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
@@ -311,12 +313,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $forms = [];
 
 	protected \Logger $logger;
+	protected Config $tweaks;
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
+
+		$this->tweaks = Server::getInstance()->getTweaks();
 
 		$this->server = $server;
 		$this->networkSession = $session;
@@ -352,6 +357,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED;
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
+	}
+
+	/**
+	 * @return SurvivalBlockBreakHandler|null
+	 */
+	public function getBlockBreakHandler() : ?SurvivalBlockBreakHandler{
+		return $this->blockBreakHandler;
 	}
 
 	protected function initHumanData(CompoundTag $nbt) : void{
@@ -873,13 +885,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION;
 			$this->activeChunkGenerationRequests[$index] = true;
 			unset($this->loadQueue[$index]);
-			$world->registerChunkLoader($this->chunkLoader, $X, $Z, true);
-			$world->registerChunkListener($this, $X, $Z);
+			$world->registerChunkLoader($this->chunkLoader, (int)$X, (int)$Z, true);
+			$world->registerChunkListener($this, (int)$X, (int)$Z);
 			if(isset($this->tickingChunks[$index])){
-				$world->registerTickingChunk($this->chunkTicker, $X, $Z);
+				$world->registerTickingChunk($this->chunkTicker, (int)$X, (int)$Z);
 			}
 
-			$world->requestChunkPopulation($X, $Z, $this->chunkLoader)->onCompletion(
+			$world->requestChunkPopulation((int)$X, (int)$Z, $this->chunkLoader)->onCompletion(
 				function() use ($X, $Z, $index, $world) : void{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
@@ -893,10 +905,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					unset($this->activeChunkGenerationRequests[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING;
 
-					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
+					$this->getNetworkSession()->startUsingChunk((int)$X, (int)$Z, function() use ($X, $Z, $index) : void{
 						$this->usedChunks[$index] = UsedChunkStatus::SENT;
 						if($this->spawnChunkLoadCount === -1){
-							$this->spawnEntitiesOnChunk($X, $Z);
+							$this->spawnEntitiesOnChunk((int)$X, (int)$Z);
 						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 							$this->spawnChunkLoadCount = -1;
 
@@ -904,7 +916,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 							$this->getNetworkSession()->notifyTerrainReady();
 						}
-						(new PlayerPostChunkSendEvent($this, $X, $Z))->call();
+						(new PlayerPostChunkSendEvent($this, (int)$X, (int)$Z))->call();
 					});
 				},
 				static function() : void{
@@ -1314,7 +1326,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//the old and new positions (running down stairs necessitates this)
 			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
 
+			// Allows you to see the significant difference between collisions enabled or disabled.
+			Timings::$entityMoveCollision->startTiming();
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
+			Timings::$entityMoveCollision->stopTiming();
 		}
 	}
 
@@ -1356,11 +1371,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	private function actuallyHandleMovement(Vector3 $newPos) : void{
-		$this->moveRateLimit--;
-		if($this->moveRateLimit < 0){
-			return;
-		}
-
 		$oldPos = $this->location;
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
@@ -1403,19 +1413,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Fires movement events and synchronizes player movement, every tick.
 	 */
 	protected function processMostRecentMovements() : void{
-		$now = microtime(true);
-		$multiplier = $this->lastMovementProcess !== null ? ($now - $this->lastMovementProcess) * 20 : 1;
-		$exceededRateLimit = $this->moveRateLimit < 0;
-		$this->moveRateLimit = min(self::MOVE_BACKLOG_SIZE, max(0, $this->moveRateLimit) + self::MOVES_PER_TICK * $multiplier);
-		$this->lastMovementProcess = $now;
-
 		$from = clone $this->lastLocation;
 		$to = clone $this->location;
 
 		$delta = $to->distanceSquared($from);
-		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
-
-		if($delta > 0.0001 || $deltaAngle > 1.0){
+		if($delta > 0.0001){
 			if(PlayerMoveEvent::hasHandlers()){
 				$ev = new PlayerMoveEvent($this, $from, $to);
 
@@ -1449,11 +1451,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 			}
 		}
-
-		if($exceededRateLimit){ //client and server positions will be out of sync if this happens
-			$this->logger->debug("Exceeded movement rate limit, forcing to last accepted position");
-			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
-		}
 	}
 
 	protected function revertMovement(Location $from) : void{
@@ -1463,6 +1460,61 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function calculateFallDamage(float $fallDistance) : float{
 		return $this->flying ? 0 : parent::calculateFallDamage($fallDistance);
+	}
+
+	protected function move(float $dx, float $dy, float $dz) : void{
+		$collisions = (bool)$this->tweaks->getNested("performance.collisions", true);
+		if($collisions) {
+			parent::move($dx, $dy, $dz);
+			return; // Use the default entity collision handling
+		}
+
+		Timings::$entityMove->startTiming();
+
+		// Simplified movement handling without collision checks
+		$oldX = $this->location->x;
+		$oldZ = $this->location->z;
+
+		Timings::$entityMoveCollision->startTiming();
+		$this->processMovement(new Vector3($dx, $dy, $dz));
+		Timings::$entityMoveCollision->stopTiming();
+
+		$frostWalkerLevel = $this->getFrostWalkerLevel();
+		if($frostWalkerLevel > 0 && (abs($this->location->x - $oldX) > self::MOTION_THRESHOLD || abs($this->location->z - $oldZ) > self::MOTION_THRESHOLD)){
+			$this->applyFrostWalker($frostWalkerLevel);
+		}
+
+		Timings::$entityMove->stopTiming();
+	}
+
+	private function processMovement(Vector3 $pos) : void{
+		$dx = $pos->x;
+		$dy = $pos->y;
+		$dz = $pos->z;
+
+		$this->boundingBox->offset($dx, $dy, $dz);
+		$this->location = new Location(
+			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+			$this->boundingBox->minY - $this->ySize,
+			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2,
+			$this->location->world,
+			$this->location->yaw,
+			$this->location->pitch
+		);
+
+		$this->getWorld()->onEntityMoved($this);
+
+		$blockIntersections = (bool)$this->tweaks->getNested("performance.block-intersections", true);
+		if($blockIntersections) {
+			$this->checkBlockIntersections();
+		}
+
+		$postFallVerticalVelocity = $this->updateFallState($dy, $this->onGround);
+		$this->motion = $this->motion->withComponents(
+			null,
+			$postFallVerticalVelocity ?? null,
+			null
+		);
 	}
 
 	public function jump() : void{
@@ -1529,14 +1581,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->fireTicks = 1;
 			}
 
-			if(!$this->isSpectator() && $this->isAlive()){
+			$entityCollisions = (bool)$this->tweaks->getNested("performance.entity-collisions", true);
+			if(!$this->isSpectator() && $this->isAlive() && $entityCollisions){
 				Timings::$playerCheckNearEntities->startTiming();
 				$this->checkNearEntities();
 				Timings::$playerCheckNearEntities->stopTiming();
 			}
 
-			if($this->blockBreakHandler !== null && !$this->blockBreakHandler->update()){
-				$this->blockBreakHandler = null;
+			if($this->blockBreakHandler !== null){
+				$this->blockBreakHandler->update();
+				if($this->blockBreakHandler->getBreakProgress() >= 1) {
+					// If the block break progress is 100% we break the block
+					// This is a hack for custom block
+					$this->breakBlock($this->blockBreakHandler->getBlockPos());
+					$this->blockBreakHandler = null;
+				}
 			}
 		}
 
@@ -2071,6 +2130,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 		$this->setSprinting($sprint);
+
+		if(!$sprint) {
+			$this->resetSprintState();
+		}
+
 		return true;
 	}
 

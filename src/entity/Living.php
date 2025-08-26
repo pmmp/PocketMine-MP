@@ -39,6 +39,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\event\entity\EntityFrostWalkerEvent;
+use pocketmine\event\player\PlayerSprintKnockBackEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -60,6 +61,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
@@ -129,6 +131,7 @@ abstract class Living extends Entity{
 	protected Attribute $moveSpeedAttr;
 
 	protected bool $sprinting = false;
+	protected bool $canSprintKB = false;
 	protected bool $sneaking = false;
 	protected bool $gliding = false;
 	protected bool $swimming = false;
@@ -264,6 +267,19 @@ abstract class Living extends Entity{
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
+	}
+
+	public function consumeSprintHit() : void {
+		// Disable the sprint knockBack bonus
+		// to prevent it from being applied multiple times in a row
+		$this->canSprintKB = false;
+	}
+
+	public function resetSprintState() : void {
+		// Reset the flag to allow
+		// the player to receive the sprint knockBack bonus again
+		// after stopping and restarting sprinting (wtap)
+		$this->canSprintKB = true;
 	}
 
 	public function isGliding() : bool{
@@ -446,9 +462,19 @@ abstract class Living extends Entity{
 			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
 		}
-		if($source->canBeReducedByArmor()){
-			//MCPE uses the same system as PC did pre-1.9
-			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
+		if ($source->canBeReducedByArmor()) {
+			// In Minecraft Bedrock Edition, armor reduces incoming damage using a diminishing returns formula:
+			//   reduction = ArmorPoints / (ArmorPoints + 5)
+			// This ensures that each additional armor point provides less protection than the previous one.
+			// The result is capped at 80% maximum damage reduction (20 armor points = full diamond).
+			// Example: 10 points → ~66.6% reduction, 5 points → 50% reduction.
+			// This modifier is applied before other damage reductions such as enchantments or effects.
+
+			$armorPoints = $this->getArmorPoints();
+			$source->setModifier(
+				-$source->getFinalDamage() * min($armorPoints / ($armorPoints + 5), 0.80),
+				EntityDamageEvent::MODIFIER_ARMOR
+			);
 		}
 
 		$cause = $source->getCause();
@@ -588,6 +614,18 @@ abstract class Living extends Entity{
 				if($e !== null){
 					$deltaX = $this->location->x - $e->location->x;
 					$deltaZ = $this->location->z - $e->location->z;
+
+					if($e instanceof Player && $e->canSprintKB) {
+						$ev = new PlayerSprintKnockBackEvent($e, $this, 0.05, 0.01);
+						$ev->call();
+
+						if(!$ev->isCancelled()) {
+							$source->setKnockBack($source->getKnockBack() + $ev->getKnockBack());
+							$source->setVerticalKnockBackLimit($source->getVerticalKnockBackLimit() + $ev->getVerticalKnockBackLimit());
+							$e->consumeSprintHit();
+						}
+					}
+
 					$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), $source->getVerticalKnockBackLimit());
 				}
 			}

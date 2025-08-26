@@ -105,6 +105,7 @@ use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\Position;
 use function array_push;
 use function count;
 use function fmod;
@@ -116,7 +117,6 @@ use function is_nan;
 use function json_decode;
 use function max;
 use function mb_strlen;
-use function microtime;
 use function sprintf;
 use function str_starts_with;
 use function strlen;
@@ -127,9 +127,6 @@ use const JSON_THROW_ON_ERROR;
  */
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
-
-	protected float $lastRightClickTime = 0.0;
-	protected ?UseItemTransactionData $lastRightClickData = null;
 
 	protected ?Vector3 $lastPlayerAuthInputPosition = null;
 	protected ?float $lastPlayerAuthInputYaw = null;
@@ -196,22 +193,6 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->setRotation($yaw, $pitch);
 		}
 
-		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
-		$newPos = $rawPos->subtract(0, 1.62, 0)->round(4);
-
-		if($this->forceMoveSync && $hasMoved){
-			$curPos = $this->player->getLocation();
-
-			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
-				//Still getting movements from before teleport, ignore them
-				return true;
-			}
-
-			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-			$this->forceMoveSync = false;
-		}
-
 		$inputFlags = $packet->getInputFlags();
 		if($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)){
 			$this->lastPlayerAuthInputFlags = $inputFlags;
@@ -242,12 +223,16 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
-		if(!$this->forceMoveSync && $hasMoved){
-			$this->lastPlayerAuthInputPosition = $rawPos;
-			//TODO: this packet has WAYYYYY more useful information that we're not using
-			$this->player->handleMovement($newPos);
-		}
+		/**
+		 * The client sends -0.0784 when on ground
+		 * Unfortunately, someone with malicious intent could falsify the data,
+		 * as it is not possible to detect whether the player is on the ground or not on the server side,
+		 * because this causes the server to lag.
+		 */
+		$delta = round($packet->getDelta()->getY(), 4);
+		$this->player->onGround = $delta == -0.0784;
 
+		$this->processMovements($packet->getPosition(), fixHeadOffset: true);
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
@@ -298,6 +283,41 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return $packetHandled;
+	}
+
+	/**
+	 * @param Position $position
+	 * @param bool     $fixHeadOffset $
+	 *
+	 * @return void
+	 */
+	private function processMovements(Vector3 $position, bool $fixHeadOffset) : void{
+		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($position);
+
+		$newPos = $position;
+		if($fixHeadOffset) {
+			$headOffset = $this->player->isSneaking() ? 1.54 : 1.62; //TODO: this is a hack, the client doesn't send the head offset, so we assume it's always 1.62 unless sneaking
+			$newPos = $position->subtract(0, $headOffset, 0); //the client sends the head position, but we need the feet position for movement handling
+		}
+
+		if($this->forceMoveSync && $hasMoved){
+			$curPos = $this->player->getLocation();
+
+			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				//Still getting movements from before teleport, ignore them
+				return;
+			}
+
+			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			$this->forceMoveSync = false;
+		}
+
+		if(!$this->forceMoveSync && $hasMoved){
+			$this->lastPlayerAuthInputPosition = $position;
+			//TODO: this packet has WAYYYYY more useful information that we're not using
+			$this->player->handleMovement($newPos);
+		}
 	}
 
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
@@ -474,30 +494,14 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-
+		$this->processMovements($data->getPlayerPosition(), fixHeadOffset: false);
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
-				//TODO: start hack for client spam bug
-				$clickPos = $data->getClickPosition();
-				$spamBug = ($this->lastRightClickData !== null &&
-					microtime(true) - $this->lastRightClickTime < 0.1 && //100ms
-					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 &&
-					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) &&
-					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
-				);
-				//get rid of continued spam if the player clicks and holds right-click
-				$this->lastRightClickData = $data;
-				$this->lastRightClickTime = microtime(true);
-				if($spamBug){
-					return true;
-				}
-				//TODO: end hack for client spam bug
-
 				self::validateFacing($data->getFace());
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
+				$this->player->interactBlock($vBlockPos, $data->getFace(), $data->getClickPosition());
 				//always sync this in case plugins caused a different result than the client expected
 				//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
 				//more information up the stack. For now I think this is good enough.
@@ -555,7 +559,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
-
+		$this->processMovements($data->getPlayerPosition(), fixHeadOffset: false);
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
@@ -571,6 +575,7 @@ class InGamePacketHandler extends PacketHandler{
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
+		$this->processMovements($data->getHeadPosition(), fixHeadOffset: true);
 		if($data->getActionType() === ReleaseItemTransactionData::ACTION_RELEASE){
 			$this->player->releaseHeldItem();
 			return true;
@@ -679,6 +684,7 @@ class InGamePacketHandler extends PacketHandler{
 	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
 		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 
+		$this->session->getLogger()->debug("PlayerAction $action on $pos (face: $face)");
 		switch($action){
 			case PlayerAction::START_BREAK:
 			case PlayerAction::CONTINUE_DESTROY_BLOCK: //destroy the next block while holding down left click
@@ -689,13 +695,13 @@ class InGamePacketHandler extends PacketHandler{
 					//this seems like a bug in the client and would cause spurious left-click events if we allowed it to
 					//be delivered to the player
 					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
+					$this->syncBlocksNearby($pos, $face);
 					break;
 				}
 				if(!$this->player->attackBlock($pos, $face)){
 					$this->syncBlocksNearby($pos, $face);
 				}
 				$this->lastBlockAttacked = $blockPosition;
-
 				break;
 
 			case PlayerAction::ABORT_BREAK:
@@ -717,8 +723,59 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
-				//TODO: do we need to handle this?
+				if(!$this->player->isCreative()) {
+					$this->player->getNetworkSession()->getLogger()->debug("Ignoring PlayerAction $action on $pos because player isnt in creative");
+					$this->syncBlocksNearby($pos, $face);
+					break;
+				}
+
+				if(!$this->player->breakBlock($pos)){
+					$this->syncBlocksNearby($pos, $face);
+				}
+				break;
 			case PlayerAction::PREDICT_DESTROY_BLOCK:
+				if($this->player->isCreative()) {
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because player is in creative mode");
+					break;
+				}
+
+				if($this->lastBlockAttacked === null){
+					//the client will send this when it starts to break a block, but also when it continues to break the
+					//currently targeted block, so we need to ignore it if we don't have a block that we're currently
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we have no block being broken");
+					$this->syncBlocksNearby($pos, $face);
+					break;
+				}
+
+				if($pos->distanceSquared($this->player->getLocation()) > 10000){
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because it is too far away from the player");
+					break;
+				}
+
+				$target = $this->player->getWorld()->getBlock($pos);
+				$breakHandler = $this->player->getBlockBreakHandler();
+				if($breakHandler === null && !$target->getBreakInfo()->breaksInstantly()){
+					//the client will send this when it starts to break a block, but also when it continues to break the
+					//currently targeted block, so we need to ignore it if the player has no BlockBreakHandler
+					//this is a hack to prevent the client from spamming this packet when it starts to break a block
+					//this is also sent when the player is not in creative mode, so we need to check that too
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because player has no BlockBreakHandler");
+					$this->syncBlocksNearby($pos, $face);
+					break;
+				} else if($breakHandler !== null && !$target->getBreakInfo()->breaksInstantly()) {
+					$breakHandler->update(); // 1 tick compensation for the client sending this packet before the block break progress is updated
+
+					$this->session->getLogger()->debug("PlayerAction $action on $pos with break progress " . $breakHandler->getBreakProgress() . " (face: $face)");
+					if($breakHandler->getBreakProgress() < 1) {
+						//the client will send this when it starts to break a block, but also when it continues to break the
+						//currently targeted block, so we need to ignore it if the break progress is less than 1
+						//this is a hack to prevent the client from spamming this packet when it starts to break a block
+						$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because break progress is less than 1");
+						$this->syncBlocksNearby($pos, $face);
+						break;
+					}
+				}
+
 				if(!$this->player->breakBlock($pos)){
 					$this->syncBlocksNearby($pos, $face);
 				}

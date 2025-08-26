@@ -129,7 +129,7 @@ abstract class Entity{
 	private bool $checkBlockIntersectionsNextTick = true;
 
 	public AxisAlignedBB $boundingBox;
-	public bool $onGround = false;
+	public bool $onGround = true;
 
 	public EntitySizeInfo $size;
 
