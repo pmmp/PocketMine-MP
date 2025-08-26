@@ -1,0 +1,10 @@
+# This file contains various performance tweaks for the server.
+# Adjust these settings to optimize server performance based on your needs.
+# Note: Disabling certain features may affect gameplay experience.
+# Make sure to test changes in a safe environment before applying them to a live server.
+# For more information, @zwuiix on Discord.
+
+performance:
+  collisions: false # if its false disable pocketmine collisions calculation (impacts player grounding)
+  block-intersections: false # if its false disable pocketmine calculation of block intersections
+  entity-collisions: false # if its false disable pocketmine entity collisions calculation

@@ -294,6 +294,7 @@ class Server{
 	private QueryInfo $queryInfo;
 
 	private ServerConfigGroup $configGroup;
+	private Config $tweaks;
 
 	/** @var Player[] */
 	private array $playerList = [];
@@ -664,6 +665,13 @@ class Server{
 		return $this->getPlayerByRawUUID($uuid->getBytes());
 	}
 
+	/**
+	 * @return Config
+	 */
+	public function getTweaks() : Config{
+		return $this->tweaks;
+	}
+
 	public function getConfigGroup() : ServerConfigGroup{
 		return $this->configGroup;
 	}
@@ -806,6 +814,14 @@ class Server{
 
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
+
+			$this->logger->info("Loading tweaks configuration");
+			$tweaksYmlPath = Path::join($this->dataPath, "tweaks.yml");
+			if(!file_exists($tweaksYmlPath)){
+				$content = Filesystem::fileGetContents(Path::join(\pocketmine\RESOURCE_PATH, "tweaks.yml"));
+				@file_put_contents($tweaksYmlPath, $content);
+			}
+			$this->tweaks = new Config($tweaksYmlPath, Config::YAML, []);
 
 			$this->logger->info("Loading server configuration");
 			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
