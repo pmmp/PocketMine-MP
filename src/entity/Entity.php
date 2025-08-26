@@ -130,6 +130,7 @@ abstract class Entity{
 
 	public AxisAlignedBB $boundingBox;
 	public bool $onGround = true;
+	public Vector3 $delta;
 
 	public EntitySizeInfo $size;
 

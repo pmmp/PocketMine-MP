@@ -127,6 +127,7 @@ use pocketmine\ServerConfigGroup;
 use pocketmine\ServerProperties;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
@@ -312,7 +313,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected array $forms = [];
 
 	protected \Logger $logger;
-	protected ServerConfigGroup $configGroup;
+	protected Config $tweaks;
 
 	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
@@ -320,7 +321,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$username = TextFormat::clean($playerInfo->getUsername());
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
 
-		$this->configGroup = Server::getInstance()->getConfigGroup();
+		$this->tweaks = Server::getInstance()->getTweaks();
 
 		$this->server = $server;
 		$this->networkSession = $session;
@@ -1413,9 +1414,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$to = clone $this->location;
 
 		$delta = $to->distanceSquared($from);
-		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
-
-		if($delta > 0.0001 || $deltaAngle > 1.0){
+		if($delta > 0.0001){
 			if(PlayerMoveEvent::hasHandlers()){
 				$ev = new PlayerMoveEvent($this, $from, $to);
 
@@ -1461,7 +1460,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function move(float $dx, float $dy, float $dz) : void{
-		$collisions = $this->configGroup->getPropertyBool("performance.collisions", true);
+		$collisions = (bool)$this->tweaks->getNested("performance.collisions", true);
 		if($collisions) {
 			parent::move($dx, $dy, $dz);
 			return; // Use the default entity collision handling
@@ -1502,7 +1501,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->getWorld()->onEntityMoved($this);
 
-		$blockIntersections = $this->configGroup->getPropertyBool("performance.block-intersections", true);
+		$blockIntersections = (bool)$this->tweaks->getNested("performance.block-intersections", true);
 		if($blockIntersections) {
 			$this->checkBlockIntersections();
 		}
@@ -1572,7 +1571,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->fireTicks = 1;
 			}
 
-			if(!$this->isSpectator() && $this->isAlive()){
+			$entityCollisions = (bool)$this->tweaks->getNested("performance.entity-collisions", true);
+			if(!$this->isSpectator() && $this->isAlive() && $entityCollisions){
 				Timings::$playerCheckNearEntities->startTiming();
 				$this->checkNearEntities();
 				Timings::$playerCheckNearEntities->stopTiming();
@@ -2031,7 +2031,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
-		if(!$this->isSprinting() && !$this->isFlying() && $this->fallDistance > 0 && !$this->effectManager->has(VanillaEffects::BLINDNESS()) && !$this->isUnderwater()){
+		if(!$this->isSprinting() && !$this->isFlying() && !$this->onGround && $this->delta->getY() < 0 && !$this->effectManager->has(VanillaEffects::BLINDNESS()) && !$this->isUnderwater()){
 			$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 		}
 
