@@ -34,12 +34,14 @@ class EffectInstance{
 	private bool $visible;
 	private bool $ambient;
 	private Color $color;
+	private bool $infinite;
 
 	/**
 	 * @param int|null $duration Passing null will use the effect type's default duration
 	 */
-	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
+	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, bool $infinite = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;
+		$this->infinite = $infinite;
 		$this->setDuration($duration ?? $effectType->getDefaultDuration());
 		$this->setAmplifier($amplifier);
 		$this->visible = $visible;
@@ -66,6 +68,10 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setDuration(int $duration) : EffectInstance{
+		if($this->infinite){
+			$this->duration = -1;
+			return $this;
+		}
 		if($duration < 0 || $duration > Limits::INT32_MAX){
 			throw new \InvalidArgumentException("Effect duration must be in range 0 - " . Limits::INT32_MAX . ", got $duration");
 		}
@@ -89,7 +95,7 @@ class EffectInstance{
 	 * Returns whether the duration has run out.
 	 */
 	public function hasExpired() : bool{
-		return $this->duration <= 0;
+		return $this->duration <= 0 && !$this->infinite;
 	}
 
 	public function getAmplifier() : int{
@@ -174,4 +180,20 @@ class EffectInstance{
 
 		return $this;
 	}
+
+	/**
+	 * Returns whether this effect is infinite.
+	 */
+	public function isInfinite() : bool{
+		return $this->infinite;
+	}
+
+	/**
+	 * Sets the effect to infinite.
+	 */
+	public function setInfinite(bool $infinite = true) : EffectInstance{
+		$this->infinite = $infinite;
+
+		return $this;
+	}	
 }
