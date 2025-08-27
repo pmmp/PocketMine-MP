@@ -1391,6 +1391,7 @@ final class VanillaBlocks{
 	private static function registerWoodenBlocks() : void{
 		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
 		$signBreakInfo = new Info(BreakInfo::axe(1.0));
+		$hangingSignBreakInfo = new Info(BreakInfo::axe(1.0), [Tags::HANGING_SIGN]);
 		$logBreakInfo = new Info(BreakInfo::axe(2.0));
 		$woodenDoorBreakInfo = new Info(BreakInfo::axe(3.0, null, 15.0));
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
@@ -1444,9 +1445,9 @@ final class VanillaBlocks{
 				WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
 				WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
 			};
-			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . "Center Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
-			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . "Edges Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
-			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $signBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 		}
 	}
 

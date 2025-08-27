@@ -2298,22 +2298,15 @@ class World implements ChunkManager{
 		if($item->isNull() || !$item->canBePlaced()){
 			return false;
 		}
-		$hand = $item->getPlacementBlock($blockReplace, $blockClicked, $face, $clickVector);
-		$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
 
-		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
-			$blockReplace = $blockClicked;
-			//TODO: while this mimics the vanilla behaviour with replaceable blocks, we should really pass some other
-			//value like NULL and let place() deal with it. This will look like a bug to anyone who doesn't know about
-			//the vanilla behaviour.
-			$face = Facing::UP;
-			$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
-		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
-			return false;
-		}
-
-		$tx = new BlockTransaction($this);
-		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+		//TODO: while passing Facing::UP mimics the vanilla behaviour with replaceable blocks, we should really pass
+		//some other value like NULL and let place() deal with it. This will look like a bug to anyone who doesn't know
+		//about the vanilla behaviour.
+		$tx =
+			$item->getPlacementTransaction($blockClicked, $blockClicked, Facing::UP, $clickVector, $player) ??
+			$item->getPlacementTransaction($blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($tx === null){
+			//no placement options available
 			return false;
 		}
 
@@ -2357,6 +2350,7 @@ class World implements ChunkManager{
 		if(!$tx->apply()){
 			return false;
 		}
+		$first = true;
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
 			$tile = $this->getTileAt($x, $y, $z);
 			if($tile !== null){
@@ -2364,11 +2358,12 @@ class World implements ChunkManager{
 				$tile->copyDataFromItem($item);
 			}
 
-			$this->getBlockAt($x, $y, $z)->onPostPlace();
-		}
-
-		if($playSound){
-			$this->addSound($hand->getPosition(), new BlockPlaceSound($hand));
+			$placed = $this->getBlockAt($x, $y, $z);
+			$placed->onPostPlace();
+			if($first && $playSound){
+				$this->addSound($placed->getPosition(), new BlockPlaceSound($placed));
+			}
+			$first = false;
 		}
 
 		$item->pop();

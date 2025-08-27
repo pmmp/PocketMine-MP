@@ -61,7 +61,12 @@ abstract class BaseBanner extends Transparent implements Colored{
 		return $this;
 	}
 
-	abstract protected function getOminousVersion() : Block;
+	/**
+	 * TODO: make this abstract in PM6 (BC break)
+	 */
+	protected function getOminousVersion() : Block{
+		return VanillaBlocks::AIR();
+	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();

@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\SupportType;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
 final class HangingSign extends Item{
 
@@ -40,14 +41,15 @@ final class HangingSign extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getPlacementBlock(Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : Block{
-		//we don't verify valid placement conditions here, only decide which block to return
-		$result = $face === Facing::DOWN ?
-			$blockReplace->getSide(Facing::UP)->getSupportType(Facing::DOWN) === SupportType::CENTER ?
-				$this->centerPointCeilingVariant :
-				$this->edgePointCeilingVariant
-			: $this->wallVariant;
-		return clone $result;
+	public function getPlacementTransaction(Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : ?BlockTransaction{
+		if($face !== Facing::DOWN){
+			return $this->tryPlacementTransaction(clone $this->wallVariant, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		//ceiling edges sign has stricter placement conditions than ceiling center sign, so try that first
+		$ceilingEdgeTx = $player === null || !$player->isSneaking() ?
+			$this->tryPlacementTransaction(clone $this->edgePointCeilingVariant, $blockReplace, $blockClicked, $face, $clickVector, $player) :
+			null;
+		return $ceilingEdgeTx ?? $this->tryPlacementTransaction(clone $this->centerPointCeilingVariant, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{

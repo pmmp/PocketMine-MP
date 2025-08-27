@@ -111,27 +111,10 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		return SupportType::NONE;
 	}
 
-	/**
-	 * @deprecated
-	 */
 	abstract protected function getSupportingFace() : int;
 
-	/**
-	 * @return int[]
-	 */
-	protected function getSupportingFaceOptions() : array{
-		return [$this->getSupportingFace()];
-	}
-
 	public function onNearbyBlockChange() : void{
-		$foundSupport = false;
-		foreach($this->getSupportingFaceOptions() as $face){
-			if($this->getSide($face)->getTypeId() !== BlockTypeIds::AIR){
-				$foundSupport = true;
-				break;
-			}
-		}
-		if(!$foundSupport){
+		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
