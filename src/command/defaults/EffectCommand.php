@@ -28,6 +28,11 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\StringToEffectParser;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -46,6 +51,33 @@ class EffectCommand extends VanillaCommand{
 			DefaultPermissionNames::COMMAND_EFFECT_SELF,
 			DefaultPermissionNames::COMMAND_EFFECT_OTHER
 		]);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 * @return null|CommandOverload[]
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		$effectEnum = new CommandEnum('Effect', StringToEffectParser::getInstance()->getKnownAliases(), false);
+		$boolean = new CommandEnum('Boolean', ["true", "false"], false);
+
+		$clear = new CommandEnum('clear', ["clear"], false);
+
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::enum("Effect", $effectEnum, 0, false),
+				CommandParameter::standard("duration", AvailableCommandsPacket::ARG_TYPE_INT, 0, true),
+				CommandParameter::standard("amplifier", AvailableCommandsPacket::ARG_TYPE_INT, 0, true),
+				CommandParameter::enum("hideParticles", $boolean, 0, true),
+			]),
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::enum("clear", $clear, 0, false)
+			]),
+		];
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

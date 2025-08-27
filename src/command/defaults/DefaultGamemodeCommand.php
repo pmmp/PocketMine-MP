@@ -26,6 +26,11 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use pocketmine\ServerProperties;
@@ -40,6 +45,28 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_defaultgamemode_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 * @return null|CommandOverload[]
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		$gamemodeOptions = array_keys(GameMode::getAll());
+		$gamemodeOptions = array_merge($gamemodeOptions, array_map(fn(string $gameModeString) => $gameModeString[0], $gamemodeOptions));
+		$gamemodeOptions = array_map(fn(string $gameModeString) => mb_strtolower($gameModeString), $gamemodeOptions);
+		$gamemodeEnum = new CommandEnum('GameMode', $gamemodeOptions, false);
+
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::enum("Gamemode", $gamemodeEnum, 0, false),
+			]),
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("Gamemode", AvailableCommandsPacket::ARG_TYPE_INT, 0, false),
+			])
+		];
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

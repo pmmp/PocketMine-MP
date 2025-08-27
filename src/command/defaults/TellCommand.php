@@ -27,6 +27,11 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -44,6 +49,21 @@ class TellCommand extends VanillaCommand{
 			["w", "msg"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELL);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 * @return null|CommandOverload[]
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::standard("message", AvailableCommandsPacket::ARG_TYPE_MESSAGE, 0, false),
+			]),
+		];
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

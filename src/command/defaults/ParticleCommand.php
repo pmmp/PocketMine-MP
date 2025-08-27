@@ -219,11 +219,7 @@ class ParticleCommand extends VanillaCommand{
 				break;
 			case "blockdust":
 				if($data !== null){
-					//to preserve the old unlimited explode behaviour, allow this to split into at most 5 parts
-					//this allows the 4th argument to be processed normally if given without forcing it to also consume
-					//any unexpected parts
-					//we probably ought to error in this case, but this will do for now
-					$d = explode("_", $data, limit: 5);
+					$d = explode("_", $data);
 					if(count($d) >= 3){
 						return new DustParticle(new Color(
 							((int) $d[0]) & 0xff,

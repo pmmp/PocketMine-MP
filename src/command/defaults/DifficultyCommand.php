@@ -27,9 +27,15 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\ServerProperties;
 use pocketmine\world\World;
+use ReflectionClass;
 use function count;
 
 class DifficultyCommand extends VanillaCommand{
@@ -41,6 +47,30 @@ class DifficultyCommand extends VanillaCommand{
 			KnownTranslationFactory::commands_difficulty_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 * @return null|CommandOverload[]
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		$worldConstants = array_keys((new ReflectionClass(World::class))->getConstants());
+		$difficultyOptions = array_filter($worldConstants, fn(string $constant) => str_starts_with($constant, 'DIFFICULTY_'));
+		$difficultyOptions = array_map(fn(string $difficultyString) => substr($difficultyString, strlen('DIFFICULTY_')), $difficultyOptions);
+		$difficultyOptions = array_merge($difficultyOptions, array_map(fn(string $difficultyString) => $difficultyString[0], $difficultyOptions));
+		$difficultyOptions = array_map(fn(string $difficultyString) => mb_strtolower($difficultyString), $difficultyOptions);
+		$difficultyEnum = new CommandEnum('Difficulty', $difficultyOptions, false);
+
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::enum("Difficulty", $difficultyEnum, 0, false),
+			]),
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("Difficulty", AvailableCommandsPacket::ARG_TYPE_INT, 0, false),
+			])
+		];
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

@@ -1150,6 +1150,9 @@ class NetworkSession{
 
 	public function syncAvailableCommands() : void{
 		$commandData = [];
+		$softEnums = [];
+		$hardcodedEnums = [];
+		$enumConstraints = [];
 		foreach($this->server->getCommandMap()->getCommands() as $command){
 			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
@@ -1173,16 +1176,14 @@ class NetworkSession{
 				0,
 				0,
 				$aliasObj,
-				[
-					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
-				],
+				$command->buildOverloads($hardcodedEnums, $softEnums, $enumConstraints),
 				chainedSubCommandData: []
 			);
 
 			$commandData[$command->getLabel()] = $data;
 		}
 
-		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
+		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, hardcodedEnums: $hardcodedEnums, softEnums: $softEnums, enumConstraints: $enumConstraints));
 	}
 
 	/**

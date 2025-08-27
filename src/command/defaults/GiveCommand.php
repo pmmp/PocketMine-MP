@@ -33,6 +33,11 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
@@ -51,6 +56,25 @@ class GiveCommand extends VanillaCommand{
 			DefaultPermissionNames::COMMAND_GIVE_SELF,
 			DefaultPermissionNames::COMMAND_GIVE_OTHER
 		]);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 *
+	 * @return array
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		$itemName = new CommandEnum('Item', [], false);
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::enum("itemName", $itemName, 0, false),
+				CommandParameter::standard("amount", AvailableCommandsPacket::ARG_TYPE_INT, 0, true),
+				CommandParameter::standard("data", AvailableCommandsPacket::ARG_TYPE_JSON, 0, true),
+			]),
+		];
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

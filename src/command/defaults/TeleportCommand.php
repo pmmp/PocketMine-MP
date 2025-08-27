@@ -28,6 +28,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
+use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -50,6 +55,28 @@ class TeleportCommand extends VanillaCommand{
 			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
 			DefaultPermissionNames::COMMAND_TELEPORT_OTHER
 		]);
+	}
+
+	/**
+	 * @param CommandEnum[]           $hardcodedEnums
+	 * @param CommandEnum[]           $softEnums
+	 * @param CommandEnumConstraint[] $enumConstraints
+	 * @return null|CommandOverload[]
+	 */
+	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
+		return [
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::standard("position", AvailableCommandsPacket::ARG_TYPE_INT_POSITION, 0, true),
+				CommandParameter::standard("yaw", AvailableCommandsPacket::ARG_TYPE_FLOAT, 0, true),
+				CommandParameter::standard("pitch", AvailableCommandsPacket::ARG_TYPE_FLOAT, 0, true),
+
+			]),
+			new CommandOverload(chaining: false, parameters: [
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::standard("destination", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+			]),
+		];
 	}
 
 	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
