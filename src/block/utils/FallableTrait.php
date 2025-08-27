@@ -28,6 +28,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
+use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -42,6 +43,12 @@ trait FallableTrait{
 	abstract protected function getPosition() : Position;
 
 	public function onNearbyBlockChange() : void{
+		$tweaks = Server::getInstance()->getTweaks();
+		$fallingBlocks = $tweaks->getNested("performance.falling-blocks", true);
+		if(!$fallingBlocks){
+			return; // Falling blocks are disabled
+		}
+
 		$pos = $this->getPosition();
 		$world = $pos->getWorld();
 		$down = $world->getBlock($pos->getSide(Facing::DOWN));
