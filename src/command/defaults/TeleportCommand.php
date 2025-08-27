@@ -61,7 +61,7 @@ class TeleportCommand extends VanillaCommand{
 	 * @param CommandEnum[]           $hardcodedEnums
 	 * @param CommandEnum[]           $softEnums
 	 * @param CommandEnumConstraint[] $enumConstraints
-	 * @return null|CommandOverload[]
+	 * @return CommandOverload[]
 	 */
 	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
 		return [

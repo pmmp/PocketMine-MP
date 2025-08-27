@@ -62,8 +62,7 @@ class GiveCommand extends VanillaCommand{
 	 * @param CommandEnum[]           $hardcodedEnums
 	 * @param CommandEnum[]           $softEnums
 	 * @param CommandEnumConstraint[] $enumConstraints
-	 *
-	 * @return array
+	 * @return CommandOverload[]
 	 */
 	public function buildOverloads(array &$hardcodedEnums, array &$softEnums, array &$enumConstraints) : array{
 		$itemName = new CommandEnum('Item', [], false);
