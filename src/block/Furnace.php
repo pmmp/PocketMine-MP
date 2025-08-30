@@ -26,15 +26,18 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\FurnaceInventoryWindow;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class Furnace extends Opaque{
+class Furnace extends Opaque implements Lightable, HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
 	use LightableTrait;
 
@@ -46,7 +49,7 @@ class Furnace extends Opaque{
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->lit);
 	}
 
@@ -58,7 +61,7 @@ class Furnace extends Opaque{
 		return $this->lit ? 13 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace && $furnace->canOpenWith($item->getCustomName())){

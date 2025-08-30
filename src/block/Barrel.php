@@ -27,6 +27,7 @@ use pocketmine\block\inventory\window\BlockInventoryWindow;
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -40,14 +41,14 @@ use pocketmine\world\sound\BarrelOpenSound;
 use pocketmine\world\sound\Sound;
 use function abs;
 
-class Barrel extends Opaque implements AnimatedContainer{
+class Barrel extends Opaque implements AnimatedContainer, AnyFacing{
 	use AnimatedContainerTrait;
 	use AnyFacingTrait;
 
 	protected bool $open = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->facing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->open);
 	}
 
@@ -61,7 +62,7 @@ class Barrel extends Opaque implements AnimatedContainer{
 		return $this;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			if(abs($player->getPosition()->x - $this->position->x) < 2 && abs($player->getPosition()->z - $this->position->z) < 2){
 				$y = $player->getEyePos()->y;
@@ -81,7 +82,7 @@ class Barrel extends Opaque implements AnimatedContainer{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$barrel = $this->position->getWorld()->getTile($this->position);
 			if($barrel instanceof TileBarrel){

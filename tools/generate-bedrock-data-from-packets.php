@@ -54,7 +54,6 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
-use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
@@ -76,6 +75,8 @@ use pocketmine\network\PacketHandlingException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\world\biome\model\BiomeDefinitionEntryData;
+use pocketmine\world\biome\model\ColorData;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Ramsey\Uuid\Exception\InvalidArgumentException;
 use Symfony\Component\Filesystem\Path;
@@ -100,6 +101,7 @@ use function json_encode;
 use function ksort;
 use function mkdir;
 use function ord;
+use function round;
 use function strlen;
 use const FILE_IGNORE_NEW_LINES;
 use const JSON_PRETTY_PRINT;
@@ -207,11 +209,18 @@ class ParserPacketHandler extends PacketHandler{
 		return $data;
 	}
 
-	/**
-	 * @return mixed[]
-	 */
-	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
+	private static function objectToOrderedArray(object $object) : mixed{
+		if($object instanceof \JsonSerializable){
+			$result = $object->jsonSerialize();
+			if(is_object($result)){
+				$result = (array) $result;
+			}elseif(!is_array($result)){
+				return $result;
+			}
+		}else{
+			$result = (array) $object;
+		}
+
 		ksort($result, SORT_STRING);
 
 		foreach(Utils::promoteKeys($result) as $property => $value){
@@ -278,7 +287,7 @@ class ParserPacketHandler extends PacketHandler{
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
 
 		echo "updating item registry\n";
-		$items = array_map(function(ItemTypeEntry $entry) : array{
+		$items = array_map(function(ItemTypeEntry $entry) : mixed{
 			return self::objectToOrderedArray($entry);
 		}, $packet->getEntries());
 		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
@@ -572,34 +581,34 @@ class ParserPacketHandler extends PacketHandler{
 	public function handleBiomeDefinitionList(BiomeDefinitionListPacket $packet) : bool{
 		echo "storing biome definitions" . PHP_EOL;
 
-		file_put_contents($this->bedrockDataPath . '/biome_definitions_full.nbt', $packet->definitions->getEncodedNbt());
+		$definitions = [];
+		foreach($packet->buildDefinitionsFromData() as $entry){
+			$mapWaterColor = new ColorData();
+			$mapWaterColor->r = $entry->getMapWaterColor()->getR();
+			$mapWaterColor->g = $entry->getMapWaterColor()->getG();
+			$mapWaterColor->b = $entry->getMapWaterColor()->getB();
+			$mapWaterColor->a = $entry->getMapWaterColor()->getA();
 
-		$nbt = $packet->definitions->getRoot();
-		if(!$nbt instanceof CompoundTag){
-			throw new AssumptionFailedError();
-		}
-		$strippedNbt = clone $nbt;
-		foreach($strippedNbt as $compound){
-			if($compound instanceof CompoundTag){
-				foreach([
-					"minecraft:capped_surface",
-					"minecraft:consolidated_features",
-					"minecraft:frozen_ocean_surface",
-					"minecraft:legacy_world_generation_rules",
-					"minecraft:mesa_surface",
-					"minecraft:mountain_parameters",
-					"minecraft:multinoise_generation_rules",
-					"minecraft:overworld_generation_rules",
-					"minecraft:surface_material_adjustments",
-					"minecraft:surface_parameters",
-					"minecraft:swamp_surface",
-				] as $remove){
-					$compound->removeTag($remove);
-				}
-			}
+			$data = new BiomeDefinitionEntryData();
+			$data->id = $entry->getId();
+			$data->temperature = round($entry->getTemperature(), 3);
+			$data->downfall = round($entry->getDownfall(), 3);
+			$data->redSporeDensity = round($entry->getRedSporeDensity(), 3);
+			$data->blueSporeDensity = round($entry->getBlueSporeDensity(), 3);
+			$data->ashDensity = round($entry->getAshDensity(), 3);
+			$data->whiteAshDensity = round($entry->getWhiteAshDensity(), 3);
+			$data->depth = round($entry->getDepth(), 3);
+			$data->scale = round($entry->getScale(), 3);
+			$data->mapWaterColour = $mapWaterColor;
+			$data->rain = $entry->hasRain();
+			$data->tags = $entry->getTags() ?? [];
+
+			$definitions[$entry->getBiomeName()] = self::objectToOrderedArray($data);
 		}
 
-		file_put_contents($this->bedrockDataPath . '/biome_definitions.nbt', (new CacheableNbt($strippedNbt))->getEncodedNbt());
+		ksort($definitions, SORT_STRING);
+
+		file_put_contents($this->bedrockDataPath . '/biome_definitions.json', json_encode($definitions, JSON_PRETTY_PRINT) . "\n");
 
 		return true;
 	}

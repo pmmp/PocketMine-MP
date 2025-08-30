@@ -21,13 +21,19 @@
 
 declare(strict_types=1);
 
-/**
- * Events related to the server core, like networking, stop, console commands
- */
-namespace pocketmine\event\server;
+namespace pocketmine\block\utils;
 
-use pocketmine\event\Event;
+interface SignLikeRotation{
 
-abstract class ServerEvent extends Event{
+	/**
+	 * @return int between 0 and 15
+	 */
+	public function getRotation() : int;
 
+	/**
+	 * @param int $rotation between 0 and 15
+	 *
+	 * @return $this
+	 */
+	public function setRotation(int $rotation) : self;
 }

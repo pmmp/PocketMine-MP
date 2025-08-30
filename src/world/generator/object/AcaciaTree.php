@@ -84,7 +84,7 @@ final class AcaciaTree extends Tree{
 		}
 	}
 
-	protected function placeBranch(BlockTransaction $transaction, Vector3 $start, int $branchFacing, int $maxDiagonal, int $length) : Vector3{
+	protected function placeBranch(BlockTransaction $transaction, Vector3 $start, Facing $branchFacing, int $maxDiagonal, int $length) : Vector3{
 		$diagonalPlaced = 0;
 
 		$nextBlockPos = $start;

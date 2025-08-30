@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
@@ -33,7 +34,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class Cactus extends Transparent{
+class Cactus extends Transparent implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
@@ -45,10 +46,10 @@ class Cactus extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		$shrinkSize = 1 / 16;
-		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
+		return [AxisAlignedBB::one()->contractedCopy($shrinkSize, 0, $shrinkSize)->trimmedCopy(Facing::UP, $shrinkSize)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 

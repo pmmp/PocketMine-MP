@@ -28,16 +28,17 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
+use pocketmine\math\Facing;
 
 class NetherPortal extends Transparent{
 
-	protected int $axis = Axis::X;
+	protected Axis $axis = Axis::X;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}
 
-	public function getAxis() : int{
+	public function getAxis() : Axis{
 		return $this->axis;
 	}
 
@@ -45,7 +46,7 @@ class NetherPortal extends Transparent{
 	 * @throws \InvalidArgumentException
 	 * @return $this
 	 */
-	public function setAxis(int $axis) : self{
+	public function setAxis(Axis $axis) : self{
 		if($axis !== Axis::X && $axis !== Axis::Z){
 			throw new \InvalidArgumentException("Invalid axis");
 		}
@@ -65,7 +66,7 @@ class NetherPortal extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 

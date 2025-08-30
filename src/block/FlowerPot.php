@@ -84,14 +84,14 @@ class FlowerPot extends Flowable{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->contract(3 / 16, 0, 3 / 16)->trim(Facing::UP, 5 / 8)];
+		return [AxisAlignedBB::one()->contractedCopy(3 / 16, 0, 3 / 16)->trimmedCopy(Facing::UP, 5 / 8)];
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
 		$plant = $item->getBlock();
 		if($this->plant !== null){

@@ -255,6 +255,7 @@ final class BlockTypeNames{
 	public const CONDUIT = "minecraft:conduit";
 	public const COPPER_BLOCK = "minecraft:copper_block";
 	public const COPPER_BULB = "minecraft:copper_bulb";
+	public const COPPER_CHEST = "minecraft:copper_chest";
 	public const COPPER_DOOR = "minecraft:copper_door";
 	public const COPPER_GRATE = "minecraft:copper_grate";
 	public const COPPER_ORE = "minecraft:copper_ore";
@@ -392,6 +393,7 @@ final class BlockTypeNames{
 	public const DOUBLE_CUT_COPPER_SLAB = "minecraft:double_cut_copper_slab";
 	public const DRAGON_EGG = "minecraft:dragon_egg";
 	public const DRAGON_HEAD = "minecraft:dragon_head";
+	public const DRIED_GHAST = "minecraft:dried_ghast";
 	public const DRIED_KELP_BLOCK = "minecraft:dried_kelp_block";
 	public const DRIPSTONE_BLOCK = "minecraft:dripstone_block";
 	public const DROPPER = "minecraft:dropper";
@@ -532,6 +534,7 @@ final class BlockTypeNames{
 	public const EXPOSED_CHISELED_COPPER = "minecraft:exposed_chiseled_copper";
 	public const EXPOSED_COPPER = "minecraft:exposed_copper";
 	public const EXPOSED_COPPER_BULB = "minecraft:exposed_copper_bulb";
+	public const EXPOSED_COPPER_CHEST = "minecraft:exposed_copper_chest";
 	public const EXPOSED_COPPER_DOOR = "minecraft:exposed_copper_door";
 	public const EXPOSED_COPPER_GRATE = "minecraft:exposed_copper_grate";
 	public const EXPOSED_COPPER_TRAPDOOR = "minecraft:exposed_copper_trapdoor";
@@ -856,6 +859,7 @@ final class BlockTypeNames{
 	public const OXIDIZED_CHISELED_COPPER = "minecraft:oxidized_chiseled_copper";
 	public const OXIDIZED_COPPER = "minecraft:oxidized_copper";
 	public const OXIDIZED_COPPER_BULB = "minecraft:oxidized_copper_bulb";
+	public const OXIDIZED_COPPER_CHEST = "minecraft:oxidized_copper_chest";
 	public const OXIDIZED_COPPER_DOOR = "minecraft:oxidized_copper_door";
 	public const OXIDIZED_COPPER_GRATE = "minecraft:oxidized_copper_grate";
 	public const OXIDIZED_COPPER_TRAPDOOR = "minecraft:oxidized_copper_trapdoor";
@@ -1210,6 +1214,7 @@ final class BlockTypeNames{
 	public const WAXED_CHISELED_COPPER = "minecraft:waxed_chiseled_copper";
 	public const WAXED_COPPER = "minecraft:waxed_copper";
 	public const WAXED_COPPER_BULB = "minecraft:waxed_copper_bulb";
+	public const WAXED_COPPER_CHEST = "minecraft:waxed_copper_chest";
 	public const WAXED_COPPER_DOOR = "minecraft:waxed_copper_door";
 	public const WAXED_COPPER_GRATE = "minecraft:waxed_copper_grate";
 	public const WAXED_COPPER_TRAPDOOR = "minecraft:waxed_copper_trapdoor";
@@ -1220,6 +1225,7 @@ final class BlockTypeNames{
 	public const WAXED_EXPOSED_CHISELED_COPPER = "minecraft:waxed_exposed_chiseled_copper";
 	public const WAXED_EXPOSED_COPPER = "minecraft:waxed_exposed_copper";
 	public const WAXED_EXPOSED_COPPER_BULB = "minecraft:waxed_exposed_copper_bulb";
+	public const WAXED_EXPOSED_COPPER_CHEST = "minecraft:waxed_exposed_copper_chest";
 	public const WAXED_EXPOSED_COPPER_DOOR = "minecraft:waxed_exposed_copper_door";
 	public const WAXED_EXPOSED_COPPER_GRATE = "minecraft:waxed_exposed_copper_grate";
 	public const WAXED_EXPOSED_COPPER_TRAPDOOR = "minecraft:waxed_exposed_copper_trapdoor";
@@ -1230,6 +1236,7 @@ final class BlockTypeNames{
 	public const WAXED_OXIDIZED_CHISELED_COPPER = "minecraft:waxed_oxidized_chiseled_copper";
 	public const WAXED_OXIDIZED_COPPER = "minecraft:waxed_oxidized_copper";
 	public const WAXED_OXIDIZED_COPPER_BULB = "minecraft:waxed_oxidized_copper_bulb";
+	public const WAXED_OXIDIZED_COPPER_CHEST = "minecraft:waxed_oxidized_copper_chest";
 	public const WAXED_OXIDIZED_COPPER_DOOR = "minecraft:waxed_oxidized_copper_door";
 	public const WAXED_OXIDIZED_COPPER_GRATE = "minecraft:waxed_oxidized_copper_grate";
 	public const WAXED_OXIDIZED_COPPER_TRAPDOOR = "minecraft:waxed_oxidized_copper_trapdoor";
@@ -1240,6 +1247,7 @@ final class BlockTypeNames{
 	public const WAXED_WEATHERED_CHISELED_COPPER = "minecraft:waxed_weathered_chiseled_copper";
 	public const WAXED_WEATHERED_COPPER = "minecraft:waxed_weathered_copper";
 	public const WAXED_WEATHERED_COPPER_BULB = "minecraft:waxed_weathered_copper_bulb";
+	public const WAXED_WEATHERED_COPPER_CHEST = "minecraft:waxed_weathered_copper_chest";
 	public const WAXED_WEATHERED_COPPER_DOOR = "minecraft:waxed_weathered_copper_door";
 	public const WAXED_WEATHERED_COPPER_GRATE = "minecraft:waxed_weathered_copper_grate";
 	public const WAXED_WEATHERED_COPPER_TRAPDOOR = "minecraft:waxed_weathered_copper_trapdoor";
@@ -1250,6 +1258,7 @@ final class BlockTypeNames{
 	public const WEATHERED_CHISELED_COPPER = "minecraft:weathered_chiseled_copper";
 	public const WEATHERED_COPPER = "minecraft:weathered_copper";
 	public const WEATHERED_COPPER_BULB = "minecraft:weathered_copper_bulb";
+	public const WEATHERED_COPPER_CHEST = "minecraft:weathered_copper_chest";
 	public const WEATHERED_COPPER_DOOR = "minecraft:weathered_copper_door";
 	public const WEATHERED_COPPER_GRATE = "minecraft:weathered_copper_grate";
 	public const WEATHERED_COPPER_TRAPDOOR = "minecraft:weathered_copper_trapdoor";

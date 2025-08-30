@@ -73,7 +73,6 @@ use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
-use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\serializer\BitSet;
@@ -111,7 +110,6 @@ use function count;
 use function fmod;
 use function get_debug_type;
 use function implode;
-use function in_array;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -136,6 +134,8 @@ class InGamePacketHandler extends PacketHandler{
 	protected ?float $lastPlayerAuthInputYaw = null;
 	protected ?float $lastPlayerAuthInputPitch = null;
 	protected ?BitSet $lastPlayerAuthInputFlags = null;
+
+	protected ?BlockPosition $lastBlockAttacked = null;
 
 	public bool $forceMoveSync = false;
 
@@ -212,7 +212,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$inputFlags = $packet->getInputFlags();
-		if($inputFlags !== $this->lastPlayerAuthInputFlags){
+		if($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)){
 			$this->lastPlayerAuthInputFlags = $inputFlags;
 
 			$sneaking = $inputFlags->get(PlayerAuthInputFlags::SNEAKING);
@@ -249,26 +249,6 @@ class InGamePacketHandler extends PacketHandler{
 
 		$packetHandled = true;
 
-		$blockActions = $packet->getBlockActions();
-		if($blockActions !== null){
-			if(count($blockActions) > 100){
-				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
-			}
-			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
-				$actionHandled = false;
-				if($blockAction instanceof PlayerBlockActionStopBreak){
-					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
-				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
-					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
-				}
-
-				if(!$actionHandled){
-					$packetHandled = false;
-					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
-				}
-			}
-		}
-
 		$useItemTransaction = $packet->getItemInteractionData();
 		if($useItemTransaction !== null){
 			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
@@ -287,9 +267,33 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$itemStackRequest = $packet->getItemStackRequest();
+		$itemStackResponseBuilder = $itemStackRequest !== null ? $this->handleSingleItemStackRequest($itemStackRequest) : null;
+
+		//itemstack request or transaction may set predictions for the outcome of these actions, so these need to be
+		//processed last
+		$blockActions = $packet->getBlockActions();
+		if($blockActions !== null){
+			if(count($blockActions) > 100){
+				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
+			}
+			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
+				$actionHandled = false;
+				if($blockAction instanceof PlayerBlockActionStopBreak){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), 0);
+				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
+				}
+
+				if(!$actionHandled){
+					$packetHandled = false;
+					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+				}
+			}
+		}
+
 		if($itemStackRequest !== null){
-			$result = $this->handleSingleItemStackRequest($itemStackRequest);
-			$this->session->sendDataPacket(ItemStackResponsePacket::create([$result]));
+			$itemStackResponse = $itemStackResponseBuilder?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $itemStackRequest->getRequestId());
+			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
 		}
 
 		return $packetHandled;
@@ -489,23 +493,16 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
-				self::validateFacing($data->getFace());
+				$face = self::deserializeFacing($data->getFace());
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
+				$this->player->interactBlock($vBlockPos, $face, $clickPos);
 				//always sync this in case plugins caused a different result than the client expected
 				//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
 				//more information up the stack. For now I think this is good enough.
 				//if only the client would tell us what blocks it thinks changed...
-				$this->syncBlocksNearby($vBlockPos, $data->getFace());
-				return true;
-			case UseItemTransactionData::ACTION_BREAK_BLOCK:
-				$blockPos = $data->getBlockPosition();
-				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				if(!$this->player->breakBlock($vBlockPos)){
-					$this->syncBlocksNearby($vBlockPos, null);
-				}
+				$this->syncBlocksNearby($vBlockPos, $face);
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
@@ -525,16 +522,19 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	private static function validateFacing(int $facing) : void{
-		if(!in_array($facing, Facing::ALL, true)){
+	private static function deserializeFacing(int $facing) : Facing{
+		//TODO: dodgy use of network facing values as internal values here - they may not be the same in the future
+		$case = Facing::tryFrom($facing);
+		if($case === null){
 			throw new PacketHandlingException("Invalid facing value $facing");
 		}
+		return $case;
 	}
 
 	/**
 	 * Syncs blocks nearby to ensure that the client and server agree on the world's blocks after a block interaction.
 	 */
-	private function syncBlocksNearby(Vector3 $blockPos, ?int $face) : void{
+	private function syncBlocksNearby(Vector3 $blockPos, ?Facing $face) : void{
 		if($blockPos->distanceSquared($this->player->getLocation()) < 10000){
 			$blocks = $blockPos->sidesArray();
 			if($face !== null){
@@ -582,7 +582,7 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	private function handleSingleItemStackRequest(ItemStackRequest $request) : ItemStackResponse{
+	private function handleSingleItemStackRequest(ItemStackRequest $request) : ?ItemStackResponseBuilder{
 		if(count($request->getActions()) > 60){
 			//recipe book auto crafting can affect all slots of the inventory when consuming inputs or producing outputs
 			//this means there could be as many as 50 CraftingConsumeInput actions or Place (taking the result) actions
@@ -599,7 +599,11 @@ class InGamePacketHandler extends PacketHandler{
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
 		try{
 			$transaction = $executor->generateInventoryTransaction();
-			$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+			if($transaction !== null){
+				$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
+			}else{
+				$result = true; //predictions only, just send responses
+			}
 		}catch(ItemStackRequestProcessException $e){
 			$result = false;
 			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
@@ -607,10 +611,7 @@ class InGamePacketHandler extends PacketHandler{
 			$this->inventoryManager->requestSyncAll();
 		}
 
-		if(!$result){
-			return new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
-		}
-		return $executor->buildItemStackResponse();
+		return $result ? $executor->getItemStackResponseBuilder() : null;
 	}
 
 	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
@@ -620,7 +621,7 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
 		}
 		foreach($packet->getRequests() as $request){
-			$responses[] = $this->handleSingleItemStackRequest($request);
+			$responses[] = $this->handleSingleItemStackRequest($request)?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
 		}
 
 		$this->session->sendDataPacket(ItemStackResponsePacket::create($responses));
@@ -678,21 +679,32 @@ class InGamePacketHandler extends PacketHandler{
 		return $this->handlePlayerActionFromData($packet->action, $packet->blockPosition, $packet->face);
 	}
 
-	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
+	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $extraData) : bool{
 		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 
 		switch($action){
 			case PlayerAction::START_BREAK:
-				self::validateFacing($face);
+			case PlayerAction::CONTINUE_DESTROY_BLOCK: //destroy the next block while holding down left click
+				$face = self::deserializeFacing($extraData);
+				if($this->lastBlockAttacked !== null && $blockPosition->equals($this->lastBlockAttacked)){
+					//the client will send CONTINUE_DESTROY_BLOCK for the currently targeted block directly before it
+					//sends PREDICT_DESTROY_BLOCK, but also when it starts to break the block
+					//this seems like a bug in the client and would cause spurious left-click events if we allowed it to
+					//be delivered to the player
+					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
+					break;
+				}
 				if(!$this->player->attackBlock($pos, $face)){
 					$this->syncBlocksNearby($pos, $face);
 				}
+				$this->lastBlockAttacked = $blockPosition;
 
 				break;
 
 			case PlayerAction::ABORT_BREAK:
 			case PlayerAction::STOP_BREAK:
 				$this->player->stopBreakBlock($pos);
+				$this->lastBlockAttacked = null;
 				break;
 			case PlayerAction::START_SLEEPING:
 				//unused
@@ -701,13 +713,20 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->stopSleep();
 				break;
 			case PlayerAction::CRACK_BREAK:
-				self::validateFacing($face);
+				$face = self::deserializeFacing($extraData);
 				$this->player->continueBreakBlock($pos, $face);
+				$this->lastBlockAttacked = $blockPosition;
 				break;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
+			case PlayerAction::PREDICT_DESTROY_BLOCK:
+				if(!$this->player->breakBlock($pos)){
+					$face = self::deserializeFacing($extraData);
+					$this->syncBlocksNearby($pos, $face);
+				}
+				$this->lastBlockAttacked = null;
 				break;
 			case PlayerAction::START_ITEM_USE_ON:
 			case PlayerAction::STOP_ITEM_USE_ON:
@@ -780,10 +799,6 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
-	}
-
-	public function handlePlayerInput(PlayerInputPacket $packet) : bool{
-		return false; //TODO
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{

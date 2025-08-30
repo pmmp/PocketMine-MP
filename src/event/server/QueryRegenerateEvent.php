@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\event\server;
 
+use pocketmine\event\Event;
 use pocketmine\network\query\QueryInfo;
 
-class QueryRegenerateEvent extends ServerEvent{
+class QueryRegenerateEvent extends Event{
 	public function __construct(private QueryInfo $queryInfo){}
 
 	public function getQueryInfo() : QueryInfo{

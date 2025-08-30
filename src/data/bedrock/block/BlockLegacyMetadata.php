@@ -38,6 +38,8 @@ final class BlockLegacyMetadata{
 	public const CORAL_VARIANT_FIRE = 3;
 	public const CORAL_VARIANT_HORN = 4;
 
+	public const LIQUID_FALLING_FLAG = 0x08;
+
 	public const MULTI_FACE_DIRECTION_FLAG_DOWN = 0x01;
 	public const MULTI_FACE_DIRECTION_FLAG_UP = 0x02;
 	public const MULTI_FACE_DIRECTION_FLAG_SOUTH = 0x04;

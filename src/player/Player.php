@@ -27,6 +27,7 @@ use DateTimeImmutable;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\RespawnAnchor;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -46,6 +47,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityExhaustEvent;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
@@ -60,7 +62,6 @@ use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerEntityPickEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\player\PlayerItemConsumeEvent;
@@ -102,6 +103,8 @@ use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -135,6 +138,7 @@ use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\ItemBreakSound;
+use pocketmine\world\sound\RespawnAnchorDepleteSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
@@ -338,7 +342,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
 
-		$this->chunkLoader = new class implements ChunkLoader{};
+		$this->chunkLoader = new ChunkLoader();
 		$this->chunkTicker = new ChunkTicker();
 		$world = $spawnLocation->getWorld();
 		//load the spawn chunk so we can see the terrain
@@ -1307,9 +1311,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->gamemode === GameMode::SPECTATOR){
 			$this->onGround = false;
 		}else{
-			$bb = clone $this->boundingBox;
-			$bb->minY = $this->location->y - 0.2;
-			$bb->maxY = $this->location->y + 0.2;
+			//TODO: AxisAlignedBB::withComponents() would be nice here
+			$bb = new AxisAlignedBB(
+				$this->boundingBox->minX,
+				$this->location->y - 0.2,
+				$this->boundingBox->minZ,
+				$this->boundingBox->maxX,
+				$this->location->y + 0.2,
+				$this->boundingBox->maxZ
+			);
 
 			//we're already at the new position at this point; check if there are blocks we might have landed on between
 			//the old and new positions (running down stairs necessitates this)
@@ -1440,9 +1450,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($horizontalDistanceTravelled > 0){
 				//TODO: check for swimming
 				if($this->isSprinting()){
-					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, EntityExhaustEvent::CAUSE_SPRINTING);
 				}else{
-					$this->hungerManager->exhaust(0.0, PlayerExhaustEvent::CAUSE_WALKING);
+					$this->hungerManager->exhaust(0.0, EntityExhaustEvent::CAUSE_WALKING);
 				}
 
 				if($this->nextChunkOrderRun > 20){
@@ -1645,7 +1655,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$newReplica = clone $oldHeldItem;
 			$newReplica->setCount($newHeldItem->getCount());
 			if($newReplica instanceof Durable && $newHeldItem instanceof Durable){
-				$newReplica->setDamage($newHeldItem->getDamage());
+				$newDamage = $newHeldItem->getDamage();
+				if($newDamage >= 0 && $newDamage <= $newReplica->getMaxDurability()){
+					$newReplica->setDamage($newDamage);
+				}
 			}
 			$damagedOrDeducted = $newReplica->equalsExact($newHeldItem);
 
@@ -1846,7 +1859,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @return bool if an action took place successfully
 	 */
-	public function attackBlock(Vector3 $pos, int $face) : bool{
+	public function attackBlock(Vector3 $pos, Facing $face) : bool{
 		if($pos->distanceSquared($this->location) > 10000){
 			return false; //TODO: maybe this should throw an exception instead?
 		}
@@ -1880,7 +1893,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function continueBreakBlock(Vector3 $pos, int $face) : void{
+	public function continueBreakBlock(Vector3 $pos, Facing $face) : void{
 		if($this->blockBreakHandler !== null && $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
 			$this->blockBreakHandler->setTargetedFace($face);
 		}
@@ -1908,7 +1921,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$returnedItems = [];
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)){
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
-				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
+				$this->hungerManager->exhaust(0.005, EntityExhaustEvent::CAUSE_MINING);
 				return true;
 			}
 		}else{
@@ -1923,7 +1936,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @return bool if it did something
 	 */
-	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset) : bool{
+	public function interactBlock(Vector3 $pos, Facing $face, Vector3 $clickOffset) : bool{
 		$this->setUsingItem(false);
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
@@ -2011,7 +2024,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$heldItem->onAttackEntity($entity, $returnedItems);
 			$this->returnItemsFromAction($oldItem, $heldItem, $returnedItems);
 
-			$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_ATTACK);
+			$this->hungerManager->exhaust(0.1, EntityExhaustEvent::CAUSE_ATTACK);
 		}
 
 		return true;
@@ -2539,6 +2552,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 				$this->logger->debug("Respawn position located, completing respawn");
 				$ev = new PlayerRespawnEvent($this, $safeSpawn);
+				$spawnPosition = $ev->getRespawnPosition();
+				$spawnBlock = $spawnPosition->getWorld()->getBlock($spawnPosition);
+				if($spawnBlock instanceof RespawnAnchor){
+					if($spawnBlock->getCharges() > 0){
+						$spawnPosition->getWorld()->setBlock($spawnPosition, $spawnBlock->setCharges($spawnBlock->getCharges() - 1));
+						$spawnPosition->getWorld()->addSound($spawnPosition, new RespawnAnchorDepleteSound());
+					}else{
+						$defaultSpawn = $this->server->getWorldManager()->getDefaultWorld()?->getSpawnLocation();
+						if($defaultSpawn !== null){
+							$this->setSpawn($defaultSpawn);
+							$ev->setRespawnPosition($defaultSpawn);
+							$this->sendMessage(KnownTranslationFactory::tile_respawn_anchor_notValid()->prefix(TextFormat::GRAY));
+						}
+					}
+				}
 				$ev->call();
 
 				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
@@ -2580,7 +2608,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 
-		$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_DAMAGE);
+		$this->hungerManager->exhaust(0.1, EntityExhaustEvent::CAUSE_DAMAGE);
 	}
 
 	public function attack(EntityDamageEvent $source) : void{

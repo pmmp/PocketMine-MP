@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -51,12 +52,12 @@ final class Light extends Flowable{
 
 	public function canBeReplaced() : bool{ return true; }
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		//light blocks behave like solid blocks when placing them on another light block
 		return $blockReplace->canBeReplaced() && $blockReplace->getTypeId() !== $this->getTypeId();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->level = $this->level === self::MAX_LIGHT_LEVEL ?
 			self::MIN_LIGHT_LEVEL :
 			$this->level + 1;

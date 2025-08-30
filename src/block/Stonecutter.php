@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\StonecutterInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -32,10 +33,10 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class Stonecutter extends Transparent{
+class Stonecutter extends Transparent implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$player->setCurrentWindow(new StonecutterInventoryWindow($player, $this->position));
 		}
@@ -43,10 +44,10 @@ class Stonecutter extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 7 / 16)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 }

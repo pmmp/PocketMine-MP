@@ -94,7 +94,19 @@ trait CommonThreadPartsTrait{
 		}
 	}
 
-	public function getCrashInfo() : ?ThreadCrashInfo{ return $this->crashInfo; }
+	public function getCrashInfo() : ?ThreadCrashInfo{
+		//TODO: Joining a crashed worker might be a bit sus, but we need to make sure the thread's shutdown
+		//handler has run before we try to collect the crash info. As of 6.1.1, pmmpthread sets isTerminated=true
+		//*before* the shutdown handler is invoked, so we might land here before the crash info has been set.
+		//In the future this should probably be fixed by running the shutdown handlers before setting isTerminated,
+		//but this workaround should be good enough for now.
+		//WARNING: Do not call this inside a synchronized block on this thread's context. Because the shutdown handler
+		//runs in a synchronized block, this will result in a deadlock.
+		if($this->isTerminated() && !$this->isJoined()){
+			$this->join();
+		}
+		return $this->crashInfo;
+	}
 
 	public function start(int $options = NativeThread::INHERIT_NONE) : bool{
 		ThreadManager::getInstance()->add($this);

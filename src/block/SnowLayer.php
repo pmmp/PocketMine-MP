@@ -67,10 +67,10 @@ class SnowLayer extends Flowable implements Fallable{
 
 	protected function recalculateCollisionBoxes() : array{
 		//TODO: this zero-height BB is intended to stay in lockstep with a MCPE bug
-		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		if(!$this->canBeReplaced()){
 			return SupportType::FULL;
 		}
@@ -81,7 +81,7 @@ class SnowLayer extends Flowable implements Fallable{
 		return $block->getAdjacentSupportType(Facing::DOWN) === SupportType::FULL;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof SnowLayer){
 			if($blockReplace->layers >= self::MAX_LAYERS){
 				return false;

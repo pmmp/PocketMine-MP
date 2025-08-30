@@ -251,19 +251,27 @@ class InventoryManager implements InventoryListener{
 		return null;
 	}
 
-	private function addPredictedSlotChange(InventoryWindow $window, int $slot, ItemStack $item) : void{
+	private function addPredictedSlotChangeInternal(InventoryWindow $window, int $slot, ItemStack $item) : void{
 		//TODO: does this need a null check?
 		$entry = $this->getEntry($window->getInventory()) ?? throw new AssumptionFailedError("Assume this should never be null");
 		$entry->predictions[$slot] = $item;
 	}
 
-	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
+	public function addPredictedSlotChange(InventoryWindow $window, int $slot, Item $item) : void{
 		$typeConverter = $this->session->getTypeConverter();
+		$itemStack = $typeConverter->coreItemStackToNet($item);
+		$this->addPredictedSlotChangeInternal($window, $slot, $itemStack);
+	}
+
+	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
 			if($action instanceof SlotChangeAction){
 				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
-				$itemStack = $typeConverter->coreItemStackToNet($action->getTargetItem());
-				$this->addPredictedSlotChange($action->getInventoryWindow(), $action->getSlot(), $itemStack);
+				$this->addPredictedSlotChange(
+					$action->getInventoryWindow(),
+					$action->getSlot(),
+					$action->getTargetItem()
+				);
 			}
 		}
 	}
@@ -292,7 +300,7 @@ class InventoryManager implements InventoryListener{
 			}
 
 			[$window, $slot] = $info;
-			$this->addPredictedSlotChange($window, $slot, $action->newItem->getItemStack());
+			$this->addPredictedSlotChangeInternal($window, $slot, $action->newItem->getItemStack());
 		}
 	}
 

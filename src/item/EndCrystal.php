@@ -35,13 +35,13 @@ use function count;
 
 class EndCrystal extends Item{
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockClicked->getTypeId() === BlockTypeIds::OBSIDIAN || $blockClicked->getTypeId() === BlockTypeIds::BEDROCK){
 			$pos = $blockClicked->getPosition();
 			$world = $pos->getWorld();
 			$bb = AxisAlignedBB::one()
-				->offset($pos->getX(), $pos->getY(), $pos->getZ())
-				->extend(Facing::UP, 1);
+				->offsetCopy($pos->getX(), $pos->getY(), $pos->getZ())
+				->extendedCopy(Facing::UP, 1);
 			if(
 				count($world->getNearbyEntities($bb)) === 0 &&
 				$blockClicked->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR &&

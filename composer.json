@@ -5,7 +5,7 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": "^8.1",
+      "php": "^8.3",
       "php-64bit": "*",
       "ext-chunkutils2": "^0.3.1",
       "ext-crypto": "^0.3.1",
@@ -34,28 +34,32 @@
       "adhocore/json-comment": "~1.2.0",
       "netresearch/jsonmapper": "~v5.0.0",
       "pocketmine/bedrock-block-upgrade-schema": "~5.1.0+bedrock-1.21.60",
-      "pocketmine/bedrock-data": "~4.1.0+bedrock-1.21.70",
-      "pocketmine/bedrock-item-upgrade-schema": "~1.14.0+bedrock-1.21.50",
-      "pocketmine/bedrock-protocol": "~37.0.0+bedrock-1.21.70",
+      "pocketmine/bedrock-data": "~6.0.0+bedrock-1.21.100",
+      "pocketmine/bedrock-item-upgrade-schema": "~1.15.0+bedrock-1.21.100",
+      "pocketmine/bedrock-protocol": "~40.0.0+bedrock-1.21.100",
       "pocketmine/binaryutils": "^0.2.1",
-      "pocketmine/callback-validator": "^1.0.2",
+      "pocketmine/callback-validator": "dev-rewrite",
       "pocketmine/color": "^0.3.0",
       "pocketmine/errorhandler": "^0.7.0",
-      "pocketmine/locale-data": "~2.24.0",
+      "pocketmine/locale-data": "~2.25.0",
       "pocketmine/log": "^0.4.0",
-      "pocketmine/math": "~1.0.0",
+      "pocketmine/math": "dev-major-next as 1.0.0",
       "pocketmine/nbt": "~1.1.0",
-      "pocketmine/raklib": "~1.1.2",
+      "pocketmine/raklib": "~1.2.0",
       "pocketmine/raklib-ipc": "~1.0.0",
       "pocketmine/snooze": "^0.5.0",
-      "ramsey/uuid": "~4.7.0",
-      "symfony/filesystem": "~6.4.0"
+      "ramsey/uuid": "~4.9.0",
+      "symfony/filesystem": "~7.3.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "2.1.11",
+      "phpstan/phpstan": "2.1.17",
       "phpstan/phpstan-phpunit": "^2.0.0",
       "phpstan/phpstan-strict-rules": "^2.0.0",
-      "phpunit/phpunit": "^10.5.24"
+      "phpunit/phpunit": "^12.2.1"
+   },
+   "replace": {
+      "symfony/polyfill-ctype": "*",
+      "symfony/polyfill-mbstring": "*"
    },
    "autoload": {
       "psr-4": {
@@ -73,7 +77,7 @@
    },
    "config": {
       "platform": {
-         "php": "8.1.0"
+         "php": "8.3.0"
       },
       "sort-packages": true
    },

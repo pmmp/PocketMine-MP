@@ -28,6 +28,7 @@ use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -41,7 +42,7 @@ use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
 use pocketmine\world\sound\Sound;
 
-class EnderChest extends Transparent implements AnimatedContainer{
+class EnderChest extends Transparent implements AnimatedContainer, HorizontalFacing{
 	use AnimatedContainerTrait {
 		onContainerOpen as private traitOnContainerOpen;
 		onContainerClose as private traitOnContainerClose;
@@ -54,14 +55,14 @@ class EnderChest extends Transparent implements AnimatedContainer{
 
 	protected function recalculateCollisionBoxes() : array{
 		//these are slightly bigger than in PC
-		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
+		return [AxisAlignedBB::one()->contractedCopy(0.025, 0, 0.025)->trimmedCopy(Facing::UP, 0.05)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$enderChest = $this->position->getWorld()->getTile($this->position);
 			if($enderChest instanceof TileEnderChest && $this->getSide(Facing::UP)->isTransparent()){

@@ -32,11 +32,9 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\Binary;
 use pocketmine\world\World;
-use function array_pad;
-use function array_slice;
-use function explode;
 use function implode;
 use function mb_scrub;
+use function rtrim;
 use function sprintf;
 
 /**
@@ -59,14 +57,6 @@ class Sign extends Spawnable{
 	public const TAG_BACK_TEXT = "BackText"; //TAG_Compound
 	public const TAG_WAXED = "IsWaxed"; //TAG_Byte
 	public const TAG_LOCKED_FOR_EDITING_BY = "LockedForEditingBy"; //TAG_Long
-
-	/**
-	 * @return string[]
-	 * @deprecated
-	 */
-	public static function fixTextBlob(string $blob) : array{
-		return array_slice(array_pad(explode("\n", $blob, limit: 5), 4, ""), 0, 4);
-	}
 
 	protected SignText $text;
 	private bool $waxed = false;
@@ -117,7 +107,7 @@ class Sign extends Spawnable{
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
-			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
+			->setString(self::TAG_TEXT_BLOB, rtrim(implode("\n", $this->text->getLines()), "\n"))
 			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
 			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
 			->setByte(self::TAG_PERSIST_FORMATTING, 1)
@@ -162,7 +152,7 @@ class Sign extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setTag(self::TAG_FRONT_TEXT, CompoundTag::create()
-			->setString(self::TAG_TEXT_BLOB, implode("\n", $this->text->getLines()))
+			->setString(self::TAG_TEXT_BLOB, rtrim(implode("\n", $this->text->getLines()), "\n"))
 			->setInt(self::TAG_TEXT_COLOR, Binary::signInt($this->text->getBaseColor()->toARGB()))
 			->setByte(self::TAG_GLOWING_TEXT, $this->text->isGlowing() ? 1 : 0)
 			->setByte(self::TAG_PERSIST_FORMATTING, 1) //TODO: not sure what this is used for

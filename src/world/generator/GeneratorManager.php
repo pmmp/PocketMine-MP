@@ -50,7 +50,7 @@ final class GeneratorManager{
 			}catch(InvalidGeneratorOptionsException $e){
 				return $e;
 			}
-		});
+		}, fast: true);
 		$this->addGenerator(Normal::class, "normal", fn() => null);
 		$this->addAlias("normal", "default");
 		$this->addGenerator(Nether::class, "nether", fn() => null);
@@ -62,6 +62,7 @@ final class GeneratorManager{
 	 * @param string   $name            Alias for this generator type that can be written in configs
 	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
 	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
+	 * @param bool     $fast            Whether this generator is fast enough to run without async tasks
 	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
 	 *
@@ -69,7 +70,7 @@ final class GeneratorManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false) : void{
+	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false, bool $fast = false) : void{
 		Utils::testValidInstance($class, Generator::class);
 
 		$name = strtolower($name);
@@ -77,7 +78,7 @@ final class GeneratorManager{
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
-		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator);
+		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator, $fast);
 	}
 
 	/**

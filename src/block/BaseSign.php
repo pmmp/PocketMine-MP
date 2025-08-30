@@ -27,6 +27,7 @@ use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\color\Color;
@@ -34,6 +35,7 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -44,7 +46,7 @@ use function array_map;
 use function assert;
 use function strlen;
 
-abstract class BaseSign extends Transparent{
+abstract class BaseSign extends Transparent implements WoodMaterial{
 	use WoodTypeTrait;
 
 	protected SignText $text;
@@ -98,11 +100,11 @@ abstract class BaseSign extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	abstract protected function getSupportingFace() : int;
+	abstract protected function getSupportingFace() : Facing;
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
@@ -110,7 +112,7 @@ abstract class BaseSign extends Transparent{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$this->editorEntityRuntimeId = $player->getId();
 		}
@@ -159,7 +161,7 @@ abstract class BaseSign extends Transparent{
 		return true;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player === null){
 			return false;
 		}

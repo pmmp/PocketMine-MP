@@ -29,6 +29,7 @@ use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
@@ -43,16 +44,16 @@ use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
 
-class Chest extends Transparent implements AnimatedContainer{
+class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 	use AnimatedContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	protected function recalculateCollisionBoxes() : array{
 		//these are slightly bigger than in PC
-		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
+		return [AxisAlignedBB::one()->contractedCopy(0.025, 0, 0.025)->trimmedCopy(Facing::UP, 0.05)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -64,7 +65,7 @@ class Chest extends Transparent implements AnimatedContainer{
 		$tile = $world->getTile($position);
 		if($tile instanceof TileChest){
 			foreach([false, true] as $clockwise){
-				$side = Facing::rotateY($this->facing, $clockwise);
+				$side = Facing::rotateY($this->facing->toFacing(), $clockwise);
 				$c = $position->getSide($side);
 				$pair = $world->getTile($c);
 				if($pair instanceof TileChest && $pair->isPaired() && $pair->getPair() === $tile){
@@ -80,7 +81,7 @@ class Chest extends Transparent implements AnimatedContainer{
 		$tile = $world->getTile($this->position);
 		if($tile instanceof TileChest){
 			foreach([false, true] as $clockwise){
-				$side = Facing::rotateY($this->facing, $clockwise);
+				$side = Facing::rotateY($this->facing->toFacing(), $clockwise);
 				$c = $this->getSide($side);
 				if($c instanceof Chest && $c->hasSameTypeId($this) && $c->facing === $this->facing){
 					$pair = $world->getTile($c->position);
@@ -99,7 +100,7 @@ class Chest extends Transparent implements AnimatedContainer{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$world = $this->position->getWorld();
 			$chest = $world->getTile($this->position);

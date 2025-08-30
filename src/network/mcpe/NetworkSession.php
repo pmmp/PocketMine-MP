@@ -415,6 +415,11 @@ class NetworkSession{
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 					}
+					if(!$this->isConnected()){
+						//handling this packet may have caused a disconnection
+						$this->logger->debug("Aborting batch processing due to server-side disconnection");
+						break;
+					}
 				}
 			}catch(PacketDecodeException|BinaryDataException $e){
 				$this->logger->logException($e);

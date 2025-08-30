@@ -25,12 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\CartographyTableInventoryWindow;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 final class CartographyTable extends Opaque{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$player->setCurrentWindow(new CartographyTableInventoryWindow($player, $this->position));
 		}

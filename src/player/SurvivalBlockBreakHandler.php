@@ -47,7 +47,7 @@ final class SurvivalBlockBreakHandler{
 		private Player $player,
 		private Vector3 $blockPos,
 		private Block $block,
-		private int $targetedFace,
+		private Facing $targetedFace,
 		private int $maxPlayerDistance,
 		private int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS
 	){
@@ -123,12 +123,11 @@ final class SurvivalBlockBreakHandler{
 		return $this->blockPos;
 	}
 
-	public function getTargetedFace() : int{
+	public function getTargetedFace() : Facing{
 		return $this->targetedFace;
 	}
 
-	public function setTargetedFace(int $face) : void{
-		Facing::validate($face);
+	public function setTargetedFace(Facing $face) : void{
 		$this->targetedFace = $face;
 	}
 

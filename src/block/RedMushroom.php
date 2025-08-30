@@ -41,7 +41,7 @@ class RedMushroom extends Flowable{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		$position = $this->position;
 		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);

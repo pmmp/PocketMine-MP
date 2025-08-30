@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
@@ -35,14 +37,14 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Stair extends Transparent{
+class Stair extends Transparent implements HorizontalFacing{
 	use HorizontalFacingTrait;
 
 	protected bool $upsideDown = false;
 	protected StairShape $shape = StairShape::STRAIGHT;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->upsideDown);
 	}
 
@@ -51,7 +53,7 @@ class Stair extends Transparent{
 
 		$this->collisionBoxes = null;
 
-		$clockwise = Facing::rotateY($this->facing, true);
+		$clockwise = HorizontalFacingOption::fromFacing(Facing::rotateY($this->facing->toFacing(), true));
 		if(($backFacing = $this->getPossibleCornerFacing(false)) !== null){
 			$this->shape = $backFacing === $clockwise ? StairShape::OUTER_RIGHT : StairShape::OUTER_LEFT;
 		}elseif(($frontFacing = $this->getPossibleCornerFacing(true)) !== null){
@@ -82,21 +84,22 @@ class Stair extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		$topStepFace = $this->upsideDown ? Facing::DOWN : Facing::UP;
 		$bbs = [
-			AxisAlignedBB::one()->trim($topStepFace, 0.5)
+			AxisAlignedBB::one()->trimmedCopy($topStepFace, 0.5)
 		];
 
+		$realFacing = $this->facing->toFacing();
 		$topStep = AxisAlignedBB::one()
-			->trim(Facing::opposite($topStepFace), 0.5)
-			->trim(Facing::opposite($this->facing), 0.5);
+			->trimmedCopy(Facing::opposite($topStepFace), 0.5)
+			->trimmedCopy(Facing::opposite($realFacing), 0.5);
 
 		if($this->shape === StairShape::OUTER_LEFT || $this->shape === StairShape::OUTER_RIGHT){
-			$topStep->trim(Facing::rotateY($this->facing, $this->shape === StairShape::OUTER_LEFT), 0.5);
+			$topStep = $topStep->trimmedCopy(Facing::rotateY($realFacing, $this->shape === StairShape::OUTER_LEFT), 0.5);
 		}elseif($this->shape === StairShape::INNER_LEFT || $this->shape === StairShape::INNER_RIGHT){
 			//add an extra cube
 			$bbs[] = AxisAlignedBB::one()
-				->trim(Facing::opposite($topStepFace), 0.5)
-				->trim($this->facing, 0.5) //avoid overlapping with main step
-				->trim(Facing::rotateY($this->facing, $this->shape === StairShape::INNER_LEFT), 0.5);
+				->trimmedCopy(Facing::opposite($topStepFace), 0.5)
+				->trimmedCopy($realFacing, 0.5) //avoid overlapping with main step
+				->trimmedCopy(Facing::rotateY($realFacing, $this->shape === StairShape::INNER_LEFT), 0.5);
 		}
 
 		$bbs[] = $topStep;
@@ -104,31 +107,33 @@ class Stair extends Transparent{
 		return $bbs;
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
+		$realFacing = $this->facing->toFacing();
 		if(
 			$facing === Facing::UP && $this->upsideDown ||
 			$facing === Facing::DOWN && !$this->upsideDown ||
-			($facing === $this->facing && $this->shape !== StairShape::OUTER_LEFT && $this->shape !== StairShape::OUTER_RIGHT) ||
-			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape === StairShape::INNER_LEFT) ||
-			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape === StairShape::INNER_RIGHT)
+			($facing === $realFacing && $this->shape !== StairShape::OUTER_LEFT && $this->shape !== StairShape::OUTER_RIGHT) ||
+			($facing === Facing::rotate($realFacing, Axis::Y, false) && $this->shape === StairShape::INNER_LEFT) ||
+			($facing === Facing::rotate($realFacing, Axis::Y, true) && $this->shape === StairShape::INNER_RIGHT)
 		){
 			return SupportType::FULL;
 		}
 		return SupportType::NONE;
 	}
 
-	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
-		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
+	private function getPossibleCornerFacing(bool $oppositeFacing) : ?HorizontalFacingOption{
+		$realFacing = $this->facing->toFacing();
+		$side = $this->getSide($oppositeFacing ? Facing::opposite($realFacing) : $realFacing);
 		return (
 			$side instanceof Stair &&
 			$side->upsideDown === $this->upsideDown &&
-			Facing::axis($side->facing) !== Facing::axis($this->facing) //perpendicular
+			Facing::axis($side->facing->toFacing()) !== Facing::axis($realFacing) //perpendicular
 		) ? $side->facing : null;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = $player->getHorizontalFacing();
+			$this->facing = HorizontalFacingOption::fromFacing($player->getHorizontalFacing());
 		}
 		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
 

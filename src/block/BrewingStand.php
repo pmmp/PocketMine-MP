@@ -52,17 +52,17 @@ class BrewingStand extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			//bottom slab part - in PC this is also inset on X/Z by 1/16, but Bedrock sucks
-			AxisAlignedBB::one()->trim(Facing::UP, 7 / 8),
+			AxisAlignedBB::one()->trimmedCopy(Facing::UP, 7 / 8),
 
 			//center post
 			AxisAlignedBB::one()
-				->squash(Axis::X, 7 / 16)
-				->squash(Axis::Z, 7 / 16)
-				->trim(Facing::UP, 1 / 8)
+				->squashedCopy(Axis::X, 7 / 16)
+				->squashedCopy(Axis::Z, 7 / 16)
+				->trimmedCopy(Facing::UP, 1 / 8)
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -96,7 +96,7 @@ class BrewingStand extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$stand = $this->position->getWorld()->getTile($this->position);
 			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){

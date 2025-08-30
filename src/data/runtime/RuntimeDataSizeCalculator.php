@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use function count;
 use function log;
@@ -50,44 +51,16 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(1);
 	}
 
-	public function horizontalFacing(int &$facing) : void{
-		$this->addBits(2);
+	public function facingExcept(Facing &$facing, Facing $except) : void{
+		$this->enum($facing);
 	}
 
-	public function facingFlags(array &$faces) : void{
-		$this->addBits(count(Facing::ALL));
-	}
-
-	public function horizontalFacingFlags(array &$faces) : void{
-		$this->addBits(count(Facing::HORIZONTAL));
-	}
-
-	public function facing(int &$facing) : void{
-		$this->addBits(3);
-	}
-
-	public function facingExcept(int &$facing, int $except) : void{
-		$this->facing($facing);
-	}
-
-	public function axis(int &$axis) : void{
-		$this->addBits(2);
-	}
-
-	public function horizontalAxis(int &$axis) : void{
+	public function horizontalAxis(Axis &$axis) : void{
 		$this->addBits(1);
 	}
 
 	public function wallConnections(array &$connections) : void{
 		$this->addBits(7);
-	}
-
-	public function railShape(int &$railShape) : void{
-		$this->addBits(4);
-	}
-
-	public function straightOnlyRailShape(int &$railShape) : void{
-		$this->addBits(3);
 	}
 
 	public function enum(\UnitEnum &$case) : void{

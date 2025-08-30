@@ -23,16 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 
-class Wood extends Opaque{
+class Wood extends Opaque implements PillarRotation, WoodMaterial{
 	use PillarRotationTrait;
 	use WoodTypeTrait;
 
@@ -62,7 +65,7 @@ class Wood extends Opaque{
 		return $this->woodType->isFlammable() ? 5 : 0;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->stripped && $item instanceof Axe){
 			$item->applyDamage(1);
 			$this->stripped = true;

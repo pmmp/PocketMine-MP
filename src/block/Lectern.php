@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -36,7 +37,7 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\LecternPlaceBookSound;
 use function count;
 
-class Lectern extends Transparent{
+class Lectern extends Transparent implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
 
 	protected int $viewedPage = 0;
@@ -45,7 +46,7 @@ class Lectern extends Transparent{
 	protected bool $producingSignal = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->producingSignal);
 	}
 
@@ -83,10 +84,10 @@ class Lectern extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 0.1)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -119,7 +120,7 @@ class Lectern extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$world = $this->position->getWorld();
 			$world->setBlock($this->position, $this->setBook($item));
@@ -129,7 +130,7 @@ class Lectern extends Transparent{
 		return true;
 	}
 
-	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+	public function onAttack(Item $item, Facing $face, ?Player $player = null) : bool{
 		if($this->book !== null){
 			$world = $this->position->getWorld();
 			$world->dropItem($this->position->up(), $this->book);

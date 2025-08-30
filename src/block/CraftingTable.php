@@ -25,12 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\CraftingTableInventoryWindow;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class CraftingTable extends Opaque{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new CraftingTableInventoryWindow($player, $this->position));
 		}

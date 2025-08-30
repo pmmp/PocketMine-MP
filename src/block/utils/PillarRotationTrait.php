@@ -33,17 +33,17 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 trait PillarRotationTrait{
-	protected int $axis = Axis::Y;
+	protected Axis $axis = Axis::Y;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->axis($this->axis);
+		$w->enum($this->axis);
 	}
 
 	/** @see Axis */
-	public function getAxis() : int{ return $this->axis; }
+	public function getAxis() : Axis{ return $this->axis; }
 
 	/** @return $this */
-	public function setAxis(int $axis) : self{
+	public function setAxis(Axis $axis) : self{
 		$this->axis = $axis;
 		return $this;
 	}
@@ -51,7 +51,7 @@ trait PillarRotationTrait{
 	/**
 	 * @see Block::place()
 	 */
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->axis = Facing::axis($face);
 		/** @see Block::place() */
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

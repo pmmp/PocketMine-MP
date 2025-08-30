@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\BlockTypeIds;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\transaction\action\validator\CallbackSlotValidator;
@@ -43,7 +44,7 @@ class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 
 	public const TAG_FACING = "facing";
 
-	protected int $facing = Facing::NORTH;
+	protected Facing $facing = Facing::NORTH;
 
 	protected Inventory $inventory;
 
@@ -64,13 +65,15 @@ class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
-		$this->facing = $nbt->getByte(self::TAG_FACING, $this->facing);
+		//TODO: suspicious use of internal Facing value for storage
+		$this->facing = Facing::tryFrom($nbt->getByte(self::TAG_FACING, $this->facing->value)) ?? throw new SavedDataLoadingException("Invalid facing value");
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveName($nbt);
 		$this->saveItems($nbt);
-		$nbt->setByte(self::TAG_FACING, $this->facing);
+		//TODO: suspicious use of internal Facing value for storage
+		$nbt->setByte(self::TAG_FACING, $this->facing->value);
 	}
 
 	public function copyDataFromItem(Item $item) : void{
@@ -99,11 +102,11 @@ class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 		return $nbt;
 	}
 
-	public function getFacing() : int{
+	public function getFacing() : Facing{
 		return $this->facing;
 	}
 
-	public function setFacing(int $facing) : void{
+	public function setFacing(Facing $facing) : void{
 		$this->facing = $facing;
 	}
 
@@ -120,7 +123,8 @@ class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_FACING, $this->facing);
+		//TODO: suspicious use of internal Facing value for network
+		$nbt->setByte(self::TAG_FACING, $this->facing->value);
 		$this->addNameSpawnData($nbt);
 	}
 }

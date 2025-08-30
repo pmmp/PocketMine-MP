@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -126,9 +127,9 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider removePropertyProvider
 	 * @phpstan-param \Closure() : BlockStateData $getStateData
 	 */
+	#[DataProvider("removePropertyProvider")]
 	public function testRemoveProperty(\Closure $getStateData) : void{
 		$this->prepareRemovePropertySchema($this->getNewSchema());
 
@@ -151,9 +152,9 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider renamePropertyProvider
 	 * @phpstan-param \Closure() : BlockStateData $getStateData
 	 */
+	#[DataProvider("renamePropertyProvider")]
 	public function testRenameProperty(\Closure $getStateData, ?int $valueAfter) : void{
 		$this->prepareRenamePropertySchema($this->getNewSchema());
 
@@ -187,9 +188,9 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider remapPropertyValueProvider
 	 * @phpstan-param \Closure() : BlockStateData $getStateData
 	 */
+	#[DataProvider("remapPropertyValueProvider")]
 	public function testRemapPropertyValue(\Closure $getStateData, ?int $valueAfter) : void{
 		$this->prepareRemapPropertyValueSchema($this->getNewSchema());
 
@@ -199,9 +200,9 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider remapPropertyValueProvider
 	 * @phpstan-param \Closure() : BlockStateData $getStateData
 	 */
+	#[DataProvider("remapPropertyValueProvider")]
 	public function testRemapAndRenameProperty(\Closure $getStateData, ?int $valueAfter) : void{
 		$schema = $this->getNewSchema();
 		$this->prepareRenamePropertySchema($schema);
@@ -239,9 +240,7 @@ class BlockStateUpgraderTest extends TestCase{
 		yield [0x1_00_00_00, 0x1_00_01_00, false, 1]; //Block newer than schema: block must NOT be altered
 	}
 
-	/**
-	 * @dataProvider upgraderVersionCompatibilityProvider
-	 */
+	#[DataProvider("upgraderVersionCompatibilityProvider")]
 	public function testUpgraderVersionCompatibility(int $schemaVersion, int $stateVersion, bool $shouldChange, int $schemaCount) : void{
 		for($i = 0; $i < $schemaCount; $i++){
 			$schema = $this->getNewSchemaVersion($schemaVersion, $i);

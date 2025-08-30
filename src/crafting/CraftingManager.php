@@ -102,17 +102,6 @@ class CraftingManager{
 	/** @phpstan-return ObjectSet<\Closure() : void> */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
 
-	/**
-	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
-	 * @deprecated
-	 */
-	public static function sort(Item $i1, Item $i2) : int{
-		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getStateId() <=> $i2->getStateId()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
-
-		return $retval;
-	}
-
 	private static function hashOutput(Item $output) : string{
 		$write = new BinaryStream();
 		$write->putVarInt($output->getStateId());

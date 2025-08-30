@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 abstract class BaseCake extends Transparent implements FoodSource{
 	use StaticSupportTrait;
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -44,7 +44,7 @@ abstract class BaseCake extends Transparent implements FoodSource{
 		return $block->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::AIR;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			return $player->consumeObject($this);
 		}

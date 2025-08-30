@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -34,7 +36,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class PinkPetals extends Flowable{
+class PinkPetals extends Flowable implements HorizontalFacing{
 	use HorizontalFacingTrait;
 	use StaticSupportTrait {
 		canBePlacedAt as supportedWhenPlacedAt;
@@ -46,7 +48,7 @@ class PinkPetals extends Flowable{
 	protected int $count = self::MIN_COUNT;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->boundedIntAuto(self::MIN_COUNT, self::MAX_COUNT, $this->count);
 	}
 
@@ -69,21 +71,21 @@ class PinkPetals extends Flowable{
 		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		return ($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT) || $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof PinkPetals && $blockReplace->count < self::MAX_COUNT){
 			$this->count = $blockReplace->count + 1;
 			$this->facing = $blockReplace->facing;
 		}elseif($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
+			$this->facing = HorizontalFacingOption::fromFacing(Facing::opposite($player->getHorizontalFacing()));
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$grew = false;
 			if($this->count < self::MAX_COUNT){

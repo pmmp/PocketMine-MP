@@ -186,7 +186,7 @@ abstract class Projectile extends Entity{
 		$entityDistance = PHP_INT_MAX;
 
 		$newDiff = $end->subtractVector($start);
-		foreach($world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
+		foreach($world->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expandedCopy(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() && $this->ticksLived < 5){
 				continue;
 			}

@@ -32,9 +32,12 @@ use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\SlotChangeActionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilder;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
+use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
@@ -46,6 +49,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestSlotInfo;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\MineBlockStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
@@ -233,9 +237,10 @@ class ItemStackRequestExecutor{
 			throw new ItemStackRequestProcessException("Cannot craft a recipe more than 256 times");
 		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
-		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeId);
+		$recipeIndex = $recipeId - CraftingDataCache::RECIPE_ID_OFFSET;
+		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeIndex);
 		if($recipe === null){
-			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeId");
+			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeIndex");
 		}
 
 		$this->specialTransaction = new CraftingTransaction($this->player, $craftingManager, [], $recipe, $repetitions);
@@ -360,6 +365,18 @@ class ItemStackRequestExecutor{
 			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
 			//no obvious use
+		}elseif($action instanceof MineBlockStackRequestAction){
+			$slot = $action->getHotbarSlot();
+			$this->requestSlotInfos[] = new ItemStackRequestSlotInfo(new FullContainerName(ContainerUIIds::HOTBAR), $slot, $action->getStackId());
+			$inventory = $this->player->getInventory();
+			$usedItem = $inventory->slotExists($slot) ? $inventory->getItem($slot) : null;
+			$predictedDamage = $action->getPredictedDurability();
+			if($usedItem instanceof Durable && $predictedDamage >= 0 && $predictedDamage <= $usedItem->getMaxDurability()){
+				$usedItem->setDamage($predictedDamage);
+				//TODO: this is a bit yucky - maybe we don't need the window to add a predicted slot change?
+				$inventoryWindow = $this->inventoryManager->getInventoryWindow($inventory) ?? throw new AssumptionFailedError("The player's inventory should always have an inventory window");
+				$this->inventoryManager->addPredictedSlotChange($inventoryWindow, $slot, $usedItem);
+			}
 		}else{
 			throw new ItemStackRequestProcessException("Unhandled item stack request action");
 		}
@@ -368,7 +385,7 @@ class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	public function generateInventoryTransaction() : InventoryTransaction{
+	public function generateInventoryTransaction() : ?InventoryTransaction{
 		foreach(Utils::promoteKeys($this->request->getActions()) as $k => $action){
 			try{
 				$this->processItemStackRequestAction($action);
@@ -378,6 +395,9 @@ class ItemStackRequestExecutor{
 		}
 		$this->setNextCreatedItem(null);
 		$inventoryActions = $this->builder->generateActions();
+		if(count($inventoryActions) === 0){
+			return null;
+		}
 
 		$transaction = $this->specialTransaction ?? new InventoryTransaction($this->player);
 		foreach($inventoryActions as $action){
@@ -387,12 +407,16 @@ class ItemStackRequestExecutor{
 		return $transaction;
 	}
 
-	public function buildItemStackResponse() : ItemStackResponse{
+	public function getItemStackResponseBuilder() : ItemStackResponseBuilder{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
 			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
-		return $builder->build();
+		return $builder;
+	}
+
+	public function buildItemStackResponse() : ItemStackResponse{
+		return $this->getItemStackResponseBuilder()->build();
 	}
 }

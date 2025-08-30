@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,7 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class DoublePitcherCrop extends DoublePlant{
+final class DoublePitcherCrop extends DoublePlant implements Ageable{
 	use AgeableTrait {
 		describeBlockOnlyState as describeAge;
 	}
@@ -57,10 +58,10 @@ final class DoublePitcherCrop extends DoublePlant{
 		//the pod exists only in the bottom half of the plant
 		return [
 			AxisAlignedBB::one()
-			->trim(Facing::UP, 11 / 16)
-			->squash(Axis::X, 3 / 16)
-			->squash(Axis::Z, 3 / 16)
-			->extend(Facing::DOWN, 1 / 16) //presumably this is to correct for farmland being 15/16 of a block tall
+			->trimmedCopy(Facing::UP, 11 / 16)
+			->squashedCopy(Axis::X, 3 / 16)
+			->squashedCopy(Axis::Z, 3 / 16)
+			->extendedCopy(Facing::DOWN, 1 / 16) //presumably this is to correct for farmland being 15/16 of a block tall
 		];
 	}
 
@@ -88,7 +89,7 @@ final class DoublePitcherCrop extends DoublePlant{
 
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 			return true;
