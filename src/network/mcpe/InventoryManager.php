@@ -164,7 +164,7 @@ class InventoryManager implements InventoryListener{
 	private function add(int $id, InventoryWindow $window) : void{
 		$k = spl_object_id($window->getInventory());
 		if(isset($this->entries[$k])){
-			throw new \InvalidArgumentException("Inventory " . get_class($window) . " is already tracked");
+			throw new \InvalidArgumentException("Inventory " . get_class($window->getInventory()) . " is already tracked (open in two different windows?)");
 		}
 		$this->entries[$k] = new InventoryManagerEntry($window);
 		$window->getInventory()->getListeners()->add($this);

@@ -2832,7 +2832,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(($inventoryManager = $this->getNetworkSession()->getInvManager()) === null){
 			throw new \InvalidArgumentException("Player cannot open inventories in this state");
 		}
-		$this->logger->debug("Opening inventory " . get_class($window) . "#" . spl_object_id($window));
+		$this->logger->debug("Opening inventory window " . get_class($window) . "#" . spl_object_id($window));
 		$inventoryManager->onCurrentWindowChange($window);
 		$window->onOpen();
 		$this->currentWindow = $window;
@@ -2843,7 +2843,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->doCloseInventory();
 		if($this->currentWindow !== null){
 			$currentWindow = $this->currentWindow;
-			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
+			$this->logger->debug("Closing inventory window " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose();
 			if(($inventoryManager = $this->getNetworkSession()->getInvManager()) !== null){
 				$inventoryManager->onCurrentWindowRemove();
