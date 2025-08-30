@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -147,10 +148,10 @@ final class CombinedInventoryProxyTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider setContentsProvider
 	 * @param Item[] $altItems
 	 * @phpstan-param array<int, Item> $altItems
 	 */
+	#[DataProvider("setContentsProvider")]
 	public function testSetContents(array $altItems) : void{
 		$backing = $this->createInventories();
 		$inventory = new CombinedInventoryProxy($backing);
