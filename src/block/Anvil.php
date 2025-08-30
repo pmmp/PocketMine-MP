@@ -29,6 +29,7 @@ use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\InventoryMenuTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\object\FallingBlock;
@@ -39,6 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
 use function round;
@@ -46,6 +48,7 @@ use function round;
 class Anvil extends Transparent implements Fallable, HorizontalFacing{
 	use FallableTrait;
 	use HorizontalFacingTrait;
+	use InventoryMenuTrait;
 
 	public const UNDAMAGED = 0;
 	public const SLIGHTLY_DAMAGED = 1;
@@ -80,12 +83,8 @@ class Anvil extends Transparent implements Fallable, HorizontalFacing{
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$player->setCurrentWindow(new AnvilInventoryWindow($player, $this->position));
-		}
-
-		return true;
+	protected function newWindow(Player $player, Position $position) : AnvilInventoryWindow{
+		return new AnvilInventoryWindow($player, $position);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{

@@ -28,16 +28,17 @@ use pocketmine\block\inventory\window\DoubleChestInventoryWindow;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
-use pocketmine\item\Item;
+use pocketmine\inventory\Inventory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\world\sound\ChestCloseSound;
@@ -46,6 +47,7 @@ use pocketmine\world\sound\Sound;
 
 class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 	use AnimatedContainerTrait;
+	use ContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	protected function recalculateCollisionBoxes() : array{
@@ -100,34 +102,25 @@ class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 		}
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$world = $this->position->getWorld();
-			$chest = $world->getTile($this->position);
-			if($chest instanceof TileChest){
-				[$pairOnLeft, $pair] = $this->locatePair($this->position) ?? [false, null];
-				if(
-					!$this->getSide(Facing::UP)->isTransparent() ||
-					($pair !== null && !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) ||
-					!$chest->canOpenWith($item->getCustomName())
-				){
-					return true;
-				}
-
-				if($pair !== null){
-					[$left, $right] = $pairOnLeft ? [$pair->getBlock(), $this] : [$this, $pair->getBlock()];
-
-					//TODO: we should probably construct DoubleChestInventory here directly too using the same logic
-					//right now it uses some weird logic in TileChest which produces incorrect results
-					//however I'm not sure if this is currently possible
-					$window = new DoubleChestInventoryWindow($player, $chest->getInventory(), $left->position, $right->position);
-				}
-
-				$player->setCurrentWindow($window ?? new BlockInventoryWindow($player, $chest->getInventory(), $this->position));
-			}
+	protected function isOpeningObstructed() : bool{
+		if(!$this->getSide(Facing::UP)->isTransparent()){
+			return true;
 		}
+		[, $pair] = $this->locatePair($this->position) ?? [false, null];
+		return $pair !== null && !$pair->getBlock()->getSide(Facing::UP)->isTransparent();
+	}
 
-		return true;
+	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+		[$pairOnLeft, $pair] = $this->locatePair($position) ?? [false, null];
+		if($pair === null){
+			return new BlockInventoryWindow($player, $inventory, $position);
+		}
+		[$left, $right] = $pairOnLeft ? [$pair->getPosition(), $position] : [$position, $pair->getPosition()];
+
+		//TODO: we should probably construct DoubleChestInventory here directly too using the same logic
+		//right now it uses some weird logic in TileChest which produces incorrect results
+		//however I'm not sure if this is currently possible
+		return new DoubleChestInventoryWindow($player, $inventory, $left, $right);
 	}
 
 	public function getFuelTime() : int{

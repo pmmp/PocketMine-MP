@@ -29,11 +29,11 @@ use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\InventoryMenuTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\player\Player;
@@ -47,6 +47,7 @@ class EnderChest extends Transparent implements AnimatedContainer, HorizontalFac
 		onContainerOpen as private traitOnContainerOpen;
 		onContainerClose as private traitOnContainerClose;
 	}
+	use InventoryMenuTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	public function getLightLevel() : int{
@@ -62,15 +63,12 @@ class EnderChest extends Transparent implements AnimatedContainer, HorizontalFac
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$enderChest = $this->position->getWorld()->getTile($this->position);
-			if($enderChest instanceof TileEnderChest && $this->getSide(Facing::UP)->isTransparent()){
-				$player->setCurrentWindow(new BlockInventoryWindow($player, $player->getEnderInventory(), $this->position));
-			}
-		}
+	protected function isOpeningObstructed() : bool{
+		return !$this->getSide(Facing::UP)->isTransparent();
+	}
 
-		return true;
+	protected function newWindow(Player $player, Position $position) : BlockInventoryWindow{
+		return new BlockInventoryWindow($player, $player->getEnderInventory(), $position);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

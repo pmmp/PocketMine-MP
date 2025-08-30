@@ -26,21 +26,19 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\StonecutterInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\InventoryMenuTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 class Stonecutter extends Transparent implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
+	use InventoryMenuTrait;
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$player->setCurrentWindow(new StonecutterInventoryWindow($player, $this->position));
-		}
-		return true;
+	protected function newWindow(Player $player, Position $position) : StonecutterInventoryWindow{
+		return new StonecutterInventoryWindow($player, $position);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

@@ -24,19 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\HopperInventoryWindow;
-use pocketmine\block\tile\Hopper as TileHopper;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 
 class Hopper extends Transparent implements PoweredByRedstone{
+	use ContainerTrait;
 	use PoweredByRedstoneTrait;
 
 	private Facing $facing = Facing::DOWN;
@@ -82,15 +86,8 @@ class Hopper extends Transparent implements PoweredByRedstone{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$tile = $this->position->getWorld()->getTile($this->position);
-			if($tile instanceof TileHopper){ //TODO: find a way to have inventories open on click without this boilerplate in every block
-				$player->setCurrentWindow(new HopperInventoryWindow($player, $tile->getInventory(), $this->position));
-			}
-			return true;
-		}
-		return false;
+	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+		return new HopperInventoryWindow($player, $inventory, $position);
 	}
 
 	public function onScheduledUpdate() : void{

@@ -24,19 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\CraftingTableInventoryWindow;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
+use pocketmine\block\utils\InventoryMenuTrait;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 class CraftingTable extends Opaque{
+	use InventoryMenuTrait;
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$player->setCurrentWindow(new CraftingTableInventoryWindow($player, $this->position));
-		}
-
-		return true;
+	protected function newWindow(Player $player, Position $position) : CraftingTableInventoryWindow{
+		return new CraftingTableInventoryWindow($player, $position);
 	}
 
 	public function getFuelTime() : int{

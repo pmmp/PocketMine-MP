@@ -21,20 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\inventory\window\LoomInventoryWindow;
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacing;
-use pocketmine\block\utils\InventoryMenuTrait;
-use pocketmine\player\Player;
-use pocketmine\world\Position;
-
-final class Loom extends Opaque implements HorizontalFacing{
-	use FacesOppositePlacingPlayerTrait;
-	use InventoryMenuTrait;
-
-	protected function newWindow(Player $player, Position $position) : LoomInventoryWindow{
-		return new LoomInventoryWindow($player, $position);
-	}
+enum ContainerOpenResult{
+	/**
+	 * Opening the container succeeded and the player is now viewing the contents
+	 */
+	case SUCCESS;
+	/**
+	 * No container tile (and therefore no content) was found on the block's position
+	 */
+	case CONTAINER_NOT_FOUND;
+	/**
+	 * The container's opening is obstructed (e.g a block on top of a chest's lid)
+	 */
+	case OBSTRUCTED;
+	/**
+	 * The container is locked and the used item doesn't have the correct custom name to unlock it
+	 */
+	case INCORRECT_KEY;
 }

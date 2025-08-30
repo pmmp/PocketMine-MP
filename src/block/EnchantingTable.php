@@ -24,14 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\EnchantingTableInventoryWindow;
+use pocketmine\block\utils\InventoryMenuTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
 class EnchantingTable extends Transparent{
+	use InventoryMenuTrait;
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 0.25)];
@@ -41,13 +42,7 @@ class EnchantingTable extends Transparent{
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			//TODO lock
-
-			$player->setCurrentWindow(new EnchantingTableInventoryWindow($player, $this->position));
-		}
-
-		return true;
+	protected function newWindow(Player $player, Position $position) : EnchantingTableInventoryWindow{
+		return new EnchantingTableInventoryWindow($player, $position);
 	}
 }

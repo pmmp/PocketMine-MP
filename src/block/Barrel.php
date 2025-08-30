@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\window\BlockInventoryWindow;
-use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -44,6 +43,7 @@ use function abs;
 class Barrel extends Opaque implements AnimatedContainer, AnyFacing{
 	use AnimatedContainerTrait;
 	use AnyFacingTrait;
+	use ContainerTrait;
 
 	protected bool $open = false;
 
@@ -80,21 +80,6 @@ class Barrel extends Opaque implements AnimatedContainer, AnyFacing{
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$barrel = $this->position->getWorld()->getTile($this->position);
-			if($barrel instanceof TileBarrel){
-				if(!$barrel->canOpenWith($item->getCustomName())){
-					return true;
-				}
-
-				$player->setCurrentWindow(new BlockInventoryWindow($player, $barrel->getInventory(), $this->position));
-			}
-		}
-
-		return true;
 	}
 
 	public function getFuelTime() : int{

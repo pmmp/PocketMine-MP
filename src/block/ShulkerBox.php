@@ -29,13 +29,16 @@ use pocketmine\block\utils\AnimatedContainer;
 use pocketmine\block\utils\AnimatedContainerTrait;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
@@ -46,6 +49,7 @@ use pocketmine\world\sound\Sound;
 class ShulkerBox extends Opaque implements AnimatedContainer, AnyFacing{
 	use AnimatedContainerTrait;
 	use AnyFacingTrait;
+	use ContainerTrait;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		//NOOP - we don't read or write facing here, because the tile persists it
@@ -105,23 +109,12 @@ class ShulkerBox extends Opaque implements AnimatedContainer, AnyFacing{
 		return $result;
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
+	protected function isOpeningObstructed() : bool{
+		return $this->getSide($this->facing)->isSolid();
+	}
 
-			$shulker = $this->position->getWorld()->getTile($this->position);
-			if($shulker instanceof TileShulkerBox){
-				if(
-					$this->getSide($this->facing)->isSolid() ||
-					!$shulker->canOpenWith($item->getCustomName())
-				){
-					return true;
-				}
-
-				$player->setCurrentWindow(new BlockInventoryWindow($player, $shulker->getInventory(), $this->position));
-			}
-		}
-
-		return true;
+	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+		return new BlockInventoryWindow($player, $inventory, $position);
 	}
 
 	public function getSupportType(Facing $facing) : SupportType{
