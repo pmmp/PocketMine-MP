@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
 use pocketmine\utils\ObjectSet;
 
 final class Hotbar{

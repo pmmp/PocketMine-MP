@@ -63,7 +63,7 @@ class EnderChest extends Transparent implements AnimatedContainerLike, Horizonta
 		return SupportType::NONE;
 	}
 
-	protected function isOpeningObstructed() : bool{
+	public function isOpeningObstructed() : bool{
 		return !$this->getSide(Facing::UP)->isTransparent();
 	}
 
