@@ -21,23 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\inventory\window\SmithingTableInventoryWindow;
-use pocketmine\block\utils\MenuAccessor;
-use pocketmine\block\utils\MenuAccessorTrait;
-use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
-use pocketmine\world\Position;
 
-final class SmithingTable extends Opaque implements MenuAccessor{
-	use MenuAccessorTrait;
+/**
+ * Blocks which open a menu when interacted with
+ * This could be a container menu, or a menu that otherwise deals with items, such as a crafting menu
+ */
+interface MenuAccessor{
+	/**
+	 * Returns whether the block's ability to open the menu is currently obstructed (e.g. by nearby blocks).
+	 */
+	public function isOpeningObstructed() : bool;
 
-	protected function newMenu(Player $player, Position $position) : InventoryWindow{
-		return new SmithingTableInventoryWindow($player, $position);
-	}
-
-	public function getFuelTime() : int{
-		return 300;
-	}
+	/**
+	 * Opens the menu to the player.
+	 * Note: No preconditions are checked. Do not check for obstruction or locks here.
+	 *
+	 * Returns true if successful, false otherwise (e.g. event cancelled, container missing)
+	 */
+	public function openToUnchecked(Player $player) : bool;
 }

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\FurnaceInventoryWindow;
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
@@ -38,7 +39,7 @@ use pocketmine\player\Player;
 use pocketmine\world\Position;
 use function mt_rand;
 
-class Furnace extends Opaque implements Lightable, HorizontalFacing{
+class Furnace extends Opaque implements Container, Lightable, HorizontalFacing{
 	use ContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 	use LightableTrait;
@@ -63,7 +64,7 @@ class Furnace extends Opaque implements Lightable, HorizontalFacing{
 		return $this->lit ? 13 : 0;
 	}
 
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
 		return new FurnaceInventoryWindow($player, $inventory, $position, $this->furnaceType);
 	}
 

@@ -24,14 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\CraftingTableInventoryWindow;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class CraftingTable extends Opaque{
-	use InventoryMenuTrait;
+class CraftingTable extends Opaque implements MenuAccessor{
+	use MenuAccessorTrait;
 
-	protected function newWindow(Player $player, Position $position) : CraftingTableInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : CraftingTableInventoryWindow{
 		return new CraftingTableInventoryWindow($player, $position);
 	}
 

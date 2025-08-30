@@ -24,14 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\CartographyTableInventoryWindow;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-final class CartographyTable extends Opaque{
-	use InventoryMenuTrait;
+final class CartographyTable extends Opaque implements MenuAccessor{
+	use MenuAccessorTrait;
 
-	protected function newWindow(Player $player, Position $position) : CartographyTableInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : CartographyTableInventoryWindow{
 		return new CartographyTableInventoryWindow($player, $position);
 	}
 

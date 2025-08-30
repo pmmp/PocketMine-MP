@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\HopperInventoryWindow;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
@@ -39,7 +40,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 
-class Hopper extends Transparent implements PoweredByRedstone{
+class Hopper extends Transparent implements Container, PoweredByRedstone{
 	use ContainerTrait;
 	use PoweredByRedstoneTrait;
 
@@ -86,7 +87,7 @@ class Hopper extends Transparent implements PoweredByRedstone{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
 		return new HopperInventoryWindow($player, $inventory, $position);
 	}
 

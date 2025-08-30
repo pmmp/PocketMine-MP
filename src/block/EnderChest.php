@@ -25,11 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\BlockInventoryWindow;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
-use pocketmine\block\utils\AnimatedContainer;
-use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\AnimatedContainerLike;
+use pocketmine\block\utils\AnimatedContainerLikeTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -42,12 +42,12 @@ use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
 use pocketmine\world\sound\Sound;
 
-class EnderChest extends Transparent implements AnimatedContainer, HorizontalFacing{
-	use AnimatedContainerTrait {
-		onContainerOpen as private traitOnContainerOpen;
-		onContainerClose as private traitOnContainerClose;
+class EnderChest extends Transparent implements AnimatedContainerLike, HorizontalFacing{
+	use AnimatedContainerLikeTrait {
+		onViewerAdded as private traitOnViewerAdded;
+		onViewerRemoved as private traitOnViewerRemoved;
 	}
-	use InventoryMenuTrait;
+	use MenuAccessorTrait;
 	use FacesOppositePlacingPlayerTrait;
 
 	public function getLightLevel() : int{
@@ -67,7 +67,7 @@ class EnderChest extends Transparent implements AnimatedContainer, HorizontalFac
 		return !$this->getSide(Facing::UP)->isTransparent();
 	}
 
-	protected function newWindow(Player $player, Position $position) : BlockInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : BlockInventoryWindow{
 		return new BlockInventoryWindow($player, $player->getEnderInventory(), $position);
 	}
 
@@ -81,7 +81,7 @@ class EnderChest extends Transparent implements AnimatedContainer, HorizontalFac
 		return true;
 	}
 
-	protected function getContainerViewerCount() : int{
+	protected function getViewerCount() : int{
 		$enderChest = $this->position->getWorld()->getTile($this->position);
 		if(!$enderChest instanceof TileEnderChest){
 			return 0;
@@ -89,34 +89,34 @@ class EnderChest extends Transparent implements AnimatedContainer, HorizontalFac
 		return $enderChest->getViewerCount();
 	}
 
-	private function updateContainerViewerCount(int $amount) : void{
+	private function updateViewerCount(int $amount) : void{
 		$enderChest = $this->position->getWorld()->getTile($this->position);
 		if($enderChest instanceof TileEnderChest){
 			$enderChest->setViewerCount($enderChest->getViewerCount() + $amount);
 		}
 	}
 
-	protected function getContainerOpenSound() : Sound{
+	protected function getOpenSound() : Sound{
 		return new EnderChestOpenSound();
 	}
 
-	protected function getContainerCloseSound() : Sound{
+	protected function getCloseSound() : Sound{
 		return new EnderChestCloseSound();
 	}
 
-	protected function doContainerAnimation(Position $position, bool $isOpen) : void{
+	protected function playAnimationVisual(Position $position, bool $isOpen) : void{
 		//event ID is always 1 for a chest
 		//TODO: we probably shouldn't be sending a packet directly here, but it doesn't fit anywhere into existing systems
 		$position->getWorld()->broadcastPacketToViewers($position, BlockEventPacket::create(BlockPosition::fromVector3($position), 1, $isOpen ? 1 : 0));
 	}
 
-	public function onContainerOpen() : void{
-		$this->updateContainerViewerCount(1);
-		$this->traitOnContainerOpen();
+	public function onViewerAdded() : void{
+		$this->updateViewerCount(1);
+		$this->traitOnViewerAdded();
 	}
 
-	public function onContainerClose() : void{
-		$this->traitOnContainerClose();
-		$this->updateContainerViewerCount(-1);
+	public function onViewerRemoved() : void{
+		$this->traitOnViewerRemoved();
+		$this->updateViewerCount(-1);
 	}
 }

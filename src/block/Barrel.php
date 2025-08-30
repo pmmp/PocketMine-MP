@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\AnimatedContainer;
-use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\AnimatedContainerLike;
+use pocketmine\block\utils\AnimatedContainerLikeTrait;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -40,8 +41,8 @@ use pocketmine\world\sound\BarrelOpenSound;
 use pocketmine\world\sound\Sound;
 use function abs;
 
-class Barrel extends Opaque implements AnimatedContainer, AnyFacing{
-	use AnimatedContainerTrait;
+class Barrel extends Opaque implements AnimatedContainerLike, AnyFacing, Container{
+	use AnimatedContainerLikeTrait;
 	use AnyFacingTrait;
 	use ContainerTrait;
 
@@ -86,15 +87,15 @@ class Barrel extends Opaque implements AnimatedContainer, AnyFacing{
 		return 300;
 	}
 
-	protected function getContainerOpenSound() : Sound{
+	protected function getOpenSound() : Sound{
 		return new BarrelOpenSound();
 	}
 
-	protected function getContainerCloseSound() : Sound{
+	protected function getCloseSound() : Sound{
 		return new BarrelCloseSound();
 	}
 
-	protected function doContainerAnimation(Position $position, bool $isOpen) : void{
+	protected function playAnimationVisual(Position $position, bool $isOpen) : void{
 		$world = $position->getWorld();
 		$block = $world->getBlock($position);
 		if($block instanceof Barrel){

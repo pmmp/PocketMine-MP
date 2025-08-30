@@ -24,15 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\EnchantingTableInventoryWindow;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class EnchantingTable extends Transparent{
-	use InventoryMenuTrait;
+class EnchantingTable extends Transparent implements MenuAccessor{
+	use MenuAccessorTrait;
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 0.25)];
@@ -42,7 +43,7 @@ class EnchantingTable extends Transparent{
 		return SupportType::NONE;
 	}
 
-	protected function newWindow(Player $player, Position $position) : EnchantingTableInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : EnchantingTableInventoryWindow{
 		return new EnchantingTableInventoryWindow($player, $position);
 	}
 }

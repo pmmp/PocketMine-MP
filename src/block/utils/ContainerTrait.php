@@ -39,34 +39,34 @@ trait ContainerTrait{
 	 * @see Block::onInteract()
 	 */
 	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$this->openTo($player, ignoreObstruction: false, ignoreLock: false);
+		if($player instanceof Player && !$this->isOpeningObstructed() && $this->canOpenWith($item->getCustomName())){
+			$this->openToUnchecked($player);
 		}
 
 		return true;
 	}
 
-	protected function isOpeningObstructed() : bool{
-		return false;
-	}
-
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
 		return new BlockInventoryWindow($player, $inventory, $position);
 	}
 
-	public function openTo(Player $player, bool $ignoreObstruction, bool $ignoreLock) : ContainerOpenResult{
+	public function isOpeningObstructed() : bool{
+		return false;
+	}
+
+	public function canOpenWith(string $key) : bool{
+		//TODO: maybe we can bring the key to the block in readStateFromWorld()?
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$tile instanceof ContainerTile){
-			return ContainerOpenResult::CONTAINER_NOT_FOUND;
-		}
-		if(!$ignoreLock && !$tile->canOpenWith($player->getHotbar()->getHeldItem()->getCustomName())){
-			return ContainerOpenResult::INCORRECT_KEY;
-		}
-		if(!$ignoreObstruction && $this->isOpeningObstructed()){
-			return ContainerOpenResult::OBSTRUCTED;
-		}
-		$window = $this->newWindow($player, $tile->getInventory(), $this->position);
-		$player->setCurrentWindow($window);
-		return ContainerOpenResult::SUCCESS;
+		return $tile instanceof ContainerTile && $tile->canOpenWith($key);
+	}
+
+	public function openToUnchecked(Player $player) : bool{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		return $tile instanceof ContainerTile && $player->setCurrentWindow($this->newMenu($player, $tile->getInventory(), $this->position));
+	}
+
+	public function getInventory() : ?Inventory{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		return $tile instanceof ContainerTile ? $tile->getInventory() : null;
 	}
 }

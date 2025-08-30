@@ -26,8 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\BlockInventoryWindow;
 use pocketmine\block\inventory\window\DoubleChestInventoryWindow;
 use pocketmine\block\tile\Chest as TileChest;
-use pocketmine\block\utils\AnimatedContainer;
-use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\AnimatedContainerLike;
+use pocketmine\block\utils\AnimatedContainerLikeTrait;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
@@ -45,8 +46,8 @@ use pocketmine\world\sound\ChestCloseSound;
 use pocketmine\world\sound\ChestOpenSound;
 use pocketmine\world\sound\Sound;
 
-class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
-	use AnimatedContainerTrait;
+class Chest extends Transparent implements AnimatedContainerLike, Container, HorizontalFacing{
+	use AnimatedContainerLikeTrait;
 	use ContainerTrait;
 	use FacesOppositePlacingPlayerTrait;
 
@@ -102,7 +103,7 @@ class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 		}
 	}
 
-	protected function isOpeningObstructed() : bool{
+	public function isOpeningObstructed() : bool{
 		if(!$this->getSide(Facing::UP)->isTransparent()){
 			return true;
 		}
@@ -110,7 +111,7 @@ class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 		return $pair !== null && !$pair->getBlock()->getSide(Facing::UP)->isTransparent();
 	}
 
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
 		[$pairOnLeft, $pair] = $this->locatePair($position) ?? [false, null];
 		if($pair === null){
 			return new BlockInventoryWindow($player, $inventory, $position);
@@ -127,29 +128,29 @@ class Chest extends Transparent implements AnimatedContainer, HorizontalFacing{
 		return 300;
 	}
 
-	protected function getContainerOpenSound() : Sound{
+	protected function getOpenSound() : Sound{
 		return new ChestOpenSound();
 	}
 
-	protected function getContainerCloseSound() : Sound{
+	protected function getCloseSound() : Sound{
 		return new ChestCloseSound();
 	}
 
-	protected function doContainerAnimation(Position $position, bool $isOpen) : void{
+	protected function playAnimationVisual(Position $position, bool $isOpen) : void{
 		//event ID is always 1 for a chest
 		//TODO: we probably shouldn't be sending a packet directly here, but it doesn't fit anywhere into existing systems
 		$position->getWorld()->broadcastPacketToViewers($position, BlockEventPacket::create(BlockPosition::fromVector3($position), 1, $isOpen ? 1 : 0));
 	}
 
-	protected function doContainerEffects(bool $isOpen) : void{
-		$this->doContainerAnimation($this->position, $isOpen);
-		$this->playContainerSound($this->position, $isOpen);
+	protected function doAnimationEffects(bool $isOpen) : void{
+		$this->playAnimationVisual($this->position, $isOpen);
+		$this->playAnimationSound($this->position, $isOpen);
 
 		$pairInfo = $this->locatePair($this->position);
 		if($pairInfo !== null){
 			[, $pair] = $pairInfo;
-			$this->doContainerAnimation($pair->getPosition(), $isOpen);
-			$this->playContainerSound($pair->getPosition(), $isOpen);
+			$this->playAnimationVisual($pair->getPosition(), $isOpen);
+			$this->playAnimationSound($pair->getPosition(), $isOpen);
 		}
 	}
 }

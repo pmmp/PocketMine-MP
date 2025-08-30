@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\BrewingStandInventoryWindow;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -38,7 +39,7 @@ use pocketmine\world\Position;
 use function array_key_exists;
 use function spl_object_id;
 
-class BrewingStand extends Transparent{
+class BrewingStand extends Transparent implements Container{
 	use ContainerTrait;
 
 	/**
@@ -98,7 +99,7 @@ class BrewingStand extends Transparent{
 		return $this;
 	}
 
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : BrewingStandInventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : BrewingStandInventoryWindow{
 		return new BrewingStandInventoryWindow($player, $inventory, $position);
 	}
 

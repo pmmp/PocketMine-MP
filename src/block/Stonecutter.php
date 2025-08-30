@@ -26,18 +26,19 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\StonecutterInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class Stonecutter extends Transparent implements HorizontalFacing{
+class Stonecutter extends Transparent implements HorizontalFacing, MenuAccessor{
 	use FacesOppositePlacingPlayerTrait;
-	use InventoryMenuTrait;
+	use MenuAccessorTrait;
 
-	protected function newWindow(Player $player, Position $position) : StonecutterInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : StonecutterInventoryWindow{
 		return new StonecutterInventoryWindow($player, $position);
 	}
 

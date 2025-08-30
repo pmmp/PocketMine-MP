@@ -31,30 +31,26 @@ use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-trait InventoryMenuTrait{
+trait MenuAccessorTrait{
 
 	/**
 	 * @see Block::onInteract()
 	 */
 	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$this->openTo($player, ignoreObstruction: false);
+		if($player instanceof Player && !$this->isOpeningObstructed()){
+			$this->openToUnchecked($player);
 		}
 
 		return true;
 	}
 
-	abstract protected function newWindow(Player $player, Position $position) : InventoryWindow;
+	abstract protected function newMenu(Player $player, Position $position) : InventoryWindow;
 
-	protected function isOpeningObstructed() : bool{
+	public function isOpeningObstructed() : bool{
 		return false;
 	}
 
-	public function openTo(Player $player, bool $ignoreObstruction) : bool{
-		if(!$ignoreObstruction && $this->isOpeningObstructed()){
-			return false;
-		}
-		$player->setCurrentWindow($this->newWindow($player, $this->position));
-		return true;
+	public function openToUnchecked(Player $player) : bool{
+		return $player->setCurrentWindow($this->newMenu($player, $this->position));
 	}
 }

@@ -26,15 +26,16 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\window\LoomInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-final class Loom extends Opaque implements HorizontalFacing{
+final class Loom extends Opaque implements HorizontalFacing, MenuAccessor{
 	use FacesOppositePlacingPlayerTrait;
-	use InventoryMenuTrait;
+	use MenuAccessorTrait;
 
-	protected function newWindow(Player $player, Position $position) : LoomInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : LoomInventoryWindow{
 		return new LoomInventoryWindow($player, $position);
 	}
 }

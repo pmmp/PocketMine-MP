@@ -28,9 +28,9 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
 use function count;
 
-trait AnimatedContainerTrait{
+trait AnimatedContainerLikeTrait{
 
-	protected function getContainerViewerCount() : int{
+	protected function getViewerCount() : int{
 		$position = $this->getPosition();
 		$tile = $position->getWorld()->getTile($position);
 		if($tile instanceof InventoryHolder){
@@ -39,33 +39,33 @@ trait AnimatedContainerTrait{
 		return 0;
 	}
 
-	abstract protected function getContainerOpenSound() : Sound;
+	abstract protected function getOpenSound() : Sound;
 
-	abstract protected function getContainerCloseSound() : Sound;
+	abstract protected function getCloseSound() : Sound;
 
-	abstract protected function doContainerAnimation(Position $position, bool $isOpen) : void;
+	abstract protected function playAnimationVisual(Position $position, bool $isOpen) : void;
 
-	protected function playContainerSound(Position $position, bool $isOpen) : void{
-		$position->getWorld()->addSound($position->add(0.5, 0.5, 0.5), $isOpen ? $this->getContainerOpenSound() : $this->getContainerCloseSound());
+	protected function playAnimationSound(Position $position, bool $isOpen) : void{
+		$position->getWorld()->addSound($position->add(0.5, 0.5, 0.5), $isOpen ? $this->getOpenSound() : $this->getCloseSound());
 	}
 
 	abstract protected function getPosition() : Position;
 
-	protected function doContainerEffects(bool $isOpen) : void{
+	protected function doAnimationEffects(bool $isOpen) : void{
 		$position = $this->getPosition();
-		$this->doContainerAnimation($position, $isOpen);
-		$this->playContainerSound($position, $isOpen);
+		$this->playAnimationVisual($position, $isOpen);
+		$this->playAnimationSound($position, $isOpen);
 	}
 
-	public function onContainerOpen() : void{
-		if($this->getContainerViewerCount() === 1){
-			$this->doContainerEffects(true);
+	public function onViewerAdded() : void{
+		if($this->getViewerCount() === 1){
+			$this->doAnimationEffects(true);
 		}
 	}
 
-	public function onContainerClose() : void{
-		if($this->getContainerViewerCount() === 1){
-			$this->doContainerEffects(false);
+	public function onViewerRemoved() : void{
+		if($this->getViewerCount() === 1){
+			$this->doAnimationEffects(false);
 		}
 	}
 }

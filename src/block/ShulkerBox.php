@@ -25,10 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\window\BlockInventoryWindow;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
-use pocketmine\block\utils\AnimatedContainer;
-use pocketmine\block\utils\AnimatedContainerTrait;
+use pocketmine\block\utils\AnimatedContainerLike;
+use pocketmine\block\utils\AnimatedContainerLikeTrait;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\Container;
 use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -46,8 +47,8 @@ use pocketmine\world\sound\ShulkerBoxCloseSound;
 use pocketmine\world\sound\ShulkerBoxOpenSound;
 use pocketmine\world\sound\Sound;
 
-class ShulkerBox extends Opaque implements AnimatedContainer, AnyFacing{
-	use AnimatedContainerTrait;
+class ShulkerBox extends Opaque implements AnimatedContainerLike, AnyFacing, Container{
+	use AnimatedContainerLikeTrait;
 	use AnyFacingTrait;
 	use ContainerTrait;
 
@@ -109,11 +110,11 @@ class ShulkerBox extends Opaque implements AnimatedContainer, AnyFacing{
 		return $result;
 	}
 
-	protected function isOpeningObstructed() : bool{
+	public function isOpeningObstructed() : bool{
 		return $this->getSide($this->facing)->isSolid();
 	}
 
-	protected function newWindow(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : InventoryWindow{
 		return new BlockInventoryWindow($player, $inventory, $position);
 	}
 
@@ -121,15 +122,15 @@ class ShulkerBox extends Opaque implements AnimatedContainer, AnyFacing{
 		return SupportType::NONE;
 	}
 
-	protected function getContainerOpenSound() : Sound{
+	protected function getOpenSound() : Sound{
 		return new ShulkerBoxOpenSound();
 	}
 
-	protected function getContainerCloseSound() : Sound{
+	protected function getCloseSound() : Sound{
 		return new ShulkerBoxCloseSound();
 	}
 
-	protected function doContainerAnimation(Position $position, bool $isOpen) : void{
+	protected function playAnimationVisual(Position $position, bool $isOpen) : void{
 		//event ID is always 1 for a chest
 		//TODO: we probably shouldn't be sending a packet directly here, but it doesn't fit anywhere into existing systems
 		$position->getWorld()->broadcastPacketToViewers($position, BlockEventPacket::create(BlockPosition::fromVector3($position), 1, $isOpen ? 1 : 0));

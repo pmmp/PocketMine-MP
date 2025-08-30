@@ -23,16 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-interface AnimatedContainer{
+use pocketmine\inventory\Inventory;
+
+/**
+ * Blocks which have an associated inventory of contents
+ * Default implementation provided by {@see ContainerTrait}
+ */
+interface Container extends MenuAccessor{
 	/**
-	 * Do actions when the container block is opened by a player.
-	 * If you have a custom viewer counter (like ender chests), you should increment it here.
+	 * Returns whether an item with the given key as its custom name can be used to access the container's contents.
 	 */
-	public function onContainerOpen() : void;
+	public function canOpenWith(string $key) : bool;
 
 	/**
-	 * Do actions when the container block is closed by a player.
-	 * As above, you should decrement your custom viewer counter here, if you have one.
+	 * Returns the inventory of this container.
+	 * Note: This may return NULL if the container's tile was missing or incorrect. This is rare, but may occur as a
+	 * result of plugins incorrectly creating blocks, or legacy world data.
 	 */
-	public function onContainerClose() : void;
+	public function getInventory() : ?Inventory;
 }

@@ -29,7 +29,8 @@ use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
-use pocketmine\block\utils\InventoryMenuTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\object\FallingBlock;
@@ -45,10 +46,10 @@ use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
 use function round;
 
-class Anvil extends Transparent implements Fallable, HorizontalFacing{
+class Anvil extends Transparent implements Fallable, HorizontalFacing, MenuAccessor{
 	use FallableTrait;
 	use HorizontalFacingTrait;
-	use InventoryMenuTrait;
+	use MenuAccessorTrait;
 
 	public const UNDAMAGED = 0;
 	public const SLIGHTLY_DAMAGED = 1;
@@ -83,7 +84,7 @@ class Anvil extends Transparent implements Fallable, HorizontalFacing{
 		return SupportType::NONE;
 	}
 
-	protected function newWindow(Player $player, Position $position) : AnvilInventoryWindow{
+	protected function newMenu(Player $player, Position $position) : AnvilInventoryWindow{
 		return new AnvilInventoryWindow($player, $position);
 	}
 
