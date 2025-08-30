@@ -307,7 +307,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($packet->eventId){
 			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
-				$item = $this->player->getHotbar()->getHeldItem();
+				$item = $this->player->getMainHandItem();
 				if($item->isNull()){
 					return false;
 				}

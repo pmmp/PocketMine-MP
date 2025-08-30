@@ -1649,7 +1649,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private function returnItemsFromAction(Item $oldHeldItem, Item $newHeldItem, array $extraReturnedItems) : void{
 		$heldItemChanged = false;
 
-		if(!$newHeldItem->equalsExact($oldHeldItem) && $oldHeldItem->equalsExact($this->hotbar->getHeldItem())){
+		if(!$newHeldItem->equalsExact($oldHeldItem) && $oldHeldItem->equalsExact($this->getMainHandItem())){
 			//determine if the item was changed in some meaningful way, or just damaged/changed count
 			//if it was really changed we always need to set it, whether we have finite resources or not
 			$newReplica = clone $oldHeldItem;
@@ -1666,7 +1666,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				if($newHeldItem instanceof Durable && $newHeldItem->isBroken()){
 					$this->broadcastSound(new ItemBreakSound());
 				}
-				$this->hotbar->setHeldItem($newHeldItem);
+				$this->setMainHandItem($newHeldItem);
 				$heldItemChanged = true;
 			}
 		}
@@ -1676,7 +1676,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if($heldItemChanged && count($extraReturnedItems) > 0 && $newHeldItem->isNull()){
-			$this->hotbar->setHeldItem(array_shift($extraReturnedItems));
+			$this->setMainHandItem(array_shift($extraReturnedItems));
 		}
 		foreach($this->inventory->addItem(...$extraReturnedItems) as $drop){
 			//TODO: we can't generate a transaction for this since the items aren't coming from an inventory :(
@@ -1698,7 +1698,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function useHeldItem() : bool{
 		$directionVector = $this->getDirectionVector();
-		$item = $this->hotbar->getHeldItem();
+		$item = $this->getMainHandItem();
 		$oldItem = clone $item;
 
 		$ev = new PlayerItemUseEvent($this, $item, $directionVector);
@@ -1732,7 +1732,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @return bool if the consumption succeeded.
 	 */
 	public function consumeHeldItem() : bool{
-		$slot = $this->hotbar->getHeldItem();
+		$slot = $this->getMainHandItem();
 		if($slot instanceof ConsumableItem){
 			$oldItem = clone $slot;
 
@@ -1765,7 +1765,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function releaseHeldItem() : bool{
 		try{
-			$item = $this->hotbar->getHeldItem();
+			$item = $this->getMainHandItem();
 			if(!$this->isUsingItem() || $this->hasItemCooldown($item)){
 				return false;
 			}
@@ -1843,13 +1843,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}else{
 			$firstEmpty = $this->inventory->firstEmpty();
 			if($firstEmpty === -1){ //full inventory
-				$this->hotbar->setHeldItem($item);
+				$this->setMainHandItem($item);
 			}elseif($firstEmpty < $this->hotbar->getSize()){
 				$this->inventory->setItem($firstEmpty, $item);
 				$this->hotbar->setSelectedIndex($firstEmpty);
 			}else{
 				$this->inventory->swap($this->hotbar->getSelectedIndex(), $firstEmpty);
-				$this->hotbar->setHeldItem($item);
+				$this->setMainHandItem($item);
 			}
 		}
 	}
@@ -1866,7 +1866,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$target = $this->getWorld()->getBlock($pos);
 
-		$ev = new PlayerInteractEvent($this, $this->hotbar->getHeldItem(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
+		$ev = new PlayerInteractEvent($this, $this->getMainHandItem(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
 		if($this->isSpectator()){
 			$ev->cancel();
 		}
@@ -1875,7 +1875,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
-		if($target->onAttack($this->hotbar->getHeldItem(), $face, $this)){
+		if($target->onAttack($this->getMainHandItem(), $face, $this)){
 			return true;
 		}
 
@@ -1916,7 +1916,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$this->stopBreakBlock($pos);
-			$item = $this->hotbar->getHeldItem();
+			$item = $this->getMainHandItem();
 			$oldItem = clone $item;
 			$returnedItems = [];
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)){
@@ -1941,7 +1941,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
-			$item = $this->hotbar->getHeldItem(); //this is a copy of the real item
+			$item = $this->getMainHandItem(); //this is a copy of the real item
 			$oldItem = clone $item;
 			$returnedItems = [];
 			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems)){
@@ -1970,7 +1970,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		$heldItem = $this->hotbar->getHeldItem();
+		$heldItem = $this->getMainHandItem();
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
@@ -2056,15 +2056,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$ev->call();
 
-		$item = $this->hotbar->getHeldItem();
+		$item = $this->getMainHandItem();
 		$oldItem = clone $item;
 		if(!$ev->isCancelled()){
 			if($item->onInteractEntity($this, $entity, $clickPos)){
-				if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->hotbar->getHeldItem())){
+				if($this->hasFiniteResources() && !$item->equalsExact($oldItem) && $oldItem->equalsExact($this->getMainHandItem())){
 					if($item instanceof Durable && $item->isBroken()){
 						$this->broadcastSound(new ItemBreakSound());
 					}
-					$this->hotbar->setHeldItem($item);
+					$this->setMainHandItem($item);
 				}
 			}
 			return $entity->onInteract($this, $clickPos);

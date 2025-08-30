@@ -322,7 +322,7 @@ class ItemEntity extends Entity{
 
 		$item = $this->getItem();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getOffHandItem()->canStackWith($item) && $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
 			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};

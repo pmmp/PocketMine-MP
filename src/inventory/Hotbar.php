@@ -36,12 +36,8 @@ final class Hotbar{
 	protected ObjectSet $selectedIndexChangeListeners;
 
 	public function __construct(
-		private Inventory $inventory,
 		private int $size = 9
 	){
-		if($this->inventory->getSize() < $this->size){
-			throw new \InvalidArgumentException("Inventory size must be at least $this->size");
-		}
 		$this->selectedIndexChangeListeners = new ObjectSet();
 	}
 
@@ -56,16 +52,6 @@ final class Hotbar{
 		if(!$this->isHotbarSlot($slot)){
 			throw new \InvalidArgumentException("$slot is not a valid hotbar slot index (expected 0 - " . ($this->getSize() - 1) . ")");
 		}
-	}
-
-	/**
-	 * Returns the item in the specified hotbar slot.
-	 *
-	 * @throws \InvalidArgumentException if the hotbar slot index is out of range
-	 */
-	public function getHotbarSlotItem(int $hotbarSlot) : Item{
-		$this->throwIfNotHotbarSlot($hotbarSlot);
-		return $this->inventory->getItem($hotbarSlot);
 	}
 
 	/**
@@ -98,20 +84,6 @@ final class Hotbar{
 	 * @phpstan-return ObjectSet<\Closure(int $oldIndex) : void>
 	 */
 	public function getSelectedIndexChangeListeners() : ObjectSet{ return $this->selectedIndexChangeListeners; }
-
-	/**
-	 * Returns the currently-held item.
-	 */
-	public function getHeldItem() : Item{
-		return $this->getHotbarSlotItem($this->selectedIndex);
-	}
-
-	/**
-	 * Sets the item in the currently-held slot to the specified item.
-	 */
-	public function setHeldItem(Item $item) : void{
-		$this->inventory->setItem($this->getSelectedIndex(), $item);
-	}
 
 	/**
 	 * Returns the number of slots in the hotbar.
