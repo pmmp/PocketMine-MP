@@ -759,11 +759,11 @@ class InGamePacketHandler extends PacketHandler{
 	 * @throws PacketHandlingException
 	 */
 	private function updateSignText(CompoundTag $nbt, string $tagName, bool $isFront, BaseSign $block, Vector3 $pos) : bool{
-		$frontTextTag = $nbt->getTag($tagName);
-		if(!$frontTextTag instanceof CompoundTag){
-			throw new PacketHandlingException("Invalid tag type " . get_debug_type($frontTextTag) . " for tag \"$tagName\" in sign update data");
+		$textTag = $nbt->getTag($tagName);
+		if(!$textTag instanceof CompoundTag){
+			throw new PacketHandlingException("Invalid tag type " . get_debug_type($textTag) . " for tag \"$tagName\" in sign update data");
 		}
-		$textBlobTag = $frontTextTag->getTag(Sign::TAG_TEXT_BLOB);
+		$textBlobTag = $textTag->getTag(Sign::TAG_TEXT_BLOB);
 		if(!$textBlobTag instanceof StringTag){
 			throw new PacketHandlingException("Invalid tag type " . get_debug_type($textBlobTag) . " for tag \"" . Sign::TAG_TEXT_BLOB . "\" in sign update data");
 		}

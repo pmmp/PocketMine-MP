@@ -81,7 +81,7 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 	}
 
 	protected function getFacingDegrees() : float{
-		return match ($this->facing) {
+		return match($this->facing){
 			Facing::SOUTH => 0,
 			Facing::WEST => 90,
 			Facing::NORTH => 180,
