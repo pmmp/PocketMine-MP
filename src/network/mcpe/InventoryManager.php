@@ -157,6 +157,10 @@ class InventoryManager implements InventoryListener{
 		return $this->entries[spl_object_id($inventory)] ?? null;
 	}
 
+	private function getEntryByWindow(InventoryWindow $window) : ?InventoryManagerEntry{
+		return $this->getEntry($window->getInventory());
+	}
+
 	public function getInventoryWindow(Inventory $inventory) : ?InventoryWindow{
 		return $this->getEntry($inventory)?->window;
 	}
@@ -253,7 +257,7 @@ class InventoryManager implements InventoryListener{
 
 	private function addPredictedSlotChangeInternal(InventoryWindow $window, int $slot, ItemStack $item) : void{
 		//TODO: does this need a null check?
-		$entry = $this->getEntry($window->getInventory()) ?? throw new AssumptionFailedError("Assume this should never be null");
+		$entry = $this->getEntryByWindow($window) ?? throw new AssumptionFailedError("Assume this should never be null");
 		$entry->predictions[$slot] = $item;
 	}
 
@@ -513,15 +517,14 @@ class InventoryManager implements InventoryListener{
 	}
 
 	public function requestSyncSlot(InventoryWindow $window, int $slot) : void{
-		$inventory = $window->getInventory();
-		$inventoryEntry = $this->getEntry($inventory);
+		$inventoryEntry = $this->getEntryByWindow($window);
 		if($inventoryEntry === null){
 			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
 			//is cleared before removal.
 			return;
 		}
 
-		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($inventory->getItem($slot));
+		$currentItem = $this->session->getTypeConverter()->coreItemStackToNet($window->getInventory()->getItem($slot));
 		$clientSideItem = $inventoryEntry->predictions[$slot] ?? null;
 		if($clientSideItem === null || !$this->itemStacksEqual($currentItem, $clientSideItem)){
 			//no prediction or incorrect - do not associate this with the currently active itemstack request
@@ -586,7 +589,7 @@ class InventoryManager implements InventoryListener{
 	}
 
 	private function syncSlot(InventoryWindow $window, int $slot, ItemStack $itemStack) : void{
-		$entry = $this->getEntry($window->getInventory()) ?? throw new \LogicException("Cannot sync an untracked inventory");
+		$entry = $this->getEntryByWindow($window) ?? throw new \LogicException("Cannot sync an untracked inventory");
 		$itemStackInfo = $entry->itemStackInfos[$slot];
 		if($itemStackInfo === null){
 			throw new \LogicException("Cannot sync an untracked inventory slot");
@@ -623,8 +626,7 @@ class InventoryManager implements InventoryListener{
 	}
 
 	private function syncContents(InventoryWindow $window) : void{
-		$inventory = $window->getInventory();
-		$entry = $this->getEntry($inventory);
+		$entry = $this->getEntryByWindow($window);
 		if($entry === null){
 			//this can happen when an inventory changed during InventoryCloseEvent, or when a temporary inventory
 			//is cleared before removal.
@@ -640,7 +642,7 @@ class InventoryManager implements InventoryListener{
 			$entry->pendingSyncs = [];
 			$contents = [];
 			$typeConverter = $this->session->getTypeConverter();
-			foreach($inventory->getContents(true) as $slot => $item){
+			foreach($window->getInventory()->getContents(true) as $slot => $item){
 				$itemStack = $typeConverter->coreItemStackToNet($item);
 				$info = $this->trackItemStack($entry, $slot, $itemStack, null);
 				$contents[] = new ItemStackWrapper($info->getStackId(), $itemStack);
@@ -728,7 +730,7 @@ class InventoryManager implements InventoryListener{
 		$playerInventory = $this->player->getInventory();
 		$selected = $this->player->getHotbar()->getSelectedIndex();
 		if($selected !== $this->clientSelectedHotbarSlot){
-			$inventoryEntry = $this->getEntry($playerInventory) ?? throw new AssumptionFailedError("Player inventory should always be tracked");
+			$inventoryEntry = $this->getEntryByWindow($this->getInventoryWindow($playerInventory)) ?? throw new AssumptionFailedError("Player inventory should always be tracked");
 			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
 			if($itemStackInfo === null){
 				throw new AssumptionFailedError("Untracked player inventory slot $selected");
@@ -787,8 +789,8 @@ class InventoryManager implements InventoryListener{
 		return $this->nextItemStackId++;
 	}
 
-	public function getItemStackInfo(Inventory $inventory, int $slot) : ?ItemStackInfo{
-		return $this->getEntry($inventory)?->itemStackInfos[$slot] ?? null;
+	public function getItemStackInfo(InventoryWindow $window, int $slot) : ?ItemStackInfo{
+		return $this->getEntryByWindow($window)?->itemStackInfos[$slot] ?? null;
 	}
 
 	private function trackItemStack(InventoryManagerEntry $entry, int $slotId, ItemStack $itemStack, ?int $itemStackRequestId) : ItemStackInfo{

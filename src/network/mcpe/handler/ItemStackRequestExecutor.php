@@ -94,7 +94,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function matchItemStack(InventoryWindow $window, int $slotId, int $clientItemStackId) : void{
-		$info = $this->inventoryManager->getItemStackInfo($window->getInventory(), $slotId);
+		$info = $this->inventoryManager->getItemStackInfo($window, $slotId);
 		if($info === null){
 			throw new AssumptionFailedError("The inventory is tracked and the slot is valid, so this should not be null");
 		}
@@ -373,7 +373,6 @@ class ItemStackRequestExecutor{
 			$predictedDamage = $action->getPredictedDurability();
 			if($usedItem instanceof Durable && $predictedDamage >= 0 && $predictedDamage <= $usedItem->getMaxDurability()){
 				$usedItem->setDamage($predictedDamage);
-				//TODO: this is a bit yucky - maybe we don't need the window to add a predicted slot change?
 				$inventoryWindow = $this->inventoryManager->getInventoryWindow($inventory) ?? throw new AssumptionFailedError("The player's inventory should always have an inventory window");
 				$this->inventoryManager->addPredictedSlotChange($inventoryWindow, $slot, $usedItem);
 			}
