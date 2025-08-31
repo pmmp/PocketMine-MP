@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\BlockTypeIds;
+
 /**
  * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
  * identify and compare item types efficiently using {@link Item::getTypeId()}.
@@ -358,18 +360,16 @@ final class ItemTypeIds{
 		return self::$nextDynamicId++;
 	}
 
-	public static function fromBlockTypeId(int $blockTypeId) : int{
-		if($blockTypeId < 0){
-			throw new \InvalidArgumentException("Block type IDs cannot be negative");
-		}
+	public static function fromBlockTypeId(string $blockTypeId) : int{
+		$typeNumber = BlockTypeIds::lookupTypeNumberFromTypeId($blockTypeId);
 		//negative item type IDs are treated as block IDs
-		return -$blockTypeId;
+		return -$typeNumber;
 	}
 
-	public static function toBlockTypeId(int $itemTypeId) : ?int{
+	public static function toBlockTypeId(int $itemTypeId) : ?string{
 		if($itemTypeId > 0){ //not a blockitem
 			return null;
 		}
-		return -$itemTypeId;
+		return BlockTypeIds::lookupTypeIdFromTypeNumber(-$itemTypeId);
 	}
 }

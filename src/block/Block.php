@@ -65,10 +65,10 @@ class Block{
 
 	/**
 	 * @internal
-	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR), binary: true))`
+	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR_TYPE_NUMBER), binary: true))`
 	 * TODO: it would be much easier if we could just make this 0 or some other easy value
 	 */
-	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR_TYPE_NUMBER << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -97,7 +97,7 @@ class Block{
 	 * The type ID is included in the XOR mask. This is not necessary to improve distribution, but it reduces the number
 	 * of operations required to compute the state ID (micro optimization).
 	 */
-	private static function computeStateIdXorMask(int $typeId) : int{
+	public static function computeStateIdXorMask(int $typeId) : int{
 		return
 			$typeId << self::INTERNAL_STATE_DATA_BITS |
 			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
@@ -120,7 +120,7 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
-		$this->stateIdXorMask = self::computeStateIdXorMask($idInfo->getBlockTypeId());
+		$this->stateIdXorMask = self::computeStateIdXorMask($idInfo->getBlockTypeNumber());
 
 		//this must be done last, otherwise the defaultState could have uninitialized fields
 		$defaultState = clone $this;
@@ -156,7 +156,7 @@ class Block{
 	 *
 	 * @see BlockTypeIds
 	 */
-	public function getTypeId() : int{
+	public function getTypeId() : string{
 		return $this->idInfo->getBlockTypeId();
 	}
 

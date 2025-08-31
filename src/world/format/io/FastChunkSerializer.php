@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
@@ -45,7 +47,7 @@ final class FastChunkSerializer{
 		//NOOP
 	}
 
-	private static function serializePalettedArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+	private static function serializeBiomeArray(BinaryStream $stream, PalettedBlockArray $array) : void{
 		$wordArray = $array->getWordArray();
 		$palette = $array->getPalette();
 
@@ -54,6 +56,24 @@ final class FastChunkSerializer{
 		$serialPalette = pack("L*", ...$palette);
 		$stream->putInt(strlen($serialPalette));
 		$stream->put($serialPalette);
+	}
+
+	private static function serializeBlockArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+		$stream->putByte($array->getBitsPerBlock());
+		$stream->put($array->getWordArray());
+
+		$palette = $array->getPalette();
+		$stream->putInt(count($palette));
+		//TODO: this probably won't be great for performance :(
+		foreach($palette as $stateId){
+			$typeNumber = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
+			$typeId = BlockTypeIds::lookupTypeIdFromTypeNumber($typeNumber);
+			$stateData = $stateId ^ BlockTypeIds::stateIdXorMask($typeNumber);
+
+			$stream->putInt(strlen($typeId));
+			$stream->put($typeId);
+			$stream->putInt($stateData);
+		}
 	}
 
 	/**
@@ -77,21 +97,37 @@ final class FastChunkSerializer{
 			$layers = $subChunk->getBlockLayers();
 			$stream->putByte(count($layers));
 			foreach($layers as $blocks){
-				self::serializePalettedArray($stream, $blocks);
+				self::serializeBlockArray($stream, $blocks);
 			}
-			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
-
+			self::serializeBiomeArray($stream, $subChunk->getBiomeArray());
 		}
 
 		return $stream->getBuffer();
 	}
 
-	private static function deserializePalettedArray(BinaryStream $stream) : PalettedBlockArray{
+	private static function deserializeBiomeArray(BinaryStream $stream) : PalettedBlockArray{
 		$bitsPerBlock = $stream->getByte();
 		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
 		/** @var int[] $unpackedPalette */
 		$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
 		$palette = array_values($unpackedPalette);
+
+		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
+	}
+
+	private static function deserializeBlockArray(BinaryStream $stream) : PalettedBlockArray{
+		$bitsPerBlock = $stream->getByte();
+		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+
+		$palette = [];
+		for($i = 0, $size = $stream->getInt(); $i < $size; $i++){
+			$typeId = $stream->get($stream->getInt());
+			$typeNumber = BlockTypeIds::lookupTypeNumberFromTypeId($typeId);
+			$stateData = $stream->getInt();
+
+			$stateId = $stateData ^ BlockTypeIds::stateIdXorMask($typeNumber);
+			$palette[] = $stateId;
+		}
 
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
@@ -114,9 +150,9 @@ final class FastChunkSerializer{
 
 			$layers = [];
 			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-				$layers[] = self::deserializePalettedArray($stream);
+				$layers[] = self::deserializeBlockArray($stream);
 			}
-			$biomeArray = self::deserializePalettedArray($stream);
+			$biomeArray = self::deserializeBiomeArray($stream);
 			$subChunks[$y] = new SubChunk($airBlockId, $layers, $biomeArray);
 		}
 

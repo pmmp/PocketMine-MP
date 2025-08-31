@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\BlockBreakInfo as BreakInfo;
-use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\light\LightUpdate;
@@ -55,7 +53,7 @@ class RuntimeBlockStateRegistry{
 	/**
 	 * Index of default states for every block type
 	 * @var Block[]
-	 * @phpstan-var array<int, Block>
+	 * @phpstan-var array<string, Block>
 	 */
 	private array $typeIndex = [];
 
@@ -201,9 +199,7 @@ class RuntimeBlockStateRegistry{
 		if(isset($this->fullList[$stateId])) { //hot
 			$block = clone $this->fullList[$stateId];
 		}else{
-			$typeId = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
-			$stateData = ($stateId ^ $typeId) & Block::INTERNAL_STATE_DATA_MASK;
-			$block = new UnknownBlock(new BID($typeId), new BlockTypeInfo(BreakInfo::instant()), $stateData);
+			throw new \InvalidArgumentException("State ID $stateId refers to an unregistered block");
 		}
 
 		return $block;

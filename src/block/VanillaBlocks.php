@@ -69,7 +69,7 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\CloningRegistryTrait;
-use function is_int;
+use function is_string;
 use function mb_strtolower;
 use function mb_strtoupper;
 use function strtolower;
@@ -867,11 +867,11 @@ final class VanillaBlocks{
 		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
 		$reflect = new \ReflectionClass(BlockTypeIds::class);
 		$typeId = $reflect->getConstant(mb_strtoupper($name));
-		if(!is_int($typeId)){
+		if(!is_string($typeId)){
 			//this allows registering new stuff without adding new type ID constants
 			//this reduces the number of mandatory steps to test new features in local development
-			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
-			$typeId = BlockTypeIds::newId();
+			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name - this will prevent plugins from comparing its type ID");
+			$typeId = BlockTypeIds::PREFIX . $name;
 		}
 		$block = $createBlock(new BID($typeId, $tileClass));
 		self::_registryRegister($name, $block);

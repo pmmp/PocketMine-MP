@@ -64,17 +64,9 @@ class BlockTest extends TestCase{
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$b = new StrangeNewBlock(new BlockIdentifier("pocketmine_test:strange_block"), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
 		$this->blockFactory->register($b);
 		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
-	}
-
-	/**
-	 * Verifies that blocks with IDs smaller than 0 can't be registered
-	 */
-	public function testRegisterIdTooSmall() : void{
-		self::expectException(\InvalidArgumentException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", new BlockTypeInfo(BlockBreakInfo::instant())));
 	}
 
 	/**
@@ -258,7 +250,7 @@ class BlockTest extends TestCase{
 	}
 
 	public function testStateDataSizeNotTooLarge() : void{
-		$typeIdBitsMin = ((int) log(BlockTypeIds::FIRST_UNUSED_BLOCK_ID, 2)) + 1;
+		$typeIdBitsMin = ((int) log(BlockTypeIds::firstUnusedTypeNumber(), 2)) + 1;
 
 		$typeIdBitsMin++; //for custom blocks
 

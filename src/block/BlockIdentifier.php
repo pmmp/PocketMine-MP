@@ -27,22 +27,27 @@ use pocketmine\block\tile\Tile;
 use pocketmine\utils\Utils;
 
 class BlockIdentifier{
+	private int $typeNumber;
+
 	/**
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
 	public function __construct(
-		private int $blockTypeId,
+		private string $blockTypeId,
 		private ?string $tileClass = null
 	){
-		if($blockTypeId < 0){
-			throw new \InvalidArgumentException("Block type ID may not be negative");
-		}
+		$this->typeNumber = BlockTypeIds::lookupTypeNumberFromTypeId($this->blockTypeId);
 		if($tileClass !== null){
 			Utils::testValidInstance($tileClass, Tile::class);
 		}
 	}
 
-	public function getBlockTypeId() : int{ return $this->blockTypeId; }
+	public function getBlockTypeId() : string{ return $this->blockTypeId; }
+
+	/**
+	 * @internal
+	 */
+	public function getBlockTypeNumber() : int{ return $this->typeNumber; }
 
 	/**
 	 * @phpstan-return class-string<Tile>|null
