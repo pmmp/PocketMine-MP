@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BlockIdentifier;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
@@ -67,8 +67,8 @@ final class FastChunkSerializer{
 		//TODO: this probably won't be great for performance :(
 		foreach($palette as $stateId){
 			$typeNumber = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
-			$typeId = BlockTypeIds::lookupTypeIdFromTypeNumber($typeNumber);
-			$stateData = $stateId ^ BlockTypeIds::stateIdXorMask($typeNumber);
+			$typeId = BlockIdentifier::lookupTypeIdFromTypeNumber($typeNumber);
+			$stateData = $stateId ^ BlockIdentifier::stateIdXorMask($typeNumber);
 
 			$stream->putInt(strlen($typeId));
 			$stream->put($typeId);
@@ -122,10 +122,10 @@ final class FastChunkSerializer{
 		$palette = [];
 		for($i = 0, $size = $stream->getInt(); $i < $size; $i++){
 			$typeId = $stream->get($stream->getInt());
-			$typeNumber = BlockTypeIds::lookupTypeNumberFromTypeId($typeId);
+			$typeNumber = BlockIdentifier::lookupTypeNumberFromTypeId($typeId);
 			$stateData = $stream->getInt();
 
-			$stateId = $stateData ^ BlockTypeIds::stateIdXorMask($typeNumber);
+			$stateId = $stateData ^ BlockIdentifier::stateIdXorMask($typeNumber);
 			$palette[] = $stateId;
 		}
 

@@ -250,7 +250,8 @@ class BlockTest extends TestCase{
 	}
 
 	public function testStateDataSizeNotTooLarge() : void{
-		$typeIdBitsMin = ((int) log(BlockTypeIds::firstUnusedTypeNumber(), 2)) + 1;
+		VanillaBlocks::getAll(); //make sure blocks are registered
+		$typeIdBitsMin = ((int) log(BlockIdentifier::firstUnusedTypeNumber(), 2)) + 1;
 
 		$typeIdBitsMin++; //for custom blocks
 

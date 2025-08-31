@@ -68,7 +68,7 @@ class Block{
 	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR_TYPE_NUMBER), binary: true))`
 	 * TODO: it would be much easier if we could just make this 0 or some other easy value
 	 */
-	public const EMPTY_STATE_ID = (BlockTypeIds::AIR_TYPE_NUMBER << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
+	public const EMPTY_STATE_ID = (BlockIdentifier::AIR_TYPE_NUMBER << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;

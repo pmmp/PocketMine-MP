@@ -35,8 +35,6 @@ namespace pocketmine\block;
  */
 final class BlockTypeIds{
 
-	public const AIR_TYPE_NUMBER = 10000;
-
 	private function __construct(){
 		//NOOP
 	}
@@ -810,50 +808,4 @@ final class BlockTypeIds{
 	public const WHITE_TULIP = self::PREFIX . "white_tulip";
 	public const WITHER_ROSE = self::PREFIX . "wither_rose";
 	public const WOOL = self::PREFIX . "wool";
-
-	private static int $nextTypeNumber = self::AIR_TYPE_NUMBER + 1; //fixed ID reserved for air, for Block::EMPTY_STATE_ID
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private static $typeIdToTypeNumber = [];
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
-	 */
-	private static $typeNumberToTypeId = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private static $typeIdXorMasks = [];
-
-	public static function firstUnusedTypeNumber() : int{
-		return self::$nextTypeNumber;
-	}
-
-	private static function claimTypeId(string $typeId) : int{
-		if(isset(self::$typeIdToTypeNumber[$typeId])){
-			throw new \InvalidArgumentException("Type ID \"$typeId\" has already been claimed");
-		}
-		$typeNumber = $typeId === self::AIR ? self::AIR_TYPE_NUMBER : self::$nextTypeNumber++;
-		self::$typeIdToTypeNumber[$typeId] = $typeNumber;
-		self::$typeNumberToTypeId[$typeNumber] = $typeId;
-		self::$typeIdXorMasks[$typeNumber] = Block::computeStateIdXorMask($typeNumber);
-		return $typeNumber;
-	}
-
-	public static function lookupTypeNumberFromTypeId(string $typeId) : int{
-		return self::$typeIdToTypeNumber[$typeId] ??= self::claimTypeId($typeId);
-	}
-
-	public static function stateIdXorMask(int $typeId) : int{
-		return self::$typeIdXorMasks[$typeId];
-	}
-
-	public static function lookupTypeIdFromTypeNumber(int $typeNumber) : string{
-		return self::$typeNumberToTypeId[$typeNumber] ?? throw new \InvalidArgumentException("Unknown type number $typeNumber (probably not registered on this thread?)");
-	}
 }

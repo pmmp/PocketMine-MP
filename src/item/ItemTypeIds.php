@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\BlockTypeIds;
+use pocketmine\block\BlockIdentifier;
 
 /**
  * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
@@ -361,7 +361,7 @@ final class ItemTypeIds{
 	}
 
 	public static function fromBlockTypeId(string $blockTypeId) : int{
-		$typeNumber = BlockTypeIds::lookupTypeNumberFromTypeId($blockTypeId);
+		$typeNumber = BlockIdentifier::lookupTypeNumberFromTypeId($blockTypeId);
 		//negative item type IDs are treated as block IDs
 		return -$typeNumber;
 	}
@@ -370,6 +370,6 @@ final class ItemTypeIds{
 		if($itemTypeId > 0){ //not a blockitem
 			return null;
 		}
-		return BlockTypeIds::lookupTypeIdFromTypeNumber(-$itemTypeId);
+		return BlockIdentifier::lookupTypeIdFromTypeNumber(-$itemTypeId);
 	}
 }
