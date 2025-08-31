@@ -50,7 +50,9 @@ trait MenuAccessorTrait{
 		return false;
 	}
 
+	abstract protected function getPosition() : Position;
+
 	public function openToUnchecked(Player $player) : bool{
-		return $player->setCurrentWindow($this->newMenu($player, $this->position));
+		return $player->setCurrentWindow($this->newMenu($player, $this->getPosition()));
 	}
 }

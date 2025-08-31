@@ -54,19 +54,25 @@ trait ContainerTrait{
 		return false;
 	}
 
+	abstract protected function getPosition() : Position;
+
+	protected function getTile() : ?ContainerTile{
+		$pos = $this->getPosition();
+		$tile = $pos->getWorld()->getTile($pos);
+		return $tile instanceof ContainerTile ? $tile : null;
+	}
+
 	public function canOpenWith(string $key) : bool{
 		//TODO: maybe we can bring the key to the block in readStateFromWorld()?
-		$tile = $this->position->getWorld()->getTile($this->position);
-		return $tile instanceof ContainerTile && $tile->canOpenWith($key);
+		return $this->getTile()?->canOpenWith($key) ?? false;
 	}
 
 	public function openToUnchecked(Player $player) : bool{
-		$tile = $this->position->getWorld()->getTile($this->position);
-		return $tile instanceof ContainerTile && $player->setCurrentWindow($this->newMenu($player, $tile->getInventory(), $this->position));
+		$tile = $this->getTile();
+		return $tile !== null && $player->setCurrentWindow($this->newMenu($player, $tile->getInventory(), $this->getPosition()));
 	}
 
 	public function getInventory() : ?Inventory{
-		$tile = $this->position->getWorld()->getTile($this->position);
-		return $tile instanceof ContainerTile ? $tile->getInventory() : null;
+		return $this->getTile()?->getInventory();
 	}
 }
