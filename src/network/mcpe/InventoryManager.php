@@ -730,7 +730,7 @@ class InventoryManager implements InventoryListener{
 		$playerInventory = $this->player->getInventory();
 		$selected = $this->player->getHotbar()->getSelectedIndex();
 		if($selected !== $this->clientSelectedHotbarSlot){
-			$inventoryEntry = $this->getEntryByWindow($this->getInventoryWindow($playerInventory)) ?? throw new AssumptionFailedError("Player inventory should always be tracked");
+			$inventoryEntry = $this->getEntry($playerInventory) ?? throw new AssumptionFailedError("Player inventory should always be tracked");
 			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
 			if($itemStackInfo === null){
 				throw new AssumptionFailedError("Untracked player inventory slot $selected");
