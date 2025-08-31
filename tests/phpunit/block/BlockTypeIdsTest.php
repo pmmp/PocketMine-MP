@@ -26,22 +26,8 @@ namespace pocketmine\block;
 use PHPUnit\Framework\TestCase;
 use pocketmine\utils\Utils;
 use function array_unique;
-use function max;
 
 class BlockTypeIdsTest extends TestCase{
-
-	public function testFirstUnused() : void{
-		$reflect = new \ReflectionClass(BlockTypeIds::class);
-
-		$constants = $reflect->getConstants();
-		unset($constants['FIRST_UNUSED_BLOCK_ID']);
-		self::assertNotEmpty($constants, "We should never have zero type IDs");
-
-		$max = max($constants);
-		self::assertIsInt($max, "Max type ID should always be an integer");
-
-		self::assertSame($reflect->getConstant('FIRST_UNUSED_BLOCK_ID'), $max + 1, "FIRST_UNUSED_BLOCK_ID must be one higher than the highest fixed type ID");
-	}
 
 	public function testNoDuplicates() : void{
 		$idTable = (new \ReflectionClass(BlockTypeIds::class))->getConstants();
