@@ -87,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.35.3
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: ${{ env.PHP_VERSION }}
 
