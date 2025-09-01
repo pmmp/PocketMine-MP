@@ -139,7 +139,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		$ev = new SignChangeEvent($this, $player, $newText, $frontSide);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$ev->isFrontSide() ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
+			$frontSide ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$item->pop();
 			return true;
@@ -302,7 +302,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$ev->isFrontSide() ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
+			$frontSide ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
 			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;

@@ -77,6 +77,4 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	}
 
 	public function isFrontSide() : bool{ return $this->frontSide; }
-
-	public function setFrontSide(bool $frontSide) : void{ $this->frontSide = $frontSide; }
 }
