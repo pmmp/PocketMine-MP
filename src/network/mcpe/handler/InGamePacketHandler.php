@@ -758,7 +758,7 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	private function updateSignText(CompoundTag $nbt, string $tagName, bool $isFront, BaseSign $block, Vector3 $pos) : bool{
+	private function updateSignText(CompoundTag $nbt, string $tagName, bool $frontFace, BaseSign $block, Vector3 $pos) : bool{
 		$textTag = $nbt->getTag($tagName);
 		if(!$textTag instanceof CompoundTag){
 			throw new PacketHandlingException("Invalid tag type " . get_debug_type($textTag) . " for tag \"$tagName\" in sign update data");
@@ -774,13 +774,13 @@ class InGamePacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e, "Invalid sign text update");
 		}
 
-		$oldText = $isFront ? $block->getText() : $block->getBackText();
+		$oldText = $block->getFaceText($frontFace);
 		if($text->getLines() === $oldText->getLines()){
 			return false;
 		}
 
 		try{
-			if(!$block->updateText($this->player, $text, $isFront)){
+			if(!$block->updateText($this->player, $text, $frontFace)){
 				foreach($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket){
 					$this->session->sendDataPacket($updatePacket);
 				}

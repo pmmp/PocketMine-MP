@@ -41,9 +41,9 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 		private BaseSign $sign,
 		private Player $player,
 		private SignText $text,
-		private bool $frontSide = true
+		private bool $frontFace = true
 	){
-		$this->oldText = $this->frontSide ? $sign->getText() : $sign->getBackText();
+		$this->oldText = $this->sign->getFaceText($this->frontFace);
 		parent::__construct($sign);
 	}
 
@@ -76,5 +76,5 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 		$this->text = $text;
 	}
 
-	public function isFrontSide() : bool{ return $this->frontSide; }
+	public function isFrontFace() : bool{ return $this->frontFace; }
 }

@@ -135,11 +135,11 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		}
 	}
 
-	private function doSignChange(SignText $newText, Player $player, Item $item, bool $frontSide) : bool{
-		$ev = new SignChangeEvent($this, $player, $newText, $frontSide);
+	private function doSignChange(SignText $newText, Player $player, Item $item, bool $frontFace) : bool{
+		$ev = new SignChangeEvent($this, $player, $newText, $frontFace);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$frontSide ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
+			$this->setFaceText($frontFace, $ev->getNewText());
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$item->pop();
 			return true;
@@ -148,9 +148,9 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		return false;
 	}
 
-	private function changeSignGlowingState(bool $glowing, Player $player, Item $item, bool $frontSide) : bool{
-		$text = $frontSide ? $this->text : $this->backText;
-		if($text->isGlowing() !== $glowing && $this->doSignChange(new SignText($text->getLines(), $text->getBaseColor(), $glowing), $player, $item, $frontSide)){
+	private function changeSignGlowingState(bool $glowing, Player $player, Item $item, bool $frontFace) : bool{
+		$text = $this->getFaceText($frontFace);
+		if($text->isGlowing() !== $glowing && $this->doSignChange(new SignText($text->getLines(), $text->getBaseColor(), $glowing), $player, $item, $frontFace)){
 			$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
 			return true;
 		}
@@ -177,7 +177,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 			return true;
 		}
 
-		$clickedFront = $this->interactsFront($this->getHitboxCenter(), $player->getPosition(), $this->getFacingDegrees());
+		$frontFace = $this->interactsFront($this->getHitboxCenter(), $player->getPosition(), $this->getFacingDegrees());
 
 		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
 			ItemTypeIds::BONE_MEAL => DyeColor::WHITE,
@@ -187,24 +187,24 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		};
 		if($dyeColor !== null){
 			$color = $dyeColor === DyeColor::BLACK ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
-			$text = $clickedFront ? $this->text : $this->backText;
+			$text = $this->getFaceText($frontFace);
 			if(
 				$color->toARGB() !== $text->getBaseColor()->toARGB() &&
-				$this->doSignChange(new SignText($text->getLines(), $color, $text->isGlowing()), $player, $item, $clickedFront)
+				$this->doSignChange(new SignText($text->getLines(), $color, $text->isGlowing()), $player, $item, $frontFace)
 			){
 				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
 				return true;
 			}
 		}elseif(match($item->getTypeId()){
-			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item, $clickedFront),
-			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item, $clickedFront),
+			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item, $frontFace),
+			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item, $frontFace),
 			ItemTypeIds::HONEYCOMB => $this->wax($player, $item),
 			default => false
 		}){
 			return true;
 		}
 
-		$player->openSignEditor($this->position, $clickedFront);
+		$player->openSignEditor($this->position, $frontFace);
 
 		return true;
 	}
@@ -221,7 +221,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 	}
 
 	/**
-	 * Returns the center of the sign's hitbox. Used to decide which side of the sign to open when a player interacts.
+	 * Returns the center of the sign's hitbox. Used to decide which face of the sign to open when a player interacts.
 	 */
 	protected function getHitboxCenter() : Vector3{
 		return $this->position->add(0.5, 0.5, 0.5);
@@ -236,22 +236,30 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 
 	/**
 	 * Returns an object containing information about the sign text.
+	 * @deprecated
+	 * @see self::getFaceText()
 	 */
 	public function getText() : SignText{
 		return $this->text;
 	}
 
-	/** @return $this */
+	/**
+	 * @deprecated
+	 * @see self::setFaceText()
+	 * @return $this
+	 */
 	public function setText(SignText $text) : self{
 		$this->text = $text;
 		return $this;
 	}
 
-	public function getBackText() : SignText{ return $this->backText; }
+	public function getFaceText(bool $frontFace) : SignText{
+		return $frontFace ? $this->text : $this->backText;
+	}
 
 	/** @return $this */
-	public function setBackText(SignText $backText) : self{
-		$this->backText = $backText;
+	public function setFaceText(bool $frontFace, SignText $text) : self{
+		$frontFace ? $this->text = $text : $this->backText = $text;
 		return $this;
 	}
 
@@ -285,7 +293,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 	 * @return bool if the sign update was successful.
 	 * @throws \UnexpectedValueException if the text payload is too large
 	 */
-	public function updateText(Player $author, SignText $text, bool $frontSide = true) : bool{
+	public function updateText(Player $author, SignText $text, bool $frontFace = true) : bool{
 		$size = 0;
 		foreach($text->getLines() as $line){
 			$size += strlen($line);
@@ -293,16 +301,16 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		if($size > 1000){
 			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
-		$oldText = $frontSide ? $this->text : $this->backText;
+		$oldText = $this->getFaceText($frontFace);
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
-		}, $text->getLines()), $oldText->getBaseColor(), $oldText->isGlowing()), $frontSide);
+		}, $text->getLines()), $oldText->getBaseColor(), $oldText->isGlowing()), $frontFace);
 		if($this->waxed || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$frontSide ? $this->setText($ev->getNewText()) : $this->setBackText($ev->getNewText());
+			$this->setFaceText($frontFace, $text);
 			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
