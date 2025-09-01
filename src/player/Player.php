@@ -2838,7 +2838,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Opens the player's sign editor GUI for the sign at the given position.
-	 * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
 	 */
 	public function openSignEditor(Vector3 $position, bool $frontSide = true) : void{
 		$block = $this->getWorld()->getBlock($position);

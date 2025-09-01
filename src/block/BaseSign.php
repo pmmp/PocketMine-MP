@@ -318,7 +318,7 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->setFaceText($frontFace, $text);
+			$this->setFaceText($frontFace, $ev->getNewText());
 			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;

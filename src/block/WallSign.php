@@ -54,7 +54,7 @@ final class WallSign extends BaseSign implements HorizontalFacing{
 			Facing::SOUTH => [0, 1 / 16],
 			Facing::WEST => [15 / 16, 0],
 			Facing::EAST => [1 / 16, 0],
-			default => throw new AssumptionFailedError("Invalid facing direction for WallSign: " . $this->facing),
+			default => throw new AssumptionFailedError("Invalid facing direction: " . $this->facing),
 		};
 		return $this->position->add($xOffset, 0.5, $zOffset);
 	}
@@ -65,7 +65,7 @@ final class WallSign extends BaseSign implements HorizontalFacing{
 			Facing::WEST => 90,
 			Facing::NORTH => 180,
 			Facing::EAST => 270,
-			default => throw new AssumptionFailedError("Invalid facing direction for WallSign: " . $this->facing),
+			default => throw new AssumptionFailedError("Invalid facing direction: " . $this->facing),
 		};
 	}
 }

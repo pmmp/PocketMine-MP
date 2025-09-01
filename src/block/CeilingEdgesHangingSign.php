@@ -73,7 +73,7 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 			Facing::WEST => 90,
 			Facing::NORTH => 180,
 			Facing::EAST => 270,
-			default => throw new AssumptionFailedError("Invalid facing direction for WallSign: " . $this->facing),
+			default => throw new AssumptionFailedError("Invalid facing direction: " . $this->facing),
 		};
 	}
 }
