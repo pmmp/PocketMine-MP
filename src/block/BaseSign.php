@@ -52,7 +52,7 @@ use function strlen;
 abstract class BaseSign extends Transparent implements WoodMaterial{
 	use WoodTypeTrait;
 
-	protected SignText $text;
+	protected SignText $text; //TODO: rename this (BC break)
 	protected SignText $backText;
 	private bool $waxed = false;
 
