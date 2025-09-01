@@ -288,12 +288,20 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 	}
 
 	/**
+	 * @deprecated
+	 * @see self::updateFaceText()
+	 */
+	public function updateText(Player $author, SignText $text) : bool{
+		return $this->updateFaceText($author, true, $text);
+	}
+
+	/**
 	 * Called by the player controller (network session) to update the sign text, firing events as appropriate.
 	 *
 	 * @return bool if the sign update was successful.
 	 * @throws \UnexpectedValueException if the text payload is too large
 	 */
-	public function updateText(Player $author, SignText $text, bool $frontFace = true) : bool{
+	public function updateFaceText(Player $author, bool $frontFace, SignText $text) : bool{
 		$size = 0;
 		foreach($text->getLines() as $line){
 			$size += strlen($line);
