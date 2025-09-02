@@ -211,12 +211,7 @@ class TypeConverter{
 	 * This tag can potentially be extremely large, and is not read by the client anyway.
 	 */
 	protected function stripBlockEntityNBT(CompoundTag $tag) : bool{
-		if(
-			($blockEntityTag = $tag->getTag(Item::TAG_BLOCK_ENTITY_TAG)) !== null &&
-			$blockEntityTag instanceof CompoundTag &&
-			$blockEntityTag->count() > 0
-		){
-			//prevent stacking unless data was the same
+		if(($tag->getTag(Item::TAG_BLOCK_ENTITY_TAG)) !== null){
 			//client doesn't use this tag, so it's fine to delete completely
 			$tag->removeTag(Item::TAG_BLOCK_ENTITY_TAG);
 			return true;
