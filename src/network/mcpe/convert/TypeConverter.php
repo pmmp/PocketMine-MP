@@ -268,7 +268,7 @@ class TypeConverter{
 
 	/**
 	 * TODO: HACK!
-	 * Strips non-viewable data from the NBT of an item.
+	 * Creates a copy of an item's NBT with non-viewable data stripped.
 	 * This is a pretty yucky hack that's mainly needed because of inventories inside blockitems containing blockentity
 	 * data. There isn't really a good way to deal with this due to the way tiles currently require a position,
 	 * otherwise we could just keep a copy of the tile context and ask it for persistent vs network NBT as needed.
