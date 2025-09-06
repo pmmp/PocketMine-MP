@@ -50,6 +50,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\auth\AuthKeyProvider;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -270,6 +271,7 @@ class Server{
 	private int $maxPlayers;
 
 	private bool $onlineMode = true;
+	private AuthKeyProvider $authKeyManager;
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
@@ -981,6 +983,8 @@ class Server{
 				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authWarning()));
 				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
+
+			$this->authKeyManager = new AuthKeyProvider($this);
 
 			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
 				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
@@ -1798,6 +1802,10 @@ class Server{
 
 	public function isLanguageForced() : bool{
 		return $this->forceLanguage;
+	}
+
+	public function getAuthKeyManager() : AuthKeyProvider{
+		return $this->authKeyManager;
 	}
 
 	public function getNetwork() : Network{

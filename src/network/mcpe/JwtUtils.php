@@ -43,6 +43,7 @@ use function openssl_pkey_get_public;
 use function openssl_sign;
 use function openssl_verify;
 use function ord;
+use function pack;
 use function preg_match;
 use function rtrim;
 use function sprintf;
@@ -54,6 +55,7 @@ use function strlen;
 use function strtr;
 use function substr;
 use const JSON_THROW_ON_ERROR;
+use const OPENSSL_ALGO_SHA256;
 use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
@@ -170,17 +172,17 @@ final class JwtUtils{
 	/**
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, \OpenSSLAsymmetricKey $signingKey) : bool{
+	public static function verify(string $jwt, \OpenSSLAsymmetricKey $signingKey, bool $ec) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$rawSignature = self::b64UrlDecode($signature);
-		$derSignature = self::rawSignatureToDer($rawSignature);
+		$derSignature = $ec ? self::rawSignatureToDer($rawSignature) : $rawSignature;
 
 		$v = openssl_verify(
 			$header . '.' . $body,
 			$derSignature,
 			$signingKey,
-			self::SIGNATURE_ALGORITHM
+			$ec ? self::SIGNATURE_ALGORITHM : OPENSSL_ALGO_SHA256
 		);
 		switch($v){
 			case 0: return false;
@@ -238,7 +240,70 @@ final class JwtUtils{
 		throw new AssumptionFailedError("OpenSSL resource contains invalid public key");
 	}
 
-	public static function parseDerPublicKey(string $derKey) : \OpenSSLAsymmetricKey{
+	/**
+	 * @copyright https://github.com/firebase/php-jwt/blob/main/src/JWK.php#L281
+	 * DER-encode the length
+	 *
+	 * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
+	 * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3} for more information.
+	 *
+	 * @param int $length
+	 * @return string
+	 */
+	private static function encodeLength(int $length): string
+	{
+		if ($length <= 0x7F) {
+			return chr($length);
+		}
+
+		$temp = \ltrim(pack('N', $length), chr(0));
+
+		return pack('Ca*', 0x80 | \strlen($temp), $temp);
+	}
+
+	/**
+	 * @copyright https://github.com/firebase/php-jwt/blob/main/src/JWK.php#L237
+	 * Create a public key represented in PEM format from RSA modulus and exponent information
+	 *
+	 * @param string $n The RSA modulus encoded in Base64
+	 * @param string $e The RSA exponent encoded in Base64
+	 *
+	 * @return string The RSA public key represented in PEM format
+	 *
+	 * @uses encodeLength
+	 */
+	public static function createDerFromModulusAndExponent(
+		string $n,
+		string $e
+	): string {
+		$mod = self::b64UrlDecode($n);
+		$exp = self::b64UrlDecode($e);
+
+		$modulus = pack('Ca*a*', 2, self::encodeLength(strlen($mod)), $mod);
+		$publicExponent = pack('Ca*a*', 2, self::encodeLength(strlen($exp)), $exp);
+
+		$rsaPublicKey = pack(
+			'Ca*a*a*',
+			48,
+			self::encodeLength(\strlen($modulus) + \strlen($publicExponent)),
+			$modulus,
+			$publicExponent
+		);
+
+		// sequence(oid(1.2.840.113549.1.1.1), null)) = rsaEncryption.
+		$rsaOID = pack('H*', '300d06092a864886f70d0101010500'); // hex version of MA0GCSqGSIb3DQEBAQUA
+		$rsaPublicKey = chr(0) . $rsaPublicKey;
+		$rsaPublicKey = chr(3) . self::encodeLength(\strlen($rsaPublicKey)) . $rsaPublicKey;
+
+		return pack(
+			'Ca*a*',
+			48,
+			self::encodeLength(\strlen($rsaOID . $rsaPublicKey)),
+			$rsaOID . $rsaPublicKey
+		);
+	}
+
+	public static function parseDerPublicKey(string $derKey, bool $ec = true) : \OpenSSLAsymmetricKey{
 		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
@@ -247,12 +312,14 @@ final class JwtUtils{
 		if($details === false){
 			throw new JwtException("OpenSSL failed to get details from key: " . openssl_error_string());
 		}
-		if(!isset($details['ec']['curve_name'])){
-			throw new JwtException("Expected an EC key");
-		}
-		$curve = $details['ec']['curve_name'];
-		if($curve !== self::BEDROCK_SIGNING_KEY_CURVE_NAME){
-			throw new JwtException("Key must belong to curve " . self::BEDROCK_SIGNING_KEY_CURVE_NAME . ", got $curve");
+		if($ec){
+			if(!isset($details['ec']['curve_name'])){
+				throw new JwtException("Expected an EC key");
+			}
+			$curve = $details['ec']['curve_name'];
+			if($curve !== self::BEDROCK_SIGNING_KEY_CURVE_NAME){
+				throw new JwtException("Key must belong to curve " . self::BEDROCK_SIGNING_KEY_CURVE_NAME . ", got $curve");
+			}
 		}
 		return $signingKeyOpenSSL;
 	}

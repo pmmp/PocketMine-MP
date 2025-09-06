@@ -27,28 +27,23 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
+use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
+use pocketmine\network\mcpe\protocol\types\login\JwtBodyRfc7519;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
-use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use function base64_decode;
-use function igbinary_serialize;
-use function igbinary_unserialize;
 use function time;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	/**
-	 * New Mojang root auth key. Mojang notified third-party developers of this change prior to the release of 1.20.0.
-	 * Expectations were that this would be used starting a "couple of weeks" after the release, but as of 2023-07-01,
-	 * it has not yet been deployed.
-	 */
-	public const MOJANG_ROOT_PUBLIC_KEY = "MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAECRXueJeTDqNRRgJi/vlRufByu/2G0i2Ebt6YMar5QX/R0DIIyrJMcUpruK4QveTfJSTp3Shlq4Gk34cD/4GUWwkv0DVuzeuB+tXija7HBxii03NHDbPAD0AKnLr2wdAp";
+	public const MOJANG_AUDIENCE = "api://auth-minecraft-services/multiplayer";
 
 	private const CLOCK_DRIFT_MAX = 60;
 
-	private string $chain;
+	/** @var NonThreadSafeValue<AuthServiceKey> */
+	private NonThreadSafeValue $key;
 
 	/**
 	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
@@ -66,17 +61,18 @@ class ProcessLoginTask extends AsyncTask{
 	private ?string $clientPublicKey = null;
 
 	/**
-	 * @param string[] $chainJwts
 	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPublicKey) : void $onCompletion
 	 */
 	public function __construct(
-		array $chainJwts,
+		private string $jwt,
+		private string $issuer,
+		AuthServiceKey $key,
 		private string $clientDataJwt,
 		private bool $authRequired,
 		\Closure $onCompletion
 	){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
-		$this->chain = igbinary_serialize($chainJwts);
+		$this->key = new NonThreadSafeValue($key);
 	}
 
 	public function onRun() : void{
@@ -90,78 +86,39 @@ class ProcessLoginTask extends AsyncTask{
 	}
 
 	private function validateChain() : string{
-		/** @var string[] $chain */
-		$chain = igbinary_unserialize($this->chain);
+		$key = $this->key->deserialize();
+		$currentKey = JwtUtils::createDerFromModulusAndExponent($key->n, $key->e);
 
-		$currentKey = null;
-		$first = true;
-
-		foreach($chain as $jwt){
-			$this->validateToken($jwt, $currentKey, $first);
-			if($first){
-				$first = false;
-			}
-		}
-
-		/** @var string $clientKey */
-		$clientKey = $currentKey;
-
+		$this->validateToken($this->jwt, $currentKey, true);
 		$this->validateToken($this->clientDataJwt, $currentKey);
 
-		return $clientKey;
+		return $currentKey;
 	}
 
 	/**
 	 * @throws VerifyLoginException if errors are encountered
 	 */
-	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
+	private function validateToken(string $jwt, string &$currentPublicKey, bool $first = false) : void{
 		try{
-			[$headersArray, $claimsArray, ] = JwtUtils::parse($jwt);
+			[, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), null, 0, $e);
 		}
 
-		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
-		$mapper->bEnforceMapType = false;
-
 		try{
-			/** @var JwtHeader $headers */
-			$headers = $mapper->map($headersArray, new JwtHeader());
-		}catch(\JsonMapper_Exception $e){
-			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), null, 0, $e);
-		}
-
-		$headerDerKey = base64_decode($headers->x5u, true);
-		if($headerDerKey === false){
-			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
-		}
-
-		if($currentPublicKey === null){
-			if(!$first){
-				throw new VerifyLoginException("Missing JWT public key", KnownTranslationFactory::pocketmine_disconnect_invalidSession_missingKey());
-			}
-		}elseif($headerDerKey !== $currentPublicKey){
-			//Fast path: if the header key doesn't match what we expected, the signature isn't going to validate anyway
-			throw new VerifyLoginException("Invalid JWT signature", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badSignature());
-		}
-
-		try{
-			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
+			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($currentPublicKey, !$first);
 		}catch(JwtException $e){
 			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
 		}
 		try{
-			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
+			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL, !$first)){
 				throw new VerifyLoginException("Invalid JWT signature", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badSignature());
 			}
 		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), null, 0, $e);
 		}
 
-		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
+		if($first){
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
@@ -172,10 +129,18 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper->bEnforceMapType = false;
 		$mapper->bRemoveUndefinedAttributes = true;
 		try{
-			/** @var JwtChainLinkBody $claims */
-			$claims = $mapper->map($claimsArray, new JwtChainLinkBody());
+			/** @var JwtChainLinkBody|JwtBodyRfc7519 $claims */
+			$claims = $mapper->map($claimsArray, $first ? new JwtChainLinkBody() : new JwtBodyRfc7519());
 		}catch(\JsonMapper_Exception $e){
 			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), null, 0, $e);
+		}
+
+		if(isset($claims->iss) && $claims->iss !== $this->issuer){
+			throw new VerifyLoginException("Invalid JWT issuer", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badIssuer());
+		}
+
+		if(isset($claims->aud) && $claims->aud !== self::MOJANG_AUDIENCE){
+			throw new VerifyLoginException("Invalid JWT audience", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badAudience());
 		}
 
 		$time = time();
@@ -187,8 +152,8 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("JWT expired", KnownTranslationFactory::pocketmine_disconnect_invalidSession_tooLate());
 		}
 
-		if(isset($claims->identityPublicKey)){
-			$identityPublicKey = base64_decode($claims->identityPublicKey, true);
+		if($first){
+			$identityPublicKey = base64_decode($claims->cpk, true);
 			if($identityPublicKey === false){
 				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
 			}
@@ -198,7 +163,7 @@ class ProcessLoginTask extends AsyncTask{
 			}catch(JwtException $e){
 				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), null, 0, $e);
 			}
-			$currentPublicKey = $identityPublicKey; //if there are further links, the next link should be signed with this
+			$currentPublicKey = $identityPublicKey;
 		}
 	}
 
