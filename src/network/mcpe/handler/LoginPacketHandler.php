@@ -48,6 +48,7 @@ use Ramsey\Uuid\Uuid;
 use function gettype;
 use function is_object;
 use function json_decode;
+use function mb_convert_encoding;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -91,7 +92,12 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$uuid = Uuid::fromBytes(mb_convert_encoding($claims->xid, "UTF-8")); //todo: verify this is correct
+		$bytes = mb_convert_encoding($claims->xid, "UTF-8");
+		if($bytes === false){
+			throw new PacketHandlingException("Invalid login UUID");
+		}
+
+		$uuid = Uuid::fromBytes($bytes); //todo: verify this is correct
 
 		if($claims->xid !== ""){
 			$playerInfo = new XboxLivePlayerInfo(

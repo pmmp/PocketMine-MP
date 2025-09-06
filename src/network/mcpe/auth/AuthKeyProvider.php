@@ -27,6 +27,7 @@ use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
+use function time;
 
 class AuthKeyProvider{
 	private const ALLOWED_REFRESH_INTERVAL = 30 * 60; // 30 minutes
@@ -35,6 +36,7 @@ class AuthKeyProvider{
 	private array $keys = [];
 	private string $issuer;
 
+	/** @phpstan-var PromiseResolver<null> */
 	private PromiseResolver $resolver;
 
 	private int $lastFetch;
@@ -51,7 +53,7 @@ class AuthKeyProvider{
 	 * @phpstan-return Promise<AuthServiceKey>
 	 */
 	public function getKey(string $keyId) : Promise{
-		/* @phpstan-var PromiseResolver<AuthServiceKey> $resolver */
+		/** @phpstan-var PromiseResolver<AuthServiceKey> $resolver */
 		$resolver = new PromiseResolver();
 
 		if(isset($this->keys[$keyId])){

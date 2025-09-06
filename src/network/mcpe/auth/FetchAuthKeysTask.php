@@ -31,6 +31,7 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\utils\Internet;
 use function gettype;
+use function is_array;
 use function is_object;
 use function json_decode;
 use const JSON_THROW_ON_ERROR;
@@ -43,11 +44,11 @@ class FetchAuthKeysTask extends AsyncTask{
 	private const AUTHORIZATION_SERVICE_OPENID_CONFIGURATION_PATH = "/.well-known/openid-configuration";
 	private const AUTHORIZATION_SERVICE_KEYS_PATH = "/.well-known/keys";
 
-	/** @var ?NonThreadSafeValue<array<string, AuthServiceKey>> */
+	/** @phpstan-var ?NonThreadSafeValue<array<string, AuthServiceKey>> */
 	private ?NonThreadSafeValue $keys = null;
 	private string $issuer;
 
-	/** @var ?NonThreadSafeValue<string[]> */
+	/** @phpstan-var ?NonThreadSafeValue<non-empty-array<string>> */
 	private ?NonThreadSafeValue $errors = null;
 
 	/**
@@ -89,7 +90,7 @@ class FetchAuthKeysTask extends AsyncTask{
 		$this->errors = $errors === [] ? null : new NonThreadSafeValue($errors);
 	}
 
-	private function getAuthServiceURI(): string{
+	private function getAuthServiceURI() : string{
 		$result = Internet::getURL(self::MINECRAFT_SERVICES_DISCOVERY_URL);
 		if($result === null || $result->getCode() !== 200){
 			throw new \RuntimeException("Failed to fetch Minecraft services discovery document");
@@ -120,7 +121,7 @@ class FetchAuthKeysTask extends AsyncTask{
 		return $discovery->result->serviceEnvironments->auth->prod->serviceUri;
 	}
 
-	private function getOpenIdConfiguration(string $authServiceUri): ?AuthServiceOpenIdConfiguration{
+	private function getOpenIdConfiguration(string $authServiceUri) : AuthServiceOpenIdConfiguration{
 		$result = Internet::getURL($authServiceUri . self::AUTHORIZATION_SERVICE_OPENID_CONFIGURATION_PATH);
 		if($result === null || $result->getCode() !== 200){
 			throw new \RuntimeException("Failed to fetch OpenID configuration from authorization service");
@@ -154,7 +155,7 @@ class FetchAuthKeysTask extends AsyncTask{
 	/**
 	 * @return array<string, AuthServiceKey> keys indexed by key ID
 	 */
-	private function getKeys(string $jwksUri): array{
+	private function getKeys(string $jwksUri) : array{
 		$result = Internet::getURL($jwksUri);
 		if($result === null || $result->getCode() !== 200){
 			return throw new \RuntimeException("Failed to fetch keys from authorization service");
@@ -166,6 +167,10 @@ class FetchAuthKeysTask extends AsyncTask{
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 
+		if(!is_array($json) || !isset($json["keys"]) || !is_array($keysArray = $json["keys"])){
+			throw new \RuntimeException("Unexpected root type of schema file " . gettype($json) . ", expected object");
+		}
+
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
@@ -174,7 +179,11 @@ class FetchAuthKeysTask extends AsyncTask{
 		$mapper->bRemoveUndefinedAttributes = true;
 
 		$keys = [];
-		foreach($json["keys"] ?? [] as $keyJson){
+		foreach($keysArray as $keyJson){
+			if(!is_array($keyJson)){
+				throw new \RuntimeException("Unexpected key type in schema file: " . gettype($keyJson) . ", expected object");
+			}
+
 			try{
 				/** @var AuthServiceKey $key */
 				$key = $mapper->map($keyJson, new AuthServiceKey());

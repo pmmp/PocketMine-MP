@@ -152,7 +152,7 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("JWT expired", KnownTranslationFactory::pocketmine_disconnect_invalidSession_tooLate());
 		}
 
-		if($first){
+		if($claims instanceof JwtChainLinkBody){
 			$identityPublicKey = base64_decode($claims->cpk, true);
 			if($identityPublicKey === false){
 				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
