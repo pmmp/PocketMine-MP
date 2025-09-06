@@ -271,7 +271,7 @@ class Server{
 	private int $maxPlayers;
 
 	private bool $onlineMode = true;
-	private AuthKeyProvider $authKeyManager;
+	private AuthKeyProvider $authKeyProvider;
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
@@ -984,7 +984,7 @@ class Server{
 				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
-			$this->authKeyManager = new AuthKeyProvider($this);
+			$this->authKeyProvider = new AuthKeyProvider($this);
 
 			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
 				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
@@ -1804,8 +1804,8 @@ class Server{
 		return $this->forceLanguage;
 	}
 
-	public function getAuthKeyManager() : AuthKeyProvider{
-		return $this->authKeyManager;
+	public function getAuthKeyProvider() : AuthKeyProvider{
+		return $this->authKeyProvider;
 	}
 
 	public function getNetwork() : Network{

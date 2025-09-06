@@ -242,10 +242,10 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws \InvalidArgumentException
 	 */
 	protected function processLogin(string $token, string $keyId, AuthenticationType $authType, string $clientData, bool $authRequired) : void{
-		$authKeyManager = $this->server->getAuthKeyManager();
+		$authKeyProvider = $this->server->getAuthKeyProvider();
 
-		$issuer = $authKeyManager->getIssuer();
-		$keyPromise = $authKeyManager->getKey($keyId);
+		$issuer = $authKeyProvider->getIssuer();
+		$keyPromise = $authKeyProvider->getKey($keyId);
 		$keyPromise->onCompletion(function (AuthServiceKey $key) use ($token, $issuer, $clientData, $authRequired) : void{
 			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($token, $issuer, $key, $clientData, $authRequired, $this->authCallback));
 			$this->session->setHandler(null); //drop packets received during login verification
