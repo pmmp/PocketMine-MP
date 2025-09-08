@@ -820,14 +820,14 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPubKeyPem) : void{
 		if(!$this->connected){
 			return;
 		}
 		if($error === null){
 			if($authenticated && !($this->info instanceof XboxLivePlayerInfo)){
 				$error = "Expected XUID but none found";
-			}elseif($clientPubKey === null){
+			}elseif($clientPubKeyPem === null){
 				$error = "Missing client public key"; //failsafe
 			}
 		}
@@ -903,7 +903,11 @@ class NetworkSession{
 		}
 
 		if(EncryptionContext::$ENABLED){
-			$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKey, function(string $encryptionKey, string $handshakeJwt) : void{
+			if($clientPubKeyPem === null){
+				//TODO: clean this mess up :(
+				throw new AssumptionFailedError("We already checked above that this is not null");
+			}
+			$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKeyPem, function(string $encryptionKey, string $handshakeJwt) : void{
 				if(!$this->connected){
 					return;
 				}

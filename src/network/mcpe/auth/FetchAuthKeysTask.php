@@ -52,9 +52,11 @@ class FetchAuthKeysTask extends AsyncTask{
 	private ?NonThreadSafeValue $errors = null;
 
 	/**
-	 * @phpstan-param \Closure(array<string, AuthServiceKey>|null $keys, string $issuer, ?string[] $errors) : void $onCompletion
+	 * @phpstan-param \Closure(?array<string, AuthServiceKey> $keys, string $issuer, ?string[] $errors) : void $onCompletion
 	 */
-	public function __construct(\Closure $onCompletion){
+	public function __construct(
+		\Closure $onCompletion
+	){
 		$this->storeLocal(self::KEYS_ON_COMPLETION, $onCompletion);
 	}
 

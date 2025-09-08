@@ -30,6 +30,7 @@ use function bin2hex;
 use function gmp_init;
 use function gmp_strval;
 use function hex2bin;
+use function is_string;
 use function openssl_digest;
 use function openssl_error_string;
 use function openssl_pkey_derive;
@@ -54,9 +55,11 @@ final class EncryptionUtils{
 		}
 	}
 
-	public static function generateSharedSecret(\OpenSSLAsymmetricKey $localPriv, \OpenSSLAsymmetricKey $remotePub) : \GMP{
+	public static function generateSharedSecret(\OpenSSLAsymmetricKey $localPriv, \OpenSSLAsymmetricKey|string $remotePub) : \GMP{
 		self::validateKey($localPriv);
-		self::validateKey($remotePub);
+		if(!is_string($remotePub)){
+			self::validateKey($remotePub);
+		}
 		$hexSecret = openssl_pkey_derive($remotePub, $localPriv, 48);
 		if($hexSecret === false){
 			throw new \InvalidArgumentException("Failed to derive shared secret: " . openssl_error_string());

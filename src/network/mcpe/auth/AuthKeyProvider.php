@@ -23,96 +23,142 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\auth;
 
+use pocketmine\network\mcpe\JwtException;
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
-use pocketmine\Server;
+use pocketmine\scheduler\AsyncPool;
+use pocketmine\utils\AssumptionFailedError;
+use function array_keys;
+use function count;
+use function implode;
 use function time;
 
 class AuthKeyProvider{
 	private const ALLOWED_REFRESH_INTERVAL = 30 * 60; // 30 minutes
 
-	/** @phpstan-var array<string, AuthServiceKey> */
-	private array $keys = [];
-	private string $issuer;
+	private ?AuthKeyring $keyring = null;
 
-	/** @phpstan-var PromiseResolver<null> */
-	private PromiseResolver $resolver;
+	/** @phpstan-var PromiseResolver<AuthKeyring> */
+	private ?PromiseResolver $resolver = null;
 
-	private int $lastFetch;
+	private int $lastFetch = 0;
 
-	public function __construct(private readonly Server $server){
-		$this->fetchKeys();
-	}
-
-	public function getIssuer() : string{
-		return $this->issuer;
-	}
+	public function __construct(
+		private readonly \Logger $logger,
+		private readonly AsyncPool $asyncPool,
+		private readonly int $keyRefreshIntervalSeconds = self::ALLOWED_REFRESH_INTERVAL
+	){}
 
 	/**
-	 * @phpstan-return Promise<AuthServiceKey>
+	 * Fetches the key for the given key ID.
+	 * The promise will be resolved with an array of [issuer, pemPublicKey].
+	 *
+	 * @phpstan-return Promise<array{string, string}>
 	 */
 	public function getKey(string $keyId) : Promise{
-		/** @phpstan-var PromiseResolver<AuthServiceKey> $resolver */
+		/** @phpstan-var PromiseResolver<array{string, string}> $resolver */
 		$resolver = new PromiseResolver();
 
-		if(isset($this->keys[$keyId])){
-			$resolver->resolve($this->keys[$keyId]);
+		if(
+			$this->keyring === null || //we haven't fetched keys yet
+			($this->keyring->getKey($keyId) === null && $this->lastFetch < time() - $this->keyRefreshIntervalSeconds) //we don't recognise this one & keys might be outdated
+		){
+			//only refresh keys when we see one we don't recognise
+			$this->fetchKeys()->onCompletion(
+				onSuccess: fn(AuthKeyring $newKeyring) => $this->resolveKey($resolver, $newKeyring, $keyId),
+				onFailure: $resolver->reject(...)
+			);
 		}else{
-			$this->onKeyNotFound($keyId, $resolver);
+			$this->resolveKey($resolver, $this->keyring, $keyId);
 		}
 
 		return $resolver->getPromise();
 	}
 
 	/**
-	 * @phpstan-param PromiseResolver<AuthServiceKey> $resolver
+	 * @phpstan-param PromiseResolver<array{string, string}> $resolver
 	 */
-	private function onKeyNotFound(string $keyId, PromiseResolver $resolver) : void{
-		if($this->canRefreshKeys()){
-			$this->fetchKeys();
+	private function resolveKey(PromiseResolver $resolver, AuthKeyring $keyring, string $keyId) : void{
+		$key = $keyring->getKey($keyId);
+		if($key === null){
+			$this->logger->debug("Key $keyId not recognised!");
+			$resolver->reject();
+			return;
 		}
 
-		$this->resolver->getPromise()->onCompletion(function() use ($keyId, $resolver) : void{
-			if(isset($this->keys[$keyId])){
-				$resolver->resolve($this->keys[$keyId]);
-			}else{
-				$resolver->reject();
-			}
-		}, function() use ($resolver) : void{
-			$resolver->reject();
-		});
+		$this->logger->debug("Key $keyId found in keychain");
+		$resolver->resolve([$keyring->getIssuer(), $key]);
 	}
 
 	/**
 	 * @phpstan-param array<string, AuthServiceKey>|null $keys
-	 * @phpstan-param string[]|null $errors
+	 * @phpstan-param string[]|null                      $errors
 	 */
 	private function onKeysFetched(?array $keys, string $issuer, ?array $errors) : void{
-		if ($errors !== null){
-			foreach($errors as $error){
-				$this->server->getLogger()->error($error);
+		$resolver = $this->resolver;
+		if($resolver === null){
+			throw new AssumptionFailedError("Not expecting this to be called without a resolver present");
+		}
+		if($errors !== null){
+			$this->logger->error("The following errors occurred while fetching new keys:\n\t- " . implode("\n\t-", $errors));
+			//we might've still succeeded in fetching keys even if there were errors, so don't return
+		}
+
+		if($keys === null){
+			$this->logger->critical("Failed to fetch authentication keys from Mojang's API. Xbox players may not be able to authenticate!");
+			$resolver->reject();
+		}else{
+			$pemKeys = [];
+			foreach($keys as $keyModel){
+				if($keyModel->use !== "sig" || $keyModel->kty !== "RSA"){
+					$this->logger->error("Key ID $keyModel->kid doesn't have the expected properties: expected use=sig, kty=RSA, got use=$keyModel->use, kty=$keyModel->kty");
+					continue;
+				}
+				$pemKey = JwtUtils::derPublicKeyToPem(JwtUtils::rsaPublicKeyModExpToDer($keyModel->n, $keyModel->e));
+
+				//make sure the key is valid
+				try{
+					JwtUtils::parsePemPublicKey($pemKey);
+				}catch(JwtException $e){
+					$this->logger->error("Failed to parse RSA public key for key ID $keyModel->kid: " . $e->getMessage());
+					$this->logger->logException($e);
+					continue;
+				}
+
+				//retain PEM keys instead of OpenSSLAsymmetricKey since these are easier and cheaper to copy between threads
+				$pemKeys[$keyModel->kid] = $pemKey;
+			}
+
+			if(count($keys) === 0){
+				$this->logger->critical("No valid authentication keys returned by Mojang's API. Xbox players may not be able to authenticate!");
+				$resolver->reject();
+			}else{
+				$this->logger->info("Successfully fetched " . count($keys) . " new authentication keys from issuer $issuer, key IDs: " . implode(", ", array_keys($pemKeys)));
+				$this->keyring = new AuthKeyring($issuer, $pemKeys);
+				$this->lastFetch = time();
+				$resolver->resolve($this->keyring);
 			}
 		}
+	}
 
-		$this->issuer = $issuer;
-
-		if ($keys === null){
-			$this->server->getLogger()->error("Failed to fetch authentication keys. Authentication will not be possible.");
-			$this->resolver->reject();
-		} else {
-			$this->keys = $keys;
-			$this->resolver->resolve(null);
+	/**
+	 * @phpstan-return Promise<AuthKeyring>
+	 */
+	private function fetchKeys() : Promise{
+		if($this->resolver !== null){
+			$this->logger->debug("Key refresh was requested, but it's already in progress");
+			return $this->resolver->getPromise();
 		}
-	}
 
-	private function fetchKeys() : void{
-		$this->lastFetch = time();
-		$this->resolver = new PromiseResolver();
-		$this->server->getAsyncPool()->submitTask(new FetchAuthKeysTask($this->onKeysFetched(...)));
-	}
+		$this->logger->notice("Fetching new authentication keys");
 
-	private function canRefreshKeys() : bool{
-		return time() - $this->lastFetch >= self::ALLOWED_REFRESH_INTERVAL;
+		/** @phpstan-var PromiseResolver<AuthKeyring> $resolver */
+		$resolver = new PromiseResolver();
+		$this->resolver = $resolver;
+		//TODO: extract this so it can be polyfilled for unit testing
+		$this->asyncPool->submitTask(new FetchAuthKeysTask($this->onKeysFetched(...)));
+		return $this->resolver->getPromise();
 	}
 }

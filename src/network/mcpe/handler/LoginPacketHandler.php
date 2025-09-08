@@ -32,23 +32,29 @@ use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\LoginPacket;
-use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationType;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
 use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
+use pocketmine\network\mcpe\protocol\types\login\selfsigned\SelfSignedCertificateChain;
+use pocketmine\network\mcpe\protocol\types\login\selfsigned\SelfSignedTokenBody;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
+use Ramsey\Uuid\Exception\UuidExceptionInterface;
 use Ramsey\Uuid\Uuid;
+use function array_key_first;
+use function base64_decode;
+use function count;
 use function gettype;
+use function is_array;
 use function is_object;
 use function json_decode;
-use function mb_convert_encoding;
+use function md5;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -69,11 +75,25 @@ class LoginPacketHandler extends PacketHandler{
 	public function handleLogin(LoginPacket $packet) : bool{
 		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
 
-		[$headerArray, $claimsArray, ] = JwtUtils::parse($authInfo->Token);
-		$header = $this->parseHeader($headerArray);
-		$claims = $this->parseBody($claimsArray);
+		if($authInfo->AuthenticationType === AuthenticationType::FULL->value){
+			try{
+				[$headerArray, $claimsArray,] = JwtUtils::parse($authInfo->Token);
+			}catch(JwtException $e){
+				throw PacketHandlingException::wrap($e, "Error parsing authentication token");
+			}
+			$header = $this->parseHeader($headerArray);
+			$claims = $this->parseBody($claimsArray);
 
-		if(!Player::isValidUserName($claims->xname)){
+			$legacyUuid = Uuid::fromBytes(md5("pocket-auth-1-xuid:" . $claims->xid, binary: true));
+			$username = $claims->xname;
+			$xuid = $claims->xid;
+		}elseif($authInfo->AuthenticationType === AuthenticationType::SELF_SIGNED->value){
+			throw new PacketHandlingException("TODO NOT SUPPORTED");
+		}else{
+			throw new PacketHandlingException("Unsupported authentication type: $authInfo->AuthenticationType");
+		}
+
+		if(!Player::isValidUserName($username)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
 			return true;
@@ -92,26 +112,19 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$bytes = mb_convert_encoding($claims->xid, "UTF-8");
-		if($bytes === false){
-			throw new PacketHandlingException("Invalid login UUID");
-		}
-
-		$uuid = Uuid::fromBytes($bytes); //todo: verify this is correct
-
-		if($claims->xid !== ""){
+		if($xuid !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
-				$claims->xid,
-				$claims->xname,
-				$uuid,
+				$xuid,
+				$username,
+				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
 				(array) $clientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
-				$claims->xname,
-				$uuid,
+				$username,
+				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
 				(array) $clientData
@@ -150,7 +163,7 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		$this->processLogin($authInfo->Token, $header->kid, AuthenticationType::from($authInfo->AuthenticationType), $packet->clientDataJwt, $ev->isAuthRequired());
+		$this->processXboxLogin($authInfo->Token, $header->kid, $packet->clientDataJwt, $ev->isAuthRequired());
 
 		return true;
 	}
@@ -165,13 +178,10 @@ class LoginPacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e);
 		}
 		if(!is_object($authInfoJson)){
-			throw new \RuntimeException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
+			throw new PacketHandlingException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
 		}
 
-		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper = $this->defaultJsonMapper();
 		try{
 			$clientData = $mapper->map($authInfoJson, new AuthenticationInfo());
 		}catch(\JsonMapper_Exception $e){
@@ -185,11 +195,7 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws PacketHandlingException
 	 */
 	protected function parseHeader(array $headerArray) : JwtHeader{
-		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
-		$mapper->bEnforceMapType = false;
+		$mapper = $this->defaultJsonMapper();
 		try{
 			$header = $mapper->map($headerArray, new JwtHeader());
 		}catch(\JsonMapper_Exception $e){
@@ -203,13 +209,9 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws PacketHandlingException
 	 */
 	protected function parseBody(array $bodyArray) : JwtChainLinkBody{
-		$mapper = new \JsonMapper();
+		$mapper = $this->defaultJsonMapper();
 		$mapper->bRemoveUndefinedAttributes = true;
 
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
-		$mapper->bEnforceMapType = false;
 		try{
 			$header = $mapper->map($bodyArray, new JwtChainLinkBody());
 		}catch(\JsonMapper_Exception $e){
@@ -228,11 +230,7 @@ class LoginPacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e);
 		}
 
-		$mapper = new \JsonMapper();
-		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper = $this->defaultJsonMapper();
 		try{
 			$clientData = $mapper->map($clientDataClaims, new ClientData());
 		}catch(\JsonMapper_Exception $e){
@@ -247,16 +245,26 @@ class LoginPacketHandler extends PacketHandler{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function processLogin(string $token, string $keyId, AuthenticationType $authType, string $clientData, bool $authRequired) : void{
+	protected function processXboxLogin(string $token, string $keyId, string $clientData, bool $authRequired) : void{
+		$this->session->setHandler(null); //drop packets received during login verification
+
 		$authKeyProvider = $this->server->getAuthKeyProvider();
 
-		$issuer = $authKeyProvider->getIssuer();
-		$keyPromise = $authKeyProvider->getKey($keyId);
-		$keyPromise->onCompletion(function (AuthServiceKey $key) use ($token, $issuer, $clientData, $authRequired) : void{
-			$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($token, $issuer, $key, $clientData, $authRequired, $this->authCallback));
-			$this->session->setHandler(null); //drop packets received during login verification
-		}, function () use ($authRequired) : void{
-			($this->authCallback)(false, $authRequired, "Failed to retrieve authentication key", null);
-		});
+		$authKeyProvider->getKey($keyId)->onCompletion(
+			function(array $issuerAndKey) use ($token, $clientData, $authRequired) : void{
+				[$issuer, $mojangPublicKeyPem] = $issuerAndKey;
+				$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($token, $issuer, $mojangPublicKeyPem, $clientData, $authRequired, $this->authCallback));
+			},
+			fn() => ($this->authCallback)(false, $authRequired, "Unrecognized authentication key ID: $keyId", null)
+		);
+	}
+
+	private function defaultJsonMapper() : \JsonMapper{
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bEnforceMapType = false;
+		return $mapper;
 	}
 }

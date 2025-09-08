@@ -27,7 +27,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
-use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
 use pocketmine\network\mcpe\protocol\types\login\JwtBodyRfc7519;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
 use pocketmine\scheduler\AsyncTask;
@@ -42,9 +41,6 @@ class ProcessLoginTask extends AsyncTask{
 
 	private const CLOCK_DRIFT_MAX = 60;
 
-	/** @var NonThreadSafeValue<AuthServiceKey> */
-	private NonThreadSafeValue $key;
-
 	/**
 	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
 	 * keychain is invalid for whatever reason (bad signature, not in nbf-exp window, etc). If this is non-null, the
@@ -58,7 +54,7 @@ class ProcessLoginTask extends AsyncTask{
 	 * root public key.
 	 */
 	private bool $authenticated = false;
-	private ?string $clientPublicKey = null;
+	private ?string $clientPublicKeyPem = null;
 
 	/**
 	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, Translatable|string|null $error, ?string $clientPublicKey) : void $onCompletion
@@ -66,18 +62,17 @@ class ProcessLoginTask extends AsyncTask{
 	public function __construct(
 		private string $jwt,
 		private string $issuer,
-		AuthServiceKey $key,
+		private string $mojangPublicKeyPem,
 		private string $clientDataJwt,
 		private bool $authRequired,
 		\Closure $onCompletion
 	){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
-		$this->key = new NonThreadSafeValue($key);
 	}
 
 	public function onRun() : void{
 		try{
-			$this->clientPublicKey = $this->validateChain();
+			$this->clientPublicKeyPem = $this->validateChain();
 			$this->error = null;
 		}catch(VerifyLoginException $e){
 			$disconnectMessage = $e->getDisconnectMessage();
@@ -86,19 +81,29 @@ class ProcessLoginTask extends AsyncTask{
 	}
 
 	private function validateChain() : string{
-		$key = $this->key->deserialize();
-		$currentKey = JwtUtils::createDerFromModulusAndExponent($key->n, $key->e);
+		$claims = $this->validateToken($this->jwt, $this->mojangPublicKeyPem, isEcKey: false, bodyClass: JwtChainLinkBody::class);
+		//validateToken will throw if the JWT is not valid
+		$this->authenticated = true;
 
-		$this->validateToken($this->jwt, $currentKey, true);
-		$this->validateToken($this->clientDataJwt, $currentKey);
+		$clientDerKey = base64_decode($claims->cpk, strict: true);
+		if($clientDerKey === false){
+			throw new VerifyLoginException("Invalid client public key: base64 error decoding");
+		}
+		//no further validation needed - OpenSSL will bail if the key is invalid
+		$clientPublicKeyPem = JwtUtils::derPublicKeyToPem($clientDerKey);
+		$this->validateToken($this->clientDataJwt, $clientPublicKeyPem, isEcKey: true, bodyClass: JwtBodyRfc7519::class);
 
-		return $currentKey;
+		return $clientPublicKeyPem;
 	}
 
 	/**
+	 * @phpstan-template TBody of JwtBodyRfc7519
+	 * @phpstan-param class-string<TBody> $bodyClass
+	 * @phpstan-return TBody
+	 *
 	 * @throws VerifyLoginException if errors are encountered
 	 */
-	private function validateToken(string $jwt, string &$currentPublicKey, bool $first = false) : void{
+	private function validateToken(string $jwt, string $signingKeyPem, bool $isEcKey, string $bodyClass) : JwtBodyRfc7519{
 		try{
 			[, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
@@ -106,20 +111,11 @@ class ProcessLoginTask extends AsyncTask{
 		}
 
 		try{
-			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($currentPublicKey, !$first);
-		}catch(JwtException $e){
-			throw new VerifyLoginException("Invalid JWT public key: " . $e->getMessage(), null, 0, $e);
-		}
-		try{
-			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL, !$first)){
+			if(!JwtUtils::verify($jwt, $signingKeyPem, $isEcKey)){
 				throw new VerifyLoginException("Invalid JWT signature", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badSignature());
 			}
 		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), null, 0, $e);
-		}
-
-		if($first){
-			$this->authenticated = true; //we're signed into xbox live
 		}
 
 		$mapper = new \JsonMapper();
@@ -129,18 +125,18 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper->bEnforceMapType = false;
 		$mapper->bRemoveUndefinedAttributes = true;
 		try{
-			/** @var JwtChainLinkBody|JwtBodyRfc7519 $claims */
-			$claims = $mapper->map($claimsArray, $first ? new JwtChainLinkBody() : new JwtBodyRfc7519());
+			//nasty dynamic new for JsonMapper
+			$claims = $mapper->map($claimsArray, new $bodyClass());
 		}catch(\JsonMapper_Exception $e){
 			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), null, 0, $e);
 		}
 
 		if(isset($claims->iss) && $claims->iss !== $this->issuer){
-			throw new VerifyLoginException("Invalid JWT issuer", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badIssuer());
+			throw new VerifyLoginException("Invalid JWT issuer");
 		}
 
 		if(isset($claims->aud) && $claims->aud !== self::MOJANG_AUDIENCE){
-			throw new VerifyLoginException("Invalid JWT audience", KnownTranslationFactory::pocketmine_disconnect_invalidSession_badAudience());
+			throw new VerifyLoginException("Invalid JWT audience");
 		}
 
 		$time = time();
@@ -152,19 +148,7 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("JWT expired", KnownTranslationFactory::pocketmine_disconnect_invalidSession_tooLate());
 		}
 
-		if($claims instanceof JwtChainLinkBody){
-			$identityPublicKey = base64_decode($claims->cpk, true);
-			if($identityPublicKey === false){
-				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
-			}
-			try{
-				//verify key format and parameters
-				JwtUtils::parseDerPublicKey($identityPublicKey);
-			}catch(JwtException $e){
-				throw new VerifyLoginException("Invalid identityPublicKey: " . $e->getMessage(), null, 0, $e);
-			}
-			$currentPublicKey = $identityPublicKey;
-		}
+		return $claims;
 	}
 
 	public function onCompletion() : void{
@@ -173,6 +157,6 @@ class ProcessLoginTask extends AsyncTask{
 		 * @phpstan-var \Closure(bool, bool, Translatable|string|null, ?string) : void $callback
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
-		$callback($this->authenticated, $this->authRequired, $this->error instanceof NonThreadSafeValue ? $this->error->deserialize() : $this->error, $this->clientPublicKey);
+		$callback($this->authenticated, $this->authRequired, $this->error instanceof NonThreadSafeValue ? $this->error->deserialize() : $this->error, $this->clientPublicKeyPem);
 	}
 }
