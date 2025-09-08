@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 use function base64_decode;
 use function base64_encode;
@@ -130,17 +131,17 @@ final class JwtUtils{
 		return self::ASN1_SEQUENCE_TAG . chr(strlen($sequence)) . $sequence;
 	}
 
-	private static function signaturePartFromAsn1(BinaryStream $stream) : string{
-		$prefix = $stream->get(1);
+	private static function signaturePartFromAsn1(ByteBufferReader $stream) : string{
+		$prefix = $stream->readByteArray(1);
 		if($prefix !== self::ASN1_INTEGER_TAG){
 			throw new \InvalidArgumentException("Expected an ASN.1 INTEGER tag, got " . bin2hex($prefix));
 		}
 		//we can assume the length is 1 byte here - if it were larger than 127, more complex logic would be needed
-		$length = $stream->getByte();
+		$length = Byte::readUnsigned($stream);
 		if($length > self::SIGNATURE_PART_LENGTH + 1){ //each part may have an extra leading 0 byte to prevent it being interpreted as a negative number
 			throw new \InvalidArgumentException("Expected at most 49 bytes for signature R or S, got $length");
 		}
-		$part = $stream->get($length);
+		$part = $stream->readByteArray($length);
 		return str_pad(ltrim($part, "\x00"), self::SIGNATURE_PART_LENGTH, "\x00", STR_PAD_LEFT);
 	}
 
@@ -156,11 +157,11 @@ final class JwtUtils{
 			throw new \InvalidArgumentException("Invalid DER signature, expected $length sequence bytes, got " . strlen($parts));
 		}
 
-		$stream = new BinaryStream($parts);
+		$stream = new ByteBufferReader($parts);
 		$rRaw = self::signaturePartFromAsn1($stream);
 		$sRaw = self::signaturePartFromAsn1($stream);
 
-		if(!$stream->feof()){
+		if($stream->getOffset() < strlen($stream->getData())){
 			throw new \InvalidArgumentException("Invalid DER signature, unexpected trailing sequence data");
 		}
 

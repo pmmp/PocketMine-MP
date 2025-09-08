@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use function assert;
@@ -156,20 +158,20 @@ class RegionLoader{
 		if($payload === false || strlen($payload) !== $bytesToRead){
 			throw new CorruptedChunkException("Corrupted chunk detected (unexpected EOF, truncated or non-padded chunk found)");
 		}
-		$stream = new BinaryStream($payload);
+		$stream = new ByteBufferReader($payload);
 
 		try{
-			$length = $stream->getInt();
+			$length = BE::readUnsignedInt($stream);
 			if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
 				return null;
 			}
 
-			$compression = $stream->getByte();
+			$compression = Byte::readUnsigned($stream);
 			if($compression !== self::COMPRESSION_ZLIB && $compression !== self::COMPRESSION_GZIP){
 				throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
 			}
 
-			return $stream->get($length - 1); //length prefix includes the compression byte
+			return $stream->readByteArray($length - 1); //length prefix includes the compression byte
 		}catch(BinaryDataException $e){
 			throw new CorruptedChunkException("Corrupted chunk detected: " . $e->getMessage(), 0, $e);
 		}

@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\VarInt;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
 use function array_shift;
@@ -114,11 +115,13 @@ class CraftingManager{
 	}
 
 	private static function hashOutput(Item $output) : string{
-		$write = new BinaryStream();
-		$write->putVarInt($output->getStateId());
-		$write->put((new LittleEndianNbtSerializer())->write(new TreeRoot($output->getNamedTag())));
+		$write = new ByteBufferWriter();
+		VarInt::writeSignedInt($write, $output->getStateId());
+		//TODO: the NBT serializer allocates its own ByteBufferWriter, we should change the API in the future to
+		//allow passing our own to avoid this extra allocation
+		$write->writeByteArray((new LittleEndianNbtSerializer())->write(new TreeRoot($output->getNamedTag())));
 
-		return $write->getBuffer();
+		return $write->getData();
 	}
 
 	/**

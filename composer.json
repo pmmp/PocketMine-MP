@@ -12,6 +12,7 @@
       "ext-ctype": "*",
       "ext-curl": "*",
       "ext-date": "*",
+      "ext-encoding": "~0.5.0",
       "ext-gmp": "*",
       "ext-hash": "*",
       "ext-igbinary": "^3.0.1",
