@@ -793,12 +793,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Parameter \#1 \$clientPub of class pocketmine\\network\\mcpe\\encryption\\PrepareEncryptionTask constructor expects string, string\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
 			message: '#^Parameter \#1 \$for of method pocketmine\\network\\mcpe\\NetworkSession\:\:syncAbilities\(\) expects pocketmine\\player\\Player, pocketmine\\player\\Player\|null given\.$#'
 			identifier: argument.type
 			count: 2
@@ -871,8 +865,8 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
+			message: '#^Dynamic new is not allowed\.$#'
+			identifier: pocketmine.new.dynamic
 			count: 1
 			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
 
