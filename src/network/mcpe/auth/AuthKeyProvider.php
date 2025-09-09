@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\auth;
 
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
-use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
+use pocketmine\network\mcpe\protocol\types\login\openid\api\AuthServiceKey;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
@@ -116,11 +116,11 @@ class AuthKeyProvider{
 					$this->logger->error("Key ID $keyModel->kid doesn't have the expected properties: expected use=sig, kty=RSA, got use=$keyModel->use, kty=$keyModel->kty");
 					continue;
 				}
-				$pemKey = JwtUtils::derPublicKeyToPem(JwtUtils::rsaPublicKeyModExpToDer($keyModel->n, $keyModel->e));
+				$derKey = JwtUtils::rsaPublicKeyModExpToDer($keyModel->n, $keyModel->e);
 
 				//make sure the key is valid
 				try{
-					JwtUtils::parsePemPublicKey($pemKey);
+					JwtUtils::parseDerPublicKey($derKey);
 				}catch(JwtException $e){
 					$this->logger->error("Failed to parse RSA public key for key ID $keyModel->kid: " . $e->getMessage());
 					$this->logger->logException($e);
@@ -128,7 +128,7 @@ class AuthKeyProvider{
 				}
 
 				//retain PEM keys instead of OpenSSLAsymmetricKey since these are easier and cheaper to copy between threads
-				$pemKeys[$keyModel->kid] = $pemKey;
+				$pemKeys[$keyModel->kid] = $derKey;
 			}
 
 			if(count($keys) === 0){

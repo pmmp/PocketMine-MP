@@ -173,7 +173,7 @@ final class JwtUtils{
 	/**
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, string $signingKeyPem, bool $ec) : bool{
+	public static function verify(string $jwt, string $signingKeyDer, bool $ec) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$rawSignature = self::b64UrlDecode($signature);
@@ -182,7 +182,7 @@ final class JwtUtils{
 		$v = openssl_verify(
 			$header . '.' . $body,
 			$derSignature,
-			$signingKeyPem,
+			self::derPublicKeyToPem($signingKeyDer),
 			$ec ? self::SIGNATURE_ALGORITHM : OPENSSL_ALGO_SHA256
 		);
 		switch($v){
@@ -259,8 +259,8 @@ final class JwtUtils{
 		return chr($tag) . self::encodeDerLength(strlen($data)) . $data;
 	}
 
-	public static function parsePemPublicKey(string $pemKey) : \OpenSSLAsymmetricKey{
-		$signingKeyOpenSSL = openssl_pkey_get_public($pemKey);
+	public static function parseDerPublicKey(string $derKey) : \OpenSSLAsymmetricKey{
+		$signingKeyOpenSSL = openssl_pkey_get_public(self::derPublicKeyToPem($derKey));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
 		}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\encryption;
 
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
 use function igbinary_serialize;
@@ -47,7 +48,7 @@ class PrepareEncryptionTask extends AsyncTask{
 	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
 	 */
 	public function __construct(
-		private string $clientPublicKeyPem,
+		private string $clientPublicKeyDer,
 		\Closure $onCompletion
 	){
 		if(self::$SERVER_PRIVATE_KEY === null){
@@ -67,7 +68,7 @@ class PrepareEncryptionTask extends AsyncTask{
 		$serverPrivDetails = igbinary_unserialize($this->serverPrivateKey);
 		$serverPriv = openssl_pkey_new($serverPrivDetails);
 		if($serverPriv === false) throw new AssumptionFailedError("Failed to restore server signing key from details");
-		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, $this->clientPublicKeyPem);
+		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, JwtUtils::parseDerPublicKey($this->clientPublicKeyDer));
 
 		$salt = random_bytes(16);
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);

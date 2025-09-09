@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\auth;
 
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
-use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceKey;
-use pocketmine\network\mcpe\protocol\types\login\auth\AuthServiceOpenIdConfiguration;
-use pocketmine\network\mcpe\protocol\types\login\services\MinecraftServicesDiscovery;
+use pocketmine\network\mcpe\protocol\types\login\openid\api\AuthServiceKey;
+use pocketmine\network\mcpe\protocol\types\login\openid\api\AuthServiceOpenIdConfiguration;
+use pocketmine\network\mcpe\protocol\types\login\openid\api\MinecraftServicesDiscovery;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\utils\Internet;

@@ -37,7 +37,7 @@ final class AuthKeyring{
 	public function getIssuer() : string{ return $this->issuer; }
 
 	/**
-	 * Returns a PEM public key associated with the given key ID
+	 * Returns a (raw) DER public key associated with the given key ID
 	 */
 	public function getKey(string $keyId) : ?string{
 		return $this->keys[$keyId] ?? null;

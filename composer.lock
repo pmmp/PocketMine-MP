@@ -260,12 +260,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "cb617c0da8ab2b5e89922dce3b34579c75354d25"
+                "reference": "4046a94f72c9c51255a856d74825ce2654bff720"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/cb617c0da8ab2b5e89922dce3b34579c75354d25",
-                "reference": "cb617c0da8ab2b5e89922dce3b34579c75354d25",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/4046a94f72c9c51255a856d74825ce2654bff720",
+                "reference": "4046a94f72c9c51255a856d74825ce2654bff720",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
                 "source": "https://github.com/pmmp/BedrockProtocol/tree/new-auth"
             },
-            "time": "2025-09-06T21:39:24+00:00"
+            "time": "2025-09-09T18:56:19+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -2806,7 +2806,7 @@
         "ext-zlib": ">=1.2.11",
         "composer-runtime-api": "^2.0"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.1.0"
     },
