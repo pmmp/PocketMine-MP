@@ -85,11 +85,11 @@ final class AuthJwtHelper{
 			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), null, 0, $e);
 		}
 
-		if(isset($claims->iss) && $claims->iss !== $issuer){
+		if(!isset($claims->iss) || $claims->iss !== $issuer){
 			throw new VerifyLoginException("Invalid JWT issuer");
 		}
 
-		if(isset($claims->aud) && $claims->aud !== $audience){
+		if(!isset($claims->aud) || $claims->aud !== $audience){
 			throw new VerifyLoginException("Invalid JWT audience");
 		}
 
