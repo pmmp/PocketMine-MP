@@ -48,7 +48,7 @@ class PrepareEncryptionTask extends AsyncTask{
 	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
 	 */
 	public function __construct(
-		private string $clientPublicKeyDer,
+		private string $clientPub,
 		\Closure $onCompletion
 	){
 		if(self::$SERVER_PRIVATE_KEY === null){
@@ -68,7 +68,8 @@ class PrepareEncryptionTask extends AsyncTask{
 		$serverPrivDetails = igbinary_unserialize($this->serverPrivateKey);
 		$serverPriv = openssl_pkey_new($serverPrivDetails);
 		if($serverPriv === false) throw new AssumptionFailedError("Failed to restore server signing key from details");
-		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, JwtUtils::parseDerPublicKey($this->clientPublicKeyDer));
+		$clientPub = JwtUtils::parseDerPublicKey($this->clientPub);
+		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, $clientPub);
 
 		$salt = random_bytes(16);
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
