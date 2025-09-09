@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a631e67b7087fb41eeaa2cdf9ded59d7",
+    "content-hash": "7bf7cd54642c2d65ecdfdcb28f3a64a8",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -256,16 +256,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "dev-new-auth",
+            "version": "41.0.0+bedrock-1.21.100",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "4046a94f72c9c51255a856d74825ce2654bff720"
+                "reference": "920ac291fe1b0143b2ebc90b3374ddab0b8531bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/4046a94f72c9c51255a856d74825ce2654bff720",
-                "reference": "4046a94f72c9c51255a856d74825ce2654bff720",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/920ac291fe1b0143b2ebc90b3374ddab0b8531bf",
+                "reference": "920ac291fe1b0143b2ebc90b3374ddab0b8531bf",
                 "shasum": ""
             },
             "require": {
@@ -296,9 +296,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/new-auth"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/41.0.0+bedrock-1.21.100"
             },
-            "time": "2025-09-09T18:56:19+00:00"
+            "time": "2025-09-09T20:52:18+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -2773,9 +2773,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/bedrock-protocol": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
