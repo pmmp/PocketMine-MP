@@ -624,12 +624,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "d5b77305deaf249197eb35742179aa1a9c80a30d"
+                "reference": "d47138390d206e7553501a87549cea4def30305c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d5b77305deaf249197eb35742179aa1a9c80a30d",
-                "reference": "d5b77305deaf249197eb35742179aa1a9c80a30d",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d47138390d206e7553501a87549cea4def30305c",
+                "reference": "d47138390d206e7553501a87549cea4def30305c",
                 "shasum": ""
             },
             "require": {
@@ -659,7 +659,7 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/ext-encoding"
             },
-            "time": "2025-09-07T19:54:50+00:00"
+            "time": "2025-09-10T16:51:06+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
