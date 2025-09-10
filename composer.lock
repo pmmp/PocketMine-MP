@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a1954c103a3e62aa779e4eb0e9f83a34",
+    "content-hash": "7425fcb8752419cc94e47e35b17edcdd",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -256,19 +256,20 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "41.0.0+bedrock-1.21.100",
+            "version": "dev-ext-encoding",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "920ac291fe1b0143b2ebc90b3374ddab0b8531bf"
+                "reference": "89e680ee9eb233edf80316f3489d0e74172cd99f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/920ac291fe1b0143b2ebc90b3374ddab0b8531bf",
-                "reference": "920ac291fe1b0143b2ebc90b3374ddab0b8531bf",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/89e680ee9eb233edf80316f3489d0e74172cd99f",
+                "reference": "89e680ee9eb233edf80316f3489d0e74172cd99f",
                 "shasum": ""
             },
             "require": {
+                "ext-encoding": "~0.5.0",
                 "ext-json": "*",
                 "php": "^8.1",
                 "pocketmine/binaryutils": "^0.2.0",
@@ -296,9 +297,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/41.0.0+bedrock-1.21.100"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/ext-encoding"
             },
-            "time": "2025-09-09T20:52:18+00:00"
+            "time": "2025-09-10T15:11:07+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -576,20 +577,21 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "1.1.1",
+            "version": "dev-ext-encoding",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "c3c7b0a7295daeaf7873d90fed5c5d10381d12e1"
+                "reference": "1a82270fc98ad6c836bfe3733c032a0c3765bc6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/c3c7b0a7295daeaf7873d90fed5c5d10381d12e1",
-                "reference": "c3c7b0a7295daeaf7873d90fed5c5d10381d12e1",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/1a82270fc98ad6c836bfe3733c032a0c3765bc6c",
+                "reference": "1a82270fc98ad6c836bfe3733c032a0c3765bc6c",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.4 || ^8.0",
+                "ext-encoding": "~0.5.0",
+                "php": "^8.1",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "^0.2.0"
             },
@@ -612,22 +614,22 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/1.1.1"
+                "source": "https://github.com/pmmp/NBT/tree/ext-encoding"
             },
-            "time": "2025-03-09T01:46:03+00:00"
+            "time": "2025-09-07T23:06:01+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "1.2.0",
+            "version": "dev-ext-encoding",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "a28d05216d34dbd00e8aed827a58df6b4c11510b"
+                "reference": "d5b77305deaf249197eb35742179aa1a9c80a30d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a28d05216d34dbd00e8aed827a58df6b4c11510b",
-                "reference": "a28d05216d34dbd00e8aed827a58df6b4c11510b",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d5b77305deaf249197eb35742179aa1a9c80a30d",
+                "reference": "d5b77305deaf249197eb35742179aa1a9c80a30d",
                 "shasum": ""
             },
             "require": {
@@ -655,9 +657,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/1.2.0"
+                "source": "https://github.com/pmmp/RakLib/tree/ext-encoding"
             },
-            "time": "2025-06-08T17:36:06+00:00"
+            "time": "2025-09-07T19:54:50+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
@@ -2771,9 +2773,26 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "pocketmine/nbt",
+            "version": "dev-ext-encoding",
+            "alias": "1.1.1",
+            "alias_normalized": "1.1.1.0"
+        },
+        {
+            "package": "pocketmine/raklib",
+            "version": "dev-ext-encoding",
+            "alias": "1.2.0",
+            "alias_normalized": "1.2.0.0"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "pocketmine/bedrock-protocol": 20,
+        "pocketmine/nbt": 20,
+        "pocketmine/raklib": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

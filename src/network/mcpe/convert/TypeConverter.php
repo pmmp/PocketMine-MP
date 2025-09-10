@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\block\tile\Container;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
@@ -43,7 +45,6 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
@@ -312,7 +313,7 @@ class TypeConverter{
 		$extraData = $id === $this->shieldRuntimeId ?
 			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
 			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
-		$extraDataSerializer = PacketSerializer::encoder();
+		$extraDataSerializer = new ByteBufferWriter();
 		$extraData->write($extraDataSerializer);
 
 		return new ItemStack(
@@ -320,7 +321,7 @@ class TypeConverter{
 			$meta,
 			$itemStack->getCount(),
 			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
-			$extraDataSerializer->getBuffer(),
+			$extraDataSerializer->getData(),
 		);
 	}
 
@@ -359,7 +360,7 @@ class TypeConverter{
 	}
 
 	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
-		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		$extraDataDeserializer = new ByteBufferReader($extraData);
 		return $id === $this->shieldRuntimeId ?
 			ItemStackExtraDataShield::read($extraDataDeserializer) :
 			ItemStackExtraData::read($extraDataDeserializer);

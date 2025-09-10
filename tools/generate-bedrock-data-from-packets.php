@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_bedrock_data_from_packets;
 
+use pmmp\encoding\ByteBufferReader;
 use pocketmine\crafting\json\FurnaceRecipeData;
 use pocketmine\crafting\json\ItemStackData;
 use pocketmine\crafting\json\PotionContainerChangeRecipeData;
@@ -52,7 +53,6 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\ItemRegistryPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -191,7 +191,7 @@ class ParserPacketHandler extends PacketHandler{
 
 		$rawExtraData = $itemStack->getRawExtraData();
 		if($rawExtraData !== ""){
-			$decoder = PacketSerializer::decoder($rawExtraData, 0);
+			$decoder = new ByteBufferReader($rawExtraData);
 			$extraData = $itemStringId === ItemTypeNames::SHIELD ? ItemStackExtraDataShield::read($decoder) : ItemStackExtraData::read($decoder);
 			$nbt = $extraData->getNbt();
 			if($nbt !== null && count($nbt) > 0){
@@ -649,12 +649,13 @@ function main(array $argv) : int{
 			fwrite(STDERR, "Unknown packet on line " . ($lineNum + 1) . ": " . $parts[1]);
 			continue;
 		}
-		$serializer = PacketSerializer::decoder($raw, 0);
+		$serializer = new ByteBufferReader($raw);
 
 		$pk->decode($serializer);
 		$pk->handle($handler);
-		if(!$serializer->feof()){
-			echo "Packet on line " . ($lineNum + 1) . ": didn't read all data from " . get_class($pk) . " (stopped at offset " . $serializer->getOffset() . " of " . strlen($serializer->getBuffer()) . " bytes): " . bin2hex($serializer->getRemaining()) . "\n";
+		$remaining = strlen($serializer->getData()) - $serializer->getOffset();
+		if($remaining > 0){
+			echo "Packet on line " . ($lineNum + 1) . ": didn't read all data from " . get_class($pk) . " (stopped at offset " . $serializer->getOffset() . " of " . strlen($serializer->getData()) . " bytes): " . bin2hex($serializer->readByteArray($remaining)) . "\n";
 		}
 	}
 	return 0;
