@@ -59,6 +59,7 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\WorldCreationOptions;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
+use function array_values;
 use function chr;
 use function count;
 use function defined;
@@ -276,7 +277,10 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			throw new CorruptedChunkException("Failed to deserialize paletted biomes: " . $e->getMessage(), 0, $e);
 		}
 		$paletteSize = $bitsPerBlock === 0 ? 1 : LE::readUnsignedInt($stream);
-		$palette = LE::readUnsignedIntArray($stream, $paletteSize);
+		$palette = [];
+		for($i = 0; $i < $paletteSize; $i++){
+			$palette[] = LE::readUnsignedInt($stream);
+		}
 
 		//TODO: exceptions
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
@@ -290,7 +294,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		if($biomes->getBitsPerBlock() !== 0){
 			LE::writeUnsignedInt($stream, count($palette));
 		}
-		LE::writeUnsignedIntArray($stream, $palette);
+		foreach($palette as $p){
+			LE::writeUnsignedInt($stream, $p);
+		}
 	}
 
 	/**
@@ -447,8 +453,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		try{
 			$binaryStream->readByteArray(256); //heightmap, discard it
 			//TODO: big endian here doesn't seem correct, but I have no way to verify
-			$biomeColors = BE::readUnsignedIntArray($binaryStream, 256);
-			$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors($biomeColors)); //never throws
+			/** @var int[] $unpackedBiomeArray */
+			$unpackedBiomeArray = unpack("N*", $binaryStream->readByteArray(1024)); //unpack() will never fail here
+			$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
 		}catch(BinaryDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}

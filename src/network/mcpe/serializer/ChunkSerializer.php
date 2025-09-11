@@ -141,11 +141,11 @@ final class ChunkSerializer{
 					$stream->writeByteArray($nbtSerializer->write(new TreeRoot($state->toNbt())));
 				}
 			}else{
-				$networkPalette = [];
+				//we would use writeSignedIntArray() here, but the gains of writing in batch are negated by the cost of
+				//allocating a temporary array for the mapped palette IDs, especially for small palettes
 				foreach($palette as $p){
-					$networkPalette[] = $blockTranslator->internalIdToNetworkId($p);
+					VarInt::writeSignedInt($stream, $blockTranslator->internalIdToNetworkId($p));
 				}
-				VarInt::writeSignedIntArray($stream, $networkPalette);
 			}
 		}
 	}
@@ -160,12 +160,11 @@ final class ChunkSerializer{
 			VarInt::writeSignedInt($stream, count($biomePaletteArray));
 		}
 
-		foreach($biomePaletteArray as $k => $p){
-			if($biomeIdMap->legacyToString($p) === null){
-				$biomePaletteArray[$k] = BiomeIds::OCEAN;
-			}
+		foreach($biomePaletteArray as $p){
+			//we would use writeSignedIntArray() here, but the gains of writing in batch are negated by the cost of
+			//allocating a temporary array for the mapped palette IDs, especially for small palettes
+			VarInt::writeSignedInt($stream, $biomeIdMap->legacyToString($p) !== null ? $p : BiomeIds::OCEAN);
 		}
-		VarInt::writeSignedIntArray($stream, $biomePaletteArray);
 	}
 
 	public static function serializeTiles(Chunk $chunk) : string{

@@ -49,8 +49,9 @@ final class FastChunkSerializer{
 
 		Byte::writeUnsigned($stream, $array->getBitsPerBlock());
 		$stream->writeByteArray($wordArray);
-		BE::writeUnsignedInt($stream, count($palette));
-		BE::writeUnsignedIntArray($stream, $palette);
+		$serialPalette = pack("L*", ...$palette);
+		BE::writeUnsignedInt($stream, strlen($serialPalette));
+		$stream->writeByteArray($serialPalette);
 	}
 
 	/**
@@ -86,7 +87,9 @@ final class FastChunkSerializer{
 		$bitsPerBlock = Byte::readUnsigned($stream);
 		$words = $stream->readByteArray(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
 		$paletteSize = BE::readUnsignedInt($stream);
-		$palette = BE::readUnsignedIntArray($stream, $paletteSize);
+		/** @var int[] $unpackedPalette */
+		$unpackedPalette = unpack("L*", $stream->readByteArray($paletteSize)); //unpack() will never fail here
+		$palette = array_values($unpackedPalette);
 
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
