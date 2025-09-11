@@ -30,7 +30,11 @@ use pmmp\encoding\ByteBufferWriter;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
+use function array_values;
 use function count;
+use function pack;
+use function strlen;
+use function unpack;
 
 /**
  * This class provides a serializer used for transmitting chunks between threads.

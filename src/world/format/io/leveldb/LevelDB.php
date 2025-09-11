@@ -73,6 +73,7 @@ use function str_repeat;
 use function strlen;
 use function substr;
 use function trim;
+use function unpack;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
