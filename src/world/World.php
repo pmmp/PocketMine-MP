@@ -122,6 +122,7 @@ use function count;
 use function floor;
 use function get_class;
 use function gettype;
+use function in_array;
 use function is_a;
 use function is_object;
 use function max;
@@ -2241,6 +2242,7 @@ class World implements ChunkManager{
 	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
+		$mainBlocks = [$vector, ($sideVector = $vector->getSide($face))];
 
 		if($clickVector === null){
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
@@ -2254,15 +2256,18 @@ class World implements ChunkManager{
 
 		if(!$this->isInWorld($blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 		$chunkX = $blockReplace->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $blockReplace->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 		if(!$this->isChunkLoaded($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 
 		if($blockClicked->getTypeId() === BlockTypeIds::AIR){
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 
@@ -2279,6 +2284,18 @@ class World implements ChunkManager{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if($ev->useBlock() && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
+					$aroundBlocks = [];
+					foreach ($vector->sidesArray() as $otherVector) {
+						if ($sideVector !== $otherVector) {
+							$aroundBlocks[] = $otherVector;
+						}
+					}
+					foreach ($sideVector->sidesArray() as $otherVector) {
+						if ($vector !== $otherVector) {
+							$aroundBlocks[] = $otherVector;
+						}
+					}
+					$player->syncBlocks($aroundBlocks);
 					return true;
 				}
 
@@ -2289,6 +2306,7 @@ class World implements ChunkManager{
 					}
 				}
 			}else{
+				$player->syncBlocks($mainBlocks);
 				return false;
 			}
 		}elseif($blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
@@ -2296,6 +2314,7 @@ class World implements ChunkManager{
 		}
 
 		if($item->isNull() || !$item->canBePlaced()){
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 
@@ -2307,14 +2326,22 @@ class World implements ChunkManager{
 			$item->getPlacementTransaction($blockReplace, $blockClicked, $face, $clickVector, $player);
 		if($tx === null){
 			//no placement options available
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 
+		/** @var Vector3[] $originalBlocks */
+		$originalBlocks = [];
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
+			$originalBlocks[] = new Vector3($x, $y, $z);
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
+				if ($player !== null && $player->getBoundingBox()->intersectsWith($collisionBox)) {
+					return false;
+				}
 				if(count($this->getCollidingEntities($collisionBox)) > 0){
-					return false;  //Entity in block
+					$player?->syncBlocks($mainBlocks);
+					return false;
 				}
 			}
 		}
@@ -2343,15 +2370,22 @@ class World implements ChunkManager{
 
 			$ev->call();
 			if($ev->isCancelled()){
+				$player->syncBlocks($mainBlocks);
 				return false;
 			}
 		}
 
 		if(!$tx->apply()){
+			$player?->syncBlocks($mainBlocks);
 			return false;
 		}
 		$first = true;
+		$newBlocks = [];
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
+			$blockPos = new Vector3($x, $y, $z);
+			if (!in_array($blockPos, $originalBlocks, true)) {
+				$newBlocks[] = $blockPos;
+			}
 			$tile = $this->getTileAt($x, $y, $z);
 			if($tile !== null){
 				//TODO: seal this up inside block placement
@@ -2367,6 +2401,9 @@ class World implements ChunkManager{
 		}
 
 		$item->pop();
+		if ($player !== null && count($newBlocks) > 0) {
+			$player->syncBlocks($newBlocks);
+		}
 
 		return true;
 	}

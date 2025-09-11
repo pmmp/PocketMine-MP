@@ -1938,10 +1938,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				return true;
 			}
 		}else{
+			$this->syncBlocks([$pos, $pos->getSide($face)]);
 			$this->logger->debug("Cancelled interaction of block at $pos due to not currently being interactable");
 		}
 
 		return false;
+	}
+
+	/**
+	 * Sync blocks sends block updates to the player at the block positions.
+	 *
+	 * @param Vector3[] $blocks
+	 */
+	public function syncBlocks(array $blocks) : void {
+		$blocks = array_filter($blocks, fn(Vector3 $block) => $block->distanceSquared($this->getLocation()) < 10000);
+		foreach ($this->getWorld()->createBlockUpdatePackets($blocks) as $packet) {
+			$this->getNetworkSession()->sendDataPacket($packet);
+		}
 	}
 
 	/**
