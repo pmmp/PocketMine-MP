@@ -122,7 +122,6 @@ use function count;
 use function floor;
 use function get_class;
 use function gettype;
-use function in_array;
 use function is_a;
 use function is_object;
 use function max;
@@ -2239,10 +2238,10 @@ class World implements ChunkManager{
 	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
-		$blockClicked = $this->getBlock($vector);
+	public function useItemOn(Vector3 $clickedBlockPos, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
+		$blockClicked = $this->getBlock($clickedBlockPos);
 		$blockReplace = $blockClicked->getSide($face);
-		$mainBlocks = [$vector, ($sideVector = $vector->getSide($face))];
+		$mainBlocks = [$clickedBlockPos, ($sideClickPos = $clickedBlockPos->getSide($face))];
 
 		if($clickVector === null){
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
@@ -2285,13 +2284,13 @@ class World implements ChunkManager{
 			if(!$ev->isCancelled()){
 				if($ev->useBlock() && $blockClicked->onInteract($item, $face, $clickVector, $player, $returnedItems)){
 					$aroundBlocks = [];
-					foreach ($vector->sidesArray() as $otherVector) {
-						if ($sideVector !== $otherVector) {
+					foreach ($clickedBlockPos->sidesArray() as $otherVector) {
+						if ($sideClickPos !== $otherVector) {
 							$aroundBlocks[] = $otherVector;
 						}
 					}
-					foreach ($sideVector->sidesArray() as $otherVector) {
-						if ($vector !== $otherVector) {
+					foreach ($sideClickPos->sidesArray() as $otherVector) {
+						if ($clickedBlockPos !== $otherVector) {
 							$aroundBlocks[] = $otherVector;
 						}
 					}
@@ -2331,19 +2330,32 @@ class World implements ChunkManager{
 		}
 
 		/** @var Vector3[] $originalBlocks */
-		$originalBlocks = [];
-		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
-			$originalBlocks[] = new Vector3($x, $y, $z);
+		$placementSyncBlocks = [];
+		$allowed = true;
+		$needsSync = false;
+		foreach($tx->getBlocks() as [$x, $y, $z, $block]) {
+			$blockPos = new Vector3($x, $y, $z);
+			$placementSyncBlocks[] = $blockPos;
 			$block->position($this, $x, $y, $z);
-			foreach($block->getCollisionBoxes() as $collisionBox){
+			foreach($block->getCollisionBoxes() as $collisionBox) {
+				$playerCollision = false;
 				if ($player !== null && $player->getBoundingBox()->intersectsWith($collisionBox)) {
-					return false;
+					$allowed = false;
+					$needsSync = !$blockPos->equals($clickedBlockPos) && !$blockPos->equals($sideClickPos);
+					$playerCollision = true;
 				}
-				if(count($this->getCollidingEntities($collisionBox)) > 0){
-					$player?->syncBlocks($mainBlocks);
-					return false;
+				if (count($this->getCollidingEntities($collisionBox)) > 0) {
+					$allowed = false;
+					$needsSync = $needsSync || !$playerCollision;
 				}
 			}
+		}
+
+		if (!$allowed) {
+			if ($needsSync) {
+				$player?->syncBlocks($placementSyncBlocks);
+			}
+			return false;
 		}
 
 		if($player !== null){
@@ -2351,7 +2363,6 @@ class World implements ChunkManager{
 			if($player->isSpectator()){
 				$ev->cancel();
 			}
-
 			if($player->isAdventure(true) && !$ev->isCancelled()){
 				$canPlace = false;
 				$itemParser = LegacyStringToItemParser::getInstance();
@@ -2370,22 +2381,17 @@ class World implements ChunkManager{
 
 			$ev->call();
 			if($ev->isCancelled()){
-				$player->syncBlocks($mainBlocks);
+				$player->syncBlocks($placementSyncBlocks);
 				return false;
 			}
 		}
 
 		if(!$tx->apply()){
-			$player?->syncBlocks($mainBlocks);
+			$player?->syncBlocks($placementSyncBlocks);
 			return false;
 		}
 		$first = true;
-		$newBlocks = [];
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
-			$blockPos = new Vector3($x, $y, $z);
-			if (!in_array($blockPos, $originalBlocks, true)) {
-				$newBlocks[] = $blockPos;
-			}
 			$tile = $this->getTileAt($x, $y, $z);
 			if($tile !== null){
 				//TODO: seal this up inside block placement
@@ -2401,10 +2407,8 @@ class World implements ChunkManager{
 		}
 
 		$item->pop();
-		if ($player !== null && count($newBlocks) > 0) {
-			$player->syncBlocks($newBlocks);
-		}
-
+		// As long as we are only syncing the relevant blocks to the actual placement, this should be fine.
+		$player?->syncBlocks($placementSyncBlocks);
 		return true;
 	}
 
