@@ -157,8 +157,8 @@ namespace pocketmine {
 		}
 
 		if(($encoding_version = phpversion("encoding")) !== false){
-			if(version_compare($encoding_version, "0.5.1") < 0 || version_compare($encoding_version, "0.6.0") >= 0){
-				$messages[] = "pmmp/ext-encoding ^0.5.1 is required, while you have $encoding_version.";
+			if(version_compare($encoding_version, "1.0.0") < 0 || version_compare($encoding_version, "2.0.0") >= 0){
+				$messages[] = "pmmp/ext-encoding ^1.0.0 is required, while you have $encoding_version.";
 			}
 		}
 

@@ -12,7 +12,7 @@
       "ext-ctype": "*",
       "ext-curl": "*",
       "ext-date": "*",
-      "ext-encoding": "~0.5.0",
+      "ext-encoding": "~1.0.0",
       "ext-gmp": "*",
       "ext-hash": "*",
       "ext-igbinary": "^3.0.1",
@@ -47,7 +47,7 @@
       "pocketmine/math": "~1.0.0",
       "pocketmine/nbt": "dev-ext-encoding as 1.1.1",
       "pocketmine/raklib": "dev-ext-encoding as 1.2.0",
-      "pocketmine/raklib-ipc": "~1.0.0",
+      "pocketmine/raklib-ipc": "dev-ext-encoding as 1.0.0",
       "pocketmine/snooze": "^0.5.0",
       "ramsey/uuid": "~4.9.0",
       "symfony/filesystem": "~6.4.0"
