@@ -2341,7 +2341,6 @@ class World implements ChunkManager{
 				$playerCollision = false;
 				if ($player !== null && $player->getBoundingBox()->intersectsWith($collisionBox)) {
 					$allowed = false;
-					$needsSync = !$blockPos->equals($clickedBlockPos) && !$blockPos->equals($sideClickPos);
 					$playerCollision = true;
 				}
 				if (count($this->getCollidingEntities($collisionBox)) > 0) {
