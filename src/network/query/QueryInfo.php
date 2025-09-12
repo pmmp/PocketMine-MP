@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\query;
 
+use pmmp\encoding\LE;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use pocketmine\YmlServerProperties;
 use function array_map;
@@ -236,6 +236,6 @@ final class QueryInfo{
 	}
 
 	public function getShortQuery() : string{
-		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . Binary::writeLShort($this->port) . $this->ip . "\x00");
+		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . LE::packUnsignedShort($this->port) . $this->ip . "\x00");
 	}
 }

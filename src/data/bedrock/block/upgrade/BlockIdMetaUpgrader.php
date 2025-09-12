@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\DataDecodeException;
 use pmmp\encoding\VarInt;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\utils\BinaryDataException;
 use function strlen;
 
 /**
@@ -104,7 +104,7 @@ final class BlockIdMetaUpgrader{
 			}
 		}
 		if($legacyStateMapReader->getOffset() < strlen($legacyStateMapReader->getData())){
-			throw new BinaryDataException("Unexpected trailing data in legacy state map data");
+			throw new DataDecodeException("Unexpected trailing data in legacy state map data");
 		}
 
 		return new self($mappingTable, $idMap);

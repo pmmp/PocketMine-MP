@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\data;
 
+use pmmp\encoding\LE;
 use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -31,7 +32,6 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Limits;
 use pocketmine\VersionInfo;
@@ -130,7 +130,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($worldData));
-		file_put_contents(Path::join($path, "level.dat"), Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		file_put_contents(Path::join($path, "level.dat"), LE::packUnsignedInt(self::CURRENT_STORAGE_VERSION) . LE::packUnsignedInt(strlen($buffer)) . $buffer);
 	}
 
 	protected function load() : CompoundTag{
@@ -208,7 +208,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($this->compoundTag));
-		Filesystem::safeFilePutContents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		Filesystem::safeFilePutContents($this->dataPath, LE::packUnsignedInt(self::CURRENT_STORAGE_VERSION) . LE::packUnsignedInt(strlen($buffer)) . $buffer);
 	}
 
 	public function getDifficulty() : int{

@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\leveldb;
 
-use pmmp\encoding\BE;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pmmp\encoding\LE;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
@@ -38,8 +38,6 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\Binary;
-use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
@@ -330,7 +328,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$logger->error("Wrong number of 3D biome palettes for this chunk version: expected $expectedCount, but got " . ($i + 1) . " - this is not a problem, but may indicate a corrupted chunk");
 					break;
 				}
-			}catch(BinaryDataException $e){
+			}catch(DataDecodeException $e){
 				throw new CorruptedChunkException("Failed to deserialize biome palette $i: " . $e->getMessage(), 0, $e);
 			}
 		}
@@ -447,7 +445,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$fullIds = $binaryStream->readByteArray(32768);
 			$fullData = $binaryStream->readByteArray(16384);
 			$binaryStream->readByteArray(32768); //legacy light info, discard it
-		}catch(BinaryDataException $e){
+		}catch(DataDecodeException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
 
@@ -457,7 +455,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			/** @var int[] $unpackedBiomeArray */
 			$unpackedBiomeArray = unpack("N*", $binaryStream->readByteArray(1024)); //unpack() will never fail here
 			$biomes3d = ChunkUtils::extrapolate3DBiomes(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
-		}catch(BinaryDataException $e){
+		}catch(DataDecodeException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
 		if($binaryStream->getOffset() < strlen($binaryStream->getData())){
@@ -490,7 +488,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		try{
 			$blocks = $binaryStream->readByteArray(4096);
 			$blockData = $binaryStream->readByteArray(2048);
-		}catch(BinaryDataException $e){
+		}catch(DataDecodeException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
 
@@ -500,7 +498,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				if($binaryStream->getOffset() < strlen($binaryStream->getData())){
 					$logger->error("Unexpected trailing data in legacy subchunk data");
 				}
-			}catch(BinaryDataException $e){
+			}catch(DataDecodeException $e){
 				$logger->error("Failed to read legacy subchunk light info: " . $e->getMessage());
 			}
 		}
@@ -622,7 +620,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				if($binaryStream->getOffset() < strlen($binaryStream->getData())){
 					$logger->error("Unexpected trailing data after 2D biome data");
 				}
-			}catch(BinaryDataException $e){
+			}catch(DataDecodeException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
 			for($i = Chunk::MIN_SUBCHUNK_INDEX; $i <= Chunk::MAX_SUBCHUNK_INDEX; ++$i){
@@ -634,7 +632,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			try{
 				$binaryStream->readByteArray(512);
 				$biomeArrays = self::deserialize3dBiomes($binaryStream, $chunkVersion, $logger);
-			}catch(BinaryDataException $e){
+			}catch(DataDecodeException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
 		}else{
@@ -764,7 +762,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write = new \LevelDBWriteBatch();
 
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
-		$write->put($index . ChunkDataKey::PM_DATA_VERSION, Binary::writeLLong(VersionInfo::WORLD_DATA_VERSION));
+		$write->put($index . ChunkDataKey::PM_DATA_VERSION, LE::packUnsignedLong(VersionInfo::WORLD_DATA_VERSION));
 
 		$subChunks = $chunkData->getSubChunks();
 
@@ -826,7 +824,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public static function chunkIndex(int $chunkX, int $chunkZ) : string{
-		return Binary::writeLInt($chunkX) . Binary::writeLInt($chunkZ);
+		return LE::packSignedInt($chunkX) . LE::packSignedInt($chunkZ);
 	}
 
 	public function doGarbageCollection() : void{
@@ -840,8 +838,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		foreach($this->db->getIterator() as $key => $_){
 			if(strlen($key) === 9 && ($key[8] === ChunkDataKey::NEW_VERSION || $key[8] === ChunkDataKey::OLD_VERSION)){
-				$chunkX = Binary::readLInt(substr($key, 0, 4));
-				$chunkZ = Binary::readLInt(substr($key, 4, 4));
+				$chunkX = LE::unpackSignedInt(substr($key, 0, 4));
+				$chunkZ = LE::unpackSignedInt(substr($key, 4, 4));
 				try{
 					if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
 						yield [$chunkX, $chunkZ] => $chunk;

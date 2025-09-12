@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerResourcePackOfferEvent;
@@ -110,7 +111,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
@@ -421,7 +421,7 @@ class NetworkSession{
 						break;
 					}
 				}
-			}catch(PacketDecodeException|BinaryDataException $e){
+			}catch(PacketDecodeException|DataDecodeException $e){
 				$this->logger->logException($e);
 				throw PacketHandlingException::wrap($e, "Packet batch decode error");
 			}

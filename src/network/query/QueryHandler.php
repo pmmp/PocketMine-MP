@@ -31,11 +31,10 @@ use pmmp\encoding\BE;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
-use pocketmine\utils\BinaryDataException;
 use function hash;
 use function random_bytes;
 use function strlen;
@@ -82,7 +81,7 @@ class QueryHandler implements RawPacketHandler{
 	}
 
 	public static function getTokenString(string $token, string $salt) : int{
-		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
+		return BE::unpackSignedInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 	public function handle(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : bool{
@@ -128,7 +127,7 @@ class QueryHandler implements RawPacketHandler{
 				default:
 					return false;
 			}
-		}catch(BinaryDataException $e){
+		}catch(DataDecodeException $e){
 			$this->logger->debug("Bad packet from $address $port: " . $e->getMessage());
 			return false;
 		}
