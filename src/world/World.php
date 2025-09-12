@@ -2329,7 +2329,7 @@ class World implements ChunkManager{
 			return false;
 		}
 
-		/** @var Vector3[] $originalBlocks */
+		/** @var Vector3[] $placementSyncBlocks */
 		$placementSyncBlocks = [];
 		$allowed = true;
 		$needsSync = false;
