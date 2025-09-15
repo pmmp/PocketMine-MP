@@ -198,16 +198,8 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
-	 */
-	private array $repeatedPacketFilters = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $repeatedPacketFilterStats = [];
+	private string $noisyPacketBuffer = "";
+	private int $noisyPacketsDropped = 0;
 
 	public function __construct(
 		private Server $server,
@@ -495,9 +487,6 @@ class NetworkSession{
 			Timings::$playerNetworkReceive->stopTiming();
 		}
 	}
-
-	private string $noisyPacketBuffer = "";
-	private int $noisyPacketsDropped = 0;
 
 	/**
 	 * @throws PacketHandlingException
