@@ -228,8 +228,6 @@ class NetworkSession{
 			$this->onSessionStartSuccess(...)
 		));
 
-		$this->addRepeatedPacketFilter(InventoryTransactionPacket::NETWORK_ID);
-
 		$this->manager->add($this);
 		$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_open()));
 	}
@@ -357,27 +355,6 @@ class NetworkSession{
 				$this->handler->setUp();
 			}
 		}
-	}
-
-	public function addRepeatedPacketFilter(int $packetId) : void{
-		$this->repeatedPacketFilters[$packetId] = "";
-		$this->repeatedPacketFilterStats[$packetId] = 0;
-	}
-
-	public function removeRepeatedPacketFilter(int $packetId) : void{
-		unset($this->repeatedPacketFilters[$packetId]);
-		unset($this->repeatedPacketFilterStats[$packetId]);
-	}
-
-	/**
-	 * Returns the stats for repeated packet filters, indexed by packet ID.
-	 * The value is the number of times a packet was dropped due to being repeated.
-	 *
-	 * @return int[]
-	 * @phpstan-return array<int, int>
-	 */
-	public function getRepeatedPacketFilterStats() : array{
-		return $this->repeatedPacketFilterStats;
 	}
 
 	private function checkRepeatedPacketFilter(string $buffer) : bool{
