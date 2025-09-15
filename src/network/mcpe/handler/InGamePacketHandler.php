@@ -44,6 +44,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -473,6 +474,22 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
+				//TODO: start hack for client spam bug
+				$clickPos = $data->getClickPosition();
+				$spamBug = ($this->lastRightClickData !== null &&
+					microtime(true) - $this->lastRightClickTime < 0.1 && //100ms
+					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 &&
+					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) &&
+					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+				);
+				//get rid of continued spam if the player clicks and holds right-click
+				$this->lastRightClickData = $data;
+				$this->lastRightClickTime = microtime(true);
+				if($spamBug){
+					throw new FilterNoisyPacketException();
+				}
+				//TODO: end hack for client spam bug
+
 				self::validateFacing($data->getFace());
 
 				$blockPos = $data->getBlockPosition();
@@ -724,7 +741,9 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		return true; //Not used
+		//this spams harder than a firehose on left click if "Improved Input Response" is enabled, and we don't even
+		//use it anyway :<
+		throw new FilterNoisyPacketException();
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{

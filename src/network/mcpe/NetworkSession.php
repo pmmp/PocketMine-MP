@@ -36,6 +36,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -145,6 +146,8 @@ class NetworkSession{
 
 	private const INCOMING_GAME_PACKETS_PER_TICK = 2;
 	private const INCOMING_GAME_PACKETS_BUFFER_TICKS = 100;
+
+	private const INCOMING_PACKET_BATCH_HARD_LIMIT = 300;
 
 	private PacketRateLimiter $packetBatchLimiter;
 	private PacketRateLimiter $gamePacketLimiter;
@@ -387,18 +390,15 @@ class NetworkSession{
 	}
 
 	private function checkRepeatedPacketFilter(string $buffer) : bool{
-		//TODO: would be great if we didn't repeat reading the ID inside PacketPool
-		$dummy = 0;
-		$packetId = Binary::readUnsignedVarInt($buffer, $dummy);
-
-		if(isset($this->repeatedPacketFilters[$packetId])){
-			if($buffer === $this->repeatedPacketFilters[$packetId]){
-				$this->repeatedPacketFilterStats[$packetId]++;
-				return true;
-			}
-
-			$this->repeatedPacketFilters[$packetId] = $buffer;
+		if($buffer === $this->noisyPacketBuffer){
+			$this->noisyPacketsDropped++;
+			return true;
 		}
+		//stop filtering once we see a packet with a different buffer
+		//this won't be any good for interleaved spammy packets, but we haven't seen any of those so far, and this
+		//is the simplest and most conservative filter we can do
+		$this->noisyPacketBuffer = "";
+		$this->noisyPacketsDropped = 0;
 
 		return false;
 	}
@@ -453,9 +453,17 @@ class NetworkSession{
 				$decompressed = $payload;
 			}
 
+			$count = 0;
 			try{
 				$stream = new BinaryStream($decompressed);
 				foreach(PacketBatch::decodeRaw($stream) as $buffer){
+					if(++$count >= self::INCOMING_PACKET_BATCH_HARD_LIMIT){
+						//this should be well more than enough; under normal conditions the game packet rate limiter
+						//will kick in well before this. This is only here to make sure we can't get huge batches of
+						//noisy packets to bog down the server, since those aren't counted by the regular limiter.
+						throw new PacketHandlingException("Reached hard limit of " . self::INCOMING_PACKET_BATCH_HARD_LIMIT . " per batch packet");
+					}
+
 					if($this->checkRepeatedPacketFilter($buffer)){
 						continue;
 					}
@@ -471,6 +479,8 @@ class NetworkSession{
 					}catch(PacketHandlingException $e){
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+					}catch(FilterNoisyPacketException){
+						$this->noisyPacketBuffer = $buffer;
 					}
 					if(!$this->isConnected()){
 						//handling this packet may have caused a disconnection
