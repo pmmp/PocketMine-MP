@@ -256,7 +256,7 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 					$slotItem->setCount($slotItem->getCount() + $amount);
 					$this->setItem($i, $slotItem);
 					if($newItem->getCount() <= 0){
-						break;
+						return $newItem;
 					}
 				}
 			}
@@ -270,7 +270,7 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 				$slotItem->setCount($amount);
 				$this->setItem($slotIndex, $slotItem);
 				if($newItem->getCount() <= 0){
-					break;
+					return $newItem;
 				}
 			}
 		}

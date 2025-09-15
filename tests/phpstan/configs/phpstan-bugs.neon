@@ -19,19 +19,25 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: '#^Method pocketmine\\block\\Block\:\:readStateFromWorld\(\) is marked as impure but does not have any side effects\.$#'
-			identifier: impureMethod.pure
-			count: 1
-			path: ../../../src/block/Block.php
-
-		-
 			message: '#^Method pocketmine\\block\\DoubleTallGrass\:\:traitGetDropsForIncompatibleTool\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: ../../../src/block/DoubleTallGrass.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:ACACIA_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:ACACIA_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:BIRCH_HANGING_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
@@ -43,7 +49,19 @@ parameters:
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:CHERRY_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:CHERRY_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:CRIMSON_HANGING_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
@@ -55,7 +73,19 @@ parameters:
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:DARK_OAK_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:DARK_OAK_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:JUNGLE_HANGING_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
@@ -67,7 +97,19 @@ parameters:
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:MANGROVE_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:MANGROVE_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:OAK_HANGING_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
@@ -79,13 +121,31 @@ parameters:
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:PALE_OAK_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:PALE_OAK_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
 
 		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:SPRUCE_HANGING_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
 			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:SPRUCE_SIGN\(\)\.$#'
+			identifier: callable.nonNativeMethod
+			count: 1
+			path: ../../../src/block/VanillaBlocks.php
+
+		-
+			message: '#^Creating callable from a non\-native static method pocketmine\\item\\VanillaItems\:\:WARPED_HANGING_SIGN\(\)\.$#'
 			identifier: callable.nonNativeMethod
 			count: 1
 			path: ../../../src/block/VanillaBlocks.php
@@ -107,6 +167,12 @@ parameters:
 			identifier: return.type
 			count: 1
 			path: ../../../src/crafting/ShapedRecipe.php
+
+		-
+			message: '#^Offset ''name'' on \*NEVER\* in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.offset
+			count: 1
+			path: ../../../src/crafting/json/ItemStackData.php
 
 		-
 			message: '#^Property pocketmine\\crash\\CrashDumpData\:\:\$parameters \(list\<string\>\) does not accept array\.$#'
@@ -251,10 +317,4 @@ parameters:
 			identifier: staticMethod.impossibleType
 			count: 2
 			path: ../../phpunit/promise/PromiseTest.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between 0 and 0 will always evaluate to true\.$#'
-			identifier: identical.alwaysTrue
-			count: 1
-			path: ../rules/UnsafeForeachArrayWithStringKeysRule.php
 

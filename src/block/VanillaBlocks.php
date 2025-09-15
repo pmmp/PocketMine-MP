@@ -45,6 +45,7 @@ use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\GlowingItemFrame as TileGlowingItemFrame;
+use pocketmine\block\tile\HangingSign as TileHangingSign;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
@@ -80,6 +81,8 @@ use function strtolower;
  * @generate-registry-docblock
  *
  * @method static WoodenButton ACACIA_BUTTON()
+ * @method static CeilingCenterHangingSign ACACIA_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign ACACIA_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor ACACIA_DOOR()
  * @method static WoodenFence ACACIA_FENCE()
  * @method static FenceGate ACACIA_FENCE_GATE()
@@ -92,6 +95,7 @@ use function strtolower;
  * @method static WoodenSlab ACACIA_SLAB()
  * @method static WoodenStairs ACACIA_STAIRS()
  * @method static WoodenTrapdoor ACACIA_TRAPDOOR()
+ * @method static WallHangingSign ACACIA_WALL_HANGING_SIGN()
  * @method static WallSign ACACIA_WALL_SIGN()
  * @method static Wood ACACIA_WOOD()
  * @method static ActivatorRail ACTIVATOR_RAIL()
@@ -122,6 +126,8 @@ use function strtolower;
  * @method static BigDripleafHead BIG_DRIPLEAF_HEAD()
  * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
  * @method static WoodenButton BIRCH_BUTTON()
+ * @method static CeilingCenterHangingSign BIRCH_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign BIRCH_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
  * @method static FenceGate BIRCH_FENCE_GATE()
@@ -134,6 +140,7 @@ use function strtolower;
  * @method static WoodenSlab BIRCH_SLAB()
  * @method static WoodenStairs BIRCH_STAIRS()
  * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
+ * @method static WallHangingSign BIRCH_WALL_HANGING_SIGN()
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
  * @method static Opaque BLACKSTONE()
@@ -170,6 +177,8 @@ use function strtolower;
  * @method static Chain CHAIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static WoodenButton CHERRY_BUTTON()
+ * @method static CeilingCenterHangingSign CHERRY_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign CHERRY_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor CHERRY_DOOR()
  * @method static WoodenFence CHERRY_FENCE()
  * @method static FenceGate CHERRY_FENCE_GATE()
@@ -181,6 +190,7 @@ use function strtolower;
  * @method static WoodenSlab CHERRY_SLAB()
  * @method static WoodenStairs CHERRY_STAIRS()
  * @method static WoodenTrapdoor CHERRY_TRAPDOOR()
+ * @method static WallHangingSign CHERRY_WALL_HANGING_SIGN()
  * @method static WallSign CHERRY_WALL_SIGN()
  * @method static Wood CHERRY_WOOD()
  * @method static Chest CHEST()
@@ -231,6 +241,8 @@ use function strtolower;
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
  * @method static WoodenButton CRIMSON_BUTTON()
+ * @method static CeilingCenterHangingSign CRIMSON_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign CRIMSON_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor CRIMSON_DOOR()
  * @method static WoodenFence CRIMSON_FENCE()
  * @method static FenceGate CRIMSON_FENCE_GATE()
@@ -243,6 +255,7 @@ use function strtolower;
  * @method static WoodenStairs CRIMSON_STAIRS()
  * @method static Wood CRIMSON_STEM()
  * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
+ * @method static WallHangingSign CRIMSON_WALL_HANGING_SIGN()
  * @method static WallSign CRIMSON_WALL_SIGN()
  * @method static Opaque CRYING_OBSIDIAN()
  * @method static Copper CUT_COPPER()
@@ -254,6 +267,8 @@ use function strtolower;
  * @method static Slab CUT_SANDSTONE_SLAB()
  * @method static Flower DANDELION()
  * @method static WoodenButton DARK_OAK_BUTTON()
+ * @method static CeilingCenterHangingSign DARK_OAK_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign DARK_OAK_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor DARK_OAK_DOOR()
  * @method static WoodenFence DARK_OAK_FENCE()
  * @method static FenceGate DARK_OAK_FENCE_GATE()
@@ -266,6 +281,7 @@ use function strtolower;
  * @method static WoodenSlab DARK_OAK_SLAB()
  * @method static WoodenStairs DARK_OAK_STAIRS()
  * @method static WoodenTrapdoor DARK_OAK_TRAPDOOR()
+ * @method static WallHangingSign DARK_OAK_WALL_HANGING_SIGN()
  * @method static WallSign DARK_OAK_WALL_SIGN()
  * @method static Wood DARK_OAK_WOOD()
  * @method static Opaque DARK_PRISMARINE()
@@ -488,6 +504,8 @@ use function strtolower;
  * @method static ItemFrame ITEM_FRAME()
  * @method static Jukebox JUKEBOX()
  * @method static WoodenButton JUNGLE_BUTTON()
+ * @method static CeilingCenterHangingSign JUNGLE_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign JUNGLE_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor JUNGLE_DOOR()
  * @method static WoodenFence JUNGLE_FENCE()
  * @method static FenceGate JUNGLE_FENCE_GATE()
@@ -500,6 +518,7 @@ use function strtolower;
  * @method static WoodenSlab JUNGLE_SLAB()
  * @method static WoodenStairs JUNGLE_STAIRS()
  * @method static WoodenTrapdoor JUNGLE_TRAPDOOR()
+ * @method static WallHangingSign JUNGLE_WALL_HANGING_SIGN()
  * @method static WallSign JUNGLE_WALL_SIGN()
  * @method static Wood JUNGLE_WOOD()
  * @method static ChemistryTable LAB_TABLE()
@@ -522,6 +541,8 @@ use function strtolower;
  * @method static Loom LOOM()
  * @method static Magma MAGMA()
  * @method static WoodenButton MANGROVE_BUTTON()
+ * @method static CeilingCenterHangingSign MANGROVE_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign MANGROVE_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor MANGROVE_DOOR()
  * @method static WoodenFence MANGROVE_FENCE()
  * @method static FenceGate MANGROVE_FENCE_GATE()
@@ -534,6 +555,7 @@ use function strtolower;
  * @method static WoodenSlab MANGROVE_SLAB()
  * @method static WoodenStairs MANGROVE_STAIRS()
  * @method static WoodenTrapdoor MANGROVE_TRAPDOOR()
+ * @method static WallHangingSign MANGROVE_WALL_HANGING_SIGN()
  * @method static WallSign MANGROVE_WALL_SIGN()
  * @method static Wood MANGROVE_WOOD()
  * @method static ChemistryTable MATERIAL_REDUCER()
@@ -572,6 +594,8 @@ use function strtolower;
  * @method static Opaque NETHER_WART_BLOCK()
  * @method static Note NOTE_BLOCK()
  * @method static WoodenButton OAK_BUTTON()
+ * @method static CeilingCenterHangingSign OAK_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign OAK_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor OAK_DOOR()
  * @method static WoodenFence OAK_FENCE()
  * @method static FenceGate OAK_FENCE_GATE()
@@ -584,14 +608,19 @@ use function strtolower;
  * @method static WoodenSlab OAK_SLAB()
  * @method static WoodenStairs OAK_STAIRS()
  * @method static WoodenTrapdoor OAK_TRAPDOOR()
+ * @method static WallHangingSign OAK_WALL_HANGING_SIGN()
  * @method static WallSign OAK_WALL_SIGN()
  * @method static Wood OAK_WOOD()
  * @method static Opaque OBSIDIAN()
+ * @method static OminousFloorBanner OMINOUS_BANNER()
+ * @method static OminousWallBanner OMINOUS_WALL_BANNER()
  * @method static Flower ORANGE_TULIP()
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static WoodenButton PALE_OAK_BUTTON()
+ * @method static CeilingCenterHangingSign PALE_OAK_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign PALE_OAK_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor PALE_OAK_DOOR()
  * @method static WoodenFence PALE_OAK_FENCE()
  * @method static FenceGate PALE_OAK_FENCE_GATE()
@@ -603,6 +632,7 @@ use function strtolower;
  * @method static WoodenSlab PALE_OAK_SLAB()
  * @method static WoodenStairs PALE_OAK_STAIRS()
  * @method static WoodenTrapdoor PALE_OAK_TRAPDOOR()
+ * @method static WallHangingSign PALE_OAK_WALL_HANGING_SIGN()
  * @method static WallSign PALE_OAK_WALL_SIGN()
  * @method static Wood PALE_OAK_WOOD()
  * @method static DoublePlant PEONY()
@@ -733,6 +763,8 @@ use function strtolower;
  * @method static Sponge SPONGE()
  * @method static SporeBlossom SPORE_BLOSSOM()
  * @method static WoodenButton SPRUCE_BUTTON()
+ * @method static CeilingCenterHangingSign SPRUCE_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign SPRUCE_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor SPRUCE_DOOR()
  * @method static WoodenFence SPRUCE_FENCE()
  * @method static FenceGate SPRUCE_FENCE_GATE()
@@ -745,6 +777,7 @@ use function strtolower;
  * @method static WoodenSlab SPRUCE_SLAB()
  * @method static WoodenStairs SPRUCE_STAIRS()
  * @method static WoodenTrapdoor SPRUCE_TRAPDOOR()
+ * @method static WallHangingSign SPRUCE_WALL_HANGING_SIGN()
  * @method static WallSign SPRUCE_WALL_SIGN()
  * @method static Wood SPRUCE_WOOD()
  * @method static StainedHardenedClay STAINED_CLAY()
@@ -788,6 +821,8 @@ use function strtolower;
  * @method static WallBanner WALL_BANNER()
  * @method static WallCoralFan WALL_CORAL_FAN()
  * @method static WoodenButton WARPED_BUTTON()
+ * @method static CeilingCenterHangingSign WARPED_CEILING_CENTER_HANGING_SIGN()
+ * @method static CeilingEdgesHangingSign WARPED_CEILING_EDGES_HANGING_SIGN()
  * @method static WoodenDoor WARPED_DOOR()
  * @method static WoodenFence WARPED_FENCE()
  * @method static FenceGate WARPED_FENCE_GATE()
@@ -800,6 +835,7 @@ use function strtolower;
  * @method static WoodenStairs WARPED_STAIRS()
  * @method static Wood WARPED_STEM()
  * @method static WoodenTrapdoor WARPED_TRAPDOOR()
+ * @method static WallHangingSign WARPED_WALL_HANGING_SIGN()
  * @method static WallSign WARPED_WALL_SIGN()
  * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
@@ -873,6 +909,8 @@ final class VanillaBlocks{
 		$bannerBreakInfo = new Info(BreakInfo::axe(1.0));
 		self::register("banner", fn(BID $id) => new FloorBanner($id, "Banner", $bannerBreakInfo), TileBanner::class);
 		self::register("wall_banner", fn(BID $id) => new WallBanner($id, "Wall Banner", $bannerBreakInfo), TileBanner::class);
+		self::register("ominous_banner", fn(BID $id) => new OminousFloorBanner($id, "Ominous Banner", $bannerBreakInfo), TileBanner::class);
+		self::register("ominous_wall_banner", fn(BID $id) => new OminousWallBanner($id, "Ominous Wall Banner", $bannerBreakInfo), TileBanner::class);
 		self::register("barrel", fn(BID $id) => new Barrel($id, "Barrel", new Info(BreakInfo::axe(2.5))), TileBarrel::class);
 		self::register("barrier", fn(BID $id) => new Transparent($id, "Barrier", new Info(BreakInfo::indestructible())));
 		self::register("beacon", fn(BID $id) => new Beacon($id, "Beacon", new Info(new BreakInfo(3.0))), TileBeacon::class);
@@ -1353,6 +1391,7 @@ final class VanillaBlocks{
 	private static function registerWoodenBlocks() : void{
 		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
 		$signBreakInfo = new Info(BreakInfo::axe(1.0));
+		$hangingSignBreakInfo = new Info(BreakInfo::axe(1.0), [Tags::HANGING_SIGN]);
 		$logBreakInfo = new Info(BreakInfo::axe(2.0));
 		$woodenDoorBreakInfo = new Info(BreakInfo::axe(3.0, null, 15.0));
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
@@ -1392,6 +1431,23 @@ final class VanillaBlocks{
 			};
 			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
 			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
+
+			$hangingSignAsItem = match($woodType){
+				WoodType::OAK => VanillaItems::OAK_HANGING_SIGN(...),
+				WoodType::SPRUCE => VanillaItems::SPRUCE_HANGING_SIGN(...),
+				WoodType::BIRCH => VanillaItems::BIRCH_HANGING_SIGN(...),
+				WoodType::JUNGLE => VanillaItems::JUNGLE_HANGING_SIGN(...),
+				WoodType::ACACIA => VanillaItems::ACACIA_HANGING_SIGN(...),
+				WoodType::DARK_OAK => VanillaItems::DARK_OAK_HANGING_SIGN(...),
+				WoodType::MANGROVE => VanillaItems::MANGROVE_HANGING_SIGN(...),
+				WoodType::CRIMSON => VanillaItems::CRIMSON_HANGING_SIGN(...),
+				WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
+				WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
+				WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
+			};
+			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 		}
 	}
 

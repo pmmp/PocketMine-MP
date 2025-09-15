@@ -51,7 +51,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		protected Position $position,
 		protected array $blocks,
 		protected float $yield,
-		private array $ignitions
+		private array $ignitions = []
 	){
 		$this->entity = $entity;
 		if($yield < 0.0 || $yield > 100.0){

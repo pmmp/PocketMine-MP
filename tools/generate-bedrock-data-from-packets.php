@@ -209,11 +209,18 @@ class ParserPacketHandler extends PacketHandler{
 		return $data;
 	}
 
-	/**
-	 * @return mixed[]
-	 */
-	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
+	private static function objectToOrderedArray(object $object) : mixed{
+		if($object instanceof \JsonSerializable){
+			$result = $object->jsonSerialize();
+			if(is_object($result)){
+				$result = (array) $result;
+			}elseif(!is_array($result)){
+				return $result;
+			}
+		}else{
+			$result = (array) $object;
+		}
+
 		ksort($result, SORT_STRING);
 
 		foreach(Utils::promoteKeys($result) as $property => $value){
@@ -280,7 +287,7 @@ class ParserPacketHandler extends PacketHandler{
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
 
 		echo "updating item registry\n";
-		$items = array_map(function(ItemTypeEntry $entry) : array{
+		$items = array_map(function(ItemTypeEntry $entry) : mixed{
 			return self::objectToOrderedArray($entry);
 		}, $packet->getEntries());
 		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");

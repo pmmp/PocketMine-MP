@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 
-final class StainedHardenedClay extends HardenedClay{
+final class StainedHardenedClay extends HardenedClay implements Colored{
 	use ColoredTrait;
 }

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -35,7 +36,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
-class Candle extends Transparent{
+class Candle extends Transparent implements Lightable{
 	use CandleTrait {
 		describeBlockOnlyState as encodeLitState;
 		getLightLevel as getBaseLightLevel;

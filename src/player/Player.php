@@ -1644,7 +1644,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$newReplica = clone $oldHeldItem;
 			$newReplica->setCount($newHeldItem->getCount());
 			if($newReplica instanceof Durable && $newHeldItem instanceof Durable){
-				$newReplica->setDamage($newHeldItem->getDamage());
+				$newDamage = $newHeldItem->getDamage();
+				if($newDamage >= 0 && $newDamage <= $newReplica->getMaxDurability()){
+					$newReplica->setDamage($newDamage);
+				}
 			}
 			$damagedOrDeducted = $newReplica->equalsExact($newHeldItem);
 
@@ -2835,13 +2838,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Opens the player's sign editor GUI for the sign at the given position.
-	 * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
 	 */
-	public function openSignEditor(Vector3 $position) : void{
+	public function openSignEditor(Vector3 $position, bool $frontFace = true) : void{
 		$block = $this->getWorld()->getBlock($position);
 		if($block instanceof BaseSign){
 			$this->getWorld()->setBlock($position, $block->setEditorEntityRuntimeId($this->getId()));
-			$this->getNetworkSession()->onOpenSignEditor($position, true);
+			$this->getNetworkSession()->onOpenSignEditor($position, $frontFace);
 		}else{
 			throw new \InvalidArgumentException("Block at this position is not a sign");
 		}

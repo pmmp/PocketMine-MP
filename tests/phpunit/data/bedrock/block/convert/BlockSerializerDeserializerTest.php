@@ -42,6 +42,8 @@ final class BlockSerializerDeserializerTest extends TestCase{
 	public function setUp() : void{
 		$this->deserializer = new BlockStateToObjectDeserializer();
 		$this->serializer = new BlockObjectToStateSerializer();
+		$registrar = new BlockSerializerDeserializerRegistrar($this->deserializer, $this->serializer);
+		VanillaBlockMappings::init($registrar);
 	}
 
 	public function testAllKnownBlockStatesSerializableAndDeserializable() : void{
@@ -49,16 +51,21 @@ final class BlockSerializerDeserializerTest extends TestCase{
 			try{
 				$blockStateData = $this->serializer->serializeBlock($block);
 			}catch(BlockStateSerializeException $e){
-				self::fail($e->getMessage());
+				self::fail("Failed to serialize " . $block->getName() . ": " . $e->getMessage());
 			}
 			try{
 				$newBlock = $this->deserializer->deserializeBlock($blockStateData);
 			}catch(BlockStateDeserializeException $e){
-				self::fail($e->getMessage());
+				self::fail("Failed to deserialize " . $blockStateData->getName() . ": " . $e->getMessage() . " with data " . $blockStateData->toNbt());
 			}
 
-			if($block->getTypeId() === BlockTypeIds::POTION_CAULDRON){
-				//this pretends to be a water cauldron in the blockstate, and stores its actual data in the blockentity
+			if(match ($block->getTypeId()) {
+				BlockTypeIds::POTION_CAULDRON,
+				BlockTypeIds::OMINOUS_BANNER,
+				BlockTypeIds::OMINOUS_WALL_BANNER => true,
+				default => false
+			}){
+				//these pretend to be something else in the blockstate, and the variant switching is done via block entity data
 				continue;
 			}
 
