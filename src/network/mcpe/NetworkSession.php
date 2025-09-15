@@ -111,7 +111,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
@@ -496,6 +495,9 @@ class NetworkSession{
 			Timings::$playerNetworkReceive->stopTiming();
 		}
 	}
+
+	private string $noisyPacketBuffer = "";
+	private int $noisyPacketsDropped = 0;
 
 	/**
 	 * @throws PacketHandlingException
