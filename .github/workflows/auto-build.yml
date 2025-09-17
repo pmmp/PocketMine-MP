@@ -34,7 +34,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-php8.3-composer-${{ hashFiles('**/composer.lock') }}
@@ -65,6 +65,7 @@ jobs:
           echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
 
       - name: Build Phar
+        id: build-phar
         run: |
           echo "Pharファイルビルド開始..."
           composer make-server --out "${{ steps.build-info.outputs.build_name }}.phar"
@@ -81,7 +82,7 @@ jobs:
           echo "Pharファイルが正常に実行されました"
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.build-info.outputs.build_name }}"
           path: "${{ steps.build-info.outputs.build_name }}.phar"
@@ -91,7 +92,7 @@ jobs:
       - name: Create GitHub Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/customize'
         id: create_release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: "build-${{ steps.build-info.outputs.time }}"
           name: "Custom Build ${{ steps.build-info.outputs.time }}"
