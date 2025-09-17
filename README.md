@@ -1,84 +1,88 @@
-<p align="center">
-	<a href="https://pmmp.io">
-		<!--[if IE]>
-			<img src="https://github.com/pmmp/PocketMine-MP/blob/stable/.github/readme/pocketmine.png" alt="The PocketMine-MP logo" title="PocketMine" loading="eager" />
-		<![endif]-->
-		<picture>
-			<source srcset="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-dark-rgb.gif" media="(prefers-color-scheme: dark)">
-			<img src="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-rgb.gif" loading="eager" />
-		</picture>
-	</a><br>
-	<b>A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
-</p>
+## 概要
+よもぎサーバ用の一部ブロック処理などを行うPocketMine-MP派生のリポジトリです。
 
-<p align="center">
-	<a href="https://github.com/pmmp/PocketMine-MP/actions/workflows/main.yml"><img src="https://github.com/pmmp/PocketMine-MP/actions/workflows/main.yml/badge.svg" alt="CI" /></a>
-	<a href="https://github.com/pmmp/PocketMine-MP/releases/latest"><img alt="GitHub release (latest SemVer)" src="https://img.shields.io/github/v/release/pmmp/PocketMine-MP?label=release&sort=semver"></a>
-	<a href="https://discord.gg/bmSAZBG"><img src="https://img.shields.io/discord/373199722573201408?label=discord&color=7289DA&logo=discord" alt="Discord" /></a>
-	<br>
-	<a href="https://github.com/pmmp/PocketMine-MP/releases"><img alt="GitHub all releases" src="https://img.shields.io/github/downloads/pmmp/PocketMine-MP/total?label=downloads%40total"></a>
-	<a href="https://github.com/pmmp/PocketMine-MP/releases/latest"><img alt="GitHub release (latest by SemVer)" src="https://img.shields.io/github/downloads/pmmp/PocketMine-MP/latest/total?sort=semver"></a>
-</p>
+## 背景
+PocketMine-MP v5.0以降、ブロック システムが大幅に再設計され、プラグインレベルでの既存ブロック動作の上書きが困難になりました。v4まで可能だった `Block` クラスの継承による動作変更が、以下の理由により実質的に不可能となっています：
 
-## What is this?
-PocketMine-MP is a highly customisable server software for Minecraft: Bedrock Edition, built from scratch in PHP, with over 10 years of history.
+### PocketMine-MP v5の制限事項
+- `RuntimeBlockStateRegistry` への登録が複雑化
+- `BlockStateToObjectDeserializer` の手動設定が必要
+- `VanillaBlocks` クラスの内部構造変更
+- リフレクションを用いた内部状態変更の不安定性
+- プライベートAPIの頻繁な変更によるメンテナンス困難
 
-If you're looking to create a Minecraft: Bedrock server with **custom functionality**, look no further.
+開発者自身も「disastrously complex and painful to maintain」と認めており、現在は公式にサポートされていません。
 
-- 🧩 **Powerful plugin API** - extend and customise gameplay as you see fit
-- 🗺️ **Rich ecosystem** and **large developer community** - find plugins easily and learn to develop your own
-- 🌐 **Multi-world support** - offer a more varied game experience to players without transferring them to other server nodes
-- 🏎️ **Performance** - get 100+ players onto one server (depending on hardware and plugins)
-- ⤴️ **Continuously updated** - new Minecraft versions are usually supported within days
+## 解決アプローチ
+プラグインレベルでの制限を回避するため、PocketMine-MPのソースコード自体を直接修正し、必要な機能を組み込んだカスタムビルドを作成しています。
 
-## :x: PocketMine-MP is NOT a vanilla Minecraft server software.
-**It is poorly suited to hosting vanilla survival servers.**
-It doesn't have many features from the vanilla game, such as vanilla world generation, redstone, mob AI, and various other things.
+## ブランチ戦略
 
-If you just want to play **vanilla survival multiplayer**, consider using the [official Minecraft: Bedrock server software](https://minecraft.net/download/server/bedrock) instead of PocketMine-MP.
+### ブランチ構成
+```
+stable (アップストリーム同期専用)
+└── upstream pmmp/PocketMine-MP tracking
+```
 
-If that's not an option for you, you may be able to add some of PocketMine-MP's missing features using plugins from [Poggit](https://poggit.pmmp.io/plugins), or write plugins to implement them yourself.
+### ブランチの役割
+- **customize**: 統合・リリース用メインブランチ。全ての機能がマージされ、自動ビルドが実行される
+- **stable**: 公式 `pmmp/PocketMine-MP` の最新版を追跡する同期専用ブランチ
+- **customize/feature/***: 個別機能の開発ブランチ
 
-## Getting Started
-- [Documentation](http://pmmp.readthedocs.org/)
-- [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
-- [Docker image](https://github.com/pmmp/PocketMine-MP/pkgs/container/pocketmine-mp)
-- [Plugin repository](https://poggit.pmmp.io/plugins)
+### 開発フロー
+1. **機能開発**: `customize/feature/機能名` ブランチで実装
+2. **プルリクエスト**: `customize` ブランチへのPR作成
+3. **コードレビュー**: 変更内容の確認とテスト
+4. **マージ**: `customize` ブランチへのマージでCI自動実行
+5. **リリース**: 自動ビルドされたPharファイルの配布
 
-## Community & Support
-Join our [Discord](https://discord.gg/bmSAZBG) server to chat with other users and developers.
+### アップストリーム同期
+- 週次での自動同期チェック
+- `stable` ブランチへの最新版取り込み
+- 競合解決後の `customize` ブランチへのマージ
 
-You can also post questions on [StackOverflow](https://stackoverflow.com/tags/pocketmine) under the tag `pocketmine`.
+## セットアップ
 
-## Developing Plugins
-If you want to write your own plugins, the following resources may be useful.
-Don't forget you can always ask our community if you need help.
+### 開発者向け
+```bash
+# リポジトリクローン
+git clone https://github.com/YOUR_USERNAME/PocketMine-MP.git
+cd PocketMine-MP
 
- * [Developer documentation](https://devdoc.pmmp.io) - General documentation for PocketMine-MP plugin developers
- * [Latest release API documentation](https://apidoc.pmmp.io) - Doxygen API documentation generated for each release
- * [Latest bleeding-edge API documentation](https://apidoc-dev.pmmp.io) - Doxygen API documentation generated weekly from `major-next` branch
- * [DevTools](https://github.com/pmmp/DevTools/) - Development tools plugin for creating plugins
- * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
+# アップストリーム設定
+git remote add upstream https://github.com/pmmp/PocketMine-MP.git
+```
 
-## Contributing to PocketMine-MP
-PocketMine-MP accepts community contributions! The following resources will be useful if you want to contribute to PocketMine-MP.
- * [Building and running PocketMine-MP from source](BUILDING.md)
- * [Contributing Guidelines](CONTRIBUTING.md)
+## ビルドシステム
 
-New here? Check out [issues with the "Easy task" label](https://github.com/pmmp/PocketMine-MP/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22Easy%20task%22) for things you could work to familiarise yourself with the codebase.
+### 自動ビルド
+- **トリガー**: `customize` ブランチへのpush
+- **出力**: GitHub Releases への自動配布
+- **ファイル名形式**: `YomogiPocketMine-YYYYMMDD-HHMMSS-コミットハッシュ.phar`
 
-## Donate
-PocketMine-MP is free, but it requires a lot of time and effort from unpaid volunteers to develop. Donations enable us to keep delivering support for new versions and adding features your players love.
+### 手動ビルド
+```bash
+# 本番用ビルド
+composer install --no-dev --classmap-authoritative
+composer make-server --out CustomPocketMine.phar
 
-You can support development using the following methods:
+# 開発用クイックビルド
+./scripts/quick-build.sh
+```
 
-- [Patreon](https://www.patreon.com/pocketminemp)
-- Bitcoin (BTC): `bc1q2v5ngyf8ugyd55kqa9ep35g2rv342ueqm6ks33`
-- Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
+## 継続的インテグレーション
 
-Thanks for your support!
+### GitHub Actions
+- **ビルドテスト**: PHP 8.3でのみ動作確認
+- **セキュリティ監査**: Composer audit実行
+- **静的解析**: PHPStan（設定されている場合）
+- **アップストリーム同期**: 週次での自動チェック
 
-## Licensing information
-This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
+## 注意事項
 
-pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.
+### 互換性
+- 公式PocketMine-MPプラグインとの完全互換性は保証されません
+- カスタム変更により一部プラグインが正常動作しない可能性があります
+
+## ライセンス
+元のPocketMine-MPのLGPL-3.0ライセンスに従います。
