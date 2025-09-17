@@ -1,0 +1,26 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # 毎週チェック
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync stable with upstream
+        run: |
+          git remote add upstream https://github.com/pmmp/PocketMine-MP.git
+          git fetch upstream
+          git checkout stable
+          git reset --hard upstream/stable
+          git push origin stable --force-with-lease
+
+      - name: Create upstream sync notification
+        if: success()
+        run: |
+          echo "upstream同期完了。customizeブランチでの作業を継続してください。" >> $GITHUB_STEP_SUMMARY
