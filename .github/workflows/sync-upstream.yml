@@ -2,7 +2,8 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '0 2 * * 1'  # 毎週チェック
+    - cron: '0 0 * * *'  # 毎日深夜0時（UTC）
+  workflow_dispatch:  # 手動実行も可能
 
 jobs:
   sync:
@@ -11,16 +12,63 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync stable with upstream
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/pmmp/PocketMine-MP.git
           git fetch upstream
+
+      - name: Check for upstream changes
+        id: check
+        run: |
           git checkout stable
+          
+          # 現在のstableと上流のstableを比較
+          if git diff --quiet HEAD upstream/stable; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "変更なし: stableブランチは最新です"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "変更検出: 上流に新しいコミットがあります"
+          
+            # 変更の詳細を取得
+            COMMIT_COUNT=$(git rev-list HEAD..upstream/stable --count)
+            echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+            echo "新しいコミット数: $COMMIT_COUNT"
+          fi
+
+      - name: Sync stable with upstream
+        if: steps.check.outputs.has_changes == 'true'
+        run: |
           git reset --hard upstream/stable
           git push origin stable --force-with-lease
+          echo "stableブランチを上流と同期しました"
 
-      - name: Create upstream sync notification
-        if: success()
+      - name: Create sync notification (changes found)
+        if: steps.check.outputs.has_changes == 'true'
         run: |
-          echo "upstream同期完了。customizeブランチでの作業を継続してください。" >> $GITHUB_STEP_SUMMARY
+          echo "## 上流同期完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 変更内容" >> $GITHUB_STEP_SUMMARY
+          echo "- 新しいコミット数: ${{ steps.check.outputs.commit_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- stableブランチが最新に更新されました" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 次のステップ" >> $GITHUB_STEP_SUMMARY
+          echo "1. customizeブランチで以下を実行:" >> $GITHUB_STEP_SUMMARY
+          echo "   \`git checkout customize\`" >> $GITHUB_STEP_SUMMARY
+          echo "   \`git merge stable\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. 競合があれば解決してください" >> $GITHUB_STEP_SUMMARY
+          echo "3. テストを実行してください" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create no-changes notification
+        if: steps.check.outputs.has_changes == 'false'
+        run: |
+          echo "## 上流チェック完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "変更なし: stableブランチは既に最新です" >> $GITHUB_STEP_SUMMARY
