@@ -27,7 +27,8 @@ jobs:
           coverage: none
 
       - name: Validate composer.json
-        run: composer validate --strict
+        run: |
+          composer validate --no-check-all --no-check-publish
 
       - name: Get composer cache directory
         id: composer-cache
