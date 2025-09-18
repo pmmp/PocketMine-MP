@@ -18,6 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
+      # PMMPのPHPバイナリをダウンロード
       - name: Download PMMP PHP Binary
         run: |
           echo "Downloading PHP 8.3 for PocketMine-MP 5..."
@@ -77,11 +78,12 @@ jobs:
         id: build-info
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
-          BUILD_TIME=$(date -u +"%Y%m%d-%H%M%S")
-          BUILD_NAME="CustomPocketMine-${BUILD_TIME}-${COMMIT_HASH}"
+          # JSTタイムゾーンで時刻を取得
+          BUILD_TIME_JST=$(TZ=Asia/Tokyo date +"%Y%m%d-%H%M%S")
+          BUILD_NAME="CustomPocketMine-${BUILD_TIME_JST}-${COMMIT_HASH}"
           
           echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
-          echo "time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "time_jst=$BUILD_TIME_JST" >> $GITHUB_OUTPUT
 
       - name: Build Phar
         id: build-phar
@@ -114,14 +116,15 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/customize'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "build-${{ steps.build-info.outputs.time }}"
-          name: "Build ${{ steps.build-info.outputs.time }}"
+          tag_name: "build-${{ steps.build-info.outputs.time_jst }}"
+          name: "Build ${{ steps.build-info.outputs.time_jst }}"
           body: |
-            **Build Time**: ${{ steps.build-info.outputs.time }} (UTC)
-            **Commit**: ${{ github.sha }}
-            **Size**: ${{ steps.build-phar.outputs.file_size }}
+            **ビルド時刻**: ${{ steps.build-info.outputs.time_jst }} (JST)
+            **コミット**: ${{ github.sha }}
+            **ファイルサイズ**: ${{ steps.build-phar.outputs.file_size }}
           files: "${{ steps.build-info.outputs.build_name }}.phar"
           draft: false
-          prerelease: true
+          prerelease: false  # 正式リリースに変更
+          make_latest: true   # 最新リリースとしてマーク
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
