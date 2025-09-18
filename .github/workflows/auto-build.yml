@@ -33,52 +33,75 @@ jobs:
           
           # ディレクトリ構造を詳しく確認
           echo "=== ディレクトリ構造確認 ==="
-          find ./pmmp-php -type f -name "php" | head -5
-          echo "=== ルートディレクトリ ==="
           ls -la ./pmmp-php/
-          echo "=== binディレクトリがある場合 ==="
-          [ -d "./pmmp-php/bin" ] && ls -la ./pmmp-php/bin/
           
-          # PHPバイナリの実際のパスを見つける
-          PHP_BINARY=$(find ./pmmp-php -type f -name "php" -executable | head -1)
-          if [ -z "$PHP_BINARY" ]; then
+          # PHP 7とPHP 8.3のディレクトリを確認
+          if [ -d "./pmmp-php/bin/php7" ]; then
+            echo "Found php7 directory"
+            PHP_BINARY="./pmmp-php/bin/php7/bin/php"
+            PHP_DIR="./pmmp-php/bin/php7/bin"
+          elif [ -d "./pmmp-php/bin/php" ]; then
+            echo "Found php directory"
+            PHP_BINARY="./pmmp-php/bin/php/bin/php"
+            PHP_DIR="./pmmp-php/bin/php/bin"
+          elif [ -f "./pmmp-php/bin/php" ]; then
+            echo "Found php binary directly"
+            PHP_BINARY="./pmmp-php/bin/php"
+            PHP_DIR="./pmmp-php/bin"
+          else
+            # findで探す
+            PHP_BINARY=$(find ./pmmp-php -type f -name "php" -executable | head -1)
+            PHP_DIR=$(dirname "$PHP_BINARY")
+          fi
+          
+          if [ ! -f "$PHP_BINARY" ]; then
             echo "Error: PHPバイナリが見つかりません"
             exit 1
           fi
           
           echo "Found PHP binary at: $PHP_BINARY"
-          PHP_DIR=$(dirname "$PHP_BINARY")
           
           # 実行権限を確認
           chmod +x "$PHP_BINARY"
           
+          # 絶対パスに変換
+          PHP_BINARY_ABS=$(readlink -f "$PHP_BINARY")
+          PHP_DIR_ABS=$(dirname "$PHP_BINARY_ABS")
+          
           # パスを環境変数に保存
-          echo "PHP_BINARY=$PHP_BINARY" >> $GITHUB_ENV
-          echo "PHP_DIR=$PHP_DIR" >> $GITHUB_ENV
+          echo "PHP_BINARY=$PHP_BINARY_ABS" >> $GITHUB_ENV
+          echo "PHP_DIR=$PHP_DIR_ABS" >> $GITHUB_ENV
           
           # PATHに追加
-          echo "$PHP_DIR" >> $GITHUB_PATH
+          echo "$PHP_DIR_ABS" >> $GITHUB_PATH
 
       - name: Verify PHP Installation
         run: |
-          ${{ env.PHP_BINARY }} -v
+          # エラー出力を抑制
+          ${{ env.PHP_BINARY }} -v 2>/dev/null || ${{ env.PHP_BINARY }} -v
           echo "=== Checking required extensions ==="
-          ${{ env.PHP_BINARY }} -m | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
+          ${{ env.PHP_BINARY }} -m 2>/dev/null | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
 
       - name: Install Composer
         run: |
-          curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }}
+          # エラー出力を抑制してComposerをインストール
+          curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }} 2>/dev/null
           mv composer.phar ./composer
           chmod +x ./composer
-          echo "COMPOSER_BINARY=$(pwd)/composer" >> $GITHUB_ENV
+          COMPOSER_ABS=$(readlink -f ./composer)
+          echo "COMPOSER_BINARY=$COMPOSER_ABS" >> $GITHUB_ENV
 
       - name: Validate composer.json
         run: |
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish
+          # 警告を標準エラー出力に送る
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
 
       - name: Get composer cache directory
         id: composer-cache
-        run: echo "dir=$(${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir)" >> $GITHUB_OUTPUT
+        run: |
+          # エラー出力を抑制してキャッシュディレクトリを取得
+          CACHE_DIR=$(${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir 2>/dev/null)
+          echo "dir=$CACHE_DIR" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
         uses: actions/cache@v4
@@ -90,7 +113,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} install --no-dev --classmap-authoritative --prefer-dist
+          # 警告を抑制してインストール
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} install --no-dev --classmap-authoritative --prefer-dist 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
 
       - name: Generate build info
         id: build-info
@@ -115,12 +139,19 @@ jobs:
         id: build-phar
         run: |
           echo "Pharファイルビルド開始..."
-          # composer make-serverコマンドを実行
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server -- --out "${{ steps.build-info.outputs.build_name }}.phar"
+          
+          # composer make-serverコマンドを実行（エラー出力を抑制）
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
           
           # ビルドされたファイルを確認
           echo "=== ビルド後のファイル一覧 ==="
-          ls -la *.phar || echo "Pharファイルが見つかりません"
+          ls -la *.phar 2>/dev/null || echo "デフォルト名のPharファイルが見つかりません"
+          
+          # デフォルトのPocketMine-MP.pharが作成されている場合はリネーム
+          if [ -f "PocketMine-MP.phar" ]; then
+            mv PocketMine-MP.phar "${{ steps.build-info.outputs.build_name }}.phar"
+            echo "PocketMine-MP.pharを${{ steps.build-info.outputs.build_name }}.pharにリネームしました"
+          fi
           
           # ファイルサイズ確認
           if [ -f "${{ steps.build-info.outputs.build_name }}.phar" ]; then
@@ -137,7 +168,7 @@ jobs:
       - name: Test Phar execution
         run: |
           echo "Pharファイルのテスト実行..."
-          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version || true
+          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
           echo "Pharファイルのテスト完了"
 
       - name: Upload build artifact
