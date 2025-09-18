@@ -141,8 +141,8 @@ class NetworkSession{
 	private const INCOMING_PACKET_BATCH_PER_TICK = 2; //usually max 1 per tick, but transactions arrive separately
 	private const INCOMING_PACKET_BATCH_BUFFER_TICKS = 100; //enough to account for a 5-second lag spike
 
-	private const INCOMING_GAME_PACKETS_PER_TICK = 2;
-	private const INCOMING_GAME_PACKETS_BUFFER_TICKS = 100;
+	private const INCOMING_GAME_PACKETS_PER_TICK = 10;
+	private const INCOMING_GAME_PACKETS_BUFFER_TICKS = 200;
 
 	private PacketRateLimiter $packetBatchLimiter;
 	private PacketRateLimiter $gamePacketLimiter;
