@@ -91,13 +91,8 @@ jobs:
           echo "Building Phar..."
           ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server
           
-          # デフォルトのPocketMine-MP.pharをリネーム
           if [ -f "PocketMine-MP.phar" ]; then
-            mv PocketMine-MP.phar "${{ steps.build-info.outputs.build_name }}.phar"
-          fi
-          
-          if [ -f "${{ steps.build-info.outputs.build_name }}.phar" ]; then
-            FILE_SIZE=$(du -h "${{ steps.build-info.outputs.build_name }}.phar" | cut -f1)
+            FILE_SIZE=$(du -h "PocketMine-MP.phar" | cut -f1)
             echo "file_size=$FILE_SIZE" >> $GITHUB_OUTPUT
           else
             echo "Error: Phar file not created"
@@ -108,7 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.build-info.outputs.build_name }}"
-          path: "${{ steps.build-info.outputs.build_name }}.phar"
+          path: "PocketMine-MP.phar"
           retention-days: 30
 
       # customizeブランチへのpush時のみリリース作成
@@ -122,7 +117,7 @@ jobs:
             **ビルド時刻**: ${{ steps.build-info.outputs.time_jst }} (JST)
             **コミット**: ${{ github.sha }}
             **ファイルサイズ**: ${{ steps.build-phar.outputs.file_size }}
-          files: "${{ steps.build-info.outputs.build_name }}.phar"
+          files: "PocketMine-MP.phar"
           draft: false
           prerelease: false  # 正式リリースに変更
           make_latest: true   # 最新リリースとしてマーク
