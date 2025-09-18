@@ -52,7 +52,7 @@ abstract class Crops extends Flowable implements Ageable{
 			return -1;
 		}
 
-		return mt_rand(20, 30);
+		return mt_rand(3, 6);
 	}
 
 	private function ensureGrowthTimeCalculated() : void{
