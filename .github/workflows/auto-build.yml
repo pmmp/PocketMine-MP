@@ -35,23 +35,21 @@ jobs:
           echo "=== ディレクトリ構造確認 ==="
           ls -la ./pmmp-php/
           
-          # PHP 7とPHP 8.3のディレクトリを確認
+          # PHPバイナリのパスを探す
           if [ -d "./pmmp-php/bin/php7" ]; then
             echo "Found php7 directory"
             PHP_BINARY="./pmmp-php/bin/php7/bin/php"
             PHP_DIR="./pmmp-php/bin/php7/bin"
+            PHP_INI="./pmmp-php/bin/php7/bin/php.ini"
           elif [ -d "./pmmp-php/bin/php" ]; then
             echo "Found php directory"
             PHP_BINARY="./pmmp-php/bin/php/bin/php"
             PHP_DIR="./pmmp-php/bin/php/bin"
-          elif [ -f "./pmmp-php/bin/php" ]; then
-            echo "Found php binary directly"
-            PHP_BINARY="./pmmp-php/bin/php"
-            PHP_DIR="./pmmp-php/bin"
+            PHP_INI="./pmmp-php/bin/php/bin/php.ini"
           else
-            # findで探す
             PHP_BINARY=$(find ./pmmp-php -type f -name "php" -executable | head -1)
             PHP_DIR=$(dirname "$PHP_BINARY")
+            PHP_INI="$PHP_DIR/php.ini"
           fi
           
           if [ ! -f "$PHP_BINARY" ]; then
@@ -60,6 +58,14 @@ jobs:
           fi
           
           echo "Found PHP binary at: $PHP_BINARY"
+          
+          # opcache拡張を無効化（php.iniを編集）
+          if [ -f "$PHP_INI" ]; then
+            echo "Disabling opcache extension in php.ini"
+            # opcache関連の行をコメントアウト
+            sed -i 's/^zend_extension=opcache.so/;zend_extension=opcache.so/' "$PHP_INI" || true
+            sed -i 's/^zend_extension="opcache.so"/;zend_extension="opcache.so"/' "$PHP_INI" || true
+          fi
           
           # 実行権限を確認
           chmod +x "$PHP_BINARY"
@@ -77,15 +83,13 @@ jobs:
 
       - name: Verify PHP Installation
         run: |
-          # エラー出力を抑制
-          ${{ env.PHP_BINARY }} -v 2>/dev/null || ${{ env.PHP_BINARY }} -v
+          ${{ env.PHP_BINARY }} -v
           echo "=== Checking required extensions ==="
-          ${{ env.PHP_BINARY }} -m 2>/dev/null | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
+          ${{ env.PHP_BINARY }} -m | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
 
       - name: Install Composer
         run: |
-          # エラー出力を抑制してComposerをインストール
-          curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }} 2>/dev/null
+          curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }}
           mv composer.phar ./composer
           chmod +x ./composer
           COMPOSER_ABS=$(readlink -f ./composer)
@@ -93,14 +97,25 @@ jobs:
 
       - name: Validate composer.json
         run: |
-          # 警告を標準エラー出力に送る
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish
 
       - name: Get composer cache directory
         id: composer-cache
         run: |
-          # エラー出力を抑制してキャッシュディレクトリを取得
-          CACHE_DIR=$(${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir 2>/dev/null)
+          # 一時ファイルを使って出力をキャプチャ
+          TEMP_FILE=$(mktemp)
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir > "$TEMP_FILE" 2>&1
+          # 警告以外の行を取得（最後の行が通常はキャッシュディレクトリ）
+          CACHE_DIR=$(grep -v "Warning:" "$TEMP_FILE" | tail -n1)
+          rm -f "$TEMP_FILE"
+          
+          # キャッシュディレクトリが空でないことを確認
+          if [ -z "$CACHE_DIR" ]; then
+            # フォールバック: デフォルトのキャッシュディレクトリを使用
+            CACHE_DIR="$HOME/.cache/composer"
+            echo "Using fallback cache directory: $CACHE_DIR"
+          fi
+          
           echo "dir=$CACHE_DIR" >> $GITHUB_OUTPUT
 
       - name: Cache composer dependencies
@@ -113,8 +128,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # 警告を抑制してインストール
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} install --no-dev --classmap-authoritative --prefer-dist 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} install --no-dev --classmap-authoritative --prefer-dist
 
       - name: Generate build info
         id: build-info
@@ -140,8 +154,8 @@ jobs:
         run: |
           echo "Pharファイルビルド開始..."
           
-          # composer make-serverコマンドを実行（エラー出力を抑制）
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
+          # composer make-serverコマンドを実行
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server
           
           # ビルドされたファイルを確認
           echo "=== ビルド後のファイル一覧 ==="
@@ -160,7 +174,6 @@ jobs:
             echo "file_size=$FILE_SIZE" >> $GITHUB_OUTPUT
           else
             echo "Error: Pharファイルが作成されませんでした"
-            # 代替パスを確認
             find . -name "*.phar" -type f
             exit 1
           fi
@@ -168,7 +181,7 @@ jobs:
       - name: Test Phar execution
         run: |
           echo "Pharファイルのテスト実行..."
-          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version 2>&1 | grep -v "Warning: Failed loading Zend extension" || true
+          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version || true
           echo "Pharファイルのテスト完了"
 
       - name: Upload build artifact
@@ -196,9 +209,6 @@ jobs:
             - **ファイルサイズ**: ${{ steps.build-phar.outputs.file_size }}
             - **PHP**: 8.3 (PocketMine-MP 5専用バイナリ)
             
-            ### カスタム機能
-            - 農地ブロック: 踏んでも壊れない
-            
             ---
             このリリースは自動生成されました
           files: "${{ steps.build-info.outputs.build_name }}.phar"
@@ -207,60 +217,3 @@ jobs:
           make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # PRコメント（PR時のみ）
-      - name: Comment on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const buildName = '${{ steps.build-info.outputs.build_name }}';
-            const commitHash = '${{ steps.build-info.outputs.hash }}';
-            const buildTime = '${{ steps.build-info.outputs.time }}';
-            
-            const comment = `## ✅ ビルド成功
-
-            ### ビルド情報
-            - **ファイル名**: \`${buildName}.phar\`
-            - **コミット**: \`${commitHash}\`
-            - **ビルド時刻**: ${buildTime} (UTC)
-            - **PHP版本**: 8.3 (PM5専用)
-
-            ### ダウンロード
-            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) からダウンロードできます。
-
-            ### テスト方法
-            \`\`\`bash
-            # PMMPのPHPバイナリでテスト
-            ./pmmp-php/bin/php ${buildName}.phar --version
-            \`\`\`
-
-            ---
-            このコメントは自動生成されました`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
-      # ビルド完了通知
-      - name: Build summary
-        run: |
-          echo "## ✅ ビルド完了" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 詳細情報" >> $GITHUB_STEP_SUMMARY
-          echo "- **ファイル名**: \`${{ steps.build-info.outputs.build_name }}.phar\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **コミット**: \`${{ steps.build-info.outputs.hash }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **ビルド時刻**: ${{ steps.build-info.outputs.time }} (UTC)" >> $GITHUB_STEP_SUMMARY
-          echo "- **PHP版本**: 8.3 (PocketMine-MP 5専用)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "### リリース作成" >> $GITHUB_STEP_SUMMARY
-            echo "GitHubリリースが自動作成されました" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### PR情報" >> $GITHUB_STEP_SUMMARY
-            echo "PRにコメントが投稿されました" >> $GITHUB_STEP_SUMMARY
-          fi
