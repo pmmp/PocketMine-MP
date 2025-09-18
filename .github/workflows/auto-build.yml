@@ -18,102 +18,45 @@ jobs:
         with:
           fetch-depth: 0
 
-      # PMMPのPHPバイナリをダウンロード
       - name: Download PMMP PHP Binary
         run: |
-          # PM5用PHP 8.3バイナリを直接ダウンロード
-          echo "Downloading PHP 8.3 for PocketMine-MP 5"
-          
-          # 正しいURLでPHPバイナリをダウンロード
+          echo "Downloading PHP 8.3 for PocketMine-MP 5..."
           curl -L "https://github.com/pmmp/PHP-Binaries/releases/download/pm5-php-8.3-latest/PHP-8.3-Linux-x86_64-PM5.tar.gz" -o php.tar.gz
           
-          # 展開
           mkdir -p ./pmmp-php
           tar -xzf php.tar.gz -C ./pmmp-php
           
-          # ディレクトリ構造を詳しく確認
-          echo "=== ディレクトリ構造確認 ==="
-          ls -la ./pmmp-php/
+          # PHPバイナリのパスを設定（php7ディレクトリを想定）
+          PHP_BINARY="./pmmp-php/bin/php7/bin/php"
+          PHP_INI="./pmmp-php/bin/php7/bin/php.ini"
           
-          # PHPバイナリのパスを探す
-          if [ -d "./pmmp-php/bin/php7" ]; then
-            echo "Found php7 directory"
-            PHP_BINARY="./pmmp-php/bin/php7/bin/php"
-            PHP_DIR="./pmmp-php/bin/php7/bin"
-            PHP_INI="./pmmp-php/bin/php7/bin/php.ini"
-          elif [ -d "./pmmp-php/bin/php" ]; then
-            echo "Found php directory"
-            PHP_BINARY="./pmmp-php/bin/php/bin/php"
-            PHP_DIR="./pmmp-php/bin/php/bin"
-            PHP_INI="./pmmp-php/bin/php/bin/php.ini"
-          else
-            PHP_BINARY=$(find ./pmmp-php -type f -name "php" -executable | head -1)
-            PHP_DIR=$(dirname "$PHP_BINARY")
-            PHP_INI="$PHP_DIR/php.ini"
-          fi
-          
-          if [ ! -f "$PHP_BINARY" ]; then
-            echo "Error: PHPバイナリが見つかりません"
-            exit 1
-          fi
-          
-          echo "Found PHP binary at: $PHP_BINARY"
-          
-          # opcache拡張を無効化（php.iniを編集）
+          # opcache拡張を無効化
           if [ -f "$PHP_INI" ]; then
-            echo "Disabling opcache extension in php.ini"
-            # opcache関連の行をコメントアウト
             sed -i 's/^zend_extension=opcache.so/;zend_extension=opcache.so/' "$PHP_INI" || true
-            sed -i 's/^zend_extension="opcache.so"/;zend_extension="opcache.so"/' "$PHP_INI" || true
           fi
           
-          # 実行権限を確認
           chmod +x "$PHP_BINARY"
-          
-          # 絶対パスに変換
           PHP_BINARY_ABS=$(readlink -f "$PHP_BINARY")
-          PHP_DIR_ABS=$(dirname "$PHP_BINARY_ABS")
           
-          # パスを環境変数に保存
           echo "PHP_BINARY=$PHP_BINARY_ABS" >> $GITHUB_ENV
-          echo "PHP_DIR=$PHP_DIR_ABS" >> $GITHUB_ENV
-          
-          # PATHに追加
-          echo "$PHP_DIR_ABS" >> $GITHUB_PATH
-
-      - name: Verify PHP Installation
-        run: |
-          ${{ env.PHP_BINARY }} -v
-          echo "=== Checking required extensions ==="
-          ${{ env.PHP_BINARY }} -m | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
 
       - name: Install Composer
         run: |
           curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }}
           mv composer.phar ./composer
           chmod +x ./composer
-          COMPOSER_ABS=$(readlink -f ./composer)
-          echo "COMPOSER_BINARY=$COMPOSER_ABS" >> $GITHUB_ENV
-
-      - name: Validate composer.json
-        run: |
-          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish
+          echo "COMPOSER_BINARY=$(readlink -f ./composer)" >> $GITHUB_ENV
 
       - name: Get composer cache directory
         id: composer-cache
         run: |
-          # 一時ファイルを使って出力をキャプチャ
           TEMP_FILE=$(mktemp)
           ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir > "$TEMP_FILE" 2>&1
-          # 警告以外の行を取得（最後の行が通常はキャッシュディレクトリ）
           CACHE_DIR=$(grep -v "Warning:" "$TEMP_FILE" | tail -n1)
           rm -f "$TEMP_FILE"
           
-          # キャッシュディレクトリが空でないことを確認
           if [ -z "$CACHE_DIR" ]; then
-            # フォールバック: デフォルトのキャッシュディレクトリを使用
             CACHE_DIR="$HOME/.cache/composer"
-            echo "Using fallback cache directory: $CACHE_DIR"
           fi
           
           echo "dir=$CACHE_DIR" >> $GITHUB_OUTPUT
@@ -122,9 +65,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php8.3-pm5-composer-${{ hashFiles('**/composer.lock') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php8.3-pm5-composer-
+            ${{ runner.os }}-composer-
 
       - name: Install dependencies
         run: |
@@ -135,54 +78,29 @@ jobs:
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           BUILD_TIME=$(date -u +"%Y%m%d-%H%M%S")
-          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          BUILD_NAME="CustomPocketMine-${BUILD_TIME}-${COMMIT_HASH}"
           
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER="${{ github.event.number }}"
-            BUILD_NAME="CustomPocketMine-PR${PR_NUMBER}-${BUILD_TIME}-${COMMIT_HASH}"
-          else
-            BUILD_NAME="CustomPocketMine-${BUILD_TIME}-${COMMIT_HASH}"
-          fi
-          
-          echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
-          echo "time=$BUILD_TIME" >> $GITHUB_OUTPUT
-          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
+          echo "time=$BUILD_TIME" >> $GITHUB_OUTPUT
 
       - name: Build Phar
         id: build-phar
         run: |
-          echo "Pharファイルビルド開始..."
-          
-          # composer make-serverコマンドを実行
+          echo "Building Phar..."
           ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server
           
-          # ビルドされたファイルを確認
-          echo "=== ビルド後のファイル一覧 ==="
-          ls -la *.phar 2>/dev/null || echo "デフォルト名のPharファイルが見つかりません"
-          
-          # デフォルトのPocketMine-MP.pharが作成されている場合はリネーム
+          # デフォルトのPocketMine-MP.pharをリネーム
           if [ -f "PocketMine-MP.phar" ]; then
             mv PocketMine-MP.phar "${{ steps.build-info.outputs.build_name }}.phar"
-            echo "PocketMine-MP.pharを${{ steps.build-info.outputs.build_name }}.pharにリネームしました"
           fi
           
-          # ファイルサイズ確認
           if [ -f "${{ steps.build-info.outputs.build_name }}.phar" ]; then
             FILE_SIZE=$(du -h "${{ steps.build-info.outputs.build_name }}.phar" | cut -f1)
-            echo "ビルド完了! ファイルサイズ: $FILE_SIZE"
             echo "file_size=$FILE_SIZE" >> $GITHUB_OUTPUT
           else
-            echo "Error: Pharファイルが作成されませんでした"
-            find . -name "*.phar" -type f
+            echo "Error: Phar file not created"
             exit 1
           fi
-
-      - name: Test Phar execution
-        run: |
-          echo "Pharファイルのテスト実行..."
-          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version || true
-          echo "Pharファイルのテスト完了"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -194,26 +112,16 @@ jobs:
       # customizeブランチへのpush時のみリリース作成
       - name: Create GitHub Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/customize'
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "build-${{ steps.build-info.outputs.time }}"
-          name: "Custom Build ${{ steps.build-info.outputs.time }}"
+          name: "Build ${{ steps.build-info.outputs.time }}"
           body: |
-            ## カスタムPocketMine-MP v5ビルド
-            
-            ### ビルド情報
-            - **ビルド時刻**: ${{ steps.build-info.outputs.time }} (UTC)
-            - **コミット**: [`${{ steps.build-info.outputs.hash }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
-            - **ブランチ**: `${{ steps.build-info.outputs.branch }}`
-            - **ファイルサイズ**: ${{ steps.build-phar.outputs.file_size }}
-            - **PHP**: 8.3 (PocketMine-MP 5専用バイナリ)
-            
-            ---
-            このリリースは自動生成されました
+            **Build Time**: ${{ steps.build-info.outputs.time }} (UTC)
+            **Commit**: ${{ github.sha }}
+            **Size**: ${{ steps.build-phar.outputs.file_size }}
           files: "${{ steps.build-info.outputs.build_name }}.phar"
           draft: false
           prerelease: true
-          make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
