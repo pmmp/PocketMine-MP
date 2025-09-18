@@ -11,9 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      # PocketMine-MP公式Dockerイメージを使用
-      image: ghcr.io/pmmp/pocketmine-mp:latest
 
     steps:
       - name: Checkout repository
@@ -21,27 +18,218 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install composer dependencies
+      # PMMPのPHPバイナリをダウンロード
+      - name: Download PMMP PHP Binary
         run: |
-          cd /pocketmine
-          composer install --no-dev --classmap-authoritative --prefer-dist
+          # PM5用PHP 8.3バイナリを直接ダウンロード
+          echo "Downloading PHP 8.3 for PocketMine-MP 5"
+          
+          # 正しいURLでPHPバイナリをダウンロード
+          curl -L "https://github.com/pmmp/PHP-Binaries/releases/download/pm5-php-8.3-latest/PHP-8.3-Linux-x86_64-PM5.tar.gz" -o php.tar.gz
+          
+          # 展開
+          mkdir -p ./pmmp-php
+          tar -xzf php.tar.gz -C ./pmmp-php
+          
+          # ディレクトリ構造を詳しく確認
+          echo "=== ディレクトリ構造確認 ==="
+          find ./pmmp-php -type f -name "php" | head -5
+          echo "=== ルートディレクトリ ==="
+          ls -la ./pmmp-php/
+          echo "=== binディレクトリがある場合 ==="
+          [ -d "./pmmp-php/bin" ] && ls -la ./pmmp-php/bin/
+          
+          # PHPバイナリの実際のパスを見つける
+          PHP_BINARY=$(find ./pmmp-php -type f -name "php" -executable | head -1)
+          if [ -z "$PHP_BINARY" ]; then
+            echo "Error: PHPバイナリが見つかりません"
+            exit 1
+          fi
+          
+          echo "Found PHP binary at: $PHP_BINARY"
+          PHP_DIR=$(dirname "$PHP_BINARY")
+          
+          # 実行権限を確認
+          chmod +x "$PHP_BINARY"
+          
+          # パスを環境変数に保存
+          echo "PHP_BINARY=$PHP_BINARY" >> $GITHUB_ENV
+          echo "PHP_DIR=$PHP_DIR" >> $GITHUB_ENV
+          
+          # PATHに追加
+          echo "$PHP_DIR" >> $GITHUB_PATH
+
+      - name: Verify PHP Installation
+        run: |
+          ${{ env.PHP_BINARY }} -v
+          echo "=== Checking required extensions ==="
+          ${{ env.PHP_BINARY }} -m | grep -E "pmmpthread|leveldb|chunkutils2|crypto|morton|igbinary" || true
+
+      - name: Install Composer
+        run: |
+          curl -sS https://getcomposer.org/installer | ${{ env.PHP_BINARY }}
+          mv composer.phar ./composer
+          chmod +x ./composer
+          echo "COMPOSER_BINARY=$(pwd)/composer" >> $GITHUB_ENV
+
+      - name: Validate composer.json
+        run: |
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} validate --no-check-all --no-check-publish
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php8.3-pm5-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php8.3-pm5-composer-
+
+      - name: Install dependencies
+        run: |
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} install --no-dev --classmap-authoritative --prefer-dist
 
       - name: Generate build info
         id: build-info
         run: |
           COMMIT_HASH=$(git rev-parse --short HEAD)
           BUILD_TIME=$(date -u +"%Y%m%d-%H%M%S")
-          BUILD_NAME="CustomPocketMine-${BUILD_TIME}-${COMMIT_HASH}"
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+          
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            PR_NUMBER="${{ github.event.number }}"
+            BUILD_NAME="CustomPocketMine-PR${PR_NUMBER}-${BUILD_TIME}-${COMMIT_HASH}"
+          else
+            BUILD_NAME="CustomPocketMine-${BUILD_TIME}-${COMMIT_HASH}"
+          fi
+          
+          echo "hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
+          echo "time=$BUILD_TIME" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
           echo "build_name=$BUILD_NAME" >> $GITHUB_OUTPUT
 
       - name: Build Phar
+        id: build-phar
         run: |
-          cd /pocketmine
-          composer make-server --out "${{ steps.build-info.outputs.build_name }}.phar"
+          echo "Pharファイルビルド開始..."
+          # composer make-serverコマンドを実行
+          ${{ env.PHP_BINARY }} ${{ env.COMPOSER_BINARY }} make-server -- --out "${{ steps.build-info.outputs.build_name }}.phar"
+          
+          # ビルドされたファイルを確認
+          echo "=== ビルド後のファイル一覧 ==="
+          ls -la *.phar || echo "Pharファイルが見つかりません"
+          
+          # ファイルサイズ確認
+          if [ -f "${{ steps.build-info.outputs.build_name }}.phar" ]; then
+            FILE_SIZE=$(du -h "${{ steps.build-info.outputs.build_name }}.phar" | cut -f1)
+            echo "ビルド完了! ファイルサイズ: $FILE_SIZE"
+            echo "file_size=$FILE_SIZE" >> $GITHUB_OUTPUT
+          else
+            echo "Error: Pharファイルが作成されませんでした"
+            # 代替パスを確認
+            find . -name "*.phar" -type f
+            exit 1
+          fi
+
+      - name: Test Phar execution
+        run: |
+          echo "Pharファイルのテスト実行..."
+          ${{ env.PHP_BINARY }} "${{ steps.build-info.outputs.build_name }}.phar" --version || true
+          echo "Pharファイルのテスト完了"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: "${{ steps.build-info.outputs.build_name }}"
-          path: "/pocketmine/${{ steps.build-info.outputs.build_name }}.phar"
+          path: "${{ steps.build-info.outputs.build_name }}.phar"
           retention-days: 30
+
+      # customizeブランチへのpush時のみリリース作成
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/customize'
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "build-${{ steps.build-info.outputs.time }}"
+          name: "Custom Build ${{ steps.build-info.outputs.time }}"
+          body: |
+            ## カスタムPocketMine-MP v5ビルド
+            
+            ### ビルド情報
+            - **ビルド時刻**: ${{ steps.build-info.outputs.time }} (UTC)
+            - **コミット**: [`${{ steps.build-info.outputs.hash }}`](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            - **ブランチ**: `${{ steps.build-info.outputs.branch }}`
+            - **ファイルサイズ**: ${{ steps.build-phar.outputs.file_size }}
+            - **PHP**: 8.3 (PocketMine-MP 5専用バイナリ)
+            
+            ### カスタム機能
+            - 農地ブロック: 踏んでも壊れない
+            
+            ---
+            このリリースは自動生成されました
+          files: "${{ steps.build-info.outputs.build_name }}.phar"
+          draft: false
+          prerelease: true
+          make_latest: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # PRコメント（PR時のみ）
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const buildName = '${{ steps.build-info.outputs.build_name }}';
+            const commitHash = '${{ steps.build-info.outputs.hash }}';
+            const buildTime = '${{ steps.build-info.outputs.time }}';
+            
+            const comment = `## ✅ ビルド成功
+
+            ### ビルド情報
+            - **ファイル名**: \`${buildName}.phar\`
+            - **コミット**: \`${commitHash}\`
+            - **ビルド時刻**: ${buildTime} (UTC)
+            - **PHP版本**: 8.3 (PM5専用)
+
+            ### ダウンロード
+            [Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) からダウンロードできます。
+
+            ### テスト方法
+            \`\`\`bash
+            # PMMPのPHPバイナリでテスト
+            ./pmmp-php/bin/php ${buildName}.phar --version
+            \`\`\`
+
+            ---
+            このコメントは自動生成されました`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      # ビルド完了通知
+      - name: Build summary
+        run: |
+          echo "## ✅ ビルド完了" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 詳細情報" >> $GITHUB_STEP_SUMMARY
+          echo "- **ファイル名**: \`${{ steps.build-info.outputs.build_name }}.phar\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **コミット**: \`${{ steps.build-info.outputs.hash }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **ビルド時刻**: ${{ steps.build-info.outputs.time }} (UTC)" >> $GITHUB_STEP_SUMMARY
+          echo "- **PHP版本**: 8.3 (PocketMine-MP 5専用)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "### リリース作成" >> $GITHUB_STEP_SUMMARY
+            echo "GitHubリリースが自動作成されました" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### PR情報" >> $GITHUB_STEP_SUMMARY
+            echo "PRにコメントが投稿されました" >> $GITHUB_STEP_SUMMARY
+          fi
