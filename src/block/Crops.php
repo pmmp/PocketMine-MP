@@ -41,35 +41,14 @@ abstract class Crops extends Flowable implements Ageable{
 
 	public const MAX_AGE = 7;
 
-	protected int $ticksUntilGrowth = -1;
-
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::FARMLAND;
-	}
-
-	private function calculateNextGrowthTime() : int{
-		if($this->age >= self::MAX_AGE){
-			return -1;
-		}
-
-		return mt_rand(3, 6);
-	}
-
-	private function ensureGrowthTimeCalculated() : void{
-		if($this->ticksUntilGrowth === -1){
-			$this->ticksUntilGrowth = $this->calculateNextGrowthTime();
-		}
-	}
-
-	public function recalculateGrowthTime() : void{
-		$this->ticksUntilGrowth = $this->calculateNextGrowthTime();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->age < self::MAX_AGE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age = self::MAX_AGE;
-			$block->ticksUntilGrowth = $block->calculateNextGrowthTime();
 			if(BlockEventHelper::grow($this, $block, $player)){
 				$item->pop();
 			}
@@ -89,15 +68,10 @@ abstract class Crops extends Flowable implements Ageable{
 			return;
 		}
 
-		$this->ensureGrowthTimeCalculated();
-
-		if($this->ticksUntilGrowth <= 0){
+		if(mt_rand(1, 6) === 1){
 			$block = clone $this;
 			++$block->age;
-			$block->ticksUntilGrowth = $block->calculateNextGrowthTime();
 			BlockEventHelper::grow($this, $block, null);
-		}else{
-			--$this->ticksUntilGrowth;
 		}
 	}
 }
