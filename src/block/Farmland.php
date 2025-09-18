@@ -32,20 +32,25 @@ use pocketmine\math\Facing;
 class Farmland extends Transparent{
 	public const MAX_WETNESS = 7;
 	protected int $wetness = 7;
+    private int $waterPositionIndex = -1;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(0, self::MAX_WETNESS, $this->wetness);
-		// 読み込み後も強制的に7にする
-		$this->wetness = 7;
-	}
+		$w->boundedIntAuto(-1, 161, $this->waterPositionIndex);
 
+		if($this->wetness !== 7){
+			$this->wetness = 7; // 既存ブロックも強制的に湿らせる
+		}
+	}
 	public function getWetness() : int{
 		return 7;
 	}
 
-	/** @return $this */
 	public function setWetness(int $wetness) : self{
-		$this->wetness = 7;
+		// 引数チェックだけして無視
+		if($wetness < 0 || $wetness > self::MAX_WETNESS){
+			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . self::MAX_WETNESS);
+		}
 		return $this;
 	}
 
