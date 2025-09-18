@@ -37,21 +37,18 @@ class Farmland extends Transparent{
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(0, self::MAX_WETNESS, $this->wetness);
 		$w->boundedIntAuto(-1, 161, $this->waterPositionIndex);
-
-		if($this->wetness !== 7){
-			$this->wetness = 7; // 既存ブロックも強制的に湿らせる
-		}
 	}
 	public function getWetness() : int{
-		return 7;
+		return $this->wetness;
 	}
 
 	public function setWetness(int $wetness) : self{
-		// 引数チェックだけして無視
 		if($wetness < 0 || $wetness > self::MAX_WETNESS){
 			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . self::MAX_WETNESS);
 		}
-		return $this;
+		$clone = clone $this;
+		$clone->wetness = $wetness;
+		return $clone;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -65,11 +62,13 @@ class Farmland extends Transparent{
 	}
 
 	public function ticksRandomly() : bool{
-		return false;
+		return true;
 	}
 
 	public function onRandomTick() : void{
-		// ticksRandomlyが無効
+		if($this->wetness < self::MAX_WETNESS){
+			$this->position->getWorld()->setBlock($this->position, $this->setWetness(self::MAX_WETNESS));
+		}
 	}
 
 	public function onEntityLand(Entity $entity) : ?float{
