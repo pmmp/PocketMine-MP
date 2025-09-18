@@ -1,15 +1,18 @@
-name: Sync Upstream
+name: Sync with Upstream
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # 毎日深夜0時（UTC）
-  workflow_dispatch:  # 手動実行も可能
+    # 毎日日本時間午前3時に実行
+    - cron: '0 18 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -19,56 +22,32 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Add upstream remote
+      - name: Sync with upstream stable releases
         run: |
-          git remote add upstream https://github.com/pmmp/PocketMine-MP.git
-          git fetch upstream
-
-      - name: Check for upstream changes
-        id: check
-        run: |
-          git checkout stable
+          # upstream追加
+          git remote add upstream https://github.com/pmmp/PocketMine-MP.git || true
+          git fetch upstream stable --tags
           
-          # 現在のstableと上流のstableを比較
-          if git diff --quiet HEAD upstream/stable; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-            echo "変更なし: stableブランチは最新です"
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-            echo "変更検出: 上流に新しいコミットがあります"
+          # pmmp-admin-bot[bot]の最新コミットを検索
+          SYNC_COMMIT=$(git log upstream/stable --author="pmmp-admin-bot\[bot\]" --grep="is next" --format="%H" -n 1)
           
-            # 変更の詳細を取得
-            COMMIT_COUNT=$(git rev-list HEAD..upstream/stable --count)
-            echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
-            echo "新しいコミット数: $COMMIT_COUNT"
+          if [ -z "$SYNC_COMMIT" ]; then
+            echo "No pmmp-admin-bot[bot] commit found"
+            exit 0
           fi
-
-      - name: Sync stable with upstream
-        if: steps.check.outputs.has_changes == 'true'
-        run: |
-          git reset --hard upstream/stable
-          git push origin stable --force-with-lease
-          echo "stableブランチを上流と同期しました"
-
-      - name: Create sync notification (changes found)
-        if: steps.check.outputs.has_changes == 'true'
-        run: |
-          echo "## 上流同期完了" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 変更内容" >> $GITHUB_STEP_SUMMARY
-          echo "- 新しいコミット数: ${{ steps.check.outputs.commit_count }}" >> $GITHUB_STEP_SUMMARY
-          echo "- stableブランチが最新に更新されました" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 次のステップ" >> $GITHUB_STEP_SUMMARY
-          echo "1. customizeブランチで以下を実行:" >> $GITHUB_STEP_SUMMARY
-          echo "   \`git checkout customize\`" >> $GITHUB_STEP_SUMMARY
-          echo "   \`git merge stable\`" >> $GITHUB_STEP_SUMMARY
-          echo "2. 競合があれば解決してください" >> $GITHUB_STEP_SUMMARY
-          echo "3. テストを実行してください" >> $GITHUB_STEP_SUMMARY
-
-      - name: Create no-changes notification
-        if: steps.check.outputs.has_changes == 'false'
-        run: |
-          echo "## 上流チェック完了" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "変更なし: stableブランチは既に最新です" >> $GITHUB_STEP_SUMMARY
+          
+          # 現在のcustomizeブランチに既に含まれているか確認
+          if git merge-base --is-ancestor $SYNC_COMMIT customize; then
+            echo "Already up to date with $SYNC_COMMIT"
+            exit 0
+          fi
+          
+          # customizeブランチに切り替え
+          git checkout customize
+          
+          # マージ実行
+          SYNC_MESSAGE=$(git log -1 --format="%s" $SYNC_COMMIT)
+          git merge $SYNC_COMMIT -m "Sync with upstream: $SYNC_MESSAGE"
+          
+          # プッシュ
+          git push origin customize
