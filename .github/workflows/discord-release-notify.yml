@@ -4,16 +4,21 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release to make notification for'
+        required: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.32.0
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: 8.2
 
@@ -30,9 +35,17 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
 
-      - name: Get actual tag name
+      - name: Get tag name
         id: tag-name
-        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo TAG_NAME="${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo TAG_NAME="${{ github.event.inputs.release }}" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported event type: ${{ github.event_name }}"
+            exit 1
+          fi
 
       - name: Run webhook post script
         run: php .github/workflows/discord-release-embed.php ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }} ${{ github.token }} ${{ secrets.DISCORD_RELEASE_WEBHOOK }} ${{ secrets.DISCORD_NEWS_PING_ROLE_ID }}

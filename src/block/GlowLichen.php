@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\MultiAnyFacing;
 use pocketmine\block\utils\MultiAnySupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Fertilizer;
@@ -35,7 +36,7 @@ use pocketmine\world\World;
 use function count;
 use function shuffle;
 
-class GlowLichen extends Transparent{
+class GlowLichen extends Transparent implements MultiAnyFacing{
 	use MultiAnySupportTrait;
 
 	public function getLightLevel() : int{

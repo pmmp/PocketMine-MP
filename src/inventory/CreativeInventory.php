@@ -24,21 +24,24 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\crafting\CraftingManagerFromDataHelper;
-use pocketmine\crafting\json\ItemStackData;
 use pocketmine\data\bedrock\BedrockDataFiles;
+use pocketmine\inventory\json\CreativeGroupData;
 use pocketmine\item\Item;
+use pocketmine\lang\Translatable;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
+use function array_filter;
+use function array_map;
 
 final class CreativeInventory{
 	use SingletonTrait;
 	use DestructorCallbackTrait;
 
 	/**
-	 * @var Item[]
-	 * @phpstan-var array<int, Item>
+	 * @var CreativeInventoryEntry[]
+	 * @phpstan-var array<int, CreativeInventoryEntry>
 	 */
 	private array $creative = [];
 
@@ -47,17 +50,32 @@ final class CreativeInventory{
 
 	private function __construct(){
 		$this->contentChangedCallbacks = new ObjectSet();
-		$creativeItems = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
-			BedrockDataFiles::CREATIVEITEMS_JSON,
-			ItemStackData::class
-		);
-		foreach($creativeItems as $data){
-			$item = CraftingManagerFromDataHelper::deserializeItemStack($data);
-			if($item === null){
-				//unknown item
-				continue;
+
+		foreach([
+			"construction" => CreativeCategory::CONSTRUCTION,
+			"nature" => CreativeCategory::NATURE,
+			"equipment" => CreativeCategory::EQUIPMENT,
+			"items" => CreativeCategory::ITEMS,
+		] as $categoryId => $categoryEnum){
+			$groups = CraftingManagerFromDataHelper::loadJsonArrayOfObjectsFile(
+				Path::join(BedrockDataFiles::CREATIVE, $categoryId . ".json"),
+				CreativeGroupData::class
+			);
+
+			foreach($groups as $groupData){
+				$icon = $groupData->group_icon === null ? null : CraftingManagerFromDataHelper::deserializeItemStack($groupData->group_icon);
+
+				$group = $icon === null ? null : new CreativeGroup(
+					new Translatable($groupData->group_name),
+					$icon
+				);
+
+				$items = array_filter(array_map(static fn($itemStack) => CraftingManagerFromDataHelper::deserializeItemStack($itemStack), $groupData->items));
+
+				foreach($items as $item){
+					$this->add($item, $categoryEnum, $group);
+				}
 			}
-			$this->add($item);
 		}
 	}
 
@@ -75,16 +93,28 @@ final class CreativeInventory{
 	 * @phpstan-return array<int, Item>
 	 */
 	public function getAll() : array{
-		return Utils::cloneObjectArray($this->creative);
+		return array_map(fn(CreativeInventoryEntry $entry) => $entry->getItem(), $this->creative);
+	}
+
+	/**
+	 * @return CreativeInventoryEntry[]
+	 * @phpstan-return array<int, CreativeInventoryEntry>
+	 */
+	public function getAllEntries() : array{
+		return $this->creative;
 	}
 
 	public function getItem(int $index) : ?Item{
-		return isset($this->creative[$index]) ? clone $this->creative[$index] : null;
+		return $this->getEntry($index)?->getItem();
+	}
+
+	public function getEntry(int $index) : ?CreativeInventoryEntry{
+		return $this->creative[$index] ?? null;
 	}
 
 	public function getItemIndex(Item $item) : int{
 		foreach($this->creative as $i => $d){
-			if($item->equals($d, true, false)){
+			if($d->matchesItem($item)){
 				return $i;
 			}
 		}
@@ -96,8 +126,8 @@ final class CreativeInventory{
 	 * Adds an item to the creative menu.
 	 * Note: Players who are already online when this is called will not see this change.
 	 */
-	public function add(Item $item) : void{
-		$this->creative[] = clone $item;
+	public function add(Item $item, CreativeCategory $category = CreativeCategory::ITEMS, ?CreativeGroup $group = null) : void{
+		$this->creative[] = new CreativeInventoryEntry($item, $category, $group);
 		$this->onContentChange();
 	}
 

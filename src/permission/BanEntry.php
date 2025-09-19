@@ -148,7 +148,9 @@ class BanEntry{
 			return null;
 		}
 
-		$parts = explode("|", trim($str));
+		//we expect at most 5 parts, but accept 6 in case of an extra unexpected delimiter
+		//we don't want to include unexpected data into the ban reason
+		$parts = explode("|", trim($str), limit: 6);
 		$entry = new BanEntry(trim(array_shift($parts)));
 		if(count($parts) > 0){
 			$entry->setCreated(self::parseDate(array_shift($parts)));

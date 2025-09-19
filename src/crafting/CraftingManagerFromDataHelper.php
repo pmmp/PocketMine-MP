@@ -164,7 +164,7 @@ final class CraftingManagerFromDataHelper{
 		}
 
 		$mapper = new \JsonMapper();
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bStrictObjectTypeChecking = false; //to allow hydrating ItemStackData - since this is only used for offline data it's safe
 		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 

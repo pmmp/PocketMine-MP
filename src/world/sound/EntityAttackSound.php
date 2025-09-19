@@ -39,7 +39,8 @@ class EntityAttackSound implements Sound{
 			-1,
 			"minecraft:player",
 			false,
-			false
+			false,
+			-1
 		)];
 	}
 }

@@ -247,6 +247,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->enderInventory;
 	}
 
+	public function getSneakOffset() : float{
+		return 0.31;
+	}
+
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
@@ -512,6 +516,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				new AbilitiesLayer(
 					AbilitiesLayer::LAYER_BASE,
 					array_fill(0, AbilitiesLayer::NUMBER_OF_ABILITIES, false),
+					0.0,
 					0.0,
 					0.0
 				)

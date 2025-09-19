@@ -21,19 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\block\utils;
 
-use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\World;
+interface CoralMaterial{
 
-class GeneratorUnregisterTask extends AsyncTask{
-	public int $worldId;
+	public function getCoralType() : CoralType;
 
-	public function __construct(World $world){
-		$this->worldId = $world->getId();
-	}
+	/**
+	 * @return $this
+	 */
+	public function setCoralType(CoralType $coralType) : self;
 
-	public function onRun() : void{
-		ThreadLocalGeneratorContext::unregister($this->worldId);
-	}
+	public function isDead() : bool;
+
+	/**
+	 * @return $this
+	 */
+	public function setDead(bool $dead) : self;
 }

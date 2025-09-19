@@ -61,6 +61,12 @@ final class CraftingDataCache{
 	 */
 	private array $caches = [];
 
+	/**
+	 * The client doesn't like recipes with ID 0 (as of 1.21.100) and complains about them in the content log
+	 * This doesn't actually affect the function of the recipe, but it is annoying, so this offset fixes it
+	 */
+	public const RECIPE_ID_OFFSET = 1;
+
 	public function getCache(CraftingManager $manager) : CraftingDataPacket{
 		$id = spl_object_id($manager);
 		if(!isset($this->caches[$id])){
@@ -87,6 +93,8 @@ final class CraftingDataCache{
 
 		$noUnlockingRequirement = new RecipeUnlockingRequirement(null);
 		foreach($manager->getCraftingRecipeIndex() as $index => $recipe){
+			//the client doesn't like recipes with an ID of 0, so we need to offset them
+			$recipeNetId = $index + self::RECIPE_ID_OFFSET;
 			if($recipe instanceof ShapelessRecipe){
 				$typeTag = match($recipe->getType()){
 					ShapelessRecipeType::CRAFTING => CraftingRecipeBlockName::CRAFTING_TABLE,
@@ -96,14 +104,14 @@ final class CraftingDataCache{
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt($index),
+					Binary::writeInt($recipeNetId),
 					array_map($converter->coreRecipeIngredientToNet(...), $recipe->getIngredientList()),
 					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
 					$typeTag,
 					50,
 					$noUnlockingRequirement,
-					$index
+					$recipeNetId
 				);
 			}elseif($recipe instanceof ShapedRecipe){
 				$inputs = [];
@@ -115,7 +123,7 @@ final class CraftingDataCache{
 				}
 				$recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt($index),
+					Binary::writeInt($recipeNetId),
 					$inputs,
 					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
@@ -123,7 +131,7 @@ final class CraftingDataCache{
 					50,
 					true,
 					$noUnlockingRequirement,
-					$index,
+					$recipeNetId,
 				);
 			}else{
 				//TODO: probably special recipe types

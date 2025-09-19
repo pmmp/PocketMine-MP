@@ -27,8 +27,8 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
-use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
-use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
+use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthJwtBody;
+use pocketmine\network\mcpe\protocol\types\login\SelfSignedJwtHeader;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use function base64_decode;
@@ -128,8 +128,8 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper->bEnforceMapType = false;
 
 		try{
-			/** @var JwtHeader $headers */
-			$headers = $mapper->map($headersArray, new JwtHeader());
+			/** @var SelfSignedJwtHeader $headers */
+			$headers = $mapper->map($headersArray, new SelfSignedJwtHeader());
 		}catch(\JsonMapper_Exception $e){
 			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), null, 0, $e);
 		}
@@ -172,8 +172,8 @@ class ProcessLoginTask extends AsyncTask{
 		$mapper->bEnforceMapType = false;
 		$mapper->bRemoveUndefinedAttributes = true;
 		try{
-			/** @var JwtChainLinkBody $claims */
-			$claims = $mapper->map($claimsArray, new JwtChainLinkBody());
+			/** @var LegacyAuthJwtBody $claims */
+			$claims = $mapper->map($claimsArray, new LegacyAuthJwtBody());
 		}catch(\JsonMapper_Exception $e){
 			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), null, 0, $e);
 		}

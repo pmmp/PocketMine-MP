@@ -38,6 +38,8 @@ trait AgeableTrait{
 
 	public function getAge() : int{ return $this->age; }
 
+	public function getMaxAge() : int{ return self::MAX_AGE; }
+
 	/**
 	 * @return $this
 	 */

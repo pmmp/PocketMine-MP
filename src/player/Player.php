@@ -26,6 +26,7 @@ namespace pocketmine\player;
 use pocketmine\block\BaseSign;
 use pocketmine\block\Bed;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\RespawnAnchor;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -45,6 +46,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
 use pocketmine\event\player\PlayerBedEnterEvent;
@@ -135,6 +137,7 @@ use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\ItemBreakSound;
+use pocketmine\world\sound\RespawnAnchorDepleteSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
@@ -1641,7 +1644,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$newReplica = clone $oldHeldItem;
 			$newReplica->setCount($newHeldItem->getCount());
 			if($newReplica instanceof Durable && $newHeldItem instanceof Durable){
-				$newReplica->setDamage($newHeldItem->getDamage());
+				$newDamage = $newHeldItem->getDamage();
+				if($newDamage >= 0 && $newDamage <= $newReplica->getMaxDurability()){
+					$newReplica->setDamage($newDamage);
+				}
 			}
 			$damagedOrDeducted = $newReplica->equalsExact($newHeldItem);
 
@@ -2537,6 +2543,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 				$this->logger->debug("Respawn position located, completing respawn");
 				$ev = new PlayerRespawnEvent($this, $safeSpawn);
+				$spawnPosition = $ev->getRespawnPosition();
+				$spawnBlock = $spawnPosition->getWorld()->getBlock($spawnPosition);
+				if($spawnBlock instanceof RespawnAnchor){
+					if($spawnBlock->getCharges() > 0){
+						$spawnPosition->getWorld()->setBlock($spawnPosition, $spawnBlock->setCharges($spawnBlock->getCharges() - 1));
+						$spawnPosition->getWorld()->addSound($spawnPosition, new RespawnAnchorDepleteSound());
+					}else{
+						$defaultSpawn = $this->server->getWorldManager()->getDefaultWorld()?->getSpawnLocation();
+						if($defaultSpawn !== null){
+							$this->setSpawn($defaultSpawn);
+							$ev->setRespawnPosition($defaultSpawn);
+							$this->sendMessage(KnownTranslationFactory::tile_respawn_anchor_notValid()->prefix(TextFormat::GRAY));
+						}
+					}
+				}
 				$ev->call();
 
 				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
@@ -2546,7 +2567,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->setSneaking(false);
 				$this->setFlying(false);
 
-				$this->extinguish();
+				$this->extinguish(EntityExtinguishEvent::CAUSE_RESPAWN);
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
 				$this->deadTicks = 0;
 				$this->noDamageTicks = 60;
@@ -2817,13 +2838,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Opens the player's sign editor GUI for the sign at the given position.
-	 * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
 	 */
-	public function openSignEditor(Vector3 $position) : void{
+	public function openSignEditor(Vector3 $position, bool $frontFace = true) : void{
 		$block = $this->getWorld()->getBlock($position);
 		if($block instanceof BaseSign){
 			$this->getWorld()->setBlock($position, $block->setEditorEntityRuntimeId($this->getId()));
-			$this->getNetworkSession()->onOpenSignEditor($position, true);
+			$this->getNetworkSession()->onOpenSignEditor($position, $frontFace);
 		}else{
 			throw new \InvalidArgumentException("Block at this position is not a sign");
 		}

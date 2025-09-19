@@ -36,6 +36,7 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -698,7 +699,7 @@ class Server{
 
 	public function removeOp(string $name) : void{
 		$lowercaseName = strtolower($name);
-		foreach($this->operators->getAll() as $operatorName => $_){
+		foreach(Utils::promoteKeys($this->operators->getAll()) as $operatorName => $_){
 			$operatorName = (string) $operatorName;
 			if($lowercaseName === strtolower($operatorName)){
 				$this->operators->remove($operatorName);
@@ -1005,7 +1006,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(BedrockDataFiles::RECIPES);
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
@@ -1617,7 +1618,7 @@ class Server{
 		if(!is_dir($crashFolder)){
 			mkdir($crashFolder);
 		}
-		$crashDumpPath = Path::join($crashFolder, date("D_M_j-H.i.s-T_Y", (int) $dump->getData()->time) . ".log");
+		$crashDumpPath = Path::join($crashFolder, date("Y-m-d_H.i.s_T", (int) $dump->getData()->time) . ".log");
 
 		$fp = @fopen($crashDumpPath, "wb");
 		if(!is_resource($fp)){

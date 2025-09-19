@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 
-class RedstoneWire extends Flowable{
+class RedstoneWire extends Flowable implements AnalogRedstoneSignalEmitter{
 	use AnalogRedstoneSignalEmitterTrait;
 	use StaticSupportTrait;
 

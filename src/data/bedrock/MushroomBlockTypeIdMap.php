@@ -24,29 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\data\bedrock\block\BlockLegacyMetadata as LegacyMeta;
+use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\utils\SingletonTrait;
 
+/**
+ * @deprecated
+ */
 final class MushroomBlockTypeIdMap{
 	use SingletonTrait;
 	/** @phpstan-use IntSaveIdMapTrait<MushroomBlockType> */
 	use IntSaveIdMapTrait;
 
 	public function __construct(){
+		$newMapping = ValueMappings::getInstance()->mushroomBlockType;
 		foreach(MushroomBlockType::cases() as $case){
-			$this->register(match($case){
-				MushroomBlockType::PORES => LegacyMeta::MUSHROOM_BLOCK_ALL_PORES,
-				MushroomBlockType::CAP_NORTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
-				MushroomBlockType::CAP_NORTH => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
-				MushroomBlockType::CAP_NORTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
-				MushroomBlockType::CAP_WEST => LegacyMeta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
-				MushroomBlockType::CAP_MIDDLE => LegacyMeta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
-				MushroomBlockType::CAP_EAST => LegacyMeta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
-				MushroomBlockType::CAP_SOUTHWEST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
-				MushroomBlockType::CAP_SOUTH => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
-				MushroomBlockType::CAP_SOUTHEAST => LegacyMeta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
-				MushroomBlockType::ALL_CAP => LegacyMeta::MUSHROOM_BLOCK_ALL_CAP,
-			}, $case);
+			$this->register($newMapping->valueToRaw($case), $case);
 		}
 	}
 }

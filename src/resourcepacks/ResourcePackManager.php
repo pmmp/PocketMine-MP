@@ -26,6 +26,7 @@ namespace pocketmine\resourcepacks;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function copy;
@@ -103,9 +104,14 @@ class ResourcePackManager{
 			try{
 				$newPack = $this->loadPackFromPath(Path::join($this->path, $pack));
 
-				$this->resourcePacks[] = $newPack;
 				$index = strtolower($newPack->getPackId());
+				if(!Uuid::isValid($index)){
+					//TODO: we should use Uuid in ResourcePack interface directly but that would break BC
+					//for now we need to validate this here to make sure it doesn't cause crashes later on
+					throw new ResourcePackException("Invalid UUID ($index)");
+				}
 				$this->uuidList[$index] = $newPack;
+				$this->resourcePacks[] = $newPack;
 
 				$keyPath = Path::join($this->path, $pack . ".key");
 				if(file_exists($keyPath)){
@@ -190,6 +196,11 @@ class ResourcePackManager{
 		$resourcePacks = [];
 		foreach($resourceStack as $pack){
 			$uuid = strtolower($pack->getPackId());
+			if(!Uuid::isValid($uuid)){
+				//TODO: we should use Uuid in ResourcePack interface directly but that would break BC
+				//for now we need to validate this here to make sure it doesn't cause crashes later on
+				throw new \InvalidArgumentException("Invalid resource pack UUID ($uuid)");
+			}
 			if(isset($uuidList[$uuid])){
 				throw new \InvalidArgumentException("Cannot load two resource pack with the same UUID ($uuid)");
 			}

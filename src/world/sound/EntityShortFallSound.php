@@ -41,7 +41,8 @@ class EntityShortFallSound implements Sound{
 			-1,
 			$this->entity::getNetworkTypeId(),
 			false, //TODO: does isBaby have any relevance here?
-			false
+			false,
+			-1
 		)];
 	}
 }

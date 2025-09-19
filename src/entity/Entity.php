@@ -31,6 +31,7 @@ use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
+use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
@@ -60,6 +61,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
@@ -76,6 +78,7 @@ use function floatval;
 use function floor;
 use function fmod;
 use function get_class;
+use function min;
 use function sin;
 use function spl_object_id;
 use const M_PI_2;
@@ -700,16 +703,26 @@ abstract class Entity{
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFireTicks(int $fireTicks) : void{
-		if($fireTicks < 0 || $fireTicks > 0x7fff){
-			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
+		if($fireTicks < 0){
+			throw new \InvalidArgumentException("Fire ticks cannot be negative");
 		}
+
+		//Since the max value is not externally obvious or intuitive, many plugins use this without being aware that
+		//reasonably large values are not accepted. We even have such usages within PM itself. It doesn't make sense
+		//to force all those calls to be aware of this limitation, as it's not a functional limit but a limitation of
+		//the Mojang save format. Truncating this to the max acceptable value is the next best thing we can do.
+		$fireTicks = min($fireTicks, Limits::INT16_MAX);
+
 		if(!$this->isFireProof()){
 			$this->fireTicks = $fireTicks;
 			$this->networkPropertiesDirty = true;
 		}
 	}
 
-	public function extinguish() : void{
+	public function extinguish(int $cause = EntityExtinguishEvent::CAUSE_CUSTOM) : void{
+		$ev = new EntityExtinguishEvent($this, $cause);
+		$ev->call();
+
 		$this->fireTicks = 0;
 		$this->networkPropertiesDirty = true;
 	}
@@ -720,7 +733,7 @@ abstract class Entity{
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
 		if($this->isFireProof() && $this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_FIRE_PROOF);
 			return false;
 		}
 
@@ -731,7 +744,7 @@ abstract class Entity{
 		}
 
 		if(!$this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_TICKING);
 		}else{
 			return true;
 		}
@@ -1178,12 +1191,14 @@ abstract class Entity{
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
+			$stepHeight = $this->getStepHeight();
+
+			if($stepHeight > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
 				$dx = $wantedX;
-				$dy = $this->stepHeight;
+				$dy = $stepHeight;
 				$dz = $wantedZ;
 
 				$stepBB = clone $this->boundingBox;
@@ -1251,6 +1266,14 @@ abstract class Entity{
 		//TODO: vehicle collision events (first we need to spawn them!)
 
 		Timings::$entityMove->stopTiming();
+	}
+
+	public function setStepHeight(float $stepHeight) : void{
+		$this->stepHeight = $stepHeight;
+	}
+
+	public function getStepHeight() : float{
+		return $this->stepHeight;
 	}
 
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
@@ -1495,7 +1518,7 @@ abstract class Entity{
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			static::getNetworkTypeId(),
-			$this->location->asVector3(),
+			$this->getOffsetPosition($this->location->asVector3()),
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,

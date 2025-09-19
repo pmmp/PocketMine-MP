@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class WoodenFence extends Fence{
+class WoodenFence extends Fence implements WoodMaterial{
 	use WoodTypeTrait;
 
 	public function getFuelTime() : int{

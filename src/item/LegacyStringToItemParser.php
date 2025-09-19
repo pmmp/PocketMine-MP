@@ -111,7 +111,8 @@ final class LegacyStringToItemParser{
 	 */
 	public function parse(string $input) : Item{
 		$key = $this->reprocess($input);
-		$b = explode(":", $key);
+		//TODO: this should be limited to 2 parts, but 3 preserves old behaviour when given a string like 351:4:1
+		$b = explode(":", $key, limit: 3);
 
 		if(!isset($b[1])){
 			$meta = 0;

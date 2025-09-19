@@ -227,12 +227,15 @@ abstract class Projectile extends Entity{
 				$specificHitFunc = fn() => $this->onHitBlock($objectHit, $rayTraceResult);
 			}
 
+			$motionBeforeOnHit = clone $this->motion;
 			$ev->call();
 			$this->onHit($ev);
 			$specificHitFunc();
 
 			$this->isCollided = $this->onGround = true;
-			$this->motion = Vector3::zero();
+			if($motionBeforeOnHit->equals($this->motion)){
+				$this->motion = Vector3::zero();
+			}
 		}else{
 			$this->isCollided = $this->onGround = false;
 			$this->blockHit = null;
@@ -295,7 +298,9 @@ abstract class Projectile extends Entity{
 			}
 		}
 
-		$this->flagForDespawn();
+		if($this->despawnsOnEntityHit()){
+			$this->flagForDespawn();
+		}
 	}
 
 	/**
@@ -304,5 +309,12 @@ abstract class Projectile extends Entity{
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		$this->blockHit = $blockHit->getPosition()->asVector3();
 		$blockHit->onProjectileHit($this, $hitResult);
+	}
+
+	/**
+	 * @deprecated This will be dropped in favor of deciding whether to despawn within `onHitEntity()` method.
+	 */
+	protected function despawnsOnEntityHit() : bool{
+		return true;
 	}
 }

@@ -53,7 +53,9 @@ class ShapelessRecipe implements CraftingRecipe{
 		if(count($ingredients) > 9){
 			throw new \InvalidArgumentException("Shapeless recipes cannot have more than 9 ingredients");
 		}
+		Utils::validateArrayValueType($ingredients, function(RecipeIngredient $_) : void{});
 		$this->ingredients = $ingredients;
+		Utils::validateArrayValueType($results, function(Item $_) : void{});
 		$this->results = Utils::cloneObjectArray($results);
 	}
 

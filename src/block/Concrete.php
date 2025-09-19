@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 
-class Concrete extends Opaque{
+class Concrete extends Opaque implements Colored{
 	use ColoredTrait;
 }
