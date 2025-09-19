@@ -155,9 +155,9 @@ class MemoryManager{
 		$ev = new LowMemoryEvent($memory, $limit, $global, $triggerCount);
 		$ev->call();
 
-		$cycles = $this->triggerGarbageCollector();
+		//$cycles = $this->triggerGarbageCollector();
 
-		$this->logger->debug(sprintf("Freed %gMB, $cycles cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
+		$this->logger->debug(sprintf("Freed %gMB, [gcは実行されていません] cycles", round(($ev->getMemoryFreed() / 1024) / 1024, 2)));
 	}
 
 	/**
