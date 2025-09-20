@@ -459,7 +459,7 @@ class NetworkSession{
 				}catch(PacketDecodeException $e){
 					throw PacketHandlingException::wrap($e);
 				}
-				if($stream->getOffset() < strlen($stream->getData())){
+				if($stream->getUnreadLength() > 0){
 					$remains = substr($stream->getData(), $stream->getOffset());
 					$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 				}

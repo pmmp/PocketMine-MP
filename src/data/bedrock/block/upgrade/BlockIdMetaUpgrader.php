@@ -29,7 +29,6 @@ use pmmp\encoding\VarInt;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use function strlen;
 
 /**
  * Handles translating legacy 1.12 block ID/meta into modern blockstates.
@@ -103,7 +102,7 @@ final class BlockIdMetaUpgrader{
 				$mappingTable[$id][$meta] = $blockStateUpgrader->upgrade(BlockStateData::fromNbt($state));
 			}
 		}
-		if($legacyStateMapReader->getOffset() < strlen($legacyStateMapReader->getData())){
+		if($legacyStateMapReader->getUnreadLength() > 0){
 			throw new DataDecodeException("Unexpected trailing data in legacy state map data");
 		}
 

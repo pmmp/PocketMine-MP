@@ -164,7 +164,7 @@ final class JwtUtils{
 		$rRaw = self::signaturePartFromAsn1($stream);
 		$sRaw = self::signaturePartFromAsn1($stream);
 
-		if($stream->getOffset() < strlen($stream->getData())){
+		if($stream->getUnreadLength() > 0){
 			throw new \InvalidArgumentException("Invalid DER signature, unexpected trailing sequence data");
 		}
 

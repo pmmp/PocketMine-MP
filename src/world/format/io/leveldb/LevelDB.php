@@ -323,7 +323,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$previous = $decoded;
 				if($nextIndex <= Chunk::MAX_SUBCHUNK_INDEX){ //older versions wrote additional superfluous biome palettes
 					$result[$nextIndex++] = $decoded;
-				}elseif($stream->getOffset() >= strlen($stream->getData())){
+				}elseif($stream->getUnreadLength() === 0){
 					//not enough padding biome arrays for the given version - this is non-critical since we discard the excess anyway, but this should be logged
 					$logger->error("Wrong number of 3D biome palettes for this chunk version: expected $expectedCount, but got " . ($i + 1) . " - this is not a problem, but may indicate a corrupted chunk");
 					break;
@@ -332,7 +332,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				throw new CorruptedChunkException("Failed to deserialize biome palette $i: " . $e->getMessage(), 0, $e);
 			}
 		}
-		if($stream->getOffset() < strlen($stream->getData())){
+		if($stream->getUnreadLength() > 0){
 			//maybe bad output produced by a third-party conversion tool like Chunker
 			$logger->error("Unexpected trailing data after 3D biomes data");
 		}
@@ -458,7 +458,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}catch(DataDecodeException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
-		if($binaryStream->getOffset() < strlen($binaryStream->getData())){
+		if($binaryStream->getUnreadLength() > 0){
 			$logger->error("Unexpected trailing data in legacy terrain data");
 		}
 
@@ -495,7 +495,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		if($chunkVersion < ChunkVersion::v1_1_0){
 			try{
 				$binaryStream->readByteArray(4096); //legacy light info, discard it
-				if($binaryStream->getOffset() < strlen($binaryStream->getData())){
+				if($binaryStream->getUnreadLength() > 0){
 					$logger->error("Unexpected trailing data in legacy subchunk data");
 				}
 			}catch(DataDecodeException $e){
@@ -617,7 +617,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			try{
 				$binaryStream->readByteArray(512); //heightmap, discard it
 				$biomes3d = ChunkUtils::extrapolate3DBiomes($binaryStream->readByteArray(256)); //never throws
-				if($binaryStream->getOffset() < strlen($binaryStream->getData())){
+				if($binaryStream->getUnreadLength() > 0){
 					$logger->error("Unexpected trailing data after 2D biome data");
 				}
 			}catch(DataDecodeException $e){

@@ -37,7 +37,6 @@ use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
 use function hash;
 use function random_bytes;
-use function strlen;
 use function substr;
 
 class QueryHandler implements RawPacketHandler{
@@ -115,7 +114,7 @@ class QueryHandler implements RawPacketHandler{
 					Byte::writeUnsigned($writer, self::STATISTICS);
 					BE::writeUnsignedInt($writer, $sessionID);
 
-					$remaining = strlen($stream->getData()) - $stream->getOffset();
+					$remaining = $stream->getUnreadLength();
 					if($remaining === 4){ //TODO: check this! according to the spec, this should always be here and always be FF FF FF 01
 						$writer->writeByteArray($this->server->getQueryInformation()->getLongQuery());
 					}else{
