@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\BE;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pocketmine\utils\AssumptionFailedError;
@@ -33,6 +34,7 @@ use function bin2hex;
 use function chr;
 use function count;
 use function explode;
+use function hex2bin;
 use function is_array;
 use function json_decode;
 use function json_encode;
@@ -55,6 +57,7 @@ use function strlen;
 use function strtr;
 use function substr;
 use const JSON_THROW_ON_ERROR;
+use const OPENSSL_ALGO_SHA256;
 use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
@@ -171,17 +174,17 @@ final class JwtUtils{
 	/**
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, \OpenSSLAsymmetricKey $signingKey) : bool{
+	public static function verify(string $jwt, string $signingKeyDer, bool $ec) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$rawSignature = self::b64UrlDecode($signature);
-		$derSignature = self::rawSignatureToDer($rawSignature);
+		$derSignature = $ec ? self::rawSignatureToDer($rawSignature) : $rawSignature;
 
 		$v = openssl_verify(
 			$header . '.' . $body,
 			$derSignature,
-			$signingKey,
-			self::SIGNATURE_ALGORITHM
+			self::derPublicKeyToPem($signingKeyDer),
+			$ec ? self::SIGNATURE_ALGORITHM : OPENSSL_ALGO_SHA256
 		);
 		switch($v){
 			case 0: return false;
@@ -239,22 +242,56 @@ final class JwtUtils{
 		throw new AssumptionFailedError("OpenSSL resource contains invalid public key");
 	}
 
+	/**
+	 * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
+	 * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3} for more information.
+	 */
+	private static function encodeDerLength(int $length) : string{
+		if ($length <= 0x7F) {
+			return chr($length);
+		}
+
+		$lengthBytes = ltrim(BE::packUnsignedInt($length), "\x00");
+
+		return chr(0x80 | strlen($lengthBytes)) . $lengthBytes;
+	}
+
+	private static function encodeDerBytes(int $tag, string $data) : string{
+		return chr($tag) . self::encodeDerLength(strlen($data)) . $data;
+	}
+
 	public static function parseDerPublicKey(string $derKey) : \OpenSSLAsymmetricKey{
-		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
+		$signingKeyOpenSSL = openssl_pkey_get_public(self::derPublicKeyToPem($derKey));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
 		}
-		$details = openssl_pkey_get_details($signingKeyOpenSSL);
-		if($details === false){
-			throw new JwtException("OpenSSL failed to get details from key: " . openssl_error_string());
-		}
-		if(!isset($details['ec']['curve_name'])){
-			throw new JwtException("Expected an EC key");
-		}
-		$curve = $details['ec']['curve_name'];
-		if($curve !== self::BEDROCK_SIGNING_KEY_CURVE_NAME){
-			throw new JwtException("Key must belong to curve " . self::BEDROCK_SIGNING_KEY_CURVE_NAME . ", got $curve");
-		}
 		return $signingKeyOpenSSL;
+	}
+
+	public static function derPublicKeyToPem(string $derKey) : string{
+		return sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey));
+	}
+
+	/**
+	 * Create a public key represented in DER format from RSA modulus and exponent information
+	 *
+	 * @param string $nBase64 The RSA modulus encoded in Base64
+	 * @param string $eBase64 The RSA exponent encoded in Base64
+	 */
+	public static function rsaPublicKeyModExpToDer(string $nBase64, string $eBase64) : string{
+		$mod = self::b64UrlDecode($nBase64);
+		$exp = self::b64UrlDecode($eBase64);
+
+		$modulus = self::encodeDerBytes(2, $mod);
+		$publicExponent = self::encodeDerBytes(2, $exp);
+
+		$rsaPublicKey = self::encodeDerBytes(48, $modulus . $publicExponent);
+
+		// sequence(oid(1.2.840.113549.1.1.1), null)) = rsaEncryption.
+		$rsaOID = hex2bin('300d06092a864886f70d0101010500'); // hex version of MA0GCSqGSIb3DQEBAQUA
+		$rsaPublicKey = chr(0) . $rsaPublicKey;
+		$rsaPublicKey = self::encodeDerBytes(3, $rsaPublicKey);
+
+		return self::encodeDerBytes(48, $rsaOID . $rsaPublicKey);
 	}
 }

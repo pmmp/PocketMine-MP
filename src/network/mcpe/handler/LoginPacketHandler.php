@@ -27,7 +27,8 @@ use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\auth\ProcessLoginTask;
+use pocketmine\network\mcpe\auth\ProcessLegacyLoginTask;
+use pocketmine\network\mcpe\auth\ProcessOpenIdLoginTask;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
@@ -38,16 +39,23 @@ use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthChain;
 use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthIdentityData;
+use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtBody;
+use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtHeader;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use function chr;
+use function count;
 use function gettype;
 use function is_array;
 use function is_object;
 use function json_decode;
+use function md5;
+use function ord;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -65,15 +73,95 @@ class LoginPacketHandler extends PacketHandler{
 		private \Closure $authCallback
 	){}
 
+	private static function calculateUuidFromXuid(string $xuid) : UuidInterface{
+		$hash = md5("pocket-auth-1-xuid:" . $xuid, binary: true);
+		$hash[6] = chr((ord($hash[6]) & 0x0f) | 0x30); // set version to 3
+		$hash[8] = chr((ord($hash[8]) & 0x3f) | 0x80); // set variant to RFC 4122
+
+		return Uuid::fromBytes($hash);
+	}
+
 	public function handleLogin(LoginPacket $packet) : bool{
 		$authInfo = $this->parseAuthInfo($packet->authInfoJson);
-		$jwtChain = $this->parseJwtChain($authInfo->Certificate);
-		$extraData = $this->fetchAuthData($jwtChain);
 
-		if(!Player::isValidUserName($extraData->displayName)){
+		if($authInfo->AuthenticationType === AuthenticationType::FULL->value){
+			try{
+				[$headerArray, $claimsArray,] = JwtUtils::parse($authInfo->Token);
+			}catch(JwtException $e){
+				throw PacketHandlingException::wrap($e, "Error parsing authentication token");
+			}
+			$header = $this->mapXboxTokenHeader($headerArray);
+			$claims = $this->mapXboxTokenBody($claimsArray);
+
+			$legacyUuid = self::calculateUuidFromXuid($claims->xid);
+			$username = $claims->xname;
+			$xuid = $claims->xid;
+
+			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
+			if($authRequired === null){
+				//plugin cancelled
+				return true;
+			}
+			$this->processOpenIdLogin($authInfo->Token, $header->kid, $packet->clientDataJwt, $authRequired);
+
+		}elseif($authInfo->AuthenticationType === AuthenticationType::SELF_SIGNED->value){
+			try{
+				$chainData = json_decode($authInfo->Certificate, flags: JSON_THROW_ON_ERROR);
+			}catch(\JsonException $e){
+				throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate chain");
+			}
+			if(!is_object($chainData)){
+				throw new PacketHandlingException("Unexpected type for self-signed certificate chain: " . gettype($chainData) . ", expected object");
+			}
+			try{
+				$chain = $this->defaultJsonMapper()->map($chainData, new LegacyAuthChain());
+			}catch(\JsonMapper_Exception $e){
+				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate chain");
+			}
+			if(count($chain->chain) > 1 || !isset($chain->chain[0])){
+				throw new PacketHandlingException("Expected exactly one certificate in self-signed certificate chain, got " . count($chain->chain));
+			}
+
+			try{
+				[, $claimsArray, ] = JwtUtils::parse($chain->chain[0]);
+			}catch(JwtException $e){
+				throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate");
+			}
+			if(!isset($claimsArray["extraData"]) || !is_array($claimsArray["extraData"])){
+				throw new PacketHandlingException("Expected \"extraData\" to be present in self-signed certificate");
+			}
+
+			try{
+				$claims = $this->defaultJsonMapper()->map($claimsArray["extraData"], new LegacyAuthIdentityData());
+			}catch(\JsonMapper_Exception $e){
+				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate extraData");
+			}
+
+			if(!Uuid::isValid($claims->identity)){
+				throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->identity);
+			}
+			$legacyUuid = Uuid::fromString($claims->identity);
+			$username = $claims->displayName;
+			$xuid = "";
+
+			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
+			if($authRequired === null){
+				//plugin cancelled
+				return true;
+			}
+			$this->processSelfSignedLogin($chain->chain, $packet->clientDataJwt, $authRequired);
+		}else{
+			throw new PacketHandlingException("Unsupported authentication type: $authInfo->AuthenticationType");
+		}
+
+		return true;
+	}
+
+	private function processLoginCommon(LoginPacket $packet, string $username, UuidInterface $legacyUuid, string $xuid) : ?bool{
+		if(!Player::isValidUserName($username)){
 			$this->session->disconnectWithError(KnownTranslationFactory::disconnectionScreen_invalidName());
 
-			return true;
+			return null;
 		}
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
@@ -86,32 +174,25 @@ class LoginPacketHandler extends PacketHandler{
 				disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_invalidSkin()
 			);
 
-			return true;
+			return null;
 		}
 
-		if(!Uuid::isValid($extraData->identity)){
-			throw new PacketHandlingException("Invalid login UUID");
-		}
-		$uuid = Uuid::fromString($extraData->identity);
-		$arrClientData = (array) $clientData;
-		$arrClientData["TitleID"] = $extraData->titleId;
-
-		if($extraData->XUID !== ""){
+		if($xuid !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
-				$extraData->XUID,
-				$extraData->displayName,
-				$uuid,
+				$xuid,
+				$username,
+				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
-				$arrClientData
+				(array) $clientData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
-				$extraData->displayName,
-				$uuid,
+				$username,
+				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
-				$arrClientData
+				(array) $clientData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);
@@ -144,12 +225,10 @@ class LoginPacketHandler extends PacketHandler{
 		$ev->call();
 		if(!$ev->isAllowed()){
 			$this->session->disconnect($ev->getFinalDisconnectReason(), $ev->getFinalDisconnectScreenMessage());
-			return true;
+			return null;
 		}
 
-		$this->processLogin($authInfo->Token, AuthenticationType::from($authInfo->AuthenticationType), $jwtChain->chain, $packet->clientDataJwt, $ev->isAuthRequired());
-
-		return true;
+		return $ev->isAuthRequired();
 	}
 
 	/**
@@ -162,13 +241,10 @@ class LoginPacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e);
 		}
 		if(!is_object($authInfoJson)){
-			throw new \RuntimeException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
+			throw new PacketHandlingException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
 		}
 
-		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper = $this->defaultJsonMapper();
 		try{
 			$clientData = $mapper->map($authInfoJson, new AuthenticationInfo());
 		}catch(\JsonMapper_Exception $e){
@@ -178,68 +254,31 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
+	 * @param array<string, mixed> $headerArray
 	 * @throws PacketHandlingException
 	 */
-	protected function parseJwtChain(string $chainDataJwt) : LegacyAuthChain{
+	protected function mapXboxTokenHeader(array $headerArray) : XboxAuthJwtHeader{
+		$mapper = $this->defaultJsonMapper();
 		try{
-			$jwtChainJson = json_decode($chainDataJwt, associative: false, flags: JSON_THROW_ON_ERROR);
-		}catch(\JsonException $e){
-			throw PacketHandlingException::wrap($e);
-		}
-		if(!is_object($jwtChainJson)){
-			throw new \RuntimeException("Unexpected type for JWT chain data: " . gettype($jwtChainJson) . ", expected object");
-		}
-
-		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
-		try{
-			$clientData = $mapper->map($jwtChainJson, new LegacyAuthChain());
+			$header = $mapper->map($headerArray, new XboxAuthJwtHeader());
 		}catch(\JsonMapper_Exception $e){
 			throw PacketHandlingException::wrap($e);
 		}
-		return $clientData;
+		return $header;
 	}
 
 	/**
+	 * @param array<string, mixed> $bodyArray
 	 * @throws PacketHandlingException
 	 */
-	protected function fetchAuthData(LegacyAuthChain $chain) : LegacyAuthIdentityData{
-		/** @var LegacyAuthIdentityData|null $extraData */
-		$extraData = null;
-		foreach($chain->chain as $jwt){
-			//validate every chain element
-			try{
-				[, $claims, ] = JwtUtils::parse($jwt);
-			}catch(JwtException $e){
-				throw PacketHandlingException::wrap($e);
-			}
-			if(isset($claims["extraData"])){
-				if($extraData !== null){
-					throw new PacketHandlingException("Found 'extraData' more than once in chainData");
-				}
-
-				if(!is_array($claims["extraData"])){
-					throw new PacketHandlingException("'extraData' key should be an array");
-				}
-				$mapper = new \JsonMapper();
-				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
-				$mapper->bExceptionOnMissingData = true;
-				$mapper->bExceptionOnUndefinedProperty = true;
-				$mapper->bStrictObjectTypeChecking = true;
-				try{
-					/** @var LegacyAuthIdentityData $extraData */
-					$extraData = $mapper->map($claims["extraData"], new LegacyAuthIdentityData());
-				}catch(\JsonMapper_Exception $e){
-					throw PacketHandlingException::wrap($e);
-				}
-			}
+	protected function mapXboxTokenBody(array $bodyArray) : XboxAuthJwtBody{
+		$mapper = $this->defaultJsonMapper();
+		try{
+			$header = $mapper->map($bodyArray, new XboxAuthJwtBody());
+		}catch(\JsonMapper_Exception $e){
+			throw PacketHandlingException::wrap($e);
 		}
-		if($extraData === null){
-			throw new PacketHandlingException("'extraData' not found in chain data");
-		}
-		return $extraData;
+		return $header;
 	}
 
 	/**
@@ -252,11 +291,7 @@ class LoginPacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e);
 		}
 
-		$mapper = new \JsonMapper();
-		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper = $this->defaultJsonMapper();
 		try{
 			$clientData = $mapper->map($clientDataClaims, new ClientData());
 		}catch(\JsonMapper_Exception $e){
@@ -269,15 +304,37 @@ class LoginPacketHandler extends PacketHandler{
 	 * TODO: This is separated for the purposes of allowing plugins (like Specter) to hack it and bypass authentication.
 	 * In the future this won't be necessary.
 	 *
-	 * @param null|string[] $legacyCertificate
-	 *
 	 * @throws \InvalidArgumentException
 	 */
-	protected function processLogin(string $token, AuthenticationType $authType, ?array $legacyCertificate, string $clientData, bool $authRequired) : void{
-		if($legacyCertificate === null){
-			throw new PacketHandlingException("Legacy certificate cannot be null");
-		}
-		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($legacyCertificate, $clientData, $authRequired, $this->authCallback));
+	protected function processOpenIdLogin(string $token, string $keyId, string $clientData, bool $authRequired) : void{
 		$this->session->setHandler(null); //drop packets received during login verification
+
+		$authKeyProvider = $this->server->getAuthKeyProvider();
+
+		$authKeyProvider->getKey($keyId)->onCompletion(
+			function(array $issuerAndKey) use ($token, $clientData, $authRequired) : void{
+				[$issuer, $mojangPublicKeyPem] = $issuerAndKey;
+				$this->server->getAsyncPool()->submitTask(new ProcessOpenIdLoginTask($token, $issuer, $mojangPublicKeyPem, $clientData, $authRequired, $this->authCallback));
+			},
+			fn() => ($this->authCallback)(false, $authRequired, "Unrecognized authentication key ID: $keyId", null)
+		);
+	}
+
+	/**
+	 * @param string[] $legacyCertificate
+	 */
+	protected function processSelfSignedLogin(array $legacyCertificate, string $clientDataJwt, bool $authRequired) : void{
+		$this->session->setHandler(null); //drop packets received during login verification
+
+		$this->server->getAsyncPool()->submitTask(new ProcessLegacyLoginTask($legacyCertificate, $clientDataJwt, rootAuthKeyDer: null, authRequired: $authRequired, onCompletion: $this->authCallback));
+	}
+
+	private function defaultJsonMapper() : \JsonMapper{
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bEnforceMapType = false;
+		return $mapper;
 	}
 }

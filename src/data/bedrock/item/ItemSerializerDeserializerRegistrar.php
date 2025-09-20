@@ -40,6 +40,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
+use pocketmine\item\FireworkStar;
 use pocketmine\item\GoatHorn;
 use pocketmine\item\Item;
 use pocketmine\item\Medicine;
@@ -246,6 +247,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::EYE_ARMOR_TRIM_SMITHING_TEMPLATE, Items::EYE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::FEATHER, Items::FEATHER());
 		$this->map1to1Item(Ids::FERMENTED_SPIDER_EYE, Items::FERMENTED_SPIDER_EYE());
+		$this->map1to1Item(Ids::FIREWORK_ROCKET, Items::FIREWORK_ROCKET());
 		$this->map1to1Item(Ids::FIRE_CHARGE, Items::FIRE_CHARGE());
 		$this->map1to1Item(Ids::FISHING_ROD, Items::FISHING_ROD());
 		$this->map1to1Item(Ids::FLINT, Items::FLINT());
@@ -403,6 +405,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::TORCHFLOWER_SEEDS, Items::TORCHFLOWER_SEEDS());
 		$this->map1to1Item(Ids::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, Items::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::TOTEM_OF_UNDYING, Items::TOTEM());
+		$this->map1to1Item(Ids::TRIDENT, Items::TRIDENT());
 		$this->map1to1Item(Ids::TROPICAL_FISH, Items::CLOWNFISH());
 		$this->map1to1Item(Ids::TURTLE_HELMET, Items::TURTLE_HELMET());
 		$this->map1to1Item(Ids::VEX_ARMOR_TRIM_SMITHING_TEMPLATE, Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
@@ -500,6 +503,14 @@ final class ItemSerializerDeserializerRegistrar{
 	 * in a unified manner.
 	 */
 	private function register1to1ItemWithMetaMappings() : void{
+		$this->map1to1ItemWithMeta(
+			Ids::FIREWORK_STAR,
+			Items::FIREWORK_STAR(),
+			function(FireworkStar $item, int $meta) : void{
+				// Colors will be defined by CompoundTag deserialization.
+			},
+			fn(FireworkStar $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getExplosion()->getFlashColor())
+		);
 		$this->map1to1ItemWithMeta(
 			Ids::GOAT_HORN,
 			Items::GOAT_HORN(),

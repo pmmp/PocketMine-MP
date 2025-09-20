@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e8e5feec61d5dfb760c54d56a0bcc42",
+    "content-hash": "9c181f8f46cf6fa7ab3d9507c59b5f92",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -260,12 +260,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "a1698a102715a9e5bfa27cf5ef192afef30c42fe"
+                "reference": "f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/a1698a102715a9e5bfa27cf5ef192afef30c42fe",
-                "reference": "a1698a102715a9e5bfa27cf5ef192afef30c42fe",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8",
+                "reference": "f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8",
                 "shasum": ""
             },
             "require": {
@@ -275,7 +275,7 @@
                 "pocketmine/binaryutils": "^0.2.0",
                 "pocketmine/color": "^0.2.0 || ^0.3.0",
                 "pocketmine/math": "^0.3.0 || ^0.4.0 || ^1.0.0",
-                "pocketmine/nbt": "dev-ext-encoding",
+                "pocketmine/nbt": "^1.0.0",
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
@@ -299,7 +299,7 @@
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
                 "source": "https://github.com/pmmp/BedrockProtocol/tree/ext-encoding"
             },
-            "time": "2025-09-11T23:11:09+00:00"
+            "time": "2025-09-20T20:12:29+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -577,26 +577,27 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "dev-ext-encoding",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "5d6a088ca8ad8ab9f7c5415e7eacfe41e5b52721"
+                "reference": "51b8d6a97065fb93e0b4f660b65164b6e1ed2fff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/5d6a088ca8ad8ab9f7c5415e7eacfe41e5b52721",
-                "reference": "5d6a088ca8ad8ab9f7c5415e7eacfe41e5b52721",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/51b8d6a97065fb93e0b4f660b65164b6e1ed2fff",
+                "reference": "51b8d6a97065fb93e0b4f660b65164b6e1ed2fff",
                 "shasum": ""
             },
             "require": {
-                "ext-encoding": "~1.0.0",
-                "php": "^8.1",
-                "php-64bit": "*"
+                "php": "^7.4 || ^8.0",
+                "php-64bit": "*",
+                "pocketmine/binaryutils": "^0.2.0"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "2.1.0",
+                "phpstan/phpstan": "2.1.27",
+                "phpstan/phpstan-phpunit": "^2.0",
                 "phpstan/phpstan-strict-rules": "^2.0",
                 "phpunit/phpunit": "^9.5"
             },
@@ -613,9 +614,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/ext-encoding"
+                "source": "https://github.com/pmmp/NBT/tree/1.2.0"
             },
-            "time": "2025-09-11T22:56:21+00:00"
+            "time": "2025-09-19T18:09:30+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -1205,16 +1206,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.17",
+            "version": "2.1.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053"
+                "reference": "4087d28bd252895874e174d65e26b2c202ed893a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/89b5ef665716fa2a52ecd2633f21007a6a349053",
-                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4087d28bd252895874e174d65e26b2c202ed893a",
+                "reference": "4087d28bd252895874e174d65e26b2c202ed893a",
                 "shasum": ""
             },
             "require": {
@@ -1259,7 +1260,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-21T20:55:28+00:00"
+            "time": "2025-09-12T14:26:42+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -2786,12 +2787,6 @@
     ],
     "aliases": [
         {
-            "package": "pocketmine/nbt",
-            "version": "dev-ext-encoding",
-            "alias": "1.1.1",
-            "alias_normalized": "1.1.1.0"
-        },
-        {
             "package": "pocketmine/raklib",
             "version": "dev-ext-encoding",
             "alias": "1.2.0",
@@ -2807,7 +2802,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/bedrock-protocol": 20,
-        "pocketmine/nbt": 20,
         "pocketmine/raklib": 20,
         "pocketmine/raklib-ipc": 20
     },

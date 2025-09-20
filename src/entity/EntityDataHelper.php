@@ -25,7 +25,6 @@ namespace pocketmine\entity;
 
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -59,11 +58,10 @@ final class EntityDataHelper{
 	public static function parseLocation(CompoundTag $nbt, World $world) : Location{
 		$pos = self::parseVec3($nbt, Entity::TAG_POS, false);
 
-		$yawPitch = $nbt->getTag(Entity::TAG_ROTATION);
-		if(!($yawPitch instanceof ListTag) || $yawPitch->getTagType() !== NBT::TAG_Float){
+		$generic = $nbt->getTag(Entity::TAG_ROTATION);
+		if(!($generic instanceof ListTag) || ($yawPitch = $generic->cast(FloatTag::class)) === null){
 			throw new SavedDataLoadingException("'" . Entity::TAG_ROTATION . "' should be a List<Float>");
 		}
-		/** @var FloatTag[] $values */
 		$values = $yawPitch->getValue();
 		if(count($values) !== 2){
 			throw new SavedDataLoadingException("Expected exactly 2 entries for 'Rotation'");
@@ -78,14 +76,13 @@ final class EntityDataHelper{
 	 * @throws SavedDataLoadingException
 	 */
 	public static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
-		$pos = $nbt->getTag($tagName);
-		if($pos === null && $optional){
+		$generic = $nbt->getTag($tagName);
+		if($generic === null && $optional){
 			return Vector3::zero();
 		}
-		if(!($pos instanceof ListTag) || ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
+		if(!($generic instanceof ListTag) || ($pos = $generic->cast(DoubleTag::class) ?? $generic->cast(FloatTag::class)) === null){
 			throw new SavedDataLoadingException("'$tagName' should be a List<Double> or List<Float>");
 		}
-		/** @var DoubleTag[]|FloatTag[] $values */
 		$values = $pos->getValue();
 		if(count($values) !== 3){
 			throw new SavedDataLoadingException("Expected exactly 3 entries in '$tagName' tag");

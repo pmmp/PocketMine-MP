@@ -44,6 +44,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -226,15 +227,14 @@ class TypeConverter{
 	 * We don't need to, and should not allow, sending nested inventories across the network.
 	 */
 	protected function stripContainedItemNonVisualNBT(CompoundTag $tag) : bool{
-		if(
-			($blockEntityInventoryTag = $tag->getTag(Container::TAG_ITEMS)) !== null &&
-			$blockEntityInventoryTag instanceof ListTag &&
-			$blockEntityInventoryTag->getTagType() === NBT::TAG_Compound &&
-			$blockEntityInventoryTag->count() > 0
-		){
+		try{
+			$blockEntityInventoryTag = $tag->getListTag(Container::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			return false;
+		}
+		if($blockEntityInventoryTag !== null && $blockEntityInventoryTag->count() > 0){
 			$stripped = new ListTag();
 
-			/** @var CompoundTag $itemTag */
 			foreach($blockEntityInventoryTag as $itemTag){
 				try{
 					$containedItem = Item::nbtDeserialize($itemTag);

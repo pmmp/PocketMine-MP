@@ -89,6 +89,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\PredictedResult;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
@@ -498,11 +499,13 @@ class InGamePacketHandler extends PacketHandler{
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
-				//always sync this in case plugins caused a different result than the client expected
-				//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
-				//more information up the stack. For now I think this is good enough.
-				//if only the client would tell us what blocks it thinks changed...
-				$this->syncBlocksNearby($vBlockPos, $data->getFace());
+				if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+					//always sync this in case plugins caused a different result than the client expected
+					//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
+					//more information up the stack. For now I think this is good enough.
+					//if only the client would tell us what blocks it thinks changed...
+					$this->syncBlocksNearby($vBlockPos, $data->getFace());
+				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
@@ -717,7 +720,8 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
-				//TODO: do we need to handle this?
+				//in server auth block breaking, we get PREDICT_DESTROY_BLOCK anyway, so this action is redundant
+				break;
 			case PlayerAction::PREDICT_DESTROY_BLOCK:
 				self::validateFacing($face);
 				if(!$this->player->breakBlock($pos)){

@@ -69,9 +69,8 @@ class Banner extends Spawnable{
 
 		$patternTypeIdMap = BannerPatternTypeIdMap::getInstance();
 
-		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
+		$patterns = $nbt->getListTag(self::TAG_PATTERNS, CompoundTag::class);
 		if($patterns !== null){
-			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
 				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
 				$patternType = $patternTypeIdMap->fromId($pattern->getString(self::TAG_PATTERN_NAME));

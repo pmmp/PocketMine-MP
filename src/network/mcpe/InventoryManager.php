@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Binary;
 use pocketmine\utils\ObjectSet;
 use function array_fill_keys;
 use function array_keys;
@@ -419,6 +420,15 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
+		if(Binary::signByte($id) === ContainerIds::NONE){ //TODO: REMOVE signByte() once BedrockProtocol + ext-encoding are implemented
+			//TODO: HACK! Since 1.21.100 (and probably earlier), the client will send -1 to close windows that it can't
+			//view for some reason, e.g. if the chat window was already open. This is pretty awkward, since it means
+			//that we can only assume it refers to the most recently sent window, and if we don't handle it,
+			//InventoryManager will never get the green light to send subsequent windows, which breaks inventory UIs.
+			//Fortunately, we already wait for close acks anyway, so the window ID is technically useless...?
+			$this->session->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
+			$id = $this->lastInventoryNetworkId;
+		}
 		if($id === $this->lastInventoryNetworkId){
 			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);

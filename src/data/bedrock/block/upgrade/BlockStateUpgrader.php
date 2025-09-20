@@ -278,6 +278,10 @@ final class BlockStateUpgrader{
 	private function applyPropertyFlattened(BlockStateUpgradeSchemaFlattenInfo $flattenInfo, string $oldName, array $states) : array{
 		$flattenedValue = $states[$flattenInfo->flattenedProperty] ?? null;
 		$expectedType = $flattenInfo->flattenedPropertyType;
+		if($expectedType === null){
+			//TODO: we can't make this non-nullable in a patch release
+			throw new AssumptionFailedError("We never give this null");
+		}
 		if(!$flattenedValue instanceof $expectedType){
 			//flattened property is not of the expected type, so this transformation is not applicable
 			return [$oldName, $states];
