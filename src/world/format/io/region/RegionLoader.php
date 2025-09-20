@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pmmp\encoding\BE;
-use pmmp\encoding\Byte;
-use pmmp\encoding\ByteBufferReader;
-use pmmp\encoding\DataDecodeException;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryDataException;
+use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\ChunkException;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use function assert;
@@ -157,21 +156,21 @@ class RegionLoader{
 		if($payload === false || strlen($payload) !== $bytesToRead){
 			throw new CorruptedChunkException("Corrupted chunk detected (unexpected EOF, truncated or non-padded chunk found)");
 		}
-		$stream = new ByteBufferReader($payload);
+		$stream = new BinaryStream($payload);
 
 		try{
-			$length = BE::readUnsignedInt($stream);
+			$length = $stream->getInt();
 			if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
 				return null;
 			}
 
-			$compression = Byte::readUnsigned($stream);
+			$compression = $stream->getByte();
 			if($compression !== self::COMPRESSION_ZLIB && $compression !== self::COMPRESSION_GZIP){
 				throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
 			}
 
-			return $stream->readByteArray($length - 1); //length prefix includes the compression byte
-		}catch(DataDecodeException $e){
+			return $stream->get($length - 1); //length prefix includes the compression byte
+		}catch(BinaryDataException $e){
 			throw new CorruptedChunkException("Corrupted chunk detected: " . $e->getMessage(), 0, $e);
 		}
 	}
@@ -231,7 +230,7 @@ class RegionLoader{
 
 		/* write the chunk data into the chosen location */
 		fseek($this->filePointer, $newLocation->getFirstSector() << 12);
-		fwrite($this->filePointer, str_pad(BE::packUnsignedInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
+		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
 
 		/*
 		 * update the file header - we do this after writing the main data, so that if a failure occurs while writing,
@@ -377,9 +376,9 @@ class RegionLoader{
 	protected function writeLocationIndex(int $index) : void{
 		$entry = $this->locationTable[$index];
 		fseek($this->filePointer, $index << 2);
-		fwrite($this->filePointer, BE::packUnsignedInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
+		fwrite($this->filePointer, Binary::writeInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
-		fwrite($this->filePointer, BE::packUnsignedInt($entry !== null ? $entry->getTimestamp() : 0), 4);
+		fwrite($this->filePointer, Binary::writeInt($entry !== null ? $entry->getTimestamp() : 0), 4);
 		clearstatcache(false, $this->filePath);
 	}
 
