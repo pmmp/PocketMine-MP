@@ -193,18 +193,6 @@ parameters:
 			path: ../../../src/network/mcpe/cache/CraftingDataCache.php
 
 		-
-			message: '#^Method pocketmine\\network\\mcpe\\compression\\ZlibCompressor\:\:getNetworkId\(\) never returns 1 so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
-
-		-
-			message: '#^Method pocketmine\\network\\mcpe\\compression\\ZlibCompressor\:\:getNetworkId\(\) never returns 255 so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
-
-		-
 			message: '#^Parameter \#1 \$states of class pocketmine\\network\\mcpe\\convert\\BlockStateDictionary constructor expects list\<pocketmine\\network\\mcpe\\convert\\BlockStateDictionaryEntry\>, array\<int\<0, max\>, pocketmine\\network\\mcpe\\convert\\BlockStateDictionaryEntry\> given\.$#'
 			identifier: argument.type
 			count: 1

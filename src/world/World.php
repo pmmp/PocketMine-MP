@@ -42,6 +42,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -2776,7 +2777,7 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
-		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof NeverSavedWithChunkEntity){
 			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
 			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
 			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");

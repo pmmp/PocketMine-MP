@@ -293,9 +293,8 @@ class Item implements \JsonSerializable{
 		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 		if($display !== null){
 			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName);
-			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
-			if($lore !== null && $lore->getTagType() === NBT::TAG_String){
-				/** @var StringTag $t */
+			$lore = $display->getListTag(self::TAG_DISPLAY_LORE, StringTag::class);
+			if($lore !== null){
 				foreach($lore as $t){
 					$this->lore[] = $t->getValue();
 				}
@@ -303,9 +302,8 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->removeEnchantments();
-		$enchantments = $tag->getListTag(self::TAG_ENCH);
-		if($enchantments !== null && $enchantments->getTagType() === NBT::TAG_Compound){
-			/** @var CompoundTag $enchantment */
+		$enchantments = $tag->getListTag(self::TAG_ENCH, CompoundTag::class);
+		if($enchantments !== null){
 			foreach($enchantments as $enchantment){
 				$magicNumber = $enchantment->getShort(self::TAG_ENCH_ID, -1);
 				$level = $enchantment->getShort(self::TAG_ENCH_LVL, 0);
@@ -322,17 +320,15 @@ class Item implements \JsonSerializable{
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		$this->canPlaceOn = [];
-		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON);
-		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
-			/** @var StringTag $entry */
+		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON, StringTag::class);
+		if($canPlaceOn !== null){
 			foreach($canPlaceOn as $entry){
 				$this->canPlaceOn[$entry->getValue()] = $entry->getValue();
 			}
 		}
 		$this->canDestroy = [];
-		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY);
-		if($canDestroy !== null && $canDestroy->getTagType() === NBT::TAG_String){
-			/** @var StringTag $entry */
+		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY, StringTag::class);
+		if($canDestroy !== null){
 			foreach($canDestroy as $entry){
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}

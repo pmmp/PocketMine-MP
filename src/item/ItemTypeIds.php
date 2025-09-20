@@ -346,8 +346,11 @@ final class ItemTypeIds{
 	public const PALE_OAK_HANGING_SIGN = 20307;
 	public const SPRUCE_HANGING_SIGN = 20308;
 	public const WARPED_HANGING_SIGN = 20309;
+	public const TRIDENT = 20310;
+	public const FIREWORK_ROCKET = 20311;
+	public const FIREWORK_STAR = 20312;
 
-	public const FIRST_UNUSED_ITEM_ID = 20310;
+	public const FIRST_UNUSED_ITEM_ID = 20313;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
