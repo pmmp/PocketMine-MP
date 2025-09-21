@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c181f8f46cf6fa7ab3d9507c59b5f92",
+    "content-hash": "90fa4c59f24bb2a1f394f6f3e4f7c30b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -256,16 +256,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "dev-ext-encoding",
+            "version": "50.0.0+bedrock-1.21.100",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8"
+                "reference": "2d7aa27a5537ae593fb1c39158648ea462fef72a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8",
-                "reference": "f09ee1ab8a4f44e5fab915e868dd599ad1c9cfd8",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/2d7aa27a5537ae593fb1c39158648ea462fef72a",
+                "reference": "2d7aa27a5537ae593fb1c39158648ea462fef72a",
                 "shasum": ""
             },
             "require": {
@@ -297,9 +297,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/ext-encoding"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/50.0.0+bedrock-1.21.100"
             },
-            "time": "2025-09-20T20:12:29+00:00"
+            "time": "2025-09-20T23:09:19+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -2801,7 +2801,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/bedrock-protocol": 20,
         "pocketmine/raklib": 20,
         "pocketmine/raklib-ipc": 20
     },
