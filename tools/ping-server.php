@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\ping_server;
 
-use pmmp\encoding\ByteBufferReader;
-use pmmp\encoding\ByteBufferWriter;
 use pocketmine\utils\Utils;
 use raklib\protocol\MessageIdentifiers;
+use raklib\protocol\PacketSerializer;
 use raklib\protocol\UnconnectedPing;
 use raklib\protocol\UnconnectedPong;
 use function bin2hex;
@@ -77,9 +76,9 @@ function ping_server(\Socket $socket, string $serverIp, int $serverPort, int $ti
 	$ping = new UnconnectedPing();
 	$ping->sendPingTime = hrtime_ms();
 	$ping->clientId = $rakNetClientId;
-	$serializer = new ByteBufferWriter();
+	$serializer = new PacketSerializer();
 	$ping->encode($serializer);
-	if(@socket_sendto($socket, $serializer->getData(), strlen($serializer->getData()), MSG_DONTROUTE, $serverIp, $serverPort) === false){
+	if(@socket_sendto($socket, $serializer->getBuffer(), strlen($serializer->getBuffer()), MSG_DONTROUTE, $serverIp, $serverPort) === false){
 		\GlobalLogger::get()->error("Failed to send ping: " . socket_strerror(socket_last_error($socket)));
 		return false;
 	}
@@ -95,7 +94,7 @@ function ping_server(\Socket $socket, string $serverIp, int $serverPort, int $ti
 		}
 		if($recvAddr === $serverIp && $recvPort === $serverPort && $recvBuffer !== "" && ord($recvBuffer[0]) === MessageIdentifiers::ID_UNCONNECTED_PONG){
 			$pong = new UnconnectedPong();
-			$pong->decode(new ByteBufferReader($recvBuffer));
+			$pong->decode(new PacketSerializer($recvBuffer));
 			\GlobalLogger::get()->info("--- Response received ---");
 			\GlobalLogger::get()->info("Payload: $pong->serverName");
 			\GlobalLogger::get()->info("Response time: " . (hrtime_ms() - $pong->sendPingTime) . " ms");
