@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90fa4c59f24bb2a1f394f6f3e4f7c30b",
+    "content-hash": "0d71d3fba23ba8c4734cac59b9e10129",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -620,24 +620,24 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "dev-ext-encoding",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "f1c22f6cb5fe34c06ee2a2624525e8edb46a00d4"
+                "reference": "a28d05216d34dbd00e8aed827a58df6b4c11510b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/f1c22f6cb5fe34c06ee2a2624525e8edb46a00d4",
-                "reference": "f1c22f6cb5fe34c06ee2a2624525e8edb46a00d4",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a28d05216d34dbd00e8aed827a58df6b4c11510b",
+                "reference": "a28d05216d34dbd00e8aed827a58df6b4c11510b",
                 "shasum": ""
             },
             "require": {
-                "ext-encoding": "~1.0.0",
                 "ext-sockets": "*",
                 "php": "^8.1",
                 "php-64bit": "*",
                 "php-ipv6": "*",
+                "pocketmine/binaryutils": "^0.2.0",
                 "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
@@ -657,33 +657,33 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/ext-encoding"
+                "source": "https://github.com/pmmp/RakLib/tree/1.2.0"
             },
-            "time": "2025-09-11T22:56:53+00:00"
+            "time": "2025-06-08T17:36:06+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "dev-ext-encoding",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "98de061d74e005e397200977e224709bf0342382"
+                "reference": "ce632ef2c6743e71eddb5dc329c49af6555f90bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/98de061d74e005e397200977e224709bf0342382",
-                "reference": "98de061d74e005e397200977e224709bf0342382",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/ce632ef2c6743e71eddb5dc329c49af6555f90bc",
+                "reference": "ce632ef2c6743e71eddb5dc329c49af6555f90bc",
                 "shasum": ""
             },
             "require": {
-                "ext-encoding": "~1.0.0",
                 "php": "^8.0",
                 "php-64bit": "*",
+                "pocketmine/binaryutils": "^0.2.0",
                 "pocketmine/raklib": "^0.15.0 || ^1.0.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "2.1.0",
-                "phpstan/phpstan-strict-rules": "^2.0.0"
+                "phpstan/phpstan": "1.10.1",
+                "phpstan/phpstan-strict-rules": "^1.0.0"
             },
             "type": "library",
             "autoload": {
@@ -698,9 +698,9 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/ext-encoding"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/1.0.1"
             },
-            "time": "2025-09-11T22:19:12+00:00"
+            "time": "2024-03-01T15:55:05+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -2785,25 +2785,9 @@
             "time": "2024-03-03T12:36:25+00:00"
         }
     ],
-    "aliases": [
-        {
-            "package": "pocketmine/raklib",
-            "version": "dev-ext-encoding",
-            "alias": "1.2.0",
-            "alias_normalized": "1.2.0.0"
-        },
-        {
-            "package": "pocketmine/raklib-ipc",
-            "version": "dev-ext-encoding",
-            "alias": "1.0.0",
-            "alias_normalized": "1.0.0.0"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/raklib": 20,
-        "pocketmine/raklib-ipc": 20
-    },
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
