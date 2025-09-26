@@ -34,6 +34,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\world\World;
 use function count;
 
@@ -86,13 +87,18 @@ class ChiseledBookshelf extends Tile implements Container{
 	}
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+		try{
+			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			//preserve the old behaviour of not throwing on wrong types
+			$inventoryTag = null;
+		}
+		if($inventoryTag !== null){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 			$newContents = [];
-			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $slot => $itemNBT){
 				try{
 					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);

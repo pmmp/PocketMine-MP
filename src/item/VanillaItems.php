@@ -168,6 +168,8 @@ use function strtolower;
  * @method static Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Item FEATHER()
  * @method static Item FERMENTED_SPIDER_EYE()
+ * @method static FireworkRocket FIREWORK_ROCKET()
+ * @method static FireworkStar FIREWORK_STAR()
  * @method static FireCharge FIRE_CHARGE()
  * @method static FishingRod FISHING_ROD()
  * @method static Item FLINT()
@@ -335,6 +337,7 @@ use function strtolower;
  * @method static Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static TorchflowerSeeds TORCHFLOWER_SEEDS()
  * @method static Totem TOTEM()
+ * @method static Trident TRIDENT()
  * @method static TurtleHelmet TURTLE_HELMET()
  * @method static Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
@@ -510,6 +513,8 @@ final class VanillaItems{
 		self::register("experience_bottle", fn(IID $id) => new ExperienceBottle($id, "Bottle o' Enchanting"));
 		self::register("feather", fn(IID $id) => new Item($id, "Feather"));
 		self::register("fermented_spider_eye", fn(IID $id) => new Item($id, "Fermented Spider Eye"));
+		self::register("firework_rocket", fn(IID $id) => new FireworkRocket($id, "Firework Rocket"));
+		self::register("firework_star", fn(IID $id) => new FireworkStar($id, "Firework Star"));
 		self::register("fire_charge", fn(IID $id) => new FireCharge($id, "Fire Charge"));
 		self::register("fishing_rod", fn(IID $id) => new FishingRod($id, "Fishing Rod", [EnchantmentTags::FISHING_ROD]));
 		self::register("flint", fn(IID $id) => new Item($id, "Flint"));
@@ -630,6 +635,7 @@ final class VanillaItems{
 		self::register("sweet_berries", fn(IID $id) => new SweetBerries($id, "Sweet Berries"));
 		self::register("torchflower_seeds", fn(IID $id) => new TorchflowerSeeds($id, "Torchflower Seeds"));
 		self::register("totem", fn(IID $id) => new Totem($id, "Totem of Undying"));
+		self::register("trident", fn(IID $id) => new Trident($id, "Trident"));
 		self::register("warped_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("warped_hanging_sign", fn(IID $id) => new HangingSign($id, "Warped Hanging Sign", Blocks::WARPED_CEILING_CENTER_HANGING_SIGN(), Blocks::WARPED_CEILING_EDGES_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()));
 		self::register("water_bucket", fn(IID $id) => new LiquidBucket($id, "Water Bucket", Blocks::WATER()));

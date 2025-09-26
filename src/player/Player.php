@@ -41,6 +41,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -169,7 +170,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, ChunkListener, IPlayer{
+class Player extends Human implements CommandSender, ChunkListener, IPlayer, NeverSavedWithChunkEntity{
 	use PermissibleDelegateTrait;
 
 	private const MOVES_PER_TICK = 2;
@@ -2838,13 +2839,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Opens the player's sign editor GUI for the sign at the given position.
-	 * TODO: add support for editing the rear side of the sign (not currently supported due to technical limitations)
 	 */
-	public function openSignEditor(Vector3 $position) : void{
+	public function openSignEditor(Vector3 $position, bool $frontFace = true) : void{
 		$block = $this->getWorld()->getBlock($position);
 		if($block instanceof BaseSign){
 			$this->getWorld()->setBlock($position, $block->setEditorEntityRuntimeId($this->getId()));
-			$this->getNetworkSession()->onOpenSignEditor($position, true);
+			$this->getNetworkSession()->onOpenSignEditor($position, $frontFace);
 		}else{
 			throw new \InvalidArgumentException("Block at this position is not a sign");
 		}

@@ -30,13 +30,11 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
-use function array_keys;
 use function array_values;
 use function assert;
 use function count;
 use function get_class;
 use function min;
-use function shuffle;
 use function spl_object_hash;
 use function spl_object_id;
 
@@ -95,10 +93,13 @@ class InventoryTransaction{
 	}
 
 	/**
-	 * Returns an **unordered** set of actions involved in this transaction.
+	 * Returns a set of actions involved in this transaction.
 	 *
-	 * WARNING: This system is **explicitly designed NOT to care about ordering**. Any order seen in this set has NO
-	 * significance and should not be relied on.
+	 * Note: This system is designed to care only about item balances. While you can usually assume that the actions
+	 * are provided in the correct order, it will still successfully complete transactions whose actions are provided in
+	 * the "wrong" order, as long as the transaction balances.
+	 * For example, you may see that an action setting a slot to a particular item may appear before the action that
+	 * removes that item from its original slot. While unintuitive, this is still valid.
 	 *
 	 * @return InventoryAction[]
 	 * @phpstan-return array<int, InventoryAction>
@@ -117,19 +118,6 @@ class InventoryTransaction{
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
-	}
-
-	/**
-	 * Shuffles actions in the transaction to prevent external things relying on any implicit ordering.
-	 */
-	private function shuffleActions() : void{
-		$keys = array_keys($this->actions);
-		shuffle($keys);
-		$actions = [];
-		foreach($keys as $key){
-			$actions[$key] = $this->actions[$key];
-		}
-		$this->actions = $actions;
 	}
 
 	/**
@@ -307,8 +295,6 @@ class InventoryTransaction{
 		if($this->hasExecuted()){
 			throw new TransactionValidationException("Transaction has already been executed");
 		}
-
-		$this->shuffleActions();
 
 		$this->validate();
 

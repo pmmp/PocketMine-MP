@@ -871,12 +871,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
-
-		-
 			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1

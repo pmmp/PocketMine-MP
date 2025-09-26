@@ -1366,6 +1366,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("eye_drops", fn() => Items::MEDICINE()->setType(MedicineType::EYE_DROPS));
 		$result->register("feather", fn() => Items::FEATHER());
 		$result->register("fermented_spider_eye", fn() => Items::FERMENTED_SPIDER_EYE());
+		$result->register("firework_rocket", fn() => Items::FIREWORK_ROCKET());
+		$result->register("firework_star", fn() => Items::FIREWORK_STAR());
+		$result->register("fireworks", fn() => Items::FIREWORK_ROCKET());
 		$result->register("fire_charge", fn() => Items::FIRE_CHARGE());
 		$result->register("fish", fn() => Items::RAW_FISH());
 		$result->register("fishing_rod", fn() => Items::FISHING_ROD());
@@ -1560,6 +1563,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("torchflower_seeds", fn() => Items::TORCHFLOWER_SEEDS());
 		$result->register("tide_armor_trim_smithing_template", fn() => Items::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("totem", fn() => Items::TOTEM());
+		$result->register("trident", fn() => Items::TRIDENT());
 		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
 		$result->register("vex_armor_trim_smithing_template", fn() => Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());

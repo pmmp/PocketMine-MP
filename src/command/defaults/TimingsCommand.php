@@ -148,7 +148,8 @@ class TimingsCommand extends VanillaCommand{
 	private function uploadReport(array $lines, CommandSender $sender) : void{
 		$data = [
 			"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
-			"data" => implode("\n", $lines)
+			"data" => implode("\n", $lines),
+			"private" => "true"
 		];
 
 		$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
@@ -181,8 +182,13 @@ class TimingsCommand extends VanillaCommand{
 				}
 				$response = json_decode($result->getBody(), true);
 				if(is_array($response) && isset($response["id"]) && (is_int($response["id"]) || is_string($response["id"]))){
-					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
-						"https://" . $host . "/?id=" . $response["id"]));
+					$url = "https://" . $host . "/?id=" . $response["id"];
+					if(isset($response["access_token"]) && is_string($response["access_token"])){
+						$url .= "&access_token=" . $response["access_token"];
+					}else{
+						$sender->getServer()->getLogger()->warning("Your chosen timings host does not support private reports. Anyone will be able to see your report if they guess the ID.");
+					}
+					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead($url));
 				}else{
 					$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
 					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
