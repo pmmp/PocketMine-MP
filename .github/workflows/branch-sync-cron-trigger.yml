@@ -1,0 +1,32 @@
+#Since GitHub automatically disables cron actions after 60 days of repo inactivity, we need the active repo (PM)
+#to trigger the branch merge workflow explicitly. This avoids the need for TOS-violating actions which we previously
+#used to keep the restricted action active, as the workflow depends on the activity of this repo anyway.
+
+name: Trigger branch sync
+
+on:
+  schedule:
+    - cron: "0 21 * * *" #once per day so we don't spam merge commits on busy days
+  workflow_dispatch: #for testing
+
+jobs:
+  trigger:
+    name: Trigger branch sync RestrictedActions workflow
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Generate access token
+        id: generate-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
+          private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: RestrictedActions
+
+      - name: Dispatch branch sync restricted action
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: ${{ github.repository_owner }}/RestrictedActions
+          event-type: pocketmine_mp_branch_sync

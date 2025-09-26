@@ -23,8 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\BlockIdentifier;
-use pocketmine\block\BlockTypeInfo;
+use pocketmine\block\Block;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
@@ -36,16 +35,11 @@ use pocketmine\world\sound\CopperWaxRemoveSound;
 use pocketmine\world\sound\ScrapeSound;
 
 trait CopperTrait{
-	private CopperOxidation $oxidation;
+	private CopperOxidation $oxidation = CopperOxidation::NONE;
 	private bool $waxed = false;
 
-	public function __construct(BlockIdentifier $identifier, string $name, BlockTypeInfo $typeInfo){
-		$this->oxidation = CopperOxidation::NONE();
-		parent::__construct($identifier, $name, $typeInfo);
-	}
-
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->copperOxidation($this->oxidation);
+		$w->enum($this->oxidation);
 		$w->bool($this->waxed);
 	}
 
@@ -65,6 +59,10 @@ trait CopperTrait{
 		return $this;
 	}
 
+	/**
+	 * @param Item[] &$returnedItems
+	 * @see Block::onInteract()
+	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->waxed && $item->getTypeId() === ItemTypeIds::HONEYCOMB){
 			$this->waxed = true;

@@ -29,6 +29,9 @@ use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
@@ -44,6 +47,7 @@ use function fwrite;
 use function is_string;
 use function ksort;
 use function mb_strtoupper;
+use function preg_replace;
 use function sort;
 use function strrpos;
 use function strtoupper;
@@ -77,6 +81,9 @@ function generateBlockPaletteReport(array $states) : BlockPaletteReport{
 		$name = $stateData->getName();
 		$result->seenTypes[$name] = $name;
 		foreach(Utils::stringifyKeys($stateData->getStates()) as $k => $v){
+			if(!$v instanceof ByteTag && !$v instanceof IntTag && !$v instanceof StringTag){
+				throw new AssumptionFailedError("Assumed all state tags should be TAG_Byte, TAG_Int or TAG_String, but found $k ($v) on block $name");
+			}
 			$result->seenStateValues[$k][$v->getValue()] = $v->getValue();
 			asort($result->seenStateValues[$k]);
 		}
@@ -100,6 +107,25 @@ function generateClassHeader(string $className) : string{
 	$shortName = substr($className, $backslashPos + 1);
 	return <<<HEADER
 <?php
+
+/*
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+ */
 
 declare(strict_types=1);
 
@@ -138,7 +164,7 @@ function generateBlockStateNames(BlockPaletteReport $data) : void{
 
 	fwrite($output, generateClassHeader(BlockStateNames::class));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $state => $values){
-		$constName = mb_strtoupper($state, 'US-ASCII');
+		$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $state) ?? throw new AssumptionFailedError("This regex is not invalid"), 'US-ASCII');
 		fwrite($output, "\tpublic const $constName = \"$state\";\n");
 	}
 
@@ -158,7 +184,7 @@ function generateBlockStringValues(BlockPaletteReport $data) : void{
 				continue;
 			}
 			$anyWritten = true;
-			$constName = mb_strtoupper($stateName . "_" . $value, 'US-ASCII');
+			$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $stateName) . "_" . $value, 'US-ASCII');
 			fwrite($output, "\tpublic const $constName = \"$value\";\n");
 		}
 		if($anyWritten){

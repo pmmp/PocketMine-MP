@@ -25,7 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\Lightable;
+use pocketmine\block\utils\LightableTrait;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -33,13 +35,11 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
-class Furnace extends Opaque{
+class Furnace extends Opaque implements Lightable, HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
+	use LightableTrait;
 
 	protected FurnaceType $furnaceType;
-
-	protected bool $lit = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, FurnaceType $furnaceType){
 		$this->furnaceType = $furnaceType;
@@ -57,18 +57,6 @@ class Furnace extends Opaque{
 
 	public function getLightLevel() : int{
 		return $this->lit ? 13 : 0;
-	}
-
-	public function isLit() : bool{
-		return $this->lit;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setLit(bool $lit = true) : self{
-		$this->lit = $lit;
-		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

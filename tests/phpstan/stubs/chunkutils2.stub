@@ -1,0 +1,15 @@
+<?php
+
+namespace pocketmine\world\format;
+
+final class PalettedBlockArray{
+    /**
+     * @param list<int> $palette
+     */
+    public static function fromData(int $bitsPerBlock, string $wordArray, array $palette): PalettedBlockArray {}
+
+    /**
+     * @return list<int>
+     */
+    public function getPalette(): array {}
+}

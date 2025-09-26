@@ -38,7 +38,7 @@ abstract class FillableCauldron extends Transparent{
 	private int $fillLevel = self::MIN_FILL_LEVEL;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(3, self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
+		$w->boundedIntAuto(self::MIN_FILL_LEVEL, self::MAX_FILL_LEVEL, $this->fillLevel);
 	}
 
 	public function getFillLevel() : int{ return $this->fillLevel; }
@@ -64,7 +64,7 @@ abstract class FillableCauldron extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return $facing === Facing::UP ? SupportType::EDGE() : SupportType::NONE();
+		return $facing === Facing::UP ? SupportType::EDGE : SupportType::NONE;
 	}
 
 	protected function withFillLevel(int $fillLevel) : Block{

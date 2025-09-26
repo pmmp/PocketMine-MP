@@ -54,7 +54,7 @@ trait LegacyAnvilChunkTrait{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ?LoadedChunkData{
+	protected function deserializeChunk(string $data, \Logger $logger) : ?LoadedChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -87,11 +87,10 @@ trait LegacyAnvilChunkTrait{
 		}
 
 		$subChunks = [];
-		$subChunksTag = $chunk->getListTag("Sections") ?? [];
+		$subChunksTag = $chunk->getListTag("Sections", CompoundTag::class) ?? [];
 		foreach($subChunksTag as $subChunk){
-			if($subChunk instanceof CompoundTag){
-				$subChunks[$subChunk->getByte("Y")] = $this->deserializeSubChunk($subChunk, clone $biomes3d);
-			}
+			$y = $subChunk->getByte("Y");
+			$subChunks[$y] = $this->deserializeSubChunk($subChunk, clone $biomes3d, new \PrefixedLogger($logger, "Subchunk y=$y"));
 		}
 		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 			if(!isset($subChunks[$y])){
@@ -111,6 +110,6 @@ trait LegacyAnvilChunkTrait{
 		);
 	}
 
-	abstract protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d) : SubChunk;
+	abstract protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk;
 
 }

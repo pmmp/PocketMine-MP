@@ -3,7 +3,7 @@ updates:
 - package-ecosystem: composer
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
     time: "10:00"
   open-pull-requests-limit: 10
   ignore:
@@ -13,6 +13,26 @@ updates:
         - "version-update:semver-major"
         - "version-update:semver-minor"
 
+    #since we lock this to exact versions, it causes conflicts with minor-next & major-next in composer.lock
+    #better to just test updates to this locally anyway since almost every version breaks something
+    - dependency-name: phpstan/phpstan
+  groups:
+    production-patch-updates:
+      dependency-type: production
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+    development-patch-updates:
+      dependency-type: development
+      patterns:
+        - "*"
+      update-types:
+        - "patch"
+    phpstan:
+      patterns:
+        - "phpstan/*"
+
 - package-ecosystem: gitsubmodule
   directory: "/"
   schedule:
@@ -21,4 +41,7 @@ updates:
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: daily
+    interval: monthly
+  groups:
+    github-actions:
+      patterns: ["*"]

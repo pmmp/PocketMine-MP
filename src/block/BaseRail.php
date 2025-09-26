@@ -38,7 +38,7 @@ use function in_array;
 abstract class BaseRail extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasEdgeSupport()){
+		if($blockReplace->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -222,7 +222,7 @@ abstract class BaseRail extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasEdgeSupport()){
+		if(!$this->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
 			$world->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){

@@ -71,7 +71,7 @@ class Language{
 
 				foreach($files as $file){
 					try{
-						$code = explode(".", $file)[0];
+						$code = explode(".", $file, limit: 2)[0];
 						$strings = self::loadLang($path, $code);
 						if(isset($strings[KnownTranslationKeys::LANGUAGE_NAME])){
 							$result[$code] = $strings[KnownTranslationKeys::LANGUAGE_NAME];
@@ -147,7 +147,7 @@ class Language{
 			$baseText = $this->parseTranslation($str, $onlyPrefix);
 		}
 
-		foreach($params as $i => $p){
+		foreach(Utils::promoteKeys($params) as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
 			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
@@ -161,7 +161,7 @@ class Language{
 			$baseText = $this->parseTranslation($c->getText());
 		}
 
-		foreach($c->getParameters() as $i => $p){
+		foreach(Utils::promoteKeys($c->getParameters()) as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
 			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}

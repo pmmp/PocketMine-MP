@@ -32,6 +32,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\EntityDataHelper as Helper;
+use pocketmine\entity\object\EndCrystal;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -42,8 +43,10 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
+use pocketmine\entity\projectile\IceBomb;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\entity\projectile\Trident;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -92,6 +95,10 @@ final class EntityFactory{
 			return new Egg(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['Egg', 'minecraft:egg']);
 
+		$this->register(EndCrystal::class, function(World $world, CompoundTag $nbt) : EndCrystal{
+			return new EndCrystal(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['EnderCrystal', 'minecraft:ender_crystal']);
+
 		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
 			return new EnderPearl(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['ThrownEnderpearl', 'minecraft:ender_pearl']);
@@ -114,6 +121,10 @@ final class EntityFactory{
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
 			return new FallingBlock(Helper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(RuntimeBlockStateRegistry::getInstance(), $nbt), $nbt);
 		}, ['FallingSand', 'minecraft:falling_block']);
+
+		$this->register(IceBomb::class, function(World $world, CompoundTag $nbt) : IceBomb{
+			return new IceBomb(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['minecraft:ice_bomb']);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
 			$itemTag = $nbt->getCompoundTag(ItemEntity::TAG_ITEM);
@@ -161,6 +172,24 @@ final class EntityFactory{
 			return new SplashPotion(Helper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
 
+		$this->register(Trident::class, function(World $world, CompoundTag $nbt) : Trident{
+			$itemTag = $nbt->getCompoundTag(Trident::TAG_ITEM);
+			if($itemTag === null){
+				throw new SavedDataLoadingException("Expected \"" . Trident::TAG_ITEM . "\" NBT tag not found");
+			}
+
+			$item = Item::nbtDeserialize($itemTag);
+			if($item->isNull()){
+				throw new SavedDataLoadingException("Trident item is invalid");
+			}
+			return new Trident(Helper::parseLocation($nbt, $world), $item, null, $nbt);
+		}, [
+			'minecraft:trident', //java
+			'minecraft:thrown_trident', //bedrock
+			'Trident', //backwards compat for people who used #4547 before it was merged, since it was sitting around for 4 years...
+			'ThrownTrident' //as above
+		]);
+
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Squid', 'minecraft:squid']);
@@ -207,6 +236,13 @@ final class EntityFactory{
 		}
 
 		$this->saveNames[$className] = reset($saveNames);
+	}
+
+	/**
+	 * @phpstan-param class-string<Entity> $class
+	 */
+	public function isRegistered(string $class) : bool{
+		return isset($this->saveNames[$class]);
 	}
 
 	/**

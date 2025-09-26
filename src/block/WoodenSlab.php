@@ -23,9 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class WoodenSlab extends Slab{
+class WoodenSlab extends Slab implements WoodMaterial{
 	use WoodTypeTrait;
 
 	public function getFuelTime() : int{

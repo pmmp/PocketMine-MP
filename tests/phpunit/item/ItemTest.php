@@ -89,7 +89,6 @@ class ItemTest extends TestCase{
 	}
 
 	public function testGetEnchantments() : void{
-		/** @var EnchantmentInstance[] $enchantments */
 		$enchantments = [
 			new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5),
 			new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1)

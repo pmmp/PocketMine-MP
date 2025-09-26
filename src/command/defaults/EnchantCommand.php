@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\lang\KnownTranslationFactory;
@@ -76,8 +77,9 @@ class EnchantCommand extends VanillaCommand{
 			}
 		}
 
-		$item->addEnchantment(new EnchantmentInstance($enchantment, $level));
-		$player->getInventory()->setItemInHand($item);
+		//this is necessary to deal with enchanted books, which are a different item type than regular books
+		$enchantedItem = EnchantingHelper::enchantItem($item, [new EnchantmentInstance($enchantment, $level)]);
+		$player->getInventory()->setItemInHand($enchantedItem);
 
 		self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_enchant_success($player->getName()));
 		return true;

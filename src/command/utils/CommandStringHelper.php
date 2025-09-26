@@ -51,9 +51,8 @@ final class CommandStringHelper{
 		foreach($matches[0] as $k => $_){
 			for($i = 1; $i <= 2; ++$i){
 				if($matches[$i][$k] !== ""){
-					/** @var string $match */ //phpstan can't understand preg_match and friends by itself :(
 					$match = $matches[$i][$k];
-					$args[(int) $k] = preg_replace('/\\\\([\\\\"])/u', '$1', $match) ?? throw new AssumptionFailedError(preg_last_error_msg());
+					$args[] = preg_replace('/\\\\([\\\\"])/u', '$1', $match) ?? throw new AssumptionFailedError(preg_last_error_msg());
 					break;
 				}
 			}

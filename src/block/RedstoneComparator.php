@@ -24,9 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -37,10 +41,11 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
 
-class RedstoneComparator extends Flowable{
+class RedstoneComparator extends Flowable implements AnalogRedstoneSignalEmitter, PoweredByRedstone, HorizontalFacing{
 	use HorizontalFacingTrait;
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
+	use StaticSupportTrait;
 
 	protected bool $isSubtractMode = false;
 
@@ -77,22 +82,15 @@ class RedstoneComparator extends Flowable{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
-			if($player !== null){
-				$this->facing = Facing::opposite($player->getHorizontalFacing());
-			}
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
-
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -101,14 +99,8 @@ class RedstoneComparator extends Flowable{
 		return true;
 	}
 
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
-	}
-
-	private function canBeSupportedBy(Block $block) : bool{
-		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
+	private function canBeSupportedAt(Block $block) : bool{
+		return $block->getAdjacentSupportType(Facing::DOWN) !== SupportType::NONE;
 	}
 
 	//TODO: redstone functionality

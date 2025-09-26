@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static TreeType ACACIA()
  * @method static TreeType BIRCH()
@@ -38,34 +36,27 @@ use pocketmine\utils\EnumTrait;
  * @method static TreeType OAK()
  * @method static TreeType SPRUCE()
  */
-final class TreeType{
-	use EnumTrait {
-		register as Enum_register;
-		__construct as Enum___construct;
-	}
+enum TreeType{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new TreeType("oak", "Oak"),
-			new TreeType("spruce", "Spruce"),
-			new TreeType("birch", "Birch"),
-			new TreeType("jungle", "Jungle"),
-			new TreeType("acacia", "Acacia"),
-			new TreeType("dark_oak", "Dark Oak"),
-			//TODO: cherry blossom, mangrove, azalea
-			//TODO: do crimson and warped "trees" belong here? I'm not sure if they're actually trees or just fungi
-			//TODO: perhaps huge mushrooms should be here too???
-		);
-	}
-
-	private function __construct(
-		string $enumName,
-		private string $displayName
-	){
-		$this->Enum___construct($enumName);
-	}
+	case OAK;
+	case SPRUCE;
+	case BIRCH;
+	case JUNGLE;
+	case ACACIA;
+	case DARK_OAK;
+	//TODO: cherry blossom, mangrove, azalea
+	//TODO: do crimson and warped "trees" belong here? I'm not sure if they're actually trees or just fungi
+	//TODO: perhaps huge mushrooms should be here too???
 
 	public function getDisplayName() : string{
-		return $this->displayName;
+		return match($this){
+			self::OAK => "Oak",
+			self::SPRUCE => "Spruce",
+			self::BIRCH => "Birch",
+			self::JUNGLE => "Jungle",
+			self::ACACIA => "Acacia",
+			self::DARK_OAK => "Dark Oak",
+		};
 	}
 }

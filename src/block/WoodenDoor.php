@@ -23,8 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 
-class WoodenDoor extends Door{
+class WoodenDoor extends Door implements WoodMaterial{
 	use WoodTypeTrait;
+
+	public function getFuelTime() : int{
+		return $this->woodType->isFlammable() ? 200 : 0;
+	}
 }

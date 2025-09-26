@@ -28,45 +28,24 @@ use pocketmine\utils\SingletonTrait;
 
 final class SuspiciousStewTypeIdMap{
 	use SingletonTrait;
-
-	/**
-	 * @var SuspiciousStewType[]
-	 * @phpstan-var array<int, SuspiciousStewType>
-	 */
-	private array $idToEnum = [];
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private array $enumToId = [];
+	/** @phpstan-use IntSaveIdMapTrait<SuspiciousStewType> */
+	use IntSaveIdMapTrait;
 
 	private function __construct(){
-		$this->register(SuspiciousStewTypeIds::POPPY, SuspiciousStewType::POPPY());
-		$this->register(SuspiciousStewTypeIds::CORNFLOWER, SuspiciousStewType::CORNFLOWER());
-		$this->register(SuspiciousStewTypeIds::TULIP, SuspiciousStewType::TULIP());
-		$this->register(SuspiciousStewTypeIds::AZURE_BLUET, SuspiciousStewType::AZURE_BLUET());
-		$this->register(SuspiciousStewTypeIds::LILY_OF_THE_VALLEY, SuspiciousStewType::LILY_OF_THE_VALLEY());
-		$this->register(SuspiciousStewTypeIds::DANDELION, SuspiciousStewType::DANDELION());
-		$this->register(SuspiciousStewTypeIds::BLUE_ORCHID, SuspiciousStewType::BLUE_ORCHID());
-		$this->register(SuspiciousStewTypeIds::ALLIUM, SuspiciousStewType::ALLIUM());
-		$this->register(SuspiciousStewTypeIds::OXEYE_DAISY, SuspiciousStewType::OXEYE_DAISY());
-		$this->register(SuspiciousStewTypeIds::WITHER_ROSE, SuspiciousStewType::WITHER_ROSE());
-	}
-
-	private function register(int $id, SuspiciousStewType $type) : void{
-		$this->idToEnum[$id] = $type;
-		$this->enumToId[$type->id()] = $id;
-	}
-
-	public function fromId(int $id) : ?SuspiciousStewType{
-		return $this->idToEnum[$id] ?? null;
-	}
-
-	public function toId(SuspiciousStewType $type) : int{
-		if(!isset($this->enumToId[$type->id()])){
-			throw new \InvalidArgumentException("Type does not have a mapped ID");
+		foreach(SuspiciousStewType::cases() as $case){
+			$this->register(match($case){
+				SuspiciousStewType::POPPY => SuspiciousStewTypeIds::POPPY,
+				SuspiciousStewType::CORNFLOWER => SuspiciousStewTypeIds::CORNFLOWER,
+				SuspiciousStewType::TULIP => SuspiciousStewTypeIds::TULIP,
+				SuspiciousStewType::AZURE_BLUET => SuspiciousStewTypeIds::AZURE_BLUET,
+				SuspiciousStewType::LILY_OF_THE_VALLEY => SuspiciousStewTypeIds::LILY_OF_THE_VALLEY,
+				SuspiciousStewType::DANDELION => SuspiciousStewTypeIds::DANDELION,
+				SuspiciousStewType::BLUE_ORCHID => SuspiciousStewTypeIds::BLUE_ORCHID,
+				SuspiciousStewType::ALLIUM => SuspiciousStewTypeIds::ALLIUM,
+				SuspiciousStewType::OXEYE_DAISY => SuspiciousStewTypeIds::OXEYE_DAISY,
+				SuspiciousStewType::WITHER_ROSE => SuspiciousStewTypeIds::WITHER_ROSE,
+			}, $case);
 		}
-		return $this->enumToId[$type->id()];
+
 	}
 }

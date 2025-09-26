@@ -117,8 +117,8 @@ final class ItemSerializer{
 			$data = $serializer($item);
 		}
 
-		if($item->hasNamedTag()){
-			$resultTag = $item->getNamedTag();
+		$resultTag = $item->getNamedTag();
+		if($resultTag->count() > 0){
 			$extraTag = $data->getTag();
 			if($extraTag !== null){
 				$resultTag = $resultTag->merge($extraTag);
@@ -177,6 +177,7 @@ final class ItemSerializer{
 			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
 		}
 
+		//TODO: this really ought to throw if there's no blockitem ID
 		$itemNameId = BlockItemIdMap::getInstance()->lookupItemId($blockStateData->getName()) ?? $blockStateData->getName();
 
 		return new Data($itemNameId, 0, $blockStateData);

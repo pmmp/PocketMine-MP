@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting\json;
 
-final class ItemStackData{
+use function count;
+
+final class ItemStackData implements \JsonSerializable{
 
 	/** @required */
 	public string $name;
@@ -39,5 +41,16 @@ final class ItemStackData{
 
 	public function __construct(string $name){
 		$this->name = $name;
+	}
+
+	/**
+	 * @return mixed[]|string
+	 */
+	public function jsonSerialize() : array|string{
+		$result = (array) $this;
+		if(count($result) === 1 && isset($result["name"])){
+			return $this->name;
+		}
+		return $result;
 	}
 }

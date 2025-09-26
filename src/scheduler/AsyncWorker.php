@@ -24,19 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pmmp\thread\Thread as NativeThread;
+use pocketmine\GarbageCollectorManager;
 use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\log\ThreadSafeLogger;
 use pocketmine\thread\Worker;
+use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use function gc_enable;
 use function ini_set;
 
 class AsyncWorker extends Worker{
 	/** @var mixed[] */
 	private static array $store = [];
 
-	private const TLS_KEY_NOTIFIER = self::class . "::notifier";
+	private static ?SleeperNotifier $notifier = null;
+	private static ?GarbageCollectorManager $cycleGcManager = null;
 
 	public function __construct(
 		private ThreadSafeLogger $logger,
@@ -45,18 +47,22 @@ class AsyncWorker extends Worker{
 		private SleeperHandlerEntry $sleeperEntry
 	){}
 
-	public function getNotifier() : SleeperNotifier{
-		$notifier = $this->getFromThreadStore(self::TLS_KEY_NOTIFIER);
-		if(!$notifier instanceof SleeperNotifier){
-			throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
+	public static function getNotifier() : SleeperNotifier{
+		if(self::$notifier !== null){
+			return self::$notifier;
 		}
-		return $notifier;
+		throw new AssumptionFailedError("SleeperNotifier not found in thread-local storage");
+	}
+
+	public static function maybeCollectCycles() : void{
+		if(self::$cycleGcManager === null){
+			throw new AssumptionFailedError("GarbageCollectorManager not found in thread-local storage");
+		}
+		self::$cycleGcManager->maybeCollectCycles();
 	}
 
 	protected function onRun() : void{
 		\GlobalLogger::set($this->logger);
-
-		gc_enable();
 
 		if($this->memoryLimit > 0){
 			ini_set('memory_limit', $this->memoryLimit . 'M');
@@ -66,15 +72,13 @@ class AsyncWorker extends Worker{
 			$this->logger->debug("No memory limit set");
 		}
 
-		$this->saveToThreadStore(self::TLS_KEY_NOTIFIER, $this->sleeperEntry->createNotifier());
+		self::$notifier = $this->sleeperEntry->createNotifier();
+		Timings::init();
+		self::$cycleGcManager = new GarbageCollectorManager($this->logger, Timings::$asyncTaskWorkers);
 	}
 
 	public function getLogger() : ThreadSafeLogger{
 		return $this->logger;
-	}
-
-	public function handleException(\Throwable $e) : void{
-		$this->logger->logException($e);
 	}
 
 	public function getThreadName() : string{
@@ -88,6 +92,8 @@ class AsyncWorker extends Worker{
 	/**
 	 * Saves mixed data into the worker's thread-local object store. This can be used to store objects which you
 	 * want to use on this worker thread from multiple AsyncTasks.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function saveToThreadStore(string $identifier, mixed $value) : void{
 		if(NativeThread::getCurrentThread() !== $this){
@@ -103,6 +109,8 @@ class AsyncWorker extends Worker{
 	 * account for the possibility that what you're trying to retrieve might not exist.
 	 *
 	 * Objects stored in this storage may ONLY be retrieved while the task is running.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function getFromThreadStore(string $identifier) : mixed{
 		if(NativeThread::getCurrentThread() !== $this){
@@ -113,6 +121,8 @@ class AsyncWorker extends Worker{
 
 	/**
 	 * Removes previously-stored mixed data from the worker's thread-local object store.
+	 *
+	 * @deprecated Use static class properties instead.
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if(NativeThread::getCurrentThread() !== $this){

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -33,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class WallCoralFan extends BaseCoral{
+final class WallCoralFan extends BaseCoral implements HorizontalFacing{
 	use HorizontalFacingTrait;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -42,7 +43,7 @@ final class WallCoralFan extends BaseCoral{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$axis = Facing::axis($face);
-		if(($axis !== Axis::X && $axis !== Axis::Z) || !$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
+		if(($axis !== Axis::X && $axis !== Axis::Z) || !$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}
 		$this->facing = $face;
@@ -54,15 +55,15 @@ final class WallCoralFan extends BaseCoral{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$this->canBeSupportedBy($world->getBlock($this->position->getSide(Facing::opposite($this->facing))), $this->facing)){
+		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing))){
 			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasCenterSupport();
+	private function canBeSupportedAt(Block $block, int $face) : bool{
+		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 
 	public function asItem() : Item{

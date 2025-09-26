@@ -37,11 +37,16 @@ final class CrashDumpData implements \JsonSerializable{
 	/** @var mixed[] */
 	public array $error;
 
+	public string $thread;
+
 	public string $plugin_involvement;
 
 	public string $plugin = "";
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var array<int, string>
+	 */
 	public array $code = [];
 
 	/** @var string[] */
@@ -53,7 +58,10 @@ final class CrashDumpData implements \JsonSerializable{
 	 */
 	public array $plugins = [];
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	public array $parameters = [];
 
 	public string $serverDotProperties = "";

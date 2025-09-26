@@ -123,7 +123,7 @@ class ItemEntity extends Entity{
 				}
 			}
 
-			if($this->hasMovementUpdate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+			if($this->hasMovementUpdate() && $this->isMergeCandidate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
 				$mergeable = [$this]; //in case the merge target ends up not being this
 				$mergeTarget = $this;
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
@@ -165,12 +165,19 @@ class ItemEntity extends Entity{
 		}
 	}
 
+	private function isMergeCandidate() : bool{
+		return $this->pickupDelay !== self::NEVER_DESPAWN && $this->item->getCount() < $this->item->getMaxStackSize();
+	}
+
 	/**
 	 * Returns whether this item entity can merge with the given one.
 	 */
 	public function isMergeable(ItemEntity $entity) : bool{
+		if(!$this->isMergeCandidate() || !$entity->isMergeCandidate()){
+			return false;
+		}
 		$item = $entity->item;
-		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN && $item->canStackWith($this->item) && $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+		return $entity !== $this && $item->canStackWith($this->item) && $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
 	/**

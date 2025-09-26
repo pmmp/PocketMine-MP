@@ -162,7 +162,7 @@ final class CraftingManagerFromDataHelper{
 		}
 
 		$mapper = new \JsonMapper();
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bStrictObjectTypeChecking = false; //to allow hydrating ItemStackData - since this is only used for offline data it's safe
 		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 
@@ -193,7 +193,7 @@ final class CraftingManagerFromDataHelper{
 	 */
 	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
 		$result = [];
-		foreach($data as $i => $item){
+		foreach(Utils::promoteKeys($data) as $i => $item){
 			if(!is_object($item)){
 				throw new SavedDataLoadingException("Invalid entry at index $i: expected object, got " . get_debug_type($item));
 			}
@@ -209,15 +209,12 @@ final class CraftingManagerFromDataHelper{
 	public static function make(string $directoryPath) : CraftingManager{
 		$result = new CraftingManager();
 
-		$ingredientDeserializerFunc = \Closure::fromCallable([self::class, "deserializeIngredient"]);
-		$itemDeserializerFunc = \Closure::fromCallable([self::class, 'deserializeItemStack']);
-
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
 			$recipeType = match($recipe->block){
-				"crafting_table" => ShapelessRecipeType::CRAFTING(),
-				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
-				"smithing_table" => ShapelessRecipeType::SMITHING(),
-				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY(),
+				"crafting_table" => ShapelessRecipeType::CRAFTING,
+				"stonecutter" => ShapelessRecipeType::STONECUTTER,
+				"smithing_table" => ShapelessRecipeType::SMITHING,
+				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
 			if($recipeType === null){
@@ -225,7 +222,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach($recipe->input as $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -233,12 +230,13 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				$inputs,
 				$outputs,
@@ -251,7 +249,7 @@ final class CraftingManagerFromDataHelper{
 			}
 			$inputs = [];
 			foreach(Utils::stringifyKeys($recipe->input) as $symbol => $inputData){
-				$input = $ingredientDeserializerFunc($inputData);
+				$input = self::deserializeIngredient($inputData);
 				if($input === null){ //unknown input item
 					continue 2;
 				}
@@ -259,12 +257,13 @@ final class CraftingManagerFromDataHelper{
 			}
 			$outputs = [];
 			foreach($recipe->output as $outputData){
-				$output = $itemDeserializerFunc($outputData);
+				$output = self::deserializeItemStack($outputData);
 				if($output === null){ //unknown output item
 					continue 2;
 				}
 				$outputs[] = $output;
 			}
+			//TODO: check unlocking requirements - our current system doesn't support this
 			$result->registerShapedRecipe(new ShapedRecipe(
 				$recipe->shape,
 				$inputs,
@@ -273,10 +272,11 @@ final class CraftingManagerFromDataHelper{
 		}
 		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
 			$furnaceType = match ($recipe->block){
-				"furnace" => FurnaceType::FURNACE(),
-				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
-				"smoker" => FurnaceType::SMOKER(),
-				//TODO: campfire
+				"furnace" => FurnaceType::FURNACE,
+				"blast_furnace" => FurnaceType::BLAST_FURNACE,
+				"smoker" => FurnaceType::SMOKER,
+				"campfire" => FurnaceType::CAMPFIRE,
+				"soul_campfire" => FurnaceType::SOUL_CAMPFIRE,
 				default => null
 			};
 			if($furnaceType === null){

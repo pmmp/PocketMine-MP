@@ -1,0 +1,61 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Human\:\:\$enderInventory because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Human\:\:\$hungerManager because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Human\:\:\$inventory because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Human\:\:\$offHandInventory because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Human\:\:\$xpManager because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Living\:\:\$armorInventory because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Living.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\entity\\Living\:\:\$effectManager because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/entity/Living.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\player\\Player\:\:\$craftingGrid because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/player/Player.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\player\\Player\:\:\$cursorInventory because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/player/Player.php
+
+		-
+			message: '#^Cannot unset property pocketmine\\world\\format\\io\\leveldb\\LevelDB\:\:\$db because it might have hooks in a subclass\.$#'
+			identifier: unset.possiblyHookedProperty
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php

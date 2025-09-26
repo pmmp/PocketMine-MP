@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
+use pocketmine\block\utils\AgeableTrait;
+use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -37,15 +40,17 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
-class CaveVines extends Flowable{
+class CaveVines extends Flowable implements Ageable{
+	use AgeableTrait;
+	use StaticSupportTrait;
+
 	public const MAX_AGE = 25;
 
-	protected int $age = 0;
 	protected bool $berries = false;
 	protected bool $head = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->boundedInt(5, 0, self::MAX_AGE, $this->age);
+		$w->boundedIntAuto(0, self::MAX_AGE, $this->age);
 		$w->bool($this->berries);
 		$w->bool($this->head);
 	}
@@ -66,19 +71,6 @@ class CaveVines extends Flowable{
 		return $this;
 	}
 
-	public function getAge() : int{
-		return $this->age;
-	}
-
-	/** @return $this */
-	public function setAge(int $age) : self{
-		if($age < 0 || $age > self::MAX_AGE){
-			throw new \InvalidArgumentException("Age must be in range 0-" . self::MAX_AGE);
-		}
-		$this->age = $age;
-		return $this;
-	}
-
 	public function canClimb() : bool{
 		return true;
 	}
@@ -87,20 +79,12 @@ class CaveVines extends Flowable{
 		return $this->berries ? 14 : 0;
 	}
 
-	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::DOWN)->equals(SupportType::FULL()) || $block->hasSameTypeId($this);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::UP))){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::UP);
+		return $supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL || $supportBlock->hasSameTypeId($this);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP))){
-			return false;
-		}
 		$this->age = mt_rand(0, self::MAX_AGE);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -114,16 +98,12 @@ class CaveVines extends Flowable{
 			return true;
 		}
 		if($item instanceof Fertilizer){
-			$ev = new BlockGrowEvent($this, (clone $this)
+			$newState = (clone $this)
 				->setBerries(true)
-				->setHead(!$this->getSide(Facing::DOWN)->hasSameTypeId($this))
-			);
-			$ev->call();
-			if($ev->isCancelled()){
-				return false;
+				->setHead(!$this->getSide(Facing::DOWN)->hasSameTypeId($this));
+			if(BlockEventHelper::grow($this, $newState, $player)){
+				$item->pop();
 			}
-			$item->pop();
-			$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			return true;
 		}
 		return false;
@@ -141,16 +121,10 @@ class CaveVines extends Flowable{
 			if($world->isInWorld($growthPos->getFloorX(), $growthPos->getFloorY(), $growthPos->getFloorZ())){
 				$block = $world->getBlock($growthPos);
 				if($block->getTypeId() === BlockTypeIds::AIR){
-					$ev = new BlockGrowEvent($block, VanillaBlocks::CAVE_VINES()
+					$newState = VanillaBlocks::CAVE_VINES()
 						->setAge($this->age + 1)
-						->setBerries(mt_rand(1, 9) === 1)
-					);
-
-					$ev->call();
-
-					if(!$ev->isCancelled()){
-						$world->setBlock($growthPos, $ev->getNewState());
-					}
+						->setBerries(mt_rand(1, 9) === 1);
+					BlockEventHelper::grow($block, $newState, null);
 				}
 			}
 		}
@@ -186,6 +160,6 @@ class CaveVines extends Flowable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

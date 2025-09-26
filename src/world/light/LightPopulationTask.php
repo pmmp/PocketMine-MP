@@ -44,7 +44,7 @@ class LightPopulationTask extends AsyncTask{
 	private string $resultBlockLightArrays;
 
 	/**
-	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion
+	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, non-empty-list<int> $heightMap) : void $onCompletion
 	 */
 	public function __construct(Chunk $chunk, \Closure $onCompletion){
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
@@ -80,7 +80,10 @@ class LightPopulationTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var int[] $heightMapArray */
+		/**
+		 * @var int[] $heightMapArray
+		 * @phpstan-var non-empty-list<int> $heightMapArray
+		 */
 		$heightMapArray = igbinary_unserialize($this->resultHeightMap);
 
 		/** @var LightArray[] $skyLightArrays */
@@ -90,7 +93,7 @@ class LightPopulationTask extends AsyncTask{
 
 		/**
 		 * @var \Closure
-		 * @phpstan-var \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap>) : void
+		 * @phpstan-var \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, non-empty-list<int> $heightMap) : void
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_COMPLETION_CALLBACK);
 		$callback($blockLightArrays, $skyLightArrays, $heightMapArray);

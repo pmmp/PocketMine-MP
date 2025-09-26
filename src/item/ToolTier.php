@@ -23,13 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static ToolTier DIAMOND()
  * @method static ToolTier GOLD()
@@ -37,46 +35,64 @@ use pocketmine\utils\EnumTrait;
  * @method static ToolTier NETHERITE()
  * @method static ToolTier STONE()
  * @method static ToolTier WOOD()
+ *
+ * @phpstan-type TMetadata array{0: int, 1: int, 2: int, 3: int, 4: int}
  */
-final class ToolTier{
-	use EnumTrait {
-		__construct as Enum___construct;
+enum ToolTier{
+	use LegacyEnumShimTrait;
+
+	case WOOD;
+	case GOLD;
+	case STONE;
+	case IRON;
+	case DIAMOND;
+	case NETHERITE;
+
+	/**
+	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
+	 * @phpstan-return TMetadata
+	 */
+	private static function meta(int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency, int $enchantability) : array{
+		return [$harvestLevel, $maxDurability, $baseAttackPoints, $baseEfficiency, $enchantability];
 	}
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("wood", 1, 60, 5, 2),
-			new self("gold", 2, 33, 5, 12),
-			new self("stone", 3, 132, 6, 4),
-			new self("iron", 4, 251, 7, 6),
-			new self("diamond", 5, 1562, 8, 8),
-			new self("netherite", 6, 2032, 9, 9)
-		);
-	}
-
-	private function __construct(
-		string $name,
-		private int $harvestLevel,
-		private int $maxDurability,
-		private int $baseAttackPoints,
-		private int $baseEfficiency
-	){
-		$this->Enum___construct($name);
+	/**
+	 * @phpstan-return TMetadata
+	 */
+	private function getMetadata() : array{
+		return match($this){
+			self::WOOD => self::meta(1, 60, 5, 2, 15),
+			self::GOLD => self::meta(2, 33, 5, 12, 22),
+			self::STONE => self::meta(3, 132, 6, 4, 5),
+			self::IRON => self::meta(4, 251, 7, 6, 14),
+			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
+			self::NETHERITE => self::meta(6, 2032, 9, 9, 15)
+		};
 	}
 
 	public function getHarvestLevel() : int{
-		return $this->harvestLevel;
+		return $this->getMetadata()[0];
 	}
 
 	public function getMaxDurability() : int{
-		return $this->maxDurability;
+		return $this->getMetadata()[1];
 	}
 
 	public function getBaseAttackPoints() : int{
-		return $this->baseAttackPoints;
+		return $this->getMetadata()[2];
 	}
 
 	public function getBaseEfficiency() : int{
-		return $this->baseEfficiency;
+		return $this->getMetadata()[3];
+	}
+
+	/**
+	 * Returns the value that defines how enchantable the item is.
+	 *
+	 * The higher an item's enchantability is, the more likely it will be to gain high-level enchantments
+	 * or multiple enchantments upon being enchanted in an enchanting table.
+	 */
+	public function getEnchantability() : int{
+		return $this->getMetadata()[4];
 	}
 }

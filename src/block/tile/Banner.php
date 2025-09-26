@@ -27,11 +27,9 @@ use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\world\World;
 
 /**
  * @deprecated
@@ -43,8 +41,12 @@ class Banner extends Spawnable{
 	public const TAG_PATTERNS = "Patterns";
 	public const TAG_PATTERN_COLOR = "Color";
 	public const TAG_PATTERN_NAME = "Pattern";
+	public const TAG_TYPE = "Type";
 
-	private DyeColor $baseColor;
+	public const TYPE_NORMAL = 0;
+	public const TYPE_OMINOUS = 1;
+
+	private DyeColor $baseColor = DyeColor::BLACK;
 
 	/**
 	 * @var BannerPatternLayer[]
@@ -52,10 +54,7 @@ class Banner extends Spawnable{
 	 */
 	private array $patterns = [];
 
-	public function __construct(World $world, Vector3 $pos){
-		$this->baseColor = DyeColor::BLACK();
-		parent::__construct($world, $pos);
-	}
+	private int $type = self::TYPE_NORMAL;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
@@ -65,16 +64,15 @@ class Banner extends Spawnable{
 		){
 			$this->baseColor = $baseColor;
 		}else{
-			$this->baseColor = DyeColor::BLACK(); //TODO: this should be an error
+			$this->baseColor = DyeColor::BLACK; //TODO: this should be an error
 		}
 
 		$patternTypeIdMap = BannerPatternTypeIdMap::getInstance();
 
-		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
+		$patterns = $nbt->getListTag(self::TAG_PATTERNS, CompoundTag::class);
 		if($patterns !== null){
-			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
-				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
 				$patternType = $patternTypeIdMap->fromId($pattern->getString(self::TAG_PATTERN_NAME));
 				if($patternType === null){
 					continue; //TODO: this should be an error, but right now we don't have the setup to deal with it
@@ -82,6 +80,8 @@ class Banner extends Spawnable{
 				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
+
+		$this->type = $nbt->getInt(self::TAG_TYPE, self::TYPE_NORMAL);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -96,6 +96,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
+		$nbt->setInt(self::TAG_TYPE, $this->type);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
@@ -110,6 +111,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
+		$nbt->setInt(self::TAG_TYPE, $this->type);
 	}
 
 	/**
@@ -142,6 +144,10 @@ class Banner extends Spawnable{
 	public function setPatterns(array $patterns) : void{
 		$this->patterns = $patterns;
 	}
+
+	public function getType() : int{ return $this->type; }
+
+	public function setType(int $type) : void{ $this->type = $type; }
 
 	public function getDefaultName() : string{
 		return "Banner";

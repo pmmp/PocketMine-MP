@@ -25,14 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-final class Loom extends Opaque{
+final class Loom extends Opaque implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
-	use HorizontalFacingTrait;
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){

@@ -58,17 +58,10 @@ final class MinimumCostFlowCalculator{
 			if($j === $originOpposite || $j === $lastOpposite){
 				continue;
 			}
-
-			$x = $blockX;
-			$y = $blockY;
-			$z = $blockZ;
-
-			match($j){
-				Facing::WEST => --$x,
-				Facing::EAST => ++$x,
-				Facing::NORTH => --$z,
-				Facing::SOUTH => ++$z
-			};
+			[$dx, $dy, $dz] = Facing::OFFSET[$j];
+			$x = $blockX + $dx;
+			$y = $blockY + $dy;
+			$z = $blockZ + $dz;
 
 			if(!isset($this->flowCostVisited[$hash = World::blockHash($x, $y, $z)])){
 				if(!$this->world->isInWorld($x, $y, $z) || !$this->canFlowInto($this->world->getBlockAt($x, $y, $z))){
@@ -109,16 +102,10 @@ final class MinimumCostFlowCalculator{
 		$flowCost = array_fill_keys(Facing::HORIZONTAL, 1000);
 		$maxCost = intdiv(4, $this->flowDecayPerBlock);
 		foreach(Facing::HORIZONTAL as $j){
-			$x = $originX;
-			$y = $originY;
-			$z = $originZ;
-
-			match($j){
-				Facing::WEST => --$x,
-				Facing::EAST => ++$x,
-				Facing::NORTH => --$z,
-				Facing::SOUTH => ++$z
-			};
+			[$dx, $dy, $dz] = Facing::OFFSET[$j];
+			$x = $originX + $dx;
+			$y = $originY + $dy;
+			$z = $originZ + $dz;
 
 			if(!$this->world->isInWorld($x, $y, $z) || !$this->canFlowInto($this->world->getBlockAt($x, $y, $z))){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;

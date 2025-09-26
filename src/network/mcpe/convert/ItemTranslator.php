@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemDeserializer;
 use pocketmine\data\bedrock\item\ItemSerializer;
 use pocketmine\data\bedrock\item\ItemTypeDeserializeException;
@@ -37,18 +38,19 @@ use pocketmine\utils\AssumptionFailedError;
  * This class handles translation between network item ID+metadata to PocketMine-MP internal ID+metadata and vice versa.
  */
 final class ItemTranslator{
-	public const NO_BLOCK_RUNTIME_ID = 0;
+	public const NO_BLOCK_RUNTIME_ID = 0; //this is technically a valid block runtime ID, but is used to represent "no block" (derp mojang)
 
 	public function __construct(
 		private ItemTypeDictionary $itemTypeDictionary,
 		private BlockStateDictionary $blockStateDictionary,
 		private ItemSerializer $itemSerializer,
-		private ItemDeserializer $itemDeserializer
+		private ItemDeserializer $itemDeserializer,
+		private BlockItemIdMap $blockItemIdMap
 	){}
 
 	/**
 	 * @return int[]|null
-	 * @phpstan-return array{int, int, int}|null
+	 * @phpstan-return array{int, int, ?int}|null
 	 */
 	public function toNetworkIdQuiet(Item $item) : ?array{
 		try{
@@ -60,7 +62,7 @@ final class ItemTranslator{
 
 	/**
 	 * @return int[]
-	 * @phpstan-return array{int, int, int}
+	 * @phpstan-return array{int, int, ?int}
 	 *
 	 * @throws ItemTypeSerializeException
 	 */
@@ -78,7 +80,7 @@ final class ItemTranslator{
 				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
 			}
 		}else{
-			$blockRuntimeId = self::NO_BLOCK_RUNTIME_ID; //this is technically a valid block runtime ID, but is used to represent "no block" (derp mojang)
+			$blockRuntimeId = null;
 		}
 
 		return [$numericId, $itemData->getMeta(), $blockRuntimeId];
@@ -106,11 +108,13 @@ final class ItemTranslator{
 		}
 
 		$blockStateData = null;
-		if($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
+		if($this->blockItemIdMap->lookupBlockId($stringId) !== null){
 			$blockStateData = $this->blockStateDictionary->generateDataFromStateId($networkBlockRuntimeId);
 			if($blockStateData === null){
 				throw new TypeConversionException("Blockstate runtimeID $networkBlockRuntimeId does not correspond to any known blockstate");
 			}
+		}elseif($networkBlockRuntimeId !== self::NO_BLOCK_RUNTIME_ID){
+			throw new TypeConversionException("Item $stringId is not a blockitem, but runtime ID $networkBlockRuntimeId was provided");
 		}
 
 		try{

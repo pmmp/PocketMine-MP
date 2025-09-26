@@ -38,15 +38,10 @@ use pocketmine\world\sound\ItemUseOnBlockSound;
 use pocketmine\world\sound\WaterSplashSound;
 
 class Dirt extends Opaque{
-	protected DirtType $dirtType;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
-		$this->dirtType = DirtType::NORMAL();
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
+	protected DirtType $dirtType = DirtType::NORMAL;
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
-		$w->dirtType($this->dirtType);
+		$w->enum($this->dirtType);
 	}
 
 	public function getDirtType() : DirtType{ return $this->dirtType; }
@@ -59,19 +54,24 @@ class Dirt extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
-		if($face === Facing::UP && $item instanceof Hoe){
+		if($face !== Facing::DOWN && $item instanceof Hoe){
+			$up = $this->getSide(Facing::UP);
+			if($up->getTypeId() !== BlockTypeIds::AIR){
+				return true;
+			}
+
 			$item->applyDamage(1);
 
-			$newBlock = $this->dirtType->equals(DirtType::NORMAL()) ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
+			$newBlock = $this->dirtType === DirtType::NORMAL ? VanillaBlocks::FARMLAND() : VanillaBlocks::DIRT();
 			$center = $this->position->add(0.5, 0.5, 0.5);
 			$world->addSound($center, new ItemUseOnBlockSound($newBlock));
 			$world->setBlock($this->position, $newBlock);
-			if($this->dirtType->equals(DirtType::ROOTED())){
+			if($this->dirtType === DirtType::ROOTED){
 				$world->dropItem($center, VanillaBlocks::HANGING_ROOTS()->asItem());
 			}
 
 			return true;
-		}elseif($this->dirtType->equals(DirtType::ROOTED()) && $item instanceof Fertilizer){
+		}elseif($this->dirtType === DirtType::ROOTED && $item instanceof Fertilizer){
 			$down = $this->getSide(Facing::DOWN);
 			if($down->getTypeId() !== BlockTypeIds::AIR){
 				return true;
@@ -80,7 +80,7 @@ class Dirt extends Opaque{
 			$item->pop();
 			$world->setBlock($down->position, VanillaBlocks::HANGING_ROOTS());
 			//TODO: bonemeal particles, growth sounds
-		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType()->equals(PotionType::WATER())){
+		}elseif(($item instanceof Potion || $item instanceof SplashPotion) && $item->getType() === PotionType::WATER){
 			$item->pop();
 			$world->setBlock($this->position, VanillaBlocks::MUD());
 			$world->addSound($this->position, new WaterSplashSound(0.5));

@@ -23,12 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\network\query;
 
+use pmmp\encoding\LE;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+use pocketmine\YmlServerProperties;
 use function array_map;
 use function chr;
 use function count;
@@ -66,11 +67,11 @@ final class QueryInfo{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
+		$this->listPlugins = $server->getConfigGroup()->getPropertyBool(YmlServerProperties::SETTINGS_QUERY_PLUGINS, true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = array_map(fn(Player $p) => $p->getName(), $server->getOnlinePlayers());
 
-		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode() === GameMode::SURVIVAL || $server->getGamemode() === GameMode::ADVENTURE) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$world = $server->getWorldManager()->getDefaultWorld();
@@ -235,6 +236,6 @@ final class QueryInfo{
 	}
 
 	public function getShortQuery() : string{
-		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . Binary::writeLShort($this->port) . $this->ip . "\x00");
+		return $this->shortQueryCache ?? ($this->shortQueryCache = $this->serverName . "\x00" . $this->gametype . "\x00" . $this->map . "\x00" . $this->numPlayers . "\x00" . $this->maxPlayers . "\x00" . LE::packUnsignedShort($this->port) . $this->ip . "\x00");
 	}
 }

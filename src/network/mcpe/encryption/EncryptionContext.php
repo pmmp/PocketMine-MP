@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\encryption;
 
 use Crypto\Cipher;
-use pocketmine\utils\Binary;
+use pmmp\encoding\LE;
 use function bin2hex;
 use function openssl_digest;
 use function openssl_error_string;
@@ -104,7 +104,7 @@ class EncryptionContext{
 	}
 
 	private function calculateChecksum(int $counter, string $payload) : string{
-		$hash = openssl_digest(Binary::writeLLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true);
+		$hash = openssl_digest(LE::packUnsignedLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true);
 		if($hash === false){
 			throw new \RuntimeException("openssl_digest() error: " . openssl_error_string());
 		}

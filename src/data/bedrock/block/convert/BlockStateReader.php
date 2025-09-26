@@ -24,8 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\convert;
 
 use pocketmine\block\utils\BellAttachmentType;
-use pocketmine\block\utils\CoralType;
-use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -33,26 +31,33 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues as StringValues;
+use pocketmine\data\bedrock\block\convert\property\EnumFromRawStateMap;
+use pocketmine\data\bedrock\block\convert\property\IntFromRawStateMap;
+use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\utils\Utils;
+use function array_keys;
+use function count;
 use function get_class;
+use function implode;
 
 final class BlockStateReader{
 
 	/**
-	 * @var true[]
-	 * @phpstan-var array<string, true>
+	 * @var Tag[]
+	 * @phpstan-var array<string, Tag>
 	 */
-	private array $usedStates = [];
+	private array $unusedStates;
 
 	public function __construct(
 		private BlockStateData $data
-	){}
+	){
+		$this->unusedStates = $this->data->getStates();
+	}
 
 	public function missingOrWrongTypeException(string $name, ?Tag $tag) : BlockStateDeserializeException{
 		return new BlockStateDeserializeException("Property \"$name\" " . ($tag !== null ? "has unexpected type " . get_class($tag) : "is missing"));
@@ -67,7 +72,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readBool(string $name) : bool{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof ByteTag){
 			switch($tag->getValue()){
@@ -81,7 +86,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readInt(string $name) : int{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		$tag = $this->data->getState($name);
 		if($tag instanceof IntTag){
 			return $tag->getValue();
@@ -100,7 +105,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readString(string $name) : string{
-		$this->usedStates[$name] = true;
+		unset($this->unusedStates[$name]);
 		//TODO: only allow a specific set of values (strings are primarily used for enums)
 		$tag = $this->data->getState($name);
 		if($tag instanceof StringTag){
@@ -110,32 +115,45 @@ final class BlockStateReader{
 	}
 
 	/**
-	 * @param int[] $mapping
-	 * @phpstan-param array<int, int> $mapping
-	 * @phpstan-return int
+	 * @deprecated
+	 * @phpstan-param IntFromRawStateMap<string> $map
 	 * @throws BlockStateDeserializeException
 	 */
-	private function parseFacingValue(int $value, array $mapping) : int{
-		$result = $mapping[$value] ?? null;
-		if($result === null){
-			throw new BlockStateDeserializeException("Unmapped facing value " . $value);
-		}
-		return $result;
-	}
+	public function mapIntFromString(string $name, IntFromRawStateMap $map) : int{
+		$raw = $this->readString($name);
 
-	/** @throws BlockStateDeserializeException */
-	public function readFacingDirection() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::FACING_DIRECTION), [
-			0 => Facing::DOWN,
-			1 => Facing::UP,
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH,
-			4 => Facing::WEST,
-			5 => Facing::EAST
-		]);
+		return $map->rawToValue($raw) ?? throw $this->badValueException($name, $raw);
 	}
 
 	/**
+	 * @deprecated
+	 * @phpstan-param IntFromRawStateMap<int> $map
+	 * @throws BlockStateDeserializeException
+	 */
+	public function mapIntFromInt(string $name, IntFromRawStateMap $map) : int{
+		$raw = $this->readInt($name);
+
+		return $map->rawToValue($raw) ?? throw $this->badValueException($name, (string) $raw);
+	}
+
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readFacingDirection() : int{
+		return $this->mapIntFromInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->facing);
+	}
+
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readBlockFace() : int{
+		return $this->mapIntFromString(BlockStateNames::MC_BLOCK_FACE, ValueMappings::getInstance()->blockFace);
+	}
+
+	/**
+	 * @deprecated
 	 * @return int[]
 	 * @phpstan-return array<int, int>
 	 */
@@ -158,92 +176,69 @@ final class BlockStateReader{
 		return $result;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readEndRodFacingDirection() : int{
 		$result = $this->readFacingDirection();
 		return Facing::axis($result) !== Axis::Y ? Facing::opposite($result) : $result;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::FACING_DIRECTION), [
-			0 => Facing::NORTH, //should be illegal, but 1.13 allows it
-			1 => Facing::NORTH, //also should be illegal
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH,
-			4 => Facing::WEST,
-			5 => Facing::EAST
-		]);
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readWeirdoHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::WEIRDO_DIRECTION), [
-			0 => Facing::EAST,
-			1 => Facing::WEST,
-			2 => Facing::SOUTH,
-			3 => Facing::NORTH
-		]);
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readLegacyHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::DIRECTION), [
-			0 => Facing::SOUTH,
-			1 => Facing::WEST,
-			2 => Facing::NORTH,
-			3 => Facing::EAST
-		]);
+		return $this->mapIntFromInt(BlockStateNames::FACING_DIRECTION, ValueMappings::getInstance()->horizontalFacingClassic);
 	}
 
 	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readWeirdoHorizontalFacing() : int{
+		return $this->mapIntFromInt(BlockStateNames::WEIRDO_DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus);
+	}
+
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readLegacyHorizontalFacing() : int{
+		return $this->mapIntFromInt(BlockStateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacingSWNE);
+	}
+
+	/**
+	 * @deprecated
 	 * This is for trapdoors, because Mojang botched the conversion in 1.13
 	 * @throws BlockStateDeserializeException
 	 */
 	public function read5MinusHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::DIRECTION), [
-			0 => Facing::EAST,
-			1 => Facing::WEST,
-			2 => Facing::SOUTH,
-			3 => Facing::NORTH
-		]);
+		return $this->mapIntFromInt(BlockStateNames::DIRECTION, ValueMappings::getInstance()->horizontalFacing5Minus);
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public function readColor() : DyeColor{
-		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow
-		return match($color = $this->readString(BlockStateNames::COLOR)){
-			StringValues::COLOR_BLACK => DyeColor::BLACK(),
-			StringValues::COLOR_BLUE => DyeColor::BLUE(),
-			StringValues::COLOR_BROWN => DyeColor::BROWN(),
-			StringValues::COLOR_CYAN => DyeColor::CYAN(),
-			StringValues::COLOR_GRAY => DyeColor::GRAY(),
-			StringValues::COLOR_GREEN => DyeColor::GREEN(),
-			StringValues::COLOR_LIGHT_BLUE => DyeColor::LIGHT_BLUE(),
-			StringValues::COLOR_LIME => DyeColor::LIME(),
-			StringValues::COLOR_MAGENTA => DyeColor::MAGENTA(),
-			StringValues::COLOR_ORANGE => DyeColor::ORANGE(),
-			StringValues::COLOR_PINK => DyeColor::PINK(),
-			StringValues::COLOR_PURPLE => DyeColor::PURPLE(),
-			StringValues::COLOR_RED => DyeColor::RED(),
-			StringValues::COLOR_SILVER => DyeColor::LIGHT_GRAY(),
-			StringValues::COLOR_WHITE => DyeColor::WHITE(),
-			StringValues::COLOR_YELLOW => DyeColor::YELLOW(),
-			default => throw $this->badValueException(BlockStateNames::COLOR, $color),
-		};
+	/**
+	 * @deprecated
+	 * Used by pumpkins as of 1.20.0.23 beta
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readCardinalHorizontalFacing() : int{
+		return $this->mapIntFromString(BlockStateNames::MC_CARDINAL_DIRECTION, ValueMappings::getInstance()->cardinalDirection);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readCoralFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNames::CORAL_DIRECTION), [
-			0 => Facing::WEST,
-			1 => Facing::EAST,
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH
-		]);
+		return $this->mapIntFromInt(BlockStateNames::CORAL_DIRECTION, ValueMappings::getInstance()->horizontalFacingCoral);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readFacingWithoutDown() : int{
 		$result = $this->readFacingDirection();
 		if($result === Facing::DOWN){ //shouldn't be legal, but 1.13 allows it
@@ -252,6 +247,10 @@ final class BlockStateReader{
 		return $result;
 	}
 
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readFacingWithoutUp() : int{
 		$result = $this->readFacingDirection();
 		if($result === Facing::UP){
@@ -261,78 +260,72 @@ final class BlockStateReader{
 	}
 
 	/**
-	 * @phpstan-return Axis::*
+	 * @deprecated
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readPillarAxis() : int{
-		$rawValue = $this->readString(BlockStateNames::PILLAR_AXIS);
-		$value = [
-			StringValues::PILLAR_AXIS_X => Axis::X,
-			StringValues::PILLAR_AXIS_Y => Axis::Y,
-			StringValues::PILLAR_AXIS_Z => Axis::Z
-		][$rawValue] ?? null;
-		if($value === null){
-			throw $this->badValueException(BlockStateNames::PILLAR_AXIS, $rawValue, "Invalid axis value");
-		}
-		return $value;
-	}
-
-	/** @throws BlockStateDeserializeException */
-	public function readSlabPosition() : SlabType{
-		return $this->readBool(BlockStateNames::TOP_SLOT_BIT) ? SlabType::TOP() : SlabType::BOTTOM();
+		return $this->mapIntFromString(BlockStateNames::PILLAR_AXIS, ValueMappings::getInstance()->pillarAxis);
 	}
 
 	/**
-	 * @phpstan-return Facing::UP|Facing::NORTH|Facing::SOUTH|Facing::WEST|Facing::EAST
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readSlabPosition() : SlabType{
+		return match($rawValue = $this->readString(BlockStateNames::MC_VERTICAL_HALF)){
+			StringValues::MC_VERTICAL_HALF_BOTTOM => SlabType::BOTTOM,
+			StringValues::MC_VERTICAL_HALF_TOP => SlabType::TOP,
+			default => throw $this->badValueException(BlockStateNames::MC_VERTICAL_HALF, $rawValue, "Invalid slab position"),
+		};
+	}
+
+	/**
+	 * @deprecated
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readTorchFacing() : int{
-		//TODO: horizontal directions are flipped (MCPE bug: https://bugs.mojang.com/browse/MCPE-152036)
-		return match($rawValue = $this->readString(BlockStateNames::TORCH_FACING_DIRECTION)){
-			StringValues::TORCH_FACING_DIRECTION_EAST => Facing::WEST,
-			StringValues::TORCH_FACING_DIRECTION_NORTH => Facing::SOUTH,
-			StringValues::TORCH_FACING_DIRECTION_SOUTH => Facing::NORTH,
-			StringValues::TORCH_FACING_DIRECTION_TOP => Facing::UP,
-			StringValues::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
-			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::EAST,
-			default => throw $this->badValueException(BlockStateNames::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
-		};
+		return $this->mapIntFromString(BlockStateNames::TORCH_FACING_DIRECTION, ValueMappings::getInstance()->torchFacing);
 	}
 
-	/** @throws BlockStateDeserializeException */
-	public function readCoralType() : CoralType{
-		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
-			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE(),
-			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN(),
-			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
-			StringValues::CORAL_COLOR_RED => CoralType::FIRE(),
-			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN(),
-			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
-		};
-	}
-
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readBellAttachmentType() : BellAttachmentType{
-		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
-			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
-			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
-			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
-			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
-			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
-		};
+		return $this->readUnitEnum(BlockStateNames::ATTACHMENT, ValueMappings::getInstance()->bellAttachmentType);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public function readWallConnectionType(string $name) : ?WallConnectionType{
 		return match($type = $this->readString($name)){
 			//TODO: this looks a bit confusing due to use of EAST, but the values are the same for all connections
 			//we need to find a better way to auto-generate the constant names when they are reused
 			//for now, using these constants is better than nothing since it still gives static analysability
 			StringValues::WALL_CONNECTION_TYPE_EAST_NONE => null,
-			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT(),
-			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL(),
+			StringValues::WALL_CONNECTION_TYPE_EAST_SHORT => WallConnectionType::SHORT,
+			StringValues::WALL_CONNECTION_TYPE_EAST_TALL => WallConnectionType::TALL,
 			default => throw $this->badValueException($name, $type),
 		};
+	}
+
+	/**
+	 * @deprecated
+	 * @phpstan-template TEnum of \UnitEnum
+	 * @phpstan-param EnumFromRawStateMap<TEnum, string> $map
+	 * @phpstan-return TEnum
+	 * @throws BlockStateDeserializeException
+	 */
+	public function readUnitEnum(string $name, EnumFromRawStateMap $map) : \UnitEnum{
+		$value = $this->readString($name);
+
+		$mapped = $map->rawToValue($value);
+		if($mapped === null){
+			throw $this->badValueException($name, $value);
+		}
+		return $mapped;
 	}
 
 	/**
@@ -340,7 +333,7 @@ final class BlockStateReader{
 	 */
 	public function ignored(string $name) : void{
 		if($this->data->getState($name) !== null){
-			$this->usedStates[$name] = true;
+			unset($this->unusedStates[$name]);
 		}else{
 			throw $this->missingOrWrongTypeException($name, null);
 		}
@@ -357,10 +350,8 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function checkUnreadProperties() : void{
-		foreach(Utils::stringifyKeys($this->data->getStates()) as $name => $tag){
-			if(!isset($this->usedStates[$name])){
-				throw new BlockStateDeserializeException("Unread property \"$name\"");
-			}
+		if(count($this->unusedStates) > 0){
+			throw new BlockStateDeserializeException("Unread properties: " . implode(", ", array_keys($this->unusedStates)));
 		}
 	}
 }

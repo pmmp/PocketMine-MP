@@ -29,13 +29,12 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
-use function array_keys;
+use pocketmine\utils\Utils;
 use function array_values;
 use function assert;
 use function count;
 use function get_class;
 use function min;
-use function shuffle;
 use function spl_object_hash;
 use function spl_object_id;
 
@@ -57,10 +56,16 @@ use function spl_object_id;
 class InventoryTransaction{
 	protected bool $hasExecuted = false;
 
-	/** @var Inventory[] */
+	/**
+	 * @var Inventory[]
+	 * @phpstan-var array<int, Inventory>
+	 */
 	protected array $inventories = [];
 
-	/** @var InventoryAction[] */
+	/**
+	 * @var InventoryAction[]
+	 * @phpstan-var array<int, InventoryAction>
+	 */
 	protected array $actions = [];
 
 	/**
@@ -81,18 +86,23 @@ class InventoryTransaction{
 
 	/**
 	 * @return Inventory[]
+	 * @phpstan-return array<int, Inventory>
 	 */
 	public function getInventories() : array{
 		return $this->inventories;
 	}
 
 	/**
-	 * Returns an **unordered** set of actions involved in this transaction.
+	 * Returns a set of actions involved in this transaction.
 	 *
-	 * WARNING: This system is **explicitly designed NOT to care about ordering**. Any order seen in this set has NO
-	 * significance and should not be relied on.
+	 * Note: This system is designed to care only about item balances. While you can usually assume that the actions
+	 * are provided in the correct order, it will still successfully complete transactions whose actions are provided in
+	 * the "wrong" order, as long as the transaction balances.
+	 * For example, you may see that an action setting a slot to a particular item may appear before the action that
+	 * removes that item from its original slot. While unintuitive, this is still valid.
 	 *
 	 * @return InventoryAction[]
+	 * @phpstan-return array<int, InventoryAction>
 	 */
 	public function getActions() : array{
 		return $this->actions;
@@ -102,39 +112,19 @@ class InventoryTransaction{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
 			$action->onAddToTransaction($this);
+			if($action instanceof SlotChangeAction && !isset($this->inventories[$inventoryId = spl_object_id($action->getInventory())])){
+				$this->inventories[$inventoryId] = $action->getInventory();
+			}
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
 	}
 
 	/**
-	 * Shuffles actions in the transaction to prevent external things relying on any implicit ordering.
-	 */
-	private function shuffleActions() : void{
-		$keys = array_keys($this->actions);
-		shuffle($keys);
-		$actions = [];
-		foreach($keys as $key){
-			$actions[$key] = $this->actions[$key];
-		}
-		$this->actions = $actions;
-	}
-
-	/**
-	 * @internal This method should not be used by plugins, it's used to add tracked inventories for InventoryActions
-	 * involving inventories.
-	 */
-	public function addInventory(Inventory $inventory) : void{
-		if(!isset($this->inventories[$hash = spl_object_id($inventory)])){
-			$this->inventories[$hash] = $inventory;
-		}
-	}
-
-	/**
 	 * @param Item[] $needItems
 	 * @param Item[] $haveItems
-	 * @phpstan-param-out Item[] $needItems
-	 * @phpstan-param-out Item[] $haveItems
+	 * @phpstan-param-out list<Item> $needItems
+	 * @phpstan-param-out list<Item> $haveItems
 	 *
 	 * @throws TransactionValidationException
 	 */
@@ -142,8 +132,9 @@ class InventoryTransaction{
 		$needItems = [];
 		$haveItems = [];
 		foreach($this->actions as $key => $action){
-			if(!$action->getTargetItem()->isNull()){
-				$needItems[] = $action->getTargetItem();
+			$targetItem = $action->getTargetItem();
+			if(!$targetItem->isNull()){
+				$needItems[] = $targetItem;
 			}
 
 			try{
@@ -152,8 +143,9 @@ class InventoryTransaction{
 				throw new TransactionValidationException(get_class($action) . "#" . spl_object_id($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
-			if(!$action->getSourceItem()->isNull()){
-				$haveItems[] = $action->getSourceItem();
+			$sourceItem = $action->getSourceItem();
+			if(!$sourceItem->isNull()){
+				$haveItems[] = $sourceItem;
 			}
 		}
 
@@ -188,11 +180,8 @@ class InventoryTransaction{
 	 * wrong order), so this method also tries to chain them into order.
 	 */
 	protected function squashDuplicateSlotChanges() : void{
-		/** @var SlotChangeAction[][] $slotChanges */
 		$slotChanges = [];
-		/** @var Inventory[] $inventories */
 		$inventories = [];
-		/** @var int[] $slots */
 		$slots = [];
 
 		foreach($this->actions as $key => $action){
@@ -203,7 +192,7 @@ class InventoryTransaction{
 			}
 		}
 
-		foreach($slotChanges as $hash => $list){
+		foreach(Utils::stringifyKeys($slotChanges) as $hash => $list){
 			if(count($list) === 1){ //No need to compact slot changes if there is only one on this slot
 				continue;
 			}
@@ -233,6 +222,7 @@ class InventoryTransaction{
 
 	/**
 	 * @param SlotChangeAction[] $possibleActions
+	 * @phpstan-param array<int, SlotChangeAction> $possibleActions
 	 */
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
 		assert(count($possibleActions) > 0);
@@ -305,8 +295,6 @@ class InventoryTransaction{
 		if($this->hasExecuted()){
 			throw new TransactionValidationException("Transaction has already been executed");
 		}
-
-		$this->shuffleActions();
 
 		$this->validate();
 

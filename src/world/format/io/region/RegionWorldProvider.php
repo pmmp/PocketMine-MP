@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -33,10 +32,8 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\LoadedChunkData;
 use pocketmine\world\format\io\WorldData;
 use Symfony\Component\Filesystem\Path;
-use function assert;
 use function file_exists;
 use function is_dir;
-use function is_int;
 use function morton2d_encode;
 use function rename;
 use function scandir;
@@ -60,7 +57,12 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 	public static function isValid(string $path) : bool{
 		if(file_exists(Path::join($path, "level.dat")) && is_dir($regionPath = Path::join($path, "region"))){
-			foreach(scandir($regionPath, SCANDIR_SORT_NONE) as $file){
+			$files = scandir($regionPath, SCANDIR_SORT_NONE);
+			if($files === false){
+				//we can't tell the type if we don't have read perms
+				return false;
+			}
+			foreach($files as $file){
 				$extPos = strrpos($file, ".");
 				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
@@ -72,7 +74,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
-	/** @var RegionLoader[] */
+	/**
+	 * @var RegionLoader[]
+	 * @phpstan-var array<int, RegionLoader>
+	 */
 	protected array $regions = [];
 
 	protected function loadLevelData() : WorldData{
@@ -90,10 +95,12 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	/**
-	 * @param int $regionX reference parameter
-	 * @param int $regionZ reference parameter
+	 * @param int|null $regionX reference parameter
+	 * @param int|null $regionZ reference parameter
 	 * @phpstan-param-out int $regionX
 	 * @phpstan-param-out int $regionZ
+	 *
+	 * TODO: make this private
 	 */
 	public static function getRegionIndex(int $chunkX, int $chunkZ, &$regionX, &$regionZ) : void{
 		$regionX = $chunkX >> 5;
@@ -147,28 +154,20 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ?LoadedChunkData;
+	abstract protected function deserializeChunk(string $data, \Logger $logger) : ?LoadedChunkData;
 
 	/**
 	 * @return CompoundTag[]
+	 * @phpstan-return list<CompoundTag>
+	 *
 	 * @throws CorruptedChunkException
 	 */
 	protected static function getCompoundList(string $context, ListTag $list) : array{
-		if($list->count() === 0){ //empty lists might have wrong types, we don't care
-			return [];
-		}
-		if($list->getTagType() !== NBT::TAG_Compound){
+		$compoundList = $list->cast(CompoundTag::class);
+		if($compoundList === null){
 			throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
 		}
-		$result = [];
-		foreach($list as $tag){
-			if(!($tag instanceof CompoundTag)){
-				//this should never happen, but it's still possible due to lack of native type safety
-				throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
-			}
-			$result[] = $tag;
-		}
-		return $result;
+		return $compoundList->getValue();
 	}
 
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
@@ -192,7 +191,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	public function loadChunk(int $chunkX, int $chunkZ) : ?LoadedChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		assert(is_int($regionX) && is_int($regionZ));
 
 		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
 			return null;
@@ -200,12 +198,15 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 		$chunkData = $this->loadRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunkData !== null){
-			return $this->deserializeChunk($chunkData);
+			return $this->deserializeChunk($chunkData, new \PrefixedLogger($this->logger, "Loading chunk x=$chunkX z=$chunkZ"));
 		}
 
 		return null;
 	}
 
+	/**
+	 * @phpstan-return \RegexIterator<mixed, string, \FilesystemIterator>
+	 */
 	private function createRegionIterator() : \RegexIterator{
 		return new \RegexIterator(
 			new \FilesystemIterator(

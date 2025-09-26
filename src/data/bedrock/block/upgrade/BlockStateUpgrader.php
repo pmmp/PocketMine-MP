@@ -24,16 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\block\upgrade;
 
 use pocketmine\data\bedrock\block\BlockStateData;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function count;
+use function get_class;
+use function is_string;
 use function ksort;
 use function max;
+use function sprintf;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
-	/** @var BlockStateUpgradeSchema[] */
+	/**
+	 * @var BlockStateUpgradeSchema[][] versionId => [schemaId => schema]
+	 * @phpstan-var array<int, array<int, BlockStateUpgradeSchema>>
+	 */
 	private array $upgradeSchemas = [];
+
+	private int $outputVersion = 0;
 
 	/**
 	 * @param BlockStateUpgradeSchema[] $upgradeSchemas
@@ -47,71 +59,119 @@ final class BlockStateUpgrader{
 
 	public function addSchema(BlockStateUpgradeSchema $schema) : void{
 		$schemaId = $schema->getSchemaId();
-		if(isset($this->upgradeSchemas[$schemaId])){
-			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID");
+		$versionId = $schema->getVersionId();
+		if(isset($this->upgradeSchemas[$versionId][$schemaId])){
+			throw new \InvalidArgumentException("Cannot add two schemas with the same schema ID and version ID");
 		}
-		$this->upgradeSchemas[$schemaId] = $schema;
+
+		//schema ID tells us the order when multiple schemas use the same version ID
+		$this->upgradeSchemas[$versionId][$schemaId] = $schema;
 
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
+		ksort($this->upgradeSchemas[$versionId], SORT_NUMERIC);
+
+		$this->outputVersion = max($this->outputVersion, $schema->getVersionId());
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
 		$version = $blockStateData->getVersion();
-		$highestVersion = $version;
-		foreach($this->upgradeSchemas as $schema){
-			$resultVersion = $schema->getVersionId();
-			$highestVersion = max($highestVersion, $resultVersion);
-			if($version > $resultVersion){
-				//even if this is actually the same version, we have to apply it anyway because mojang are dumb and
-				//didn't always bump the blockstate version when changing it :(
+		$name = $blockStateData->getName();
+		$states = $blockStateData->getStates();
+		foreach($this->upgradeSchemas as $resultVersion => $schemaList){
+			/*
+			 * Sometimes Mojang made changes without bumping the version ID.
+			 * A notable example is 0131_1.18.20.27_beta_to_1.18.30.json, which renamed a bunch of blockIDs.
+			 * When this happens, all the schemas must be applied even if the version is the same, because the input
+			 * version doesn't tell us which of the schemas have already been applied.
+			 * If there's only one schema for a version (the norm), we can safely assume it's already been applied if
+			 * the version is the same, and skip over it.
+			 * TODO: this causes issues when testing isolated schemas since there will only be one schema for a version.
+			 * The second check should be disabled for that case.
+			 */
+			if($version > $resultVersion || (count($schemaList) === 1 && $version === $resultVersion)){
 				continue;
 			}
-			$oldName = $blockStateData->getName();
-			$oldState = $blockStateData->getStates();
-			if(isset($schema->remappedStates[$oldName])){
-				foreach($schema->remappedStates[$oldName] as $remap){
-					if(count($remap->oldState) > count($oldState)){
-						//match criteria has more requirements than we have state properties
-						continue; //try next state
-					}
-					foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
-						if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
-							continue 2; //try next state
-						}
-					}
-					$newState = $remap->newState;
-					foreach($remap->copiedState as $stateName){
-						if(isset($oldState[$stateName])){
-							$newState[$stateName] = $oldState[$stateName];
-						}
-					}
 
-					$blockStateData = new BlockStateData($remap->newName, $newState, $resultVersion);
-					continue 2; //try next schema
+			foreach($schemaList as $schema){
+				[$name, $states] = $this->applySchema($schema, $name, $states);
+			}
+		}
+
+		return new BlockStateData($name, $states, $this->outputVersion);
+	}
+
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return (string|Tag[])[]
+	 * @phpstan-return array{0: string, 1: array<string, Tag>}
+	 */
+	private function applySchema(BlockStateUpgradeSchema $schema, string $oldName, array $states) : array{
+		$remapped = $this->applyStateRemapped($schema, $oldName, $states);
+		if($remapped !== null){
+			return $remapped;
+		}
+
+		if(isset($schema->renamedIds[$oldName]) && isset($schema->flattenedProperties[$oldName])){
+			//TODO: this probably ought to be validated when the schema is constructed
+			throw new AssumptionFailedError("Both renamedIds and flattenedProperties are set for the same block ID \"$oldName\" - don't know what to do");
+		}
+		if(isset($schema->renamedIds[$oldName])){
+			$newName = $schema->renamedIds[$oldName];
+		}elseif(isset($schema->flattenedProperties[$oldName])){
+			[$newName, $states] = $this->applyPropertyFlattened($schema->flattenedProperties[$oldName], $oldName, $states);
+		}else{
+			$newName = $oldName;
+		}
+
+		$states = $this->applyPropertyAdded($schema, $oldName, $states);
+		$states = $this->applyPropertyRemoved($schema, $oldName, $states);
+		$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states);
+		$states = $this->applyPropertyValueChanged($schema, $oldName, $states);
+
+		return [$newName, $states];
+	}
+
+	/**
+	 * @param Tag[] $oldState
+	 * @phpstan-param array<string, Tag> $oldState
+	 *
+	 * @return (string|Tag[])[]|null
+	 * @phpstan-return array{0: string, 1: array<string, Tag>}|null
+	 */
+	private function applyStateRemapped(BlockStateUpgradeSchema $schema, string $oldName, array $oldState) : ?array{
+		if(isset($schema->remappedStates[$oldName])){
+			foreach($schema->remappedStates[$oldName] as $remap){
+				if(count($remap->oldState) > count($oldState)){
+					//match criteria has more requirements than we have state properties
+					continue; //try next state
 				}
-			}
-			$newName = $schema->renamedIds[$oldName] ?? null;
+				foreach(Utils::stringifyKeys($remap->oldState) as $k => $v){
+					if(!isset($oldState[$k]) || !$oldState[$k]->equals($v)){
+						continue 2; //try next state
+					}
+				}
 
-			$stateChanges = 0;
-			$states = $blockStateData->getStates();
+				if(is_string($remap->newName)){
+					$newName = $remap->newName;
+				}else{
+					//discard flatten modifications to state - the remap newState and copiedState will take care of it
+					[$newName, ] = $this->applyPropertyFlattened($remap->newName, $oldName, $oldState);
+				}
 
-			$states = $this->applyPropertyAdded($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyRemoved($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyRenamedOrValueChanged($schema, $oldName, $states, $stateChanges);
-			$states = $this->applyPropertyValueChanged($schema, $oldName, $states, $stateChanges);
+				$newState = $remap->newState;
+				foreach($remap->copiedState as $stateName){
+					if(isset($oldState[$stateName])){
+						$newState[$stateName] = $oldState[$stateName];
+					}
+				}
 
-			if($newName !== null || $stateChanges > 0){
-				$blockStateData = new BlockStateData($newName ?? $oldName, $states, $resultVersion);
-				//don't break out; we may need to further upgrade the state
+				return [$newName, $newState];
 			}
 		}
 
-		if($highestVersion > $version){
-			//always update the version number of the blockstate, even if it didn't change - this is needed for
-			//external tools
-			$blockStateData = new BlockStateData($blockStateData->getName(), $blockStateData->getStates(), $highestVersion);
-		}
-		return $blockStateData;
+		return null;
 	}
 
 	/**
@@ -121,11 +181,10 @@ final class BlockStateUpgrader{
 	 * @return Tag[]
 	 * @phpstan-return array<string, Tag>
 	 */
-	private function applyPropertyAdded(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
+	private function applyPropertyAdded(BlockStateUpgradeSchema $schema, string $oldName, array $states) : array{
 		if(isset($schema->addedProperties[$oldName])){
 			foreach(Utils::stringifyKeys($schema->addedProperties[$oldName]) as $propertyName => $value){
 				if(!isset($states[$propertyName])){
-					$stateChanges++;
 					$states[$propertyName] = $value;
 				}
 			}
@@ -141,13 +200,10 @@ final class BlockStateUpgrader{
 	 * @return Tag[]
 	 * @phpstan-return array<string, Tag>
 	 */
-	private function applyPropertyRemoved(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
+	private function applyPropertyRemoved(BlockStateUpgradeSchema $schema, string $oldName, array $states) : array{
 		if(isset($schema->removedProperties[$oldName])){
 			foreach($schema->removedProperties[$oldName] as $propertyName){
-				if(isset($states[$propertyName])){
-					$stateChanges++;
-					unset($states[$propertyName]);
-				}
+				unset($states[$propertyName]);
 			}
 		}
 
@@ -173,12 +229,11 @@ final class BlockStateUpgrader{
 	 * @return Tag[]
 	 * @phpstan-return array<string, Tag>
 	 */
-	private function applyPropertyRenamedOrValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
+	private function applyPropertyRenamedOrValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states) : array{
 		if(isset($schema->renamedProperties[$oldName])){
 			foreach(Utils::stringifyKeys($schema->renamedProperties[$oldName]) as $oldPropertyName => $newPropertyName){
 				$oldValue = $states[$oldPropertyName] ?? null;
 				if($oldValue !== null){
-					$stateChanges++;
 					unset($states[$oldPropertyName]);
 
 					//If a value remap is needed, we need to do it here, since we won't be able to locate the property
@@ -199,20 +254,49 @@ final class BlockStateUpgrader{
 	 * @return Tag[]
 	 * @phpstan-return array<string, Tag>
 	 */
-	private function applyPropertyValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states, int &$stateChanges) : array{
+	private function applyPropertyValueChanged(BlockStateUpgradeSchema $schema, string $oldName, array $states) : array{
 		if(isset($schema->remappedPropertyValues[$oldName])){
 			foreach(Utils::stringifyKeys($schema->remappedPropertyValues[$oldName]) as $oldPropertyName => $remappedValues){
 				$oldValue = $states[$oldPropertyName] ?? null;
 				if($oldValue !== null){
 					$newValue = $this->locateNewPropertyValue($schema, $oldName, $oldPropertyName, $oldValue);
-					if($newValue !== $oldValue){
-						$stateChanges++;
-						$states[$oldPropertyName] = $newValue;
-					}
+					$states[$oldPropertyName] = $newValue;
 				}
 			}
 		}
 
 		return $states;
+	}
+
+	/**
+	 * @param Tag[] $states
+	 * @phpstan-param array<string, Tag> $states
+	 *
+	 * @return (string|Tag[])[]
+	 * @phpstan-return array{0: string, 1: array<string, Tag>}
+	 */
+	private function applyPropertyFlattened(BlockStateUpgradeSchemaFlattenInfo $flattenInfo, string $oldName, array $states) : array{
+		$flattenedValue = $states[$flattenInfo->flattenedProperty] ?? null;
+		$expectedType = $flattenInfo->flattenedPropertyType;
+		if($expectedType === null){
+			//TODO: we can't make this non-nullable in a patch release
+			throw new AssumptionFailedError("We never give this null");
+		}
+		if(!$flattenedValue instanceof $expectedType){
+			//flattened property is not of the expected type, so this transformation is not applicable
+			return [$oldName, $states];
+		}
+		$embedKey = match(get_class($flattenedValue)){
+			StringTag::class => $flattenedValue->getValue(),
+			ByteTag::class => (string) $flattenedValue->getValue(),
+			IntTag::class => (string) $flattenedValue->getValue(),
+			//flattenedPropertyType is always one of these three types, but PHPStan doesn't know that
+			default => throw new AssumptionFailedError("flattenedPropertyType should be one of these three types, but have " . get_class($flattenedValue)),
+		};
+		$embedValue = $flattenInfo->flattenedValueRemaps[$embedKey] ?? $embedKey;
+		$newName = sprintf("%s%s%s", $flattenInfo->prefix, $embedValue, $flattenInfo->suffix);
+		unset($states[$flattenInfo->flattenedProperty]);
+
+		return [$newName, $states];
 	}
 }

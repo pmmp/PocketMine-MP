@@ -33,7 +33,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
-use function lcg_value;
+use pocketmine\utils\Utils;
 use function mt_rand;
 
 class Armor extends Durable{
@@ -44,8 +44,11 @@ class Armor extends Durable{
 
 	protected ?Color $customColor = null;
 
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info){
-		parent::__construct($identifier, $name);
+	/**
+	 * @param string[] $enchantmentTags
+	 */
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = []){
+		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->armorInfo = $info;
 	}
 
@@ -70,6 +73,14 @@ class Armor extends Durable{
 
 	public function isFireProof() : bool{
 		return $this->armorInfo->isFireProof();
+	}
+
+	public function getMaterial() : ArmorMaterial{
+		return $this->armorInfo->getMaterial();
+	}
+
+	public function getEnchantability() : int{
+		return $this->armorInfo->getMaterial()->getEnchantability();
 	}
 
 	/**
@@ -118,7 +129,7 @@ class Armor extends Durable{
 
 			$chance = 1 / ($unbreakingLevel + 1);
 			for($i = 0; $i < $amount; ++$i){
-				if(mt_rand(1, 100) > 60 && lcg_value() > $chance){ //unbreaking only applies to armor 40% of the time at best
+				if(mt_rand(1, 100) > 60 && Utils::getRandomFloat() > $chance){ //unbreaking only applies to armor 40% of the time at best
 					$negated++;
 				}
 			}
@@ -135,11 +146,15 @@ class Armor extends Durable{
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
 		$player->getInventory()->setItemInHand($existing);
+		$sound = $new->getMaterial()->getEquipSound();
+		if($sound !== null){
+			$player->broadcastSound($sound);
+		}
 		if(!$thisCopy->isNull()){
 			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
 			$returnedItems[] = $thisCopy;
 		}
-		return ItemUseResult::SUCCESS();
+		return ItemUseResult::SUCCESS;
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{

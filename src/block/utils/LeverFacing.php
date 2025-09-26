@@ -24,13 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\math\Facing;
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\LegacyEnumShimTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
+ *  These are retained for backwards compatibility only.
  *
  * @method static LeverFacing DOWN_AXIS_X()
  * @method static LeverFacing DOWN_AXIS_Z()
@@ -41,27 +39,26 @@ use pocketmine\utils\EnumTrait;
  * @method static LeverFacing UP_AXIS_Z()
  * @method static LeverFacing WEST()
  */
-final class LeverFacing{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+enum LeverFacing{
+	use LegacyEnumShimTrait;
 
-	protected static function setup() : void{
-		self::registerAll(
-			new self("up_axis_x", Facing::UP),
-			new self("up_axis_z", Facing::UP),
-			new self("down_axis_x", Facing::DOWN),
-			new self("down_axis_z", Facing::DOWN),
-			new self("north", Facing::NORTH),
-			new self("east", Facing::EAST),
-			new self("south", Facing::SOUTH),
-			new self("west", Facing::WEST),
-		);
-	}
+	case UP_AXIS_X;
+	case UP_AXIS_Z;
+	case DOWN_AXIS_X;
+	case DOWN_AXIS_Z;
+	case NORTH;
+	case EAST;
+	case SOUTH;
+	case WEST;
 
-	private function __construct(string $enumName, private int $facing){
-		$this->Enum___construct($enumName);
+	public function getFacing() : int{
+		return match($this){
+			self::UP_AXIS_X, self::UP_AXIS_Z => Facing::UP,
+			self::DOWN_AXIS_X, self::DOWN_AXIS_Z => Facing::DOWN,
+			self::NORTH => Facing::NORTH,
+			self::EAST => Facing::EAST,
+			self::SOUTH => Facing::SOUTH,
+			self::WEST => Facing::WEST,
+		};
 	}
-
-	public function getFacing() : int{ return $this->facing; }
 }

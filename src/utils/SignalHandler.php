@@ -36,14 +36,12 @@ use const SIGTERM;
 
 final class SignalHandler{
 	/** @phpstan-var (\Closure(int) : void)|null */
-	private ?\Closure $interruptCallback;
+	private ?\Closure $interruptCallback = null;
 
 	/**
 	 * @phpstan-param \Closure() : void $interruptCallback
 	 */
 	public function __construct(\Closure $interruptCallback){
-		$this->interruptCallback = $interruptCallback;
-
 		if(function_exists('sapi_windows_set_ctrl_handler')){
 			sapi_windows_set_ctrl_handler($this->interruptCallback = function(int $signo) use ($interruptCallback) : void{
 				if($signo === PHP_WINDOWS_EVENT_CTRL_C || $signo === PHP_WINDOWS_EVENT_CTRL_BREAK){

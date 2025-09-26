@@ -33,9 +33,11 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
+use function array_values;
 use function explode;
 use function implode;
 use function str_replace;
+use const PHP_INT_MAX;
 
 abstract class Command{
 
@@ -44,10 +46,16 @@ abstract class Command{
 	private string $nextLabel;
 	private string $label;
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $aliases = [];
 
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	private array $activeAliases = [];
 
 	private ?CommandMap $commandMap = null;
@@ -62,6 +70,7 @@ abstract class Command{
 
 	/**
 	 * @param string[] $aliases
+	 * @phpstan-param list<string> $aliases
 	 */
 	public function __construct(string $name, Translatable|string $description = "", Translatable|string|null $usageMessage = null, array $aliases = []){
 		$this->name = $name;
@@ -73,6 +82,7 @@ abstract class Command{
 
 	/**
 	 * @param string[] $args
+	 * @phpstan-param list<string> $args
 	 *
 	 * @return mixed
 	 * @throws CommandException
@@ -104,7 +114,7 @@ abstract class Command{
 	}
 
 	public function setPermission(?string $permission) : void{
-		$this->setPermissions($permission === null ? [] : explode(";", $permission));
+		$this->setPermissions($permission === null ? [] : explode(";", $permission, limit: PHP_INT_MAX));
 	}
 
 	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
@@ -182,6 +192,7 @@ abstract class Command{
 
 	/**
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getAliases() : array{
 		return $this->activeAliases;
@@ -201,8 +212,10 @@ abstract class Command{
 
 	/**
 	 * @param string[] $aliases
+	 * @phpstan-param list<string> $aliases
 	 */
 	public function setAliases(array $aliases) : void{
+		$aliases = array_values($aliases); //because plugins can and will pass crap
 		$this->aliases = $aliases;
 		if(!$this->isRegistered()){
 			$this->activeAliases = $aliases;

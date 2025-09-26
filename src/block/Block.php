@@ -26,6 +26,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\LE;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
@@ -36,11 +38,14 @@ use pocketmine\data\runtime\RuntimeDataSizeCalculator;
 use pocketmine\data\runtime\RuntimeDataWriter;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Projectile;
+use pocketmine\item\enchantment\AvailableEnchantmentRegistry;
+use pocketmine\item\enchantment\ItemEnchantmentTagRegistry;
+use pocketmine\item\enchantment\ItemEnchantmentTags;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
-use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -52,29 +57,53 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use function count;
 use function get_class;
+use function hash;
 use const PHP_INT_MAX;
 
 class Block{
-	public const INTERNAL_STATE_DATA_BITS = 8;
+	public const INTERNAL_STATE_DATA_BITS = 11;
 	public const INTERNAL_STATE_DATA_MASK = ~(~0 << self::INTERNAL_STATE_DATA_BITS);
 
 	/**
 	 * @internal
+	 * Hardcoded int is `Binary::readLong(hash('xxh3', Binary::writeLLong(BlockTypeIds::AIR), binary: true))`
+	 * TODO: it would be much easier if we could just make this 0 or some other easy value
 	 */
-	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (BlockTypeIds::AIR & self::INTERNAL_STATE_DATA_MASK);
+	public const EMPTY_STATE_ID = (BlockTypeIds::AIR << self::INTERNAL_STATE_DATA_BITS) | (-7482769108513497636 & self::INTERNAL_STATE_DATA_MASK);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
 	protected BlockTypeInfo $typeInfo;
 	protected Position $position;
 
-	/** @var AxisAlignedBB[]|null */
+	/**
+	 * @var AxisAlignedBB[]|null
+	 * @phpstan-var list<AxisAlignedBB>|null
+	 */
 	protected ?array $collisionBoxes = null;
 
 	private int $requiredBlockItemStateDataBits;
 	private int $requiredBlockOnlyStateDataBits;
 
 	private Block $defaultState;
+
+	private int $stateIdXorMask;
+
+	/**
+	 * Computes the mask to be XOR'd with the state data.
+	 * This is to improve distribution of the state data bits, which occupy the least significant bits of the state ID.
+	 * Improved distribution improves PHP array performance when using the state ID as a key, as PHP arrays use some of
+	 * the lower bits of integer keys directly without hashing.
+	 *
+	 * The type ID is included in the XOR mask. This is not necessary to improve distribution, but it reduces the number
+	 * of operations required to compute the state ID (micro optimization).
+	 */
+	private static function computeStateIdXorMask(int $typeId) : int{
+		//TODO: the mixed byte order here is probably a mistake, but it doesn't break anything for now
+		return
+			$typeId << self::INTERNAL_STATE_DATA_BITS |
+			(BE::unpackSignedLong(hash('xxh3', LE::packSignedLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
+	}
 
 	/**
 	 * @param string $name English name of the block type (TODO: implement translations)
@@ -93,6 +122,9 @@ class Block{
 		$this->describeBlockOnlyState($calculator);
 		$this->requiredBlockOnlyStateDataBits = $calculator->getBitsUsed();
 
+		$this->stateIdXorMask = self::computeStateIdXorMask($idInfo->getBlockTypeId());
+
+		//this must be done last, otherwise the defaultState could have uninitialized fields
 		$defaultState = clone $this;
 		$this->defaultState = $defaultState;
 		$defaultState->defaultState = $defaultState;
@@ -148,13 +180,7 @@ class Block{
 	 * {@link RuntimeBlockStateRegistry::fromStateId()}.
 	 */
 	public function getStateId() : int{
-		$typeId = $this->getTypeId();
-		//TODO: this XOR mask improves hashtable distribution, but it's only effective if the number of unique block
-		//type IDs is larger than the number of available state data bits. We should probably hash (e.g. using xxhash)
-		//the type ID to create a better mask.
-		//Alternatively, we could hash the whole state ID, but this is currently problematic, since we currently need
-		//to be able to recover the state data from the state ID because of UnknownBlock.
-		return ($typeId << self::INTERNAL_STATE_DATA_BITS) | ($this->encodeFullState() ^ ($typeId & self::INTERNAL_STATE_DATA_MASK));
+		return $this->encodeFullState() ^ $this->stateIdXorMask;
 	}
 
 	/**
@@ -224,12 +250,6 @@ class Block{
 		}
 	}
 
-	private function decodeFullState(int $data) : void{
-		$reader = new RuntimeDataReader($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits, $data);
-		$this->decodeBlockItemState($reader->readInt($this->requiredBlockItemStateDataBits));
-		$this->decodeBlockOnlyState($reader->readInt($this->requiredBlockOnlyStateDataBits));
-	}
-
 	private function encodeBlockItemState() : int{
 		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits);
 
@@ -255,11 +275,22 @@ class Block{
 	}
 
 	private function encodeFullState() : int{
-		$writer = new RuntimeDataWriter($this->requiredBlockItemStateDataBits + $this->requiredBlockOnlyStateDataBits);
-		$writer->writeInt($this->requiredBlockItemStateDataBits, $this->encodeBlockItemState());
-		$writer->writeInt($this->requiredBlockOnlyStateDataBits, $this->encodeBlockOnlyState());
+		$blockItemBits = $this->requiredBlockItemStateDataBits;
+		$blockOnlyBits = $this->requiredBlockOnlyStateDataBits;
 
-		return $writer->getValue();
+		if($blockOnlyBits === 0 && $blockItemBits === 0){
+			return 0;
+		}
+
+		$result = 0;
+		if($blockItemBits > 0){
+			$result |= $this->encodeBlockItemState();
+		}
+		if($blockOnlyBits > 0){
+			$result |= $this->encodeBlockOnlyState() << $blockItemBits;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -300,34 +331,46 @@ class Block{
 		if($bits > Block::INTERNAL_STATE_DATA_BITS){
 			throw new \LogicException("Block state data cannot use more than " . Block::INTERNAL_STATE_DATA_BITS . " bits");
 		}
-		for($stateData = 0; $stateData < (1 << $bits); ++$stateData){
-			$v = clone $this;
+		for($blockItemStateData = 0; $blockItemStateData < (1 << $this->requiredBlockItemStateDataBits); ++$blockItemStateData){
+			$withType = clone $this;
 			try{
-				$v->decodeFullState($stateData);
-				if($v->encodeFullState() !== $stateData){
-					throw new \LogicException(static::class . "::decodeStateData() accepts invalid state data (returned " . $v->encodeFullState() . " for input $stateData)");
+				$withType->decodeBlockItemState($blockItemStateData);
+				$encoded = $withType->encodeBlockItemState();
+				if($encoded !== $blockItemStateData){
+					throw new \LogicException(static::class . "::decodeBlockItemState() accepts invalid inputs (returned $encoded for input $blockItemStateData)");
 				}
 			}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
 				continue;
 			}
 
-			yield $v;
+			for($blockOnlyStateData = 0; $blockOnlyStateData < (1 << $this->requiredBlockOnlyStateDataBits); ++$blockOnlyStateData){
+				$withState = clone $withType;
+				try{
+					$withState->decodeBlockOnlyState($blockOnlyStateData);
+					$encoded = $withState->encodeBlockOnlyState();
+					if($encoded !== $blockOnlyStateData){
+						throw new \LogicException(static::class . "::decodeBlockOnlyState() accepts invalid inputs (returned $encoded for input $blockOnlyStateData)");
+					}
+				}catch(InvalidSerializedRuntimeDataException){ //invalid property combination, leave it
+					continue;
+				}
+
+				yield $withState;
+			}
 		}
 	}
 
 	/**
 	 * Called when this block is created, set, or has a neighbouring block update, to re-detect dynamic properties which
-	 * are not saved on the world.
-	 *
-	 * Clears any cached precomputed objects, such as bounding boxes. Remove any outdated precomputed things such as
-	 * AABBs and force recalculation.
+	 * are not saved in the blockstate ID.
+	 * If any such properties are updated, don't forget to clear things like AABB caches if necessary.
 	 *
 	 * A replacement block may be returned. This is useful if the block type changed due to reading of world data (e.g.
 	 * data from a block entity).
+	 *
+	 * @phpstan-impure
 	 */
 	public function readStateFromWorld() : Block{
-		$this->collisionBoxes = null;
-
 		return $this;
 	}
 
@@ -366,7 +409,7 @@ class Block{
 	}
 
 	/**
-	 * AKA: Block->isPlaceable
+	 * Returns whether this block can be placed when obtained as an item.
 	 */
 	public function canBePlaced() : bool{
 		return true;
@@ -422,6 +465,19 @@ class Block{
 	}
 
 	/**
+	 * Returns tags that represent the type of item being enchanted and are used to determine
+	 * what enchantments can be applied to the item of this block during in-game enchanting (enchanting table, anvil, fishing, etc.).
+	 * @see ItemEnchantmentTags
+	 * @see ItemEnchantmentTagRegistry
+	 * @see AvailableEnchantmentRegistry
+	 *
+	 * @return string[]
+	 */
+	public function getEnchantmentTags() : array{
+		return $this->typeInfo->getEnchantmentTags();
+	}
+
+	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if full)
@@ -472,7 +528,8 @@ class Block{
 	/**
 	 * Do actions when interacted by Item. Returns if it has done anything
 	 *
-	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
+	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
+	 * @param Item[]  &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		return false;
@@ -527,16 +584,28 @@ class Block{
 		return $this->getLightFilter() > 0;
 	}
 
+	/**
+	 * Returns whether this block allows any light to pass through it.
+	 */
 	public function isTransparent() : bool{
 		return false;
 	}
 
+	/**
+	 * @deprecated TL;DR: Don't use this function. Its results are confusing and inconsistent.
+	 *
+	 * No one is sure what the meaning of this property actually is. It's borrowed from Minecraft Java Edition, and is
+	 * used by various blocks for support checks.
+	 *
+	 * Things like signs and banners are considered "solid" despite having no collision box, and things like skulls and
+	 * flower pots are considered non-solid despite obviously being "solid" in the conventional, real-world sense.
+	 */
 	public function isSolid() : bool{
 		return true;
 	}
 
 	/**
-	 * AKA: Block->isFlowable
+	 * Returns whether this block can be destroyed by liquid flowing into its cell.
 	 */
 	public function canBeFlowedInto() : bool{
 		return false;
@@ -558,6 +627,7 @@ class Block{
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
 		$this->position = new Position($x, $y, $z, $world);
+		$this->collisionBoxes = null;
 	}
 
 	/**
@@ -708,8 +778,14 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->position->isValid()){
-			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
+		$position = $this->position;
+		if($position->isValid()){
+			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? [0, 0, 0];
+			return $position->getWorld()->getBlockAt(
+				$position->x + ($dx * $step),
+				$position->y + ($dy * $step),
+				$position->z + ($dz * $step)
+			);
 		}
 
 		throw new \LogicException("Block does not have a valid world");
@@ -723,8 +799,14 @@ class Block{
 	 */
 	public function getHorizontalSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::HORIZONTAL as $facing){
+			[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
@@ -736,8 +818,13 @@ class Block{
 	 */
 	public function getAllSides() : \Generator{
 		$world = $this->position->getWorld();
-		foreach($this->position->sides() as $vector3){
-			yield $world->getBlock($vector3);
+		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
+			//TODO: yield Facing as the key?
+			yield $world->getBlockAt(
+				$this->position->x + $dx,
+				$this->position->y + $dy,
+				$this->position->z + $dz
+			);
 		}
 	}
 
@@ -830,6 +917,7 @@ class Block{
 	 * - anti-cheat checks in plugins
 	 *
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
@@ -854,6 +942,7 @@ class Block{
 
 	/**
 	 * @return AxisAlignedBB[]
+	 * @phpstan-return list<AxisAlignedBB>
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()];
@@ -864,7 +953,11 @@ class Block{
 	 * blocks placed on the given face can be supported by this block.
 	 */
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
+		return SupportType::FULL;
+	}
+
+	protected function getAdjacentSupportType(int $facing) : SupportType{
+		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
 	}
 
 	public function isFullCube() : bool{

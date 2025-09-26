@@ -49,7 +49,7 @@ class Bucket extends Item{
 				default => null
 			};
 			if($resultItem === null){
-				return ItemUseResult::FAIL();
+				return ItemUseResult::FAIL;
 			}
 
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
@@ -60,12 +60,12 @@ class Bucket extends Item{
 
 				$this->pop();
 				$returnedItems[] = $ev->getItem();
-				return ItemUseResult::SUCCESS();
+				return ItemUseResult::SUCCESS;
 			}
 
-			return ItemUseResult::FAIL();
+			return ItemUseResult::FAIL;
 		}
 
-		return ItemUseResult::NONE();
+		return ItemUseResult::NONE;
 	}
 }

@@ -23,18 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\inventory\CreativeInventory;
+use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
+use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
+use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingConsumeInputStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftingCreateSpecificResultStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeAutoStackRequestAction;
@@ -46,6 +50,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\DropStackReque
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequest;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\ItemStackRequestSlotInfo;
+use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\MineBlockStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\PlaceStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\SwapStackRequestAction;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\TakeStackRequestAction;
@@ -53,6 +58,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResp
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function array_key_first;
 use function count;
 use function spl_object_id;
@@ -111,10 +117,10 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info) : array{
-		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
+		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerName()->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if($windowAndSlot === null){
-			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerId() . ", slot ID: " . $info->getSlotId());
+			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerName()->getContainerId() . ", slot ID: " . $info->getSlotId());
 		}
 		[$inventory, $slot] = $windowAndSlot;
 		if(!$inventory->slotExists($slot)){
@@ -141,7 +147,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	protected function removeItemFromSlot(ItemStackRequestSlotInfo $slotInfo, int $count) : Item{
-		if($slotInfo->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
+		if($slotInfo->getContainerName()->getContainerId() === ContainerUIIds::CREATED_OUTPUT && $slotInfo->getSlotId() === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 			//special case for the "created item" output slot
 			//TODO: do we need to send a response for this slot info?
 			return $this->takeCreatedItem($count);
@@ -233,9 +239,10 @@ class ItemStackRequestExecutor{
 			throw new ItemStackRequestProcessException("Cannot craft a recipe more than 256 times");
 		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
-		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeId);
+		$recipeIndex = $recipeId - CraftingDataCache::RECIPE_ID_OFFSET;
+		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeIndex);
 		if($recipe === null){
-			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeId");
+			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeIndex");
 		}
 
 		$this->specialTransaction = new CraftingTransaction($this->player, $craftingManager, [], $recipe, $repetitions);
@@ -288,7 +295,7 @@ class ItemStackRequestExecutor{
 	 * @throws ItemStackRequestProcessException
 	 */
 	private function assertDoingCrafting() : void{
-		if(!$this->specialTransaction instanceof CraftingTransaction){
+		if(!$this->specialTransaction instanceof CraftingTransaction && !$this->specialTransaction instanceof EnchantingTransaction){
 			if($this->specialTransaction === null){
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
 			}else{
@@ -327,14 +334,23 @@ class ItemStackRequestExecutor{
 			$this->builder->addAction(new DestroyItemAction($destroyed));
 
 		}elseif($action instanceof CreativeCreateStackRequestAction){
-			$item = CreativeInventory::getInstance()->getItem($action->getCreativeItemId());
+			$item = $this->player->getCreativeInventory()->getItem($action->getCreativeItemId());
 			if($item === null){
 				throw new ItemStackRequestProcessException("No such creative item index: " . $action->getCreativeItemId());
 			}
 
 			$this->setNextCreatedItem($item, true);
 		}elseif($action instanceof CraftRecipeStackRequestAction){
-			$this->beginCrafting($action->getRecipeId(), 1);
+			$window = $this->player->getCurrentWindow();
+			if($window instanceof EnchantInventory){
+				$optionId = $this->inventoryManager->getEnchantingTableOptionIndex($action->getRecipeId());
+				if($optionId !== null && ($option = $window->getOption($optionId)) !== null){
+					$this->specialTransaction = new EnchantingTransaction($this->player, $option, $optionId + 1);
+					$this->setNextCreatedItem($window->getOutput($optionId));
+				}
+			}else{
+				$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
+			}
 		}elseif($action instanceof CraftRecipeAutoStackRequestAction){
 			$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());
 		}elseif($action instanceof CraftingConsumeInputStackRequestAction){
@@ -351,6 +367,16 @@ class ItemStackRequestExecutor{
 			$this->setNextCreatedItem($nextResultItem);
 		}elseif($action instanceof DeprecatedCraftingResultsStackRequestAction){
 			//no obvious use
+		}elseif($action instanceof MineBlockStackRequestAction){
+			$slot = $action->getHotbarSlot();
+			$this->requestSlotInfos[] = new ItemStackRequestSlotInfo(new FullContainerName(ContainerUIIds::HOTBAR), $slot, $action->getStackId());
+			$inventory = $this->player->getInventory();
+			$usedItem = $inventory->slotExists($slot) ? $inventory->getItem($slot) : null;
+			$predictedDamage = $action->getPredictedDurability();
+			if($usedItem instanceof Durable && $predictedDamage >= 0 && $predictedDamage <= $usedItem->getMaxDurability()){
+				$usedItem->setDamage($predictedDamage);
+				$this->inventoryManager->addPredictedSlotChange($inventory, $slot, $usedItem);
+			}
 		}else{
 			throw new ItemStackRequestProcessException("Unhandled item stack request action");
 		}
@@ -359,8 +385,8 @@ class ItemStackRequestExecutor{
 	/**
 	 * @throws ItemStackRequestProcessException
 	 */
-	public function generateInventoryTransaction() : InventoryTransaction{
-		foreach($this->request->getActions() as $k => $action){
+	public function generateInventoryTransaction() : ?InventoryTransaction{
+		foreach(Utils::promoteKeys($this->request->getActions()) as $k => $action){
 			try{
 				$this->processItemStackRequestAction($action);
 			}catch(ItemStackRequestProcessException $e){
@@ -369,6 +395,9 @@ class ItemStackRequestExecutor{
 		}
 		$this->setNextCreatedItem(null);
 		$inventoryActions = $this->builder->generateActions();
+		if(count($inventoryActions) === 0){
+			return null;
+		}
 
 		$transaction = $this->specialTransaction ?? new InventoryTransaction($this->player);
 		foreach($inventoryActions as $action){
@@ -378,12 +407,16 @@ class ItemStackRequestExecutor{
 		return $transaction;
 	}
 
-	public function buildItemStackResponse() : ItemStackResponse{
+	public function getItemStackResponseBuilder() : ItemStackResponseBuilder{
 		$builder = new ItemStackResponseBuilder($this->request->getRequestId(), $this->inventoryManager);
 		foreach($this->requestSlotInfos as $requestInfo){
-			$builder->addSlot($requestInfo->getContainerId(), $requestInfo->getSlotId());
+			$builder->addSlot($requestInfo->getContainerName()->getContainerId(), $requestInfo->getSlotId());
 		}
 
-		return $builder->build();
+		return $builder;
+	}
+
+	public function buildItemStackResponse() : ItemStackResponse{
+		return $this->getItemStackResponseBuilder()->build();
 	}
 }

@@ -50,7 +50,7 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($player !== null && !$player->getGamemode()->equals(GameMode::CREATIVE())){
+		if($player !== null && $player->getGamemode() !== GameMode::CREATIVE){
 			$this->teleport();
 			return true;
 		}
@@ -82,6 +82,6 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::NONE;
 	}
 }

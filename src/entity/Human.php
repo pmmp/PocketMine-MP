@@ -37,6 +37,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\PlayerOffHandInventory;
+use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -66,8 +67,8 @@ use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
 use pocketmine\player\Player;
-use pocketmine\utils\Limits;
 use pocketmine\world\sound\TotemUseSound;
+use pocketmine\world\World;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_fill;
@@ -76,7 +77,6 @@ use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
-use function random_int;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -190,8 +190,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->hungerManager;
 	}
 
+	/**
+	 * Returns whether the Human can eat food. This may return a different result than {@link HungerManager::isHungry()},
+	 * as HungerManager only handles the hunger bar.
+	 */
+	public function canEat() : bool{
+		return $this->hungerManager->isHungry() || $this->getWorld()->getDifficulty() === World::DIFFICULTY_PEACEFUL;
+	}
+
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->canEat()){
 			return false;
 		}
 
@@ -211,6 +219,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->xpManager;
 	}
 
+	public function getEnchantmentSeed() : int{
+		return $this->xpSeed;
+	}
+
+	public function setEnchantmentSeed(int $seed) : void{
+		$this->xpSeed = $seed;
+	}
+
+	public function regenerateEnchantmentSeed() : void{
+		$this->xpSeed = EnchantingHelper::generateSeed();
+	}
+
 	public function getXpDropAmount() : int{
 		//this causes some XP to be lost on death when above level 1 (by design), dropping at most enough points for
 		//about 7.5 levels of XP.
@@ -225,6 +245,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	public function getEnderInventory() : PlayerEnderInventory{
 		return $this->enderInventory;
+	}
+
+	public function getSneakOffset() : float{
+		return 0.31;
 	}
 
 	/**
@@ -275,12 +299,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
-		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY);
+		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY, CompoundTag::class);
 		if($inventoryTag !== null){
 			$inventoryItems = [];
 			$armorInventoryItems = [];
 
-			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
 				if($slot >= 0 && $slot < 9){ //Hotbar
@@ -304,11 +327,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobOffHandItemChange($recipients, $this)
 		)));
 
-		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY);
+		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY, CompoundTag::class);
 		if($enderChestInventoryTag !== null){
 			$enderChestInventoryItems = [];
 
-			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
 				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
 			}
@@ -334,7 +356,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(($xpSeedTag = $nbt->getTag(self::TAG_XP_SEED)) instanceof IntTag){
 			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
-			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
+			$this->xpSeed = EnchantingHelper::generateSeed();
 		}
 	}
 
@@ -492,6 +514,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				new AbilitiesLayer(
 					AbilitiesLayer::LAYER_BASE,
 					array_fill(0, AbilitiesLayer::NUMBER_OF_ABILITIES, false),
+					0.0,
 					0.0,
 					0.0
 				)

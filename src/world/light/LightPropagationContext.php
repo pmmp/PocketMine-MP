@@ -28,8 +28,8 @@ final class LightPropagationContext{
 	/** @phpstan-var \SplQueue<array{int, int, int}> */
 	public \SplQueue $spreadQueue;
 	/**
-	 * @var true[]
-	 * @phpstan-var array<int, true>
+	 * @var int[]|true[]
+	 * @phpstan-var array<int, int|true>
 	 */
 	public array $spreadVisited = [];
 

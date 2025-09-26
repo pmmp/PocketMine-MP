@@ -88,7 +88,8 @@ class HungerManager{
 	}
 
 	/**
-	 * Returns whether this Human may consume objects requiring hunger.
+	 * Returns whether the food level is below the maximum.
+	 * This doesn't decide if the entity can eat food. Use {@link Human::canEat()} for that.
 	 */
 	public function isHungry() : bool{
 		return $this->getFood() < $this->getMaxFood();
@@ -133,14 +134,18 @@ class HungerManager{
 		if(!$this->enabled){
 			return 0;
 		}
-		$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
-		$ev->call();
-		if($ev->isCancelled()){
-			return 0.0;
+		$evAmount = $amount;
+		if(PlayerExhaustEvent::hasHandlers()){
+			$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
+			$ev->call();
+			if($ev->isCancelled()){
+				return 0.0;
+			}
+			$evAmount = $ev->getAmount();
 		}
 
 		$exhaustion = $this->getExhaustion();
-		$exhaustion += $ev->getAmount();
+		$exhaustion += $evAmount;
 
 		while($exhaustion >= 4.0){
 			$exhaustion -= 4.0;
@@ -159,7 +164,7 @@ class HungerManager{
 		}
 		$this->setExhaustion($exhaustion);
 
-		return $ev->getAmount();
+		return $evAmount;
 	}
 
 	public function getFoodTickTimer() : int{

@@ -29,11 +29,14 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
 use pocketmine\Server;
+use pocketmine\thread\ThreadCrashInfoFrame;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
+use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
+use function array_map;
 use function base64_encode;
 use function error_get_last;
 use function file;
@@ -60,6 +63,12 @@ use function strpos;
 use function substr;
 use function zend_version;
 use function zlib_encode;
+use const E_COMPILE_ERROR;
+use const E_CORE_ERROR;
+use const E_ERROR;
+use const E_PARSE;
+use const E_RECOVERABLE_ERROR;
+use const E_USER_ERROR;
 use const FILE_IGNORE_NEW_LINES;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
@@ -81,6 +90,9 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_NONE = "none";
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
+
+	public const FATAL_ERROR_MASK =
+		E_ERROR | E_PARSE | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR;
 
 	private CrashDumpData $data;
 	private string $encodedData;
@@ -140,7 +152,7 @@ class CrashDump{
 					depends: $d->getDepend(),
 					softDepends: $d->getSoftDepend(),
 					main: $d->getMain(),
-					load: mb_strtoupper($d->getOrder()->name()),
+					load: mb_strtoupper($d->getOrder()->name),
 					website: $d->getWebsite()
 				);
 			}
@@ -150,7 +162,7 @@ class CrashDump{
 	private function extraData() : void{
 		global $argv;
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-settings", true)){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_SETTINGS, true)){
 			$this->data->parameters = (array) $argv;
 			if(($serverDotProperties = @file_get_contents(Path::join($this->server->getDataPath(), "server.properties"))) !== false){
 				$this->data->serverDotProperties = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties) ?? throw new AssumptionFailedError("Pattern is valid");
@@ -168,7 +180,7 @@ class CrashDump{
 
 		$this->data->jit_mode = Utils::getOpcacheJitMode();
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_PHPINFO, true)){
 			ob_start();
 			phpinfo();
 			$this->data->phpinfo = ob_get_contents(); // @phpstan-ignore-line
@@ -183,10 +195,10 @@ class CrashDump{
 			$error = $lastExceptionError;
 		}else{
 			$error = error_get_last();
-			if($error === null){
+			if($error === null || ($error["type"] & self::FATAL_ERROR_MASK) === 0){
 				throw new \RuntimeException("Crash error information missing - did something use exit()?");
 			}
-			$error["trace"] = Utils::currentTrace(3); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
+			$error["trace"] = Utils::printableTrace(Utils::currentTrace(3)); //Skipping CrashDump->baseCrash, CrashDump->construct, Server->crashDump
 			$error["fullFile"] = $error["file"];
 			$error["file"] = Filesystem::cleanPath($error["file"]);
 			try{
@@ -197,15 +209,14 @@ class CrashDump{
 			if(($pos = strpos($error["message"], "\n")) !== false){
 				$error["message"] = substr($error["message"], 0, $pos);
 			}
+			$error["thread"] = "Main";
 		}
 		$error["message"] = mb_scrub($error["message"], 'UTF-8');
 
 		if(isset($lastError)){
-			if(isset($lastError["trace"])){
-				$lastError["trace"] = Utils::printableTrace($lastError["trace"]);
-			}
 			$this->data->lastError = $lastError;
 			$this->data->lastError["message"] = mb_scrub($this->data->lastError["message"], 'UTF-8');
+			$this->data->lastError["trace"] = array_map(array: $lastError["trace"], callback: fn(ThreadCrashInfoFrame $frame) => $frame->getPrintableFrame());
 		}
 
 		$this->data->error = $error;
@@ -215,16 +226,17 @@ class CrashDump{
 		$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_NONE;
 		if(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
 			foreach($error["trace"] as $frame){
-				if(!isset($frame["file"])){
+				$frameFile = $frame->getFile();
+				if($frameFile === null){
 					continue; //PHP core
 				}
-				if($this->determinePluginFromFile($frame["file"], false)){
+				if($this->determinePluginFromFile($frameFile, false)){
 					break;
 				}
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool(YmlServerProperties::AUTO_REPORT_SEND_CODE, true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
@@ -233,7 +245,8 @@ class CrashDump{
 			}
 		}
 
-		$this->data->trace = Utils::printableTrace($error["trace"]);
+		$this->data->trace = array_map(array: $error["trace"], callback: fn(ThreadCrashInfoFrame $frame) => $frame->getPrintableFrame());
+		$this->data->thread = $error["thread"];
 	}
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{

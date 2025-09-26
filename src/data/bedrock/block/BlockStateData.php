@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block;
 
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
@@ -36,14 +37,7 @@ use function implode;
  * Contains the common information found in a serialized blockstate.
  */
 final class BlockStateData{
-	/**
-	 * Bedrock version of the most recent backwards-incompatible change to blockstates.
-	 */
-	public const CURRENT_VERSION =
-		(1 << 24) | //major
-		(19 << 16) | //minor
-		(80 << 8) | //patch
-		(11); //revision
+	public const CURRENT_VERSION = WorldDataVersions::BLOCK_STATES;
 
 	public const TAG_NAME = "name";
 	public const TAG_STATES = "states";
@@ -111,7 +105,10 @@ final class BlockStateData{
 		return new self($name, $states->getValue(), $version);
 	}
 
-	public function toNbt() : CompoundTag{
+	/**
+	 * Encodes the blockstate as a TAG_Compound, exactly as it would be in vanilla Bedrock.
+	 */
+	public function toVanillaNbt() : CompoundTag{
 		$statesTag = CompoundTag::create();
 		foreach(Utils::stringifyKeys($this->states) as $key => $value){
 			$statesTag->setTag($key, $value);
@@ -119,7 +116,15 @@ final class BlockStateData{
 		return CompoundTag::create()
 			->setString(self::TAG_NAME, $this->name)
 			->setInt(self::TAG_VERSION, $this->version)
-			->setTag(self::TAG_STATES, $statesTag)
+			->setTag(self::TAG_STATES, $statesTag);
+	}
+
+	/**
+	 * Encodes the blockstate as a TAG_Compound, but with extra PM-specific metadata, used for fixing bugs in old saved
+	 * data. This should be used for anything saved to disk.
+	 */
+	public function toNbt() : CompoundTag{
+		return $this->toVanillaNbt()
 			->setLong(VersionInfo::TAG_WORLD_DATA_VERSION, VersionInfo::WORLD_DATA_VERSION);
 	}
 

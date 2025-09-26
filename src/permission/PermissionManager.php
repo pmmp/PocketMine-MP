@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function count;
 use function spl_object_id;
 
@@ -37,9 +39,15 @@ class PermissionManager{
 		return self::$instance;
 	}
 
-	/** @var Permission[] */
+	/**
+	 * @var Permission[]
+	 * @phpstan-var array<string, Permission>
+	 */
 	protected array $permissions = [];
-	/** @var PermissibleInternal[][] */
+	/**
+	 * @var PermissibleInternal[][]
+	 * @phpstan-var array<string, array<int, PermissibleInternal>>
+	 */
 	protected array $permSubs = [];
 
 	public function getPermission(string $name) : ?Permission{
@@ -64,6 +72,10 @@ class PermissionManager{
 		}
 	}
 
+	/**
+	 * @deprecated Superseded by server chat broadcast channels
+	 * @see Server::subscribeToBroadcastChannel()
+	 */
 	public function subscribeToPermission(string $permission, PermissibleInternal $permissible) : void{
 		if(!isset($this->permSubs[$permission])){
 			$this->permSubs[$permission] = [];
@@ -71,25 +83,37 @@ class PermissionManager{
 		$this->permSubs[$permission][spl_object_id($permissible)] = $permissible;
 	}
 
+	/**
+	 * @deprecated Superseded by server chat broadcast channels
+	 * @see Server::unsubscribeFromBroadcastChannel()
+	 */
 	public function unsubscribeFromPermission(string $permission, PermissibleInternal $permissible) : void{
-		if(isset($this->permSubs[$permission])){
-			unset($this->permSubs[$permission][spl_object_id($permissible)]);
-			if(count($this->permSubs[$permission]) === 0){
+		if(isset($this->permSubs[$permission][spl_object_id($permissible)])){
+			if(count($this->permSubs[$permission]) === 1){
 				unset($this->permSubs[$permission]);
-			}
-		}
-	}
-
-	public function unsubscribeFromAllPermissions(PermissibleInternal $permissible) : void{
-		foreach($this->permSubs as $permission => &$subs){
-			unset($subs[spl_object_id($permissible)]);
-			if(count($subs) === 0){
-				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			}
 		}
 	}
 
 	/**
+	 * @deprecated Superseded by server chat broadcast channels
+	 * @see Server::unsubscribeFromAllBroadcastChannels()
+	 */
+	public function unsubscribeFromAllPermissions(PermissibleInternal $permissible) : void{
+		foreach(Utils::promoteKeys($this->permSubs) as $permission => $subs){
+			if(count($subs) === 1 && isset($subs[spl_object_id($permissible)])){
+				unset($this->permSubs[$permission]);
+			}else{
+				unset($this->permSubs[$permission][spl_object_id($permissible)]);
+			}
+		}
+	}
+
+	/**
+	 * @deprecated Superseded by server chat broadcast channels
+	 * @see Server::getBroadcastChannelSubscribers()
 	 * @return PermissibleInternal[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{

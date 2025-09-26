@@ -29,15 +29,10 @@ use pocketmine\player\Player;
 
 class Medicine extends Item implements ConsumableItem{
 
-	private MedicineType $medicineType;
-
-	public function __construct(ItemIdentifier $identifier, string $name){
-		$this->medicineType = MedicineType::EYE_DROPS();
-		parent::__construct($identifier, $name);
-	}
+	private MedicineType $medicineType = MedicineType::EYE_DROPS;
 
 	protected function describeState(RuntimeDataDescriber $w) : void{
-		$w->medicineType($this->medicineType);
+		$w->enum($this->medicineType);
 	}
 
 	public function getType() : MedicineType{ return $this->medicineType; }

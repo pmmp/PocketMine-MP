@@ -63,6 +63,14 @@ final class PotionCauldron extends FillableCauldron{
 
 	/** @return $this */
 	public function setPotionItem(?Item $potionItem) : self{
+		if($potionItem !== null && !match($potionItem->getTypeId()){
+			ItemTypeIds::POTION,
+			ItemTypeIds::SPLASH_POTION,
+			ItemTypeIds::LINGERING_POTION => true,
+			default => false,
+		}){
+			throw new \InvalidArgumentException("Item must be a POTION, SPLASH_POTION or LINGERING_POTION");
+		}
 		$this->potionItem = $potionItem !== null ? (clone $potionItem)->setCount(1) : null;
 		return $this;
 	}

@@ -26,13 +26,17 @@ namespace pocketmine\world\format\io\leveldb;
 use pocketmine\block\Block;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
+use pocketmine\data\bedrock\block\convert\UnsupportedBlockStateException;
+use pocketmine\data\bedrock\WorldDataVersions;
 use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
@@ -57,6 +61,7 @@ use function count;
 use function defined;
 use function extension_loaded;
 use function file_exists;
+use function implode;
 use function is_dir;
 use function mkdir;
 use function ord;
@@ -75,8 +80,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_18_30;
-	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = WorldDataVersions::CHUNK;
+	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = WorldDataVersions::SUBCHUNK;
 
 	private const CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET = 4;
 
@@ -155,7 +160,35 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$nbt = new LittleEndianNbtSerializer();
 		$palette = [];
 
-		$paletteSize = $bitsPerBlock === 0 ? 1 : $stream->getLInt();
+		if($bitsPerBlock === 0){
+			$paletteSize = 1;
+			/*
+			 * Due to code copy-paste in a public plugin, some PM4 worlds have 0 bpb palettes with a length prefix.
+			 * This is invalid and does not happen in vanilla.
+			 * These palettes were accepted by PM4 despite being invalid, but PM5 considered them corrupt, causing loss
+			 * of data. Since many users were affected by this, a workaround is therefore necessary to allow PM5 to read
+			 * these worlds without data loss.
+			 *
+			 * References:
+			 * - https://github.com/Refaltor77/CustomItemAPI/issues/68
+			 * - https://github.com/pmmp/PocketMine-MP/issues/5911
+			 */
+			$offset = $stream->getOffset();
+			$byte1 = $stream->getByte();
+			$stream->setOffset($offset); //reset offset
+
+			if($byte1 !== NBT::TAG_Compound){ //normally the first byte would be the NBT of the blockstate
+				$susLength = $stream->getLInt();
+				if($susLength !== 1){ //make sure the data isn't complete garbage
+					throw new CorruptedChunkException("CustomItemAPI borked 0 bpb palette should always have a length of 1");
+				}
+				$logger->error("Unexpected palette size for 0 bpb palette");
+			}
+		}else{
+			$paletteSize = $stream->getLInt();
+		}
+
+		$blockDecodeErrors = [];
 
 		for($i = 0; $i < $paletteSize; ++$i){
 			try{
@@ -172,16 +205,29 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$blockStateData = $this->blockDataUpgrader->upgradeBlockStateNbt($blockStateNbt);
 			}catch(BlockStateDeserializeException $e){
 				//while not ideal, this is not a fatal error
-				$logger->error("Failed to upgrade blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$errorMessage = "Upgrade error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$blockDecodeErrors[$errorMessage][] = $i;
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 				continue;
 			}
 			try{
 				$palette[] = $this->blockStateDeserializer->deserialize($blockStateData);
+			}catch(UnsupportedBlockStateException $e){
+				$blockDecodeErrors[$e->getMessage()][] = $i;
+				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}catch(BlockStateDeserializeException $e){
-				$logger->error("Failed to deserialize blockstate: " . $e->getMessage() . " offset $i in palette, blockstate NBT: " . $blockStateNbt->toString());
+				$errorMessage = "Deserialize error: " . $e->getMessage() . ", NBT: " . $blockStateNbt->toString();
+				$blockDecodeErrors[$errorMessage][] = $i;
 				$palette[] = $this->blockStateDeserializer->deserialize(GlobalBlockStateHandlers::getUnknownBlockStateData());
 			}
+		}
+
+		if(count($blockDecodeErrors) > 0){
+			$finalErrors = [];
+			foreach(Utils::promoteKeys($blockDecodeErrors) as $errorMessage => $paletteOffsets){
+				$finalErrors[] = "$errorMessage (palette offsets: " . implode(", ", $paletteOffsets) . ")";
+			}
+			$logger->error("Errors decoding blocks:\n - " . implode("\n - ", $finalErrors));
 		}
 
 		//TODO: exceptions
@@ -276,6 +322,10 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$previous = $decoded;
 				if($nextIndex <= Chunk::MAX_SUBCHUNK_INDEX){ //older versions wrote additional superfluous biome palettes
 					$result[$nextIndex++] = $decoded;
+				}elseif($stream->feof()){
+					//not enough padding biome arrays for the given version - this is non-critical since we discard the excess anyway, but this should be logged
+					$logger->error("Wrong number of 3D biome palettes for this chunk version: expected $expectedCount, but got " . ($i + 1) . " - this is not a problem, but may indicate a corrupted chunk");
+					break;
 				}
 			}catch(BinaryDataException $e){
 				throw new CorruptedChunkException("Failed to deserialize biome palette $i: " . $e->getMessage(), 0, $e);
@@ -412,7 +462,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$subChunks = [];
 		for($yy = 0; $yy < 8; ++$yy){
-			$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy)];
+			$storages = [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy, new \PrefixedLogger($logger, "Subchunk y=$yy"))];
 			if(isset($convertedLegacyExtraData[$yy])){
 				$storages[] = $convertedLegacyExtraData[$yy];
 			}
@@ -451,7 +501,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData)];
+		$storages = [$this->palettizeLegacySubChunkXZY($blocks, $blockData, $logger)];
 		if($convertedLegacyExtraData !== null){
 			$storages[] = $convertedLegacyExtraData;
 		}
@@ -612,6 +662,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		switch($chunkVersion){
+			case ChunkVersion::v1_21_40:
+				//TODO: BiomeStates became shorts instead of bytes
 			case ChunkVersion::v1_18_30:
 			case ChunkVersion::v1_18_0_25_beta:
 			case ChunkVersion::v1_18_0_24_unused:
@@ -667,7 +719,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$nbt = new LittleEndianNbtSerializer();
 
-		/** @var CompoundTag[] $entities */
 		$entities = [];
 		if(($entityData = $this->db->get($index . ChunkDataKey::ENTITIES)) !== false && $entityData !== ""){
 			try{
@@ -677,7 +728,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		/** @var CompoundTag[] $tiles */
 		$tiles = [];
 		if(($tileData = $this->db->get($index . ChunkDataKey::BLOCK_ENTITIES)) !== false && $tileData !== ""){
 			try{

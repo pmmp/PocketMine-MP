@@ -24,8 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 /**
- * This class is auto-generated. Do not edit it manually.
- * @see build/generate-runtime-enum-serializers.php
+ * Provides backwards-compatible shims for the old codegen'd enum describer methods.
+ * This is kept for plugin backwards compatibility, but these functions should not be used in new code.
+ * @deprecated
  */
 interface RuntimeEnumDescriber{
 
@@ -36,6 +37,8 @@ interface RuntimeEnumDescriber{
 	public function coralType(\pocketmine\block\utils\CoralType &$value) : void;
 
 	public function dirtType(\pocketmine\block\utils\DirtType &$value) : void;
+
+	public function dripleafState(\pocketmine\block\utils\DripleafState &$value) : void;
 
 	public function dyeColor(\pocketmine\block\utils\DyeColor &$value) : void;
 

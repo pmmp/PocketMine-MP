@@ -23,24 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
-use pocketmine\world\Position;
 use function mt_rand;
 
 final class ChorusPlant extends Flowable{
+	use StaticSupportTrait;
+
+	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	protected array $connections = [];
 
 	protected function recalculateCollisionBoxes() : array{
 		$bb = AxisAlignedBB::one();
-		foreach($this->getAllSides() as $facing => $block){
-			$id = $block->getTypeId();
-			if($id !== BlockTypeIds::END_STONE && $id !== BlockTypeIds::CHORUS_FLOWER && !$block->hasSameTypeId($this)){
+		foreach(Facing::ALL as $facing){
+			if(!isset($this->connections[$facing])){
 				$bb->trim($facing, 2 / 16);
 			}
 		}
@@ -48,11 +51,32 @@ final class ChorusPlant extends Flowable{
 		return [$bb];
 	}
 
+	public function readStateFromWorld() : Block{
+		parent::readStateFromWorld();
+
+		$this->collisionBoxes = null;
+
+		foreach(Facing::ALL as $facing){
+			$block = $this->getSide($facing);
+			if(match($block->getTypeId()){
+				BlockTypeIds::END_STONE, BlockTypeIds::CHORUS_FLOWER, $this->getTypeId() => true,
+				default => false
+			}){
+				$this->connections[$facing] = true;
+			}else{
+				unset($this->connections[$facing]);
+			}
+		}
+
+		return $this;
+	}
+
 	private function canBeSupportedBy(Block $block) : bool{
 		return $block->hasSameTypeId($this) || $block->getTypeId() === BlockTypeIds::END_STONE;
 	}
 
-	private function canStay(Position $position) : bool{
+	private function canBeSupportedAt(Block $block) : bool{
+		$position = $block->position;
 		$world = $position->getWorld();
 
 		$down = $world->getBlock($position->down());
@@ -72,24 +96,7 @@ final class ChorusPlant extends Flowable{
 			}
 		}
 
-		if($this->canBeSupportedBy($down)){
-			return true;
-		}
-
-		return false;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canStay($blockReplace->getPosition())){
-			return false;
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onNearbyBlockChange() : void{
-		if(!$this->canStay($this->position)){
-			$this->position->getWorld()->useBreakOn($this->position);
-		}
+		return $this->canBeSupportedBy($down);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
