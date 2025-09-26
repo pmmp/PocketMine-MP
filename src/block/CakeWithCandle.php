@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
+use pocketmine\block\utils\Lightable;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -31,14 +32,11 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class CakeWithCandle extends BaseCake{
+class CakeWithCandle extends BaseCake implements Lightable{
 	use CandleTrait {
 		onInteract as onInteractCandle;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()

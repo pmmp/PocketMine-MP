@@ -26,6 +26,8 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\utils\Utils;
+use pocketmine\world\Explosion;
 
 /**
  * Called when an entity decides to explode, before the explosion's impact is calculated.
@@ -42,10 +44,15 @@ class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 
 	public function __construct(
 		Entity $entity,
-		protected float $radius
+		protected float $radius,
+		private float $fireChance = 0.0,
 	){
 		if($radius <= 0){
 			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
 		}
 		$this->entity = $entity;
 	}
@@ -59,6 +66,47 @@ class EntityPreExplodeEvent extends EntityEvent implements Cancellable{
 			throw new \InvalidArgumentException("Explosion radius must be positive");
 		}
 		$this->radius = $radius;
+	}
+
+	/**
+	 * Returns whether the explosion will create a fire.
+	 */
+	public function isIncendiary() : bool{
+		return $this->fireChance > 0;
+	}
+
+	/**
+	 * Sets whether the explosion will create a fire by filling fireChance with default values.
+	 *
+	 * If $incendiary is true, the fire chance will be filled only if explosion isn't currently creating a fire (if fire chance is 0).
+	 */
+	public function setIncendiary(bool $incendiary) : void{
+		if(!$incendiary){
+			$this->fireChance = 0;
+		}elseif($this->fireChance <= 0){
+			$this->fireChance = Explosion::DEFAULT_FIRE_CHANCE;
+		}
+	}
+
+	/**
+	 * Returns a chance between 0 and 1 of creating a fire.
+	 */
+	public function getFireChance() : float{
+		return $this->fireChance;
+	}
+
+	/**
+	 * Sets a chance between 0 and 1 of creating a fire.
+	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
+	 *
+	 * @param float $fireChance 0 ... 1
+	 */
+	public function setFireChance(float $fireChance) : void{
+		Utils::checkFloatNotInfOrNaN("fireChance", $fireChance);
+		if($fireChance < 0.0 || $fireChance > 1.0){
+			throw new \InvalidArgumentException("Fire chance must be between 0 and 1.");
+		}
+		$this->fireChance = $fireChance;
 	}
 
 	public function isBlockBreaking() : bool{

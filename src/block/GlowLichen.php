@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\MultiAnyFacing;
 use pocketmine\block\utils\MultiAnySupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -36,7 +36,7 @@ use pocketmine\world\World;
 use function count;
 use function shuffle;
 
-class GlowLichen extends Transparent{
+class GlowLichen extends Transparent implements MultiAnyFacing{
 	use MultiAnySupportTrait;
 
 	public function getLightLevel() : int{
@@ -47,9 +47,6 @@ class GlowLichen extends Transparent{
 		return false;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

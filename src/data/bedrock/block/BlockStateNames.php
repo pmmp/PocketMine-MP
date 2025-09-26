@@ -59,6 +59,7 @@ final class BlockStateNames{
 	public const COVERED_BIT = "covered_bit";
 	public const CRACKED_STATE = "cracked_state";
 	public const CRAFTING = "crafting";
+	public const CREAKING_HEART_STATE = "creaking_heart_state";
 	public const DEAD_BIT = "dead_bit";
 	public const DEPRECATED = "deprecated";
 	public const DIRECTION = "direction";
@@ -112,6 +113,7 @@ final class BlockStateNames{
 	public const RAIL_DATA_BIT = "rail_data_bit";
 	public const RAIL_DIRECTION = "rail_direction";
 	public const REDSTONE_SIGNAL = "redstone_signal";
+	public const REHYDRATION_LEVEL = "rehydration_level";
 	public const REPEATER_DELAY = "repeater_delay";
 	public const RESPAWN_ANCHOR_CHARGE = "respawn_anchor_charge";
 	public const ROTATION = "rotation";

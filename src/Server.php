@@ -36,6 +36,7 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
+use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -49,6 +50,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\auth\AuthKeyProvider;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -138,6 +140,7 @@ use function file_put_contents;
 use function filemtime;
 use function fopen;
 use function get_class;
+use function gettype;
 use function ini_set;
 use function is_array;
 use function is_dir;
@@ -268,6 +271,7 @@ class Server{
 	private int $maxPlayers;
 
 	private bool $onlineMode = true;
+	private AuthKeyProvider $authKeyProvider;
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
@@ -697,7 +701,7 @@ class Server{
 
 	public function removeOp(string $name) : void{
 		$lowercaseName = strtolower($name);
-		foreach($this->operators->getAll() as $operatorName => $_){
+		foreach(Utils::promoteKeys($this->operators->getAll()) as $operatorName => $_){
 			$operatorName = (string) $operatorName;
 			if($lowercaseName === strtolower($operatorName)){
 				$this->operators->remove($operatorName);
@@ -918,6 +922,7 @@ class Server{
 			TimingsHandler::getCollectCallbacks()->add(function() : array{
 				$promises = [];
 				foreach($this->asyncPool->getRunningWorkers() as $workerId){
+					/** @phpstan-var PromiseResolver<list<string>> $resolver */
 					$resolver = new PromiseResolver();
 					$this->asyncPool->submitTaskToWorker(new TimingsCollectionTask($resolver), $workerId);
 
@@ -979,6 +984,8 @@ class Server{
 				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
+			$this->authKeyProvider = new AuthKeyProvider(new \PrefixedLogger($this->logger, "Minecraft Auth Key Provider"), $this->asyncPool);
+
 			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
 				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
 			}
@@ -1003,7 +1010,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(BedrockDataFiles::RECIPES);
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
@@ -1013,7 +1020,11 @@ class Server{
 				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(Filesystem::fileGetContents($graylistFile)));
+				$array = yaml_parse(Filesystem::fileGetContents($graylistFile));
+				if(!is_array($array)){
+					throw new \InvalidArgumentException("Expected array for root, but have " . gettype($array));
+				}
+				$pluginGraylist = PluginGraylist::fromArray($array);
 			}catch(\InvalidArgumentException $e){
 				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
 				$this->forceShutdownExit();
@@ -1174,7 +1185,7 @@ class Server{
 
 		if($this->worldManager->getDefaultWorld() === null){
 			$default = $this->configGroup->getConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
-			if(trim($default) == ""){
+			if(trim($default) === ""){
 				$this->logger->warning("level-name cannot be null, using default");
 				$default = "world";
 				$this->configGroup->setConfigString(ServerProperties::DEFAULT_WORLD_NAME, "world");
@@ -1611,7 +1622,7 @@ class Server{
 		if(!is_dir($crashFolder)){
 			mkdir($crashFolder);
 		}
-		$crashDumpPath = Path::join($crashFolder, date("D_M_j-H.i.s-T_Y", (int) $dump->getData()->time) . ".log");
+		$crashDumpPath = Path::join($crashFolder, date("Y-m-d_H.i.s_T", (int) $dump->getData()->time) . ".log");
 
 		$fp = @fopen($crashDumpPath, "wb");
 		if(!is_resource($fp)){
@@ -1791,6 +1802,13 @@ class Server{
 
 	public function isLanguageForced() : bool{
 		return $this->forceLanguage;
+	}
+
+	/**
+	 * @internal
+	 */
+	public function getAuthKeyProvider() : AuthKeyProvider{
+		return $this->authKeyProvider;
 	}
 
 	public function getNetwork() : Network{

@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
@@ -35,7 +37,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class RedstoneRepeater extends Flowable{
+class RedstoneRepeater extends Flowable implements PoweredByRedstone, HorizontalFacing{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 	use StaticSupportTrait;
@@ -62,9 +64,6 @@ class RedstoneRepeater extends Flowable{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
 	}

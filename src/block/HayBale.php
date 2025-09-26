@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\entity\Entity;
 
-class HayBale extends Opaque{
+class HayBale extends Opaque implements PillarRotation{
 	use PillarRotationTrait;
 
 	public function getFlameEncouragement() : int{

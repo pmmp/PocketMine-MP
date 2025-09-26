@@ -51,8 +51,10 @@ use function array_unique;
 use function array_values;
 use function count;
 use function dirname;
+use function fclose;
 use function file_exists;
 use function file_put_contents;
+use function fopen;
 use function fwrite;
 use function get_class;
 use function get_debug_type;
@@ -352,6 +354,9 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
  * @param string[] $strings
  */
 function findCommonPrefix(array $strings) : string{
+	if(count($strings) === 0){
+		return "";
+	}
 	sort($strings, SORT_STRING);
 
 	$first = $strings[array_key_first($strings)];
@@ -523,10 +528,12 @@ function processRemappedStates(array $upgradeTable) : array{
 			}
 		}
 	}
+	$orderedUnchanged = [];
 	foreach(Utils::stringifyKeys($unchangedStatesByNewName) as $newName => $unchangedStates){
-		ksort($unchangedStates);
-		$unchangedStatesByNewName[$newName] = $unchangedStates;
+		sort($unchangedStates);
+		$orderedUnchanged[$newName] = $unchangedStates;
 	}
+	$unchangedStatesByNewName = $orderedUnchanged;
 
 	$notFlattenedProperties = [];
 
@@ -656,7 +663,8 @@ function processRemappedStates(array $upgradeTable) : array{
 	usort($list, function(BlockStateUpgradeSchemaBlockRemap $a, BlockStateUpgradeSchemaBlockRemap $b) : int{
 		return count($b->oldState) <=> count($a->oldState);
 	});
-	return array_values($list);
+	//usort discards keys, so this is already a list<BlockStateUpgradeSchemaBlockRemap>
+	return $list;
 }
 
 /**
@@ -885,12 +893,51 @@ function cmdUpdateAll(array $argv) : int{
 /**
  * @param string[] $argv
  */
+function cmdDumpTable(array $argv) : int{
+	$tableFile = $argv[2];
+	$outputFile = $argv[3];
+
+	$output = fopen($outputFile, 'wb');
+	if($output === false){
+		fwrite(STDERR, "Failed to open output file: $outputFile\n");
+		return 1;
+	}
+
+	$table = loadUpgradeTableFromFile($tableFile, reverse: false);
+	ksort($table, SORT_STRING);
+
+	foreach(Utils::stringifyKeys($table) as $oldName => $mappings){
+		fwrite($output, "---------- MAPPING LIST: $oldName ----------\n");
+		foreach($mappings as $mapping){
+			$oldNbt = $mapping->old->toVanillaNbt();
+			$oldNbt->setInt("version", $mapping->new->getVersion());
+
+			//intentionally not reused result of toVanillaNbt otherwise output wouldn't include version
+			fwrite($output, "OLD: " . $mapping->old->toVanillaNbt() . "\n");
+			if(!$oldNbt->equals($mapping->new->toVanillaNbt())){
+				fwrite($output, "NEW: " . $mapping->new->toVanillaNbt() . "\n");
+			}else{
+				fwrite($output, "NEW: version bump only (" . $mapping->new->getVersion() . ")\n");
+			}
+			fwrite($output, "-----\n");
+		}
+	}
+
+	fclose($output);
+	\GlobalLogger::get()->info("Table dump file $outputFile generated successfully.");
+	return 0;
+}
+
+/**
+ * @param string[] $argv
+ */
 function main(array $argv) : int{
 	$options = [
 		"generate" => [["palette upgrade table file", "schema output file"], cmdGenerate(...)],
 		"test" => [["palette upgrade table file", "schema output file"], cmdTest(...)],
 		"update" => [["schema input file", "old palette file", "updated schema output file"], cmdUpdate(...)],
-		"update-all" => [["schema folder", "path to BlockPaletteArchive"], cmdUpdateAll(...)]
+		"update-all" => [["schema folder", "path to BlockPaletteArchive"], cmdUpdateAll(...)],
+		"dump-table" => [["palette upgrade table file", "txt output file"], cmdDumpTable(...)]
 	];
 
 	$selected = $argv[1] ?? null;

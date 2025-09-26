@@ -51,7 +51,7 @@ class ItemFrame extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_ITEM)) !== null){
-			$this->item = Item::nbtDeserialize($itemTag);
+			$this->item = Item::safeNbtDeserialize($itemTag, "ItemFrame ($this->position) framed item");
 		}
 		if($nbt->getTag(self::TAG_ITEM_ROTATION) instanceof FloatTag){
 			$this->itemRotation = (int) ($nbt->getFloat(self::TAG_ITEM_ROTATION, $this->itemRotation * 45) / 45);

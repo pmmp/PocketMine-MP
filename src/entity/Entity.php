@@ -31,6 +31,7 @@ use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
+use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
@@ -60,6 +61,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
@@ -72,9 +74,11 @@ use function assert;
 use function cos;
 use function count;
 use function deg2rad;
+use function floatval;
 use function floor;
 use function fmod;
 use function get_class;
+use function min;
 use function sin;
 use function spl_object_id;
 use const M_PI_2;
@@ -488,7 +492,7 @@ abstract class Entity{
 				new FloatTag($this->location->pitch)
 			]));
 
-		if(!($this instanceof Player)){
+		if(!($this instanceof NeverSavedWithChunkEntity)){
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
@@ -591,7 +595,7 @@ abstract class Entity{
 	 * Sets the health of the Entity. This won't send any update to the players
 	 */
 	public function setHealth(float $amount) : void{
-		if($amount == $this->health){
+		if($amount === $this->health){
 			return;
 		}
 
@@ -699,16 +703,26 @@ abstract class Entity{
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFireTicks(int $fireTicks) : void{
-		if($fireTicks < 0 || $fireTicks > 0x7fff){
-			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
+		if($fireTicks < 0){
+			throw new \InvalidArgumentException("Fire ticks cannot be negative");
 		}
+
+		//Since the max value is not externally obvious or intuitive, many plugins use this without being aware that
+		//reasonably large values are not accepted. We even have such usages within PM itself. It doesn't make sense
+		//to force all those calls to be aware of this limitation, as it's not a functional limit but a limitation of
+		//the Mojang save format. Truncating this to the max acceptable value is the next best thing we can do.
+		$fireTicks = min($fireTicks, Limits::INT16_MAX);
+
 		if(!$this->isFireProof()){
 			$this->fireTicks = $fireTicks;
 			$this->networkPropertiesDirty = true;
 		}
 	}
 
-	public function extinguish() : void{
+	public function extinguish(int $cause = EntityExtinguishEvent::CAUSE_CUSTOM) : void{
+		$ev = new EntityExtinguishEvent($this, $cause);
+		$ev->call();
+
 		$this->fireTicks = 0;
 		$this->networkPropertiesDirty = true;
 	}
@@ -719,7 +733,7 @@ abstract class Entity{
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
 		if($this->isFireProof() && $this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_FIRE_PROOF);
 			return false;
 		}
 
@@ -730,7 +744,7 @@ abstract class Entity{
 		}
 
 		if(!$this->isOnFire()){
-			$this->extinguish();
+			$this->extinguish(EntityExtinguishEvent::CAUSE_TICKING);
 		}else{
 			return true;
 		}
@@ -760,8 +774,8 @@ abstract class Entity{
 
 		$diffMotion = $this->motion->subtractVector($this->lastMotion)->lengthSquared();
 
-		$still = $this->motion->lengthSquared() == 0.0;
-		$wasStill = $this->lastMotion->lengthSquared() == 0.0;
+		$still = $this->motion->lengthSquared() === 0.0;
+		$wasStill = $this->lastMotion->lengthSquared() === 0.0;
 		if($wasStill !== $still){
 			//TODO: hack for client-side AI interference: prevent client sided movement when motion is 0
 			$this->setNoClientPredictions($still);
@@ -1004,7 +1018,7 @@ abstract class Entity{
 				abs($this->motion->z) <= self::MOTION_THRESHOLD ? 0 : null
 			);
 
-			if($this->motion->x != 0 || $this->motion->y != 0 || $this->motion->z != 0){
+			if(floatval($this->motion->x) !== 0.0 || floatval($this->motion->y) !== 0.0 || floatval($this->motion->z) !== 0.0){
 				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 			}
 
@@ -1058,9 +1072,9 @@ abstract class Entity{
 	public function hasMovementUpdate() : bool{
 		return (
 			$this->forceMovementUpdate ||
-			$this->motion->x != 0 ||
-			$this->motion->y != 0 ||
-			$this->motion->z != 0 ||
+			floatval($this->motion->x) !== 0.0 ||
+			floatval($this->motion->y) !== 0.0 ||
+			floatval($this->motion->z) !== 0.0 ||
 			!$this->onGround
 		);
 	}
@@ -1163,7 +1177,7 @@ abstract class Entity{
 
 			$moveBB->offset(0, $dy, 0);
 
-			$fallingFlag = ($this->onGround || ($dy != $wantedY && $wantedY < 0));
+			$fallingFlag = ($this->onGround || ($dy !== $wantedY && $wantedY < 0));
 
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($moveBB, $dx);
@@ -1177,12 +1191,14 @@ abstract class Entity{
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 && $fallingFlag && ($wantedX != $dx || $wantedZ != $dz)){
+			$stepHeight = $this->getStepHeight();
+
+			if($stepHeight > 0 && $fallingFlag && ($wantedX !== $dx || $wantedZ !== $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
 				$dx = $wantedX;
-				$dy = $this->stepHeight;
+				$dy = $stepHeight;
 				$dz = $wantedZ;
 
 				$stepBB = clone $this->boundingBox;
@@ -1242,9 +1258,9 @@ abstract class Entity{
 		$postFallVerticalVelocity = $this->updateFallState($dy, $this->onGround);
 
 		$this->motion = $this->motion->withComponents(
-			$wantedX != $dx ? 0 : null,
-			$postFallVerticalVelocity ?? ($wantedY != $dy ? 0 : null),
-			$wantedZ != $dz ? 0 : null
+			$wantedX !== $dx ? 0 : null,
+			$postFallVerticalVelocity ?? ($wantedY !== $dy ? 0 : null),
+			$wantedZ !== $dz ? 0 : null
 		);
 
 		//TODO: vehicle collision events (first we need to spawn them!)
@@ -1252,11 +1268,19 @@ abstract class Entity{
 		Timings::$entityMove->stopTiming();
 	}
 
+	public function setStepHeight(float $stepHeight) : void{
+		$this->stepHeight = $stepHeight;
+	}
+
+	public function getStepHeight() : float{
+		return $this->stepHeight;
+	}
+
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
-		$this->isCollidedVertically = $wantedY != $dy;
-		$this->isCollidedHorizontally = ($wantedX != $dx || $wantedZ != $dz);
+		$this->isCollidedVertically = $wantedY !== $dy;
+		$this->isCollidedHorizontally = ($wantedX !== $dx || $wantedZ !== $dz);
 		$this->isCollided = ($this->isCollidedHorizontally || $this->isCollidedVertically);
-		$this->onGround = ($wantedY != $dy && $wantedY < 0);
+		$this->onGround = ($wantedY !== $dy && $wantedY < 0);
 	}
 
 	/**
@@ -1494,7 +1518,7 @@ abstract class Entity{
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
 			static::getNetworkTypeId(),
-			$this->location->asVector3(),
+			$this->getOffsetPosition($this->location->asVector3()),
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,

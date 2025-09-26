@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -36,7 +37,7 @@ use function max;
 use function round;
 use const M_PI;
 
-class DaylightSensor extends Transparent{
+class DaylightSensor extends Transparent implements AnalogRedstoneSignalEmitter{
 	use AnalogRedstoneSignalEmitterTrait;
 
 	protected bool $inverted = false;
@@ -62,9 +63,6 @@ class DaylightSensor extends Transparent{
 		return 300;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}

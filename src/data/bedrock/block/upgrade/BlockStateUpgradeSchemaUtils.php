@@ -37,7 +37,6 @@ use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_key_last;
 use function array_map;
-use function array_values;
 use function assert;
 use function count;
 use function get_debug_type;
@@ -138,8 +137,8 @@ final class BlockStateUpgradeSchemaUtils{
 
 		$convertedRemappedValuesIndex = [];
 		foreach(Utils::stringifyKeys($model->remappedPropertyValuesIndex ?? []) as $mappingKey => $mappingValues){
-			foreach($mappingValues as $k => $oldNew){
-				$convertedRemappedValuesIndex[$mappingKey][$k] = new BlockStateUpgradeSchemaValueRemap(
+			foreach($mappingValues as $oldNew){
+				$convertedRemappedValuesIndex[$mappingKey][] = new BlockStateUpgradeSchemaValueRemap(
 					self::jsonModelToTag($oldNew->old),
 					self::jsonModelToTag($oldNew->new)
 				);
@@ -361,7 +360,7 @@ final class BlockStateUpgradeSchemaUtils{
 				//remaps with the same number of criteria should be sorted alphabetically, but this is not strictly necessary
 				return json_encode($a->oldState ?? []) <=> json_encode($b->oldState ?? []);
 			});
-			$result->remappedStates[$oldBlockName] = array_values($keyedRemaps);
+			$result->remappedStates[$oldBlockName] = $keyedRemaps; //usort strips keys, so this is already a list
 		}
 		if(isset($result->remappedStates)){
 			ksort($result->remappedStates);

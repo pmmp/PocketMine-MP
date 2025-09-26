@@ -42,7 +42,8 @@ class EntityLongFallSound implements Sound{
 			-1,
 			$this->entity::getNetworkTypeId(),
 			false, //TODO: is isBaby relevant here?
-			false
+			false,
+			$this->entity->getId()
 		)];
 	}
 }

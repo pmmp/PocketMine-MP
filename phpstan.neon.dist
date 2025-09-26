@@ -4,6 +4,8 @@ includes:
 	- tests/phpstan/configs/impossible-generics.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/property-hook-sadness.neon
+	- tests/phpstan/configs/reflection-class-sadness.neon
 	- tests/phpstan/configs/spl-fixed-array-sucks.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
 	- vendor/phpstan/phpstan-phpunit/rules.neon
@@ -11,14 +13,17 @@ includes:
 
 rules:
 	- pocketmine\phpstan\rules\DeprecatedLegacyEnumAccessRule
+	- pocketmine\phpstan\rules\DisallowDynamicNewRule
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
 	- pocketmine\phpstan\rules\DisallowForeachByReferenceRule
-	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
+	- pocketmine\phpstan\rules\ExplodeLimitRule
+	- pocketmine\phpstan\rules\UnsafeForeachRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:
 	level: 9
 	checkMissingCallableSignature: true
+	rememberPossiblyImpureFunctionValues: false #risky to remember these, better for performance to avoid repeated calls anyway
 	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
@@ -31,6 +36,7 @@ parameters:
 	paths:
 		- build
 		- src
+		- tests/phpstan/DummyPluginOwned.php
 		- tests/phpstan/rules
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
@@ -44,6 +50,7 @@ parameters:
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
+		- tests/phpstan/stubs/chunkutils2.stub
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/leveldb.stub
 		- tests/phpstan/stubs/pmmpthread.stub

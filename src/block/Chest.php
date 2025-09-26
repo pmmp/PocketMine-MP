@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
@@ -33,12 +34,9 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class Chest extends Transparent{
+class Chest extends Transparent implements HorizontalFacing{
 	use FacesOppositePlacingPlayerTrait;
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		//these are slightly bigger than in PC
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];

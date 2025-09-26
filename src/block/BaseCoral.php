@@ -24,12 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use function mt_rand;
 
-abstract class BaseCoral extends Transparent{
+abstract class BaseCoral extends Transparent implements CoralMaterial{
 	use CoralTypeTrait;
 
 	public function onNearbyBlockChange() : void{

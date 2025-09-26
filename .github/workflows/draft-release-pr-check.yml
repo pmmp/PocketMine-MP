@@ -24,13 +24,13 @@ permissions:
 jobs:
   check-intent:
     name: Check release trigger
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     outputs:
       valid: ${{ steps.validate.outputs.DEV_BUILD == 'false' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
@@ -43,13 +43,13 @@ jobs:
     #don't do these checks if this isn't a release - we don't want to generate unnecessary failed statuses
     if: needs.check-intent.outputs.valid == 'true'
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.31.1
+        uses: shivammathur/setup-php@2.35.4
         with:
           php-version: 8.2
 

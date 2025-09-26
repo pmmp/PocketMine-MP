@@ -23,14 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\VarInt;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
+use function array_shift;
+use function count;
+use function implode;
+use function ksort;
 use function spl_object_id;
-use function usort;
+use const SORT_STRING;
 
 class CraftingManager{
 	use DestructorCallbackTrait;
@@ -100,6 +105,7 @@ class CraftingManager{
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
+	 * @deprecated
 	 */
 	public static function sort(Item $i1, Item $i2) : int{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
@@ -108,47 +114,32 @@ class CraftingManager{
 		return $retval;
 	}
 
-	/**
-	 * @param Item[] $items
-	 * @phpstan-param list<Item> $items
-	 *
-	 * @return Item[]
-	 * @phpstan-return list<Item>
-	 */
-	private static function pack(array $items) : array{
-		$result = [];
+	private static function hashOutput(Item $output) : string{
+		$write = new ByteBufferWriter();
+		VarInt::writeSignedInt($write, $output->getStateId());
+		//TODO: the NBT serializer allocates its own ByteBufferWriter, we should change the API in the future to
+		//allow passing our own to avoid this extra allocation
+		$write->writeByteArray((new LittleEndianNbtSerializer())->write(new TreeRoot($output->getNamedTag())));
 
-		foreach($items as $item){
-			foreach($result as $otherItem){
-				if($item->canStackWith($otherItem)){
-					$otherItem->setCount($otherItem->getCount() + $item->getCount());
-					continue 2;
-				}
-			}
-
-			//No matching item found
-			$result[] = clone $item;
-		}
-
-		return $result;
+		return $write->getData();
 	}
 
 	/**
 	 * @param Item[] $outputs
-	 * @phpstan-param list<Item> $outputs
 	 */
 	private static function hashOutputs(array $outputs) : string{
-		$outputs = self::pack($outputs);
-		usort($outputs, [self::class, "sort"]);
-		$result = new BinaryStream();
+		if(count($outputs) === 1){
+			return self::hashOutput(array_shift($outputs));
+		}
+		$unique = [];
 		foreach($outputs as $o){
 			//count is not written because the outputs might be from multiple repetitions of a single recipe
 			//this reduces the accuracy of the hash, but it won't matter in most cases.
-			$result->putVarInt($o->getStateId());
-			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
+			$hash = self::hashOutput($o);
+			$unique[$hash] = $hash;
 		}
-
-		return $result->getBuffer();
+		ksort($unique, SORT_STRING);
+		return implode("", $unique);
 	}
 
 	/**

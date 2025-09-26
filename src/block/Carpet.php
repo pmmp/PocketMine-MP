@@ -23,12 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class Carpet extends Flowable{
+class Carpet extends Flowable implements Colored{
 	use ColoredTrait;
 	use StaticSupportTrait;
 
@@ -36,9 +37,6 @@ class Carpet extends Flowable{
 		return true;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
 	}

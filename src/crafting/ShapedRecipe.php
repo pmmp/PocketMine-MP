@@ -97,6 +97,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 		$this->shape = $shape;
 
+		Utils::validateArrayValueType($ingredients, function(RecipeIngredient $_) : void{});
 		foreach(Utils::stringifyKeys($ingredients) as $char => $i){
 			if(!str_contains(implode($this->shape), $char)){
 				throw new \InvalidArgumentException("Symbol '$char' does not appear in the recipe shape");
@@ -105,6 +106,7 @@ class ShapedRecipe implements CraftingRecipe{
 			$this->ingredientList[$char] = clone $i;
 		}
 
+		Utils::validateArrayValueType($results, function(Item $_) : void{});
 		$this->results = Utils::cloneObjectArray($results);
 	}
 

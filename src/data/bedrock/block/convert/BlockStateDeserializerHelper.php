@@ -56,11 +56,13 @@ use pocketmine\data\bedrock\block\BlockLegacyMetadata;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateNames as StateNames;
+use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\utils\AssumptionFailedError;
 
+/**
+ * @deprecated
+ */
 final class BlockStateDeserializerHelper{
 
 	/** @throws BlockStateDeserializeException */
@@ -70,7 +72,14 @@ final class BlockStateDeserializerHelper{
 			->setPressed($in->readBool(BlockStateNames::BUTTON_PRESSED_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @phpstan-template TCandle of Candle
+	 * @phpstan-param TCandle $block
+	 * @phpstan-return TCandle
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeCandle(Candle $block, BlockStateReader $in) : Candle{
 		return $block
 			->setCount($in->readBoundedInt(StateNames::CANDLES, 0, 3) + 1)
@@ -97,6 +106,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
@@ -109,6 +119,7 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/**
+	 * @deprecated
 	 * @phpstan-template TBlock of CopperMaterial
 	 *
 	 * @phpstan-param TBlock $block
@@ -126,12 +137,20 @@ final class BlockStateDeserializerHelper{
 			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @phpstan-template TDoor of Door
+	 * @phpstan-param TDoor $block
+	 * @phpstan-return TDoor
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeDoor(Door $block, BlockStateReader $in) : Door{
 		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
 		return $block
 			->setTop($in->readBool(BlockStateNames::UPPER_BLOCK_BIT))
-			->setFacing(Facing::rotateY($in->readLegacyHorizontalFacing(), false))
+			//a door facing "east" is actually facing north - thanks mojang
+			->setFacing(Facing::rotateY($in->readCardinalHorizontalFacing(), clockwise: false))
 			->setHingeRight($in->readBool(BlockStateNames::DOOR_HINGE_BIT))
 			->setOpen($in->readBool(BlockStateNames::OPEN_BIT));
 	}
@@ -142,25 +161,30 @@ final class BlockStateDeserializerHelper{
 			->setTop($in->readBool(BlockStateNames::UPPER_BLOCK_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFenceGate(FenceGate $block, BlockStateReader $in) : FenceGate{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->readCardinalHorizontalFacing())
 			->setInWall($in->readBool(BlockStateNames::IN_WALL_BIT))
 			->setOpen($in->readBool(BlockStateNames::OPEN_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFloorCoralFan(FloorCoralFan $block, BlockStateReader $in) : FloorCoralFan{
 		return $block
-			->setAxis(match($in->readBoundedInt(BlockStateNames::CORAL_FAN_DIRECTION, 0, 1)){
-				0 => Axis::X,
-				1 => Axis::Z,
-				default => throw new AssumptionFailedError("readBoundedInt() should have prevented this"),
-			});
+			->setAxis($in->mapIntFromInt(BlockStateNames::CORAL_FAN_DIRECTION, ValueMappings::getInstance()->coralAxis));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeFloorSign(FloorSign $block, BlockStateReader $in) : FloorSign{
 		return $block
 			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
@@ -173,7 +197,10 @@ final class BlockStateDeserializerHelper{
 			->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @throws BlockStateDeserializeException
+	 * @deprecated
+	 */
 	public static function decodeLeaves(Leaves $block, BlockStateReader $in) : Leaves{
 		return $block
 			->setNoDecay($in->readBool(StateNames::PERSISTENT_BIT))
@@ -223,7 +250,10 @@ final class BlockStateDeserializerHelper{
 			->setDelay($in->readBoundedInt(BlockStateNames::REPEATER_DELAY, 0, 3) + 1);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @throws BlockStateDeserializeException
+	 * @deprecated
+	 */
 	public static function decodeSapling(Sapling $block, BlockStateReader $in) : Sapling{
 		return $block
 			->setReady($in->readBool(BlockStateNames::AGE_BIT));
@@ -236,18 +266,37 @@ final class BlockStateDeserializerHelper{
 		return $block->setPressed($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15) !== 0);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TSlab of Slab
+	 * @phpstan-param TSlab $block
+	 * @phpstan-return TSlab
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeSingleSlab(Slab $block, BlockStateReader $in) : Slab{
 		return $block->setSlabType($in->readSlabPosition());
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @phpstan-template TSlab of Slab
+	 * @phpstan-param TSlab $block
+	 * @phpstan-return TSlab
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeDoubleSlab(Slab $block, BlockStateReader $in) : Slab{
 		$in->ignored(StateNames::MC_VERTICAL_HALF);
 		return $block->setSlabType(SlabType::DOUBLE);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @phpstan-template TStair of Stair
+	 * @phpstan-param TStair $block
+	 * @phpstan-return TStair
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeStairs(Stair $block, BlockStateReader $in) : Stair{
 		return $block
 			->setUpsideDown($in->readBool(BlockStateNames::UPSIDE_DOWN_BIT))
@@ -264,7 +313,14 @@ final class BlockStateDeserializerHelper{
 			->setFacing($facing === Facing::DOWN ? Facing::UP : $facing);
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @phpstan-template TTrapdoor of Trapdoor
+	 * @phpstan-param TTrapdoor $block
+	 * @phpstan-return TTrapdoor
+	 *
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeTrapdoor(Trapdoor $block, BlockStateReader $in) : Trapdoor{
 		return $block
 			->setFacing($in->read5MinusHorizontalFacing())
@@ -283,12 +339,19 @@ final class BlockStateDeserializerHelper{
 		return $block;
 	}
 
-	/** @throws BlockStateDeserializeException */
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeWallSign(WallSign $block, BlockStateReader $in) : WallSign{
 		return $block
 			->setFacing($in->readHorizontalFacing());
 	}
 
+	/**
+	 * @deprecated
+	 * @throws BlockStateDeserializeException
+	 */
 	public static function decodeWeightedPressurePlate(WeightedPressurePlate $block, BlockStateReader $in) : WeightedPressurePlate{
 		return $block
 			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));

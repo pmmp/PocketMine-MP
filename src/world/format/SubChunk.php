@@ -134,11 +134,8 @@ class SubChunk{
 		foreach($this->blockLayers as $layer){
 			$layer->collectGarbage();
 
-			foreach($layer->getPalette() as $p){
-				if($p !== $this->emptyBlockId){
-					$cleanedLayers[] = $layer;
-					continue 2;
-				}
+			if($layer->getBitsPerBlock() !== 0 || $layer->get(0, 0, 0) !== $this->emptyBlockId){
+				$cleanedLayers[] = $layer;
 			}
 		}
 		$this->blockLayers = $cleanedLayers;

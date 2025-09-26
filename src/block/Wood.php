@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
@@ -32,7 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\ItemUseOnBlockSound;
 
-class Wood extends Opaque{
+class Wood extends Opaque implements PillarRotation, WoodMaterial{
 	use PillarRotationTrait;
 	use WoodTypeTrait;
 

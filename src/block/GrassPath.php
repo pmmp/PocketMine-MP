@@ -29,9 +29,6 @@ use pocketmine\math\Facing;
 
 class GrassPath extends Transparent{
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 1 / 16)];
 	}

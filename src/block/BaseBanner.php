@@ -25,19 +25,19 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
 use function count;
 
-abstract class BaseBanner extends Transparent{
+abstract class BaseBanner extends Transparent implements Colored{
 	use ColoredTrait;
 
 	/**
@@ -50,11 +50,22 @@ abstract class BaseBanner extends Transparent{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
+			if($tile->getType() === TileBanner::TYPE_OMINOUS){
+				//illager banner is implemented as a separate block, as it doesn't support base color or custom patterns
+				return $this->getOminousVersion();
+			}
 			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
 
 		return $this;
+	}
+
+	/**
+	 * TODO: make this abstract in PM6 (BC break)
+	 */
+	protected function getOminousVersion() : Block{
+		return VanillaBlocks::AIR();
 	}
 
 	public function writeStateToWorld() : void{
@@ -97,9 +108,6 @@ abstract class BaseBanner extends Transparent{
 		return $this;
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
 	}

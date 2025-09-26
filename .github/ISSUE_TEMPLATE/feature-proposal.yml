@@ -1,0 +1,19 @@
+name: Feature addition, change, or removal
+description: Propose adding new features, or changing/removing existing ones
+body:
+  - type: textarea
+    attributes:
+      label: Problem description
+      description: Explain why a change is needed
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Proposed solution
+      description: Describe what changes you think should be made
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Alternative solutions or workarounds"
+      description: "Describe other ways you've explored to achieve your goal"

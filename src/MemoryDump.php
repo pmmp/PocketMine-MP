@@ -253,12 +253,12 @@ final class MemoryDump{
 	}
 
 	/**
-	 * @param object[] $objects   reference parameter
-	 * @param int[]    $refCounts reference parameter
+	 * @param object[]|true[] $objects   reference parameter
+	 * @param int[]           $refCounts reference parameter
 	 *
-	 * @phpstan-param array<string, object> $objects
+	 * @phpstan-param array<string, object|true> $objects
 	 * @phpstan-param array<string, int> $refCounts
-	 * @phpstan-param-out array<string, object> $objects
+	 * @phpstan-param-out array<string, object|true> $objects
 	 * @phpstan-param-out array<string, int> $refCounts
 	 */
 	private static function continueDump(mixed $from, array &$objects, array &$refCounts, int $recursion, int $maxNesting, int $maxStringSize) : mixed{

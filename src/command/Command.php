@@ -33,9 +33,11 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
+use function array_values;
 use function explode;
 use function implode;
 use function str_replace;
+use const PHP_INT_MAX;
 
 abstract class Command{
 
@@ -80,6 +82,7 @@ abstract class Command{
 
 	/**
 	 * @param string[] $args
+	 * @phpstan-param list<string> $args
 	 *
 	 * @return mixed
 	 * @throws CommandException
@@ -111,7 +114,7 @@ abstract class Command{
 	}
 
 	public function setPermission(?string $permission) : void{
-		$this->setPermissions($permission === null ? [] : explode(";", $permission));
+		$this->setPermissions($permission === null ? [] : explode(";", $permission, limit: PHP_INT_MAX));
 	}
 
 	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
@@ -212,6 +215,7 @@ abstract class Command{
 	 * @phpstan-param list<string> $aliases
 	 */
 	public function setAliases(array $aliases) : void{
+		$aliases = array_values($aliases); //because plugins can and will pass crap
 		$this->aliases = $aliases;
 		if(!$this->isRegistered()){
 			$this->activeAliases = $aliases;

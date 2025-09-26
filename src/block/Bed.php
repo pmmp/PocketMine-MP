@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,7 +43,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
-class Bed extends Transparent{
+class Bed extends Transparent implements Colored, HorizontalFacing{
 	use ColoredTrait;
 	use HorizontalFacingTrait;
 
@@ -76,9 +78,6 @@ class Bed extends Transparent{
 		}
 	}
 
-	/**
-	 * @return AxisAlignedBB[]
-	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
 	}

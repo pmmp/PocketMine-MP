@@ -31,12 +31,12 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  */
 
 /**
- * @var string[]|\Closure[] $options
- * @phpstan-var array<string, string|\Closure() : string> $options
+ * @var string[]|Closure[] $options
+ * @phpstan-var array<string, string|Closure() : string> $options
  */
 $options = [
 	"base_version" => VersionInfo::BASE_VERSION,
-	"major_version" => fn() => explode(".", VersionInfo::BASE_VERSION)[0],
+	"major_version" => fn() => explode(".", VersionInfo::BASE_VERSION, limit: 2)[0],
 	"mcpe_version" => ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 	"is_dev" => VersionInfo::IS_DEVELOPMENT_BUILD,
 	"changelog_file_name" => function() : string{

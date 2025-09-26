@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\CropGrowthHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -37,7 +38,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class DoublePitcherCrop extends DoublePlant{
+final class DoublePitcherCrop extends DoublePlant implements Ageable{
 	use AgeableTrait {
 		describeBlockOnlyState as describeAge;
 	}

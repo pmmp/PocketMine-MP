@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Book;
@@ -38,7 +39,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function spl_object_id;
 
-class ChiseledBookshelf extends Opaque{
+class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
 
@@ -111,6 +112,18 @@ class ChiseledBookshelf extends Opaque{
 	 */
 	public function getSlots() : array{
 		return $this->slots;
+	}
+
+	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @return $this
+	 */
+	public function setSlots(array $slots) : self{
+		$this->slots = [];
+		foreach($slots as $slot){
+			$this->setSlot($slot, true);
+		}
+		return $this;
 	}
 
 	/**

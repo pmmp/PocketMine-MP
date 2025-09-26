@@ -76,7 +76,12 @@ function find_regions_recursive(string $dir, array &$files) : void{
 			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) &&
 			is_file($fullPath)
 		){
-			$files[$fullPath] = filesize($fullPath);
+			$size = filesize($fullPath);
+			if($size === false){
+				//If we can't get the size of the file, we probably don't have perms to read it, so ignore it
+				continue;
+			}
+			$files[$fullPath] = $size;
 		}elseif(is_dir($fullPath)){
 			find_regions_recursive($fullPath, $files);
 		}
@@ -165,7 +170,8 @@ function main(array $argv) : int{
 	clearstatcache();
 	$newSize = 0;
 	foreach(Utils::stringifyKeys($files) as $file => $oldSize){
-		$newSize += file_exists($file) ? filesize($file) : 0;
+		$size = file_exists($file) ? filesize($file) : 0;
+		$newSize += $size !== false ? $size : 0;
 	}
 	$diff = $currentSize - $newSize;
 	$logger->info("Finished compaction of " . count($files) . " files. Freed " . number_format($diff) . " bytes of space (" . round(($diff / $currentSize) * 100, 2) . "% reduction).");

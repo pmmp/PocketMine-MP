@@ -42,7 +42,8 @@ final class WaterSplashSound implements Sound{
 			(int) ($this->volume * 16777215),
 			":",
 			false,
-			false
+			false,
+			-1
 		)];
 	}
 }

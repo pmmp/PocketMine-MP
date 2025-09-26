@@ -53,6 +53,10 @@ use const STR_PAD_LEFT;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+/**
+ * @phpstan-param positive-int $scale
+ * @phpstan-param positive-int $radius
+ */
 function newImage(int $scale, int $radius) : \GdImage{
 	$image = Utils::assumeNotFalse(imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2));
 	imagesavealpha($image, true);
@@ -147,6 +151,18 @@ foreach(["radius", "baseX", "baseZ", "scale", "chunksPerStep"] as $name){
 }
 if($radius === null){
 	fwrite(STDERR, "Please specify a radius using --radius\n");
+	exit(1);
+}
+if($radius < 1){
+	fwrite(STDERR, "Radius cannot be less than 1\n");
+	exit(1);
+}
+if($scale < 1){
+	fwrite(STDERR, "Scale cannot be less than 1\n");
+	exit(1);
+}
+if($nChunksPerStep < 1){
+	fwrite(STDERR, "Chunks per step cannot be less than 1\n");
 	exit(1);
 }
 

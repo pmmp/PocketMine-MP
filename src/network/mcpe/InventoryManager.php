@@ -41,6 +41,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\cache\CreativeInventoryCache;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -63,6 +64,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Binary;
 use pocketmine\utils\ObjectSet;
 use function array_fill_keys;
 use function array_keys;
@@ -228,17 +230,25 @@ class InventoryManager{
 		return null;
 	}
 
-	private function addPredictedSlotChange(Inventory $inventory, int $slot, ItemStack $item) : void{
+	private function addPredictedSlotChangeInternal(Inventory $inventory, int $slot, ItemStack $item) : void{
 		$this->inventories[spl_object_id($inventory)]->predictions[$slot] = $item;
 	}
 
-	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
+	public function addPredictedSlotChange(Inventory $inventory, int $slot, Item $item) : void{
 		$typeConverter = $this->session->getTypeConverter();
+		$itemStack = $typeConverter->coreItemStackToNet($item);
+		$this->addPredictedSlotChangeInternal($inventory, $slot, $itemStack);
+	}
+
+	public function addTransactionPredictedSlotChanges(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
 			if($action instanceof SlotChangeAction){
 				//TODO: ItemStackRequestExecutor can probably build these predictions with much lower overhead
-				$itemStack = $typeConverter->coreItemStackToNet($action->getTargetItem());
-				$this->addPredictedSlotChange($action->getInventory(), $action->getSlot(), $itemStack);
+				$this->addPredictedSlotChange(
+					$action->getInventory(),
+					$action->getSlot(),
+					$action->getTargetItem()
+				);
 			}
 		}
 	}
@@ -267,7 +277,7 @@ class InventoryManager{
 			}
 
 			[$inventory, $slot] = $info;
-			$this->addPredictedSlotChange($inventory, $slot, $action->newItem->getItemStack());
+			$this->addPredictedSlotChangeInternal($inventory, $slot, $action->newItem->getItemStack());
 		}
 	}
 
@@ -410,6 +420,15 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
+		if(Binary::signByte($id) === ContainerIds::NONE){ //TODO: REMOVE signByte() once BedrockProtocol + ext-encoding are implemented
+			//TODO: HACK! Since 1.21.100 (and probably earlier), the client will send -1 to close windows that it can't
+			//view for some reason, e.g. if the chat window was already open. This is pretty awkward, since it means
+			//that we can only assume it refers to the most recently sent window, and if we don't handle it,
+			//InventoryManager will never get the green light to send subsequent windows, which breaks inventory UIs.
+			//Fortunately, we already wait for close acks anyway, so the window ID is technically useless...?
+			$this->session->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
+			$id = $this->lastInventoryNetworkId;
+		}
 		if($id === $this->lastInventoryNetworkId){
 			if(isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId){
 				$this->remove($id);
@@ -690,7 +709,7 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->getCache($this->player->getCreativeInventory()));
+		$this->session->sendDataPacket(CreativeInventoryCache::getInstance()->buildPacket($this->player->getCreativeInventory(), $this->session));
 	}
 
 	/**
