@@ -462,9 +462,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$subChunks = [];
 		for($yy = 0; $yy < 8; ++$yy){
-			$blockLayer = $this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy, new \PrefixedLogger($logger, "Subchunk y=$yy"));
-			$liquidLayer = $convertedLegacyExtraData[$yy] ?? null;
-			$subChunks[$yy] = new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, $liquidLayer, clone $biomes3d);
+			$layer0 = $this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $yy, new \PrefixedLogger($logger, "Subchunk y=$yy"));
+			$layer1 = $convertedLegacyExtraData[$yy] ?? null;
+			$subChunks[$yy] = new SubChunk(Block::EMPTY_STATE_ID, $layer0, $layer1, clone $biomes3d);
 		}
 
 		//make sure extrapolated biomes get filled in correctly
@@ -499,10 +499,10 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$blockLayer = $this->palettizeLegacySubChunkXZY($blocks, $blockData, $logger);
-		$liquidLayer = $convertedLegacyExtraData;
+		$layer0 = $this->palettizeLegacySubChunkXZY($blocks, $blockData, $logger);
+		$layer1 = $convertedLegacyExtraData;
 
-		return new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, $liquidLayer, $biomePalette);
+		return new SubChunk(Block::EMPTY_STATE_ID, $layer0, $layer1, $biomePalette);
 	}
 
 	/**
@@ -522,9 +522,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case SubChunkVersion::CLASSIC_BUG_7:
 				return $this->deserializeNonPalettedSubChunkData($binaryStream, $chunkVersion, $convertedLegacyExtraData, $biomePalette, $logger);
 			case SubChunkVersion::PALETTED_SINGLE:
-				$blockLayer = $this->deserializeBlockPalette($binaryStream, $logger);
-				$liquidLayer = $convertedLegacyExtraData;
-				return new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, $liquidLayer, $biomePalette);
+				$layer0 = $this->deserializeBlockPalette($binaryStream, $logger);
+				$layer1 = $convertedLegacyExtraData;
+				return new SubChunk(Block::EMPTY_STATE_ID, $layer0, $layer1, $biomePalette);
 			case SubChunkVersion::PALETTED_MULTI:
 			case SubChunkVersion::PALETTED_MULTI_WITH_OFFSET:
 				//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
@@ -535,18 +535,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$binaryStream->getByte();
 				}
 
-				$blockLayer = null;
-				$liquidLayer = null;
+				$layer0 = null;
+				$layer1 = null;
 				for($k = 0; $k < $storageCount; ++$k){
 					$layer = $this->deserializeBlockPalette($binaryStream, $logger);
 					if($k === 0){
-						$blockLayer = $layer;
+						$layer0 = $layer;
 					}elseif($k === 1){
-						$liquidLayer = $layer;
+						$layer1 = $layer;
 					}
 					// Ignore additional layers beyond the first two
 				}
-				return new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, $liquidLayer, $biomePalette);
+				return new SubChunk(Block::EMPTY_STATE_ID, $layer0, $layer1, $biomePalette);
 			default:
 				//this should never happen - an unsupported chunk appearing in a supported world is a sign of corruption
 				throw new CorruptedChunkException("don't know how to decode LevelDB subchunk format version $subChunkVersion");
@@ -775,9 +775,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$subStream = new BinaryStream();
 					$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
 
-					$layers = $subChunk->getBlockLayersArray();
+					$layers = $subChunk->getBlockLayers();
 					$subStream->putByte(count($layers));
-
 					foreach($layers as $layer){
 						$this->serializeBlockPalette($subStream, $layer);
 					}

@@ -55,7 +55,7 @@ class SubChunk{
 	 * This may report non-empty erroneously if the chunk has been modified and not garbage-collected.
 	 */
 	public function isEmptyFast() : bool{
-		return $this->blockLayer0 !== null || $this->blockLayer1 !== null;
+		return $this->blockLayer0 === null && $this->blockLayer1 === null;
 	}
 
 	/**
@@ -87,7 +87,7 @@ class SubChunk{
 	 * @return PalettedBlockArray[]
 	 * @phpstan-return array{}|array{PalettedBlockArray}|array{PalettedBlockArray, PalettedBlockArray}
 	 */
-	public function getBlockLayersArray() : array{
+	public function getBlockLayers() : array{
 		$layers = [];
 		if($this->blockLayer0 !== null){
 			$layers[] = $this->blockLayer0;

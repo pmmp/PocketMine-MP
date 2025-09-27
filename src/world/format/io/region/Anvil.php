@@ -32,12 +32,11 @@ class Anvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk{
-		$blockLayer = $this->palettizeLegacySubChunkYZX(
+		return new SubChunk(Block::EMPTY_STATE_ID, $this->palettizeLegacySubChunkYZX(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
 			self::readFixedSizeByteArray($subChunk, "Data", 2048),
 			$logger
-		);
-		return new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, null, $biomes3d);
+		), null, $biomes3d);
 		//ignore legacy light information
 	}
 

@@ -75,7 +75,7 @@ final class FastChunkSerializer{
 			Byte::writeSigned($stream, $y);
 			BE::writeUnsignedInt($stream, $subChunk->getEmptyBlockId());
 
-			$layers = $subChunk->getBlockLayersArray();
+			$layers = $subChunk->getBlockLayers();
 			Byte::writeUnsigned($stream, count($layers));
 			foreach($layers as $blocks){
 				self::serializePalettedArray($stream, $blocks);
@@ -122,7 +122,6 @@ final class FastChunkSerializer{
 			$layer1 = $layerCount === 2 ? self::deserializePalettedArray($stream) : null;
 
 			$biomeArray = self::deserializePalettedArray($stream);
-
 			$subChunks[$y] = new SubChunk($airBlockId, $layer0, $layer1, $biomeArray);
 		}
 

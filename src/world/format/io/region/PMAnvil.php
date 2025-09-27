@@ -36,12 +36,11 @@ class PMAnvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function deserializeSubChunk(CompoundTag $subChunk, PalettedBlockArray $biomes3d, \Logger $logger) : SubChunk{
-		$blockLayer = $this->palettizeLegacySubChunkXZY(
+		return new SubChunk(Block::EMPTY_STATE_ID, $this->palettizeLegacySubChunkXZY(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
 			self::readFixedSizeByteArray($subChunk, "Data", 2048),
 			$logger
-		);
-		return new SubChunk(Block::EMPTY_STATE_ID, $blockLayer, null, $biomes3d);
+		), null, $biomes3d);
 	}
 
 	protected static function getRegionFileExtension() : string{

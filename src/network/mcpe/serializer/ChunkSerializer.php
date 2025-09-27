@@ -112,9 +112,9 @@ final class ChunkSerializer{
 	}
 
 	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, ByteBufferWriter $stream, bool $persistentBlockStates) : void{
-		$layers = $subChunk->getBlockLayersArray();
-
+		$layers = $subChunk->getBlockLayers();
 		Byte::writeUnsigned($stream, 8); //version
+
 		Byte::writeUnsigned($stream, count($layers));
 
 		$blockStateDictionary = $blockTranslator->getBlockStateDictionary();

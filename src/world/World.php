@@ -2610,10 +2610,7 @@ class World implements ChunkManager{
 
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		foreach($chunk->getSubChunks() as $subChunk){
-			foreach($subChunk->getBlockLayersArray() as $blockLayer){
-				if($blockLayer === null){
-					continue;
-				}
+			foreach($subChunk->getBlockLayers() as $blockLayer){
 				foreach($blockLayer->getPalette() as $blockStateId){
 					if(!$this->blockStateRegistry->hasStateId($blockStateId)){
 						throw new \InvalidArgumentException("Provided chunk contains unknown/unregistered blocks (found unknown state ID $blockStateId)");
