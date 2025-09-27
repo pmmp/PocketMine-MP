@@ -36,7 +36,6 @@ use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -129,10 +128,7 @@ class SplashPotion extends Throwable{
 				}
 			}
 		}else{
-			$entity = new AreaEffectCloud(
-				Location::fromObject($this->location->floor()->add(0.5, 0.5, 0.5), $this->getWorld()),
-				$this->potionType
-			);
+			$entity = new AreaEffectCloud(Location::fromObject($this->location->floor()->add(0.5, 0.5, 0.5), $this->getWorld()));
 			if(($owner = $this->getOwningEntity()) !== null && !$owner->isClosed()){
 				$entity->setOwningEntity($owner);
 			}
