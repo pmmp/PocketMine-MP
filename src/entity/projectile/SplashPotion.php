@@ -129,6 +129,9 @@ class SplashPotion extends Throwable{
 			}
 		}else{
 			$entity = new AreaEffectCloud(Location::fromObject($this->location->floor()->add(0.5, 0.5, 0.5), $this->getWorld()));
+			foreach($this->potionType->getEffects() as $effect){
+				$entity->getEffects()->add($effect);
+			}
 			if(($owner = $this->getOwningEntity()) !== null && !$owner->isClosed()){
 				$entity->setOwningEntity($owner);
 			}

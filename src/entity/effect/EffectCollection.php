@@ -63,7 +63,7 @@ class EffectCollection{
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
 
-		$this->setEffectFilterForBubbles(static fn(EffectInstance $e) => $e->isVisible() && $e->getType()->hasBubbles());
+		$this->setEffectFilterForBubbles(static fn(EffectInstance $e) : bool => $e->isVisible() && $e->getType()->hasBubbles());
 	}
 
 	/**

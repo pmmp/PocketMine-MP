@@ -111,7 +111,7 @@ class AreaEffectCloud extends Entity{
 		$this->effectCollection = new EffectCollection();
 		$this->effectCollection->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
 		$this->effectCollection->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
-		$this->effectCollection->setEffectFilterForBubbles(static fn(EffectInstance $e) => $e->isVisible());
+		$this->effectCollection->setEffectFilterForBubbles(static fn(EffectInstance $e) : bool => $e->isVisible());
 
 		$worldTime = $this->getWorld()->getTime();
 		$this->age = max($worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime), 0);
