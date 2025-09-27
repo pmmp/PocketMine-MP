@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,7 +44,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
-class Bed extends Transparent{
+class Bed extends Transparent implements Colored, HorizontalFacing{
 	use ColoredTrait;
 	use HorizontalFacingTrait;
 
@@ -49,7 +52,7 @@ class Bed extends Transparent{
 	protected bool $head = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->occupied);
 		$w->bool($this->head);
 	}
@@ -77,10 +80,10 @@ class Bed extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 7 / 16)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -104,8 +107,8 @@ class Bed extends Transparent{
 		return $this;
 	}
 
-	private function getOtherHalfSide() : int{
-		return $this->head ? Facing::opposite($this->facing) : $this->facing;
+	private function getOtherHalfSide() : Facing{
+		return $this->head ? Facing::opposite($this->facing->toFacing()) : $this->facing->toFacing();
 	}
 
 	public function getOtherHalf() : ?Bed{
@@ -117,7 +120,7 @@ class Bed extends Transparent{
 		return null;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null){
 			$other = $this->getOtherHalf();
 			$playerPos = $player->getPosition();
@@ -170,9 +173,11 @@ class Bed extends Transparent{
 		return $entity->getMotion()->y * -3 / 4; // 2/3 in Java, according to the wiki
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->canBeSupportedAt($blockReplace)){
-			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
+			if($player !== null){
+				$this->facing = HorizontalFacingOption::fromFacing($player->getHorizontalFacing());
+			}
 
 			$next = $this->getSide($this->getOtherHalfSide());
 			if($next->canBeReplaced() && $this->canBeSupportedAt($next)){

@@ -23,20 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\window\LoomInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-final class Loom extends Opaque{
+final class Loom extends Opaque implements HorizontalFacing, MenuAccessor{
 	use FacesOppositePlacingPlayerTrait;
+	use MenuAccessorTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$player->setCurrentWindow(new LoomInventory($this->position));
-			return true;
-		}
-		return false;
+	protected function newMenu(Player $player, Position $position) : LoomInventoryWindow{
+		return new LoomInventoryWindow($player, $position);
 	}
 }

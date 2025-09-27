@@ -117,8 +117,8 @@ final class ItemSerializer{
 			$data = $serializer($item);
 		}
 
-		if($item->hasNamedTag()){
-			$resultTag = $item->getNamedTag();
+		$resultTag = $item->getNamedTag();
+		if($resultTag->count() > 0){
 			$extraTag = $data->getTag();
 			if($extraTag !== null){
 				$resultTag = $resultTag->merge($extraTag);

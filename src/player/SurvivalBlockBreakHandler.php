@@ -47,7 +47,7 @@ final class SurvivalBlockBreakHandler{
 		private Player $player,
 		private Vector3 $blockPos,
 		private Block $block,
-		private int $targetedFace,
+		private Facing $targetedFace,
 		private int $maxPlayerDistance,
 		private int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS
 	){
@@ -67,7 +67,7 @@ final class SurvivalBlockBreakHandler{
 		if(!$this->block->getBreakInfo()->isBreakable()){
 			return 0.0;
 		}
-		$breakTimePerTick = $this->block->getBreakInfo()->getBreakTime($this->player->getInventory()->getItemInHand()) * 20;
+		$breakTimePerTick = $this->block->getBreakInfo()->getBreakTime($this->player->getMainHandItem()) * 20;
 		if(!$this->player->isOnGround() && !$this->player->isFlying()){
 			$breakTimePerTick *= 5;
 		}
@@ -123,12 +123,11 @@ final class SurvivalBlockBreakHandler{
 		return $this->blockPos;
 	}
 
-	public function getTargetedFace() : int{
+	public function getTargetedFace() : Facing{
 		return $this->targetedFace;
 	}
 
-	public function setTargetedFace(int $face) : void{
-		Facing::validate($face);
+	public function setTargetedFace(Facing $face) : void{
 		$this->targetedFace = $face;
 	}
 

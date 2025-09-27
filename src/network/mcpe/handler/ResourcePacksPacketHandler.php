@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\resourcepacks\ResourcePack;
 use Ramsey\Uuid\Uuid;
 use function array_keys;
@@ -43,6 +44,7 @@ use function array_map;
 use function ceil;
 use function count;
 use function implode;
+use function sprintf;
 use function strpos;
 use function strtolower;
 use function substr;
@@ -65,6 +67,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	 * @phpstan-var array<string, ResourcePack>
 	 */
 	private array $resourcePacksById = [];
+
+	private bool $requestedMetadata = false;
+	private bool $requestedStack = false;
 
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private array $downloadedChunks = [];
@@ -140,6 +145,21 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
+				if($this->requestedMetadata){
+					throw new PacketHandlingException("Cannot request resource pack metadata multiple times");
+				}
+				$this->requestedMetadata = true;
+
+				if($this->requestedStack){
+					//client already told us that they have all the packs, they shouldn't be asking for more
+					throw new PacketHandlingException("Cannot request resource pack metadata after resource pack stack");
+				}
+
+				if(count($packet->packIds) > count($this->resourcePacksById)){
+					throw new PacketHandlingException(sprintf("Requested metadata for more resource packs (%d) than available on the server (%d)", count($packet->packIds), count($this->resourcePacksById)));
+				}
+
+				$seen = [];
 				foreach($packet->packIds as $uuid){
 					//dirty hack for mojang's dirty hack for versions
 					$splitPos = strpos($uuid, "_");
@@ -153,6 +173,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 						return false;
 					}
+					if(isset($seen[$pack->getPackId()])){
+						throw new PacketHandlingException("Repeated metadata request for pack $uuid");
+					}
 
 					$this->session->sendDataPacket(ResourcePackDataInfoPacket::create(
 						$pack->getPackId(),
@@ -163,11 +186,16 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						false,
 						ResourcePackType::RESOURCES //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
 					));
+					$seen[$pack->getPackId()] = true;
 				}
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
-
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
+				if($this->requestedStack){
+					throw new PacketHandlingException("Cannot request resource pack stack multiple times");
+				}
+				$this->requestedStack = true;
+
 				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackStack);

@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitter;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
@@ -35,11 +38,10 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use function assert;
 
-class RedstoneComparator extends Flowable{
-	use HorizontalFacingTrait;
+class RedstoneComparator extends Flowable implements AnalogRedstoneSignalEmitter, PoweredByRedstone, HorizontalFacing{
+	use FacesOppositePlacingPlayerTrait;
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
 	use StaticSupportTrait;
@@ -47,7 +49,7 @@ class RedstoneComparator extends Flowable{
 	protected bool $isSubtractMode = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->isSubtractMode);
 		$w->bool($this->powered);
 	}
@@ -80,17 +82,10 @@ class RedstoneComparator extends Flowable{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 7 / 8)];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->isSubtractMode = !$this->isSubtractMode;
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;

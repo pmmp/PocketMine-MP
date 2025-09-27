@@ -48,7 +48,7 @@ final class AsyncGeneratorExecutor implements GeneratorExecutor{
 		\Logger $logger,
 		private readonly AsyncPool $workerPool,
 		private readonly GeneratorExecutorSetupParameters $setupParameters,
-		int $asyncContextId = null
+		?int $asyncContextId = null
 	){
 		$this->logger = new \PrefixedLogger($logger, "AsyncGeneratorExecutor");
 

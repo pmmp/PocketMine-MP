@@ -51,16 +51,16 @@ final class Cauldron extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		$result = [
-			AxisAlignedBB::one()->trim(Facing::UP, 11 / 16) //bottom of the cauldron
+			AxisAlignedBB::one()->trimmedCopy(Facing::UP, 11 / 16) //bottom of the cauldron
 		];
 
 		foreach(Facing::HORIZONTAL as $f){ //add the frame parts around the bowl
-			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
+			$result[] = AxisAlignedBB::one()->trimmedCopy($f, 14 / 16);
 		}
 		return $result;
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return $facing === Facing::UP ? SupportType::EDGE : SupportType::NONE;
 	}
 
@@ -75,7 +75,7 @@ final class Cauldron extends Transparent{
 		$returnedItems[] = $returnedItem;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item->getTypeId() === ItemTypeIds::WATER_BUCKET){
 			$this->fill(FillableCauldron::MAX_FILL_LEVEL, VanillaBlocks::WATER_CAULDRON(), $item, VanillaItems::BUCKET(), $returnedItems);
 		}elseif($item->getTypeId() === ItemTypeIds::LAVA_BUCKET){

@@ -35,11 +35,15 @@ use pocketmine\player\Player;
 class SignChangeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
+	private SignText $oldText;
+
 	public function __construct(
 		private BaseSign $sign,
 		private Player $player,
-		private SignText $text
+		private SignText $text,
+		private bool $frontFace = true
 	){
+		$this->oldText = $this->sign->getFaceText($this->frontFace);
 		parent::__construct($sign);
 	}
 
@@ -55,7 +59,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	 * Returns the text currently on the sign.
 	 */
 	public function getOldText() : SignText{
-		return $this->sign->getText();
+		return $this->oldText;
 	}
 
 	/**
@@ -71,4 +75,6 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	public function setNewText(SignText $text) : void{
 		$this->text = $text;
 	}
+
+	public function isFrontFace() : bool{ return $this->frontFace; }
 }

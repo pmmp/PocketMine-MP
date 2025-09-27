@@ -43,9 +43,9 @@ class Cake extends BaseCake{
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()
-				->contract(1 / 16, 0, 1 / 16)
-				->trim(Facing::UP, 0.5)
-				->trim(Facing::WEST, $this->bites / 8)
+				->contractedCopy(1 / 16, 0, 1 / 16)
+				->trimmedCopy(Facing::UP, 0.5)
+				->trimmedCopy(Facing::WEST, $this->bites / 8)
 		];
 	}
 
@@ -60,7 +60,7 @@ class Cake extends BaseCake{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->bites === 0 && $item instanceof ItemBlock){
 			$block = $item->getBlock();
 			$resultBlock = null;

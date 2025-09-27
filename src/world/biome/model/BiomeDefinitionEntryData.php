@@ -28,7 +28,7 @@ namespace pocketmine\world\biome\model;
  */
 final class BiomeDefinitionEntryData{
 	/** @required */
-	public ?int $id;
+	public int $id;
 
 	/** @required */
 	public float $temperature;

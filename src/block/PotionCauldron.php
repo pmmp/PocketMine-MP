@@ -27,6 +27,7 @@ use pocketmine\block\tile\Cauldron as TileCauldron;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\CauldronEmptyPotionSound;
@@ -94,7 +95,7 @@ final class PotionCauldron extends FillableCauldron{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		match($item->getTypeId()){
 			ItemTypeIds::LINGERING_POTION, ItemTypeIds::POTION, ItemTypeIds::SPLASH_POTION => $this->addFillLevelsOrMix(self::POTION_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems),
 			ItemTypeIds::GLASS_BOTTLE => $this->potionItem === null ? null : $this->removeFillLevels(self::POTION_FILL_AMOUNT, $item, clone $this->potionItem, $returnedItems),

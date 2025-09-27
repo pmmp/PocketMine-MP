@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\math\Facing;
 use pocketmine\world\World;
 use function array_fill_keys;
+use function array_map;
 use function intdiv;
 use function min;
 
@@ -51,14 +52,14 @@ final class MinimumCostFlowCalculator{
 		private \Closure $canFlowInto
 	){}
 
-	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $originOpposite, int $lastOpposite) : int{
+	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, Facing $originOpposite, Facing $lastOpposite) : int{
 		$cost = 1000;
 
 		foreach(Facing::HORIZONTAL as $j){
 			if($j === $originOpposite || $j === $lastOpposite){
 				continue;
 			}
-			[$dx, $dy, $dz] = Facing::OFFSET[$j];
+			[$dx, $dy, $dz] = Facing::OFFSET[$j->value];
 			$x = $blockX + $dx;
 			$y = $blockY + $dy;
 			$z = $blockZ + $dz;
@@ -99,10 +100,10 @@ final class MinimumCostFlowCalculator{
 	 * @return int[]
 	 */
 	public function getOptimalFlowDirections(int $originX, int $originY, int $originZ) : array{
-		$flowCost = array_fill_keys(Facing::HORIZONTAL, 1000);
+		$flowCost = array_fill_keys(array_map(fn(Facing $f) => $f->value, Facing::HORIZONTAL), 1000);
 		$maxCost = intdiv(4, $this->flowDecayPerBlock);
 		foreach(Facing::HORIZONTAL as $j){
-			[$dx, $dy, $dz] = Facing::OFFSET[$j];
+			[$dx, $dy, $dz] = Facing::OFFSET[$j->value];
 			$x = $originX + $dx;
 			$y = $originY + $dy;
 			$z = $originZ + $dz;
@@ -111,12 +112,12 @@ final class MinimumCostFlowCalculator{
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
 			}elseif($this->world->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
-				$flowCost[$j] = $maxCost = 0;
+				$flowCost[$j->value] = $maxCost = 0;
 			}elseif($maxCost > 0){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW;
 				$opposite = Facing::opposite($j);
-				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $opposite, $opposite);
-				$maxCost = min($maxCost, $flowCost[$j]);
+				$flowCost[$j->value] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $opposite, $opposite);
+				$maxCost = min($maxCost, $flowCost[$j->value]);
 			}
 		}
 

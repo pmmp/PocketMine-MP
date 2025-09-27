@@ -27,17 +27,16 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Facing;
 
 trait AnyFacingTrait{
-	protected int $facing = Facing::DOWN;
+	protected Facing $facing = Facing::DOWN;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->facing($this->facing);
+		$w->enum($this->facing);
 	}
 
-	public function getFacing() : int{ return $this->facing; }
+	public function getFacing() : Facing{ return $this->facing; }
 
 	/** @return $this */
-	public function setFacing(int $facing) : self{
-		Facing::validate($this->facing);
+	public function setFacing(Facing $facing) : self{
 		$this->facing = $facing;
 		return $this;
 	}

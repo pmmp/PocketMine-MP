@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\MultiAnyFacing;
 use pocketmine\block\utils\MultiAnySupportTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Fertilizer;
@@ -35,7 +36,7 @@ use pocketmine\world\World;
 use function count;
 use function shuffle;
 
-class GlowLichen extends Transparent{
+class GlowLichen extends Transparent implements MultiAnyFacing{
 	use MultiAnySupportTrait;
 
 	public function getLightLevel() : int{
@@ -50,7 +51,7 @@ class GlowLichen extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -59,13 +60,13 @@ class GlowLichen extends Transparent{
 	}
 
 	/**
-	 * @return int[]
+	 * @return Facing[]
 	 */
 	protected function getInitialPlaceFaces(Block $blockReplace) : array{
 		return $blockReplace instanceof GlowLichen ? $blockReplace->faces : [];
 	}
 
-	private function getSpreadBlock(Block $replace, int $spreadFace) : ?Block{
+	private function getSpreadBlock(Block $replace, Facing $spreadFace) : ?Block{
 		if($replace instanceof self && $replace->hasSameTypeId($this)){
 			if($replace->hasFace($spreadFace)){
 				return null;
@@ -80,7 +81,7 @@ class GlowLichen extends Transparent{
 		return $result->setFace($spreadFace, true);
 	}
 
-	private function spread(World $world, Vector3 $replacePos, int $spreadFace) : bool{
+	private function spread(World $world, Vector3 $replacePos, Facing $spreadFace) : bool{
 		$supportBlock = $world->getBlock($replacePos->getSide($spreadFace));
 		$supportFace = Facing::opposite($spreadFace);
 
@@ -98,9 +99,9 @@ class GlowLichen extends Transparent{
 	}
 
 	/**
-	 * @phpstan-return \Generator<int, int, void, void>
+	 * @phpstan-return \Generator<int, Facing, void, void>
 	 */
-	private static function getShuffledSpreadFaces(int $sourceFace) : \Generator{
+	private static function getShuffledSpreadFaces(Facing $sourceFace) : \Generator{
 		$skipAxis = Facing::axis($sourceFace);
 
 		$faces = Facing::ALL;
@@ -112,7 +113,7 @@ class GlowLichen extends Transparent{
 		}
 	}
 
-	private function spreadAroundSupport(int $sourceFace) : bool{
+	private function spreadAroundSupport(Facing $sourceFace) : bool{
 		$world = $this->position->getWorld();
 
 		$supportPos = $this->position->getSide($sourceFace);
@@ -126,7 +127,7 @@ class GlowLichen extends Transparent{
 		return false;
 	}
 
-	private function spreadAdjacentToSupport(int $sourceFace) : bool{
+	private function spreadAdjacentToSupport(Facing $sourceFace) : bool{
 		$world = $this->position->getWorld();
 
 		foreach(self::getShuffledSpreadFaces($sourceFace) as $spreadFace){
@@ -138,7 +139,7 @@ class GlowLichen extends Transparent{
 		return false;
 	}
 
-	private function spreadWithinSelf(int $sourceFace) : bool{
+	private function spreadWithinSelf(Facing $sourceFace) : bool{
 		foreach(self::getShuffledSpreadFaces($sourceFace) as $spreadFace){
 			if(!$this->hasFace($spreadFace) && $this->spread($this->position->getWorld(), $this->position, $spreadFace)){
 				return true;
@@ -148,7 +149,7 @@ class GlowLichen extends Transparent{
 		return false;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && count($this->faces) > 0){
 			$shuffledFaces = $this->faces;
 			shuffle($shuffledFaces);

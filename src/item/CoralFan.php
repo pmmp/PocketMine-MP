@@ -46,7 +46,7 @@ final class CoralFan extends Item{
 		$this->encodeCoralType($w);
 	}
 
-	public function getBlock(?int $clickedFace = null) : Block{
+	public function getBlock(?Facing $clickedFace = null) : Block{
 		$block = $clickedFace !== null && Facing::axis($clickedFace) !== Axis::Y ? VanillaBlocks::WALL_CORAL_FAN() : VanillaBlocks::CORAL_FAN();
 
 		return $block->setCoralType($this->coralType)->setDead($this->dead);

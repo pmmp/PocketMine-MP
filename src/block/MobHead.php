@@ -41,7 +41,7 @@ class MobHead extends Flowable{
 
 	protected MobHeadType $mobHeadType = MobHeadType::SKELETON;
 
-	protected int $facing = Facing::NORTH;
+	protected Facing $facing = Facing::NORTH;
 	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function describeBlockItemState(RuntimeDataDescriber $w) : void{
@@ -82,10 +82,10 @@ class MobHead extends Flowable{
 		return $this;
 	}
 
-	public function getFacing() : int{ return $this->facing; }
+	public function getFacing() : Facing{ return $this->facing; }
 
 	/** @return $this */
-	public function setFacing(int $facing) : self{
+	public function setFacing(Facing $facing) : self{
 		if($facing === Facing::DOWN){
 			throw new \InvalidArgumentException("Skull may not face DOWN");
 		}
@@ -106,17 +106,17 @@ class MobHead extends Flowable{
 
 	protected function recalculateCollisionBoxes() : array{
 		$collisionBox = AxisAlignedBB::one()
-			->contract(0.25, 0, 0.25)
-			->trim(Facing::UP, 0.5);
+			->contractedCopy(0.25, 0, 0.25)
+			->trimmedCopy(Facing::UP, 0.5);
 		if($this->facing !== Facing::UP){
 			$collisionBox = $collisionBox
-				->offsetTowards(Facing::opposite($this->facing), 0.25)
-				->offsetTowards(Facing::UP, 0.25);
+				->offsetTowardsCopy(Facing::opposite($this->facing), 0.25)
+				->offsetTowardsCopy(Facing::UP, 0.25);
 		}
 		return [$collisionBox];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::DOWN){
 			return false;
 		}

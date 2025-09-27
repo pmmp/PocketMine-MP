@@ -38,6 +38,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -48,6 +49,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function base64_decode;
 use function base64_encode;
@@ -295,9 +297,8 @@ class Item implements \JsonSerializable{
 		$display = $tag->getCompoundTag(self::TAG_DISPLAY);
 		if($display !== null){
 			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName);
-			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
-			if($lore !== null && $lore->getTagType() === NBT::TAG_String){
-				/** @var StringTag $t */
+			$lore = $display->getListTag(self::TAG_DISPLAY_LORE, StringTag::class);
+			if($lore !== null){
 				foreach($lore as $t){
 					$this->lore[] = $t->getValue();
 				}
@@ -305,9 +306,8 @@ class Item implements \JsonSerializable{
 		}
 
 		$this->removeEnchantments();
-		$enchantments = $tag->getListTag(self::TAG_ENCH);
-		if($enchantments !== null && $enchantments->getTagType() === NBT::TAG_Compound){
-			/** @var CompoundTag $enchantment */
+		$enchantments = $tag->getListTag(self::TAG_ENCH, CompoundTag::class);
+		if($enchantments !== null){
 			foreach($enchantments as $enchantment){
 				$magicNumber = $enchantment->getShort(self::TAG_ENCH_ID, -1);
 				$level = $enchantment->getShort(self::TAG_ENCH_LVL, 0);
@@ -324,17 +324,15 @@ class Item implements \JsonSerializable{
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		$this->canPlaceOn = [];
-		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON);
-		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
-			/** @var StringTag $entry */
+		$canPlaceOn = $tag->getListTag(self::TAG_CAN_PLACE_ON, StringTag::class);
+		if($canPlaceOn !== null){
 			foreach($canPlaceOn as $entry){
 				$this->canPlaceOn[$entry->getValue()] = $entry->getValue();
 			}
 		}
 		$this->canDestroy = [];
-		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY);
-		if($canDestroy !== null && $canDestroy->getTagType() === NBT::TAG_String){
-			/** @var StringTag $entry */
+		$canDestroy = $tag->getListTag(self::TAG_CAN_DESTROY, StringTag::class);
+		if($canDestroy !== null){
 			foreach($canDestroy as $entry){
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
@@ -488,10 +486,24 @@ class Item implements \JsonSerializable{
 		return $this->getBlock()->canBePlaced();
 	}
 
+	protected final function tryPlacementTransaction(Block $blockPlace, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player) : ?BlockTransaction{
+		$position = $blockReplace->getPosition();
+		$blockPlace->position($position->getWorld(), $position->getFloorX(), $position->getFloorY(), $position->getFloorZ());
+		if(!$blockPlace->canBePlacedAt($blockReplace, $clickVector, $face, $blockReplace->getPosition()->equals($blockClicked->getPosition()))){
+			return null;
+		}
+		$transaction = new BlockTransaction($position->getWorld());
+		return $blockPlace->place($transaction, $this, $blockReplace, $blockClicked, $face, $clickVector, $player) ? $transaction : null;
+	}
+
+	public function getPlacementTransaction(Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : ?BlockTransaction{
+		return $this->tryPlacementTransaction($this->getBlock($face), $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
 	/**
 	 * Returns the block corresponding to this Item.
 	 */
-	public function getBlock(?int $clickedFace = null) : Block{
+	public function getBlock(?Facing $clickedFace = null) : Block{
 		return VanillaBlocks::AIR();
 	}
 
@@ -590,7 +602,7 @@ class Item implements \JsonSerializable{
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		return ItemUseResult::NONE;
 	}
 

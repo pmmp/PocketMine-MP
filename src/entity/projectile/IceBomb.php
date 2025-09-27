@@ -46,7 +46,7 @@ class IceBomb extends Throwable{
 		if($block->getTypeId() === BlockTypeIds::WATER){
 			$pos = $block->getPosition();
 
-			return AxisAlignedBB::one()->offset($pos->x, $pos->y, $pos->z)->calculateIntercept($start, $end);
+			return AxisAlignedBB::one()->offsetCopy($pos->x, $pos->y, $pos->z)->calculateIntercept($start, $end);
 		}
 
 		return parent::calculateInterceptWithBlock($block, $start, $end);

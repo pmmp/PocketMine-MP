@@ -34,11 +34,12 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\world\World;
 use function count;
 
-class ChiseledBookshelf extends Tile implements Container{
-	use ContainerTrait;
+class ChiseledBookshelf extends Tile implements ContainerTile{
+	use ContainerTileTrait;
 
 	private const TAG_LAST_INTERACTED_SLOT = "LastInteractedSlot"; //TAG_Int
 
@@ -86,13 +87,18 @@ class ChiseledBookshelf extends Tile implements Container{
 	}
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+		try{
+			$inventoryTag = $tag->getListTag(ContainerTile::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			//preserve the old behaviour of not throwing on wrong types
+			$inventoryTag = null;
+		}
+		if($inventoryTag !== null){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 			$newContents = [];
-			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $slot => $itemNBT){
 				try{
 					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
@@ -111,7 +117,7 @@ class ChiseledBookshelf extends Tile implements Container{
 			$inventory->getListeners()->add(...$listeners);
 		}
 
-		if(($lockTag = $tag->getTag(Container::TAG_LOCK)) instanceof StringTag){
+		if(($lockTag = $tag->getTag(ContainerTile::TAG_LOCK)) instanceof StringTag){
 			$this->lock = $lockTag->getValue();
 		}
 	}
@@ -130,10 +136,10 @@ class ChiseledBookshelf extends Tile implements Container{
 			}
 		}
 
-		$tag->setTag(Container::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
+		$tag->setTag(ContainerTile::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));
 
 		if($this->lock !== null){
-			$tag->setString(Container::TAG_LOCK, $this->lock);
+			$tag->setString(ContainerTile::TAG_LOCK, $this->lock);
 		}
 	}
 }

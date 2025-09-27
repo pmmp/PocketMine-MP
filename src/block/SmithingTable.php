@@ -23,19 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\SmithingTableInventory;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
+use pocketmine\block\inventory\window\SmithingTableInventoryWindow;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-final class SmithingTable extends Opaque{
+final class SmithingTable extends Opaque implements MenuAccessor{
+	use MenuAccessorTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$player->setCurrentWindow(new SmithingTableInventory($this->position));
-		}
-
-		return true;
+	protected function newMenu(Player $player, Position $position) : InventoryWindow{
+		return new SmithingTableInventoryWindow($player, $position);
 	}
 
 	public function getFuelTime() : int{

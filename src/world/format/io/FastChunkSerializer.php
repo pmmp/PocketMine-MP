@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\utils\Binary;
-use pocketmine\utils\BinaryStream;
+use pmmp\encoding\BE;
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -45,15 +47,15 @@ final class FastChunkSerializer{
 		//NOOP
 	}
 
-	private static function serializePalettedArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+	private static function serializePalettedArray(ByteBufferWriter $stream, PalettedBlockArray $array) : void{
 		$wordArray = $array->getWordArray();
 		$palette = $array->getPalette();
 
-		$stream->putByte($array->getBitsPerBlock());
-		$stream->put($wordArray);
+		Byte::writeUnsigned($stream, $array->getBitsPerBlock());
+		$stream->writeByteArray($wordArray);
 		$serialPalette = pack("L*", ...$palette);
-		$stream->putInt(strlen($serialPalette));
-		$stream->put($serialPalette);
+		BE::writeUnsignedInt($stream, strlen($serialPalette));
+		$stream->writeByteArray($serialPalette);
 	}
 
 	/**
@@ -61,19 +63,17 @@ final class FastChunkSerializer{
 	 * TODO: tiles and entities
 	 */
 	public static function serializeTerrain(Chunk $chunk) : string{
-		$stream = new BinaryStream();
-		$stream->putByte(
-			($chunk->isPopulated() ? self::FLAG_POPULATED : 0)
-		);
+		$stream = new ByteBufferWriter();
+		Byte::writeUnsigned($stream, ($chunk->isPopulated() ? self::FLAG_POPULATED : 0));
 
 		//subchunks
 		$subChunks = $chunk->getSubChunks();
 		$count = count($subChunks);
-		$stream->putByte($count);
+		Byte::writeUnsigned($stream, $count);
 
 		foreach($subChunks as $y => $subChunk){
-			$stream->putByte($y);
-			$stream->putInt($subChunk->getEmptyBlockId());
+			Byte::writeSigned($stream, $y);
+			BE::writeUnsignedInt($stream, $subChunk->getEmptyBlockId());
 
 			// Write block and liquid layers (always present)
 			self::serializePalettedArray($stream, $subChunk->getBlockLayer());
@@ -81,14 +81,15 @@ final class FastChunkSerializer{
 			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
 		}
 
-		return $stream->getBuffer();
+		return $stream->getData();
 	}
 
-	private static function deserializePalettedArray(BinaryStream $stream) : PalettedBlockArray{
-		$bitsPerBlock = $stream->getByte();
-		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+	private static function deserializePalettedArray(ByteBufferReader $stream) : PalettedBlockArray{
+		$bitsPerBlock = Byte::readUnsigned($stream);
+		$words = $stream->readByteArray(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+		$paletteSize = BE::readUnsignedInt($stream);
 		/** @var int[] $unpackedPalette */
-		$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
+		$unpackedPalette = unpack("L*", $stream->readByteArray($paletteSize)); //unpack() will never fail here
 		$palette = array_values($unpackedPalette);
 
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
@@ -98,17 +99,18 @@ final class FastChunkSerializer{
 	 * Deserializes a fast-serialized chunk
 	 */
 	public static function deserializeTerrain(string $data) : Chunk{
-		$stream = new BinaryStream($data);
+		$stream = new ByteBufferReader($data);
 
-		$flags = $stream->getByte();
+		$flags = Byte::readUnsigned($stream);
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
 
 		$subChunks = [];
 
-		$count = $stream->getByte();
+		$count = Byte::readUnsigned($stream);
 		for($subCount = 0; $subCount < $count; ++$subCount){
-			$y = Binary::signByte($stream->getByte());
-			$airBlockId = $stream->getInt();
+			$y = Byte::readSigned($stream);
+			//TODO: why the heck are we using big-endian here?
+			$airBlockId = BE::readUnsignedInt($stream);
 
 			// Read block and liquid layers (always present)
 			$blockLayer = self::deserializePalettedArray($stream);

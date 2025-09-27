@@ -28,6 +28,7 @@ use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -37,7 +38,7 @@ class Bucket extends Item{
 		return 16;
 	}
 
-	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 		if($blockClicked instanceof Liquid && $blockClicked->isSource()){
 			$stack = clone $this;

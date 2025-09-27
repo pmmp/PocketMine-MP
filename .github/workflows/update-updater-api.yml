@@ -4,6 +4,11 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Release to publish info for'
+        required: true
 
 jobs:
   build:
@@ -14,14 +19,22 @@ jobs:
       - name: Install jq
         run: sudo apt update && sudo apt install jq -y
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: ${{ github.repository_owner }}/update.pmmp.io
           ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
 
-      - name: Get actual tag name
+      - name: Get tag name
         id: tag-name
-        run: echo TAG_NAME=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{') >> $GITHUB_OUTPUT
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo TAG_NAME="${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo TAG_NAME="${{ github.event.inputs.release }}" >> $GITHUB_OUTPUT
+          else
+            echo "Unsupported event type: ${{ github.event_name }}"
+            exit 1
+          fi
 
       - name: Download new release information
         run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json

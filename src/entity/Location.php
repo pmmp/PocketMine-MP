@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 
-class Location extends Position{
+readonly class Location extends Position{
 
 	public float $yaw;
 	public float $pitch;

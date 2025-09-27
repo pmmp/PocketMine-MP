@@ -42,6 +42,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -288,6 +289,12 @@ class World implements ChunkManager{
 	 * @phpstan-var array<ChunkPosHash, Chunk>
 	 */
 	private array $chunks = [];
+
+	/**
+	 * @var true[]
+	 * @phpstan-var array<ChunkPosHash, true>
+	 */
+	private array $knownUngeneratedChunks = [];
 
 	/**
 	 * @var Vector3[][] chunkHash => [relativeBlockHash => Vector3]
@@ -625,6 +632,7 @@ class World implements ChunkManager{
 			self::getXZ($chunkHash, $chunkX, $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ, false);
 		}
+		$this->knownUngeneratedChunks = [];
 		foreach($this->entitiesByChunk as $chunkHash => $entities){
 			self::getXZ($chunkHash, $chunkX, $chunkZ);
 
@@ -976,7 +984,7 @@ class World implements ChunkManager{
 					continue;
 				}
 			}
-			foreach($this->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z)) as $entity){
+			foreach($this->getNearbyEntities(AxisAlignedBB::one()->offsetCopy($x, $y, $z)) as $entity){
 				$entity->onNearbyBlockChange();
 			}
 			$block->onNearbyBlockChange();
@@ -1604,7 +1612,7 @@ class World implements ChunkManager{
 		$stateCollisionInfo = $this->getBlockCollisionInfo($x, $y, $z, $collisionInfo);
 		$boxes = match($stateCollisionInfo){
 			RuntimeBlockStateRegistry::COLLISION_NONE => [],
-			RuntimeBlockStateRegistry::COLLISION_CUBE => [AxisAlignedBB::one()->offset($x, $y, $z)],
+			RuntimeBlockStateRegistry::COLLISION_CUBE => [AxisAlignedBB::one()->offsetCopy($x, $y, $z)],
 			default => $this->getBlockAt($x, $y, $z)->getCollisionBoxes()
 		};
 
@@ -1618,7 +1626,7 @@ class World implements ChunkManager{
 				$stateCollisionInfo = $this->getBlockCollisionInfo($offsetX, $offsetY, $offsetZ, $collisionInfo);
 				if($stateCollisionInfo === RuntimeBlockStateRegistry::COLLISION_MAY_OVERFLOW){
 					//avoid allocating this unless it's needed
-					$cellBB ??= AxisAlignedBB::one()->offset($x, $y, $z);
+					$cellBB ??= AxisAlignedBB::one()->offsetCopy($x, $y, $z);
 					$extraBoxes = $this->getBlockAt($offsetX, $offsetY, $offsetZ)->getCollisionBoxes();
 					foreach($extraBoxes as $extraBox){
 						if($extraBox->intersectsWith($cellBB)){
@@ -2212,7 +2220,7 @@ class World implements ChunkManager{
 	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, Facing $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -2272,22 +2280,15 @@ class World implements ChunkManager{
 		if($item->isNull() || !$item->canBePlaced()){
 			return false;
 		}
-		$hand = $item->getBlock($face);
-		$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
 
-		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
-			$blockReplace = $blockClicked;
-			//TODO: while this mimics the vanilla behaviour with replaceable blocks, we should really pass some other
-			//value like NULL and let place() deal with it. This will look like a bug to anyone who doesn't know about
-			//the vanilla behaviour.
-			$face = Facing::UP;
-			$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
-		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
-			return false;
-		}
-
-		$tx = new BlockTransaction($this);
-		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+		//TODO: while passing Facing::UP mimics the vanilla behaviour with replaceable blocks, we should really pass
+		//some other value like NULL and let place() deal with it. This will look like a bug to anyone who doesn't know
+		//about the vanilla behaviour.
+		$tx =
+			$item->getPlacementTransaction($blockClicked, $blockClicked, Facing::UP, $clickVector, $player) ??
+			$item->getPlacementTransaction($blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($tx === null){
+			//no placement options available
 			return false;
 		}
 
@@ -2331,6 +2332,7 @@ class World implements ChunkManager{
 		if(!$tx->apply()){
 			return false;
 		}
+		$first = true;
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
 			$tile = $this->getTileAt($x, $y, $z);
 			if($tile !== null){
@@ -2338,11 +2340,12 @@ class World implements ChunkManager{
 				$tile->copyDataFromItem($item);
 			}
 
-			$this->getBlockAt($x, $y, $z)->onPostPlace();
-		}
-
-		if($playSound){
-			$this->addSound($hand->getPosition(), new BlockPlaceSound($hand));
+			$placed = $this->getBlockAt($x, $y, $z);
+			$placed->onPostPlace();
+			if($first && $playSound){
+				$this->addSound($placed->getPosition(), new BlockPlaceSound($placed));
+			}
+			$first = false;
 		}
 
 		$item->pop();
@@ -2648,6 +2651,7 @@ class World implements ChunkManager{
 		}
 
 		$this->chunks[$chunkHash] = $chunk;
+		unset($this->knownUngeneratedChunks[$chunkHash]);
 
 		$this->blockCacheSize -= count($this->blockCache[$chunkHash] ?? []);
 		unset($this->blockCache[$chunkHash]);
@@ -2754,7 +2758,7 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
-		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof NeverSavedWithChunkEntity){
 			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
 			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
 			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");
@@ -2912,6 +2916,9 @@ class World implements ChunkManager{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
 			return $this->chunks[$chunkHash];
 		}
+		if(isset($this->knownUngeneratedChunks[$chunkHash])){
+			return null;
+		}
 
 		$this->timings->syncChunkLoad->startTiming();
 
@@ -2931,6 +2938,7 @@ class World implements ChunkManager{
 
 		if($loadedChunkData === null){
 			$this->timings->syncChunkLoad->stopTiming();
+			$this->knownUngeneratedChunks[$chunkHash] = true;
 			return null;
 		}
 
@@ -2947,7 +2955,7 @@ class World implements ChunkManager{
 		unset($this->blockCache[$chunkHash]);
 		unset($this->blockCollisionBoxCache[$chunkHash]);
 
-		$this->initChunk($x, $z, $chunkData);
+		$this->initChunk($x, $z, $chunkData, $chunk);
 
 		if(ChunkLoadEvent::hasHandlers()){
 			(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
@@ -2967,7 +2975,7 @@ class World implements ChunkManager{
 		return $this->chunks[$chunkHash];
 	}
 
-	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData, Chunk $chunk) : void{
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
 
 		if(count($chunkData->getEntityNBT()) !== 0){
@@ -3031,6 +3039,16 @@ class World implements ChunkManager{
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
 					$this->addTile($tile);
+				}
+				$expectedStateId = $chunk->getBlockStateId($tilePosition->getFloorX() & Chunk::COORD_MASK, $tilePosition->getFloorY(), $tilePosition->getFloorZ() & Chunk::COORD_MASK);
+				$actualStateId = $this->getBlock($tilePosition)->getStateId();
+				if($expectedStateId !== $actualStateId){
+					//state ID was updated by readStateFromWorld - typically because the block pulled some data from the tile
+					//make sure this is synced to the chunk
+					//TODO: in the future we should pull tile reading logic out of readStateFromWorld() and do it only
+					//when the tile is loaded - this would be cleaner and faster
+					$chunk->setBlockStateId($tilePosition->getFloorX() & Chunk::COORD_MASK, $tilePosition->getFloorY(), $tilePosition->getFloorZ() & Chunk::COORD_MASK, $actualStateId);
+					$this->logger->debug("Tile " . $tile::class . " at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z updated block state ID from $expectedStateId to $actualStateId");
 				}
 			}
 

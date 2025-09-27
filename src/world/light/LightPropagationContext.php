@@ -23,13 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\math\Facing;
+
 final class LightPropagationContext{
 
 	/** @phpstan-var \SplQueue<array{int, int, int}> */
 	public \SplQueue $spreadQueue;
 	/**
 	 * @var int[]|true[]
-	 * @phpstan-var array<int, int|true>
+	 * @phpstan-var array<int, Facing|true>
 	 */
 	public array $spreadVisited = [];
 

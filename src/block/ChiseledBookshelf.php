@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\ChiseledBookshelf as TileChiseledBookshelf;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Book;
@@ -38,7 +39,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function spl_object_id;
 
-class ChiseledBookshelf extends Opaque{
+class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 	use HorizontalFacingTrait;
 	use FacesOppositePlacingPlayerTrait;
 
@@ -51,7 +52,7 @@ class ChiseledBookshelf extends Opaque{
 	private ?ChiseledBookshelfSlot $lastInteractedSlot = null;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->enumSet($this->slots, ChiseledBookshelfSlot::cases());
 	}
 
@@ -114,6 +115,18 @@ class ChiseledBookshelf extends Opaque{
 	}
 
 	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @return $this
+	 */
+	public function setSlots(array $slots) : self{
+		$this->slots = [];
+		foreach($slots as $slot){
+			$this->setSlot($slot, true);
+		}
+		return $this;
+	}
+
+	/**
 	 * Returns the last slot interacted by a player or null if no slot has been interacted with yet.
 	 */
 	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{
@@ -130,8 +143,8 @@ class ChiseledBookshelf extends Opaque{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($face !== $this->facing){
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($face !== $this->facing->toFacing()){
 			return false;
 		}
 

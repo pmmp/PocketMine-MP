@@ -23,10 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\window\AnvilInventoryWindow;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\object\FallingBlock;
@@ -37,13 +41,15 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
 use function round;
 
-class Anvil extends Transparent implements Fallable{
+class Anvil extends Transparent implements Fallable, HorizontalFacing, MenuAccessor{
 	use FallableTrait;
 	use HorizontalFacingTrait;
+	use MenuAccessorTrait;
 
 	public const UNDAMAGED = 0;
 	public const SLIGHTLY_DAMAGED = 1;
@@ -56,7 +62,7 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 	}
 
 	public function getDamage() : int{ return $this->damage; }
@@ -71,24 +77,20 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->squash(Facing::axis(Facing::rotateY($this->facing, false)), 1 / 8)];
+		return [AxisAlignedBB::one()->squashedCopy(Facing::axis(Facing::rotateY($this->facing->toFacing(), false)), 1 / 8)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$player->setCurrentWindow(new AnvilInventory($this->position));
-		}
-
-		return true;
+	protected function newMenu(Player $player, Position $position) : AnvilInventoryWindow{
+		return new AnvilInventoryWindow($player, $position);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Facing::rotateY($player->getHorizontalFacing(), false);
+			$this->facing = HorizontalFacingOption::fromFacing(Facing::rotateY($player->getHorizontalFacing(), false));
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

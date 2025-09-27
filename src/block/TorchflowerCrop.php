@@ -62,7 +62,7 @@ final class TorchflowerCrop extends Flowable{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if(BlockEventHelper::grow($this, $this->getNextState(), $player)){
 				$item->pop();

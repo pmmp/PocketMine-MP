@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\FortuneDropHelper;
@@ -39,7 +40,7 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\SweetBerriesPickSound;
 use function mt_rand;
 
-class SweetBerryBush extends Flowable{
+class SweetBerryBush extends Flowable implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
@@ -64,7 +65,7 @@ class SweetBerryBush extends Flowable{
 			($supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD));
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
 		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;

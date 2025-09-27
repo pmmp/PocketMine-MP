@@ -24,18 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\RailConnectionInfo;
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
+use pocketmine\block\utils\RailShape;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\math\Facing;
-use function array_keys;
-use function implode;
 
 class Rail extends BaseRail{
 
-	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
+	private RailShape $railShape = RailShape::FLAT_AXIS_Z;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->railShape($this->railShape);
+		$w->enum($this->railShape);
 	}
 
 	protected function setShapeFromConnections(array $connections) : void{
@@ -43,11 +41,11 @@ class Rail extends BaseRail{
 		if($railShape === null){
 			throw new \InvalidArgumentException("No rail shape matches these connections");
 		}
-		$this->railShape = $railShape;
+		$this->railShape = RailShape::from($railShape);
 	}
 
 	protected function getCurrentShapeConnections() : array{
-		return RailConnectionInfo::CURVE_CONNECTIONS[$this->railShape] ?? RailConnectionInfo::CONNECTIONS[$this->railShape];
+		return RailConnectionInfo::CURVE_CONNECTIONS[$this->railShape->value] ?? RailConnectionInfo::CONNECTIONS[$this->railShape->value];
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
@@ -60,8 +58,8 @@ class Rail extends BaseRail{
 				Facing::WEST,
 				Facing::EAST
 			] as $d){
-				if($constraint !== $d){
-					$possible[$d] = true;
+				if($constraint !== $d->value){
+					$possible[$d->value] = true;
 				}
 			}
 		}
@@ -69,13 +67,10 @@ class Rail extends BaseRail{
 		return $possible;
 	}
 
-	public function getShape() : int{ return $this->railShape; }
+	public function getShape() : RailShape{ return $this->railShape; }
 
 	/** @return $this */
-	public function setShape(int $shape) : self{
-		if(!isset(RailConnectionInfo::CONNECTIONS[$shape]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$shape])){
-			throw new \InvalidArgumentException("Invalid shape, must be one of " . implode(", ", [...array_keys(RailConnectionInfo::CONNECTIONS), ...array_keys(RailConnectionInfo::CURVE_CONNECTIONS)]));
-		}
+	public function setShape(RailShape $shape) : self{
 		$this->railShape = $shape;
 		return $this;
 	}

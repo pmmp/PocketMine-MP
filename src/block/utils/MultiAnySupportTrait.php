@@ -42,11 +42,11 @@ trait MultiAnySupportTrait{
 	/**
 	 * Returns a list of faces that block should already have when placed.
 	 *
-	 * @return int[]
+	 * @return Facing[]
 	 */
 	abstract protected function getInitialPlaceFaces(Block $blockReplace) : array;
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->faces = $this->getInitialPlaceFaces($blockReplace);
 		$availableFaces = $this->getAvailableFaces();
 
@@ -55,8 +55,8 @@ trait MultiAnySupportTrait{
 		}
 
 		$opposite = Facing::opposite($face);
-		$placedFace = isset($availableFaces[$opposite]) ? $opposite : array_key_first($availableFaces);
-		$this->faces[$placedFace] = $placedFace;
+		$placedFace = isset($availableFaces[$opposite->value]) ? $opposite : $availableFaces[array_key_first($availableFaces)];
+		$this->faces[$placedFace->value] = $placedFace;
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -66,7 +66,7 @@ trait MultiAnySupportTrait{
 
 		foreach($this->faces as $face){
 			if($this->getAdjacentSupportType($face) !== SupportType::FULL){
-				unset($this->faces[$face]);
+				unset($this->faces[$face->value]);
 				$changed = true;
 			}
 		}
@@ -82,13 +82,14 @@ trait MultiAnySupportTrait{
 	}
 
 	/**
-	 * @return array<int, int> $faces
+	 * @return Facing[]
+	 * @phpstan-return array<int, Facing>
 	 */
 	private function getAvailableFaces() : array{
 		$faces = [];
 		foreach(Facing::ALL as $face){
 			if(!$this->hasFace($face) && $this->getAdjacentSupportType($face) === SupportType::FULL){
-				$faces[$face] = $face;
+				$faces[$face->value] = $face;
 			}
 		}
 		return $faces;

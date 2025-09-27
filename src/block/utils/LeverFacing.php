@@ -35,7 +35,7 @@ enum LeverFacing{
 	case SOUTH;
 	case WEST;
 
-	public function getFacing() : int{
+	public function getFacing() : Facing{
 		return match($this){
 			self::UP_AXIS_X, self::UP_AXIS_Z => Facing::UP,
 			self::DOWN_AXIS_X, self::DOWN_AXIS_Z => Facing::DOWN,

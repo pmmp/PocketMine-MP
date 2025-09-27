@@ -56,7 +56,7 @@ class EnchantCommand extends VanillaCommand{
 			return true;
 		}
 
-		$item = $player->getInventory()->getItemInHand();
+		$item = $player->getMainHandItem();
 
 		if($item->isNull()){
 			$sender->sendMessage(KnownTranslationFactory::commands_enchant_noItem());
@@ -79,7 +79,7 @@ class EnchantCommand extends VanillaCommand{
 
 		//this is necessary to deal with enchanted books, which are a different item type than regular books
 		$enchantedItem = EnchantingHelper::enchantItem($item, [new EnchantmentInstance($enchantment, $level)]);
-		$player->getInventory()->setItemInHand($enchantedItem);
+		$player->setMainHandItem($enchantedItem);
 
 		self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_enchant_success($player->getName()));
 		return true;

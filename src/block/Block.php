@@ -26,6 +26,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\LE;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
@@ -49,7 +51,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Binary;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -98,9 +99,10 @@ class Block{
 	 * of operations required to compute the state ID (micro optimization).
 	 */
 	private static function computeStateIdXorMask(int $typeId) : int{
+		//TODO: the mixed byte order here is probably a mistake, but it doesn't break anything for now
 		return
 			$typeId << self::INTERNAL_STATE_DATA_BITS |
-			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
+			(BE::unpackSignedLong(hash('xxh3', LE::packSignedLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
 	}
 
 	/**
@@ -424,7 +426,7 @@ class Block{
 	 * Returns whether this block can replace the given block in the given placement conditions.
 	 * This is used to allow slabs of the same type to combine into double slabs.
 	 */
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		return $blockReplace->canBeReplaced();
 	}
 
@@ -436,13 +438,13 @@ class Block{
 	 * @param Item             $item         Item used to place the block
 	 * @param Block            $blockReplace Block expected to be replaced
 	 * @param Block            $blockClicked Block that was clicked using the item
-	 * @param int              $face         Face of the clicked block which was clicked
+	 * @param Facing           $face         Face of the clicked block which was clicked
 	 * @param Vector3          $clickVector  Exact position inside the clicked block where the click occurred, relative to the block's position
 	 * @param Player|null      $player       Player who placed the block, or null if it was not a player
 	 *
 	 * @return bool whether the placement should go ahead
 	 */
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$tx->addBlock($blockReplace->position, $this);
 		return true;
 	}
@@ -524,7 +526,7 @@ class Block{
 	 * @param Vector3 $clickVector    Exact position where the click occurred, relative to the block's integer position
 	 * @param Item[]  &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)
 	 */
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		return false;
 	}
 
@@ -533,7 +535,7 @@ class Block{
 	 *
 	 * @return bool if an action took place, prevents starting to break the block if true.
 	 */
-	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+	public function onAttack(Item $item, Facing $face, ?Player $player = null) : bool{
 		return false;
 	}
 
@@ -770,10 +772,10 @@ class Block{
 	 *
 	 * @return Block
 	 */
-	public function getSide(int $side, int $step = 1){
+	public function getSide(Facing $side, int $step = 1){
 		$position = $this->position;
 		if($position->isValid()){
-			[$dx, $dy, $dz] = Facing::OFFSET[$side] ?? [0, 0, 0];
+			[$dx, $dy, $dz] = Facing::OFFSET[$side->value] ?? [0, 0, 0];
 			return $position->getWorld()->getBlockAt(
 				$position->x + ($dx * $step),
 				$position->y + ($dy * $step),
@@ -793,7 +795,7 @@ class Block{
 	public function getHorizontalSides() : \Generator{
 		$world = $this->position->getWorld();
 		foreach(Facing::HORIZONTAL as $facing){
-			[$dx, $dy, $dz] = Facing::OFFSET[$facing];
+			[$dx, $dy, $dz] = Facing::OFFSET[$facing->value];
 			//TODO: yield Facing as the key?
 			yield $world->getBlockAt(
 				$this->position->x + $dx,
@@ -914,11 +916,12 @@ class Block{
 	 */
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
-			$this->collisionBoxes = $this->recalculateCollisionBoxes();
+			$collisionBoxes = $this->recalculateCollisionBoxes();
 			$extraOffset = $this->getModelPositionOffset();
 			$offset = $extraOffset !== null ? $this->position->addVector($extraOffset) : $this->position;
-			foreach($this->collisionBoxes as $bb){
-				$bb->offset($offset->x, $offset->y, $offset->z);
+			$this->collisionBoxes = [];
+			foreach($collisionBoxes as $bb){
+				$this->collisionBoxes[] = $bb->offsetCopy($offset->x, $offset->y, $offset->z);
 			}
 		}
 
@@ -945,11 +948,11 @@ class Block{
 	 * Returns the type of support that the block can provide on the given face. This is used to determine whether
 	 * blocks placed on the given face can be supported by this block.
 	 */
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::FULL;
 	}
 
-	protected function getAdjacentSupportType(int $facing) : SupportType{
+	protected function getAdjacentSupportType(Facing $facing) : SupportType{
 		return $this->getSide($facing)->getSupportType(Facing::opposite($facing));
 	}
 

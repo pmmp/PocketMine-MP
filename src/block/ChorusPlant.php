@@ -43,8 +43,8 @@ final class ChorusPlant extends Flowable{
 	protected function recalculateCollisionBoxes() : array{
 		$bb = AxisAlignedBB::one();
 		foreach(Facing::ALL as $facing){
-			if(!isset($this->connections[$facing])){
-				$bb->trim($facing, 2 / 16);
+			if(!isset($this->connections[$facing->value])){
+				$bb = $bb->trimmedCopy($facing, 2 / 16);
 			}
 		}
 
@@ -62,9 +62,9 @@ final class ChorusPlant extends Flowable{
 				BlockTypeIds::END_STONE, BlockTypeIds::CHORUS_FLOWER, $this->getTypeId() => true,
 				default => false
 			}){
-				$this->connections[$facing] = true;
+				$this->connections[$facing->value] = true;
 			}else{
-				unset($this->connections[$facing]);
+				unset($this->connections[$facing->value]);
 			}
 		}
 

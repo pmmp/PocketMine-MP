@@ -6,7 +6,7 @@ name: Trigger branch sync
 
 on:
   schedule:
-    - cron: "0 0 * * *" #once per day so we don't spam merge commits on busy days
+    - cron: "0 21 * * *" #once per day so we don't spam merge commits on busy days
   workflow_dispatch: #for testing
 
 jobs:

@@ -34,10 +34,10 @@ class WaterLily extends Flowable{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
+		return [AxisAlignedBB::one()->contractedCopy(1 / 16, 0, 1 / 16)->trimmedCopy(Facing::UP, 63 / 64)];
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		return !$blockReplace instanceof Water && $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 

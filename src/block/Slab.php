@@ -63,7 +63,7 @@ class Slab extends Transparent{
 		return $this;
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		if(parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock)){
 			return true;
 		}
@@ -79,7 +79,7 @@ class Slab extends Transparent{
 		return false;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof Slab && $blockReplace->slabType !== SlabType::DOUBLE && $blockReplace->hasSameTypeId($this) && (
 			($blockReplace->slabType === SlabType::TOP && ($clickVector->y <= 0.5 || $face === Facing::UP)) ||
 			($blockReplace->slabType === SlabType::BOTTOM && ($clickVector->y >= 0.5 || $face === Facing::DOWN))
@@ -97,10 +97,10 @@ class Slab extends Transparent{
 		if($this->slabType === SlabType::DOUBLE){
 			return [AxisAlignedBB::one()];
 		}
-		return [AxisAlignedBB::one()->trim($this->slabType === SlabType::TOP ? Facing::DOWN : Facing::UP, 0.5)];
+		return [AxisAlignedBB::one()->trimmedCopy($this->slabType === SlabType::TOP ? Facing::DOWN : Facing::UP, 0.5)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		if($this->slabType === SlabType::DOUBLE){
 			return SupportType::FULL;
 		}elseif(($facing === Facing::UP && $this->slabType === SlabType::TOP) || ($facing === Facing::DOWN && $this->slabType === SlabType::BOTTOM)){
