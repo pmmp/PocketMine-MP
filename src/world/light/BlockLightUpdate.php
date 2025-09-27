@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\format\LightArray;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
@@ -55,6 +56,20 @@ class BlockLightUpdate extends LightUpdate{
 		}
 	}
 
+	private function layerHasLightEmitter(?PalettedBlockArray $layer) : bool{
+		if($layer === null){
+			return false;
+		}
+
+		foreach($layer->getPalette() as $state){
+			if(($this->lightEmitters[$state] ?? 0) > 0){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public function recalculateChunk(int $chunkX, int $chunkZ) : int{
 		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ) === SubChunkExplorerStatus::INVALID){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not exist");
@@ -65,17 +80,10 @@ class BlockLightUpdate extends LightUpdate{
 		foreach($chunk->getSubChunks() as $subChunkY => $subChunk){
 			$subChunk->setBlockLightArray(LightArray::fill(0));
 
-			$hasLightEmitter = false;
-			foreach([$subChunk->getBlockLayer(), $subChunk->getLiquidLayer()] as $layer){
-				foreach($layer->getPalette() as $state){
-					if(($this->lightEmitters[$state] ?? 0) > 0){
-						$hasLightEmitter = true;
-						break 2;
-					}
-				}
-			}
-
-			if($hasLightEmitter){
+			if(
+				$this->layerHasLightEmitter($subChunk->getBlockLayer0()) ||
+				$this->layerHasLightEmitter($subChunk->getBlockLayer1())
+			){
 				$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 			}
 		}

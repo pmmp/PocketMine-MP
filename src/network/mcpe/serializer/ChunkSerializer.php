@@ -112,13 +112,7 @@ final class ChunkSerializer{
 	}
 
 	public static function serializeSubChunk(SubChunk $subChunk, BlockTranslator $blockTranslator, ByteBufferWriter $stream, bool $persistentBlockStates) : void{
-		$layers = [];
-		if(!$subChunk->isBlockLayerEmpty()){
-			$layers[] = $subChunk->getBlockLayer();
-		}
-		if(!$subChunk->isLiquidLayerEmpty()){
-			$layers[] = $subChunk->getLiquidLayer();
-		}
+		$layers = $subChunk->getBlockLayersArray();
 
 		Byte::writeUnsigned($stream, 8); //version
 		Byte::writeUnsigned($stream, count($layers));

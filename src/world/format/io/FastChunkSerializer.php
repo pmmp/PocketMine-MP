@@ -75,9 +75,11 @@ final class FastChunkSerializer{
 			Byte::writeSigned($stream, $y);
 			BE::writeUnsignedInt($stream, $subChunk->getEmptyBlockId());
 
-			// Write block and liquid layers (always present)
-			self::serializePalettedArray($stream, $subChunk->getBlockLayer());
-			self::serializePalettedArray($stream, $subChunk->getLiquidLayer());
+			$layers = $subChunk->getBlockLayersArray();
+			Byte::writeUnsigned($stream, count($layers));
+			foreach($layers as $blocks){
+				self::serializePalettedArray($stream, $blocks);
+			}
 			self::serializePalettedArray($stream, $subChunk->getBiomeArray());
 		}
 
@@ -112,12 +114,16 @@ final class FastChunkSerializer{
 			//TODO: why the heck are we using big-endian here?
 			$airBlockId = BE::readUnsignedInt($stream);
 
-			// Read block and liquid layers (always present)
-			$blockLayer = self::deserializePalettedArray($stream);
-			$liquidLayer = self::deserializePalettedArray($stream);
+			$layerCount = Byte::readUnsigned($stream);
+			if($layerCount > 2){
+				throw new \UnexpectedValueException("Expected at most 2 layers, but got $layerCount");
+			}
+			$layer0 = $layerCount >= 1 ? self::deserializePalettedArray($stream) : null;
+			$layer1 = $layerCount === 2 ? self::deserializePalettedArray($stream) : null;
+
 			$biomeArray = self::deserializePalettedArray($stream);
 
-			$subChunks[$y] = new SubChunk($airBlockId, $blockLayer, $liquidLayer, $biomeArray);
+			$subChunks[$y] = new SubChunk($airBlockId, $layer0, $layer1, $biomeArray);
 		}
 
 		return new Chunk($subChunks, $terrainPopulated);

@@ -775,14 +775,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$subStream = new BinaryStream();
 					$subStream->putByte(self::CURRENT_LEVEL_SUBCHUNK_VERSION);
 
-					$layers = [];
-					if(!$subChunk->isBlockLayerEmpty()){
-						$layers[] = $subChunk->getBlockLayer();
-					}
-					if(!$subChunk->isLiquidLayerEmpty()){
-						$layers[] = $subChunk->getLiquidLayer();
-					}
-
+					$layers = $subChunk->getBlockLayersArray();
 					$subStream->putByte(count($layers));
 
 					foreach($layers as $layer){

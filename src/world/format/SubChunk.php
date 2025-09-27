@@ -28,31 +28,17 @@ class SubChunk{
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
 	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
 
-	private int $emptyBlockId;
-	private PalettedBlockArray $blockLayer;
-	private PalettedBlockArray $liquidLayer;
-	private PalettedBlockArray $biomes;
-	private ?LightArray $skyLight;
-	private ?LightArray $blockLight;
-
 	/**
 	 * SubChunk constructor.
 	 */
 	public function __construct(
-		int $emptyBlockId,
-		?PalettedBlockArray $blockLayer,
-		?PalettedBlockArray $liquidLayer,
-		PalettedBlockArray $biomes,
-		?LightArray $skyLight = null,
-		?LightArray $blockLight = null
-	){
-		$this->emptyBlockId = $emptyBlockId;
-		$this->blockLayer = $blockLayer ?? new PalettedBlockArray($emptyBlockId);
-		$this->liquidLayer = $liquidLayer ?? new PalettedBlockArray($emptyBlockId);
-		$this->biomes = $biomes;
-		$this->skyLight = $skyLight;
-		$this->blockLight = $blockLight;
-	}
+		private int $emptyBlockId,
+		private ?PalettedBlockArray $blockLayer0,
+		private ?PalettedBlockArray $blockLayer1,
+		private PalettedBlockArray $biomes,
+		private ?LightArray $skyLight = null,
+		private ?LightArray $blockLight = null
+	){}
 
 	/**
 	 * Returns whether this subchunk contains any non-air blocks.
@@ -69,22 +55,7 @@ class SubChunk{
 	 * This may report non-empty erroneously if the chunk has been modified and not garbage-collected.
 	 */
 	public function isEmptyFast() : bool{
-		return $this->blockLayer->getBitsPerBlock() === 0 && $this->blockLayer->get(0, 0, 0) === $this->emptyBlockId &&
-			   $this->liquidLayer->getBitsPerBlock() === 0 && $this->liquidLayer->get(0, 0, 0) === $this->emptyBlockId;
-	}
-
-	/**
-	 * Returns whether the block layer is empty (contains only empty blocks).
-	 */
-	public function isBlockLayerEmpty() : bool{
-		return $this->blockLayer->getBitsPerBlock() === 0 && $this->blockLayer->get(0, 0, 0) === $this->emptyBlockId;
-	}
-
-	/**
-	 * Returns whether the liquid layer is empty (contains only empty blocks).
-	 */
-	public function isLiquidLayerEmpty() : bool{
-		return $this->liquidLayer->getBitsPerBlock() === 0 && $this->liquidLayer->get(0, 0, 0) === $this->emptyBlockId;
+		return $this->blockLayer0 !== null || $this->blockLayer1 !== null;
 	}
 
 	/**
@@ -94,24 +65,45 @@ class SubChunk{
 	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
 
 	public function getBlockStateId(int $x, int $y, int $z) : int{
-		return $this->blockLayer->get($x, $y, $z);
+		return $this->blockLayer0?->get($x, $y, $z) ?? $this->emptyBlockId;
 	}
 
 	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
-		$this->blockLayer->set($x, $y, $z, $block);
+		if($this->blockLayer0 === null){
+			$this->blockLayer0 = new PalettedBlockArray($this->emptyBlockId);
+		}
+		$this->blockLayer0->set($x, $y, $z, $block);
 	}
 
-	public function getBlockLayer() : PalettedBlockArray{
-		return $this->blockLayer;
+	public function getBlockLayer0() : ?PalettedBlockArray{
+		return $this->blockLayer0;
 	}
 
-	public function getLiquidLayer() : PalettedBlockArray{
-		return $this->liquidLayer;
+	public function getBlockLayer1() : ?PalettedBlockArray{
+		return $this->blockLayer1;
+	}
+
+	/**
+	 * @return PalettedBlockArray[]
+	 * @phpstan-return array{}|array{PalettedBlockArray}|array{PalettedBlockArray, PalettedBlockArray}
+	 */
+	public function getBlockLayersArray() : array{
+		$layers = [];
+		if($this->blockLayer0 !== null){
+			$layers[] = $this->blockLayer0;
+		}
+		if($this->blockLayer1 !== null){
+			$layers[] = $this->blockLayer1;
+		}
+		return $layers;
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : ?int{
+		if($this->blockLayer0 === null){
+			return null;
+		}
 		for($y = self::EDGE_LENGTH - 1; $y >= 0; --$y){
-			if($this->blockLayer->get($x, $y, $z) !== $this->emptyBlockId){
+			if($this->blockLayer0->get($x, $y, $z) !== $this->emptyBlockId){
 				return $y;
 			}
 		}
@@ -144,9 +136,21 @@ class SubChunk{
 		return [];
 	}
 
+	private static function gcBlockPalette(?PalettedBlockArray $layer, int $emptyBlockId) : ?PalettedBlockArray{
+		if($layer === null){
+			return null;
+		}
+		$layer->collectGarbage();
+		return $layer->getBitsPerBlock() === 0 && $layer->get(0, 0, 0) === $emptyBlockId ? null : $layer;
+	}
+
 	public function collectGarbage() : void{
-		$this->blockLayer->collectGarbage();
-		$this->liquidLayer->collectGarbage();
+		$this->blockLayer0 = self::gcBlockPalette($this->blockLayer0, $this->emptyBlockId);
+		$this->blockLayer1 = self::gcBlockPalette($this->blockLayer1, $this->emptyBlockId);
+		if($this->blockLayer0 === null && $this->blockLayer1 !== null){
+			$this->blockLayer0 = $this->blockLayer1;
+			$this->blockLayer1 = null;
+		}
 		$this->biomes->collectGarbage();
 
 		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
@@ -158,8 +162,8 @@ class SubChunk{
 	}
 
 	public function __clone(){
-		$this->blockLayer = clone $this->blockLayer;
-		$this->liquidLayer = clone $this->liquidLayer;
+		$this->blockLayer0 = $this->blockLayer0 !== null ? clone $this->blockLayer0 : null;
+		$this->blockLayer1 = $this->blockLayer1 !== null ? clone $this->blockLayer1 : null;
 		$this->biomes = clone $this->biomes;
 
 		if($this->skyLight !== null){
