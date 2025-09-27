@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use DaveRandom\CallbackValidator\BuiltInTypes;
-use DaveRandom\CallbackValidator\CallbackType;
-use DaveRandom\CallbackValidator\ParameterType;
-use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\color\Color;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
@@ -34,7 +30,7 @@ use function abs;
 use function count;
 use function spl_object_id;
 
-class EffectContainer{
+class EffectCollection{
 
 	/** @var EffectInstance[] */
 	protected array $effects = [];
@@ -67,13 +63,11 @@ class EffectContainer{
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
 
-		$this->setEffectFilterForBubbles(function(EffectInstance $effect) : bool{
-			return $effect->isVisible() && $effect->getType()->hasBubbles();
-		});
+		$this->setEffectFilterForBubbles(static fn(EffectInstance $e) => $e->isVisible() && $e->getType()->hasBubbles());
 	}
 
 	/**
-	 * Returns an array of Effects currently active.
+	 * Returns all the effects in the collection, indexed by spl_object_id of the effect type.
 	 * @return EffectInstance[]
 	 */
 	public function all() : array{
@@ -141,8 +135,8 @@ class EffectContainer{
 	}
 
 	/**
-	 * Adds an effect.
-	 * If {@link EffectContainer::canAdd()} conditions are met.
+	 * Adds an effect to the collection.
+	 * Existing effects of the same type will be replaced if {@see self::canAdd()} returns true.
 	 *
 	 * @return bool whether the effect has been successfully applied.
 	 */
@@ -166,11 +160,11 @@ class EffectContainer{
 	/**
 	 * Sets the filter that determines which effects will be displayed in the bubbles.
 	 *
-	 * @phpstan-param \Closure(EffectInstance) : bool $effectValidator
+	 * @phpstan-param \Closure(EffectInstance) : bool $filter
 	 */
-	public function setEffectFilterForBubbles(\Closure $effectValidator) : void{
-		Utils::validateCallableSignature(new CallbackType(new ReturnType(BuiltInTypes::BOOL), new ParameterType("effect", EffectInstance::class)), $effectValidator);
-		$this->effectFilterForBubbles = $effectValidator;
+	public function setEffectFilterForBubbles(\Closure $filter) : void{
+		Utils::validateCallableSignature(fn(EffectInstance $e) : bool => false, $filter);
+		$this->effectFilterForBubbles = $filter;
 	}
 
 	/**

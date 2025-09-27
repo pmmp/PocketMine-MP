@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\data\bedrock\EffectIdMap;
-use pocketmine\data\bedrock\PotionTypeIdMap;
-use pocketmine\entity\effect\EffectContainer;
+use pocketmine\data\bedrock\PotionTypeIds;
+use pocketmine\entity\effect\EffectCollection;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Entity;
@@ -33,7 +33,6 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\AreaEffectCloudApplyEvent;
-use pocketmine\item\PotionType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -58,7 +57,7 @@ class AreaEffectCloud extends Entity{
 	public const DEFAULT_RADIUS_CHANGE_ON_USE = -0.5; // in blocks
 	public const DEFAULT_RADIUS_CHANGE_PER_TICK = -(self::DEFAULT_RADIUS / self::DEFAULT_DURATION); // in blocks
 
-	public const TAG_POTION_ID = "PotionId"; //TAG_Short
+	protected const TAG_POTION_ID = "PotionId"; //TAG_Short
 	protected const TAG_SPAWN_TICK = "SpawnTick"; //TAG_Long
 	protected const TAG_DURATION = "Duration"; //TAG_Int
 	protected const TAG_PICKUP_COUNT = "PickupCount"; //TAG_Int
@@ -75,7 +74,7 @@ class AreaEffectCloud extends Entity{
 
 	protected int $age = 0;
 
-	protected EffectContainer $effectContainer;
+	protected EffectCollection $effectCollection;
 
 	/** @var array<int, int> entity ID => expiration */
 	protected array $victims = [];
@@ -95,7 +94,6 @@ class AreaEffectCloud extends Entity{
 
 	public function __construct(
 		Location $location,
-		protected PotionType $potionType,
 		?CompoundTag $nbt = null
 	){
 		parent::__construct($location, $nbt);
@@ -110,12 +108,10 @@ class AreaEffectCloud extends Entity{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->effectContainer = new EffectContainer();
-		$this->effectContainer->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
-		$this->effectContainer->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
-		$this->effectContainer->setEffectFilterForBubbles(function(EffectInstance $effect) : bool{
-			return $effect->isVisible();
-		});
+		$this->effectCollection = new EffectCollection();
+		$this->effectCollection->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectCollection->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectCollection->setEffectFilterForBubbles(static fn(EffectInstance $e) => $e->isVisible());
 
 		$worldTime = $this->getWorld()->getTime();
 		$this->age = max($worldTime - $nbt->getLong(self::TAG_SPAWN_TICK, $worldTime), 0);
@@ -130,8 +126,7 @@ class AreaEffectCloud extends Entity{
 		$this->radiusChangeOnUse = $nbt->getFloat(self::TAG_RADIUS_ON_USE, self::DEFAULT_RADIUS_CHANGE_ON_USE);
 		$this->radiusChangePerTick = $nbt->getFloat(self::TAG_RADIUS_PER_TICK, self::DEFAULT_RADIUS_CHANGE_PER_TICK);
 
-		/** @var CompoundTag[]|ListTag|null $effectsTag */
-		$effectsTag = $nbt->getListTag(self::TAG_EFFECTS);
+		$effectsTag = $nbt->getListTag(self::TAG_EFFECTS, CompoundTag::class);
 		if($effectsTag !== null){
 			foreach($effectsTag as $e){
 				$effect = EffectIdMap::getInstance()->fromId($e->getByte("Id"));
@@ -139,20 +134,13 @@ class AreaEffectCloud extends Entity{
 					continue;
 				}
 
-				$this->effectContainer->add(new EffectInstance(
+				$this->effectCollection->add(new EffectInstance(
 					$effect,
 					$e->getInt("Duration"),
 					Binary::unsignByte($e->getByte("Amplifier")),
 					$e->getByte("ShowParticles", 1) !== 0,
 					$e->getByte("Ambient", 0) !== 0
 				));
-			}
-		}else{
-			foreach($this->potionType->getEffects() as $effect){
-				$this->effectContainer->add($effect);
-				if($effect->getType() instanceof InstantEffect){
-					$this->setReapplicationDelay(0);
-				}
 			}
 		}
 	}
@@ -161,7 +149,7 @@ class AreaEffectCloud extends Entity{
 		$nbt = parent::saveNBT();
 
 		$nbt->setLong(self::TAG_SPAWN_TICK, $this->getWorld()->getTime() - $this->age);
-		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIdMap::getInstance()->toId($this->potionType));
+		$nbt->setShort(self::TAG_POTION_ID, PotionTypeIds::WATER); //not used, mobEffects is used exclusively in Bedrock
 		$nbt->setInt(self::TAG_DURATION, $this->maxAge);
 		$nbt->setInt(self::TAG_DURATION_ON_USE, $this->maxAgeChangeOnUse);
 		$nbt->setInt(self::TAG_PICKUP_COUNT, $this->pickupCount);
@@ -172,9 +160,9 @@ class AreaEffectCloud extends Entity{
 		$nbt->setFloat(self::TAG_RADIUS_ON_USE, $this->radiusChangeOnUse);
 		$nbt->setFloat(self::TAG_RADIUS_PER_TICK, $this->radiusChangePerTick);
 
-		if(count($this->effectContainer->all()) > 0){
+		if(count($this->effectCollection->all()) > 0){
 			$effects = [];
-			foreach($this->effectContainer->all() as $effect){
+			foreach($this->effectCollection->all() as $effect){
 				$effects[] = CompoundTag::create()
 					->setByte("Id", EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
@@ -203,12 +191,8 @@ class AreaEffectCloud extends Entity{
 		return $this->age;
 	}
 
-	public function getPotionType() : PotionType{
-		return $this->potionType;
-	}
-
-	public function getEffects() : EffectContainer{
-		return $this->effectContainer;
+	public function getEffects() : EffectCollection{
+		return $this->effectCollection;
 	}
 
 	/**
@@ -351,7 +335,6 @@ class AreaEffectCloud extends Entity{
 				}
 			}
 
-			/** @var Living[] $entities */
 			$entities = [];
 			$radiusChange = 0.0;
 			$maxAgeChange = 0;
@@ -390,7 +373,7 @@ class AreaEffectCloud extends Entity{
 			}
 
 			foreach($ev->getAffectedEntities() as $entity){
-				foreach($this->effectContainer->all() as $effect){
+				foreach($this->effectCollection->all() as $effect){
 					$effect = clone $effect; //avoid accidental modification
 					if($effect->getType() instanceof InstantEffect){
 						$effect->getType()->applyEffect($entity, $effect, 0.5, $this);
@@ -423,7 +406,7 @@ class AreaEffectCloud extends Entity{
 		//visual properties
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS, $this->radius);
 		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt((
-			count($this->effectContainer->all()) === 0 ? PotionSplashParticle::DEFAULT_COLOR() : $this->effectContainer->getBubbleColor()
+			count($this->effectCollection->all()) === 0 ? PotionSplashParticle::DEFAULT_COLOR() : $this->effectCollection->getBubbleColor()
 		)->toARGB()));
 
 		//these are properties the client expects, and are used for client-sided logic, which we don't want
@@ -434,5 +417,11 @@ class AreaEffectCloud extends Entity{
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_SPAWN_TIME, 0);
 		$properties->setFloat(EntityMetadataProperties::AREA_EFFECT_CLOUD_PICKUP_COUNT, 0);
 		$properties->setInt(EntityMetadataProperties::AREA_EFFECT_CLOUD_WAITING, 0);
+	}
+
+	protected function destroyCycles() : void{
+		//wipe out callback refs
+		$this->effectCollection = new EffectCollection();
+		parent::destroyCycles();
 	}
 }

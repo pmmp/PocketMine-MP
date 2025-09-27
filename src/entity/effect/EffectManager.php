@@ -29,7 +29,7 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use function count;
 use function spl_object_id;
 
-class EffectManager extends EffectContainer{
+class EffectManager extends EffectCollection{
 
 	public function __construct(
 		private Living $entity
