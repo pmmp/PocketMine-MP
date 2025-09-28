@@ -31,7 +31,7 @@ use pocketmine\player\Player;
 class Egg extends ProjectileItem{
 
 	public function getMaxStackSize() : int{
-		return 16;
+		return 64;
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
