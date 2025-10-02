@@ -354,6 +354,9 @@ function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgra
  * @param string[] $strings
  */
 function findCommonPrefix(array $strings) : string{
+	if(count($strings) === 0){
+		return "";
+	}
 	sort($strings, SORT_STRING);
 
 	$first = $strings[array_key_first($strings)];

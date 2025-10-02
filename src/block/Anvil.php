@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -41,7 +42,7 @@ use pocketmine\world\sound\AnvilFallSound;
 use pocketmine\world\sound\Sound;
 use function round;
 
-class Anvil extends Transparent implements Fallable{
+class Anvil extends Transparent implements Fallable, HorizontalFacing{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 

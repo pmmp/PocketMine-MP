@@ -247,6 +247,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->enderInventory;
 	}
 
+	public function getSneakOffset() : float{
+		return 0.31;
+	}
+
 	/**
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
@@ -295,20 +299,21 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
-		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY);
+		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY, CompoundTag::class);
 		if($inventoryTag !== null){
 			$inventoryItems = [];
 			$armorInventoryItems = [];
 
-			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
 				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 && $slot < 104){ //Armor
-					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+					$armorSlot = $slot - 100;
+					$armorInventoryItems[$armorSlot] = Item::safeNbtDeserialize($item, "Human armor slot $armorSlot");
 				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
-					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
+					$inventorySlot = $slot - 9;
+					$inventoryItems[$inventorySlot] = Item::safeNbtDeserialize($item, "Human inventory slot $inventorySlot");
 				}
 			}
 
@@ -317,20 +322,20 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$offHand = $nbt->getCompoundTag(self::TAG_OFF_HAND_ITEM);
 		if($offHand !== null){
-			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+			$this->offHandInventory->setItem(0, Item::safeNbtDeserialize($offHand, "Human off-hand item"));
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobOffHandItemChange($recipients, $this)
 		)));
 
-		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY);
+		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY, CompoundTag::class);
 		if($enderChestInventoryTag !== null){
 			$enderChestInventoryItems = [];
 
-			/** @var CompoundTag $item */
-			foreach($enderChestInventoryTag as $i => $item){
-				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
+			foreach($enderChestInventoryTag as $item){
+				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
+				$enderChestInventoryItems[$slot] = Item::safeNbtDeserialize($item, "Human ender chest slot $slot");
 			}
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}

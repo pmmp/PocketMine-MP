@@ -32,6 +32,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\EntityDataHelper as Helper;
+use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\entity\object\EndCrystal;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
@@ -46,6 +47,7 @@ use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\IceBomb;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\entity\projectile\Trident;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -85,6 +87,10 @@ final class EntityFactory{
 	public function __construct(){
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
+
+		$this->register(AreaEffectCloud::class, function(World $world, CompoundTag $nbt) : AreaEffectCloud{
+			return new AreaEffectCloud(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['AreaEffectCloud', 'minecraft:area_effect_cloud']);
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
 			return new Arrow(Helper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);
@@ -170,6 +176,24 @@ final class EntityFactory{
 			}
 			return new SplashPotion(Helper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion']);
+
+		$this->register(Trident::class, function(World $world, CompoundTag $nbt) : Trident{
+			$itemTag = $nbt->getCompoundTag(Trident::TAG_ITEM);
+			if($itemTag === null){
+				throw new SavedDataLoadingException("Expected \"" . Trident::TAG_ITEM . "\" NBT tag not found");
+			}
+
+			$item = Item::nbtDeserialize($itemTag);
+			if($item->isNull()){
+				throw new SavedDataLoadingException("Trident item is invalid");
+			}
+			return new Trident(Helper::parseLocation($nbt, $world), $item, null, $nbt);
+		}, [
+			'minecraft:trident', //java
+			'minecraft:thrown_trident', //bedrock
+			'Trident', //backwards compat for people who used #4547 before it was merged, since it was sitting around for 4 years...
+			'ThrownTrident' //as above
+		]);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SignLikeRotation;
 use pocketmine\block\utils\SignLikeRotationTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -30,8 +31,12 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class FloorBanner extends BaseBanner{
+final class FloorBanner extends BaseBanner implements SignLikeRotation{
 	use SignLikeRotationTrait;
+
+	protected function getOminousVersion() : Block{
+		return VanillaBlocks::OMINOUS_BANNER()->setRotation($this->rotation);
+	}
 
 	protected function getSupportingFace() : int{
 		return Facing::DOWN;

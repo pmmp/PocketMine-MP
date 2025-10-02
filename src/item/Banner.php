@@ -29,7 +29,6 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use function count;
@@ -92,9 +91,8 @@ class Banner extends ItemBlockWallOrFloor{
 
 		$colorIdMap = DyeColorIdMap::getInstance();
 		$patternIdMap = BannerPatternTypeIdMap::getInstance();
-		$patterns = $tag->getListTag(self::TAG_PATTERNS);
-		if($patterns !== null && $patterns->getTagType() === NBT::TAG_Compound){
-			/** @var CompoundTag $t */
+		$patterns = $tag->getListTag(self::TAG_PATTERNS, CompoundTag::class);
+		if($patterns !== null){
 			foreach($patterns as $t){
 				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK; //TODO: missing pattern colour should be an error
 				$patternType = $patternIdMap->fromId($t->getString(self::TAG_PATTERN_NAME));

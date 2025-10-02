@@ -55,6 +55,9 @@ use pocketmine\data\bedrock\block\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Facing;
 
+/**
+ * @deprecated
+ */
 final class BlockStateSerializerHelper{
 	public static function encodeButton(Button $block, Writer $out) : Writer{
 		return $out
@@ -77,6 +80,9 @@ final class BlockStateSerializerHelper{
 		return $out->writeInt(BlockStateNames::GROWTH, $block->getAge());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeTorch(Torch $block, Writer $out) : Writer{
 		return $out
 			->writeTorchFacing($block->getFacing());
@@ -97,6 +103,9 @@ final class BlockStateSerializerHelper{
 		};
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeDoor(Door $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop())
@@ -111,6 +120,9 @@ final class BlockStateSerializerHelper{
 			->writeBool(BlockStateNames::UPPER_BLOCK_BIT, $block->isTop());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeFenceGate(FenceGate $block, Writer $out) : Writer{
 		return $out
 			->writeCardinalHorizontalFacing($block->getFacing())
@@ -118,6 +130,9 @@ final class BlockStateSerializerHelper{
 			->writeBool(BlockStateNames::OPEN_BIT, $block->isOpen());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeFloorSign(FloorSign $block, Writer $out) : Writer{
 		return $out
 			->writeInt(BlockStateNames::GROUND_SIGN_DIRECTION, $block->getRotation());
@@ -135,6 +150,9 @@ final class BlockStateSerializerHelper{
 			->writeFacingDirection($block->getFacing());
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeLeaves(Leaves $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::PERSISTENT_BIT, $block->isNoDecay())
@@ -159,11 +177,17 @@ final class BlockStateSerializerHelper{
 			->writeInt(BlockStateNames::HUGE_MUSHROOM_BITS, MushroomBlockTypeIdMap::getInstance()->toId($block->getMushroomBlockType()));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeQuartz(int $axis, Writer $out) : Writer{
 		return $out
 			->writePillarAxis($axis); //this isn't needed for all types, but we have to write it anyway
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeSapling(Sapling $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::AGE_BIT, $block->isReady());
@@ -193,6 +217,9 @@ final class BlockStateSerializerHelper{
 			self::encodeSingleSlab($block, $singleId);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeStairs(Stair $block, Writer $out) : Writer{
 		return $out
 			->writeBool(BlockStateNames::UPSIDE_DOWN_BIT, $block->isUpsideDown())
@@ -208,6 +235,9 @@ final class BlockStateSerializerHelper{
 			->writeFacingWithoutUp($facing === Facing::UP ? Facing::DOWN : $facing);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeTrapdoor(Trapdoor $block, Writer $out) : Writer{
 		return $out
 			->write5MinusHorizontalFacing($block->getFacing())
@@ -224,6 +254,9 @@ final class BlockStateSerializerHelper{
 			->writeWallConnectionType(BlockStateNames::WALL_CONNECTION_TYPE_WEST, $block->getConnection(Facing::WEST));
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public static function encodeWallSign(WallSign $block, Writer $out) : Writer{
 		return $out
 			->writeHorizontalFacing($block->getFacing());

@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\item\Item;
 use function mt_rand;
 
-final class CoralBlock extends Opaque{
+final class CoralBlock extends Opaque implements CoralMaterial{
 	use CoralTypeTrait;
 
 	public function onNearbyBlockChange() : void{

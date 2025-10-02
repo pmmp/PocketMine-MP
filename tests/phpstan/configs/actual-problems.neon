@@ -601,6 +601,12 @@ parameters:
 			path: ../../../src/crash/CrashDumpRenderer.php
 
 		-
+			message: '#^Parameter \#1 \$faces of method pocketmine\\block\\Vine\:\:setFaces\(\) expects list\<2\|3\|4\|5\>, array\<int\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/data/bedrock/block/convert/VanillaBlockMappings.php
+
+		-
 			message: '#^Parameter \#1 \$blockToItemId of class pocketmine\\data\\bedrock\\item\\BlockItemIdMap constructor expects array\<string, string\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -865,12 +871,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
-
-		-
 			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -943,6 +943,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$srcNamespacePrefix \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
 			message: '#^Cannot call method addChild\(\) on pocketmine\\permission\\Permission\|null\.$#'
 			identifier: method.nonObject
 			count: 4
@@ -983,6 +989,12 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../../../src/scheduler/TaskScheduler.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: ../../../src/thread/ThreadManager.php
 
 		-
 			message: '#^Cannot access offset string on mixed\.$#'
@@ -1153,12 +1165,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: '#^Parameter \#2 \$x of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
 			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1183,12 +1189,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: '#^Parameter \#3 \$y of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
 			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1208,12 +1208,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
-			message: '#^Parameter \#4 \$z of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php

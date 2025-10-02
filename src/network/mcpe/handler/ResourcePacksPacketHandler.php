@@ -36,6 +36,7 @@ use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\resourcepacks\ResourcePack;
 use Ramsey\Uuid\Uuid;
 use function array_keys;
@@ -43,6 +44,7 @@ use function array_map;
 use function ceil;
 use function count;
 use function implode;
+use function sprintf;
 use function strpos;
 use function strtolower;
 use function substr;
@@ -61,10 +63,27 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private const MAX_CONCURRENT_CHUNK_REQUESTS = 1;
 
 	/**
+	 * All data/resource_packs/chemistry* packs need to be listed here to get chemistry blocks to render
+	 * correctly, unfortunately there doesn't seem to be a better way to do this
+	 */
+	private const CHEMISTRY_RESOURCE_PACKS = [
+		["b41c2785-c512-4a49-af56-3a87afd47c57", "1.21.30"],
+		["a4df0cb3-17be-4163-88d7-fcf7002b935d", "1.21.20"],
+		["d19adffe-a2e1-4b02-8436-ca4583368c89", "1.21.10"],
+		["85d5603d-2824-4b21-8044-34f441f4fce1", "1.21.0"],
+		["e977cd13-0a11-4618-96fb-03dfe9c43608", "1.20.60"],
+		["0674721c-a0aa-41a1-9ba8-1ed33ea3e7ed", "1.20.50"],
+		["0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0"],
+	];
+
+	/**
 	 * @var ResourcePack[]
 	 * @phpstan-var array<string, ResourcePack>
 	 */
 	private array $resourcePacksById = [];
+
+	private bool $requestedMetadata = false;
+	private bool $requestedStack = false;
 
 	/** @var bool[][] uuid => [chunk index => hasSent] */
 	private array $downloadedChunks = [];
@@ -120,7 +139,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			hasAddons: false,
 			hasScripts: false,
 			worldTemplateId: Uuid::fromString(Uuid::NIL),
-			worldTemplateVersion: ""
+			worldTemplateVersion: "",
+			forceDisableVibrantVisuals: true,
 		));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
@@ -139,6 +159,21 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
+				if($this->requestedMetadata){
+					throw new PacketHandlingException("Cannot request resource pack metadata multiple times");
+				}
+				$this->requestedMetadata = true;
+
+				if($this->requestedStack){
+					//client already told us that they have all the packs, they shouldn't be asking for more
+					throw new PacketHandlingException("Cannot request resource pack metadata after resource pack stack");
+				}
+
+				if(count($packet->packIds) > count($this->resourcePacksById)){
+					throw new PacketHandlingException(sprintf("Requested metadata for more resource packs (%d) than available on the server (%d)", count($packet->packIds), count($this->resourcePacksById)));
+				}
+
+				$seen = [];
 				foreach($packet->packIds as $uuid){
 					//dirty hack for mojang's dirty hack for versions
 					$splitPos = strpos($uuid, "_");
@@ -152,6 +187,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 						return false;
 					}
+					if(isset($seen[$pack->getPackId()])){
+						throw new PacketHandlingException("Repeated metadata request for pack $uuid");
+					}
 
 					$this->session->sendDataPacket(ResourcePackDataInfoPacket::create(
 						$pack->getPackId(),
@@ -162,17 +200,24 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						false,
 						ResourcePackType::RESOURCES //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
 					));
+					$seen[$pack->getPackId()] = true;
 				}
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
-
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
+				if($this->requestedStack){
+					throw new PacketHandlingException("Cannot request resource pack stack multiple times");
+				}
+				$this->requestedStack = true;
+
 				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackStack);
 
-				//we support chemistry blocks by default, the client should already have this installed
-				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
+				//we support chemistry blocks by default, the client should already have these installed
+				foreach(self::CHEMISTRY_RESOURCE_PACKS as [$uuid, $version]){
+					$stack[] = new ResourcePackStackEntry($uuid, $version, "");
+				}
 
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes

@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
+use pocketmine\block\tile\Container;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
 use pocketmine\crafting\MetaWildcardRecipeIngredient;
@@ -31,12 +34,18 @@ use pocketmine\crafting\TagWildcardRecipeIngredient;
 use pocketmine\data\bedrock\BedrockDataFiles;
 use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\Tag;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
@@ -52,11 +61,13 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use function get_class;
+use function hash;
 
 class TypeConverter{
 	use SingletonTrait;
 
 	private const PM_ID_TAG = "___Id___";
+	private const PM_FULL_NBT_HASH_TAG = "___FullNbtHash___";
 
 	private const RECIPE_INPUT_WILDCARD_META = 0x7fff;
 
@@ -197,6 +208,84 @@ class TypeConverter{
 		return new ExactRecipeIngredient($result);
 	}
 
+	/**
+	 * Strips unnecessary block actor NBT from items that have it.
+	 * This tag can potentially be extremely large, and is not read by the client anyway.
+	 */
+	protected function stripBlockEntityNBT(CompoundTag $tag) : bool{
+		if(($tag->getTag(Item::TAG_BLOCK_ENTITY_TAG)) !== null){
+			//client doesn't use this tag, so it's fine to delete completely
+			$tag->removeTag(Item::TAG_BLOCK_ENTITY_TAG);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Strips non-viewable data from shulker boxes and similar blocks
+	 * The lore for shulker boxes only requires knowing the type & count of items and possibly custom name
+	 * We don't need to, and should not allow, sending nested inventories across the network.
+	 */
+	protected function stripContainedItemNonVisualNBT(CompoundTag $tag) : bool{
+		try{
+			$blockEntityInventoryTag = $tag->getListTag(Container::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			return false;
+		}
+		if($blockEntityInventoryTag !== null && $blockEntityInventoryTag->count() > 0){
+			$stripped = new ListTag();
+
+			foreach($blockEntityInventoryTag as $itemTag){
+				try{
+					$containedItem = Item::nbtDeserialize($itemTag);
+					$customName = $containedItem->getCustomName();
+					$containedItem->clearNamedTag();
+					$containedItem->setCustomName($customName);
+					$stripped->push($containedItem->nbtSerialize());
+				}catch(SavedDataLoadingException){
+					continue;
+				}
+			}
+			$tag->setTag(Container::TAG_ITEMS, $stripped);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Computes a hash of an item's server-side NBT.
+	 * This is baked into an item's network NBT to make sure the client doesn't try to stack items with the same network
+	 * NBT but different server-side NBT.
+	 */
+	protected function hashNBT(Tag $tag) : string{
+		$encoded = (new LittleEndianNbtSerializer())->write(new TreeRoot($tag));
+		return hash('sha256', $encoded, binary: true);
+	}
+
+	/**
+	 * TODO: HACK!
+	 * Creates a copy of an item's NBT with non-viewable data stripped.
+	 * This is a pretty yucky hack that's mainly needed because of inventories inside blockitems containing blockentity
+	 * data. There isn't really a good way to deal with this due to the way tiles currently require a position,
+	 * otherwise we could just keep a copy of the tile context and ask it for persistent vs network NBT as needed.
+	 * Unfortunately, making this nice will require significant BC breaks, so this will have to do for now.
+	 */
+	protected function cleanupUnnecessaryItemNBT(CompoundTag $original) : CompoundTag{
+		$tag = clone $original;
+		$anythingStripped = false;
+		foreach([
+			$this->stripContainedItemNonVisualNBT($tag),
+			$this->stripBlockEntityNBT($tag)
+		] as $stripped){
+			$anythingStripped = $anythingStripped || $stripped;
+		}
+
+		if($anythingStripped){
+			$tag->setByteArray(self::PM_FULL_NBT_HASH_TAG, $this->hashNBT($original));
+		}
+		return $tag;
+	}
+
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
 		if($itemStack->isNull()){
 			return ItemStack::null();
@@ -205,7 +294,7 @@ class TypeConverter{
 		if($nbt->count() === 0){
 			$nbt = null;
 		}else{
-			$nbt = clone $nbt;
+			$nbt = $this->cleanupUnnecessaryItemNBT($nbt);
 		}
 
 		$idMeta = $this->itemTranslator->toNetworkIdQuiet($itemStack);
@@ -224,7 +313,7 @@ class TypeConverter{
 		$extraData = $id === $this->shieldRuntimeId ?
 			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
 			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
-		$extraDataSerializer = PacketSerializer::encoder();
+		$extraDataSerializer = new ByteBufferWriter();
 		$extraData->write($extraDataSerializer);
 
 		return new ItemStack(
@@ -232,7 +321,7 @@ class TypeConverter{
 			$meta,
 			$itemStack->getCount(),
 			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
-			$extraDataSerializer->getBuffer(),
+			$extraDataSerializer->getData(),
 		);
 	}
 
@@ -271,7 +360,7 @@ class TypeConverter{
 	}
 
 	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
-		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		$extraDataDeserializer = new ByteBufferReader($extraData);
 		return $id === $this->shieldRuntimeId ?
 			ItemStackExtraDataShield::read($extraDataDeserializer) :
 			ItemStackExtraData::read($extraDataDeserializer);

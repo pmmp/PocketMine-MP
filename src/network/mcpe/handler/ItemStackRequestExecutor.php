@@ -35,6 +35,7 @@ use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
 use pocketmine\network\mcpe\protocol\types\inventory\FullContainerName;
@@ -238,9 +239,10 @@ class ItemStackRequestExecutor{
 			throw new ItemStackRequestProcessException("Cannot craft a recipe more than 256 times");
 		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
-		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeId);
+		$recipeIndex = $recipeId - CraftingDataCache::RECIPE_ID_OFFSET;
+		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeIndex);
 		if($recipe === null){
-			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeId");
+			throw new ItemStackRequestProcessException("No such crafting recipe index: $recipeIndex");
 		}
 
 		$this->specialTransaction = new CraftingTransaction($this->player, $craftingManager, [], $recipe, $repetitions);
