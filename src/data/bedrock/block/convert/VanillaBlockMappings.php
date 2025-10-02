@@ -1264,7 +1264,7 @@ final class VanillaBlockMappings{
 		$reg->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
 			$commonProperties->horizontalFacingCardinal
 		]));
-		$reg->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
+		$reg->mapModel(Model::create(Blocks::CHAIN(), Ids::IRON_CHAIN)->properties([$commonProperties->pillarAxis]));
 		$reg->mapModel(Model::create(Blocks::CHISELED_BOOKSHELF(), Ids::CHISELED_BOOKSHELF)->properties([
 			$commonProperties->horizontalFacingSWNE,
 			new ValueSetFromIntProperty(
