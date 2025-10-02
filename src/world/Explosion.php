@@ -29,7 +29,6 @@ use pocketmine\block\TNT;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\entity\object\PrimedTNT;
 use pocketmine\event\block\BlockExplodeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -56,7 +55,6 @@ use function sqrt;
 
 class Explosion{
 	public const DEFAULT_FIRE_CHANCE = 1.0 / 3.0;
-	public const UNDERWATER_TNT_Y_OFFSET = 0.06125;
 
 	private int $rays = 16;
 	public World $world;
@@ -103,12 +101,6 @@ class Explosion{
 		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 
 		$this->excludedBlockTypeIds = array_fill_keys($excludedBlockTypeIds, true);
-
-		if($this->what instanceof PrimedTNT || $this->what instanceof TNT){
-			if($this->what->worksUnderwater()){
-				$this->source->y += self::UNDERWATER_TNT_Y_OFFSET;
-			}
-		}
 	}
 
 	/**
