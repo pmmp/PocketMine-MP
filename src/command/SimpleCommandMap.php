@@ -163,7 +163,6 @@ class SimpleCommandMap implements CommandMap{
 		$this->mapAlias($fallbackPrefix . ":" . $preferredAlias, $command, $registeredAliases);
 
 		foreach($otherAliases as $alias){
-			$this->mapAlias($fallbackPrefix . ":" . $alias, $command, $registeredAliases);
 			if(!isset($this->aliasToCommandMap[$alias])){
 				$this->mapAlias($alias, $command, $registeredAliases);
 			}
