@@ -63,6 +63,20 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private const MAX_CONCURRENT_CHUNK_REQUESTS = 1;
 
 	/**
+	 * All data/resource_packs/chemistry* packs need to be listed here to get chemistry blocks to render
+	 * correctly, unfortunately there doesn't seem to be a better way to do this
+	 */
+	private const CHEMISTRY_RESOURCE_PACKS = [
+		["b41c2785-c512-4a49-af56-3a87afd47c57", "1.21.30"],
+		["a4df0cb3-17be-4163-88d7-fcf7002b935d", "1.21.20"],
+		["d19adffe-a2e1-4b02-8436-ca4583368c89", "1.21.10"],
+		["85d5603d-2824-4b21-8044-34f441f4fce1", "1.21.0"],
+		["e977cd13-0a11-4618-96fb-03dfe9c43608", "1.20.60"],
+		["0674721c-a0aa-41a1-9ba8-1ed33ea3e7ed", "1.20.50"],
+		["0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0"],
+	];
+
+	/**
 	 * @var ResourcePack[]
 	 * @phpstan-var array<string, ResourcePack>
 	 */
@@ -200,8 +214,10 @@ class ResourcePacksPacketHandler extends PacketHandler{
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackStack);
 
-				//we support chemistry blocks by default, the client should already have this installed
-				$stack[] = new ResourcePackStackEntry("0fba4063-dba1-4281-9b89-ff9390653530", "1.0.0", "");
+				//we support chemistry blocks by default, the client should already have these installed
+				foreach(self::CHEMISTRY_RESOURCE_PACKS as [$uuid, $version]){
+					$stack[] = new ResourcePackStackEntry($uuid, $version, "");
+				}
 
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes

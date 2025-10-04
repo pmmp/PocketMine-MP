@@ -1264,7 +1264,7 @@ final class VanillaBlockMappings{
 		$reg->mapModel(Model::create(Blocks::CARVED_PUMPKIN(), Ids::CARVED_PUMPKIN)->properties([
 			$commonProperties->horizontalFacingCardinal
 		]));
-		$reg->mapModel(Model::create(Blocks::CHAIN(), Ids::CHAIN)->properties([$commonProperties->pillarAxis]));
+		$reg->mapModel(Model::create(Blocks::CHAIN(), Ids::IRON_CHAIN)->properties([$commonProperties->pillarAxis]));
 		$reg->mapModel(Model::create(Blocks::CHISELED_BOOKSHELF(), Ids::CHISELED_BOOKSHELF)->properties([
 			$commonProperties->horizontalFacingSWNE,
 			new ValueSetFromIntProperty(
@@ -1355,7 +1355,10 @@ final class VanillaBlockMappings{
 			new ValueFromStringProperty(StateNames::LEVER_DIRECTION, ValueMappings::getInstance()->leverFacing, fn(Lever $b) => $b->getFacing(), fn(Lever $b, LeverFacing $v) => $b->setFacing($v)),
 			new BoolProperty(StateNames::OPEN_BIT, fn(Lever $b) => $b->isActivated(), fn(Lever $b, bool $v) => $b->setActivated($v)),
 		]));
-		$reg->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([$commonProperties->anyFacingClassic]));
+		$reg->mapModel(Model::create(Blocks::LIGHTNING_ROD(), Ids::LIGHTNING_ROD)->properties([
+			$commonProperties->anyFacingClassic,
+			new DummyProperty(StateNames::POWERED_BIT, false) //TODO
+		]));
 		$reg->mapModel(Model::create(Blocks::LIT_PUMPKIN(), Ids::LIT_PUMPKIN)->properties([$commonProperties->horizontalFacingCardinal]));
 		$reg->mapModel(Model::create(Blocks::LOOM(), Ids::LOOM)->properties([$commonProperties->horizontalFacingSWNE]));
 

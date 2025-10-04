@@ -56,6 +56,7 @@ use function is_object;
 use function json_decode;
 use function md5;
 use function ord;
+use function var_export;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -114,7 +115,7 @@ class LoginPacketHandler extends PacketHandler{
 				throw new PacketHandlingException("Unexpected type for self-signed certificate chain: " . gettype($chainData) . ", expected object");
 			}
 			try{
-				$chain = $this->defaultJsonMapper()->map($chainData, new LegacyAuthChain());
+				$chain = $this->defaultJsonMapper("Self-signed auth chain JSON")->map($chainData, new LegacyAuthChain());
 			}catch(\JsonMapper_Exception $e){
 				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate chain");
 			}
@@ -132,7 +133,7 @@ class LoginPacketHandler extends PacketHandler{
 			}
 
 			try{
-				$claims = $this->defaultJsonMapper()->map($claimsArray["extraData"], new LegacyAuthIdentityData());
+				$claims = $this->defaultJsonMapper("Self-signed auth JWT 'extraData'")->map($claimsArray["extraData"], new LegacyAuthIdentityData());
 			}catch(\JsonMapper_Exception $e){
 				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate extraData");
 			}
@@ -244,7 +245,7 @@ class LoginPacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Unexpected type for auth info data: " . gettype($authInfoJson) . ", expected object");
 		}
 
-		$mapper = $this->defaultJsonMapper();
+		$mapper = $this->defaultJsonMapper("Root authentication info JSON");
 		try{
 			$clientData = $mapper->map($authInfoJson, new AuthenticationInfo());
 		}catch(\JsonMapper_Exception $e){
@@ -258,7 +259,7 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws PacketHandlingException
 	 */
 	protected function mapXboxTokenHeader(array $headerArray) : XboxAuthJwtHeader{
-		$mapper = $this->defaultJsonMapper();
+		$mapper = $this->defaultJsonMapper("OpenID JWT header");
 		try{
 			$header = $mapper->map($headerArray, new XboxAuthJwtHeader());
 		}catch(\JsonMapper_Exception $e){
@@ -272,7 +273,7 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws PacketHandlingException
 	 */
 	protected function mapXboxTokenBody(array $bodyArray) : XboxAuthJwtBody{
-		$mapper = $this->defaultJsonMapper();
+		$mapper = $this->defaultJsonMapper("OpenID JWT body");
 		try{
 			$header = $mapper->map($bodyArray, new XboxAuthJwtBody());
 		}catch(\JsonMapper_Exception $e){
@@ -291,7 +292,7 @@ class LoginPacketHandler extends PacketHandler{
 			throw PacketHandlingException::wrap($e);
 		}
 
-		$mapper = $this->defaultJsonMapper();
+		$mapper = $this->defaultJsonMapper("ClientData JWT body");
 		try{
 			$clientData = $mapper->map($clientDataClaims, new ClientData());
 		}catch(\JsonMapper_Exception $e){
@@ -329,12 +330,21 @@ class LoginPacketHandler extends PacketHandler{
 		$this->server->getAsyncPool()->submitTask(new ProcessLegacyLoginTask($legacyCertificate, $clientDataJwt, rootAuthKeyDer: null, authRequired: $authRequired, onCompletion: $this->authCallback));
 	}
 
-	private function defaultJsonMapper() : \JsonMapper{
+	private function defaultJsonMapper(string $logContext) : \JsonMapper{
 		$mapper = new \JsonMapper();
 		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->undefinedPropertyHandler = $this->warnUndefinedJsonPropertyHandler($logContext);
 		$mapper->bStrictObjectTypeChecking = true;
 		$mapper->bEnforceMapType = false;
 		return $mapper;
+	}
+
+	/**
+	 * @phpstan-return \Closure(object, string, mixed) : void
+	 */
+	private function warnUndefinedJsonPropertyHandler(string $context) : \Closure{
+		return fn(object $object, string $name, mixed $value) => $this->session->getLogger()->warning(
+			"$context: Unexpected JSON property for " . (new \ReflectionClass($object))->getShortName() . ": " . $name . " = " . var_export($value, return: true)
+		);
 	}
 }
