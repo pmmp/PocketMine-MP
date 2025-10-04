@@ -71,27 +71,27 @@ class Candle extends Transparent implements Lightable{
 		return [
 			(match($this->count){
 				1 => AxisAlignedBB::one()
-					->squash(Axis::X, 7 / 16)
-					->squash(Axis::Z, 7 / 16),
+					->squashedCopy(Axis::X, 7 / 16)
+					->squashedCopy(Axis::Z, 7 / 16),
 				2 => AxisAlignedBB::one()
-					->squash(Axis::X, 5 / 16)
-					->trim(Facing::NORTH, 7 / 16) //0.3 thick on the Z axis
-					->trim(Facing::SOUTH, 6 / 16),
+					->squashedCopy(Axis::X, 5 / 16)
+					->trimmedCopy(Facing::NORTH, 7 / 16) //0.3 thick on the Z axis
+					->trimmedCopy(Facing::SOUTH, 6 / 16),
 				3 => AxisAlignedBB::one()
-					->trim(Facing::WEST, 5 / 16)
-					->trim(Facing::EAST, 6 / 16)
-					->trim(Facing::NORTH, 6 / 16)
-					->trim(Facing::SOUTH, 5 / 16),
+					->trimmedCopy(Facing::WEST, 5 / 16)
+					->trimmedCopy(Facing::EAST, 6 / 16)
+					->trimmedCopy(Facing::NORTH, 6 / 16)
+					->trimmedCopy(Facing::SOUTH, 5 / 16),
 				4 => AxisAlignedBB::one()
-					->squash(Axis::X, 5 / 16)
-					->trim(Facing::NORTH, 5 / 16)
-					->trim(Facing::SOUTH, 6 / 16),
+					->squashedCopy(Axis::X, 5 / 16)
+					->trimmedCopy(Facing::NORTH, 5 / 16)
+					->trimmedCopy(Facing::SOUTH, 6 / 16),
 				default => throw new AssumptionFailedError("Unreachable")
-			})->trim(Facing::UP, 10 / 16)
+			})->trimmedCopy(Facing::UP, 10 / 16)
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -99,12 +99,12 @@ class Candle extends Transparent implements Lightable{
 		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		$candle = $this->getCandleIfCompatibleType($blockReplace);
 		return $candle !== null ? $candle->count < self::MAX_COUNT : parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$blockReplace->getAdjacentSupportType(Facing::DOWN)->hasCenterSupport()){
 			return false;
 		}

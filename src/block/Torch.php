@@ -33,16 +33,16 @@ use pocketmine\world\BlockTransaction;
 
 class Torch extends Flowable{
 
-	protected int $facing = Facing::UP;
+	protected Facing $facing = Facing::UP;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->facingExcept($this->facing, Facing::DOWN);
 	}
 
-	public function getFacing() : int{ return $this->facing; }
+	public function getFacing() : Facing{ return $this->facing; }
 
 	/** @return $this */
-	public function setFacing(int $facing) : self{
+	public function setFacing(Facing $facing) : self{
 		if($facing === Facing::DOWN){
 			throw new \InvalidArgumentException("Torch may not face DOWN");
 		}
@@ -60,7 +60,7 @@ class Torch extends Flowable{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face !== Facing::DOWN && $this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -81,7 +81,7 @@ class Torch extends Flowable{
 		return false;
 	}
 
-	private function canBeSupportedAt(Block $block, int $face) : bool{
+	private function canBeSupportedAt(Block $block, Facing $face) : bool{
 		return $face === Facing::DOWN ?
 			$block->getAdjacentSupportType($face)->hasCenterSupport() :
 			$block->getAdjacentSupportType($face) === SupportType::FULL;

@@ -46,7 +46,7 @@ class Lectern extends Transparent implements HorizontalFacing{
 	protected bool $producingSignal = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->producingSignal);
 	}
 
@@ -84,10 +84,10 @@ class Lectern extends Transparent implements HorizontalFacing{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::UP, 0.1)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -120,7 +120,7 @@ class Lectern extends Transparent implements HorizontalFacing{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$world = $this->position->getWorld();
 			$world->setBlock($this->position, $this->setBook($item));
@@ -130,7 +130,7 @@ class Lectern extends Transparent implements HorizontalFacing{
 		return true;
 	}
 
-	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+	public function onAttack(Item $item, Facing $face, ?Player $player = null) : bool{
 		if($this->book !== null){
 			$world = $this->position->getWorld();
 			$world->dropItem($this->position->up(), $this->book);

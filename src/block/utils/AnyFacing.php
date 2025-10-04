@@ -26,16 +26,10 @@ namespace pocketmine\block\utils;
 use pocketmine\math\Facing;
 
 interface AnyFacing{
-
-	/**
-	 * @see Facing
-	 */
-	public function getFacing() : int;
+	public function getFacing() : Facing;
 
 	/**
 	 * @return $this
-	 *
-	 * @see Facing
 	 */
-	public function setFacing(int $facing) : self;
+	public function setFacing(Facing $facing) : self;
 }

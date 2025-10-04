@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodMaterial;
@@ -45,7 +46,7 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 	protected bool $inWall = false;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->open);
 		$w->bool($this->inWall);
 	}
@@ -67,23 +68,24 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return $this->open ? [] : [AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16)];
+		return $this->open ? [] : [AxisAlignedBB::one()->extendedCopy(Facing::UP, 0.5)->squashedCopy(Facing::axis($this->facing->toFacing()), 6 / 16)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
 	private function checkInWall() : bool{
+		$realFacing = $this->facing->toFacing();
 		return (
-			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall ||
-			$this->getSide(Facing::rotateY($this->facing, true)) instanceof Wall
+			$this->getSide(Facing::rotateY($realFacing, false)) instanceof Wall ||
+			$this->getSide(Facing::rotateY($realFacing, true)) instanceof Wall
 		);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = $player->getHorizontalFacing();
+			$this->facing = HorizontalFacingOption::fromFacing($player->getHorizontalFacing());
 		}
 
 		$this->inWall = $this->checkInWall();
@@ -99,12 +101,12 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 		}
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$this->open = !$this->open;
 		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();
-			if($playerFacing === Facing::opposite($this->facing)){
-				$this->facing = $playerFacing;
+			if($playerFacing === Facing::opposite($this->facing->toFacing())){
+				$this->facing = HorizontalFacingOption::fromFacing($playerFacing);
 			}
 		}
 

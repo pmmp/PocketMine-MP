@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
@@ -35,10 +36,14 @@ use pocketmine\network\mcpe\protocol\types\LevelEvent;
 class BlockPunchParticle implements Particle{
 	public function __construct(
 		private Block $block,
-		private int $face
+		private Facing $face
 	){}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEvent::PARTICLE_PUNCH_BLOCK, TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()) | ($this->face << 24), $pos)];
+		return [LevelEventPacket::create(
+			LevelEvent::PARTICLE_PUNCH_BLOCK,
+			//TODO: dodgy use of internal value for protocol - this should be properly translated
+			TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($this->block->getStateId()) | ($this->face->value << 24), $pos)
+		];
 	}
 }

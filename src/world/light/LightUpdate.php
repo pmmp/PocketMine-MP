@@ -156,11 +156,12 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			foreach(Facing::OFFSET as $side => [$ox, $oy, $oz]){
+			foreach(Facing::ALL as $side){
 				if($from === $side){
 					//don't check the side that this node received its initial light from
 					continue;
 				}
+				[$ox, $oy, $oz] = Facing::OFFSET[$side->value];
 				$cx = $x + $ox;
 				$cy = $y + $oy;
 				$cz = $z + $oz;
@@ -204,7 +205,7 @@ abstract class LightUpdate{
 		}
 	}
 
-	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context, LightArray $lightArray, SubChunk $subChunk, int $side) : void{
+	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context, LightArray $lightArray, SubChunk $subChunk, Facing $side) : void{
 		$lx = $x & SubChunk::COORD_MASK;
 		$ly = $y & SubChunk::COORD_MASK;
 		$lz = $z & SubChunk::COORD_MASK;

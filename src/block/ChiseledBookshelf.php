@@ -52,7 +52,7 @@ class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 	private ?ChiseledBookshelfSlot $lastInteractedSlot = null;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 		$w->enumSet($this->slots, ChiseledBookshelfSlot::cases());
 	}
 
@@ -115,6 +115,18 @@ class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 	}
 
 	/**
+	 * @param ChiseledBookshelfSlot[] $slots
+	 * @return $this
+	 */
+	public function setSlots(array $slots) : self{
+		$this->slots = [];
+		foreach($slots as $slot){
+			$this->setSlot($slot, true);
+		}
+		return $this;
+	}
+
+	/**
 	 * Returns the last slot interacted by a player or null if no slot has been interacted with yet.
 	 */
 	public function getLastInteractedSlot() : ?ChiseledBookshelfSlot{
@@ -131,8 +143,8 @@ class ChiseledBookshelf extends Opaque implements HorizontalFacing{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($face !== $this->facing){
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($face !== $this->facing->toFacing()){
 			return false;
 		}
 

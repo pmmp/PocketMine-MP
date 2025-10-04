@@ -23,11 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\block\upgrade;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\DataDecodeException;
+use pmmp\encoding\VarInt;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\BinaryStream;
 
 /**
  * Handles translating legacy 1.12 block ID/meta into modern blockstates.
@@ -84,25 +85,25 @@ final class BlockIdMetaUpgrader{
 	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap, BlockStateUpgrader $blockStateUpgrader) : self{
 		$mappingTable = [];
 
-		$legacyStateMapReader = new BinaryStream($data);
+		$legacyStateMapReader = new ByteBufferReader($data);
 		$nbtReader = new LittleEndianNbtSerializer();
 
-		$idCount = $legacyStateMapReader->getUnsignedVarInt();
+		$idCount = VarInt::readUnsignedInt($legacyStateMapReader);
 		for($idIndex = 0; $idIndex < $idCount; $idIndex++){
-			$id = $legacyStateMapReader->get($legacyStateMapReader->getUnsignedVarInt());
+			$id = $legacyStateMapReader->readByteArray(VarInt::readUnsignedInt($legacyStateMapReader));
 
-			$metaCount = $legacyStateMapReader->getUnsignedVarInt();
+			$metaCount = VarInt::readUnsignedInt($legacyStateMapReader);
 			for($metaIndex = 0; $metaIndex < $metaCount; $metaIndex++){
-				$meta = $legacyStateMapReader->getUnsignedVarInt();
+				$meta = VarInt::readUnsignedInt($legacyStateMapReader);
 
 				$offset = $legacyStateMapReader->getOffset();
-				$state = $nbtReader->read($legacyStateMapReader->getBuffer(), $offset)->mustGetCompoundTag();
+				$state = $nbtReader->read($legacyStateMapReader->getData(), $offset)->mustGetCompoundTag();
 				$legacyStateMapReader->setOffset($offset);
 				$mappingTable[$id][$meta] = $blockStateUpgrader->upgrade(BlockStateData::fromNbt($state));
 			}
 		}
-		if(!$legacyStateMapReader->feof()){
-			throw new BinaryDataException("Unexpected trailing data in legacy state map data");
+		if($legacyStateMapReader->getUnreadLength() > 0){
+			throw new DataDecodeException("Unexpected trailing data in legacy state map data");
 		}
 
 		return new self($mappingTable, $idMap);

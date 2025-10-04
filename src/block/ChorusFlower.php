@@ -106,9 +106,9 @@ final class ChorusFlower extends Flowable implements Ageable{
 		return [$stemHeight, $endStoneBelow];
 	}
 
-	private function allHorizontalBlocksEmpty(World $world, Vector3 $position, ?int $except) : bool{
+	private function allHorizontalBlocksEmpty(World $world, Vector3 $position, ?Facing $except) : bool{
 		foreach($position->sidesAroundAxis(Axis::Y) as $facing => $sidePosition){
-			if($facing === $except){
+			if($facing === $except?->value){
 				continue;
 			}
 			if($world->getBlock($sidePosition)->getTypeId() !== BlockTypeIds::AIR){
@@ -149,7 +149,7 @@ final class ChorusFlower extends Flowable implements Ageable{
 		return $this->allHorizontalBlocksEmpty($world, $up, null);
 	}
 
-	private function grow(int $facing, int $ageChange, ?BlockTransaction $tx) : BlockTransaction{
+	private function grow(Facing $facing, int $ageChange, ?BlockTransaction $tx) : BlockTransaction{
 		if($tx === null){
 			$tx = new BlockTransaction($this->position->getWorld());
 		}
@@ -176,10 +176,10 @@ final class ChorusFlower extends Flowable implements Ageable{
 			$facingVisited = [];
 			for($attempts = 0, $maxAttempts = mt_rand(0, $endStoneBelow ? 4 : 3); $attempts < $maxAttempts; $attempts++){
 				$facing = Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)];
-				if(isset($facingVisited[$facing])){
+				if(isset($facingVisited[$facing->value])){
 					continue;
 				}
-				$facingVisited[$facing] = true;
+				$facingVisited[$facing->value] = true;
 
 				$sidePosition = $this->position->getSide($facing);
 				if(

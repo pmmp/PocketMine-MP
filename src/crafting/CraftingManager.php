@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\VarInt;
 use pocketmine\item\Item;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
 use function array_shift;
@@ -102,23 +103,14 @@ class CraftingManager{
 	/** @phpstan-return ObjectSet<\Closure() : void> */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
 
-	/**
-	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
-	 * @deprecated
-	 */
-	public static function sort(Item $i1, Item $i2) : int{
-		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getStateId() <=> $i2->getStateId()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
-
-		return $retval;
-	}
-
 	private static function hashOutput(Item $output) : string{
-		$write = new BinaryStream();
-		$write->putVarInt($output->getStateId());
-		$write->put((new LittleEndianNbtSerializer())->write(new TreeRoot($output->getNamedTag())));
+		$write = new ByteBufferWriter();
+		VarInt::writeSignedInt($write, $output->getStateId());
+		//TODO: the NBT serializer allocates its own ByteBufferWriter, we should change the API in the future to
+		//allow passing our own to avoid this extra allocation
+		$write->writeByteArray((new LittleEndianNbtSerializer())->write(new TreeRoot($output->getNamedTag())));
 
-		return $write->getBuffer();
+		return $write->getData();
 	}
 
 	/**

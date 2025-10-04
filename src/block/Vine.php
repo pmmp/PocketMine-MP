@@ -23,59 +23,56 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\HorizontalFacingOption;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function array_intersect_key;
 use function count;
+use function spl_object_id;
 
 class Vine extends Flowable{
 
-	/** @var int[] */
+	/** @var HorizontalFacingOption[] */
 	protected array $faces = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacingFlags($this->faces);
+		$w->enumSet($this->faces, HorizontalFacingOption::cases());
 	}
 
-	/** @return int[] */
+	/** @return HorizontalFacingOption[] */
 	public function getFaces() : array{ return $this->faces; }
 
-	public function hasFace(int $face) : bool{
-		return isset($this->faces[$face]);
+	public function hasFace(HorizontalFacingOption $face) : bool{
+		return isset($this->faces[spl_object_id($face)]);
 	}
 
 	/**
-	 * @param int[] $faces
-	 * @phpstan-param list<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST> $faces
+	 * @param HorizontalFacingOption[] $faces
 	 * @return $this
 	 */
 	public function setFaces(array $faces) : self{
 		$uniqueFaces = [];
 		foreach($faces as $face){
-			if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
-				throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+			if(!$face instanceof HorizontalFacingOption){
+				throw new \InvalidArgumentException("Expected array of HorizontalFacingOption");
 			}
-			$uniqueFaces[$face] = $face;
+			$uniqueFaces[spl_object_id($face)] = $face;
 		}
 		$this->faces = $uniqueFaces;
 		return $this;
 	}
 
 	/** @return $this */
-	public function setFace(int $face, bool $value) : self{
-		if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
-			throw new \InvalidArgumentException("Facing can only be north, east, south or west");
-		}
+	public function setFace(HorizontalFacingOption $face, bool $value) : self{
 		if($value){
-			$this->faces[$face] = $face;
+			$this->faces[spl_object_id($face)] = $face;
 		}else{
-			unset($this->faces[$face]);
+			unset($this->faces[spl_object_id($face)]);
 		}
 		return $this;
 	}
@@ -101,13 +98,15 @@ class Vine extends Flowable{
 		return [];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::opposite($face))->isFullCube() || Facing::axis($face) === Axis::Y){
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$oppositeFace = Facing::opposite($face);
+		$hzFacing = HorizontalFacingOption::tryFromFacing($oppositeFace);
+		if($hzFacing === null || !$blockReplace->getSide($oppositeFace)->isFullCube()){
 			return false;
 		}
 
 		$this->faces = $blockReplace instanceof Vine ? $blockReplace->faces : [];
-		$this->faces[Facing::opposite($face)] = Facing::opposite($face);
+		$this->faces[spl_object_id($hzFacing)] = $hzFacing;
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -120,8 +119,8 @@ class Vine extends Flowable{
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
 		foreach($this->faces as $face){
-			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
-				unset($this->faces[$face]);
+			if(!isset($supportedFaces[spl_object_id($face)]) && !$this->getSide($face->toFacing())->isSolid()){
+				unset($this->faces[spl_object_id($face)]);
 				$changed = true;
 			}
 		}

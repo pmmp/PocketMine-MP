@@ -100,6 +100,8 @@ trait CommonThreadPartsTrait{
 		//*before* the shutdown handler is invoked, so we might land here before the crash info has been set.
 		//In the future this should probably be fixed by running the shutdown handlers before setting isTerminated,
 		//but this workaround should be good enough for now.
+		//WARNING: Do not call this inside a synchronized block on this thread's context. Because the shutdown handler
+		//runs in a synchronized block, this will result in a deadlock.
 		if($this->isTerminated() && !$this->isJoined()){
 			$this->join();
 		}

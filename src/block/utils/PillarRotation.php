@@ -27,13 +27,8 @@ use pocketmine\math\Axis;
 
 interface PillarRotation{
 
-	/** @see Axis */
-	public function getAxis() : int;
+	public function getAxis() : Axis;
 
-	/**
-	 * @return $this
-	 *
-	 * @see Axis
-	 */
-	public function setAxis(int $axis) : self;
+	/** @return $this */
+	public function setAxis(Axis $axis) : self;
 }

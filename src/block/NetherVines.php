@@ -49,9 +49,9 @@ class NetherVines extends Flowable implements Ageable{
 	public const MAX_AGE = 25;
 
 	/** Direction the vine grows towards. */
-	private int $growthFace;
+	private Facing $growthFace;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, int $growthFace){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, Facing $growthFace){
 		$this->growthFace = $growthFace;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
@@ -80,12 +80,12 @@ class NetherVines extends Flowable implements Ageable{
 		return $top;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->age = mt_rand(0, self::MAX_AGE - 1);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			if($this->grow($player, mt_rand(1, 5))){
 				$item->pop();
@@ -159,7 +159,7 @@ class NetherVines extends Flowable implements Ageable{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 }

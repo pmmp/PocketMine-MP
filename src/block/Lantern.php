@@ -62,18 +62,18 @@ class Lantern extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()
-				->trim(Facing::UP,   $this->hanging ? 6 / 16 : 8 / 16)
-				->trim(Facing::DOWN, $this->hanging ? 2 / 16 : 0)
-				->squash(Axis::X, 5 / 16)
-				->squash(Axis::Z, 5 / 16)
+				->trimmedCopy(Facing::UP,   $this->hanging ? 6 / 16 : 8 / 16)
+				->trimmedCopy(Facing::DOWN, $this->hanging ? 2 / 16 : 0)
+				->squashedCopy(Axis::X, 5 / 16)
+				->squashedCopy(Axis::Z, 5 / 16)
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$downSupport = $this->canBeSupportedAt($blockReplace, Facing::DOWN);
 		if(!$downSupport && !$this->canBeSupportedAt($blockReplace, Facing::UP)){
 			return false;
@@ -90,7 +90,7 @@ class Lantern extends Transparent{
 		}
 	}
 
-	private function canBeSupportedAt(Block $block, int $face) : bool{
+	private function canBeSupportedAt(Block $block, Facing $face) : bool{
 		return $block->getAdjacentSupportType($face)->hasCenterSupport();
 	}
 }

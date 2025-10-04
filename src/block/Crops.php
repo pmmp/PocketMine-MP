@@ -45,7 +45,7 @@ abstract class Crops extends Flowable implements Ageable{
 		return $block->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::FARMLAND;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->age < self::MAX_AGE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$tempAge = $block->age + mt_rand(2, 5);

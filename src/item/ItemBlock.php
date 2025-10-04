@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\math\Facing;
 
 /**
  * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
@@ -44,7 +45,7 @@ final class ItemBlock extends Item{
 		$this->block->describeBlockItemState($w);
 	}
 
-	public function getBlock(?int $clickedFace = null) : Block{
+	public function getBlock(?Facing $clickedFace = null) : Block{
 		return clone $this->block;
 	}
 

@@ -38,16 +38,16 @@ use function rad2deg;
 final class FloorCoralFan extends BaseCoral{
 	use StaticSupportTrait;
 
-	private int $axis = Axis::X;
+	private Axis $axis = Axis::X;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalAxis($this->axis);
 	}
 
-	public function getAxis() : int{ return $this->axis; }
+	public function getAxis() : Axis{ return $this->axis; }
 
 	/** @return $this */
-	public function setAxis(int $axis) : self{
+	public function setAxis(Axis $axis) : self{
 		if($axis !== Axis::X && $axis !== Axis::Z){
 			throw new \InvalidArgumentException("Axis must be X or Z only");
 		}
@@ -55,7 +55,7 @@ final class FloorCoralFan extends BaseCoral{
 		return $this;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$playerBlockPos = $player->getPosition()->floor();
 			$directionVector = $blockReplace->position->subtractVector($playerBlockPos)->normalize();

@@ -52,7 +52,7 @@ class ItemFrame extends Flowable implements AnyFacing{
 	protected float $itemDropChance = 1.0;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->facing($this->facing);
+		$w->enum($this->facing);
 		$w->bool($this->hasMap);
 	}
 
@@ -132,7 +132,7 @@ class ItemFrame extends Flowable implements AnyFacing{
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;
 
@@ -150,7 +150,7 @@ class ItemFrame extends Flowable implements AnyFacing{
 		return true;
 	}
 
-	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+	public function onAttack(Item $item, Facing $face, ?Player $player = null) : bool{
 		if($this->framedItem === null){
 			return false;
 		}
@@ -164,7 +164,7 @@ class ItemFrame extends Flowable implements AnyFacing{
 		return true;
 	}
 
-	private function canBeSupportedAt(Block $block, int $face) : bool{
+	private function canBeSupportedAt(Block $block, Facing $face) : bool{
 		return $block->getAdjacentSupportType($face) !== SupportType::NONE;
 	}
 
@@ -174,7 +174,7 @@ class ItemFrame extends Flowable implements AnyFacing{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}

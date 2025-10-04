@@ -24,24 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\math\Axis;
-use pocketmine\math\Facing;
 
 trait HorizontalFacingTrait{
-	protected int $facing = Facing::NORTH;
+	protected HorizontalFacingOption $facing = HorizontalFacingOption::NORTH;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->horizontalFacing($this->facing);
+		$w->enum($this->facing);
 	}
 
-	public function getFacing() : int{ return $this->facing; }
+	public function getFacing() : HorizontalFacingOption{ return $this->facing; }
 
 	/** @return $this */
-	public function setFacing(int $facing) : self{
-		$axis = Facing::axis($facing);
-		if($axis !== Axis::X && $axis !== Axis::Z){
-			throw new \InvalidArgumentException("Facing must be horizontal");
-		}
+	public function setFacing(HorizontalFacingOption $facing) : self{
 		$this->facing = $facing;
 		return $this;
 	}

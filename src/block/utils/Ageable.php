@@ -27,7 +27,10 @@ interface Ageable{
 
 	public function getAge() : int;
 
+	public function getMaxAge() : int;
+
 	/**
+	 * Must be in range 0 - getMaxAge()
 	 * @return $this
 	 */
 	public function setAge(int $age) : self;

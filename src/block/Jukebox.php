@@ -27,6 +27,7 @@ use pocketmine\block\tile\Jukebox as JukeboxTile;
 use pocketmine\item\Item;
 use pocketmine\item\Record;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\RecordSound;
@@ -40,7 +41,7 @@ class Jukebox extends Opaque{
 		return 300;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player instanceof Player){
 			if($this->record !== null){
 				$this->ejectRecord();

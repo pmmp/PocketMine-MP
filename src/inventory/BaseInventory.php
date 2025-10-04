@@ -25,14 +25,12 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use function array_slice;
 use function count;
 use function max;
 use function min;
-use function spl_object_id;
 
 /**
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
@@ -41,11 +39,6 @@ use function spl_object_id;
  */
 abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	protected int $maxStackSize = Inventory::MAX_STACK;
-	/**
-	 * @var Player[]
-	 * @phpstan-var array<int, Player>
-	 */
-	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
 	 * @phpstan-var ObjectSet<InventoryListener>
@@ -102,26 +95,12 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 
 		$listeners = $this->listeners->toArray();
 		$this->listeners->clear();
-		$viewers = $this->viewers;
-		$this->viewers = [];
 
 		$this->internalSetContents($items);
 
 		$this->listeners->add(...$listeners); //don't directly write, in case listeners were added while operation was in progress
-		foreach($viewers as $id => $viewer){
-			$this->viewers[$id] = $viewer;
-		}
 
 		$this->onContentChange($oldContents);
-	}
-
-	/**
-	 * Helper for utility functions which search the inventory.
-	 * TODO: make this abstract instead of providing a slow default implementation (BC break)
-	 */
-	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
-		$item = $this->getItem($slot);
-		return $item->equals($test, true, $checkTags) ? $item->getCount() : 0;
 	}
 
 	public function contains(Item $item) : bool{
@@ -174,14 +153,6 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 		}
 
 		return -1;
-	}
-
-	/**
-	 * TODO: make this abstract and force implementations to implement it properly (BC break)
-	 * This default implementation works, but is slow.
-	 */
-	public function isSlotEmpty(int $index) : bool{
-		return $this->getItem($index)->isNull();
 	}
 
 	public function canAddItem(Item $item) : bool{
@@ -339,43 +310,9 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 		$this->setItem($slot2, $i1);
 	}
 
-	/**
-	 * @return Player[]
-	 */
-	public function getViewers() : array{
-		return $this->viewers;
-	}
-
-	/**
-	 * Removes the inventory window from all players currently viewing it.
-	 */
-	public function removeAllViewers() : void{
-		foreach($this->viewers as $hash => $viewer){
-			if($viewer->getCurrentWindow() === $this){ //this might not be the case for the player's own inventory
-				$viewer->removeCurrentWindow();
-			}
-			unset($this->viewers[$hash]);
-		}
-	}
-
-	public function onOpen(Player $who) : void{
-		$this->viewers[spl_object_id($who)] = $who;
-	}
-
-	public function onClose(Player $who) : void{
-		unset($this->viewers[spl_object_id($who)]);
-	}
-
 	protected function onSlotChange(int $index, Item $before) : void{
 		foreach($this->listeners as $listener){
 			$listener->onSlotChange($this, $index, $before);
-		}
-		foreach($this->viewers as $viewer){
-			$invManager = $viewer->getNetworkSession()->getInvManager();
-			if($invManager === null){
-				continue;
-			}
-			$invManager->onSlotChange($this, $index);
 		}
 	}
 
@@ -386,14 +323,6 @@ abstract class BaseInventory implements Inventory, SlotValidatedInventory{
 	protected function onContentChange(array $itemsBefore) : void{
 		foreach($this->listeners as $listener){
 			$listener->onContentChange($this, $itemsBefore);
-		}
-
-		foreach($this->getViewers() as $viewer){
-			$invManager = $viewer->getNetworkSession()->getInvManager();
-			if($invManager === null){
-				continue;
-			}
-			$invManager->syncContents($this);
 		}
 	}
 

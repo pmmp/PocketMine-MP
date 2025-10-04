@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\generate_bedrock_data_from_packets;
 
+use pmmp\encoding\ByteBufferReader;
 use pocketmine\crafting\json\FurnaceRecipeData;
 use pocketmine\crafting\json\ItemStackData;
 use pocketmine\crafting\json\PotionContainerChangeRecipeData;
@@ -37,7 +38,6 @@ use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\ItemTypeNames;
 use pocketmine\inventory\json\CreativeGroupData;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\TreeRoot;
@@ -52,7 +52,6 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\ItemRegistryPacket;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -191,7 +190,7 @@ class ParserPacketHandler extends PacketHandler{
 
 		$rawExtraData = $itemStack->getRawExtraData();
 		if($rawExtraData !== ""){
-			$decoder = PacketSerializer::decoder($rawExtraData, 0);
+			$decoder = new ByteBufferReader($rawExtraData);
 			$extraData = $itemStringId === ItemTypeNames::SHIELD ? ItemStackExtraDataShield::read($decoder) : ItemStackExtraData::read($decoder);
 			$nbt = $extraData->getNbt();
 			if($nbt !== null && count($nbt) > 0){
@@ -209,11 +208,18 @@ class ParserPacketHandler extends PacketHandler{
 		return $data;
 	}
 
-	/**
-	 * @return mixed[]
-	 */
-	private static function objectToOrderedArray(object $object) : array{
-		$result = (array) ($object instanceof \JsonSerializable ? $object->jsonSerialize() : $object);
+	private static function objectToOrderedArray(object $object) : mixed{
+		if($object instanceof \JsonSerializable){
+			$result = $object->jsonSerialize();
+			if(is_object($result)){
+				$result = (array) $result;
+			}elseif(!is_array($result)){
+				return $result;
+			}
+		}else{
+			$result = (array) $object;
+		}
+
 		ksort($result, SORT_STRING);
 
 		foreach(Utils::promoteKeys($result) as $property => $value){
@@ -280,7 +286,7 @@ class ParserPacketHandler extends PacketHandler{
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
 
 		echo "updating item registry\n";
-		$items = array_map(function(ItemTypeEntry $entry) : array{
+		$items = array_map(function(ItemTypeEntry $entry) : mixed{
 			return self::objectToOrderedArray($entry);
 		}, $packet->getEntries());
 		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
@@ -547,8 +553,8 @@ class ParserPacketHandler extends PacketHandler{
 		if(!($tag instanceof CompoundTag)){
 			throw new AssumptionFailedError();
 		}
-		$idList = $tag->getTag("idlist");
-		if(!($idList instanceof ListTag) || $idList->getTagType() !== NBT::TAG_Compound){
+		$generic = $tag->getTag("idlist");
+		if(!($generic instanceof ListTag) || ($idList = $generic->cast(CompoundTag::class)) === null){
 			echo $tag . "\n";
 			throw new \RuntimeException("expected TAG_List<TAG_Compound>(\"idlist\") tag inside root TAG_Compound");
 		}
@@ -558,9 +564,6 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		echo "updating legacy => string entity ID mapping table\n";
 		$map = [];
-		/**
-		 * @var CompoundTag $thing
-		 */
 		foreach($idList as $thing){
 			$map[$thing->getString("id")] = $thing->getInt("rid");
 		}
@@ -586,10 +589,7 @@ class ParserPacketHandler extends PacketHandler{
 			$data->id = $entry->getId();
 			$data->temperature = round($entry->getTemperature(), 3);
 			$data->downfall = round($entry->getDownfall(), 3);
-			$data->redSporeDensity = round($entry->getRedSporeDensity(), 3);
-			$data->blueSporeDensity = round($entry->getBlueSporeDensity(), 3);
-			$data->ashDensity = round($entry->getAshDensity(), 3);
-			$data->whiteAshDensity = round($entry->getWhiteAshDensity(), 3);
+			$data->foliageSnow = round($entry->getFoliageSnow(), 3);
 			$data->depth = round($entry->getDepth(), 3);
 			$data->scale = round($entry->getScale(), 3);
 			$data->mapWaterColour = $mapWaterColor;
@@ -642,12 +642,13 @@ function main(array $argv) : int{
 			fwrite(STDERR, "Unknown packet on line " . ($lineNum + 1) . ": " . $parts[1]);
 			continue;
 		}
-		$serializer = PacketSerializer::decoder($raw, 0);
+		$serializer = new ByteBufferReader($raw);
 
 		$pk->decode($serializer);
 		$pk->handle($handler);
-		if(!$serializer->feof()){
-			echo "Packet on line " . ($lineNum + 1) . ": didn't read all data from " . get_class($pk) . " (stopped at offset " . $serializer->getOffset() . " of " . strlen($serializer->getBuffer()) . " bytes): " . bin2hex($serializer->getRemaining()) . "\n";
+		$remaining = strlen($serializer->getData()) - $serializer->getOffset();
+		if($remaining > 0){
+			echo "Packet on line " . ($lineNum + 1) . ": didn't read all data from " . get_class($pk) . " (stopped at offset " . $serializer->getOffset() . " of " . strlen($serializer->getData()) . " bytes): " . bin2hex($serializer->readByteArray($remaining)) . "\n";
 		}
 	}
 	return 0;

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
@@ -36,16 +37,16 @@ final class Bell extends Spawnable{
 	public const TAG_TICKS = "Ticks"; //TAG_Int
 
 	private bool $ringing = false;
-	private int $facing = Facing::NORTH;
+	private Facing $facing = Facing::NORTH;
 	private int $ticks = 0;
 
 	public function isRinging() : bool{ return $this->ringing; }
 
 	public function setRinging(bool $ringing) : void{ $this->ringing = $ringing; }
 
-	public function getFacing() : int{ return $this->facing; }
+	public function getFacing() : Facing{ return $this->facing; }
 
-	public function setFacing(int $facing) : void{ $this->facing = $facing; }
+	public function setFacing(Facing $facing) : void{ $this->facing = $facing; }
 
 	public function getTicks() : int{ return $this->ticks; }
 
@@ -53,19 +54,22 @@ final class Bell extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_RINGING, $this->ringing ? 1 : 0);
-		$nbt->setInt(self::TAG_DIRECTION, $this->facing);
+		//TODO: suspicious use of internal Facing value for network
+		$nbt->setInt(self::TAG_DIRECTION, $this->facing->value);
 		$nbt->setInt(self::TAG_TICKS, $this->ticks);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->ringing = $nbt->getByte(self::TAG_RINGING, 0) !== 0;
-		$this->facing = $nbt->getInt(self::TAG_DIRECTION, Facing::NORTH);
+		//TODO: suspicious use of internal Facing value for storage
+		$this->facing = Facing::tryFrom($nbt->getInt(self::TAG_DIRECTION, Facing::NORTH->value)) ?? throw new SavedDataLoadingException("Invalid facing value");
 		$this->ticks = $nbt->getInt(self::TAG_TICKS, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_RINGING, $this->ringing ? 1 : 0);
-		$nbt->setInt(self::TAG_DIRECTION, $this->facing);
+		//TODO: suspicious use of internal Facing value for storage
+		$nbt->setInt(self::TAG_DIRECTION, $this->facing->value);
 		$nbt->setInt(self::TAG_TICKS, $this->ticks);
 	}
 
@@ -77,7 +81,7 @@ final class Bell extends Spawnable{
 	 * simpler as a BlockEventPacket. It's simpler to implement bells with this hack than to follow Mojang's complicated
 	 * mess.
 	 */
-	public function createFakeUpdatePacket(int $bellHitFace) : BlockActorDataPacket{
+	public function createFakeUpdatePacket(Facing $bellHitFace) : BlockActorDataPacket{
 		$nbt = $this->getSpawnCompound();
 		$nbt->setByte(self::TAG_RINGING, 1);
 		$nbt->setInt(self::TAG_DIRECTION, match($bellHitFace){

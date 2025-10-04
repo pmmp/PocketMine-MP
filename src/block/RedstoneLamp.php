@@ -23,11 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 
-class RedstoneLamp extends Opaque implements PoweredByRedstone{
+class RedstoneLamp extends Opaque implements PoweredByRedstone, Lightable{
 	use PoweredByRedstoneTrait;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -36,5 +37,15 @@ class RedstoneLamp extends Opaque implements PoweredByRedstone{
 
 	public function getLightLevel() : int{
 		return $this->powered ? 15 : 0;
+	}
+
+	public function isLit() : bool{
+		return $this->powered;
+	}
+
+	/** @return $this */
+	public function setLit(bool $lit = true) : self{
+		$this->powered = $lit;
+		return $this;
 	}
 }

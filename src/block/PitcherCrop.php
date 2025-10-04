@@ -54,10 +54,10 @@ final class PitcherCrop extends Flowable implements Ageable{
 		$heightTrim = $this->age === 0 ? 13 : 11;
 		return [
 			AxisAlignedBB::one()
-				->trim(Facing::UP, $heightTrim / 16)
-				->squash(Axis::X, $widthTrim / 16)
-				->squash(Axis::Z, $widthTrim / 16)
-				->extend(Facing::DOWN, 1 / 16) //presumably this is to correct for farmland being 15/16 of a block tall
+				->trimmedCopy(Facing::UP, $heightTrim / 16)
+				->squashedCopy(Axis::X, $widthTrim / 16)
+				->squashedCopy(Axis::Z, $widthTrim / 16)
+				->extendedCopy(Facing::DOWN, 1 / 16) //presumably this is to correct for farmland being 15/16 of a block tall
 		];
 	}
 
@@ -85,7 +85,7 @@ final class PitcherCrop extends Flowable implements Ageable{
 		return BlockEventHelper::grow($this, (clone $this)->setAge($this->age + 1), $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 			return true;

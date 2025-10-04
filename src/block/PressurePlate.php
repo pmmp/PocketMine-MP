@@ -43,7 +43,7 @@ abstract class PressurePlate extends Transparent{
 		BlockIdentifier $idInfo,
 		string $name,
 		BlockTypeInfo $typeInfo,
-		int $deactivationDelayTicks = 20 //TODO: make this mandatory in PM6
+		int $deactivationDelayTicks
 	){
 		parent::__construct($idInfo, $name, $typeInfo);
 		$this->deactivationDelayTicks = $deactivationDelayTicks;
@@ -57,7 +57,7 @@ abstract class PressurePlate extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -83,30 +83,21 @@ abstract class PressurePlate extends Transparent{
 	 */
 	protected function getActivationBox() : AxisAlignedBB{
 		return AxisAlignedBB::one()
-			->squash(Axis::X, 1 / 8)
-			->squash(Axis::Z, 1 / 8)
-			->trim(Facing::UP, 3 / 4)
-			->offset($this->position->x, $this->position->y, $this->position->z);
+			->squashedCopy(Axis::X, 1 / 8)
+			->squashedCopy(Axis::Z, 1 / 8)
+			->trimmedCopy(Facing::UP, 3 / 4)
+			->offsetCopy($this->position->x, $this->position->y, $this->position->z);
 	}
 
-	/**
-	 * TODO: make this abstract in PM6
-	 */
-	protected function hasOutputSignal() : bool{
-		return false;
-	}
+	abstract protected function hasOutputSignal() : bool;
 
 	/**
-	 * TODO: make this abstract in PM6
-	 *
 	 * @param Entity[] $entities
 	 *
 	 * @return mixed[]
 	 * @phpstan-return array{Block, ?bool}
 	 */
-	protected function calculatePlateState(array $entities) : array{
-		return [$this, null];
-	}
+	abstract protected function calculatePlateState(array $entities) : array;
 
 	/**
 	 * Filters entities which don't affect the pressure plate state from the given list.

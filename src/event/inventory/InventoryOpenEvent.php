@@ -25,14 +25,14 @@ namespace pocketmine\event\inventory;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\inventory\Inventory;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 
 class InventoryOpenEvent extends InventoryEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
-		Inventory $inventory,
+		InventoryWindow $inventory,
 		private Player $who
 	){
 		parent::__construct($inventory);

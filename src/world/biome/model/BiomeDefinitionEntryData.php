@@ -28,7 +28,7 @@ namespace pocketmine\world\biome\model;
  */
 final class BiomeDefinitionEntryData{
 	/** @required */
-	public ?int $id;
+	public int $id;
 
 	/** @required */
 	public float $temperature;
@@ -37,16 +37,7 @@ final class BiomeDefinitionEntryData{
 	public float $downfall;
 
 	/** @required */
-	public float $redSporeDensity;
-
-	/** @required */
-	public float $blueSporeDensity;
-
-	/** @required */
-	public float $ashDensity;
-
-	/** @required */
-	public float $whiteAshDensity;
+	public float $foliageSnow;
 
 	/** @required */
 	public float $depth;

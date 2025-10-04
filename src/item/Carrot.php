@@ -25,10 +25,11 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\math\Facing;
 
 class Carrot extends Food{
 
-	public function getBlock(?int $clickedFace = null) : Block{
+	public function getBlock(?Facing $clickedFace = null) : Block{
 		return VanillaBlocks::CARROTS();
 	}
 

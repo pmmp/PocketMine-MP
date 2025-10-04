@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
-use function array_map;
-use function count;
-
 class SubChunk{
 	public const COORD_BIT_SIZE = 4;
 	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
@@ -33,13 +30,11 @@ class SubChunk{
 
 	/**
 	 * SubChunk constructor.
-	 *
-	 * @param PalettedBlockArray[] $blockLayers
-	 * @phpstan-param list<PalettedBlockArray> $blockLayers
 	 */
 	public function __construct(
 		private int $emptyBlockId,
-		private array $blockLayers,
+		private ?PalettedBlockArray $blockLayer0,
+		private ?PalettedBlockArray $blockLayer1,
 		private PalettedBlockArray $biomes,
 		private ?LightArray $skyLight = null,
 		private ?LightArray $blockLight = null
@@ -60,7 +55,7 @@ class SubChunk{
 	 * This may report non-empty erroneously if the chunk has been modified and not garbage-collected.
 	 */
 	public function isEmptyFast() : bool{
-		return count($this->blockLayers) === 0;
+		return $this->blockLayer0 === null && $this->blockLayer1 === null;
 	}
 
 	/**
@@ -70,33 +65,45 @@ class SubChunk{
 	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
 
 	public function getBlockStateId(int $x, int $y, int $z) : int{
-		if(count($this->blockLayers) === 0){
-			return $this->emptyBlockId;
-		}
-		return $this->blockLayers[0]->get($x, $y, $z);
+		return $this->blockLayer0?->get($x, $y, $z) ?? $this->emptyBlockId;
 	}
 
 	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
-		if(count($this->blockLayers) === 0){
-			$this->blockLayers[] = new PalettedBlockArray($this->emptyBlockId);
+		if($this->blockLayer0 === null){
+			$this->blockLayer0 = new PalettedBlockArray($this->emptyBlockId);
 		}
-		$this->blockLayers[0]->set($x, $y, $z, $block);
+		$this->blockLayer0->set($x, $y, $z, $block);
+	}
+
+	public function getBlockLayer0() : ?PalettedBlockArray{
+		return $this->blockLayer0;
+	}
+
+	public function getBlockLayer1() : ?PalettedBlockArray{
+		return $this->blockLayer1;
 	}
 
 	/**
 	 * @return PalettedBlockArray[]
-	 * @phpstan-return list<PalettedBlockArray>
+	 * @phpstan-return array{}|array{PalettedBlockArray}|array{PalettedBlockArray, PalettedBlockArray}
 	 */
 	public function getBlockLayers() : array{
-		return $this->blockLayers;
+		$layers = [];
+		if($this->blockLayer0 !== null){
+			$layers[] = $this->blockLayer0;
+		}
+		if($this->blockLayer1 !== null){
+			$layers[] = $this->blockLayer1;
+		}
+		return $layers;
 	}
 
 	public function getHighestBlockAt(int $x, int $z) : ?int{
-		if(count($this->blockLayers) === 0){
+		if($this->blockLayer0 === null){
 			return null;
 		}
 		for($y = self::EDGE_LENGTH - 1; $y >= 0; --$y){
-			if($this->blockLayers[0]->get($x, $y, $z) !== $this->emptyBlockId){
+			if($this->blockLayer0->get($x, $y, $z) !== $this->emptyBlockId){
 				return $y;
 			}
 		}
@@ -129,16 +136,21 @@ class SubChunk{
 		return [];
 	}
 
-	public function collectGarbage() : void{
-		$cleanedLayers = [];
-		foreach($this->blockLayers as $layer){
-			$layer->collectGarbage();
-
-			if($layer->getBitsPerBlock() !== 0 || $layer->get(0, 0, 0) !== $this->emptyBlockId){
-				$cleanedLayers[] = $layer;
-			}
+	private static function gcBlockPalette(?PalettedBlockArray $layer, int $emptyBlockId) : ?PalettedBlockArray{
+		if($layer === null){
+			return null;
 		}
-		$this->blockLayers = $cleanedLayers;
+		$layer->collectGarbage();
+		return $layer->getBitsPerBlock() === 0 && $layer->get(0, 0, 0) === $emptyBlockId ? null : $layer;
+	}
+
+	public function collectGarbage() : void{
+		$this->blockLayer0 = self::gcBlockPalette($this->blockLayer0, $this->emptyBlockId);
+		$this->blockLayer1 = self::gcBlockPalette($this->blockLayer1, $this->emptyBlockId);
+		if($this->blockLayer0 === null && $this->blockLayer1 !== null){
+			$this->blockLayer0 = $this->blockLayer1;
+			$this->blockLayer1 = null;
+		}
 		$this->biomes->collectGarbage();
 
 		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
@@ -150,9 +162,8 @@ class SubChunk{
 	}
 
 	public function __clone(){
-		$this->blockLayers = array_map(function(PalettedBlockArray $array) : PalettedBlockArray{
-			return clone $array;
-		}, $this->blockLayers);
+		$this->blockLayer0 = $this->blockLayer0 !== null ? clone $this->blockLayer0 : null;
+		$this->blockLayer1 = $this->blockLayer1 !== null ? clone $this->blockLayer1 : null;
 		$this->biomes = clone $this->biomes;
 
 		if($this->skyLight !== null){

@@ -24,20 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\RailConnectionInfo;
-use pocketmine\data\bedrock\block\BlockLegacyMetadata;
+use pocketmine\block\utils\StraightOnlyRailShape;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use function array_keys;
-use function implode;
 
 /**
  * Simple non-curvable rail.
  */
 class StraightOnlyRail extends BaseRail{
 
-	private int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
+	private StraightOnlyRailShape $railShape = StraightOnlyRailShape::FLAT_AXIS_Z;
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->straightOnlyRailShape($this->railShape);
+		$w->enum($this->railShape);
 	}
 
 	protected function setShapeFromConnections(array $connections) : void{
@@ -45,20 +43,17 @@ class StraightOnlyRail extends BaseRail{
 		if($railShape === null){
 			throw new \InvalidArgumentException("No rail shape matches these connections");
 		}
-		$this->railShape = $railShape;
+		$this->railShape = StraightOnlyRailShape::from($railShape);
 	}
 
 	protected function getCurrentShapeConnections() : array{
-		return RailConnectionInfo::CONNECTIONS[$this->railShape];
+		return RailConnectionInfo::CONNECTIONS[$this->railShape->value];
 	}
 
-	public function getShape() : int{ return $this->railShape; }
+	public function getShape() : StraightOnlyRailShape{ return $this->railShape; }
 
 	/** @return $this */
-	public function setShape(int $shape) : self{
-		if(!isset(RailConnectionInfo::CONNECTIONS[$shape])){
-			throw new \InvalidArgumentException("Invalid rail shape, must be one of " . implode(", ", array_keys(RailConnectionInfo::CONNECTIONS)));
-		}
+	public function setShape(StraightOnlyRailShape $shape) : self{
 		$this->railShape = $shape;
 		return $this;
 

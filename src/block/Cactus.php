@@ -46,10 +46,10 @@ class Cactus extends Transparent implements Ageable{
 
 	protected function recalculateCollisionBoxes() : array{
 		$shrinkSize = 1 / 16;
-		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
+		return [AxisAlignedBB::one()->contractedCopy($shrinkSize, 0, $shrinkSize)->trimmedCopy(Facing::UP, $shrinkSize)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 

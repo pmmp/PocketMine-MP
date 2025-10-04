@@ -73,7 +73,7 @@ PocketMine-MP is free, but it requires a lot of time and effort from unpaid volu
 You can support development using the following methods:
 
 - [Patreon](https://www.patreon.com/pocketminemp)
-- Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
+- Bitcoin (BTC): `bc1q2v5ngyf8ugyd55kqa9ep35g2rv342ueqm6ks33`
 - Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
 
 Thanks for your support!

@@ -18,7 +18,7 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@3.2.0
@@ -41,7 +41,7 @@ jobs:
         run: composer install --prefer-dist --no-interaction
 
       - name: Clone extension stubs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: pmmp/phpstorm-stubs
           path: extension-stubs

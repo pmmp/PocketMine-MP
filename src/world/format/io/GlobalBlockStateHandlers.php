@@ -26,7 +26,9 @@ namespace pocketmine\world\format\io;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\data\bedrock\block\convert\BlockObjectToStateSerializer;
+use pocketmine\data\bedrock\block\convert\BlockSerializerDeserializerRegistrar;
 use pocketmine\data\bedrock\block\convert\BlockStateToObjectDeserializer;
+use pocketmine\data\bedrock\block\convert\VanillaBlockMappings;
 use pocketmine\data\bedrock\block\upgrade\BlockDataUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockIdMetaUpgrader;
 use pocketmine\data\bedrock\block\upgrade\BlockStateUpgrader;
@@ -44,20 +46,28 @@ use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
  * benefits for now.
  */
 final class GlobalBlockStateHandlers{
-	private static ?BlockObjectToStateSerializer $blockStateSerializer = null;
-
-	private static ?BlockStateToObjectDeserializer $blockStateDeserializer = null;
-
 	private static ?BlockDataUpgrader $blockDataUpgrader = null;
 
 	private static ?BlockStateData $unknownBlockStateData = null;
 
+	private static ?BlockSerializerDeserializerRegistrar $registrar = null;
+
+	public static function getRegistrar() : BlockSerializerDeserializerRegistrar{
+		if(self::$registrar === null){
+			$deserializer = new BlockStateToObjectDeserializer();
+			$serializer = new BlockObjectToStateSerializer();
+			self::$registrar = new BlockSerializerDeserializerRegistrar($deserializer, $serializer);
+			VanillaBlockMappings::init(self::$registrar);
+		}
+		return self::$registrar;
+	}
+
 	public static function getDeserializer() : BlockStateToObjectDeserializer{
-		return self::$blockStateDeserializer ??= new BlockStateToObjectDeserializer();
+		return self::getRegistrar()->deserializer;
 	}
 
 	public static function getSerializer() : BlockObjectToStateSerializer{
-		return self::$blockStateSerializer ??= new BlockObjectToStateSerializer();
+		return self::getRegistrar()->serializer;
 	}
 
 	public static function getUpgrader() : BlockDataUpgrader{

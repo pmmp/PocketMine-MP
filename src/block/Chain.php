@@ -33,7 +33,7 @@ use pocketmine\math\Facing;
 final class Chain extends Transparent implements PillarRotation{
 	use PillarRotationTrait;
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return $this->axis === Axis::Y && Facing::axis($facing) === Axis::Y ? SupportType::CENTER : SupportType::NONE;
 	}
 
@@ -41,7 +41,7 @@ final class Chain extends Transparent implements PillarRotation{
 		$bb = AxisAlignedBB::one();
 		foreach([Axis::Y, Axis::Z, Axis::X] as $axis){
 			if($axis !== $this->axis){
-				$bb->squash($axis, 13 / 32);
+				$bb = $bb->squashedCopy($axis, 13 / 32);
 			}
 		}
 		return [$bb];
