@@ -38,8 +38,9 @@ use function substr;
 
 class XpCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $name){
 		parent::__construct(
+			$name,
 			KnownTranslationFactory::pocketmine_command_xp_description(),
 			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);

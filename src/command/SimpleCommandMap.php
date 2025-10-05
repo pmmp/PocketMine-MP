@@ -103,50 +103,50 @@ class SimpleCommandMap implements CommandMap{
 
 	private function setDefaultCommands() : void{
 		$pmPrefix = "pocketmine";
-		$this->register($pmPrefix, new BanCommand(), "ban");
-		$this->register($pmPrefix, new BanIpCommand(), "ban-ip");
-		$this->register($pmPrefix, new BanListCommand(), "banlist");
-		$this->register($pmPrefix, new ClearCommand(), "clear");
-		$this->register($pmPrefix, new DefaultGamemodeCommand(), "defaultgamemode");
-		$this->register($pmPrefix, new DeopCommand(), "deop");
-		$this->register($pmPrefix, new DifficultyCommand(), "difficulty");
-		$this->register($pmPrefix, new DumpMemoryCommand(), "dumpmemory");
-		$this->register($pmPrefix, new EffectCommand(), "effect");
-		$this->register($pmPrefix, new EnchantCommand(), "enchant");
-		$this->register($pmPrefix, new GamemodeCommand(), "gamemode");
-		$this->register($pmPrefix, new GarbageCollectorCommand(), "gc");
-		$this->register($pmPrefix, new GiveCommand(), "give");
-		$this->register($pmPrefix, new HelpCommand(), "help", ["?"]);
-		$this->register($pmPrefix, new KickCommand(), "kick");
-		$this->register($pmPrefix, new KillCommand(), "kill", ["suicide"]);
-		$this->register($pmPrefix, new ListCommand(), "list");
-		$this->register($pmPrefix, new MeCommand(), "me");
-		$this->register($pmPrefix, new OpCommand(), "op");
-		$this->register($pmPrefix, new PardonCommand(), "pardon", ["unban"]);
-		$this->register($pmPrefix, new PardonIpCommand(), "pardon-ip", ["unban-ip"]);
-		$this->register($pmPrefix, new ParticleCommand(), "particle");
-		$this->register($pmPrefix, new PluginsCommand(), "plugins", ["pl"]);
-		$this->register($pmPrefix, new SaveCommand(), "save-all");
-		$this->register($pmPrefix, new SaveOffCommand(), "save-off");
-		$this->register($pmPrefix, new SaveOnCommand(), "save-on");
-		$this->register($pmPrefix, new SayCommand(), "say");
-		$this->register($pmPrefix, new SeedCommand(), "seed");
-		$this->register($pmPrefix, new SetWorldSpawnCommand(), "setworldspawn");
-		$this->register($pmPrefix, new SpawnpointCommand(), "spawnpoint");
-		$this->register($pmPrefix, new StatusCommand(), "status");
-		$this->register($pmPrefix, new StopCommand(), "stop");
-		$this->register($pmPrefix, new TeleportCommand(), "tp", ["teleport"]);
-		$this->register($pmPrefix, new TellCommand(), "tell", ["w", "msg"]);
-		$this->register($pmPrefix, new TimeCommand(), "time");
-		$this->register($pmPrefix, new TimingsCommand(), "timings");
-		$this->register($pmPrefix, new TitleCommand(), "title");
-		$this->register($pmPrefix, new TransferServerCommand(), "transferserver");
-		$this->register($pmPrefix, new VersionCommand(), "version", ["ver", "about"]);
-		$this->register($pmPrefix, new WhitelistCommand(), "whitelist");
-		$this->register($pmPrefix, new XpCommand(), "xp");
+		$this->register($pmPrefix, new BanCommand("ban"));
+		$this->register($pmPrefix, new BanIpCommand("ban-ip"));
+		$this->register($pmPrefix, new BanListCommand("banlist"));
+		$this->register($pmPrefix, new ClearCommand("clear"));
+		$this->register($pmPrefix, new DefaultGamemodeCommand("defaultgamemode"));
+		$this->register($pmPrefix, new DeopCommand("deop"));
+		$this->register($pmPrefix, new DifficultyCommand("difficulty"));
+		$this->register($pmPrefix, new DumpMemoryCommand("dumpmemory"));
+		$this->register($pmPrefix, new EffectCommand("effect"));
+		$this->register($pmPrefix, new EnchantCommand("enchant"));
+		$this->register($pmPrefix, new GamemodeCommand("gamemode"));
+		$this->register($pmPrefix, new GarbageCollectorCommand("gc"));
+		$this->register($pmPrefix, new GiveCommand("give"));
+		$this->register($pmPrefix, new HelpCommand("help"), ["?"]);
+		$this->register($pmPrefix, new KickCommand("kick"));
+		$this->register($pmPrefix, new KillCommand("kill"), ["suicide"]);
+		$this->register($pmPrefix, new ListCommand("list"));
+		$this->register($pmPrefix, new MeCommand("me"));
+		$this->register($pmPrefix, new OpCommand("op"));
+		$this->register($pmPrefix, new PardonCommand("pardon"), ["unban"]);
+		$this->register($pmPrefix, new PardonIpCommand("pardon-ip"), ["unban-ip"]);
+		$this->register($pmPrefix, new ParticleCommand("particle"));
+		$this->register($pmPrefix, new PluginsCommand("plugins"), ["pl"]);
+		$this->register($pmPrefix, new SaveCommand("save-all"));
+		$this->register($pmPrefix, new SaveOffCommand("save-off"));
+		$this->register($pmPrefix, new SaveOnCommand("save-on"));
+		$this->register($pmPrefix, new SayCommand("say"));
+		$this->register($pmPrefix, new SeedCommand("seed"));
+		$this->register($pmPrefix, new SetWorldSpawnCommand("setworldspawn"));
+		$this->register($pmPrefix, new SpawnpointCommand("spawnpoint"));
+		$this->register($pmPrefix, new StatusCommand("status"));
+		$this->register($pmPrefix, new StopCommand("stop"));
+		$this->register($pmPrefix, new TeleportCommand("tp"), ["teleport"]);
+		$this->register($pmPrefix, new TellCommand("tell"), ["w", "msg"]);
+		$this->register($pmPrefix, new TimeCommand("time"));
+		$this->register($pmPrefix, new TimingsCommand("timings"));
+		$this->register($pmPrefix, new TitleCommand("title"));
+		$this->register($pmPrefix, new TransferServerCommand("transferserver"));
+		$this->register($pmPrefix, new VersionCommand("version"), ["ver", "about"]);
+		$this->register($pmPrefix, new WhitelistCommand("whitelist"));
+		$this->register($pmPrefix, new XpCommand("xp"));
 	}
 
-	public function register(string $fallbackPrefix, Command $command, string $preferredAlias, array $otherAliases = []) : CommandMapEntry{
+	public function register(string $fallbackPrefix, Command $command, array $otherAliases = []) : CommandMapEntry{
 		if(count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
@@ -154,7 +154,7 @@ class SimpleCommandMap implements CommandMap{
 			throw new \InvalidArgumentException("This Command object has already been registered");
 		}
 
-		$preferredAlias = trim($preferredAlias);
+		$preferredAlias = trim($command->getName());
 		$fallbackPrefix = strtolower(trim($fallbackPrefix));
 
 		$registeredAliases = [];
@@ -323,7 +323,7 @@ class SimpleCommandMap implements CommandMap{
 			$lowerAlias = strtolower($alias);
 			$this->unregisterAlias($lowerAlias);
 			if(count($targets) > 0){
-				$aliasInstance = new FormattedCommandAlias($targets);
+				$aliasInstance = new FormattedCommandAlias($lowerAlias, $targets);
 				$registeredAliases = [];
 				$this->mapAlias($lowerAlias, $aliasInstance, $registeredAliases);
 				$this->uniqueCommands[spl_object_id($aliasInstance)] = new CommandMapEntry($aliasInstance, $registeredAliases);

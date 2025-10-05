@@ -50,9 +50,10 @@ class FormattedCommandAlias extends Command{
 	 * @param string[] $formatStrings
 	 */
 	public function __construct(
+		string $name,
 		private array $formatStrings
 	){
-		parent::__construct(KnownTranslationFactory::pocketmine_command_userDefined_description());
+		parent::__construct($name, KnownTranslationFactory::pocketmine_command_userDefined_description());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

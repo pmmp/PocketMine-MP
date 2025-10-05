@@ -29,7 +29,7 @@ interface CommandMap{
 	 *
 	 * @phpstan-param list<string> $otherAliases
 	 */
-	public function register(string $fallbackPrefix, Command $command, string $preferredAlias, array $otherAliases = []) : CommandMapEntry;
+	public function register(string $fallbackPrefix, Command $command, array $otherAliases = []) : CommandMapEntry;
 
 	public function dispatch(CommandSender $sender, string $cmdLine) : bool;
 

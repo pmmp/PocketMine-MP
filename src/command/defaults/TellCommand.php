@@ -36,8 +36,9 @@ use function implode;
 
 class TellCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $name){
 		parent::__construct(
+			$name,
 			KnownTranslationFactory::pocketmine_command_tell_description(),
 			KnownTranslationFactory::commands_message_usage()
 		);

@@ -30,17 +30,13 @@ use pocketmine\plugin\PluginOwned;
 
 final class PluginCommand extends Command implements PluginOwned{
 	public function __construct(
-		private string $name,
+		string $name,
 		private Plugin $owner,
 		private CommandExecutor $executor,
 		Translatable|string $description = "",
 		Translatable|string|null $usageMessage = null
 	){
-		parent::__construct($description, $usageMessage);
-	}
-
-	public function getName() : string{
-		return $this->name;
+		parent::__construct($name, $description, $usageMessage);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

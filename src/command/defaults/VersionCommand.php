@@ -40,8 +40,9 @@ use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $name){
 		parent::__construct(
+			$name,
 			KnownTranslationFactory::pocketmine_command_version_description(),
 			KnownTranslationFactory::pocketmine_command_version_usage()
 		);

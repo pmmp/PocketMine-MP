@@ -30,8 +30,9 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class StopCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $name){
 		parent::__construct(
+			$name,
 			KnownTranslationFactory::pocketmine_command_stop_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);

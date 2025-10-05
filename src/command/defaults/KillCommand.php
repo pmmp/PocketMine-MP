@@ -33,8 +33,9 @@ use function count;
 
 class KillCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $name){
 		parent::__construct(
+			$name,
 			KnownTranslationFactory::pocketmine_command_kill_description(),
 			KnownTranslationFactory::pocketmine_command_kill_usage()
 		);
