@@ -194,7 +194,8 @@ abstract class Living extends Entity{
 					$e->getInt(self::TAG_EFFECT_DURATION),
 					Binary::unsignByte($e->getByte(self::TAG_EFFECT_AMPLIFIER)),
 					$e->getByte(self::TAG_EFFECT_SHOW_PARTICLES, 1) !== 0,
-					$e->getByte(self::TAG_EFFECT_AMBIENT, 0) !== 0
+					$e->getByte(self::TAG_EFFECT_AMBIENT, 0) !== 0,
+					$e->getInt(self::TAG_EFFECT_DURATION) === -1
 				));
 			}
 		}
@@ -321,7 +322,7 @@ abstract class Living extends Entity{
 				$effects[] = CompoundTag::create()
 					->setByte(self::TAG_EFFECT_ID, EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte(self::TAG_EFFECT_AMPLIFIER, Binary::signByte($effect->getAmplifier()))
-					->setInt(self::TAG_EFFECT_DURATION, $effect->getDuration())
+					->setInt(self::TAG_EFFECT_DURATION, $effect->isInfinite() ? -1 : $effect->getDuration())
 					->setByte(self::TAG_EFFECT_AMBIENT, $effect->isAmbient() ? 1 : 0)
 					->setByte(self::TAG_EFFECT_SHOW_PARTICLES, $effect->isVisible() ? 1 : 0);
 			}

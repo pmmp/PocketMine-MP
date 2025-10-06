@@ -130,9 +130,12 @@ class EffectManager{
 		$index = spl_object_id($effect->getType());
 		if(isset($this->effects[$index])){
 			$oldEffect = $this->effects[$index];
+			// Infinite duration has priority over other duration
 			if(
+				!$effect->isInfinite() &&
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
 				|| (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) && $effect->getDuration() < $oldEffect->getDuration())
+				|| ($effect->isInfinite() && !$oldEffect->isInfinite())
 			){
 				$cancelled = true;
 			}
@@ -208,7 +211,9 @@ class EffectManager{
 			if($type->canTick($instance)){
 				$type->applyEffect($this->entity, $instance);
 			}
-			$instance->decreaseDuration($tickDiff);
+			if(!$instance->isInfinite()){
+				$instance->decreaseDuration($tickDiff);
+			}
 			if($instance->hasExpired()){
 				$this->remove($instance->getType());
 			}
