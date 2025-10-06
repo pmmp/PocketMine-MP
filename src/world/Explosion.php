@@ -219,7 +219,7 @@ class Explosion{
 
 			if($distance <= 1){
 				$motion = $entityPos->subtractVector($this->source)->normalize();
-				$exposure = $this->getExposure($this->world, $this->source, $entity);
+				$exposure = $this->getExposure($this->source, $entity);
 
 				$impact = (1 - $distance) * $exposure;
 
@@ -274,7 +274,7 @@ class Explosion{
 	/**
 	 * Returns the explosion exposure of an entity, used to calculate explosion impact.
 	 */
-	public function getExposure(World $world, Vector3 $origin, Entity $entity) : float{
+	private function getExposure(Vector3 $origin, Entity $entity) : float{
 		$bb = $entity->getBoundingBox();
 
 		$diff = (new Vector3($bb->getXLength(), $bb->getYLength(), $bb->getZLength()))->multiply(2)->add(1, 1, 1);
@@ -295,17 +295,17 @@ class Explosion{
 						$this->lerp($z, $bb->minZ, $bb->maxZ) + $zOffset
 					);
 
-					$collided = false;
+					$intercepted = false;
 
 					foreach(VoxelRayTrace::betweenPoints($origin, $point) as $pos){
-						$block = $world->getBlock($pos);
+						$block = $this->world->getBlock($pos);
 						if($block->calculateIntercept($origin, $point) !== null){
-							$collided = true;
+							$intercepted = true;
 							break;
 						}
 					}
 
-					if(!$collided){
+					if(!$intercepted){
 						$misses++;
 					}
 					$checks++;
@@ -330,7 +330,7 @@ class Explosion{
 		$this->fireChance = $fireChance;
 	}
 
-	private function lerp(float $t, float $a, float $b) : float{
-		return $a + $t * ($b - $a);
+	private static function lerp(float $scale, float $a, float $b) : float{
+		return $a + $scale * ($b - $a);
 	}
 }
