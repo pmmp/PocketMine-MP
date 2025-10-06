@@ -277,20 +277,8 @@ class Explosion{
 	public function getExposure(World $world, Vector3 $origin, Entity $entity) : float{
 		$bb = $entity->getBoundingBox();
 
-		$boxMin = new Vector3($bb->minX, $bb->minY, $bb->minZ);
-		$boxMax = new Vector3($bb->maxX, $bb->maxY, $bb->maxZ);
-
-		$diff = $boxMax->subtractVector($boxMin)->multiply(2)->add(1, 1, 1);
-
-		if($diff->x <= 0.0 || $diff->y <= 0.0 || $diff->z <= 0.0){
-			return 0.0;
-		}
-
+		$diff = new Vector3($bb->getXLength(), $bb->getYLength(), $bb->getZLength())->multiply(2)->add(1, 1, 1);
 		$step = new Vector3(1.0 / $diff->x, 1.0 / $diff->y, 1.0 / $diff->z);
-
-		if($step->x < 0.0 || $step->y < 0.0 || $step->z < 0.0){
-			return 0.0;
-		}
 
 		$xOffset = (1.0 - floor($diff->x) / $diff->x) / 2.0;
 		$zOffset = (1.0 - floor($diff->z) / $diff->z) / 2.0;
@@ -302,9 +290,9 @@ class Explosion{
 			for($y = 0.0; $y <= 1.0; $y += $step->y){
 				for($z = 0.0; $z <= 1.0; $z += $step->z){
 					$point = new Vector3(
-						$this->lerp($x, $boxMin->x, $boxMax->x) + $xOffset,
-						$this->lerp($y, $boxMin->y, $boxMax->y),
-						$this->lerp($z, $boxMin->z, $boxMax->z) + $zOffset
+						$this->lerp($x, $bb->minX, $bb->maxX) + $xOffset,
+						$this->lerp($y, $bb->minY, $bb->maxY),
+						$this->lerp($z, $bb->minZ, $bb->maxZ) + $zOffset
 					);
 
 					$collided = false;
