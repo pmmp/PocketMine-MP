@@ -226,7 +226,7 @@ class Explosion{
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
 				if($this->what instanceof Entity){
-					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage, [], $exposure);
+					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
 				}elseif($this->what instanceof Block){
 					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}else{
