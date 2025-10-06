@@ -284,7 +284,7 @@ class Explosion{
 		$zOffset = (1.0 - (floor($diff->z) / $diff->z)) / 2.0;
 
 		$checks = 0.0;
-		$misses = 0.0;
+		$hits = 0.0;
 
 		for($x = 0.0; $x <= 1.0; $x += $step->x){
 			for($y = 0.0; $y <= 1.0; $y += $step->y){
@@ -306,14 +306,14 @@ class Explosion{
 					}
 
 					if(!$intercepted){
-						$misses++;
+						$hits++;
 					}
 					$checks++;
 				}
 			}
 		}
 
-		return $checks > 0.0 ? $misses / $checks : 0.0;
+		return $checks > 0.0 ? $hits / $checks : 0.0;
 	}
 
 	/**
