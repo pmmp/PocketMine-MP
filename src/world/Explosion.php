@@ -280,8 +280,8 @@ class Explosion{
 		$diff = (new Vector3($bb->getXLength(), $bb->getYLength(), $bb->getZLength()))->multiply(2)->add(1, 1, 1);
 		$step = new Vector3(1.0 / $diff->x, 1.0 / $diff->y, 1.0 / $diff->z);
 
-		$xOffset = (1.0 - floor($diff->x) / $diff->x) / 2.0;
-		$zOffset = (1.0 - floor($diff->z) / $diff->z) / 2.0;
+		$xOffset = (1.0 - (floor($diff->x) / $diff->x)) / 2.0;
+		$zOffset = (1.0 - (floor($diff->z) / $diff->z)) / 2.0;
 
 		$checks = 0.0;
 		$misses = 0.0;
