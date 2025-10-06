@@ -38,6 +38,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\SubChunk;
@@ -218,13 +219,14 @@ class Explosion{
 
 			if($distance <= 1){
 				$motion = $entityPos->subtractVector($this->source)->normalize();
+				$exposure = $this->getExposure($this->world, $this->source, $entity);
 
-				$impact = (1 - $distance) * ($exposure = 1);
+				$impact = (1 - $distance) * $exposure;
 
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
 				if($this->what instanceof Entity){
-					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage);
+					$ev = new EntityDamageByEntityEvent($this->what, $entity, EntityDamageEvent::CAUSE_ENTITY_EXPLOSION, $damage, [], $exposure);
 				}elseif($this->what instanceof Block){
 					$ev = new EntityDamageByBlockEvent($this->what, $entity, EntityDamageEvent::CAUSE_BLOCK_EXPLOSION, $damage);
 				}else{
@@ -270,6 +272,63 @@ class Explosion{
 	}
 
 	/**
+	 * Returns the explosion exposure of an entity, used to calculate explosion impact.
+	 */
+	public function getExposure(World $world, Vector3 $origin, Entity $entity) : float{
+		$bb = $entity->getBoundingBox();
+
+		$boxMin = new Vector3($bb->minX, $bb->minY, $bb->minZ);
+		$boxMax = new Vector3($bb->maxX, $bb->maxY, $bb->maxZ);
+
+		$diff = $boxMax->subtractVector($boxMin)->multiply(2)->add(1, 1, 1);
+
+		if($diff->x <= 0.0 || $diff->y <= 0.0 || $diff->z <= 0.0){
+			return 0.0;
+		}
+
+		$step = new Vector3(1.0 / $diff->x, 1.0 / $diff->y, 1.0 / $diff->z);
+
+		if($step->x < 0.0 || $step->y < 0.0 || $step->z < 0.0){
+			return 0.0;
+		}
+
+		$xOffset = (1.0 - floor($diff->x) / $diff->x) / 2.0;
+		$zOffset = (1.0 - floor($diff->z) / $diff->z) / 2.0;
+
+		$checks = 0.0;
+		$misses = 0.0;
+
+		for($x = 0.0; $x <= 1.0; $x += $step->x){
+			for($y = 0.0; $y <= 1.0; $y += $step->y){
+				for($z = 0.0; $z <= 1.0; $z += $step->z){
+					$point = new Vector3(
+						$this->lerp($x, $boxMin->x, $boxMax->x) + $xOffset,
+						$this->lerp($y, $boxMin->y, $boxMax->y),
+						$this->lerp($z, $boxMin->z, $boxMax->z) + $zOffset
+					);
+
+					$collided = false;
+
+					foreach(VoxelRayTrace::betweenPoints($origin, $point) as $pos){
+						$block = $world->getBlock($pos);
+						if($block->calculateIntercept($origin, $point) !== null){
+							$collided = true;
+							break;
+						}
+					}
+
+					if(!$collided){
+						$misses++;
+					}
+					$checks++;
+				}
+			}
+		}
+
+		return $checks > 0.0 ? $misses / $checks : 0.0;
+	}
+
+	/**
 	 * Sets a chance between 0 and 1 of creating a fire.
 	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
 	 *
@@ -281,5 +340,9 @@ class Explosion{
 			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
+	}
+
+	private function lerp(float $t, float $a, float $b) : float{
+		return $a + $t * ($b - $a);
 	}
 }
