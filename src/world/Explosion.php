@@ -290,9 +290,9 @@ class Explosion{
 			for($y = 0.0; $y <= 1.0; $y += $step->y){
 				for($z = 0.0; $z <= 1.0; $z += $step->z){
 					$point = new Vector3(
-						$this->lerp($x, $bb->minX, $bb->maxX) + $xOffset,
-						$this->lerp($y, $bb->minY, $bb->maxY),
-						$this->lerp($z, $bb->minZ, $bb->maxZ) + $zOffset
+						self::lerp($x, $bb->minX, $bb->maxX) + $xOffset,
+						self::lerp($y, $bb->minY, $bb->maxY),
+						self::lerp($z, $bb->minZ, $bb->maxZ) + $zOffset
 					);
 
 					$intercepted = false;
