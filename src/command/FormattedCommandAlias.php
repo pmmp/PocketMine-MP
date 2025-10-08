@@ -95,7 +95,8 @@ class FormattedCommandAlias extends Command{
 				throw new AssumptionFailedError("This should have been checked before construction");
 			}
 
-			if(($target = $commandMap->getEntry($commandLabel)) !== null){
+			if(($target = $commandMap->getEntry($commandLabel)) instanceof CommandMapEntry){
+
 				$timings = Timings::getCommandDispatchTimings($target->getNamespacedName());
 				$timings->startTiming();
 
@@ -107,6 +108,7 @@ class FormattedCommandAlias extends Command{
 					$timings->stopTiming();
 				}
 			}else{
+				//TODO: this seems suspicious - why do we continue alias execution if one of the commands is borked?
 				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));
 
 				//to match the behaviour of SimpleCommandMap::dispatch()
