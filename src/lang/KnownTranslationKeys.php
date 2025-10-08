@@ -616,6 +616,13 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_START = "pocketmine.server.start";
 	public const POCKETMINE_SERVER_STARTFINISHED = "pocketmine.server.startFinished";
 	public const POCKETMINE_SERVER_TICKOVERLOAD = "pocketmine.server.tickOverload";
+	public const POCKETMINE_SERVER_URL_BUGREPORTING = "pocketmine.server.url.bugReporting";
+	public const POCKETMINE_SERVER_URL_DISCORD = "pocketmine.server.url.discord";
+	public const POCKETMINE_SERVER_URL_DOCS = "pocketmine.server.url.docs";
+	public const POCKETMINE_SERVER_URL_DONATIONS = "pocketmine.server.url.donations";
+	public const POCKETMINE_SERVER_URL_FREEPLUGINS = "pocketmine.server.url.freePlugins";
+	public const POCKETMINE_SERVER_URL_SOURCECODE = "pocketmine.server.url.sourceCode";
+	public const POCKETMINE_SERVER_URL_TRANSLATIONS = "pocketmine.server.url.translations";
 	public const POCKETMINE_PLUGINS = "pocketmine_plugins";
 	public const POCKETMINE_WILL_START = "pocketmine_will_start";
 	public const PORT_WARNING = "port_warning";

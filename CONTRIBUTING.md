@@ -85,6 +85,13 @@ Note that there might be a long wait time before a reviewer looks at your PR.
 Depending on the changes, maintainers might ask you to make changes to the PR to fix problems or to improve the code.
 **Do not delete your fork** while your pull request remains open, otherwise you won't be able to make any requested changes and the PR will end up being declined.
 
+> [!TIP]
+> Don't worry about getting a PR perfect on the first try.
+> In fact, it's quite unusual for a PR to be perfect when it's first submitted, and most PRs will get changes requested by reviewers, even when the PR is made by one of our team members.
+>
+> Mistakes are normal, and PMMP team members will review your code and suggest changes to your code as needed.
+> Just make sure to stick with it so you can communicate with reviewers and/or make changes.
+
 ### Requirements
 The following are required as a minimum for pull requests. PRs that don't meet these requirements will be declined unless updated to meet them.
 
