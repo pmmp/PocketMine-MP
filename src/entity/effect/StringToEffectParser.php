@@ -58,6 +58,7 @@ final class StringToEffectParser extends StringToTParser{
 		$result->register("regeneration", fn() => VanillaEffects::REGENERATION());
 		$result->register("resistance", fn() => VanillaEffects::RESISTANCE());
 		$result->register("saturation", fn() => VanillaEffects::SATURATION());
+		$result->register("slow_falling", fn() => VanillaEffects::SLOW_FALLING());
 		$result->register("slowness", fn() => VanillaEffects::SLOWNESS());
 		$result->register("speed", fn() => VanillaEffects::SPEED());
 		$result->register("strength", fn() => VanillaEffects::STRENGTH());

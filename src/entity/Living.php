@@ -33,6 +33,7 @@ use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\animation\RespawnAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\EffectManager;
+use pocketmine\entity\effect\SlowFallEffect;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -149,9 +150,12 @@ abstract class Living extends Entity{
 		parent::initEntity($nbt);
 
 		$this->effectManager = new EffectManager($this);
-		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
-		$this->effectManager->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
-
+		$this->effectManager->getEffectAddHooks()->add(function(EffectInstance $effect) : void{
+			$this->onEffectAdded($effect);
+		});
+		$this->effectManager->getEffectRemoveHooks()->add(function(EffectInstance $effect) : void{
+			$this->onEffectRemoved($effect);
+		});
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
 		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
@@ -334,6 +338,20 @@ abstract class Living extends Entity{
 
 	public function getEffects() : EffectManager{
 		return $this->effectManager;
+	}
+
+	protected function onEffectAdded(EffectInstance $effect) : void{
+		if($effect->getType() instanceof SlowFallEffect){
+			$this->gravity = 0.01;
+		}
+		$this->networkPropertiesDirty = true;
+	}
+
+	protected function onEffectRemoved(EffectInstance $effect) : void{
+		if($effect->getType() instanceof SlowFallEffect){
+			$this->gravity = $this->getInitialGravity();
+		}
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
