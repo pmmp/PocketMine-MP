@@ -36,8 +36,9 @@ use function strtolower;
 
 class EffectCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_effect_description(),
 			KnownTranslationFactory::commands_effect_usage()

@@ -44,6 +44,7 @@ abstract class Command{
 	private Translatable|string|null $permissionMessage = null;
 
 	public function __construct(
+		private string $namespace,
 		private string $name,
 		private Translatable|string $description = "",
 		private Translatable|string|null $usageMessage = null
@@ -58,12 +59,23 @@ abstract class Command{
 	 */
 	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
 
+	final public function getNamespace() : string{
+		return $this->namespace;
+	}
+
 	/**
 	 * Returns the local identifier of the command (without namespace or leading slash).
 	 * This cannot be changed after creation.
 	 */
-	public function getName() : string{
+	final public function getName() : string{
 		return $this->name;
+	}
+
+	/**
+	 * Returns the globally unique ID for the command. This typically looks like namespace:name
+	 */
+	final public function getId() : string{
+		return "$this->namespace:$this->name";
 	}
 
 	/**

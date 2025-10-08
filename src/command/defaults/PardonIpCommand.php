@@ -33,8 +33,9 @@ use function inet_pton;
 
 class PardonIpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_unban_ip_description(),
 			KnownTranslationFactory::commands_unbanip_usage()

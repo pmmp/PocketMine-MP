@@ -1098,12 +1098,12 @@ class NetworkSession{
 		$commandData = [];
 		$globalAliasMap = $this->server->getCommandMap()->getAliasMap();
 		$userAliasMap = $this->player->getCommandAliasMap();
-		foreach($this->server->getCommandMap()->getUniqueCommands() as $commandEntry){
-			if(!$commandEntry->command->testPermissionSilent($this->player)){
+		foreach($this->server->getCommandMap()->getUniqueCommands() as $command){
+			if(!$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
-			$userAliases = $userAliasMap->getMergedAliases($commandEntry->getNamespacedName(), $globalAliasMap);
+			$userAliases = $userAliasMap->getMergedAliases($command->getId(), $globalAliasMap);
 			//the client doesn't like it when we override /help
 			$aliases = array_values(array_filter($userAliases, fn(string $alias) => $alias !== "help" && $alias !== "?"));
 			if(count($aliases) === 0){
@@ -1115,7 +1115,7 @@ class NetworkSession{
 			$lname = strtolower($firstNetworkAlias);
 			$aliasObj = new CommandEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases);
 
-			$description = $commandEntry->command->getDescription();
+			$description = $command->getDescription();
 			$data = new CommandData(
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
 				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,

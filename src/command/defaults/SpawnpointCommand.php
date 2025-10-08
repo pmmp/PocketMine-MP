@@ -36,8 +36,9 @@ use function round;
 
 class SpawnpointCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_spawnpoint_description(),
 			KnownTranslationFactory::commands_spawnpoint_usage()

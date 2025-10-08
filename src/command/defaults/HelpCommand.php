@@ -50,8 +50,9 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_help_description(),
 			KnownTranslationFactory::commands_help_usage()
@@ -81,14 +82,14 @@ class HelpCommand extends VanillaCommand{
 		$userAliasMap = $sender->getCommandAliasMap();
 		if($commandName === ""){
 			$commands = [];
-			foreach($commandMap->getUniqueCommands() as $commandEntry){
-				if($commandEntry->command->testPermissionSilent($sender)){
-					$userAliases = $userAliasMap->getMergedAliases($commandEntry->getNamespacedName(), $commandMap->getAliasMap());
+			foreach($commandMap->getUniqueCommands() as $command){
+				if($command->testPermissionSilent($sender)){
+					$userAliases = $userAliasMap->getMergedAliases($command->getId(), $commandMap->getAliasMap());
 					$preferredAlias = $userAliases[array_key_first($userAliases)];
 					if(isset($commands[$preferredAlias])){
 						throw new AssumptionFailedError("Something weird happened during user/global alias resolving");
 					}
-					$commands[$preferredAlias] = $commandEntry;
+					$commands[$preferredAlias] = $command;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
@@ -100,8 +101,8 @@ class HelpCommand extends VanillaCommand{
 			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
 			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
-				foreach(Utils::promoteKeys($commands[$pageNumber - 1]) as $preferredAlias => $commandEntry){
-					$description = $commandEntry->command->getDescription();
+				foreach(Utils::promoteKeys($commands[$pageNumber - 1]) as $preferredAlias => $command){
+					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
 					$sender->sendMessage(TextFormat::DARK_GREEN . "/$preferredAlias: " . TextFormat::RESET . $descriptionString);
 				}
@@ -109,26 +110,26 @@ class HelpCommand extends VanillaCommand{
 
 			return true;
 		}else{
-			if(($commandEntry = $commandMap->getEntry(strtolower($commandName), $userAliasMap)) !== null){
-				if(is_array($commandEntry)){
-					SimpleCommandMap::handleConflicted($sender, $commandName, $commandEntry);
+			if(($command = $commandMap->getCommand(strtolower($commandName), $userAliasMap)) !== null){
+				if(is_array($command)){
+					SimpleCommandMap::handleConflicted($sender, $commandName, $command);
 					return true;
 				}
-				if($commandEntry->command->testPermissionSilent($sender)){
+				if($command->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
-					$description = $commandEntry->command->getDescription();
+					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($commandName)
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
 						->prefix(TextFormat::GOLD));
 
-					$usage = $commandEntry->getUsage($commandName);
+					$usage = $command->getUsage() ?? "/$commandName";
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString, limit: PHP_INT_MAX)))
 						->prefix(TextFormat::GOLD));
 
-					$aliases = $userAliasMap->getMergedAliases($commandEntry->getNamespacedName(), $commandMap->getAliasMap());
+					$aliases = $userAliasMap->getMergedAliases($command->getId(), $commandMap->getAliasMap());
 					sort($aliases, SORT_NATURAL);
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::RESET . implode(", ", $aliases))
 						->prefix(TextFormat::GOLD));

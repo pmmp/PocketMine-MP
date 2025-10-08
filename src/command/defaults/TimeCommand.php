@@ -34,8 +34,9 @@ use function count;
 
 class TimeCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_time_description(),
 			KnownTranslationFactory::pocketmine_command_time_usage()

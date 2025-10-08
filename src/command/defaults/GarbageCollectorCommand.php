@@ -34,8 +34,9 @@ use function round;
 
 class GarbageCollectorCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_gc_description()
 		);

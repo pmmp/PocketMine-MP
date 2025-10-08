@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
-use pocketmine\command\CommandMapEntry;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\permission\DefaultPermissionNames;
@@ -41,8 +40,9 @@ final class CommandAliasCommand extends Command{
 	private const SELF_PERM = DefaultPermissionNames::COMMAND_CMDALIAS_SELF;
 	private const GLOBAL_PERM = DefaultPermissionNames::COMMAND_CMDALIAS_GLOBAL;
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			"View or modify user-specific or global command aliases",
 			"/cmdalias [global] create <target> <alias> OR /cmdalias [global] delete <alias>"
@@ -76,21 +76,21 @@ final class CommandAliasCommand extends Command{
 			}
 
 			[$target, $alias] = $parsedArgs;
-			$commandId = $commandMap->getEntry($target, $sender->getCommandAliasMap());
-			if($commandId === null){
+			$command = $commandMap->getCommand($target, $sender->getCommandAliasMap());
+			if($command === null){
 				$sender->sendMessage(TextFormat::RED . "Failed to bind /$alias to /$target: No such command /$target");
 				return true;
 			}
-			if(is_array($commandId)){
+			if(is_array($command)){
 				$sender->sendMessage(
 					TextFormat::RED .
 					"Failed to bind /$alias to /$target: /$target could refer to multiple commands: " .
-					implode(", ", array_map(fn(CommandMapEntry $c) => $c->getNamespacedName(), $commandId))
+					implode(", ", array_map(fn(Command $c) => $c->getId(), $command))
 				);
 				return true;
 			}
-			$aliasMap->bindAlias($commandId->getNamespacedName(), $alias, override: true);
-			$sender->sendMessage("Successfully bound /$alias to /" . $commandId->getNamespacedName());
+			$aliasMap->bindAlias($command->getId(), $alias, override: true);
+			$sender->sendMessage("Successfully bound /$alias to /" . $command->getId());
 			return true;
 		}
 		if($operation === "delete"){

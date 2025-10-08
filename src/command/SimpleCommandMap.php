@@ -87,8 +87,8 @@ use function trim;
 class SimpleCommandMap implements CommandMap{
 
 	/**
-	 * @var CommandMapEntry[]
-	 * @phpstan-var array<string, CommandMapEntry>
+	 * @var Command[]
+	 * @phpstan-var array<string, Command>
 	 */
 	private array $uniqueCommands = [];
 
@@ -101,83 +101,72 @@ class SimpleCommandMap implements CommandMap{
 
 	private function setDefaultCommands() : void{
 		$pmPrefix = "pocketmine";
-		$this->register($pmPrefix, new BanCommand("ban"));
-		$this->register($pmPrefix, new BanIpCommand("ban-ip"));
-		$this->register($pmPrefix, new BanListCommand("banlist"));
-		$this->register($pmPrefix, new ClearCommand("clear"));
-		$this->register($pmPrefix, new CommandAliasCommand("cmdalias"));
-		$this->register($pmPrefix, new DefaultGamemodeCommand("defaultgamemode"));
-		$this->register($pmPrefix, new DeopCommand("deop"));
-		$this->register($pmPrefix, new DifficultyCommand("difficulty"));
-		$this->register($pmPrefix, new DumpMemoryCommand("dumpmemory"));
-		$this->register($pmPrefix, new EffectCommand("effect"));
-		$this->register($pmPrefix, new EnchantCommand("enchant"));
-		$this->register($pmPrefix, new GamemodeCommand("gamemode"));
-		$this->register($pmPrefix, new GarbageCollectorCommand("gc"));
-		$this->register($pmPrefix, new GiveCommand("give"));
-		$this->register($pmPrefix, new HelpCommand("help"), ["?"]);
-		$this->register($pmPrefix, new KickCommand("kick"));
-		$this->register($pmPrefix, new KillCommand("kill"), ["suicide"]);
-		$this->register($pmPrefix, new ListCommand("list"));
-		$this->register($pmPrefix, new MeCommand("me"));
-		$this->register($pmPrefix, new OpCommand("op"));
-		$this->register($pmPrefix, new PardonCommand("pardon"), ["unban"]);
-		$this->register($pmPrefix, new PardonIpCommand("pardon-ip"), ["unban-ip"]);
-		$this->register($pmPrefix, new ParticleCommand("particle"));
-		$this->register($pmPrefix, new PluginsCommand("plugins"), ["pl"]);
-		$this->register($pmPrefix, new SaveCommand("save-all"));
-		$this->register($pmPrefix, new SaveOffCommand("save-off"));
-		$this->register($pmPrefix, new SaveOnCommand("save-on"));
-		$this->register($pmPrefix, new SayCommand("say"));
-		$this->register($pmPrefix, new SeedCommand("seed"));
-		$this->register($pmPrefix, new SetWorldSpawnCommand("setworldspawn"));
-		$this->register($pmPrefix, new SpawnpointCommand("spawnpoint"));
-		$this->register($pmPrefix, new StatusCommand("status"));
-		$this->register($pmPrefix, new StopCommand("stop"));
-		$this->register($pmPrefix, new TeleportCommand("tp"), ["teleport"]);
-		$this->register($pmPrefix, new TellCommand("tell"), ["w", "msg"]);
-		$this->register($pmPrefix, new TimeCommand("time"));
-		$this->register($pmPrefix, new TimingsCommand("timings"));
-		$this->register($pmPrefix, new TitleCommand("title"));
-		$this->register($pmPrefix, new TransferServerCommand("transferserver"));
-		$this->register($pmPrefix, new VersionCommand("version"), ["ver", "about"]);
-		$this->register($pmPrefix, new WhitelistCommand("whitelist"));
-		$this->register($pmPrefix, new XpCommand("xp"));
+		$this->register(new BanCommand($pmPrefix, "ban"));
+		$this->register(new BanIpCommand($pmPrefix, "ban-ip"));
+		$this->register(new BanListCommand($pmPrefix, "banlist"));
+		$this->register(new ClearCommand($pmPrefix, "clear"));
+		$this->register(new CommandAliasCommand($pmPrefix, "cmdalias"));
+		$this->register(new DefaultGamemodeCommand($pmPrefix, "defaultgamemode"));
+		$this->register(new DeopCommand($pmPrefix, "deop"));
+		$this->register(new DifficultyCommand($pmPrefix, "difficulty"));
+		$this->register(new DumpMemoryCommand($pmPrefix, "dumpmemory"));
+		$this->register(new EffectCommand($pmPrefix, "effect"));
+		$this->register(new EnchantCommand($pmPrefix, "enchant"));
+		$this->register(new GamemodeCommand($pmPrefix, "gamemode"));
+		$this->register(new GarbageCollectorCommand($pmPrefix, "gc"));
+		$this->register(new GiveCommand($pmPrefix, "give"));
+		$this->register(new HelpCommand($pmPrefix, "help"), ["?"]);
+		$this->register(new KickCommand($pmPrefix, "kick"));
+		$this->register(new KillCommand($pmPrefix, "kill"), ["suicide"]);
+		$this->register(new ListCommand($pmPrefix, "list"));
+		$this->register(new MeCommand($pmPrefix, "me"));
+		$this->register(new OpCommand($pmPrefix, "op"));
+		$this->register(new PardonCommand($pmPrefix, "pardon"), ["unban"]);
+		$this->register(new PardonIpCommand($pmPrefix, "pardon-ip"), ["unban-ip"]);
+		$this->register(new ParticleCommand($pmPrefix, "particle"));
+		$this->register(new PluginsCommand($pmPrefix, "plugins"), ["pl"]);
+		$this->register(new SaveCommand($pmPrefix, "save-all"));
+		$this->register(new SaveOffCommand($pmPrefix, "save-off"));
+		$this->register(new SaveOnCommand($pmPrefix, "save-on"));
+		$this->register(new SayCommand($pmPrefix, "say"));
+		$this->register(new SeedCommand($pmPrefix, "seed"));
+		$this->register(new SetWorldSpawnCommand($pmPrefix, "setworldspawn"));
+		$this->register(new SpawnpointCommand($pmPrefix, "spawnpoint"));
+		$this->register(new StatusCommand($pmPrefix, "status"));
+		$this->register(new StopCommand($pmPrefix, "stop"));
+		$this->register(new TeleportCommand($pmPrefix, "tp"), ["teleport"]);
+		$this->register(new TellCommand($pmPrefix, "tell"), ["w", "msg"]);
+		$this->register(new TimeCommand($pmPrefix, "time"));
+		$this->register(new TimingsCommand($pmPrefix, "timings"));
+		$this->register(new TitleCommand($pmPrefix, "title"));
+		$this->register(new TransferServerCommand($pmPrefix, "transferserver"));
+		$this->register(new VersionCommand($pmPrefix, "version"), ["ver", "about"]);
+		$this->register(new WhitelistCommand($pmPrefix, "whitelist"));
+		$this->register(new XpCommand($pmPrefix, "xp"));
 	}
 
-	public function register(string $namespace, Command $command, array $otherAliases = []) : CommandMapEntry{
+	public function register(Command $command, array $otherAliases = []) : void{
 		if(count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
 
-		//TODO: inconsistency here with casing?
-		$preferredAlias = trim($command->getName());
-		$namespace = strtolower(trim($namespace));
-		$commandId = "$namespace:$preferredAlias";
+		$commandId = $command->getId();
 		if(isset($this->uniqueCommands[$commandId])){
 			throw new \InvalidArgumentException("A command with ID $commandId has already been registered");
 		}
 
+		$preferredAlias = trim($command->getName());
 		$this->aliasMap->bindAlias($commandId, $preferredAlias, override: false);
 		foreach($otherAliases as $alias){
 			$this->aliasMap->bindAlias($commandId, $alias, override: false);
 		}
 
-		$entry = new CommandMapEntry($namespace, $command);
-		$this->uniqueCommands[$commandId] = $entry;
-
-		return $entry;
+		$this->uniqueCommands[$commandId] = $command;
 	}
 
 	public function unregister(Command $command) : bool{
-		//ewwwww, command doesn't contain its own namespace :(
-		//I suppose the same instance can be registered multiple times with different namespaces now too...
-		foreach(Utils::stringifyKeys($this->uniqueCommands) as $commandId => $commandEntry){
-			if($commandEntry->command === $command){
-				unset($this->uniqueCommands[$commandId]);
-				$this->aliasMap->unbindAliasesForCommand($commandId);
-			}
-		}
+		unset($this->uniqueCommands[$command->getId()]);
+		$this->aliasMap->unbindAliasesForCommand($command->getId());
 
 		return true;
 	}
@@ -186,20 +175,21 @@ class SimpleCommandMap implements CommandMap{
 		$args = CommandStringHelper::parseQuoteAware($commandLine);
 
 		$sentCommandLabel = array_shift($args);
-		if($sentCommandLabel !== null && ($target = $this->getEntry($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
+		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
 			if(is_array($target)){
 				self::handleConflicted($sender, $sentCommandLabel, $target);
 				return true;
 			}
-			$timings = Timings::getCommandDispatchTimings($target->getNamespacedName());
+			$timings = Timings::getCommandDispatchTimings($target->getId());
 			$timings->startTiming();
 
 			try{
-				if($target->command->testPermission($sentCommandLabel, $sender)){
-					$target->command->execute($sender, $sentCommandLabel, $args);
+				if($target->testPermission($sentCommandLabel, $sender)){
+					$target->execute($sender, $sentCommandLabel, $args);
 				}
 			}catch(InvalidCommandSyntaxException $e){
-				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage($sentCommandLabel))));
+				//TODO: localised command message should use user-provided alias, it shouldn't be hard-baked into the language strings
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage() ?? "/$sentCommandLabel")));
 			}finally{
 				$timings->stopTiming();
 			}
@@ -213,14 +203,14 @@ class SimpleCommandMap implements CommandMap{
 	/**
 	 * TODO: probably need to find a better place to put this
 	 * @internal
-	 * @param CommandMapEntry[] $conflictedEntries
-	 * @phpstan-param array<int, CommandMapEntry> $conflictedEntries
+	 * @param Command[] $conflictedEntries
+	 * @phpstan-param array<int, Command> $conflictedEntries
 	 */
 	public static function handleConflicted(CommandSender $sender, string $alias, array $conflictedEntries) : void{
 		$candidates = [];
 		foreach($conflictedEntries as $c){
-			if($c->command->testPermissionSilent($sender)){
-				$candidates[] = "/" . $c->getNamespacedName();
+			if($c->testPermissionSilent($sender)){
+				$candidates[] = "/" . $c->getId();
 			}
 		}
 		if(count($candidates) > 0){
@@ -241,7 +231,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->setDefaultCommands();
 	}
 
-	public function getEntry(string $name, ?CommandAliasMap $senderAliasMap = null) : CommandMapEntry|array|null{
+	public function getCommand(string $name, ?CommandAliasMap $senderAliasMap = null) : Command|array|null{
 		if(isset($this->uniqueCommands[$name])){ //direct command ID reference
 			return $this->uniqueCommands[$name];
 		}
@@ -264,8 +254,8 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	/**
-	 * @return CommandMapEntry[]
-	 * @phpstan-return array<string, CommandMapEntry>
+	 * @return Command[]
+	 * @phpstan-return array<string, Command>
 	 */
 	public function getUniqueCommands() : array{
 		return $this->uniqueCommands;
@@ -287,9 +277,9 @@ class SimpleCommandMap implements CommandMap{
 			foreach($commandStrings as $commandString){
 				$args = CommandStringHelper::parseQuoteAware($commandString);
 				$commandName = array_shift($args) ?? "";
-				$command = $this->getEntry($commandName);
+				$command = $this->getCommand($commandName);
 
-				if(!$command instanceof CommandMapEntry){
+				if(!$command instanceof Command){
 					$bad[] = $commandString;
 				}elseif(strcasecmp($commandName, $alias) === 0){
 					$recursive[] = $commandString;
@@ -311,10 +301,9 @@ class SimpleCommandMap implements CommandMap{
 			//These registered commands have absolute priority
 			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$aliasInstance = new FormattedCommandAlias($lowerAlias, $targets);
-				$entry = new CommandMapEntry("pocketmine-config-defined", $aliasInstance);
-				$this->aliasMap->bindAlias($entry->getNamespacedName(), $lowerAlias, override: true);
-				$this->uniqueCommands[$entry->getNamespacedName()] = $entry;
+				$aliasInstance = new FormattedCommandAlias("pocketmine-config-defined", $lowerAlias, $targets);
+				$this->aliasMap->bindAlias($aliasInstance->getId(), $lowerAlias, override: true);
+				$this->uniqueCommands[$aliasInstance->getId()] = $aliasInstance;
 			}else{
 				//no targets blackholes the alias - this allows config to delete unwanted aliases
 				$this->aliasMap->unbindAlias($lowerAlias);

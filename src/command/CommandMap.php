@@ -25,7 +25,7 @@ namespace pocketmine\command;
 
 interface CommandMap{
 	/**
-	 * Registering a command with (namespace="myplugin", command(name="mycommand"), otherAliases=["myc"]) will bind:
+	 * Registering a command with (command(namespace="myplugin", name="mycommand"), otherAliases=["myc"]) will bind:
 	 * - /myplugin:mycommand (always works, error thrown if not unique)
 	 * - /mycommand (only works if not conflicted, not required to be unique)
 	 * - /myc (only works if not conflicted, not required to be unique)
@@ -39,20 +39,20 @@ interface CommandMap{
 	 *
 	 * @phpstan-param list<string> $otherAliases
 	 */
-	public function register(string $namespace, Command $command, array $otherAliases = []) : CommandMapEntry;
+	public function register(Command $command, array $otherAliases = []) : void;
 
 	public function dispatch(CommandSender $sender, string $cmdLine) : bool;
 
 	public function clearCommands() : void;
 
 	/**
-	 * Returns entries for the command(s) bound to the given name or alias.
+	 * Returns the command(s) bound to the given name or alias.
 	 * This will return an array if the alias is conflicted (multiple commands bound to it).
 	 *
-	 * @return CommandMapEntry|CommandMapEntry[]|null
-	 * @phpstan-return CommandMapEntry|array<int, CommandMapEntry>|null
+	 * @return Command|Command[]|null
+	 * @phpstan-return Command|array<int, Command>|null
 	 */
-	public function getEntry(string $name, ?CommandAliasMap $senderAliasMap = null) : CommandMapEntry|array|null;
+	public function getCommand(string $name, ?CommandAliasMap $senderAliasMap = null) : Command|array|null;
 
 	/**
 	 * Returns the global alias map for this command map.

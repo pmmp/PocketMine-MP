@@ -159,6 +159,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			}
 
 			$newCmd = new PluginCommand(
+				$this->description->getName(),
 				$key,
 				$this,
 				$this,
@@ -172,7 +173,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				$newCmd->setPermissionMessage($permissionDeniedMessage);
 			}
 
-			$this->server->getCommandMap()->register($this->description->getName(), $newCmd, $aliasList);
+			$this->server->getCommandMap()->register($newCmd, $aliasList);
 		}
 	}
 

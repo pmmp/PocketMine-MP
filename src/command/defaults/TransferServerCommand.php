@@ -32,8 +32,9 @@ use function count;
 
 class TransferServerCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_transferserver_description(),
 			KnownTranslationFactory::pocketmine_command_transferserver_usage()

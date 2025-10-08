@@ -32,8 +32,9 @@ use function count;
 
 class PardonCommand extends VanillaCommand{
 
-	public function __construct(string $name){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
+			$namespace,
 			$name,
 			KnownTranslationFactory::pocketmine_command_unban_player_description(),
 			KnownTranslationFactory::commands_unban_usage()
