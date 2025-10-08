@@ -32,9 +32,14 @@ final class CommandMapEntry{
 	 * @phpstan-param non-empty-list<string> $aliases
 	 */
 	public function __construct(
+		public readonly string $namespace,
 		public readonly Command $command,
 		public readonly array $aliases
 	){}
+
+	public function getNamespacedName() : string{
+		return $this->namespace . ":" . $this->command->getName();
+	}
 
 	public function getPreferredAlias() : string{
 		return $this->aliases[0];

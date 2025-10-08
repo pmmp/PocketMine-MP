@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\SimpleCommandMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
@@ -34,6 +35,7 @@ use function array_pop;
 use function count;
 use function explode;
 use function implode;
+use function is_array;
 use function is_numeric;
 use function ksort;
 use function min;
@@ -99,6 +101,10 @@ class HelpCommand extends VanillaCommand{
 			return true;
 		}else{
 			if(($commandEntry = $commandMap->getEntry(strtolower($commandName))) !== null){
+				if(is_array($commandEntry)){
+					SimpleCommandMap::handleConflicted($sender, $commandName, $commandEntry);
+					return true;
+				}
 				if($commandEntry->command->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
 					$description = $commandEntry->command->getDescription();

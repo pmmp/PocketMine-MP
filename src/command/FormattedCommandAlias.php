@@ -96,9 +96,7 @@ class FormattedCommandAlias extends Command{
 			}
 
 			if(($target = $commandMap->getEntry($commandLabel)) !== null){
-				//TODO: using labels for command dispatch is problematic - what if the label changes?
-				//maybe this should use command class instead?
-				$timings = Timings::getCommandDispatchTimings($target->getPreferredAlias());
+				$timings = Timings::getCommandDispatchTimings($target->getNamespacedName());
 				$timings->startTiming();
 
 				try{

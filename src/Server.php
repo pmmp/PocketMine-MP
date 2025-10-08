@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\command\Command;
+use pocketmine\command\CommandMapEntry;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\console\ConsoleCommandSender;
@@ -680,11 +681,8 @@ class Server{
 	 * @phpstan-return (Command&PluginOwned)|null
 	 */
 	public function getPluginCommand(string $name){
-		if(($command = $this->commandMap->getCommand($name)) instanceof PluginOwned){
-			return $command;
-		}else{
-			return null;
-		}
+		$entry = $this->commandMap->getEntry($name);
+		return $entry instanceof CommandMapEntry && $entry->command instanceof PluginOwned ? $entry->command : null;
 	}
 
 	public function getNameBans() : BanList{

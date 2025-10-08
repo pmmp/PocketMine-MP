@@ -73,10 +73,12 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use function array_filter;
+use function array_map;
 use function array_shift;
 use function array_values;
 use function count;
 use function implode;
+use function is_array;
 use function spl_object_id;
 use function str_contains;
 use function strcasecmp;
@@ -87,7 +89,7 @@ class SimpleCommandMap implements CommandMap{
 
 	/**
 	 * @var Command[]
-	 * @phpstan-var array<string, Command>
+	 * @phpstan-var array<string, Command|array<int, Command>>
 	 */
 	protected array $aliasToCommandMap = [];
 
@@ -146,7 +148,7 @@ class SimpleCommandMap implements CommandMap{
 		$this->register($pmPrefix, new XpCommand("xp"));
 	}
 
-	public function register(string $fallbackPrefix, Command $command, array $otherAliases = []) : CommandMapEntry{
+	public function register(string $namespace, Command $command, array $otherAliases = []) : CommandMapEntry{
 		if(count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
@@ -154,21 +156,28 @@ class SimpleCommandMap implements CommandMap{
 			throw new \InvalidArgumentException("This Command object has already been registered");
 		}
 
+		//TODO: inconsistency here with casing?
 		$preferredAlias = trim($command->getName());
-		$fallbackPrefix = strtolower(trim($fallbackPrefix));
+		$namespace = strtolower(trim($namespace));
 
 		$registeredAliases = [];
-		//primary labels take precedence over any existing registrations
-		$this->mapAlias($preferredAlias, $command, $registeredAliases);
-		$this->mapAlias($fallbackPrefix . ":" . $preferredAlias, $command, $registeredAliases);
 
+		//prefixed alias must always succeed in registration - namespace should prevent conflicts
+		$prefixedAlias = $namespace . ":" . $preferredAlias;
+		if(isset($this->aliasToCommandMap[$prefixedAlias])){
+			throw new \InvalidArgumentException("\"$prefixedAlias\" conflicts with another command, please choose a different command name or namespace");
+		}
+		$dummy = [];
+		$this->mapAlias($prefixedAlias, $command, $dummy);
+
+		$this->mapAlias($preferredAlias, $command, $registeredAliases);
 		foreach($otherAliases as $alias){
-			if(!isset($this->aliasToCommandMap[$alias])){
-				$this->mapAlias($alias, $command, $registeredAliases);
-			}
+			$this->mapAlias($alias, $command, $registeredAliases);
 		}
 
-		$entry = new CommandMapEntry($command, $registeredAliases);
+		//this should always be last on the list
+		$registeredAliases[] = $prefixedAlias;
+		$entry = new CommandMapEntry($namespace, $command, $registeredAliases);
 		$this->uniqueCommands[spl_object_id($command)] = $entry;
 
 		return $entry;
@@ -180,9 +189,20 @@ class SimpleCommandMap implements CommandMap{
 	 * @phpstan-param-out non-empty-list<string> $registeredAliases
 	 */
 	private function mapAlias(string $alias, Command $command, array &$registeredAliases) : void{
-		$this->unregisterAlias($alias);
-		$this->aliasToCommandMap[$alias] = $command;
-		$registeredAliases[] = $alias;
+		$existing = $this->aliasToCommandMap[$alias] ?? null;
+		if($existing !== null){
+			if(!is_array($existing)){
+				//previously non-conflicted - remove the alias from this command and make it conflicted
+				//commands that are already conflicted shouldn't need alias removal
+				$this->unregisterAlias($alias);
+				$existing = [spl_object_id($existing) => $existing];
+			}
+			$existing[spl_object_id($command)] = $command;
+			$this->aliasToCommandMap[$alias] = $existing;
+		}else{
+			$this->aliasToCommandMap[$alias] = $command;
+			$registeredAliases[] = $alias;
+		}
 	}
 
 	public function registerAlias(string $existingAlias, string $newAlias) : void{
@@ -190,23 +210,31 @@ class SimpleCommandMap implements CommandMap{
 		if($existingCommand === null){
 			throw new \InvalidArgumentException("No command is currently using the alias \"$existingAlias\", cannot create an alias to it");
 		}
+		if(is_array($existingCommand)){
+			throw new \InvalidArgumentException("Multiple commands are using the alias \"$existingAlias\", don't know which one to target");
+		}
 		$registration = $this->uniqueCommands[spl_object_id($existingCommand)];
 		$newAliases = $registration->aliases;
+
+		//explicit alias registration overrides everything else, including conflicts
+		$this->unregisterAlias($newAlias);
 		$this->mapAlias($newAlias, $existingCommand, $newAliases);
-		$this->uniqueCommands[spl_object_id($existingCommand)] = new CommandMapEntry($existingCommand, $newAliases);
+		$this->uniqueCommands[spl_object_id($existingCommand)] = new CommandMapEntry($registration->namespace, $existingCommand, $newAliases);
 	}
 
 	public function unregisterAlias(string $alias) : void{
-		$oldCommand = $this->aliasToCommandMap[$alias] ?? null;
-		if($oldCommand !== null){
+		$oldCommands = $this->aliasToCommandMap[$alias] ?? null;
+		if($oldCommands !== null){
 			unset($this->aliasToCommandMap[$alias]);
-			$oldCommandKey = spl_object_id($oldCommand);
-			$oldCommandEntry = $this->uniqueCommands[$oldCommandKey];
-			$filteredAliases = array_values(array_filter($oldCommandEntry->aliases, fn(string $oldAlias) => $oldAlias !== $alias));
-			if(count($filteredAliases) > 0){
-				$this->uniqueCommands[$oldCommandKey] = new CommandMapEntry($oldCommand, $filteredAliases);
-			}else{
-				unset($this->uniqueCommands[$oldCommandKey]);
+			foreach(is_array($oldCommands) ? $oldCommands : [$oldCommands] as $oldCommand){
+				$oldCommandKey = spl_object_id($oldCommand);
+				$oldCommandEntry = $this->uniqueCommands[$oldCommandKey];
+				$filteredAliases = array_values(array_filter($oldCommandEntry->aliases, fn(string $oldAlias) => $oldAlias !== $alias));
+				if(count($filteredAliases) === 0){
+					unset($this->uniqueCommands[$oldCommandKey]);
+				}else{
+					$this->uniqueCommands[$oldCommandKey] = new CommandMapEntry($oldCommandEntry->namespace, $oldCommandEntry->command, $filteredAliases);
+				}
 			}
 		}
 	}
@@ -216,7 +244,15 @@ class SimpleCommandMap implements CommandMap{
 		if($entry !== null){
 			unset($this->uniqueCommands[spl_object_id($command)]);
 			foreach($entry->aliases as $alias){
-				unset($this->aliasToCommandMap[$alias]);
+				$commandsUsingAlias = $this->aliasToCommandMap[$alias];
+				if(is_array($commandsUsingAlias) && count($commandsUsingAlias) > 0){
+					unset($commandsUsingAlias[spl_object_id($command)]);
+					//even if there's only 1 command left, we let it stay "conflicted" to avoid surprising behaviour
+					//for users - this can still be explicitly rebound using registerAlias()
+					$this->aliasToCommandMap[$alias] = $commandsUsingAlias;
+				}else{
+					unset($this->aliasToCommandMap[$alias]);
+				}
 			}
 		}
 
@@ -228,9 +264,11 @@ class SimpleCommandMap implements CommandMap{
 
 		$sentCommandLabel = array_shift($args);
 		if($sentCommandLabel !== null && ($target = $this->getEntry($sentCommandLabel)) !== null){
-			//TODO: using labels for command dispatch is problematic - what if the label changes?
-			//maybe this should use command class instead?
-			$timings = Timings::getCommandDispatchTimings($target->getPreferredAlias());
+			if(is_array($target)){
+				self::handleConflicted($sender, $sentCommandLabel, $target);
+				return true;
+			}
+			$timings = Timings::getCommandDispatchTimings($target->getNamespacedName());
 			$timings->startTiming();
 
 			try{
@@ -249,19 +287,58 @@ class SimpleCommandMap implements CommandMap{
 		return false;
 	}
 
+	/**
+	 * TODO: probably need to find a better place to put this
+	 * @internal
+	 * @param CommandMapEntry[] $conflictedEntries
+	 * @phpstan-param array<int, CommandMapEntry> $conflictedEntries
+	 */
+	public static function handleConflicted(CommandSender $sender, string $alias, array $conflictedEntries) : void{
+		$candidates = [];
+		foreach($conflictedEntries as $c){
+			if($c->command->testPermissionSilent($sender)){
+				$candidates[] = "/" . $c->getNamespacedName();
+			}
+		}
+		if(count($candidates) > 0){
+			//TODO: l10n
+			//there might only be 1 permissible command here, but we still don't auto-select in this case
+			//because it might cause surprising behaviour if the user's permissions change between command
+			//invocations. Better to force them to use an unambiguous alias in all cases.
+			$candidateNames = implode(", ", $candidates);
+			$sender->sendMessage(TextFormat::RED . "/$alias is assigned to multiple commands. Use one of these instead: $candidateNames");
+		}else{
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($alias)->prefix(TextFormat::RED));
+		}
+	}
+
 	public function clearCommands() : void{
 		$this->aliasToCommandMap = [];
 		$this->uniqueCommands = [];
 		$this->setDefaultCommands();
 	}
 
-	public function getCommand(string $name) : ?Command{
-		return $this->aliasToCommandMap[$name] ?? null;
+	/**
+	 * @return CommandMapEntry|CommandMapEntry[]|null
+	 * @phpstan-return Command|array<int, Command>|null
+	 */
+	public function getEntry(string $name) : CommandMapEntry|array|null{
+		$command = $this->aliasToCommandMap[$name] ?? null;
+		if($command instanceof Command){
+			return $this->uniqueCommands[spl_object_id($command)] ?? throw new AssumptionFailedError("This should never be unset");
+		}
+		if(is_array($command)){
+			return array_map(
+				fn(Command $c) => $this->uniqueCommands[spl_object_id($c)] ?? throw new AssumptionFailedError("This should never be unset"),
+				$command
+			);
+		}
+		return null;
 	}
 
 	/**
-	 * @return Command[]
-	 * @phpstan-return array<string, Command>
+	 * @return Command[]|Command[][]
+	 * @phpstan-return array<string, Command|array<int, Command>>
 	 */
 	public function getAliasToCommandMap() : array{
 		return $this->aliasToCommandMap;
@@ -273,13 +350,6 @@ class SimpleCommandMap implements CommandMap{
 	 */
 	public function getUniqueCommands() : array{
 		return $this->uniqueCommands;
-	}
-
-	public function getEntry(string $name) : ?CommandMapEntry{
-		$command = $this->getCommand($name);
-		return $command !== null ?
-			$this->uniqueCommands[spl_object_id($command)] ?? throw new AssumptionFailedError("This should never be unset") :
-			null;
 	}
 
 	public function registerServerAliases() : void{
@@ -298,9 +368,9 @@ class SimpleCommandMap implements CommandMap{
 			foreach($commandStrings as $commandString){
 				$args = CommandStringHelper::parseQuoteAware($commandString);
 				$commandName = array_shift($args) ?? "";
-				$command = $this->getCommand($commandName);
+				$command = $this->getEntry($commandName);
 
-				if($command === null){
+				if(!$command instanceof CommandMapEntry){
 					$bad[] = $commandString;
 				}elseif(strcasecmp($commandName, $alias) === 0){
 					$recursive[] = $commandString;
@@ -326,7 +396,7 @@ class SimpleCommandMap implements CommandMap{
 				$aliasInstance = new FormattedCommandAlias($lowerAlias, $targets);
 				$registeredAliases = [];
 				$this->mapAlias($lowerAlias, $aliasInstance, $registeredAliases);
-				$this->uniqueCommands[spl_object_id($aliasInstance)] = new CommandMapEntry($aliasInstance, $registeredAliases);
+				$this->uniqueCommands[spl_object_id($aliasInstance)] = new CommandMapEntry("pocketmine-config-defined", $aliasInstance, $registeredAliases);
 			}
 		}
 	}
