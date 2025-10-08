@@ -36,19 +36,33 @@ use pocketmine\utils\TextFormat;
 use function explode;
 use function implode;
 use function str_replace;
+use function strtolower;
 use const PHP_INT_MAX;
 
 abstract class Command{
+	private readonly string $namespace;
+	private readonly string $name;
+
 	/** @var string[] */
 	private array $permission = [];
 	private Translatable|string|null $permissionMessage = null;
 
 	public function __construct(
-		private string $namespace,
-		private string $name,
+		string $namespace,
+		string $name,
 		private Translatable|string $description = "",
 		private Translatable|string|null $usageMessage = null
-	){}
+	){
+		if($namespace === ""){
+			throw new \InvalidArgumentException("Command namespace cannot be empty (set it to, for example, your plugin's name)");
+		}
+		if($name === ""){
+			throw new \InvalidArgumentException("Command name cannot be empty");
+		}
+		$this->namespace = strtolower(trim($namespace));
+		//TODO: case handling inconsistency preserved from old code
+		$this->name = trim($name);
+	}
 
 	/**
 	 * @param string[] $args
