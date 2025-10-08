@@ -1096,13 +1096,16 @@ class NetworkSession{
 
 	public function syncAvailableCommands() : void{
 		$commandData = [];
+		$globalAliasMap = $this->server->getCommandMap()->getAliasMap();
+		$userAliasMap = $this->player->getCommandAliasMap();
 		foreach($this->server->getCommandMap()->getUniqueCommands() as $commandEntry){
 			if(!$commandEntry->command->testPermissionSilent($this->player)){
 				continue;
 			}
 
+			$userAliases = $userAliasMap->getMergedAliases($commandEntry->getNamespacedName(), $globalAliasMap);
 			//the client doesn't like it when we override /help
-			$aliases = array_values(array_filter($commandEntry->aliases, fn(string $alias) => $alias !== "help" && $alias !== "?"));
+			$aliases = array_values(array_filter($userAliases, fn(string $alias) => $alias !== "help" && $alias !== "?"));
 			if(count($aliases) === 0){
 				continue;
 			}

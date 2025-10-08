@@ -95,6 +95,8 @@ class FormattedCommandAlias extends Command{
 				throw new AssumptionFailedError("This should have been checked before construction");
 			}
 
+			//formatted command aliases don't use user-specific aliases since they are globally defined in pocketmine.yml
+			//using user-specific aliases might break the behaviour
 			if(($target = $commandMap->getEntry($commandLabel)) instanceof CommandMapEntry){
 
 				$timings = Timings::getCommandDispatchTimings($target->getNamespacedName());
@@ -103,7 +105,7 @@ class FormattedCommandAlias extends Command{
 				try{
 					$target->command->execute($sender, $commandLabel, $commandArgs);
 				}catch(InvalidCommandSyntaxException $e){
-					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage($commandLabel))));
 				}finally{
 					$timings->stopTiming();
 				}

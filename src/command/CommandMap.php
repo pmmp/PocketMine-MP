@@ -31,10 +31,9 @@ interface CommandMap{
 	 * - /myc (only works if not conflicted, not required to be unique)
 	 *
 	 * If two commands claim the same alias, it will become conflicted, and neither command will be usable with that
-	 * alias unless the alias is explicitly rebound with registerAlias().
+	 * alias unless the alias is explicitly rebound in the alias map.
 	 * The user will be shown an error when trying to use it, listing all namespaced names (not aliases) of the commands
 	 * bound to it. The user can then use one of the namespaced names to run the command they want.
-	 * Conflicted aliases will not be included in the returned CommandMapEntry.
 	 *
 	 * @param string[] $otherAliases
 	 *
@@ -47,12 +46,17 @@ interface CommandMap{
 	public function clearCommands() : void;
 
 	/**
-	 * Returns the command(s) bound to the given name or alias.
+	 * Returns entries for the command(s) bound to the given name or alias.
 	 * This will return an array if the alias is conflicted (multiple commands bound to it).
 	 *
 	 * @return CommandMapEntry|CommandMapEntry[]|null
 	 * @phpstan-return CommandMapEntry|array<int, CommandMapEntry>|null
 	 */
-	public function getEntry(string $name) : CommandMapEntry|array|null;
+	public function getEntry(string $name, ?CommandAliasMap $senderAliasMap = null) : CommandMapEntry|array|null;
 
+	/**
+	 * Returns the global alias map for this command map.
+	 * Aliases in this map will be used as a fallback when user-specific aliases don't give any results.
+	 */
+	public function getAliasMap() : CommandAliasMap;
 }

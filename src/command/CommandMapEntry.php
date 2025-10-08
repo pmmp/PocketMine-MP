@@ -27,27 +27,18 @@ use pocketmine\lang\Translatable;
 
 final class CommandMapEntry{
 
-	/**
-	 * @param string[] $aliases
-	 * @phpstan-param non-empty-list<string> $aliases
-	 */
 	public function __construct(
 		public readonly string $namespace,
 		public readonly Command $command,
-		public readonly array $aliases
 	){}
 
 	public function getNamespacedName() : string{
 		return $this->namespace . ":" . $this->command->getName();
 	}
 
-	public function getPreferredAlias() : string{
-		return $this->aliases[0];
-	}
-
-	public function getUsage() : Translatable|string{
-		//TODO: usage messages ought to use user-specified alias, not command preferred
-		//command-preferred is confusing if the user used a different alias
-		return $this->command->getUsage() ?? "/" . $this->getPreferredAlias();
+	public function getUsage(string $sentCommandLabel) : Translatable|string{
+		//TODO: localised usage currently has no way to get user-specified alias
+		//usage messages ought to use user-specified alias to avoid confusion
+		return $this->command->getUsage() ?? "/$sentCommandLabel";
 	}
 }

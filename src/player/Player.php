@@ -30,6 +30,7 @@ use pocketmine\block\BlockTypeTags;
 use pocketmine\block\RespawnAnchor;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\command\CommandAliasMap;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
@@ -296,6 +297,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
+	private CommandAliasMap $commandAliasMap;
+
 	protected string $locale = "en_US";
 
 	protected int $startAction = -1;
@@ -339,6 +342,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
 		}
 		$this->perm = new PermissibleBase($rootPermissions);
+		$this->commandAliasMap = new CommandAliasMap();
+
 		$this->chunksPerTick = $this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_PER_TICK, 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_SPAWN_RADIUS, 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
@@ -597,6 +602,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 		$this->lineHeight = $height;
 	}
+
+	public function getCommandAliasMap() : CommandAliasMap{ return $this->commandAliasMap; }
 
 	public function canSee(Player $player) : bool{
 		return !isset($this->hiddenPlayers[$player->getUniqueId()->getBytes()]);
