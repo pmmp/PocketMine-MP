@@ -1598,9 +1598,13 @@ final class StringToItemParser extends StringToTParser{
 	}
 
 	public function override(string $alias, \Closure $callback) : void{
-		// Remove the alias from the old item's reverse map
-		foreach($this->reverseMap as $stateId => $aliases){
-			unset($this->reverseMap[$stateId][$alias]);
+		$oldItem = $this->parse($alias);
+		if($oldItem !== null){
+			$oldStateId = $oldItem->getStateId();
+			unset($this->reverseMap[$oldStateId][$alias]);
+			if(count($this->reverseMap[$oldStateId]) === 0){
+				unset($this->reverseMap[$oldStateId]);
+			}
 		}
 		parent::override($alias, $callback);
 		$item = $callback($alias);
