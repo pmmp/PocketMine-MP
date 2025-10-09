@@ -1597,6 +1597,29 @@ final class StringToItemParser extends StringToTParser{
 		$this->reverseMap[$item->getStateId()][$alias] = true;
 	}
 
+	public function override(string $alias, \Closure $callback) : void{
+		// Get the processed alias key to check if it was previously registered
+		$key = $this->reprocess($alias);
+		
+		// If the alias was previously registered, we need to remove it from the old item's reverseMap
+		$oldItem = $this->parse($alias);
+		if($oldItem !== null){
+			$oldStateId = $oldItem->getStateId();
+			unset($this->reverseMap[$oldStateId][$key]);
+			// Clean up empty arrays to avoid memory waste
+			if(empty($this->reverseMap[$oldStateId])){
+				unset($this->reverseMap[$oldStateId]);
+			}
+		}
+		
+		// Call parent to update the callbackMap
+		parent::override($alias, $callback);
+		
+		// Execute the new callback to get the new item and update reverseMap
+		$item = $callback($alias);
+		$this->reverseMap[$item->getStateId()][$key] = true;
+	}
+
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
