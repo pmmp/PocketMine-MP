@@ -1597,6 +1597,16 @@ final class StringToItemParser extends StringToTParser{
 		$this->reverseMap[$item->getStateId()][$alias] = true;
 	}
 
+	public function override(string $alias, \Closure $callback) : void{
+		// Remove the alias from the old item's reverse map
+		foreach($this->reverseMap as $stateId => $aliases){
+			unset($this->reverseMap[$stateId][$alias]);
+		}
+		parent::override($alias, $callback);
+		$item = $callback($alias);
+		$this->reverseMap[$item->getStateId()][$alias] = true;
+	}
+
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
