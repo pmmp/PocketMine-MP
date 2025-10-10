@@ -554,14 +554,16 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param \Closure $signature Dummy callable with the required parameters and return type
-	 * @param \Closure $subject   Callable to check the signature of
+	 * @param Prototype|\Closure $signature Dummy callable with the required parameters and return type, or a manually constructed Prototype
+	 * @param \Closure           $subject   Callable to check the signature of
 	 * @phpstan-param anyClosure $signature
 	 * @phpstan-param anyClosure $subject
 	 */
-	public static function validateCallableSignature(\Closure $signature, \Closure $subject) : void{
-		if(!Prototype::isSatisfiedBy($signature, $subject)){
-			throw new \TypeError("Declaration of callable `" . Prototype::print($subject) . "` must be compatible with `" . Prototype::print($signature) . "`");
+	public static function validateCallableSignature(Prototype|\Closure $signature, \Closure $subject) : void{
+		$signaturePrototype = $signature instanceof Prototype ? $signature : Prototype::fromClosure($signature);
+		$subjectPrototype = Prototype::fromClosure($subject);
+		if(!$signaturePrototype->isSatisfiedBy($subjectPrototype)){
+			throw new \TypeError("Declaration of callable `$subjectPrototype` must be compatible with `$signaturePrototype`");
 		}
 	}
 

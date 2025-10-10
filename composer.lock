@@ -349,12 +349,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/CallbackValidator.git",
-                "reference": "4b9b375590872cdd98a2a07c5aa0e1e99af5ceda"
+                "reference": "8e0e3be58e89c2611beac9c6954a036b81b2b6fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/CallbackValidator/zipball/4b9b375590872cdd98a2a07c5aa0e1e99af5ceda",
-                "reference": "4b9b375590872cdd98a2a07c5aa0e1e99af5ceda",
+                "url": "https://api.github.com/repos/pmmp/CallbackValidator/zipball/8e0e3be58e89c2611beac9c6954a036b81b2b6fc",
+                "reference": "8e0e3be58e89c2611beac9c6954a036b81b2b6fc",
                 "shasum": ""
             },
             "require": {
@@ -391,7 +391,7 @@
                 "issues": "https://github.com/pmmp/CallbackValidator/issues",
                 "source": "https://github.com/pmmp/CallbackValidator/tree/rewrite"
             },
-            "time": "2025-01-03T17:50:24+00:00"
+            "time": "2025-10-10T21:55:21+00:00"
         },
         {
             "name": "pocketmine/color",
