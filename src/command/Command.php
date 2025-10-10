@@ -37,6 +37,7 @@ use function explode;
 use function implode;
 use function str_replace;
 use function strtolower;
+use function trim;
 use const PHP_INT_MAX;
 
 abstract class Command{
