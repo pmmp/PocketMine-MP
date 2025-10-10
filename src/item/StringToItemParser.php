@@ -1602,8 +1602,15 @@ final class StringToItemParser extends StringToTParser{
 		if($oldItem !== null){
 			$oldStateId = $oldItem->getStateId();
 			unset($this->reverseMap[$oldStateId][$alias]);
+			if($this->reverseMap[$oldStateId] === []){
+				unset($this->reverseMap[$oldStateId]);
+			}
 		}
 		parent::override($alias, $callback);
+		$newItem = $this->parse($alias);
+		if($newItem !== null){
+			$this->reverseMap[$newItem->getStateId()][$alias] = true;
+		}
 	}
 
 	/** @phpstan-param \Closure(string $input) : Block $callback */
