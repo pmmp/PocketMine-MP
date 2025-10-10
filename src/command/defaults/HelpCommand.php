@@ -112,7 +112,7 @@ class HelpCommand extends VanillaCommand{
 		}else{
 			if(($command = $commandMap->getCommand(strtolower($commandName), $userAliasMap)) !== null){
 				if(is_array($command)){
-					SimpleCommandMap::handleConflicted($sender, $commandName, $command);
+					SimpleCommandMap::handleConflicted($sender, $commandName, $command, $commandMap->getAliasMap());
 					return true;
 				}
 				if($command->testPermissionSilent($sender)){
@@ -137,7 +137,7 @@ class HelpCommand extends VanillaCommand{
 					return true;
 				}
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/help")->prefix(TextFormat::RED));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/" . $userAliasMap->getPreferredAlias("pocketmine:help", $commandMap->getAliasMap()))->prefix(TextFormat::RED));
 
 			return true;
 		}

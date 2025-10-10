@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use function array_filter;
+use function array_key_first;
 use function array_keys;
 use function array_values;
 use function count;
@@ -148,6 +149,16 @@ final class CommandAliasMap{
 		$localAliases[] = $commandId;
 
 		return $localAliases;
+	}
+
+	/**
+	 * Returns a preferred alias for the given command ID. Used for displaying errors and help tips.
+	 * For example, the user might not have /help bound, but might have a different alias for it that's more convenient
+	 * than /pocketmine:help.
+	 */
+	public function getPreferredAlias(string $commandId, CommandAliasMap $fallbackMap) : string{
+		$aliasList = $this->getMergedAliases($commandId, $fallbackMap);
+		return $aliasList[array_key_first($aliasList)];
 	}
 
 	/**

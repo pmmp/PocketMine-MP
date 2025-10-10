@@ -1535,6 +1535,62 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE, []);
 	}
 
+	public static function pocketmine_command_cmdalias_create_success(Translatable|string $alias, Translatable|string $target) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_CREATE_SUCCESS, [
+			"alias" => $alias,
+			"target" => $target,
+		]);
+	}
+
+	public static function pocketmine_command_cmdalias_delete_notFound(Translatable|string $alias) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_DELETE_NOTFOUND, [
+			"alias" => $alias,
+		]);
+	}
+
+	public static function pocketmine_command_cmdalias_delete_success(Translatable|string $alias) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_DELETE_SUCCESS, [
+			"alias" => $alias,
+		]);
+	}
+
+	public static function pocketmine_command_cmdalias_description() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_cmdalias_list_conflicted(Translatable|string $alias, Translatable|string $commandIds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_LIST_CONFLICTED, [
+			"alias" => $alias,
+			"commandIds" => $commandIds,
+		]);
+	}
+
+	public static function pocketmine_command_cmdalias_list_noneSet() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_LIST_NONESET, []);
+	}
+
+	public static function pocketmine_command_cmdalias_list_normal(Translatable|string $alias, Translatable|string $commandId) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_LIST_NORMAL, [
+			"alias" => $alias,
+			"commandId" => $commandId,
+		]);
+	}
+
+	public static function pocketmine_command_cmdalias_scope_global() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_SCOPE_GLOBAL, []);
+	}
+
+	public static function pocketmine_command_cmdalias_scope_userSpecific() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_SCOPE_USERSPECIFIC, []);
+	}
+
+	public static function pocketmine_command_cmdalias_template(Translatable|string $message, Translatable|string $scope) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_TEMPLATE, [
+			"message" => $message,
+			"scope" => $scope,
+		]);
+	}
+
 	public static function pocketmine_command_defaultgamemode_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_DEFAULTGAMEMODE_DESCRIPTION, []);
 	}
@@ -1557,6 +1613,19 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_enchant_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_error_aliasConflict(Translatable|string $alias, Translatable|string $commandIdList) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_ALIASCONFLICT, [
+			"alias" => $alias,
+			"commandIdList" => $commandIdList,
+		]);
+	}
+
+	public static function pocketmine_command_error_aliasConflictTip(Translatable|string $cmdAliasCommand) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_ALIASCONFLICTTIP, [
+			"cmdAliasCommand" => $cmdAliasCommand,
+		]);
 	}
 
 	public static function pocketmine_command_error_permission(Translatable|string $commandName) : Translatable{
@@ -2225,6 +2294,18 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_permission_command_clear_self() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_CLEAR_SELF, []);
+	}
+
+	public static function pocketmine_permission_command_cmdalias_edit_global() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_CMDALIAS_EDIT_GLOBAL, []);
+	}
+
+	public static function pocketmine_permission_command_cmdalias_edit_self() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_CMDALIAS_EDIT_SELF, []);
+	}
+
+	public static function pocketmine_permission_command_cmdalias_list() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_CMDALIAS_LIST, []);
 	}
 
 	public static function pocketmine_permission_command_defaultgamemode() : Translatable{

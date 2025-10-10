@@ -177,7 +177,7 @@ class SimpleCommandMap implements CommandMap{
 		$sentCommandLabel = array_shift($args);
 		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
 			if(is_array($target)){
-				self::handleConflicted($sender, $sentCommandLabel, $target);
+				self::handleConflicted($sender, $sentCommandLabel, $target, $this->aliasMap);
 				return true;
 			}
 			$timings = Timings::getCommandDispatchTimings($target->getId());
@@ -196,7 +196,11 @@ class SimpleCommandMap implements CommandMap{
 			return true;
 		}
 
-		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel ?? "", "/help")->prefix(TextFormat::RED));
+		//Don't love hardcoding the command ID here, but it seems like the only way for now
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound(
+			$sentCommandLabel ?? "",
+			"/" . $sender->getCommandAliasMap()->getPreferredAlias("pocketmine:help", $this->aliasMap)
+		)->prefix(TextFormat::RED));
 		return false;
 	}
 
@@ -206,20 +210,24 @@ class SimpleCommandMap implements CommandMap{
 	 * @param Command[] $conflictedEntries
 	 * @phpstan-param array<int, Command> $conflictedEntries
 	 */
-	public static function handleConflicted(CommandSender $sender, string $alias, array $conflictedEntries) : void{
+	public static function handleConflicted(CommandSender $sender, string $alias, array $conflictedEntries, CommandAliasMap $fallbackAliasMap) : void{
 		$candidates = [];
+		$userAliasMap = $sender->getCommandAliasMap();
 		foreach($conflictedEntries as $c){
 			if($c->testPermissionSilent($sender)){
 				$candidates[] = "/" . $c->getId();
 			}
 		}
 		if(count($candidates) > 0){
-			//TODO: l10n
 			//there might only be 1 permissible command here, but we still don't auto-select in this case
 			//because it might cause surprising behaviour if the user's permissions change between command
 			//invocations. Better to force them to use an unambiguous alias in all cases.
 			$candidateNames = implode(", ", $candidates);
-			$sender->sendMessage(TextFormat::RED . "/$alias is assigned to multiple commands. Use one of these instead: $candidateNames");
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflict("/$alias", $candidateNames)->prefix(TextFormat::RED));
+			//Don't love hardcoding the command ID here, but it seems like the only way for now
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflictTip(
+				"/" . $userAliasMap->getPreferredAlias("pocketmine:cmdalias", $fallbackAliasMap)
+			)->prefix(TextFormat::RED));
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($alias)->prefix(TextFormat::RED));
 		}
