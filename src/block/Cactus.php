@@ -40,6 +40,7 @@ class Cactus extends Transparent implements Ageable{
 	use StaticSupportTrait;
 
 	public const MAX_AGE = 15;
+	public const MAX_HEIGHT = 3;
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -92,7 +93,7 @@ class Cactus extends Transparent implements Ageable{
 
 		$height = 1;
 		$current = $this;
-		while($height < 3 && ($down = $current->getSide(Facing::DOWN))->hasSameTypeId($this)){
+		while($height < self::MAX_HEIGHT && ($down = $current->getSide(Facing::DOWN))->hasSameTypeId($this)){
 			$current = $down;
 			$height++;
 		}
@@ -109,8 +110,8 @@ class Cactus extends Transparent implements Ageable{
 			}
 
 			if($canGrowFlower){
-				$chance = $height >= 3 ? 0.25 : 0.10;
-				if((mt_rand(1, 100) / 100) <= $chance){
+				$chance = $height >= self::MAX_HEIGHT ? 25 : 10;
+				if(mt_rand(1, 100) <= $chance){
 					if(BlockEventHelper::grow($up, VanillaBlocks::CACTUS_FLOWER(), null)){
 						$this->age = 0;
 						$world->setBlock($this->position, $this, update: false);
@@ -123,7 +124,7 @@ class Cactus extends Transparent implements Ageable{
 		if($this->age > self::MAX_AGE){
 			$this->age = 0;
 
-			if($height < 3){
+			if($height < self::MAX_HEIGHT){
 				BlockEventHelper::grow($up, VanillaBlocks::CACTUS(), null);
 			}
 		}
