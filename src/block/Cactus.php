@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function mt_rand;
 
 class Cactus extends Transparent implements Ageable{
 	use AgeableTrait;
@@ -78,26 +79,60 @@ class Cactus extends Transparent implements Ageable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
-			$world = $this->position->getWorld();
-			if($this->age === self::MAX_AGE){
-				for($y = 1; $y < 3; ++$y){
-					if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
-						break;
-					}
-					$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
-					if($b->getTypeId() === BlockTypeIds::AIR){
-						BlockEventHelper::grow($b, VanillaBlocks::CACTUS(), null);
-					}else{
+		if($this->getSide(Facing::DOWN)->hasSameTypeId($this)){
+			return;
+		}
+
+		$world = $this->position->getWorld();
+
+		$topPosition = $this->position->asVector3();
+		$height = 1;
+		while($height < 3 && $world->getBlockAt($topPosition->x, $topPosition->y + 1, $topPosition->z)->hasSameTypeId($this)){
+			$topPosition->y++;
+			$height++;
+		}
+
+		if($world->getBlockAt($topPosition->x, $topPosition->y + 1, $topPosition->z)->getTypeId() === BlockTypeIds::CACTUS_FLOWER){
+			return;
+		}
+
+		$this->age++;
+
+		if($this->age === 9){
+			$upPos = $topPosition->add(0, 1, 0);
+			if($world->isInWorld($upPos->x, $upPos->y, $upPos->z) && $world->getBlockAt($upPos->x, $upPos->y, $upPos->z)->getTypeId() === BlockTypeIds::AIR){
+				$canGrowFlower = true;
+				foreach(Facing::HORIZONTAL as $side){
+					$sidePos = $upPos->getSide($side);
+					if($world->getBlockAt($sidePos->x, $sidePos->y, $sidePos->z)->isSolid()){
+						$canGrowFlower = false;
 						break;
 					}
 				}
-				$this->age = 0;
-				$world->setBlock($this->position, $this, update: false);
-			}else{
-				++$this->age;
-				$world->setBlock($this->position, $this, update: false);
+
+				if($canGrowFlower){
+					$chance = ($height >= 3) ? 0.25 : 0.10;
+					if((mt_rand(1, 100) / 100) <= $chance){
+						if(BlockEventHelper::grow($world->getBlockAt($upPos->x, $upPos->y, $upPos->z), VanillaBlocks::CACTUS_FLOWER(), null)){
+							$this->age = 0;
+							$world->setBlock($this->position, $this, update: false);
+						}
+						return;
+					}
+				}
 			}
 		}
+
+		if($this->age > self::MAX_AGE){
+			$this->age = 0;
+
+			if($height < 3){
+				$upPos = $topPosition->add(0, 1, 0);
+				if($world->isInWorld($upPos->x, $upPos->y, $upPos->z) && $world->getBlockAt($upPos->x, $upPos->y, $upPos->z)->getTypeId() === BlockTypeIds::AIR){
+					BlockEventHelper::grow($world->getBlockAt($upPos->x, $upPos->y, $upPos->z), VanillaBlocks::CACTUS(), null);
+				}
+			}
+		}
+		$world->setBlock($this->position, $this, update: false);
 	}
 }

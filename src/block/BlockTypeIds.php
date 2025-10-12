@@ -822,8 +822,9 @@ final class BlockTypeIds{
 	public const WARPED_CEILING_CENTER_HANGING_SIGN = 10792;
 	public const WARPED_CEILING_EDGES_HANGING_SIGN = 10793;
 	public const WARPED_WALL_HANGING_SIGN = 10794;
+	public const CACTUS_FLOWER = 10795;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10795;
+	public const FIRST_UNUSED_BLOCK_ID = 10796;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

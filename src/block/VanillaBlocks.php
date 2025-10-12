@@ -162,6 +162,7 @@ use function strtolower;
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
  * @method static BuddingAmethyst BUDDING_AMETHYST()
  * @method static Cactus CACTUS()
+ * @method static CactusFlower CACTUS_FLOWER()
  * @method static Cake CAKE()
  * @method static CakeWithCandle CAKE_WITH_CANDLE()
  * @method static CakeWithDyedCandle CAKE_WITH_DYED_CANDLE()
@@ -1371,6 +1372,7 @@ final class VanillaBlocks{
 				return [];
 			}
 		});
+		self::register("cactus_flower", fn(BID $id) => new CactusFlower($id, "Cactus Flower", new Info(BreakInfo::instant())));
 
 		self::registerBlocksR13();
 		self::registerBlocksR14();
