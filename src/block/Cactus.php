@@ -79,46 +79,43 @@ class Cactus extends Transparent implements Ageable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->getSide(Facing::DOWN)->hasSameTypeId($this)){
+		$up = $this->getSide(Facing::UP);
+		if($up->getTypeId() !== BlockTypeIds::AIR){
 			return;
 		}
 
 		$world = $this->position->getWorld();
 
-		$topPosition = $this->position->asVector3();
-		$height = 1;
-		while($height < 3 && $world->getBlockAt($topPosition->x, $topPosition->y + 1, $topPosition->z)->hasSameTypeId($this)){
-			$topPosition->y++;
-			$height++;
+		if(!$world->isInWorld($up->position->x, $up->position->y, $up->position->z)){
+			return;
 		}
 
-		if($world->getBlockAt($topPosition->x, $topPosition->y + 1, $topPosition->z)->getTypeId() === BlockTypeIds::CACTUS_FLOWER){
-			return;
+		$height = 1;
+		$current = $this;
+		while($height < 3 && ($down = $current->getSide(Facing::DOWN))->hasSameTypeId($this)){
+			$current = $down;
+			$height++;
 		}
 
 		$this->age++;
 
 		if($this->age === 9){
-			$upPos = $topPosition->add(0, 1, 0);
-			if($world->isInWorld($upPos->x, $upPos->y, $upPos->z) && $world->getBlockAt($upPos->x, $upPos->y, $upPos->z)->getTypeId() === BlockTypeIds::AIR){
-				$canGrowFlower = true;
-				foreach(Facing::HORIZONTAL as $side){
-					$sidePos = $upPos->getSide($side);
-					if($world->getBlockAt($sidePos->x, $sidePos->y, $sidePos->z)->isSolid()){
-						$canGrowFlower = false;
-						break;
-					}
+			$canGrowFlower = true;
+			foreach(Facing::HORIZONTAL as $side){
+				if($up->getSide($side)->isSolid()){
+					$canGrowFlower = false;
+					break;
 				}
+			}
 
-				if($canGrowFlower){
-					$chance = ($height >= 3) ? 0.25 : 0.10;
-					if((mt_rand(1, 100) / 100) <= $chance){
-						if(BlockEventHelper::grow($world->getBlockAt($upPos->x, $upPos->y, $upPos->z), VanillaBlocks::CACTUS_FLOWER(), null)){
-							$this->age = 0;
-							$world->setBlock($this->position, $this, update: false);
-						}
-						return;
+			if($canGrowFlower){
+				$chance = $height >= 3 ? 0.25 : 0.10;
+				if((mt_rand(1, 100) / 100) <= $chance){
+					if(BlockEventHelper::grow($up, VanillaBlocks::CACTUS_FLOWER(), null)){
+						$this->age = 0;
+						$world->setBlock($this->position, $this, update: false);
 					}
+					return;
 				}
 			}
 		}
@@ -127,10 +124,7 @@ class Cactus extends Transparent implements Ageable{
 			$this->age = 0;
 
 			if($height < 3){
-				$upPos = $topPosition->add(0, 1, 0);
-				if($world->isInWorld($upPos->x, $upPos->y, $upPos->z) && $world->getBlockAt($upPos->x, $upPos->y, $upPos->z)->getTypeId() === BlockTypeIds::AIR){
-					BlockEventHelper::grow($world->getBlockAt($upPos->x, $upPos->y, $upPos->z), VanillaBlocks::CACTUS(), null);
-				}
+				BlockEventHelper::grow($up, VanillaBlocks::CACTUS(), null);
 			}
 		}
 		$world->setBlock($this->position, $this, update: false);
