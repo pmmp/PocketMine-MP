@@ -147,7 +147,7 @@
         "COPPER": 8,
         "COPPER_BARS": 8,
         "COPPER_BULB": 32,
-        "COPPER_CHAIN": 32,
+        "COPPER_CHAIN": 24,
         "COPPER_DOOR": 256,
         "COPPER_GRATE": 8,
         "COPPER_LANTERN": 16,
