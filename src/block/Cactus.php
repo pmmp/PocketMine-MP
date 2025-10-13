@@ -92,9 +92,7 @@ class Cactus extends Transparent implements Ageable{
 		}
 
 		$height = 1;
-		$current = $this;
-		while($height < self::MAX_HEIGHT && ($down = $current->getSide(Facing::DOWN))->hasSameTypeId($this)){
-			$current = $down;
+		while($height < self::MAX_HEIGHT && $this->getSide(Facing::DOWN, $height)->hasSameTypeId($this)){
 			$height++;
 		}
 
