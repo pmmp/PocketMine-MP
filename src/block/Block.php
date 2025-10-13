@@ -545,7 +545,7 @@ class Block{
 	 *
 	 * This is internal and used only in things such as waterlogging, plugins should NOT use this.
 	 */
-	public function onScheduledDisplacedUpdate() : void{
+	public function onDisplacedScheduledUpdate() : void{
 		//NOOP
 	}
 

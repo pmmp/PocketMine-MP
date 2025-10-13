@@ -256,7 +256,7 @@ abstract class Liquid extends Transparent{
 		$this->onFlowUpdate();
 	}
 
-	public function onScheduledDisplacedUpdate() : void{
+	public function onDisplacedScheduledUpdate() : void{
 		$this->onFlowUpdate();
 	}
 

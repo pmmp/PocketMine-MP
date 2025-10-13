@@ -987,7 +987,7 @@ class World implements ChunkManager{
 				continue;
 			}
 			$block = $this->getBlock($vec)->getDisplacedBlock();
-			$block->onScheduledDisplacedUpdate();
+			$block->onDisplacedScheduledUpdate();
 		}
 		$this->timings->scheduledBlockUpdates->stopTiming();
 
