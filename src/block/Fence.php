@@ -23,13 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\CoveredByWaterTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
 
-class Fence extends Transparent{
+class Fence extends Transparent implements CoveredByWater{
+	use CoveredByWaterTrait{
+		readStateFromWorld as readWaterStateFromWorld;
+	}
+
 	/** @var bool[] facing => dummy */
 	protected array $connections = [];
 
@@ -39,6 +45,8 @@ class Fence extends Transparent{
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+
+		$this->readWaterStateFromWorld();
 
 		$this->collisionBoxes = null;
 

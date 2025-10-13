@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\world\sound\BucketEmptyWaterSound;
@@ -57,5 +58,33 @@ class Water extends Liquid{
 			$entity->extinguish(EntityExtinguishEvent::CAUSE_WATER);
 		}
 		return true;
+	}
+
+	protected function canFlowInto(Block $block) : bool{
+		return
+			parent::canFlowInto($block) ||
+			$block instanceof CoveredByWater &&
+			$block->getWaterCover() === null &&
+			$block->canBeCoveredByFlowing();
+	}
+
+	protected function getFlowResult(Block $target, int $newFlowDecay, bool $falling) : Block{
+		$result = parent::getFlowResult($target, $newFlowDecay, $falling);
+
+		if($target instanceof CoveredByWater && $result instanceof Water){
+			$result = (clone $target)->setWaterCover($result);
+		}
+		return $result;
+	}
+
+	protected function getDecayResult(Block $oldForm) : Block{
+		return $oldForm instanceof CoveredByWater ? (clone $oldForm)->setWaterCover(null) : VanillaBlocks::AIR();
+	}
+
+	protected function isSideAvailable(Block $block, int $face) : bool{
+		return $block instanceof CoveredByWater ? $block->isSideOpenToFlow($face) : true;
+	}
+	protected function unpackLiquid(Block $block) : Block{
+		return $block instanceof CoveredByWater && ($cover = $block->getWaterCover()) !== null ? $cover : $block;
 	}
 }

@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockBurnEvent;
 use pocketmine\math\Facing;
@@ -54,7 +55,10 @@ class Fire extends BaseFire implements Ageable{
 		$down = $this->getSide(Facing::DOWN);
 		if(SoulFire::canBeSupportedBy($down)){
 			$world->setBlock($this->position, VanillaBlocks::SOUL_FIRE());
-		}elseif(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()){
+		}elseif(
+			$down instanceof CoveredByWater && $down->getWaterCover() !== null ||
+			!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->hasAdjacentFlammableBlocks()
+		){
 			$world->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$world->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));

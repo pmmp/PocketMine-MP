@@ -26,14 +26,20 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralTypeTrait;
+use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\CoveredByWaterTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use function mt_rand;
 
-abstract class BaseCoral extends Transparent implements CoralMaterial{
+abstract class BaseCoral extends Transparent implements CoralMaterial, CoveredByWater{
 	use CoralTypeTrait;
+	use CoveredByWaterTrait{
+		onNearbyBlockChange as onWaterBlockChange;
+	}
 
 	public function onNearbyBlockChange() : void{
+		$this->onWaterBlockChange();
 		if(!$this->dead){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
 		}
@@ -56,18 +62,7 @@ abstract class BaseCoral extends Transparent implements CoralMaterial{
 	public function isSolid() : bool{ return false; }
 
 	protected function isCoveredWithWater() : bool{
-		$world = $this->position->getWorld();
-
-		$hasWater = false;
-		foreach($this->position->sides() as $vector3){
-			if($world->getBlock($vector3) instanceof Water){
-				$hasWater = true;
-				break;
-			}
-		}
-
-		//TODO: check water inside the block itself (not supported on the API yet)
-		return $hasWater;
+		return $this->waterCover !== null;
 	}
 
 	protected function recalculateCollisionBoxes() : array{ return []; }

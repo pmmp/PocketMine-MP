@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\CoveredByWaterTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -35,8 +37,12 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
-class Door extends Transparent implements HorizontalFacing{
+class Door extends Transparent implements HorizontalFacing, CoveredByWater{
 	use HorizontalFacingTrait;
+	use CoveredByWaterTrait{
+		readStateFromWorld as readWaterStateFromWorld;
+		onNearbyBlockChange as onWaterBlockChange;
+	}
 
 	protected bool $top = false;
 	protected bool $hingeRight = false;
@@ -51,6 +57,8 @@ class Door extends Transparent implements HorizontalFacing{
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+
+		$this->readWaterStateFromWorld();
 
 		$this->collisionBoxes = null;
 
@@ -106,6 +114,8 @@ class Door extends Transparent implements HorizontalFacing{
 	}
 
 	public function onNearbyBlockChange() : void{
+		$this->onWaterBlockChange();
+
 		if(!$this->canBeSupportedAt($this) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
@@ -131,6 +141,13 @@ class Door extends Transparent implements HorizontalFacing{
 
 			$topHalf = clone $this;
 			$topHalf->top = true;
+
+			if($blockReplace instanceof Water && $blockReplace->isSource()){
+				$this->waterCover = clone $blockReplace;
+			}
+			if($blockUp instanceof Water && $blockUp->isSource()){
+				$topHalf->waterCover = clone $blockUp;
+			}
 
 			$tx->addBlock($blockReplace->position, $this)->addBlock($blockUp->position, $topHalf);
 			return true;

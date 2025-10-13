@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Vector3;
 
@@ -41,7 +42,9 @@ abstract class Flowable extends Transparent{
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
-		return (!$this->canBeFlowedInto() || !$blockReplace instanceof Liquid) &&
+		return
+			(($this instanceof CoveredByWater && $this->canBeCovered() && $blockReplace->getTypeId() === BlockTypeIds::WATER) ||
+				(!$this->canBeFlowedInto() || !$blockReplace instanceof Liquid)) &&
 			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 

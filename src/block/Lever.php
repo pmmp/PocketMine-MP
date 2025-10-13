@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\CoveredByWaterTrait;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -35,7 +37,12 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
-class Lever extends Flowable{
+class Lever extends Flowable implements CoveredByWater{
+	use CoveredByWaterTrait{
+		place as waterPlace;
+		onNearbyBlockChange as onWaterBlockChange;
+	}
+
 	protected LeverFacing $facing = LeverFacing::UP_AXIS_X;
 	protected bool $activated = false;
 
@@ -81,10 +88,16 @@ class Lever extends Flowable{
 			default => throw new AssumptionFailedError("Bad facing value"),
 		};
 
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function canBeCoveredByFlowing() : bool{
+		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
+		$this->onWaterBlockChange();
+
 		if(!$this->canBeSupportedAt($this, Facing::opposite($this->facing->getFacing()))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}

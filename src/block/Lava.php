@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -71,7 +72,7 @@ class Lava extends Liquid{
 			return false;
 		}
 		foreach($this->getAdjacentBlocksExceptDown() as $colliding){
-			if($colliding instanceof Water){
+			if($colliding instanceof Water || $colliding instanceof CoveredByWater && $colliding->canBeCoveredByFlowing() && $colliding->getWaterCover() !== null){
 				if($this->decay === 0){
 					$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
 					return true;
@@ -95,7 +96,7 @@ class Lava extends Liquid{
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
-		if($block instanceof Water){
+		if($block instanceof Water || $block instanceof CoveredByWater && $block->canBeCoveredByFlowing() && $block->getWaterCover() !== null){
 			$block->liquidCollide($this, VanillaBlocks::STONE());
 		}else{
 			parent::flowIntoBlock($block, $newFlowDecay, $falling);

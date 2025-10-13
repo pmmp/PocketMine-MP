@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\CoveredByWaterTrait;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -33,7 +35,11 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Slab extends Transparent{
+class Slab extends Transparent implements CoveredByWater{
+	use CoveredByWaterTrait{
+		place as waterPlace;
+	}
+
 	protected SlabType $slabType = SlabType::BOTTOM;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo){
@@ -63,6 +69,14 @@ class Slab extends Transparent{
 		return $this;
 	}
 
+	public function canBeCovered() : bool{
+		return $this->slabType !== SlabType::DOUBLE;
+	}
+
+	public function isSideOpenToFlow(int $face) : bool{
+		return $this->slabType === SlabType::TOP || $face !== Facing::DOWN;
+	}
+
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		if(parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock)){
 			return true;
@@ -90,7 +104,7 @@ class Slab extends Transparent{
 			$this->slabType = (($face !== Facing::UP && $clickVector->y > 0.5) || $face === Facing::DOWN) ? SlabType::TOP : SlabType::BOTTOM;
 		}
 
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

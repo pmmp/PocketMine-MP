@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -140,6 +141,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
+		$block = $this->unpackLiquid($block);
 		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
 			return -1;
 		}
@@ -179,7 +181,7 @@ abstract class Liquid extends Transparent{
 			$sideBlock = $world->getBlockAt($sideX, $sideY, $sideZ);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
-			if($blockDecay < 0){
+			if($blockDecay < 0 || !$this->isSideAvailable($sideBlock, $j)){
 				if(!$sideBlock->canBeFlowedInto()){
 					continue;
 				}
@@ -251,6 +253,14 @@ abstract class Liquid extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
+		$this->onFlowUpdate();
+	}
+
+	public function onScheduledDisplacedUpdate() : void{
+		$this->onFlowUpdate();
+	}
+
+	private function onFlowUpdate() : void{
 		$multiplier = $this->getFlowDecayPerBlock();
 
 		$world = $this->position->getWorld();
@@ -258,14 +268,15 @@ abstract class Liquid extends Transparent{
 		$x = $this->position->getFloorX();
 		$y = $this->position->getFloorY();
 		$z = $this->position->getFloorZ();
+		$owningBlock = $world->getBlockAt($x, $y, $z);
 
 		if(!$this->isSource()){
 			$smallestFlowDecay = -100;
 			$this->adjacentSources = 0;
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z - 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z + 1), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x - 1, $y, $z), $smallestFlowDecay);
-			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x + 1, $y, $z), $smallestFlowDecay);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z - 1), $smallestFlowDecay, Facing::NORTH);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x, $y, $z + 1), $smallestFlowDecay, Facing::SOUTH);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x - 1, $y, $z), $smallestFlowDecay, Facing::WEST);
+			$smallestFlowDecay = $this->getSmallestFlowDecay($world->getBlockAt($x + 1, $y, $z), $smallestFlowDecay, Facing::EAST);
 
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
@@ -274,14 +285,18 @@ abstract class Liquid extends Transparent{
 				$newDecay = -1;
 			}
 
-			if($this->getEffectiveFlowDecay($world->getBlockAt($x, $y + 1, $z)) >= 0){
+			if($this->getEffectiveFlowDecay($block = $world->getBlockAt($x, $y + 1, $z)) >= 0 && $this->isSideAvailable($block, Facing::DOWN)){
 				$falling = true;
 			}
 
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
-				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->hasSameTypeId($this) && $bottomBlock->isSource())){
+				$bottomLiquid = $this->unpackLiquid($bottomBlock);
+				if(
+					$bottomBlock->isSolid() ||
+					($bottomLiquid instanceof Liquid && $bottomLiquid->hasSameTypeId($this) && $bottomLiquid->isSource())
+				){
 					$newDecay = 0;
 					$falling = false;
 				}
@@ -289,19 +304,20 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
 				if(!$falling && $newDecay < 0){
-					$world->setBlockAt($x, $y, $z, VanillaBlocks::AIR());
+					$world->setBlockAt($x, $y, $z, $this->getDecayResult($owningBlock));
 					return;
 				}
 
 				$this->falling = $falling;
 				$this->decay = $falling ? 0 : $newDecay;
-				$world->setBlockAt($x, $y, $z, $this); //local block update will cause an update to be scheduled
+				$world->setBlockAt($x, $y, $z, $owningBlock); //local block update will cause an update to be scheduled
 			}
 		}
 
-		$bottomBlock = $world->getBlockAt($x, $y - 1, $z);
-
-		$this->flowIntoBlock($bottomBlock, 0, true);
+		$bottomBlock = $this->unpackLiquid($world->getBlockAt($x, $y - 1, $z));
+		if($this->isSideAvailable($owningBlock, Facing::DOWN)){
+			$this->flowIntoBlock($bottomBlock, 0, true);
+		}
 
 		if($this->isSource() || !$bottomBlock->canBeFlowedInto()){
 			if($this->falling){
@@ -313,6 +329,9 @@ abstract class Liquid extends Transparent{
 			if($adjacentDecay <= self::MAX_DECAY){
 				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($x, $y, $z) as $facing){
+					if(!$this->isSideAvailable($owningBlock, Facing::opposite($facing))){
+						continue;
+					}
 					[$dx, $dy, $dz] = Facing::OFFSET[$facing];
 					$this->flowIntoBlock($world->getBlockAt($x + $dx, $y + $dy, $z + $dz), $adjacentDecay, false);
 				}
@@ -324,15 +343,12 @@ abstract class Liquid extends Transparent{
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
 		if($this->canFlowInto($block) && !($block instanceof Liquid)){
-			$new = clone $this;
-			$new->falling = $falling;
-			$new->decay = $falling ? 0 : $newFlowDecay;
-
-			$ev = new BlockSpreadEvent($block, $this, $new);
+			$ev = new BlockSpreadEvent($block, $this->position->getWorld()->getBlock($this->position), $this->getFlowResult($block, $newFlowDecay, $falling));
 			$ev->call();
+
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
-				if($block->getTypeId() !== BlockTypeIds::AIR){
+				if(!$block instanceof CoveredByWater && $block->getTypeId() !== BlockTypeIds::AIR){
 					$world->useBreakOn($block->position);
 				}
 
@@ -342,16 +358,17 @@ abstract class Liquid extends Transparent{
 	}
 
 	/** @phpstan-impure */
-	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) || !$block->hasSameTypeId($this)){
+	private function getSmallestFlowDecay(Block $block, int $decay, int $face) : int{
+		$liquid = $this->unpackLiquid($block);
+		if(!($liquid instanceof Liquid) || !$liquid->hasSameTypeId($this) || !$this->isSideAvailable($block, $face)){
 			return $decay;
 		}
 
-		$blockDecay = $block->decay;
+		$blockDecay = $liquid->decay;
 
-		if($block->isSource()){
+		if($liquid->isSource()){
 			++$this->adjacentSources;
-		}elseif($block->falling){
+		}elseif($liquid->falling){
 			$blockDecay = 0;
 		}
 
@@ -362,7 +379,7 @@ abstract class Liquid extends Transparent{
 		return false;
 	}
 
-	protected function liquidCollide(Block $cause, Block $result) : bool{
+	public function liquidCollide(Block $cause, Block $result) : bool{
 		if(BlockEventHelper::form($this, $result, $cause)){
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new FizzSound(2.6 + (Utils::getRandomFloat() - Utils::getRandomFloat()) * 0.8));
 		}
@@ -373,6 +390,26 @@ abstract class Liquid extends Transparent{
 		return
 			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
 			$block->canBeFlowedInto() &&
-			!($block instanceof Liquid && $block->isSource()); //TODO: I think this should only be liquids of the same type
+			!(($liquid = $this->unpackLiquid($block)) instanceof Liquid && $liquid->isSource()); //TODO: I think this should only be liquids of the same type
+	}
+
+	protected function getFlowResult(Block $target, int $newFlowDecay, bool $falling) : Block{
+		$new = clone $this;
+		$new->falling = $falling;
+		$new->decay = $falling ? 0 : $newFlowDecay;
+
+		return $new;
+	}
+
+	protected function getDecayResult(Block $oldForm) : Block{
+		return VanillaBlocks::AIR();
+	}
+
+	protected function isSideAvailable(Block $block, int $face) : bool{
+		return true;
+	}
+
+	protected function unpackLiquid(Block $block) : Block{
+		return $block;
 	}
 }

@@ -34,6 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -59,6 +60,7 @@ use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\StringToItemParser;
@@ -304,11 +306,21 @@ class World implements ChunkManager{
 
 	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
 	private ReversePriorityQueue $scheduledBlockUpdateQueue;
+
+	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
+	private ReversePriorityQueue $scheduledDisplacedBlockUpdateQueue;
+
 	/**
 	 * @var int[] blockHash => tick delay
 	 * @phpstan-var array<BlockPosHash, int>
 	 */
 	private array $scheduledBlockUpdateQueueIndex = [];
+
+	/**
+	 * @var int[] blockHash => tick delay
+	 * @phpstan-var array<BlockPosHash, int>
+	 */
+	private array $scheduledDisplacedBlockUpdateQueueIndex = [];
 
 	/** @phpstan-var \SplQueue<int> */
 	private \SplQueue $neighbourBlockUpdateQueue;
@@ -534,6 +546,9 @@ class World implements ChunkManager{
 
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
+
+		$this->scheduledDisplacedBlockUpdateQueue = new ReversePriorityQueue();
+		$this->scheduledDisplacedBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 
 		$this->neighbourBlockUpdateQueue = new \SplQueue();
 
@@ -963,6 +978,17 @@ class World implements ChunkManager{
 			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
+
+		while($this->scheduledDisplacedBlockUpdateQueue->count() > 0 && $this->scheduledDisplacedBlockUpdateQueue->current()["priority"] <= $currentTick){
+			/** @var Vector3 $vec */
+			$vec = $this->scheduledDisplacedBlockUpdateQueue->extract()["data"];
+			unset($this->scheduledDisplacedBlockUpdateQueueIndex[World::blockHash($vec->x, $vec->y, $vec->z)]);
+			if(!$this->isInLoadedTerrain($vec)){
+				continue;
+			}
+			$block = $this->getBlock($vec)->getDisplacedBlock();
+			$block->onScheduledDisplacedUpdate();
+		}
 		$this->timings->scheduledBlockUpdates->stopTiming();
 
 		$this->timings->neighbourBlockUpdates->startTiming();
@@ -1125,6 +1151,12 @@ class World implements ChunkManager{
 				$blockTranslator->internalIdToNetworkId($fullBlock->getStateId()),
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
+			);
+			$packets[] = UpdateBlockPacket::create(
+				$blockPosition,
+				$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()->getStateId()),
+				UpdateBlockPacket::FLAG_NETWORK,
+				UpdateBlockPacket::DATA_LAYER_LIQUID
 			);
 
 			if($tile instanceof Spawnable){
@@ -1474,6 +1506,24 @@ class World implements ChunkManager{
 		}
 		$this->scheduledBlockUpdateQueueIndex[$index] = $delay;
 		$this->scheduledBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
+	}
+
+	/**
+	 * @internal
+	 * Similar to scheduleDelayedBlockUpdate, but used to delay an update of "displaced" blocks (e.g. water),
+	 * placed at the same position with their owning blocks, independently of their owning blocks updates.
+	 *
+	 * This is internal and used only in things such as waterlogging, plugins should NOT use this.
+	 */
+	public function delayDisplacedBlockUpdate(Vector3 $pos, int $delay) : void{
+		if(
+			!$this->isInWorld($pos->x, $pos->y, $pos->z) ||
+			(isset($this->scheduledDisplacedBlockUpdateQueueIndex[$index = World::blockHash($pos->x, $pos->y, $pos->z)]) && $this->scheduledDisplacedBlockUpdateQueueIndex[$index] <= $delay)
+		){
+			return;
+		}
+		$this->scheduledDisplacedBlockUpdateQueueIndex[$index] = $delay;
+		$this->scheduledDisplacedBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
 	}
 
 	private function tryAddToNeighbourUpdateQueue(int $x, int $y, int $z) : void{
@@ -1977,15 +2027,21 @@ class World implements ChunkManager{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$displacedBlock = $this->blockStateRegistry->fromStateId($chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
+				$displacedBlock = VanillaBlocks::AIR();
 			}
 		}else{
 			$block = VanillaBlocks::AIR();
+			$displacedBlock = VanillaBlocks::AIR();
 		}
 
 		$block->position($this, $x, $y, $z);
+		$displacedBlock->position($this, $x, $y, $z);
+
+		$block->setDisplacedBlock($displacedBlock);
 
 		if($this->inDynamicStateRecalculation){
 			//this call was generated by a parent getBlock() call calculating dynamic stateinfo
@@ -2272,6 +2328,14 @@ class World implements ChunkManager{
 			if($player->isSneaking()){
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
+			}else{
+				//I have no idea why, but if you are holding an empty bucket and there is an activatable waterlogged block above,
+				//the client sends a position of that waterlogged block instead, triggering its activation...
+				$ev->setUseBlock(
+					$item->getTypeId() !== ItemTypeIds::BUCKET ||
+					!$blockClicked instanceof CoveredByWater ||
+					(($cover = $blockClicked->getWaterCover()) === null || !$cover->isSource())
+				);
 			}
 			if($player->isSpectator()){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this

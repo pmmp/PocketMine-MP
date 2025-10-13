@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -42,6 +43,9 @@ class WaterLily extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN) instanceof Water;
+		$support = $block->getSide(Facing::DOWN);
+		return
+			$support instanceof Water ||
+			$support instanceof CoveredByWater && $support->getWaterCover() !== null;
 	}
 }
