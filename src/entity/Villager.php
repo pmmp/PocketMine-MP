@@ -46,7 +46,7 @@ class Villager extends Living implements Ageable{
 	private int $profession = self::PROFESSION_FARMER;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{
-		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height??
+		return new EntitySizeInfo(1.9, 0.6); //TODO: eye height??
 	}
 
 	public function getName() : string{
