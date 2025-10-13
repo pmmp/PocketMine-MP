@@ -98,8 +98,6 @@ class Cactus extends Transparent implements Ageable{
 			$height++;
 		}
 
-		$this->age++;
-
 		if($this->age === 9){
 			$canGrowFlower = true;
 			foreach(Facing::HORIZONTAL as $side){
@@ -121,12 +119,14 @@ class Cactus extends Transparent implements Ageable{
 			}
 		}
 
-		if($this->age > self::MAX_AGE){
+		if($this->age === self::MAX_AGE){
 			$this->age = 0;
 
 			if($height < self::MAX_HEIGHT){
 				BlockEventHelper::grow($up, VanillaBlocks::CACTUS(), null);
 			}
+		}else{
+			++$this->age;
 		}
 		$world->setBlock($this->position, $this, update: false);
 	}
