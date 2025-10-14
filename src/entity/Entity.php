@@ -27,8 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\Water;
+use pocketmine\block\utils\WaterCoverHelper;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
@@ -1137,8 +1136,8 @@ abstract class Entity{
 	public function isUnderwater() : bool{
 		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), $blockY = (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
-		$water = $block instanceof CoveredByWater && $block->getWaterCover() !== null ? $block->getWaterCover() : $block;
-		if($water instanceof Water){
+		$water = WaterCoverHelper::getWater($block);
+		if($water !== null){
 			$f = ($blockY + 1) - ($water->getFluidHeightPercent() - 0.1111111);
 			return $y < $f;
 		}

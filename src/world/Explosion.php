@@ -26,8 +26,8 @@ namespace pocketmine\world;
 use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
-use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WaterCoverHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockExplodeEvent;
@@ -143,7 +143,7 @@ class Explosion{
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
-										if($_block instanceof CoveredByWater && $_block->getWaterCover() !== null){
+										if(WaterCoverHelper::isWater($_block)){
 											continue;
 										}
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){

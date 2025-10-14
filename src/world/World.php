@@ -34,7 +34,6 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
-use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -60,7 +59,6 @@ use pocketmine\event\world\WorldParticleEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\event\world\WorldSoundEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\StringToItemParser;
@@ -987,7 +985,7 @@ class World implements ChunkManager{
 				continue;
 			}
 			$block = $this->getBlock($vec)->getDisplacedBlock();
-			$block->onDisplacedScheduledUpdate();
+			$block?->onDisplacedScheduledUpdate();
 		}
 		$this->timings->scheduledBlockUpdates->stopTiming();
 
@@ -1154,7 +1152,7 @@ class World implements ChunkManager{
 			);
 			$packets[] = UpdateBlockPacket::create(
 				$blockPosition,
-				$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()->getStateId()),
+				$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()?->getStateId() ?? Block::EMPTY_STATE_ID),
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_LIQUID
 			);
@@ -2031,11 +2029,11 @@ class World implements ChunkManager{
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
-				$displacedBlock = VanillaBlocks::AIR();
+				$displacedBlock = null;
 			}
 		}else{
 			$block = VanillaBlocks::AIR();
-			$displacedBlock = VanillaBlocks::AIR();
+			$displacedBlock = null;
 		}
 
 		$block->setDisplacedBlock($displacedBlock);
@@ -2293,7 +2291,7 @@ class World implements ChunkManager{
 	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = [], bool $interactContainedBlock = false) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -2327,13 +2325,7 @@ class World implements ChunkManager{
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
 			}else{
-				//I have no idea why, but if you are holding an empty bucket and there is an activatable waterlogged block above,
-				//the client sends a position of that waterlogged block instead, triggering its activation...
-				$ev->setUseBlock(
-					$item->getTypeId() !== ItemTypeIds::BUCKET ||
-					!$blockClicked instanceof CoveredByWater ||
-					(($cover = $blockClicked->getWaterCover()) === null || !$cover->isSource())
-				);
+				$ev->setUseBlock(!$interactContainedBlock);
 			}
 			if($player->isSpectator()){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this

@@ -37,7 +37,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
-class Lever extends Flowable implements CoveredByWater{
+class Lever extends CoveredFlowable implements CoveredByWater{
 	use CoveredByWaterTrait{
 		place as waterPlace;
 		onNearbyBlockChange as onWaterBlockChange;

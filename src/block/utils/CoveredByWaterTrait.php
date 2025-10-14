@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
@@ -62,18 +61,18 @@ trait CoveredByWaterTrait{
 		return true;
 	}
 
-	public function getDisplacedBlock() : Block{
-		return $this->waterCover !== null ? $this->waterCover : VanillaBlocks::AIR();
+	public function getDisplacedBlock() : ?Block{
+		return $this->waterCover !== null ? $this->waterCover : null;
 	}
 
-	public function setDisplacedBlock(Block $block) : void{
+	public function setDisplacedBlock(?Block $block) : void{
 		if($block instanceof Water){
 			$this->waterCover = $block;
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof Water && $blockReplace->isSource()){
+		if($blockReplace instanceof Water && ($this->canBeCoveredByFlowing() || $blockReplace->isSource())){
 			$this->waterCover = clone $blockReplace;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

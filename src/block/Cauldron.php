@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Cauldron as TileCauldron;
-use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WaterCoverHelper;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\Potion;
@@ -97,7 +97,7 @@ final class Cauldron extends Transparent{
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
 		$block = $world->getBlock($this->position->up());
-		if($block->getTypeId() === BlockTypeIds::WATER || $block instanceof CoveredByWater && $block->getWaterCover() !== null){
+		if(WaterCoverHelper::isWater($block)){
 			$cauldron = VanillaBlocks::WATER_CAULDRON()->setFillLevel(FillableCauldron::MAX_FILL_LEVEL);
 			$world->setBlock($this->position, $cauldron);
 			$world->addSound($this->position->add(0.5, 0.5, 0.5), $cauldron->getFillSound());

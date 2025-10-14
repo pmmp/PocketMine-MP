@@ -32,7 +32,7 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use function mt_rand;
 
-abstract class BaseCoral extends Transparent implements CoralMaterial, CoveredByWater{
+abstract class BaseCoral extends CoveredFlowable implements CoralMaterial, CoveredByWater{
 	use CoralTypeTrait;
 	use CoveredByWaterTrait{
 		onNearbyBlockChange as onWaterBlockChange;

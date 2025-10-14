@@ -348,7 +348,7 @@ abstract class Liquid extends Transparent{
 
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
-				if(!$block instanceof CoveredByWater && $block->getTypeId() !== BlockTypeIds::AIR){
+				if((!$block instanceof CoveredByWater || !$block->canBeCoveredByFlowing()) && $block->getTypeId() !== BlockTypeIds::AIR){
 					$world->useBreakOn($block->position);
 				}
 

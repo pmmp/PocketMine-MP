@@ -387,7 +387,7 @@ class Block{
 			throw new AssumptionFailedError("World::setBlock() should have loaded the chunk before calling this method");
 		}
 		$chunk->setBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getStateId());
-		$chunk->setDisplacedBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getDisplacedBlock()->getStateId());
+		$chunk->setDisplacedBlockStateId($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getDisplacedBlock()?->getStateId() ?? self::EMPTY_STATE_ID);
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $world->getTile($this->position);
@@ -414,15 +414,15 @@ class Block{
 	 * Returns a block which has been displaced by another block to the second layer.
 	 * Used in waterlogging and snowlogging.
 	 */
-	public function getDisplacedBlock() : Block{
-		return VanillaBlocks::AIR();
+	public function getDisplacedBlock() : ?Block{
+		return null;
 	}
 
 	/**
 	 * @internal
 	 * Called when block is loaded to update its cover.
 	 */
-	public function setDisplacedBlock(Block $block) : void{
+	public function setDisplacedBlock(?Block $block) : void{
 		//NOOP
 	}
 
@@ -505,7 +505,7 @@ class Block{
 		if(($t = $world->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$world->setBlock($this->position, $this->getDisplacedBlock());
+		$world->setBlock($this->position, $this->getDisplacedBlock() ?? VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -653,7 +653,7 @@ class Block{
 		$this->position = new Position($x, $y, $z, $world);
 		$this->collisionBoxes = null;
 
-		if(($block = $this->getDisplacedBlock())->getTypeId() !== BlockTypeIds::AIR){
+		if(($block = $this->getDisplacedBlock()) !== null){
 			$block->position($world, $x, $y, $z);
 		}
 	}
