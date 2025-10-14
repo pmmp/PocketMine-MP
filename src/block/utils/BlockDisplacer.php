@@ -24,28 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\block\Water;
 
-interface CoveredByWater extends BlockDisplacer{
-
-	public function getWaterCover() : ?Water;
-
-	/**
-	 * @return $this
-	 */
-	public function setWaterCover(?Water $waterCover) : self;
-
-	public function liquidCollide(Block $cause, Block $result) : bool;
+/**
+ * Indicates that a block can contain another block inside.
+ * Used in things like waterlogging & snowlogging.
+ */
+interface BlockDisplacer{
 
 	/**
-	 * Returns whether block can be covered by water at the current moment.
-	 * For example, double slabs can't be waterlogged, while single can.
+	 * @internal
+	 * Called when a block is loaded to update its contained block.
+	 * Do NOT use this in plugins, use your block provided API instead.
 	 */
-	public function canBeCovered() : bool;
-
-	/** Returns whether the block can be covered not only by source water, but also by the flowing. */
-	public function canBeCoveredByFlowing() : bool;
-
-	/** Returns whether water can flow through the given side. */
-	public function isSideOpenToFlow(int $face) : bool;
+	public function setDisplacedBlock(?Block $block) : void;
 }

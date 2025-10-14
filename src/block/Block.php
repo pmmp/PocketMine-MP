@@ -419,14 +419,6 @@ class Block{
 	}
 
 	/**
-	 * @internal
-	 * Called when block is loaded to update its cover.
-	 */
-	public function setDisplacedBlock(?Block $block) : void{
-		//NOOP
-	}
-
-	/**
 	 * Returns whether this block can be placed when obtained as an item.
 	 */
 	public function canBePlaced() : bool{

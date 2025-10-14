@@ -34,6 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\utils\BlockDisplacer;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
@@ -2036,7 +2037,9 @@ class World implements ChunkManager{
 			$displacedBlock = null;
 		}
 
-		$block->setDisplacedBlock($displacedBlock);
+		if($block instanceof BlockDisplacer){
+			$block->setDisplacedBlock($displacedBlock);
+		}
 		$block->position($this, $x, $y, $z);
 
 		if($this->inDynamicStateRecalculation){
