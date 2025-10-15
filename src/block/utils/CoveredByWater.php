@@ -26,7 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\block\Block;
 use pocketmine\block\Water;
 
-interface CoveredByWater extends BlockDisplacer{
+interface CoveredByWater{
 
 	public function getWaterCover() : ?Water;
 

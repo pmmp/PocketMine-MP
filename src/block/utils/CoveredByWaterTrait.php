@@ -65,12 +65,6 @@ trait CoveredByWaterTrait{
 		return $this->waterCover !== null ? $this->waterCover : null;
 	}
 
-	public function setDisplacedBlock(?Block $block) : void{
-		if($block instanceof Water){
-			$this->waterCover = $block;
-		}
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof Water && ($this->canBeCoveredByFlowing() || $blockReplace->isSource())){
 			$this->waterCover = clone $blockReplace;

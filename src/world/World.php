@@ -34,8 +34,9 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
-use pocketmine\block\utils\BlockDisplacer;
+use pocketmine\block\utils\CoveredByWater;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -2037,8 +2038,8 @@ class World implements ChunkManager{
 			$displacedBlock = null;
 		}
 
-		if($block instanceof BlockDisplacer){
-			$block->setDisplacedBlock($displacedBlock);
+		if($block instanceof CoveredByWater){
+			$block->setWaterCover($displacedBlock instanceof Water ? $displacedBlock : null);
 		}
 		$block->position($this, $x, $y, $z);
 
