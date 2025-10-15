@@ -345,7 +345,6 @@ abstract class Liquid extends Transparent{
 		if($this->canFlowInto($block) && !($block instanceof Liquid)){
 			$ev = new BlockSpreadEvent($block, $this->position->getWorld()->getBlock($this->position), $this->getFlowResult($block, $newFlowDecay, $falling));
 			$ev->call();
-
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
 				if((!$block instanceof CoveredByWater || !$block->canBeCoveredByFlowing()) && $block->getTypeId() !== BlockTypeIds::AIR){
