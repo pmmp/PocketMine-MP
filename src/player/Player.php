@@ -108,7 +108,6 @@ use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -1927,7 +1926,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 *
 	 * @return bool if it did something
 	 */
-	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset, ?int $blockRuntimeId = null) : bool{
+	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset, bool $interactContainedBlock = false) : bool{
 		$this->setUsingItem(false);
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
@@ -1935,12 +1934,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			$returnedItems = [];
-			$world = $this->getWorld();
-			$interactContainedBlock = false;
-			if($blockRuntimeId !== null && ($displacedBlock = $world->getBlock($pos)->getDisplacedBlock()) !== null){
-				$interactContainedBlock = TypeConverter::getInstance()->getBlockTranslator()->internalIdToNetworkId($displacedBlock->getStateId()) === $blockRuntimeId;
-			}
-			if($world->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems, $interactContainedBlock)){
+			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems, $interactContainedBlock)){
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
 			}

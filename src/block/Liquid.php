@@ -329,7 +329,7 @@ abstract class Liquid extends Transparent{
 			if($adjacentDecay <= self::MAX_DECAY){
 				$calculator = new MinimumCostFlowCalculator($world, $this->getFlowDecayPerBlock(), $this->canFlowInto(...));
 				foreach($calculator->getOptimalFlowDirections($x, $y, $z) as $facing){
-					if(!$this->isSideAvailable($owningBlock, Facing::opposite($facing))){
+					if(!$this->isSideAvailable($owningBlock, $facing)){
 						continue;
 					}
 					[$dx, $dy, $dz] = Facing::OFFSET[$facing];
@@ -359,7 +359,7 @@ abstract class Liquid extends Transparent{
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay, int $face) : int{
 		$liquid = $this->unpackLiquid($block);
-		if(!($liquid instanceof Liquid) || !$liquid->hasSameTypeId($this) || !$this->isSideAvailable($block, $face)){
+		if(!($liquid instanceof Liquid) || !$liquid->hasSameTypeId($this) || !$this->isSideAvailable($block, Facing::opposite($face))){
 			return $decay;
 		}
 

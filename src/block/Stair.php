@@ -89,9 +89,7 @@ class Stair extends Transparent implements HorizontalFacing, CoveredByWater{
 	}
 
 	public function isSideOpenToFlow(int $face) : bool{
-		return
-			($this->upsideDown || $face !== Facing::DOWN) &&
-			($this->shape !== StairShape::STRAIGHT || Facing::opposite($this->facing) !== $face);
+		return $this->getSupportType($face) !== SupportType::FULL;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
