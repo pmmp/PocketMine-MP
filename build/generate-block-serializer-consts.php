@@ -29,6 +29,9 @@ use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
+use pocketmine\nbt\tag\ByteTag;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
@@ -78,6 +81,9 @@ function generateBlockPaletteReport(array $states) : BlockPaletteReport{
 		$name = $stateData->getName();
 		$result->seenTypes[$name] = $name;
 		foreach(Utils::stringifyKeys($stateData->getStates()) as $k => $v){
+			if(!$v instanceof ByteTag && !$v instanceof IntTag && !$v instanceof StringTag){
+				throw new AssumptionFailedError("Assumed all state tags should be TAG_Byte, TAG_Int or TAG_String, but found $k ($v) on block $name");
+			}
 			$result->seenStateValues[$k][$v->getValue()] = $v->getValue();
 			asort($result->seenStateValues[$k]);
 		}

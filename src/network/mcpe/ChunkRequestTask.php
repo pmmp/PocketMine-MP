@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
@@ -33,7 +34,6 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
-use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use function chr;
@@ -73,11 +73,11 @@ class ChunkRequestTask extends AsyncTask{
 		$converter = TypeConverter::getInstance();
 		$payload = ChunkSerializer::serializeFullChunk($chunk, $dimensionId, $converter->getBlockTranslator(), $this->tiles);
 
-		$stream = new BinaryStream();
+		$stream = new ByteBufferWriter();
 		PacketBatch::encodePackets($stream, [LevelChunkPacket::create(new ChunkPosition($this->chunkX, $this->chunkZ), $dimensionId, $subCount, false, null, $payload)]);
 
 		$compressor = $this->compressor->deserialize();
-		$this->setResult(chr($compressor->getNetworkId()) . $compressor->compress($stream->getBuffer()));
+		$this->setResult(chr($compressor->getNetworkId()) . $compressor->compress($stream->getData()));
 	}
 
 	public function onCompletion() : void{

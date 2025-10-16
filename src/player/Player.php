@@ -41,6 +41,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -169,7 +170,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, ChunkListener, IPlayer{
+class Player extends Human implements CommandSender, ChunkListener, IPlayer, NeverSavedWithChunkEntity{
 	use PermissibleDelegateTrait;
 
 	private const MOVES_PER_TICK = 2;
