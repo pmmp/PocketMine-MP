@@ -54,4 +54,8 @@ final class MetaWildcardRecipeIngredient implements RecipeIngredient{
 	public function __toString() : string{
 		return "MetaWildcardRecipeIngredient($this->itemId)";
 	}
+
+	public function isEquivalent(RecipeIngredient $other) : bool{
+		return $other instanceof MetaWildcardRecipeIngredient && $other->itemId === $this->itemId;
+	}
 }

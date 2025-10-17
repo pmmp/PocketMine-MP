@@ -52,4 +52,8 @@ final class TagWildcardRecipeIngredient implements RecipeIngredient{
 	public function __toString() : string{
 		return "TagWildcardRecipeIngredient($this->tagName)";
 	}
+
+	public function isEquivalent(RecipeIngredient $other) : bool{
+		return $other instanceof TagWildcardRecipeIngredient && $other->tagName === $this->tagName;
+	}
 }

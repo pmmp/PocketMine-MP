@@ -118,17 +118,6 @@ class CraftingManager{
 	/** @phpstan-return ObjectSet<\Closure() : void> */
 	public function getRecipeUnregisteredCallbacks() : ObjectSet{ return $this->recipeUnregisteredCallbacks; }
 
-	/**
-	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
-	 * @deprecated
-	 */
-	public static function sort(Item $i1, Item $i2) : int{
-		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
-		($retval = $i1->getStateId() <=> $i2->getStateId()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
-
-		return $retval;
-	}
-
 	private static function hashOutput(Item $output) : string{
 		$write = new ByteBufferWriter();
 		VarInt::writeSignedInt($write, $output->getStateId());
@@ -256,7 +245,7 @@ class CraftingManager{
 		$hash = self::hashOutputs($recipe->getResults());
 
 		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
-			if($r->isSame($recipe)){
+			if($r->isEquivalent($recipe)){
 				unset($this->shapelessRecipes[$hash][$i]);
 				if(count($this->shapelessRecipes[$hash]) === 0){
 					unset($this->shapelessRecipes[$hash]);
@@ -267,7 +256,7 @@ class CraftingManager{
 		}
 
 		foreach($this->craftingRecipeIndex as $index => $testRecipe){
-			if($testRecipe instanceof ShapelessRecipe && $recipe->isSame($testRecipe)){
+			if($testRecipe instanceof ShapelessRecipe && $recipe->isEquivalent($testRecipe)){
 				unset($this->craftingRecipeIndex[$index]);
 				$changed = true;
 			}

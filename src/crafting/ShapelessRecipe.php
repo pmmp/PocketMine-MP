@@ -101,7 +101,7 @@ class ShapelessRecipe implements CraftingRecipe{
 		return count($input) === 0; //crafting grid should be empty apart from the given ingredient stacks
 	}
 
-	public function isSame(ShapelessRecipe $recipe) : bool{
+	public function isEquivalent(ShapelessRecipe $recipe) : bool{
 		if($this->getType() !== $recipe->getType()){
 			return false;
 		}
@@ -118,7 +118,7 @@ class ShapelessRecipe implements CraftingRecipe{
 		if(!Utils::areUnorderedArraysEqual(
 			$this->getIngredientList(),
 			$recipe->getIngredientList(),
-			static fn(RecipeIngredient $a, RecipeIngredient $b) : bool => $a->__toString() === $b->__toString()
+			static fn(RecipeIngredient $a, RecipeIngredient $b) : bool => $a->isEquivalent($b)
 		)){
 			return false;
 		}
