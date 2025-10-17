@@ -209,7 +209,7 @@ class CraftingManager{
 
 		foreach($this->shapedRecipes[$hash] ?? [] as $i => $r){
 			if($r === $recipe){
-				unset($this->shapedRecipes[$hash][$i]);
+				array_splice($this->shapedRecipes[$hash], $i, 1);
 				if(count($this->shapedRecipes[$hash]) === 0){
 					unset($this->shapedRecipes[$hash]);
 					$changed = true;
@@ -246,7 +246,7 @@ class CraftingManager{
 
 		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
 			if($r->isEquivalent($recipe)){
-				unset($this->shapelessRecipes[$hash][$i]);
+				array_splice($this->shapelessRecipes[$hash], $i, 1);
 				if(count($this->shapelessRecipes[$hash]) === 0){
 					unset($this->shapelessRecipes[$hash]);
 					$changed = true;
@@ -280,7 +280,7 @@ class CraftingManager{
 	public function unregisterPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
 		$recipeIndex = array_search($recipe, $this->potionTypeRecipes, true);
 		if($recipeIndex !== false){
-			unset($this->potionTypeRecipes[$recipeIndex]);
+			array_splice($this->potionTypeRecipes, $recipeIndex, 1);
 
 			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();
@@ -299,7 +299,7 @@ class CraftingManager{
 	public function unregisterPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$recipeIndex = array_search($recipe, $this->potionContainerChangeRecipes, true);
 		if($recipeIndex !== false){
-			unset($this->potionContainerChangeRecipes[$recipeIndex]);
+			array_splice($this->potionContainerChangeRecipes, $recipeIndex, 1);
 
 			foreach($this->recipeUnregisteredCallbacks as $callback){
 				$callback();

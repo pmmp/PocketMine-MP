@@ -55,9 +55,6 @@ final class ExactRecipeIngredient implements RecipeIngredient{
 	}
 
 	public function isEquivalent(RecipeIngredient $other) : bool{
-		if(!$other instanceof ExactRecipeIngredient){
-			return false;
-		}
-		return $this->item->equals($other->item, true, $this->item->hasNamedTag());
+		return $other instanceof ExactRecipeIngredient && $this->item->equals($other->item, true, $this->item->hasNamedTag());
 	}
 }
