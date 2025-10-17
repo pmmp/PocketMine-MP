@@ -64,7 +64,7 @@ final class Nylium extends Block{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+		if($item instanceof Fertilizer && $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR){
 			$item->pop();
 			$this->growVegetation(new Random());
 			return true;
