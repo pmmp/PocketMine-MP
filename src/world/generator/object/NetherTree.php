@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockTypeIds;
 use pocketmine\block\NetherFungus;
 use pocketmine\block\NetherVines;
 use pocketmine\block\VanillaBlocks;
@@ -36,15 +35,22 @@ use function min;
 
 class NetherTree extends Tree{
 
-	private bool $planted = false;
-	private bool $huge = false;
+	private bool $huge;
 
-	public function __construct(Block $stemBlock, Block $hatBlock, Random $random, private readonly bool $hasVines){
+	public function __construct(Block $stemBlock, Block $hatBlock, Random $random, private readonly bool $hasVines, private readonly bool $planted = false){
 		$i = $random->nextBoundedInt(9) + 4;
 		if($random->nextBoundedInt(12) === 0){
 			$i *= 2;
 		}
+		$this->huge = !$this->planted && $random->nextFloat() < 0.06;
 		parent::__construct($stemBlock, $hatBlock, $i);
+	}
+
+	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
+		if($this->planted){
+			return true;
+		}
+		return parent::canPlaceObject($world, $x, $y, $z, $random);
 	}
 
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
@@ -53,11 +59,6 @@ class NetherTree extends Tree{
 		}
 
 		$transaction = new BlockTransaction($world);
-
-		if($this->canOverride($transaction->fetchBlockAt($x, $y, $z))){
-			$transaction->addBlockAt($x, $y, $z, VanillaBlocks::AIR());
-		}
-
 		$this->placeStem($x, $y, $z, $random, $this->generateTrunkHeight($random), $transaction);
 		$this->placeHat($x, $y, $z, $random, $transaction);
 
@@ -65,11 +66,11 @@ class NetherTree extends Tree{
 	}
 
 	protected function placeStem(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
-		$i = $this->planted ? 1 : 0;
+		$i = $this->huge ? 1 : 0;
 
 		for($j = -$i; $j <= $i; ++$j){
 			for($k = -$i; $k <= $i; ++$k){
-				$isCorner = $this->planted && abs($j) === $i && abs($k) === $i;
+				$isCorner = $this->huge && abs($j) === $i && abs($k) === $i;
 
 				for($l = 0; $l < $trunkHeight; ++$l){
 					$blockX = $x + $j;
@@ -77,11 +78,7 @@ class NetherTree extends Tree{
 					$blockZ = $z + $k;
 
 					if($this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
-						if($this->planted){
-							if($transaction->fetchBlockAt($blockX, $blockY - 1, $blockZ)->getTypeId() !== BlockTypeIds::AIR){
-								$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
-							}
-						}elseif($isCorner){
+						if($isCorner){
 							if($random->nextFloat() < 0.1){
 								$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
 							}
@@ -123,12 +120,6 @@ class NetherTree extends Tree{
 					$blockZ = $z + $j1;
 
 					if($this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
-						if($this->planted){
-							if($transaction->fetchBlockAt($blockX, $blockY - 1, $blockZ)->getTypeId() !== BlockTypeIds::AIR){
-								continue;
-							}
-						}
-
 						if($isLowerSection){
 							if(!$isInner){
 								$this->placeHatDropBlock($blockX, $blockY, $blockZ, $random, $transaction, $isCrimson);
@@ -178,15 +169,15 @@ class NetherTree extends Tree{
 				$i *= 2;
 			}
 
-			$maxAge = 25;
-			$age = 23;
+			$maxAge = NetherVines::MAX_AGE;
+			$startAge = 23;
 
 			for($v = 0; $v < $i; ++$v){
 				$vy = $currentY - $v;
 				if($vy < 0) break;
 
 				if($this->canOverride($transaction->fetchBlockAt($x, $vy, $z))){
-					$vineAge = min($maxAge, $age + $v);
+					$vineAge = min($maxAge, $startAge + $v);
 					$transaction->addBlockAt($x, $vy, $z, VanillaBlocks::WEEPING_VINES()->setAge($vineAge));
 				}else{
 					break;
@@ -197,5 +188,9 @@ class NetherTree extends Tree{
 
 	protected function canOverride(Block $block) : bool{
 		return $block->canBeReplaced() || $block instanceof NetherFungus || $block instanceof NetherVines;
+	}
+
+	protected function generateTrunkHeight(Random $random) : int{
+		return $this->treeHeight;
 	}
 }

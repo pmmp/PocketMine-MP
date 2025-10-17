@@ -67,7 +67,7 @@ class NetherFungus extends Flowable{
 	}
 
 	private function grow(?Player $player) : bool{
-		$treeType = $this->getTypeId() === BlockTypeIds::CRIMSON_FUNGUS ? TreeType::CRIMSON_FUNGUS : TreeType::WARPED_FUNGUS;
+		$treeType = $this->getTypeId() === BlockTypeIds::CRIMSON_FUNGUS ? TreeType::CRIMSON_FUNGUS_PLANTED : TreeType::WARPED_FUNGUS_PLANTED;
 
 		$random = new Random(mt_rand());
 		$tree = TreeFactory::get($random, $treeType);
