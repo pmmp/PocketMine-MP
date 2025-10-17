@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerResourcePackOfferEvent;
@@ -70,7 +73,6 @@ use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
@@ -109,21 +111,20 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
+use function array_filter;
 use function array_map;
+use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
 use function get_class;
 use function implode;
-use function in_array;
 use function is_string;
 use function json_encode;
 use function ord;
@@ -401,7 +402,7 @@ class NetworkSession{
 			}
 
 			try{
-				$stream = new BinaryStream($decompressed);
+				$stream = new ByteBufferReader($decompressed);
 				foreach(PacketBatch::decodeRaw($stream) as $buffer){
 					$this->gamePacketLimiter->decrement();
 					$packet = $this->packetPool->getPacket($buffer);
@@ -415,8 +416,13 @@ class NetworkSession{
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 					}
+					if(!$this->isConnected()){
+						//handling this packet may have caused a disconnection
+						$this->logger->debug("Aborting batch processing due to server-side disconnection");
+						break;
+					}
 				}
-			}catch(PacketDecodeException|BinaryDataException $e){
+			}catch(PacketDecodeException|DataDecodeException $e){
 				$this->logger->logException($e);
 				throw PacketHandlingException::wrap($e, "Packet batch decode error");
 			}
@@ -448,14 +454,14 @@ class NetworkSession{
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
 			$decodeTimings->startTiming();
 			try{
-				$stream = PacketSerializer::decoder($buffer, 0);
+				$stream = new ByteBufferReader($buffer);
 				try{
 					$packet->decode($stream);
 				}catch(PacketDecodeException $e){
 					throw PacketHandlingException::wrap($e);
 				}
-				if(!$stream->feof()){
-					$remains = substr($stream->getBuffer(), $stream->getOffset());
+				if($stream->getUnreadLength() > 0){
+					$remains = substr($stream->getData(), $stream->getOffset());
 					$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 				}
 			}finally{
@@ -473,7 +479,7 @@ class NetworkSession{
 			$handlerTimings->startTiming();
 			try{
 				if($this->handler === null || !$packet->handle($this->handler)){
-					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getData()));
 				}
 			}finally{
 				$handlerTimings->stopTiming();
@@ -525,8 +531,10 @@ class NetworkSession{
 			if($ackReceiptResolver !== null){
 				$this->sendBufferAckPromises[] = $ackReceiptResolver;
 			}
+			$writer = new ByteBufferWriter();
 			foreach($packets as $evPacket){
-				$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder(), $evPacket));
+				$writer->clear(); //memory reuse let's gooooo
+				$this->addToSendBuffer(self::encodePacketTimed($writer, $evPacket));
 			}
 			if($immediate){
 				$this->flushGamePacketQueue();
@@ -559,12 +567,12 @@ class NetworkSession{
 	/**
 	 * @internal
 	 */
-	public static function encodePacketTimed(PacketSerializer $serializer, ClientboundPacket $packet) : string{
+	public static function encodePacketTimed(ByteBufferWriter $serializer, ClientboundPacket $packet) : string{
 		$timings = Timings::getEncodeDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
 			$packet->encode($serializer);
-			return $serializer->getBuffer();
+			return $serializer->getData();
 		}finally{
 			$timings->stopTiming();
 		}
@@ -586,13 +594,13 @@ class NetworkSession{
 					$syncMode = false;
 				}
 
-				$stream = new BinaryStream();
+				$stream = new ByteBufferWriter();
 				PacketBatch::encodeRaw($stream, $this->sendBuffer);
 
 				if($this->enableCompression){
-					$batch = $this->server->prepareBatch($stream->getBuffer(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+					$batch = $this->server->prepareBatch($stream->getData(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
 				}else{
-					$batch = $stream->getBuffer();
+					$batch = $stream->getData();
 				}
 				$this->sendBuffer = [];
 				$ackPromises = $this->sendBufferAckPromises;
@@ -1088,21 +1096,24 @@ class NetworkSession{
 
 	public function syncAvailableCommands() : void{
 		$commandData = [];
-		foreach($this->server->getCommandMap()->getCommands() as $command){
-			if(isset($commandData[$command->getLabel()]) || $command->getLabel() === "help" || !$command->testPermissionSilent($this->player)){
+		$globalAliasMap = $this->server->getCommandMap()->getAliasMap();
+		$userAliasMap = $this->player->getCommandAliasMap();
+		foreach($this->server->getCommandMap()->getUniqueCommands() as $command){
+			if(!$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
-			$lname = strtolower($command->getLabel());
-			$aliases = $command->getAliases();
-			$aliasObj = null;
-			if(count($aliases) > 0){
-				if(!in_array($lname, $aliases, true)){
-					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $lname;
-				}
-				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", $aliases);
+			$userAliases = $userAliasMap->getMergedAliases($command->getId(), $globalAliasMap);
+			//the client doesn't like it when we override /help
+			$aliases = array_values(array_filter($userAliases, fn(string $alias) => $alias !== "help" && $alias !== "?"));
+			if(count($aliases) === 0){
+				continue;
 			}
+			$firstNetworkAlias = $aliases[0];
+			//use filtered aliases for command name discovery - this allows /help to still be shown as /pocketmine:help
+			//on the client without conflicting with the client's built-in /help command
+			$lname = strtolower($firstNetworkAlias);
+			$aliasObj = new CommandEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases);
 
 			$description = $command->getDescription();
 			$data = new CommandData(
@@ -1117,7 +1128,7 @@ class NetworkSession{
 				chainedSubCommandData: []
 			);
 
-			$commandData[$command->getLabel()] = $data;
+			$commandData[] = $data;
 		}
 
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));

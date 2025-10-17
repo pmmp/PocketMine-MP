@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pocketmine\event\fixtures\TestAbstractAllowHandleEvent;
 use pocketmine\event\fixtures\TestAbstractEvent;
@@ -35,12 +36,12 @@ class HandlerListManagerTest extends TestCase{
 
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(\ReflectionClass<Event>) : bool
+	 * @phpstan-var \Closure(\ReflectionClass<covariant Event>) : bool
 	 */
 	private $isValidFunc;
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(\ReflectionClass<Event>) : ?\ReflectionClass<Event>
+	 * @phpstan-var \Closure(\ReflectionClass<covariant Event>) : ?\ReflectionClass<covariant Event>
 	 */
 	private $resolveParentFunc;
 
@@ -53,7 +54,7 @@ class HandlerListManagerTest extends TestCase{
 
 	/**
 	 * @return \Generator|mixed[][]
-	 * @phpstan-return \Generator<int, array{\ReflectionClass<Event>, bool, string}, void, void>
+	 * @phpstan-return \Generator<int, array{\ReflectionClass<covariant Event>, bool, string}, void, void>
 	 */
 	public static function isValidClassProvider() : \Generator{
 		yield [new \ReflectionClass(Event::class), false, "event base should not be handleable"];
@@ -63,17 +64,16 @@ class HandlerListManagerTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider isValidClassProvider
-	 *
-	 * @phpstan-param \ReflectionClass<Event> $class
+	 * @phpstan-param \ReflectionClass<covariant Event> $class
 	 */
+	#[DataProvider("isValidClassProvider")]
 	public function testIsValidClass(\ReflectionClass $class, bool $isValid, string $reason) : void{
 		self::assertSame($isValid, ($this->isValidFunc)($class), $reason);
 	}
 
 	/**
 	 * @return \Generator|\ReflectionClass[][]
-	 * @phpstan-return \Generator<int, array{\ReflectionClass<Event>, \ReflectionClass<Event>|null}, void, void>
+	 * @phpstan-return \Generator<int, array{\ReflectionClass<covariant Event>, \ReflectionClass<covariant Event>|null}, void, void>
 	 */
 	public static function resolveParentClassProvider() : \Generator{
 		yield [new \ReflectionClass(TestConcreteExtendsAllowHandleEvent::class), new \ReflectionClass(TestAbstractAllowHandleEvent::class)];
@@ -83,11 +83,10 @@ class HandlerListManagerTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider resolveParentClassProvider
-	 *
-	 * @phpstan-param \ReflectionClass<Event>      $class
-	 * @phpstan-param \ReflectionClass<Event>|null $expect
+	 * @phpstan-param \ReflectionClass<covariant Event>      $class
+	 * @phpstan-param \ReflectionClass<covariant Event>|null $expect
 	 */
+	#[DataProvider("resolveParentClassProvider")]
 	public function testResolveParentClass(\ReflectionClass $class, ?\ReflectionClass $expect) : void{
 		if($expect === null){
 			self::assertNull(($this->resolveParentFunc)($class));

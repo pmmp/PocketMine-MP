@@ -23,17 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use function array_flip;
 use function log;
 use function spl_object_id;
 
 final class RuntimeDataWriter implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $value = 0;
 	private int $offset = 0;
 
@@ -57,18 +53,6 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 		$this->writeInt($bits, $value);
 	}
 
-	/**
-	 * @deprecated Use {@link self::boundedIntAuto()} instead.
-	 */
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
-		$offset = $this->offset;
-		$this->writeBoundedIntAuto($min, $max, $value);
-		$actualBits = $this->offset - $offset;
-		if($actualBits !== $bits){
-			throw new \InvalidArgumentException("Bits should be $actualBits for the given bounds, but received $bits. Use boundedIntAuto() for automatic bits calculation.");
-		}
-	}
-
 	private function writeBoundedIntAuto(int $min, int $max, int $value) : void{
 		if($value < $min || $value > $max){
 			throw new \InvalidArgumentException("Value $value is outside the range $min - $max");
@@ -89,78 +73,27 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 		$this->writeBool($value);
 	}
 
-	public function horizontalFacing(int &$facing) : void{
-		$this->writeInt(2, match($facing){
-			Facing::NORTH => 0,
-			Facing::EAST => 1,
-			Facing::SOUTH => 2,
-			Facing::WEST => 3,
-			default => throw new \InvalidArgumentException("Invalid horizontal facing $facing")
-		});
+	public function facingExcept(Facing &$facing, Facing $except) : void{
+		$this->enum($facing);
 	}
 
-	/**
-	 * @param int[] $faces
-	 */
-	public function facingFlags(array &$faces) : void{
-		$uniqueFaces = array_flip($faces);
-		foreach(Facing::ALL as $facing){
-			$this->writeBool(isset($uniqueFaces[$facing]));
-		}
-	}
-
-	/**
-	 * @param int[] $faces
-	 */
-	public function horizontalFacingFlags(array &$faces) : void{
-		$uniqueFaces = array_flip($faces);
-		foreach(Facing::HORIZONTAL as $facing){
-			$this->writeBool(isset($uniqueFaces[$facing]));
-		}
-	}
-
-	public function facing(int &$facing) : void{
-		$this->writeInt(3, match($facing){
-			0 => Facing::DOWN,
-			1 => Facing::UP,
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH,
-			4 => Facing::WEST,
-			5 => Facing::EAST,
-			default => throw new \InvalidArgumentException("Invalid facing $facing")
-		});
-	}
-
-	public function facingExcept(int &$facing, int $except) : void{
-		$this->facing($facing);
-	}
-
-	public function axis(int &$axis) : void{
-		$this->writeInt(2, match($axis){
-			Axis::X => 0,
-			Axis::Z => 1,
-			Axis::Y => 2,
-			default => throw new \InvalidArgumentException("Invalid axis $axis")
-		});
-	}
-
-	public function horizontalAxis(int &$axis) : void{
+	public function horizontalAxis(Axis &$axis) : void{
 		$this->writeInt(1, match($axis){
 			Axis::X => 0,
 			Axis::Z => 1,
-			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis")
+			default => throw new \InvalidArgumentException("Invalid horizontal axis $axis->name")
 		});
 	}
 
 	/**
 	 * @param WallConnectionType[] $connections
-	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
+	 * @phpstan-param array<value-of<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST>, WallConnectionType> $connections
 	 */
 	public function wallConnections(array &$connections) : void{
 		$packed = 0;
 		$offset = 0;
 		foreach(Facing::HORIZONTAL as $facing){
-			$packed += match($connections[$facing] ?? null){
+			$packed += match($connections[$facing->value] ?? null){
 				null => 0,
 				WallConnectionType::SHORT => 1,
 				WallConnectionType::TALL => 2,
@@ -168,24 +101,6 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 			$offset++;
 		}
 		$this->writeBoundedIntAuto(0, (3 ** 4) - 1, $packed);
-	}
-
-	/**
-	 * @param BrewingStandSlot[] $slots
-	 * @phpstan-param array<int, BrewingStandSlot> $slots
-	 *
-	 * @deprecated Use {@link enumSet()} instead.
-	 */
-	public function brewingStandSlots(array &$slots) : void{
-		$this->enumSet($slots, BrewingStandSlot::cases());
-	}
-
-	public function railShape(int &$railShape) : void{
-		$this->int(4, $railShape);
-	}
-
-	public function straightOnlyRailShape(int &$railShape) : void{
-		$this->int(3, $railShape);
 	}
 
 	public function enum(\UnitEnum &$case) : void{

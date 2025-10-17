@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\AmethystTrait;
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\FortuneDropHelper;
 use pocketmine\block\utils\SupportType;
@@ -38,7 +39,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
-final class AmethystCluster extends Transparent{
+final class AmethystCluster extends Transparent implements AnyFacing{
 	use AmethystTrait;
 	use AnyFacingTrait;
 
@@ -81,22 +82,22 @@ final class AmethystCluster extends Transparent{
 			if($axis === $myAxis){
 				continue;
 			}
-			$box->squash($axis, $this->stage === self::STAGE_SMALL_BUD ? 4 / 16 : 3 / 16);
+			$box = $box->squashedCopy($axis, $this->stage === self::STAGE_SMALL_BUD ? 4 / 16 : 3 / 16);
 		}
-		$box->trim($this->facing, 1 - ($this->stage === self::STAGE_CLUSTER ? 7 / 16 : ($this->stage + 3) / 16));
+		$box = $box->trimmedCopy($this->facing, 1 - ($this->stage === self::STAGE_CLUSTER ? 7 / 16 : ($this->stage + 3) / 16));
 
 		return [$box];
 	}
 
-	private function canBeSupportedAt(Block $block, int $facing) : bool{
+	private function canBeSupportedAt(Block $block, Facing $facing) : bool{
 		return $block->getAdjacentSupportType($facing) === SupportType::FULL;
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->canBeSupportedAt($blockReplace, Facing::opposite($face))){
 			return false;
 		}

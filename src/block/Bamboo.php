@@ -90,10 +90,10 @@ class Bamboo extends Transparent{
 	protected function recalculateCollisionBoxes() : array{
 		//this places the BB at the northwest corner, not the center
 		$inset = 1 - (($this->thick ? 3 : 2) / 16);
-		return [AxisAlignedBB::one()->trim(Facing::SOUTH, $inset)->trim(Facing::EAST, $inset)];
+		return [AxisAlignedBB::one()->trimmedCopy(Facing::SOUTH, $inset)->trimmedCopy(Facing::EAST, $inset)];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -138,7 +138,7 @@ class Bamboo extends Transparent{
 		return $top;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
 			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class CloningRegistryTraitTest extends TestCase{
@@ -37,9 +38,9 @@ final class CloningRegistryTraitTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider cloningRegistryMembersProvider
 	 * @phpstan-param \Closure() : \stdClass $provider
 	 */
+	#[DataProvider("cloningRegistryMembersProvider")]
 	public function testEachMemberClone(\Closure $provider) : void{
 		self::assertNotSame($provider(), $provider(), "Cloning registry should never return the same object twice");
 	}
@@ -47,7 +48,7 @@ final class CloningRegistryTraitTest extends TestCase{
 	public function testGetAllClone() : void{
 		$list1 = TestCloningRegistry::getAll();
 		$list2 = TestCloningRegistry::getAll();
-		foreach(Utils::promoteKeys($list1) as $k => $member){
+		foreach(Utils::stringifyKeys($list1) as $k => $member){
 			self::assertNotSame($member, $list2[$k], "VanillaBlocks ought to clone its members");
 		}
 	}

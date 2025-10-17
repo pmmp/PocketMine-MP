@@ -30,3 +30,26 @@ parameters:
 			count: 4
 			path: ../../../src/world/generator/noise/Noise.php
 
+		-
+			message: '#^Parameter \$q00 of static method pocketmine\\world\\generator\\noise\\Noise\:\:bilinearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: '#^Parameter \$q01 of static method pocketmine\\world\\generator\\noise\\Noise\:\:bilinearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: '#^Parameter \$q10 of static method pocketmine\\world\\generator\\noise\\Noise\:\:bilinearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: '#^Parameter \$q11 of static method pocketmine\\world\\generator\\noise\\Noise\:\:bilinearLerp\(\) expects float, float\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/world/generator/noise/Noise.php

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
@@ -35,7 +36,7 @@ use function max;
 use function min;
 use function mt_rand;
 
-class Fire extends BaseFire{
+class Fire extends BaseFire implements Ageable{
 	use AgeableTrait;
 
 	public const MAX_AGE = 15;

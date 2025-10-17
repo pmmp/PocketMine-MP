@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 
 /**
@@ -40,7 +41,7 @@ abstract class Flowable extends Transparent{
 		return false;
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, Facing $face, bool $isClickedBlock) : bool{
 		return (!$this->canBeFlowedInto() || !$blockReplace instanceof Liquid) &&
 			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
@@ -49,7 +50,7 @@ abstract class Flowable extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 }

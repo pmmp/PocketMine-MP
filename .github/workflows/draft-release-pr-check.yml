@@ -30,7 +30,7 @@ jobs:
       valid: ${{ steps.validate.outputs.DEV_BUILD == 'false' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
@@ -46,12 +46,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.34.1
+        uses: shivammathur/setup-php@2.35.5
         with:
-          php-version: 8.2
+          php-version: 8.3
 
       - name: Restore Composer package cache
         uses: actions/cache@v4

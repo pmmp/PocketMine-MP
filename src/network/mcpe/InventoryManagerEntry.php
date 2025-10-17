@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\inventory\Inventory;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\player\InventoryWindow;
 
 final class InventoryManagerEntry{
 	/**
@@ -46,7 +46,7 @@ final class InventoryManagerEntry{
 	public array $pendingSyncs = [];
 
 	public function __construct(
-		public Inventory $inventory,
-		public ?ComplexInventoryMapEntry $complexSlotMap = null
+		public InventoryWindow $window,
+		public ?ComplexWindowMapEntry $complexSlotMap = null
 	){}
 }

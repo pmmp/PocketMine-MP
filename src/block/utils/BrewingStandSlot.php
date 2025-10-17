@@ -23,20 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\inventory\BrewingStandInventory;
-use pocketmine\utils\LegacyEnumShimTrait;
+use pocketmine\block\inventory\window\BrewingStandInventoryWindow;
 
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static BrewingStandSlot EAST()
- * @method static BrewingStandSlot NORTHWEST()
- * @method static BrewingStandSlot SOUTHWEST()
- */
 enum BrewingStandSlot{
-	use LegacyEnumShimTrait;
-
 	case EAST;
 	case NORTHWEST;
 	case SOUTHWEST;
@@ -46,9 +35,9 @@ enum BrewingStandSlot{
 	 */
 	public function getSlotNumber() : int{
 		return match($this){
-			self::EAST => BrewingStandInventory::SLOT_BOTTLE_LEFT,
-			self::NORTHWEST => BrewingStandInventory::SLOT_BOTTLE_MIDDLE,
-			self::SOUTHWEST => BrewingStandInventory::SLOT_BOTTLE_RIGHT
+			self::EAST => BrewingStandInventoryWindow::SLOT_BOTTLE_LEFT,
+			self::NORTHWEST => BrewingStandInventoryWindow::SLOT_BOTTLE_MIDDLE,
+			self::SOUTHWEST => BrewingStandInventoryWindow::SLOT_BOTTLE_RIGHT
 		};
 	}
 }

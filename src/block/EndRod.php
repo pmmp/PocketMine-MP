@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -32,10 +33,10 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class EndRod extends Flowable{
+class EndRod extends Flowable implements AnyFacing{
 	use AnyFacingTrait;
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face;
 		if($blockClicked instanceof EndRod && $blockClicked->facing === $this->facing){
 			$this->facing = Facing::opposite($face);
@@ -60,7 +61,7 @@ class EndRod extends Flowable{
 			if($axis === $myAxis){
 				continue;
 			}
-			$bb->squash($axis, 6 / 16);
+			$bb->squashedCopy($axis, 6 / 16);
 		}
 		return [$bb];
 	}

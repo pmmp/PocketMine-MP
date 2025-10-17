@@ -33,50 +33,50 @@ final class RailConnectionInfo{
 	public const CONNECTIONS = [
 		//straights
 		BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH => [
-			Facing::NORTH,
-			Facing::SOUTH
+			Facing::NORTH->value,
+			Facing::SOUTH->value
 		],
 		BlockLegacyMetadata::RAIL_STRAIGHT_EAST_WEST => [
-			Facing::EAST,
-			Facing::WEST
+			Facing::EAST->value,
+			Facing::WEST->value
 		],
 
 		//ascending
 		BlockLegacyMetadata::RAIL_ASCENDING_EAST => [
-			Facing::WEST,
-			Facing::EAST | self::FLAG_ASCEND
+			Facing::WEST->value,
+			Facing::EAST->value | self::FLAG_ASCEND
 		],
 		BlockLegacyMetadata::RAIL_ASCENDING_WEST => [
-			Facing::EAST,
-			Facing::WEST | self::FLAG_ASCEND
+			Facing::EAST->value,
+			Facing::WEST->value | self::FLAG_ASCEND
 		],
 		BlockLegacyMetadata::RAIL_ASCENDING_NORTH => [
-			Facing::SOUTH,
-			Facing::NORTH | self::FLAG_ASCEND
+			Facing::SOUTH->value,
+			Facing::NORTH->value | self::FLAG_ASCEND
 		],
 		BlockLegacyMetadata::RAIL_ASCENDING_SOUTH => [
-			Facing::NORTH,
-			Facing::SOUTH | self::FLAG_ASCEND
+			Facing::NORTH->value,
+			Facing::SOUTH->value | self::FLAG_ASCEND
 		]
 	];
 
 	/* extended meta values for regular rails, to allow curving */
 	public const CURVE_CONNECTIONS = [
 		BlockLegacyMetadata::RAIL_CURVE_SOUTHEAST => [
-			Facing::SOUTH,
-			Facing::EAST
+			Facing::SOUTH->value,
+			Facing::EAST->value
 		],
 		BlockLegacyMetadata::RAIL_CURVE_SOUTHWEST => [
-			Facing::SOUTH,
-			Facing::WEST
+			Facing::SOUTH->value,
+			Facing::WEST->value
 		],
 		BlockLegacyMetadata::RAIL_CURVE_NORTHWEST => [
-			Facing::NORTH,
-			Facing::WEST
+			Facing::NORTH->value,
+			Facing::WEST->value
 		],
 		BlockLegacyMetadata::RAIL_CURVE_NORTHEAST => [
-			Facing::NORTH,
-			Facing::EAST
+			Facing::NORTH->value,
+			Facing::EAST->value
 		]
 	];
 }

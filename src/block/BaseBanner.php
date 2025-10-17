@@ -25,18 +25,20 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\Colored;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
 use function count;
 
-abstract class BaseBanner extends Transparent{
+abstract class BaseBanner extends Transparent implements Colored{
 	use ColoredTrait;
 
 	/**
@@ -49,12 +51,18 @@ abstract class BaseBanner extends Transparent{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBanner){
+			if($tile->getType() === TileBanner::TYPE_OMINOUS){
+				//illager banner is implemented as a separate block, as it doesn't support base color or custom patterns
+				return $this->getOminousVersion();
+			}
 			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
 
 		return $this;
 	}
+
+	abstract protected function getOminousVersion() : Block;
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
@@ -100,7 +108,7 @@ abstract class BaseBanner extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
@@ -108,7 +116,7 @@ abstract class BaseBanner extends Transparent{
 		return $block->isSolid();
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->canBeSupportedBy($blockReplace->getSide($this->getSupportingFace()))){
 			return false;
 		}
@@ -120,7 +128,7 @@ abstract class BaseBanner extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	abstract protected function getSupportingFace() : int;
+	abstract protected function getSupportingFace() : Facing;
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->canBeSupportedBy($this->getSide($this->getSupportingFace()))){

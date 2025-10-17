@@ -23,18 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\LegacyEnumShimTrait;
-
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static WallConnectionType SHORT()
- * @method static WallConnectionType TALL()
- */
 enum WallConnectionType{
-	use LegacyEnumShimTrait;
-
 	case SHORT;
 	case TALL;
 }

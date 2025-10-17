@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\runtime;
 
-use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -35,8 +33,6 @@ use function log;
 use function spl_object_id;
 
 final class RuntimeDataReader implements RuntimeDataDescriber{
-	use LegacyRuntimeEnumDescriberTrait;
-
 	private int $offset = 0;
 
 	public function __construct(
@@ -57,18 +53,6 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 
 	public function int(int $bits, int &$value) : void{
 		$value = $this->readInt($bits);
-	}
-
-	/**
-	 * @deprecated Use {@link self::boundedIntAuto()} instead.
-	 */
-	public function boundedInt(int $bits, int $min, int $max, int &$value) : void{
-		$offset = $this->offset;
-		$this->boundedIntAuto($min, $max, $value);
-		$actualBits = $this->offset - $offset;
-		if($this->offset !== $offset + $bits){
-			throw new \InvalidArgumentException("Bits should be $actualBits for the given bounds, but received $bits. Use boundedIntAuto() for automatic bits calculation.");
-		}
 	}
 
 	private function readBoundedIntAuto(int $min, int $max) : int{
@@ -92,59 +76,9 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		$value = $this->readBool();
 	}
 
-	public function horizontalFacing(int &$facing) : void{
-		$facing = match($this->readInt(2)){
-			0 => Facing::NORTH,
-			1 => Facing::EAST,
-			2 => Facing::SOUTH,
-			3 => Facing::WEST,
-			default => throw new AssumptionFailedError("Unreachable")
-		};
-	}
-
-	/**
-	 * @param int[] $faces
-	 */
-	public function facingFlags(array &$faces) : void{
-		$result = [];
-		foreach(Facing::ALL as $facing){
-			if($this->readBool()){
-				$result[$facing] = $facing;
-			}
-		}
-
-		$faces = $result;
-	}
-
-	/**
-	 * @param int[] $faces
-	 */
-	public function horizontalFacingFlags(array &$faces) : void{
-		$result = [];
-		foreach(Facing::HORIZONTAL as $facing){
-			if($this->readBool()){
-				$result[$facing] = $facing;
-			}
-		}
-
-		$faces = $result;
-	}
-
-	public function facing(int &$facing) : void{
-		$facing = match($this->readInt(3)){
-			0 => Facing::DOWN,
-			1 => Facing::UP,
-			2 => Facing::NORTH,
-			3 => Facing::SOUTH,
-			4 => Facing::WEST,
-			5 => Facing::EAST,
-			default => throw new InvalidSerializedRuntimeDataException("Invalid facing value")
-		};
-	}
-
-	public function facingExcept(int &$facing, int $except) : void{
-		$result = 0;
-		$this->facing($result);
+	public function facingExcept(Facing &$facing, Facing $except) : void{
+		$result = Facing::DOWN;
+		$this->enum($result);
 		if($result === $except){
 			throw new InvalidSerializedRuntimeDataException("Illegal facing value");
 		}
@@ -152,16 +86,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		$facing = $result;
 	}
 
-	public function axis(int &$axis) : void{
-		$axis = match($this->readInt(2)){
-			0 => Axis::X,
-			1 => Axis::Z,
-			2 => Axis::Y,
-			default => throw new InvalidSerializedRuntimeDataException("Invalid axis value")
-		};
-	}
-
-	public function horizontalAxis(int &$axis) : void{
+	public function horizontalAxis(Axis &$axis) : void{
 		$axis = match($this->readInt(1)){
 			0 => Axis::X,
 			1 => Axis::Z,
@@ -171,7 +96,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 
 	/**
 	 * @param WallConnectionType[] $connections
-	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
+	 * @phpstan-param array<value-of<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST>, WallConnectionType> $connections
 	 */
 	public function wallConnections(array &$connections) : void{
 		$result = [];
@@ -180,7 +105,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		foreach(Facing::HORIZONTAL as $facing){
 			$type = intdiv($packed,  (3 ** $offset)) % 3;
 			if($type !== 0){
-				$result[$facing] = match($type){
+				$result[$facing->value] = match($type){
 					1 => WallConnectionType::SHORT,
 					2 => WallConnectionType::TALL,
 					default => throw new AssumptionFailedError("Unreachable")
@@ -190,34 +115,6 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$connections = $result;
-	}
-
-	/**
-	 * @param BrewingStandSlot[] $slots
-	 * @phpstan-param array<int, BrewingStandSlot> $slots
-	 *
-	 * @deprecated Use {@link enumSet()} instead.
-	 */
-	public function brewingStandSlots(array &$slots) : void{
-		$this->enumSet($slots, BrewingStandSlot::cases());
-	}
-
-	public function railShape(int &$railShape) : void{
-		$result = $this->readInt(4);
-		if(!isset(RailConnectionInfo::CONNECTIONS[$result]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$result])){
-			throw new InvalidSerializedRuntimeDataException("Invalid rail shape $result");
-		}
-
-		$railShape = $result;
-	}
-
-	public function straightOnlyRailShape(int &$railShape) : void{
-		$result = $this->readInt(3);
-		if(!isset(RailConnectionInfo::CONNECTIONS[$result])){
-			throw new InvalidSerializedRuntimeDataException("No rail shape matches meta $result");
-		}
-
-		$railShape = $result;
 	}
 
 	public function enum(\UnitEnum &$case) : void{

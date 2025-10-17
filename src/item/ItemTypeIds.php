@@ -334,8 +334,23 @@ final class ItemTypeIds{
 	public const RECORD_CREATOR = 20295;
 	public const RECORD_CREATOR_MUSIC_BOX = 20296;
 	public const RECORD_PRECIPICE = 20297;
+	public const OMINOUS_BANNER = 20298;
+	public const ACACIA_HANGING_SIGN = 20299;
+	public const BIRCH_HANGING_SIGN = 20300;
+	public const CHERRY_HANGING_SIGN = 20301;
+	public const CRIMSON_HANGING_SIGN = 20302;
+	public const DARK_OAK_HANGING_SIGN = 20303;
+	public const JUNGLE_HANGING_SIGN = 20304;
+	public const MANGROVE_HANGING_SIGN = 20305;
+	public const OAK_HANGING_SIGN = 20306;
+	public const PALE_OAK_HANGING_SIGN = 20307;
+	public const SPRUCE_HANGING_SIGN = 20308;
+	public const WARPED_HANGING_SIGN = 20309;
+	public const TRIDENT = 20310;
+	public const FIREWORK_ROCKET = 20311;
+	public const FIREWORK_STAR = 20312;
 
-	public const FIRST_UNUSED_ITEM_ID = 20298;
+	public const FIRST_UNUSED_ITEM_ID = 20313;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

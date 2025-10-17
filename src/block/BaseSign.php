@@ -27,6 +27,7 @@ use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SignText;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\color\Color;
@@ -34,20 +35,26 @@ use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DyeUseSound;
 use pocketmine\world\sound\InkSacUseSound;
+use function abs;
 use function array_map;
 use function assert;
+use function atan2;
+use function fmod;
+use function rad2deg;
 use function strlen;
 
-abstract class BaseSign extends Transparent{
+abstract class BaseSign extends Transparent implements WoodMaterial{
 	use WoodTypeTrait;
 
-	protected SignText $text;
+	protected SignText $frontText;
+	protected SignText $backText;
 	private bool $waxed = false;
 
 	protected ?int $editorEntityRuntimeId = null;
@@ -61,7 +68,8 @@ abstract class BaseSign extends Transparent{
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, \Closure $asItemCallback){
 		$this->woodType = $woodType;
 		parent::__construct($idInfo, $name, $typeInfo);
-		$this->text = new SignText();
+		$this->frontText = new SignText();
+		$this->backText = new SignText();
 		$this->asItemCallback = $asItemCallback;
 	}
 
@@ -69,7 +77,8 @@ abstract class BaseSign extends Transparent{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
-			$this->text = $tile->getText();
+			$this->frontText = $tile->getFrontText();
+			$this->backText = $tile->getBackText();
 			$this->waxed = $tile->isWaxed();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
@@ -81,7 +90,8 @@ abstract class BaseSign extends Transparent{
 		parent::writeStateToWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSign);
-		$tile->setText($this->text);
+		$tile->setFrontText($this->frontText);
+		$tile->setBackText($this->backText);
 		$tile->setWaxed($this->waxed);
 		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
 	}
@@ -98,11 +108,11 @@ abstract class BaseSign extends Transparent{
 		return [];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 
-	abstract protected function getSupportingFace() : int;
+	abstract protected function getSupportingFace() : Facing;
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
@@ -110,7 +120,7 @@ abstract class BaseSign extends Transparent{
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			$this->editorEntityRuntimeId = $player->getId();
 		}
@@ -126,11 +136,11 @@ abstract class BaseSign extends Transparent{
 		}
 	}
 
-	private function doSignChange(SignText $newText, Player $player, Item $item) : bool{
-		$ev = new SignChangeEvent($this, $player, $newText);
+	private function doSignChange(SignText $newText, Player $player, Item $item, bool $frontFace) : bool{
+		$ev = new SignChangeEvent($this, $player, $newText, $frontFace);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->text = $ev->getNewText();
+			$this->setFaceText($frontFace, $ev->getNewText());
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$item->pop();
 			return true;
@@ -139,8 +149,9 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
-	private function changeSignGlowingState(bool $glowing, Player $player, Item $item) : bool{
-		if($this->text->isGlowing() !== $glowing && $this->doSignChange(new SignText($this->text->getLines(), $this->text->getBaseColor(), $glowing), $player, $item)){
+	private function changeSignGlowingState(bool $glowing, Player $player, Item $item, bool $frontFace) : bool{
+		$text = $this->getFaceText($frontFace);
+		if($text->isGlowing() !== $glowing && $this->doSignChange(new SignText($text->getLines(), $text->getBaseColor(), $glowing), $player, $item, $frontFace)){
 			$this->position->getWorld()->addSound($this->position, new InkSacUseSound());
 			return true;
 		}
@@ -159,13 +170,15 @@ abstract class BaseSign extends Transparent{
 		return true;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player === null){
 			return false;
 		}
 		if($this->waxed){
 			return true;
 		}
+
+		$frontFace = $this->interactsFront($this->getHitboxCenter(), $player->getPosition(), $this->getFacingDegrees());
 
 		$dyeColor = $item instanceof Dye ? $item->getColor() : match($item->getTypeId()){
 			ItemTypeIds::BONE_MEAL => DyeColor::WHITE,
@@ -175,37 +188,55 @@ abstract class BaseSign extends Transparent{
 		};
 		if($dyeColor !== null){
 			$color = $dyeColor === DyeColor::BLACK ? new Color(0, 0, 0) : $dyeColor->getRgbValue();
+			$text = $this->getFaceText($frontFace);
 			if(
-				$color->toARGB() !== $this->text->getBaseColor()->toARGB() &&
-				$this->doSignChange(new SignText($this->text->getLines(), $color, $this->text->isGlowing()), $player, $item)
+				$color->toARGB() !== $text->getBaseColor()->toARGB() &&
+				$this->doSignChange(new SignText($text->getLines(), $color, $text->isGlowing()), $player, $item, $frontFace)
 			){
 				$this->position->getWorld()->addSound($this->position, new DyeUseSound());
 				return true;
 			}
 		}elseif(match($item->getTypeId()){
-			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item),
-			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item),
+			ItemTypeIds::INK_SAC => $this->changeSignGlowingState(false, $player, $item, $frontFace),
+			ItemTypeIds::GLOW_INK_SAC => $this->changeSignGlowingState(true, $player, $item, $frontFace),
 			ItemTypeIds::HONEYCOMB => $this->wax($player, $item),
 			default => false
 		}){
 			return true;
 		}
 
-		$player->openSignEditor($this->position);
+		$player->openSignEditor($this->position, $frontFace);
 
 		return true;
 	}
 
+	private function interactsFront(Vector3 $hitboxCenter, Vector3 $playerPosition, float $signFacingDegrees) : bool{
+		$playerCenterDiffX = $playerPosition->x - $hitboxCenter->x;
+		$playerCenterDiffZ = $playerPosition->z - $hitboxCenter->z;
+
+		$f1 = rad2deg(atan2($playerCenterDiffZ, $playerCenterDiffX)) - 90.0;
+
+		$rotationDiff = $signFacingDegrees - $f1;
+		$rotation = fmod($rotationDiff + 180.0, 360.0) - 180.0; // Normalize to [-180, 180]
+		return abs($rotation) <= 90.0;
+	}
+
 	/**
-	 * Returns an object containing information about the sign text.
+	 * Returns the center of the sign's hitbox. Used to decide which face of the sign to open when a player interacts.
 	 */
-	public function getText() : SignText{
-		return $this->text;
+	protected function getHitboxCenter() : Vector3{
+		return $this->position->add(0.5, 0.5, 0.5);
+	}
+
+	abstract protected function getFacingDegrees() : float;
+
+	public function getFaceText(bool $frontFace) : SignText{
+		return $frontFace ? $this->frontText : $this->backText;
 	}
 
 	/** @return $this */
-	public function setText(SignText $text) : self{
-		$this->text = $text;
+	public function setFaceText(bool $frontFace, SignText $text) : self{
+		$frontFace ? $this->frontText = $text : $this->backText = $text;
 		return $this;
 	}
 
@@ -239,7 +270,7 @@ abstract class BaseSign extends Transparent{
 	 * @return bool if the sign update was successful.
 	 * @throws \UnexpectedValueException if the text payload is too large
 	 */
-	public function updateText(Player $author, SignText $text) : bool{
+	public function updateFaceText(Player $author, bool $frontFace, SignText $text) : bool{
 		$size = 0;
 		foreach($text->getLines() as $line){
 			$size += strlen($line);
@@ -247,15 +278,16 @@ abstract class BaseSign extends Transparent{
 		if($size > 1000){
 			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
+		$oldText = $this->getFaceText($frontFace);
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
-		}, $text->getLines()), $this->text->getBaseColor(), $this->text->isGlowing()));
+		}, $text->getLines()), $oldText->getBaseColor(), $oldText->isGlowing()), $frontFace);
 		if($this->waxed || $this->editorEntityRuntimeId !== $author->getId()){
 			$ev->cancel();
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->setText($ev->getNewText());
+			$this->setFaceText($frontFace, $ev->getNewText());
 			$this->setEditorEntityRuntimeId(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;

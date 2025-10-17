@@ -37,6 +37,7 @@ use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
 use pocketmine\item\SplashPotion;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\CauldronAddDyeSound;
@@ -108,7 +109,7 @@ final class WaterCauldron extends FillableCauldron{
 		return new CauldronEmptyWaterSound();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
 		if(($dyeColor = match($item->getTypeId()){
 				ItemTypeIds::LAPIS_LAZULI => DyeColor::BLUE,
@@ -123,7 +124,7 @@ final class WaterCauldron extends FillableCauldron{
 			$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
 
 			$item->pop();
-		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
+		}elseif($item instanceof Potion || $item instanceof SplashPotion){
 			if($item->getType() === PotionType::WATER){
 				$this->setCustomWaterColor(null)->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{

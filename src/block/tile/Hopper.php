@@ -23,24 +23,25 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\inventory\HopperInventory;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
-class Hopper extends Spawnable implements Container, Nameable{
+class Hopper extends Spawnable implements ContainerTile, Nameable{
 
-	use ContainerTrait;
+	use ContainerTileTrait;
 	use NameableTrait;
 
 	private const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
 
-	private HopperInventory $inventory;
+	private Inventory $inventory;
 	private int $transferCooldown = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new HopperInventory($this->position);
+		$this->inventory = new SimpleInventory(5);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -59,7 +60,7 @@ class Hopper extends Spawnable implements Container, Nameable{
 
 	public function close() : void{
 		if(!$this->closed){
-			$this->inventory->removeAllViewers();
+			$this->inventory->removeAllWindows();
 
 			parent::close();
 		}
@@ -69,11 +70,11 @@ class Hopper extends Spawnable implements Container, Nameable{
 		return "Hopper";
 	}
 
-	public function getInventory() : HopperInventory{
+	public function getInventory() : Inventory{
 		return $this->inventory;
 	}
 
-	public function getRealInventory() : HopperInventory{
+	public function getRealInventory() : Inventory{
 		return $this->inventory;
 	}
 }

@@ -28,6 +28,7 @@ use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Axe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\CopperWaxApplySound;
@@ -61,9 +62,10 @@ trait CopperTrait{
 
 	/**
 	 * @param Item[] &$returnedItems
+	 *
 	 * @see Block::onInteract()
 	 */
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->waxed && $item->getTypeId() === ItemTypeIds::HONEYCOMB){
 			$this->waxed = true;
 			$this->position->getWorld()->setBlock($this->position, $this);

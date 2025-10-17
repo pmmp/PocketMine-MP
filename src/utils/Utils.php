@@ -27,7 +27,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\Prototype;
 use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\math\Vector3;
@@ -163,16 +163,6 @@ final class Utils{
 		}
 
 		return $reflect->getName();
-	}
-
-	/**
-	 * @phpstan-return \Closure(object) : object
-	 * @deprecated
-	 */
-	public static function cloneCallback() : \Closure{
-		return static function(object $o){
-			return clone $o;
-		};
 	}
 
 	/**
@@ -564,20 +554,16 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
-	 * @param callable              $subject   Callable to check the signature of
-	 * @phpstan-param anyCallable|CallbackType $signature
-	 * @phpstan-param anyCallable              $subject
-	 *
-	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
-	 * @throws \TypeError
+	 * @param Prototype|\Closure $signature Dummy callable with the required parameters and return type, or a manually constructed Prototype
+	 * @param \Closure           $subject   Callable to check the signature of
+	 * @phpstan-param anyClosure $signature
+	 * @phpstan-param anyClosure $subject
 	 */
-	public static function validateCallableSignature(callable|CallbackType $signature, callable $subject) : void{
-		if(!($signature instanceof CallbackType)){
-			$signature = CallbackType::createFromCallable($signature);
-		}
-		if(!$signature->isSatisfiedBy($subject)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $signature . "`");
+	public static function validateCallableSignature(Prototype|\Closure $signature, \Closure $subject) : void{
+		$signaturePrototype = $signature instanceof Prototype ? $signature : Prototype::fromClosure($signature);
+		$subjectPrototype = Prototype::fromClosure($subject);
+		if(!$signaturePrototype->isSatisfiedBy($subjectPrototype)){
+			throw new \TypeError("Declaration of callable `$subjectPrototype` must be compatible with `$signaturePrototype`");
 		}
 	}
 

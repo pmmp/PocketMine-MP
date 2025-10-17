@@ -46,7 +46,7 @@ use function sqrt;
 
 class Arrow extends Projectile{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::ARROW; }
+	public function getNetworkTypeId() : string{ return EntityIds::ARROW; }
 
 	public const PICKUP_NONE = 0;
 	public const PICKUP_ANY = 1;
@@ -172,7 +172,7 @@ class Arrow extends Projectile{
 		$item = VanillaItems::ARROW();
 		$playerInventory = match(true){
 			!$player->hasFiniteResources() => null, //arrows are not picked up in creative
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+			$player->getOffHandItem()->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};

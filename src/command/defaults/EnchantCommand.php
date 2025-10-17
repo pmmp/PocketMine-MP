@@ -34,9 +34,10 @@ use function count;
 
 class EnchantCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"enchant",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_enchant_description(),
 			KnownTranslationFactory::commands_enchant_usage()
 		);
@@ -51,12 +52,12 @@ class EnchantCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_ENCHANT_SELF, DefaultPermissionNames::COMMAND_ENCHANT_OTHER);
 		if($player === null){
 			return true;
 		}
 
-		$item = $player->getInventory()->getItemInHand();
+		$item = $player->getMainHandItem();
 
 		if($item->isNull()){
 			$sender->sendMessage(KnownTranslationFactory::commands_enchant_noItem());
@@ -79,7 +80,7 @@ class EnchantCommand extends VanillaCommand{
 
 		//this is necessary to deal with enchanted books, which are a different item type than regular books
 		$enchantedItem = EnchantingHelper::enchantItem($item, [new EnchantmentInstance($enchantment, $level)]);
-		$player->getInventory()->setItemInHand($enchantedItem);
+		$player->setMainHandItem($enchantedItem);
 
 		self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_enchant_success($player->getName()));
 		return true;

@@ -35,7 +35,7 @@ class CopperDoor extends Door implements CopperMaterial{
 		onInteract as onInteractCopper;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if ($player !== null && $player->isSneaking() && $this->onInteractCopper($item, $face, $clickVector, $player, $returnedItems)) {
 			//copy copper properties to other half
 			$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);

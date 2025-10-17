@@ -30,13 +30,12 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\event\entity\EntityExhaustEvent;
 use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Hotbar;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
-use pocketmine\inventory\PlayerEnderInventory;
-use pocketmine\inventory\PlayerInventory;
-use pocketmine\inventory\PlayerOffHandInventory;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\enchantment\EnchantingHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -99,11 +98,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	private const TAG_SKIN_GEOMETRY_NAME = "GeometryName"; //TAG_String
 	private const TAG_SKIN_GEOMETRY_DATA = "GeometryData"; //TAG_ByteArray
 
-	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
+	public function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
-	protected PlayerInventory $inventory;
-	protected PlayerOffHandInventory $offHandInventory;
-	protected PlayerEnderInventory $enderInventory;
+	protected Hotbar $hotbar;
+	protected Inventory $inventory;
+	protected Inventory $offHandInventory;
+	protected Inventory $enderInventory;
 
 	protected UuidInterface $uuid;
 
@@ -173,9 +173,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.2, EntityExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->hungerManager->exhaust(0.05, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.05, EntityExhaustEvent::CAUSE_JUMPING);
 		}
 	}
 
@@ -237,14 +237,38 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return min(100, 7 * $this->xpManager->getXpLevel());
 	}
 
-	public function getInventory() : PlayerInventory{
+	public function getHotbar() : Hotbar{
+		return $this->hotbar;
+	}
+
+	public function getInventory() : Inventory{
 		return $this->inventory;
 	}
 
-	public function getOffHandInventory() : PlayerOffHandInventory{ return $this->offHandInventory; }
+	public function getMainHandItem() : Item{
+		return $this->inventory->getItem($this->hotbar->getSelectedIndex());
+	}
 
-	public function getEnderInventory() : PlayerEnderInventory{
+	public function setMainHandItem(Item $item) : void{
+		$this->inventory->setItem($this->hotbar->getSelectedIndex(), $item);
+	}
+
+	public function getOffHandItem() : Item{
+		return $this->offHandInventory->getItem(0);
+	}
+
+	public function setOffHandItem(Item $item) : void{
+		$this->offHandInventory->setItem(0, $item);
+	}
+
+	public function getOffHandInventory() : Inventory{ return $this->offHandInventory; }
+
+	public function getEnderInventory() : Inventory{
 		return $this->enderInventory;
+	}
+
+	public function getSneakOffset() : float{
+		return 0.31;
 	}
 
 	/**
@@ -274,41 +298,44 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->hungerManager = new HungerManager($this);
 		$this->xpManager = new ExperienceManager($this);
 
-		$this->inventory = new PlayerInventory($this);
+		$this->inventory = new SimpleInventory(36);
+		$this->hotbar = new Hotbar();
+
 		$syncHeldItem = fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobMainHandItemChange($recipients, $this)
 		);
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
 			function(Inventory $unused, int $slot, Item $unused2) use ($syncHeldItem) : void{
-				if($slot === $this->inventory->getHeldItemIndex()){
+				if($slot === $this->hotbar->getSelectedIndex()){
 					$syncHeldItem();
 				}
 			},
 			function(Inventory $unused, array $oldItems) use ($syncHeldItem) : void{
-				if(array_key_exists($this->inventory->getHeldItemIndex(), $oldItems)){
+				if(array_key_exists($this->hotbar->getSelectedIndex(), $oldItems)){
 					$syncHeldItem();
 				}
 			}
 		));
-		$this->offHandInventory = new PlayerOffHandInventory($this);
-		$this->enderInventory = new PlayerEnderInventory($this);
+		$this->offHandInventory = new SimpleInventory(1);
+		$this->enderInventory = new SimpleInventory(27);
 		$this->initHumanData($nbt);
 
-		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY);
+		$inventoryTag = $nbt->getListTag(self::TAG_INVENTORY, CompoundTag::class);
 		if($inventoryTag !== null){
 			$inventoryItems = [];
 			$armorInventoryItems = [];
 
-			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
 				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 && $slot < 104){ //Armor
-					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+					$armorSlot = $slot - 100;
+					$armorInventoryItems[$armorSlot] = Item::safeNbtDeserialize($item, "Human armor slot $armorSlot");
 				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
-					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
+					$inventorySlot = $slot - 9;
+					$inventoryItems[$inventorySlot] = Item::safeNbtDeserialize($item, "Human inventory slot $inventorySlot");
 				}
 			}
 
@@ -317,26 +344,27 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$offHand = $nbt->getCompoundTag(self::TAG_OFF_HAND_ITEM);
 		if($offHand !== null){
-			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+			$this->setOffHandItem(Item::safeNbtDeserialize($offHand, "Human off-hand item"));
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobOffHandItemChange($recipients, $this)
 		)));
 
-		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY);
+		$enderChestInventoryTag = $nbt->getListTag(self::TAG_ENDER_CHEST_INVENTORY, CompoundTag::class);
 		if($enderChestInventoryTag !== null){
 			$enderChestInventoryItems = [];
 
-			/** @var CompoundTag $item */
-			foreach($enderChestInventoryTag as $i => $item){
-				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
+			foreach($enderChestInventoryTag as $item){
+				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
+				$enderChestInventoryItems[$slot] = Item::safeNbtDeserialize($item, "Human ender chest slot $slot");
 			}
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
-		$this->inventory->setHeldItemIndex($nbt->getInt(self::TAG_SELECTED_INVENTORY_SLOT, 0));
-		$this->inventory->getHeldItemIndexChangeListeners()->add(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
+		$this->hotbar->setSelectedIndex($nbt->getInt(self::TAG_SELECTED_INVENTORY_SLOT, 0));
+		//TODO: cyclic reference
+		$this->hotbar->getSelectedIndexChangeListeners()->add(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
 			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobMainHandItemChange($recipients, $this)
 		));
@@ -376,7 +404,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$type = $source->getCause();
 		if($type !== EntityDamageEvent::CAUSE_SUICIDE && $type !== EntityDamageEvent::CAUSE_VOID
-			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
+			&& ($this->getMainHandItem() instanceof Totem || $this->getOffHandItem() instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation <= -1){
@@ -398,13 +426,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->broadcastAnimation(new TotemUseAnimation($this));
 			$this->broadcastSound(new TotemUseSound());
 
-			$hand = $this->inventory->getItemInHand();
+			$hand = $this->getMainHandItem();
 			if($hand instanceof Totem){
 				$hand->pop(); //Plugins could alter max stack size
-				$this->inventory->setItemInHand($hand);
-			}elseif(($offHand = $this->offHandInventory->getItem(0)) instanceof Totem){
+				$this->setMainHandItem($hand);
+			}elseif(($offHand = $this->getOffHandItem()) instanceof Totem){
 				$offHand->pop();
-				$this->offHandInventory->setItem(0, $offHand);
+				$this->setOffHandItem($offHand);
 			}
 		}
 	}
@@ -434,8 +462,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$nbt->setTag(self::TAG_INVENTORY, $inventoryTag);
 
 		//Normal inventory
-		$slotCount = $this->inventory->getSize() + $this->inventory->getHotbarSize();
-		for($slot = $this->inventory->getHotbarSize(); $slot < $slotCount; ++$slot){
+		$slotCount = $this->inventory->getSize() + $this->hotbar->getSize();
+		for($slot = $this->hotbar->getSize(); $slot < $slotCount; ++$slot){
 			$item = $this->inventory->getItem($slot - 9);
 			if(!$item->isNull()){
 				$inventoryTag->push($item->nbtSerialize($slot));
@@ -450,9 +478,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-		$nbt->setInt(self::TAG_SELECTED_INVENTORY_SLOT, $this->inventory->getHeldItemIndex());
+		$nbt->setInt(self::TAG_SELECTED_INVENTORY_SLOT, $this->hotbar->getSelectedIndex());
 
-		$offHandItem = $this->offHandInventory->getItem(0);
+		$offHandItem = $this->getOffHandItem();
 		if(!$offHandItem->isNull()){
 			$nbt->setTag(self::TAG_OFF_HAND_ITEM, $offHandItem->nbtSerialize());
 		}
@@ -504,7 +532,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
-			ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($this->getInventory()->getItemInHand())),
+			ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($this->getMainHandItem())),
 			GameMode::SURVIVAL,
 			$this->getAllNetworkData(),
 			new PropertySyncData([], []),
@@ -539,18 +567,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function onDispose() : void{
-		$this->inventory->removeAllViewers();
-		$this->inventory->getHeldItemIndexChangeListeners()->clear();
-		$this->offHandInventory->removeAllViewers();
-		$this->enderInventory->removeAllViewers();
+		$this->hotbar->getSelectedIndexChangeListeners()->clear();
+		$this->inventory->removeAllWindows();
+		$this->offHandInventory->removeAllWindows();
+		$this->enderInventory->removeAllWindows();
 		parent::onDispose();
 	}
 
 	protected function destroyCycles() : void{
 		unset(
-			$this->inventory,
-			$this->offHandInventory,
-			$this->enderInventory,
 			$this->hungerManager,
 			$this->xpManager
 		);

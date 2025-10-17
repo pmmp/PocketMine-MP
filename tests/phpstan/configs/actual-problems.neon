@@ -91,31 +91,13 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
-			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
-			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
@@ -385,6 +367,12 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: '#^Offset 0\|1\|2\|3\|4\|5\|6\|7\|8\|9 might not exist on array\{array\{2, 3\}, array\{5, 4\}, array\{4, 16777221\}, array\{5, 16777220\}, array\{3, 16777218\}, array\{2, 16777219\}\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../../../src/block/Rail.php
+
+		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -457,54 +445,6 @@ parameters:
 			path: ../../../src/block/Sugarcane.php
 
 		-
-			message: '#^Parameter \#1 \$x of class pocketmine\\math\\Vector3 constructor expects float\|int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Parameter \#2 \$value of method pocketmine\\nbt\\tag\\CompoundTag\:\:setInt\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 4
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Parameter \#3 \$z of class pocketmine\\math\\Vector3 constructor expects float\|int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getTileAt\(\) expects int, int\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Property pocketmine\\block\\tile\\Chest\:\:\$pairX \(int\|null\) does not accept float\|int\.$#'
-			identifier: assign.propertyType
-			count: 2
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: '#^Property pocketmine\\block\\tile\\Chest\:\:\$pairZ \(int\|null\) does not accept float\|int\.$#'
-			identifier: assign.propertyType
-			count: 2
-			path: ../../../src/block/tile/Chest.php
-
-		-
 			message: '#^Constant pocketmine\\block\\tile\\MobHead\:\:TAG_MOUTH_MOVING is unused\.$#'
 			identifier: classConstant.unused
 			count: 1
@@ -571,12 +511,6 @@ parameters:
 			path: ../../../src/command/defaults/TimeCommand.php
 
 		-
-			message: '#^Parameter \#1 \$path of static method pocketmine\\utils\\Filesystem\:\:cleanPath\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/crash/CrashDump.php
-
-		-
 			message: '#^Binary operation "\." between ''Error\: '' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
@@ -641,6 +575,12 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../../src/entity/object/FallingBlock.php
+
+		-
+			message: '#^Offset 0\|1\|2\|3\|4\|5 might not exist on array\{3\: 0, 4\: 1, 2\: 2, 5\: 3\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 3
+			path: ../../../src/entity/object/Painting.php
 
 		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
@@ -734,6 +674,12 @@ parameters:
 
 		-
 			message: '#^Cannot call method getAttributeMap\(\) on pocketmine\\player\\Player\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: '#^Cannot call method getCommandAliasMap\(\) on pocketmine\\player\\Player\|null\.$#'
 			identifier: method.nonObject
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -865,12 +811,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
-
-		-
 			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -943,6 +883,12 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$srcNamespacePrefix \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
 			message: '#^Cannot call method addChild\(\) on pocketmine\\permission\\Permission\|null\.$#'
 			identifier: method.nonObject
 			count: 4
@@ -983,6 +929,12 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: ../../../src/scheduler/TaskScheduler.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: ../../../src/thread/ThreadManager.php
 
 		-
 			message: '#^Cannot access offset string on mixed\.$#'
@@ -1153,12 +1105,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: '#^Parameter \#2 \$x of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
 			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1183,12 +1129,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: '#^Parameter \#3 \$y of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
 			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1208,12 +1148,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#3 \$z of static method pocketmine\\world\\World\:\:blockHash\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
-			message: '#^Parameter \#4 \$z of method pocketmine\\block\\Block\:\:position\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 2
 			path: ../../../src/world/World.php

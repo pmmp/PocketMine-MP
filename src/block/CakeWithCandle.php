@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CandleTrait;
+use pocketmine\block\utils\Lightable;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -31,7 +32,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class CakeWithCandle extends BaseCake{
+class CakeWithCandle extends BaseCake implements Lightable{
 	use CandleTrait {
 		onInteract as onInteractCandle;
 	}
@@ -39,8 +40,8 @@ class CakeWithCandle extends BaseCake{
 	protected function recalculateCollisionBoxes() : array{
 		return [
 			AxisAlignedBB::one()
-				->contract(1 / 16, 0, 1 / 16)
-				->trim(Facing::UP, 0.5) //TODO: not sure if the candle affects height
+				->contractedCopy(1 / 16, 0, 1 / 16)
+				->trimmedCopy(Facing::UP, 0.5) //TODO: not sure if the candle affects height
 		];
 	}
 
@@ -48,7 +49,7 @@ class CakeWithCandle extends BaseCake{
 		return VanillaBlocks::CANDLE();
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->lit && $face !== Facing::UP){
 			return true;
 		}

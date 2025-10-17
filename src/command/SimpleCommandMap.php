@@ -27,6 +27,7 @@ use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
 use pocketmine\command\defaults\ClearCommand;
+use pocketmine\command\defaults\CommandAliasCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
 use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
@@ -61,7 +62,6 @@ use pocketmine\command\defaults\TimeCommand;
 use pocketmine\command\defaults\TimingsCommand;
 use pocketmine\command\defaults\TitleCommand;
 use pocketmine\command\defaults\TransferServerCommand;
-use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\defaults\XpCommand;
@@ -72,10 +72,13 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use function array_filter;
+use function array_map;
 use function array_shift;
-use function array_values;
 use function count;
 use function implode;
+use function is_array;
+use function is_string;
 use function str_contains;
 use function strcasecmp;
 use function strtolower;
@@ -87,121 +90,83 @@ class SimpleCommandMap implements CommandMap{
 	 * @var Command[]
 	 * @phpstan-var array<string, Command>
 	 */
-	protected array $knownCommands = [];
+	private array $uniqueCommands = [];
+
+	private CommandAliasMap $aliasMap;
 
 	public function __construct(private Server $server){
+		$this->aliasMap = new CommandAliasMap();
 		$this->setDefaultCommands();
 	}
 
 	private function setDefaultCommands() : void{
-		$this->registerAll("pocketmine", [
-			new BanCommand(),
-			new BanIpCommand(),
-			new BanListCommand(),
-			new ClearCommand(),
-			new DefaultGamemodeCommand(),
-			new DeopCommand(),
-			new DifficultyCommand(),
-			new DumpMemoryCommand(),
-			new EffectCommand(),
-			new EnchantCommand(),
-			new GamemodeCommand(),
-			new GarbageCollectorCommand(),
-			new GiveCommand(),
-			new HelpCommand(),
-			new KickCommand(),
-			new KillCommand(),
-			new ListCommand(),
-			new MeCommand(),
-			new OpCommand(),
-			new PardonCommand(),
-			new PardonIpCommand(),
-			new ParticleCommand(),
-			new PluginsCommand(),
-			new SaveCommand(),
-			new SaveOffCommand(),
-			new SaveOnCommand(),
-			new SayCommand(),
-			new SeedCommand(),
-			new SetWorldSpawnCommand(),
-			new SpawnpointCommand(),
-			new StatusCommand(),
-			new StopCommand(),
-			new TeleportCommand(),
-			new TellCommand(),
-			new TimeCommand(),
-			new TimingsCommand(),
-			new TitleCommand(),
-			new TransferServerCommand(),
-			new VersionCommand(),
-			new WhitelistCommand(),
-			new XpCommand(),
-		]);
+		$pmPrefix = "pocketmine";
+		$this->register(new BanCommand($pmPrefix, "ban"));
+		$this->register(new BanIpCommand($pmPrefix, "ban-ip"));
+		$this->register(new BanListCommand($pmPrefix, "banlist"));
+		$this->register(new ClearCommand($pmPrefix, "clear"));
+		$this->register(new CommandAliasCommand($pmPrefix, "cmdalias"));
+		$this->register(new DefaultGamemodeCommand($pmPrefix, "defaultgamemode"));
+		$this->register(new DeopCommand($pmPrefix, "deop"));
+		$this->register(new DifficultyCommand($pmPrefix, "difficulty"));
+		$this->register(new DumpMemoryCommand($pmPrefix, "dumpmemory"));
+		$this->register(new EffectCommand($pmPrefix, "effect"));
+		$this->register(new EnchantCommand($pmPrefix, "enchant"));
+		$this->register(new GamemodeCommand($pmPrefix, "gamemode"));
+		$this->register(new GarbageCollectorCommand($pmPrefix, "gc"));
+		$this->register(new GiveCommand($pmPrefix, "give"));
+		$this->register(new HelpCommand($pmPrefix, "help"), ["?"]);
+		$this->register(new KickCommand($pmPrefix, "kick"));
+		$this->register(new KillCommand($pmPrefix, "kill"), ["suicide"]);
+		$this->register(new ListCommand($pmPrefix, "list"));
+		$this->register(new MeCommand($pmPrefix, "me"));
+		$this->register(new OpCommand($pmPrefix, "op"));
+		$this->register(new PardonCommand($pmPrefix, "pardon"), ["unban"]);
+		$this->register(new PardonIpCommand($pmPrefix, "pardon-ip"), ["unban-ip"]);
+		$this->register(new ParticleCommand($pmPrefix, "particle"));
+		$this->register(new PluginsCommand($pmPrefix, "plugins"), ["pl"]);
+		$this->register(new SaveCommand($pmPrefix, "save-all"));
+		$this->register(new SaveOffCommand($pmPrefix, "save-off"));
+		$this->register(new SaveOnCommand($pmPrefix, "save-on"));
+		$this->register(new SayCommand($pmPrefix, "say"));
+		$this->register(new SeedCommand($pmPrefix, "seed"));
+		$this->register(new SetWorldSpawnCommand($pmPrefix, "setworldspawn"));
+		$this->register(new SpawnpointCommand($pmPrefix, "spawnpoint"));
+		$this->register(new StatusCommand($pmPrefix, "status"));
+		$this->register(new StopCommand($pmPrefix, "stop"));
+		$this->register(new TeleportCommand($pmPrefix, "tp"), ["teleport"]);
+		$this->register(new TellCommand($pmPrefix, "tell"), ["w", "msg"]);
+		$this->register(new TimeCommand($pmPrefix, "time"));
+		$this->register(new TimingsCommand($pmPrefix, "timings"));
+		$this->register(new TitleCommand($pmPrefix, "title"));
+		$this->register(new TransferServerCommand($pmPrefix, "transferserver"));
+		$this->register(new VersionCommand($pmPrefix, "version"), ["ver", "about"]);
+		$this->register(new WhitelistCommand($pmPrefix, "whitelist"));
+		$this->register(new XpCommand($pmPrefix, "xp"));
 	}
 
-	public function registerAll(string $fallbackPrefix, array $commands) : void{
-		foreach($commands as $command){
-			$this->register($fallbackPrefix, $command);
-		}
-	}
-
-	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool{
+	public function register(Command $command, array $otherAliases = []) : void{
 		if(count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
 
-		if($label === null){
-			$label = $command->getLabel();
-		}
-		$label = trim($label);
-		$fallbackPrefix = strtolower(trim($fallbackPrefix));
-
-		$registered = $this->registerAlias($command, false, $fallbackPrefix, $label);
-
-		$aliases = $command->getAliases();
-		foreach($aliases as $index => $alias){
-			if(!$this->registerAlias($command, true, $fallbackPrefix, $alias)){
-				unset($aliases[$index]);
-			}
-		}
-		$command->setAliases(array_values($aliases));
-
-		if(!$registered){
-			$command->setLabel($fallbackPrefix . ":" . $label);
+		$commandId = $command->getId();
+		if(isset($this->uniqueCommands[$commandId])){
+			throw new \InvalidArgumentException("A command with ID $commandId has already been registered");
 		}
 
-		$command->register($this);
+		$preferredAlias = trim($command->getName());
+		$this->aliasMap->bindAlias($commandId, $preferredAlias, override: false);
+		foreach($otherAliases as $alias){
+			$this->aliasMap->bindAlias($commandId, $alias, override: false);
+		}
 
-		return $registered;
+		$this->uniqueCommands[$commandId] = $command;
 	}
 
 	public function unregister(Command $command) : bool{
-		foreach(Utils::promoteKeys($this->knownCommands) as $lbl => $cmd){
-			if($cmd === $command){
-				unset($this->knownCommands[$lbl]);
-			}
-		}
-
-		$command->unregister($this);
-
-		return true;
-	}
-
-	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
-		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
-		if(($command instanceof VanillaCommand || $isAlias) && isset($this->knownCommands[$label])){
-			return false;
-		}
-
-		if(isset($this->knownCommands[$label]) && $this->knownCommands[$label]->getLabel() === $label){
-			return false;
-		}
-
-		if(!$isAlias){
-			$command->setLabel($label);
-		}
-
-		$this->knownCommands[$label] = $command;
+		unset($this->uniqueCommands[$command->getId()]);
+		$this->aliasMap->unbindAliasesForCommand($command->getId());
 
 		return true;
 	}
@@ -210,44 +175,98 @@ class SimpleCommandMap implements CommandMap{
 		$args = CommandStringHelper::parseQuoteAware($commandLine);
 
 		$sentCommandLabel = array_shift($args);
-		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
-			$timings = Timings::getCommandDispatchTimings($target->getLabel());
+		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
+			if(is_array($target)){
+				self::handleConflicted($sender, $sentCommandLabel, $target, $this->aliasMap);
+				return true;
+			}
+			$timings = Timings::getCommandDispatchTimings($target->getId());
 			$timings->startTiming();
 
 			try{
-				if($target->testPermission($sender)){
+				if($target->testPermission($sentCommandLabel, $sender)){
 					$target->execute($sender, $sentCommandLabel, $args);
 				}
 			}catch(InvalidCommandSyntaxException $e){
-				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+				//TODO: localised command message should use user-provided alias, it shouldn't be hard-baked into the language strings
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage() ?? "/$sentCommandLabel")));
 			}finally{
 				$timings->stopTiming();
 			}
 			return true;
 		}
 
-		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel ?? "", "/help")->prefix(TextFormat::RED));
+		//Don't love hardcoding the command ID here, but it seems like the only way for now
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound(
+			$sentCommandLabel ?? "",
+			"/" . $sender->getCommandAliasMap()->getPreferredAlias("pocketmine:help", $this->aliasMap)
+		)->prefix(TextFormat::RED));
 		return false;
 	}
 
-	public function clearCommands() : void{
-		foreach($this->knownCommands as $command){
-			$command->unregister($this);
+	/**
+	 * TODO: probably need to find a better place to put this
+	 * @internal
+	 * @param Command[] $conflictedEntries
+	 * @phpstan-param array<int, Command> $conflictedEntries
+	 */
+	public static function handleConflicted(CommandSender $sender, string $alias, array $conflictedEntries, CommandAliasMap $fallbackAliasMap) : void{
+		$candidates = [];
+		$userAliasMap = $sender->getCommandAliasMap();
+		foreach($conflictedEntries as $c){
+			if($c->testPermissionSilent($sender)){
+				$candidates[] = "/" . $c->getId();
+			}
 		}
-		$this->knownCommands = [];
+		if(count($candidates) > 0){
+			//there might only be 1 permissible command here, but we still don't auto-select in this case
+			//because it might cause surprising behaviour if the user's permissions change between command
+			//invocations. Better to force them to use an unambiguous alias in all cases.
+			$candidateNames = implode(", ", $candidates);
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflict("/$alias", $candidateNames)->prefix(TextFormat::RED));
+			//Don't love hardcoding the command ID here, but it seems like the only way for now
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflictTip(
+				"/" . $userAliasMap->getPreferredAlias("pocketmine:cmdalias", $fallbackAliasMap)
+			)->prefix(TextFormat::RED));
+		}else{
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($alias)->prefix(TextFormat::RED));
+		}
+	}
+
+	public function clearCommands() : void{
+		$this->aliasMap = new CommandAliasMap();
+		$this->uniqueCommands = [];
 		$this->setDefaultCommands();
 	}
 
-	public function getCommand(string $name) : ?Command{
-		return $this->knownCommands[$name] ?? null;
+	public function getCommand(string $name, ?CommandAliasMap $senderAliasMap = null) : Command|array|null{
+		if(isset($this->uniqueCommands[$name])){ //direct command ID reference
+			return $this->uniqueCommands[$name];
+		}
+		$commandId = $senderAliasMap?->resolveAlias($name) ?? $this->aliasMap->resolveAlias($name);
+		if(is_string($commandId)){
+			return $this->uniqueCommands[$commandId] ?? null;
+		}
+		if(is_array($commandId)){
+			//the user's command map may refer to commands that are no longer registered, so we need to filter these
+			//from the result set
+			//we don't deconflict if there's only 1 command left because we don't want re-running a command to randomly
+			//have a different result if the global command map was modified - the user can explicitly rebind the
+			//alias in this case
+			return array_filter(array_map(
+				fn(string $c) => $this->uniqueCommands[$c] ?? null,
+				$commandId
+			), is_object(...));
+		}
+		return null;
 	}
 
 	/**
 	 * @return Command[]
 	 * @phpstan-return array<string, Command>
 	 */
-	public function getCommands() : array{
-		return $this->knownCommands;
+	public function getUniqueCommands() : array{
+		return $this->uniqueCommands;
 	}
 
 	public function registerServerAliases() : void{
@@ -268,7 +287,7 @@ class SimpleCommandMap implements CommandMap{
 				$commandName = array_shift($args) ?? "";
 				$command = $this->getCommand($commandName);
 
-				if($command === null){
+				if(!$command instanceof Command){
 					$bad[] = $commandString;
 				}elseif(strcasecmp($commandName, $alias) === 0){
 					$recursive[] = $commandString;
@@ -290,11 +309,15 @@ class SimpleCommandMap implements CommandMap{
 			//These registered commands have absolute priority
 			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$this->knownCommands[$lowerAlias] = new FormattedCommandAlias($lowerAlias, $targets);
+				$aliasInstance = new FormattedCommandAlias("pocketmine-config-defined", $lowerAlias, $targets);
+				$this->aliasMap->bindAlias($aliasInstance->getId(), $lowerAlias, override: true);
+				$this->uniqueCommands[$aliasInstance->getId()] = $aliasInstance;
 			}else{
-				unset($this->knownCommands[$lowerAlias]);
+				//no targets blackholes the alias - this allows config to delete unwanted aliases
+				$this->aliasMap->unbindAlias($lowerAlias);
 			}
-
 		}
 	}
+
+	public function getAliasMap() : CommandAliasMap{ return $this->aliasMap; }
 }

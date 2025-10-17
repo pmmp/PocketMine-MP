@@ -23,10 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\block\inventory\EnchantInventory;
+use pocketmine\block\inventory\window\EnchantingTableInventoryWindow;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\event\Event;
 use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
@@ -44,13 +43,13 @@ class PlayerEnchantingOptionsRequestEvent extends PlayerEvent implements Cancell
 	 */
 	public function __construct(
 		Player $player,
-		private readonly EnchantInventory $inventory,
+		private readonly EnchantingTableInventoryWindow $inventory,
 		private array $options
 	){
 		$this->player = $player;
 	}
 
-	public function getInventory() : EnchantInventory{
+	public function getInventory() : EnchantingTableInventoryWindow{
 		return $this->inventory;
 	}
 

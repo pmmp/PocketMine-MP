@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command\utils;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class CommandStringHelperTest extends TestCase{
@@ -47,9 +48,9 @@ class CommandStringHelperTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider parseQuoteAwareProvider
 	 * @param string[] $expected
 	 */
+	#[DataProvider("parseQuoteAwareProvider")]
 	public function testParseQuoteAware(string $commandLine, array $expected) : void{
 		$actual = CommandStringHelper::parseQuoteAware($commandLine);
 

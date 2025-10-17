@@ -127,7 +127,7 @@ class BlockTransaction{
 	 * @phpstan-param \Closure(ChunkManager $world, int $x, int $y, int $z) : bool $validator
 	 */
 	public function addValidator(\Closure $validator) : void{
-		Utils::validateCallableSignature([$this, 'dummyValidator'], $validator);
+		Utils::validateCallableSignature($this->dummyValidator(...), $validator);
 		$this->validators[] = $validator;
 	}
 

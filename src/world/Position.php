@@ -23,12 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\world;
 
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\utils\AssumptionFailedError;
 use function assert;
 
-class Position extends Vector3{
-	public ?World $world = null;
+readonly class Position extends Vector3{
+	public ?World $world;
 
 	public function __construct(float|int $x, float|int $y, float|int $z, ?World $world){
 		parent::__construct($x, $y, $z);
@@ -71,8 +72,6 @@ class Position extends Vector3{
 	 */
 	public function isValid() : bool{
 		if($this->world !== null && !$this->world->isLoaded()){
-			$this->world = null;
-
 			return false;
 		}
 
@@ -84,7 +83,7 @@ class Position extends Vector3{
 	 *
 	 * @return Position
 	 */
-	public function getSide(int $side, int $step = 1){
+	public function getSide(Facing $side, int $step = 1){
 		assert($this->isValid());
 
 		return Position::fromObject(parent::getSide($side, $step), $this->world);

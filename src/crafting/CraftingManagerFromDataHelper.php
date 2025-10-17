@@ -152,21 +152,21 @@ final class CraftingManagerFromDataHelper{
 	 * @return mixed[]
 	 *
 	 * @phpstan-template TData of object
-	 * @phpstan-param class-string<TData> $modelCLass
+	 * @phpstan-param class-string<TData> $modelClass
 	 * @phpstan-return list<TData>
 	 */
-	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
+	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelClass) : array{
 		$recipes = json_decode(Filesystem::fileGetContents($filePath));
 		if(!is_array($recipes)){
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
 		}
 
 		$mapper = new \JsonMapper();
-		$mapper->bStrictObjectTypeChecking = true;
+		$mapper->bStrictObjectTypeChecking = false; //to allow hydrating ItemStackData - since this is only used for offline data it's safe
 		$mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 
-		return self::loadJsonObjectListIntoModel($mapper, $modelCLass, $recipes);
+		return self::loadJsonObjectListIntoModel($mapper, $modelClass, $recipes);
 	}
 
 	/**

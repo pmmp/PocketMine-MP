@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
-use pocketmine\utils\BinaryStream;
 use function count;
 use function log;
 use function spl_object_id;
@@ -64,8 +63,10 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 
 		$totalLength = 0;
 		$packetBuffers = [];
+		$writer = new ByteBufferWriter();
 		foreach($packets as $packet){
-			$buffer = NetworkSession::encodePacketTimed(PacketSerializer::encoder(), $packet);
+			$writer->clear(); //memory reuse let's gooooo
+			$buffer = NetworkSession::encodePacketTimed($writer, $packet);
 			//varint length prefix + packet buffer
 			$totalLength += (((int) log(strlen($buffer), 128)) + 1) + strlen($buffer);
 			$packetBuffers[] = $buffer;
@@ -77,9 +78,9 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 			$threshold = $compressor->getCompressionThreshold();
 			if(count($compressorTargets) > 1 && $threshold !== null && $totalLength >= $threshold){
 				//do not prepare shared batch unless we're sure it will be compressed
-				$stream = new BinaryStream();
+				$stream = new ByteBufferWriter();
 				PacketBatch::encodeRaw($stream, $packetBuffers);
-				$batchBuffer = $stream->getBuffer();
+				$batchBuffer = $stream->getData();
 
 				$batch = $this->server->prepareBatch($batchBuffer, $compressor, timings: Timings::$playerNetworkSendCompressBroadcast);
 				foreach($compressorTargets as $target){

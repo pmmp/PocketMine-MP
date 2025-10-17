@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\utils\BrewingStandSlot;
 use function count;
@@ -39,11 +40,10 @@ class BrewingStandTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider slotsProvider
-	 *
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param list<BrewingStandSlot> $slots
 	 */
+	#[DataProvider("slotsProvider")]
 	public function testHasAndSetSlot(array $slots) : void{
 		$block = VanillaBlocks::BREWING_STAND();
 		foreach($slots as $slot){
@@ -62,11 +62,10 @@ class BrewingStandTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider slotsProvider
-	 *
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param list<BrewingStandSlot> $slots
 	 */
+	#[DataProvider("slotsProvider")]
 	public function testGetSlots(array $slots) : void{
 		$block = VanillaBlocks::BREWING_STAND();
 
@@ -83,11 +82,10 @@ class BrewingStandTest extends TestCase{
 	}
 
 	/**
-	 * @dataProvider slotsProvider
-	 *
 	 * @param BrewingStandSlot[] $slots
 	 * @phpstan-param list<BrewingStandSlot> $slots
 	 */
+	#[DataProvider("slotsProvider")]
 	public function testSetSlots(array $slots) : void{
 		$block = VanillaBlocks::BREWING_STAND();
 

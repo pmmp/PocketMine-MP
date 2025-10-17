@@ -59,6 +59,9 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_BAN_PLAYER, l10n::pocketmine_permission_command_ban_player()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_CLEAR_OTHER, l10n::pocketmine_permission_command_clear_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_CLEAR_SELF, l10n::pocketmine_permission_command_clear_self()), [$everyoneRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_CMDALIAS_LIST, l10n::pocketmine_permission_command_cmdalias_list()), [$everyoneRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_CMDALIAS_EDIT_SELF, l10n::pocketmine_permission_command_cmdalias_edit_self()), [$everyoneRoot]);
+		self::registerPermission(new Permission(Names::COMMAND_CMDALIAS_EDIT_GLOBAL, l10n::pocketmine_permission_command_cmdalias_edit_global()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_DEFAULTGAMEMODE, l10n::pocketmine_permission_command_defaultgamemode()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_DIFFICULTY, l10n::pocketmine_permission_command_difficulty()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_DUMPMEMORY, l10n::pocketmine_permission_command_dumpmemory()), [$consoleRoot]);

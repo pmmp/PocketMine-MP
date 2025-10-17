@@ -34,9 +34,10 @@ use function implode;
 
 class MeCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"me",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_me_description(),
 			KnownTranslationFactory::commands_me_usage()
 		);

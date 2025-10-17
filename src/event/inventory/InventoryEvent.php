@@ -27,15 +27,15 @@ declare(strict_types=1);
 namespace pocketmine\event\inventory;
 
 use pocketmine\event\Event;
-use pocketmine\inventory\Inventory;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 
 abstract class InventoryEvent extends Event{
 	public function __construct(
-		protected Inventory $inventory
+		protected InventoryWindow $inventory
 	){}
 
-	public function getInventory() : Inventory{
+	public function getInventory() : InventoryWindow{
 		return $this->inventory;
 	}
 
@@ -43,6 +43,6 @@ abstract class InventoryEvent extends Event{
 	 * @return Player[]
 	 */
 	public function getViewers() : array{
-		return $this->inventory->getViewers();
+		return $this->inventory->getInventory()->getViewers();
 	}
 }

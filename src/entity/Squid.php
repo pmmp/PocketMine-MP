@@ -38,14 +38,14 @@ use const M_PI;
 
 class Squid extends WaterAnimal{
 
-	public static function getNetworkTypeId() : string{ return EntityIds::SQUID; }
+	public function getNetworkTypeId() : string{ return EntityIds::SQUID; }
 
 	public ?Vector3 $swimDirection = null;
 	public float $swimSpeed = 0.1;
 
 	private int $switchDirectionTicker = 0;
 
-	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.8, 0.8); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

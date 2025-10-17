@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
@@ -39,7 +40,7 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\GlowBerriesPickSound;
 use function mt_rand;
 
-class CaveVines extends Flowable{
+class CaveVines extends Flowable implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
@@ -83,12 +84,12 @@ class CaveVines extends Flowable{
 		return $supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL || $supportBlock->hasSameTypeId($this);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->age = mt_rand(0, self::MAX_AGE);
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->berries){
 			$this->position->getWorld()->dropItem($this->position, $this->asItem());
 			$this->position->getWorld()->addSound($this->position, new GlowBerriesPickSound());
@@ -158,7 +159,7 @@ class CaveVines extends Flowable{
 		return VanillaItems::GLOW_BERRIES();
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(Facing $facing) : SupportType{
 		return SupportType::NONE;
 	}
 }

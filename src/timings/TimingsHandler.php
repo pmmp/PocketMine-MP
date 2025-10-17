@@ -140,19 +140,6 @@ class TimingsHandler{
 	}
 
 	/**
-	 * @deprecated This only collects timings from the main thread. Collecting timings from all threads is an async
-	 * operation, so it can't be done synchronously.
-	 *
-	 * @return string[]
-	 */
-	public static function printTimings() : array{
-		$records = self::printCurrentThreadRecords();
-		$footer = self::printFooter();
-
-		return [...$records, ...$footer];
-	}
-
-	/**
 	 * Collects timings asynchronously, allowing timings from multiple threads to be aggregated into a single report.
 	 *
 	 * NOTE: You need to add a callback to collectCallbacks if you want to include timings from other threads. They

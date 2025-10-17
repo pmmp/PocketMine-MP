@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\CopperMaterial;
+use pocketmine\block\utils\CopperTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -32,7 +35,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-final class LightningRod extends Transparent{
+final class LightningRod extends Transparent implements AnyFacing, CopperMaterial{
+	use CopperTrait;
 	use AnyFacingTrait;
 
 	protected function recalculateCollisionBoxes() : array{
@@ -41,14 +45,14 @@ final class LightningRod extends Transparent{
 		$result = AxisAlignedBB::one();
 		foreach([Axis::X, Axis::Y, Axis::Z] as $axis){
 			if($axis !== $myAxis){
-				$result->squash($axis, 6 / 16);
+				$result = $result->squashedCopy($axis, 6 / 16);
 			}
 		}
 
 		return [$result];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face;
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}

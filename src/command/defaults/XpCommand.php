@@ -38,9 +38,10 @@ use function substr;
 
 class XpCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"xp",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_xp_description(),
 			KnownTranslationFactory::pocketmine_command_xp_usage()
 		);
@@ -55,7 +56,7 @@ class XpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
+		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
 		if($player === null){
 			return true;
 		}

@@ -28,15 +28,14 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
-use function array_keys;
 use function array_values;
 use function assert;
 use function count;
 use function get_class;
 use function min;
-use function shuffle;
 use function spl_object_hash;
 use function spl_object_id;
 
@@ -59,10 +58,10 @@ class InventoryTransaction{
 	protected bool $hasExecuted = false;
 
 	/**
-	 * @var Inventory[]
-	 * @phpstan-var array<int, Inventory>
+	 * @var InventoryWindow[]
+	 * @phpstan-var array<int, InventoryWindow>
 	 */
-	protected array $inventories = [];
+	protected array $inventoryWindows = [];
 
 	/**
 	 * @var InventoryAction[]
@@ -87,18 +86,21 @@ class InventoryTransaction{
 	}
 
 	/**
-	 * @return Inventory[]
-	 * @phpstan-return array<int, Inventory>
+	 * @return InventoryWindow[]
+	 * @phpstan-return array<int, InventoryWindow>
 	 */
-	public function getInventories() : array{
-		return $this->inventories;
+	public function getInventoryWindows() : array{
+		return $this->inventoryWindows;
 	}
 
 	/**
-	 * Returns an **unordered** set of actions involved in this transaction.
+	 * Returns a set of actions involved in this transaction.
 	 *
-	 * WARNING: This system is **explicitly designed NOT to care about ordering**. Any order seen in this set has NO
-	 * significance and should not be relied on.
+	 * Note: This system is designed to care only about item balances. While you can usually assume that the actions
+	 * are provided in the correct order, it will still successfully complete transactions whose actions are provided in
+	 * the "wrong" order, as long as the transaction balances.
+	 * For example, you may see that an action setting a slot to a particular item may appear before the action that
+	 * removes that item from its original slot. While unintuitive, this is still valid.
 	 *
 	 * @return InventoryAction[]
 	 * @phpstan-return array<int, InventoryAction>
@@ -110,26 +112,12 @@ class InventoryTransaction{
 	public function addAction(InventoryAction $action) : void{
 		if(!isset($this->actions[$hash = spl_object_id($action)])){
 			$this->actions[$hash] = $action;
-			$action->onAddToTransaction($this);
-			if($action instanceof SlotChangeAction && !isset($this->inventories[$inventoryId = spl_object_id($action->getInventory())])){
-				$this->inventories[$inventoryId] = $action->getInventory();
+			if($action instanceof SlotChangeAction && !isset($this->inventoryWindows[$inventoryId = spl_object_id($action->getInventoryWindow())])){
+				$this->inventoryWindows[$inventoryId] = $action->getInventoryWindow();
 			}
 		}else{
 			throw new \InvalidArgumentException("Tried to add the same action to a transaction twice");
 		}
-	}
-
-	/**
-	 * Shuffles actions in the transaction to prevent external things relying on any implicit ordering.
-	 */
-	private function shuffleActions() : void{
-		$keys = array_keys($this->actions);
-		shuffle($keys);
-		$actions = [];
-		foreach($keys as $key){
-			$actions[$key] = $this->actions[$key];
-		}
-		$this->actions = $actions;
 	}
 
 	/**
@@ -198,8 +186,8 @@ class InventoryTransaction{
 
 		foreach($this->actions as $key => $action){
 			if($action instanceof SlotChangeAction){
-				$slotChanges[$h = (spl_object_hash($action->getInventory()) . "@" . $action->getSlot())][] = $action;
-				$inventories[$h] = $action->getInventory();
+				$slotChanges[$h = (spl_object_hash($action->getInventoryWindow()) . "@" . $action->getSlot())][] = $action;
+				$inventories[$h] = $action->getInventoryWindow();
 				$slots[$h] = $action->getSlot();
 			}
 		}
@@ -209,10 +197,11 @@ class InventoryTransaction{
 				continue;
 			}
 
-			$inventory = $inventories[$hash];
+			$window = $inventories[$hash];
+			$inventory = $window->getInventory();
 			$slot = $slots[$hash];
 			if(!$inventory->slotExists($slot)){ //this can get hit for crafting tables because the validation happens after this compaction
-				throw new TransactionValidationException("Slot $slot does not exist in inventory " . get_class($inventory));
+				throw new TransactionValidationException("Slot $slot does not exist in inventory window " . get_class($window));
 			}
 			$sourceItem = $inventory->getItem($slot);
 
@@ -227,7 +216,7 @@ class InventoryTransaction{
 
 			if(!$targetItem->equalsExact($sourceItem)){
 				//sometimes we get actions on the crafting grid whose source and target items are the same, so dump them
-				$this->addAction(new SlotChangeAction($inventory, $slot, $sourceItem, $targetItem));
+				$this->addAction(new SlotChangeAction($window, $slot, $sourceItem, $targetItem));
 			}
 		}
 	}
@@ -307,8 +296,6 @@ class InventoryTransaction{
 		if($this->hasExecuted()){
 			throw new TransactionValidationException("Transaction has already been executed");
 		}
-
-		$this->shuffleActions();
 
 		$this->validate();
 

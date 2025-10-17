@@ -50,4 +50,10 @@ interface CommandSender extends Permissible{
 	 * @phpstan-param positive-int|null $height
 	 */
 	public function setScreenLineHeight(?int $height) : void;
+
+	/**
+	 * Returns the user's local alias map. This may contain special user-specific aliases that differ from the global
+	 * command map's aliases.
+	 */
+	public function getCommandAliasMap() : CommandAliasMap;
 }

@@ -152,7 +152,7 @@ abstract class Living extends Entity{
 		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
 		$this->effectManager->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
 
-		$this->armorInventory = new ArmorInventory($this);
+		$this->armorInventory = new ArmorInventory();
 		//TODO: load/save armor inventory contents
 		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
@@ -181,8 +181,7 @@ abstract class Living extends Entity{
 
 		$this->setAirSupplyTicks($nbt->getShort(self::TAG_BREATH_TICKS, self::DEFAULT_BREATH_TICKS));
 
-		/** @var CompoundTag[]|ListTag|null $activeEffectsTag */
-		$activeEffectsTag = $nbt->getListTag(self::TAG_ACTIVE_EFFECTS);
+		$activeEffectsTag = $nbt->getListTag(self::TAG_ACTIVE_EFFECTS, CompoundTag::class);
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
 				$effect = EffectIdMap::getInstance()->fromId($e->getByte(self::TAG_EFFECT_ID));
@@ -242,6 +241,10 @@ abstract class Living extends Entity{
 		$this->absorptionAttr->setValue($absorption);
 	}
 
+	public function getSneakOffset() : float{
+		return 0.0;
+	}
+
 	public function isSneaking() : bool{
 		return $this->sneaking;
 	}
@@ -292,7 +295,7 @@ abstract class Living extends Entity{
 			$width = $size->getWidth();
 			$this->setSize((new EntitySizeInfo($width, $width, $width * 0.9))->scale($this->getScale()));
 		}elseif($this->isSneaking()){
-			$this->setSize((new EntitySizeInfo(3 / 4 * $size->getHeight(), $size->getWidth(), 3 / 4 * $size->getEyeHeight()))->scale($this->getScale()));
+			$this->setSize((new EntitySizeInfo($size->getHeight() - $this->getSneakOffset(), $size->getWidth(), $size->getEyeHeight() - $this->getSneakOffset()))->scale($this->getScale()));
 		}else{
 			$this->setSize($size->scale($this->getScale()));
 		}
@@ -741,7 +744,7 @@ abstract class Living extends Entity{
 				if(
 					!$block->isSameState($liquid) ||
 					$world->getBlockAt($x, $y + 1, $z)->getTypeId() !== BlockTypeIds::AIR ||
-					count($world->getNearbyEntities(AxisAlignedBB::one()->offset($x, $y, $z))) !== 0
+					count($world->getNearbyEntities(AxisAlignedBB::one()->offsetCopy($x, $y, $z))) !== 0
 				){
 					continue;
 				}
@@ -987,7 +990,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function onDispose() : void{
-		$this->armorInventory->removeAllViewers();
+		$this->armorInventory->removeAllWindows();
 		$this->effectManager->getEffectAddHooks()->clear();
 		$this->effectManager->getEffectRemoveHooks()->clear();
 		parent::onDispose();
@@ -995,7 +998,6 @@ abstract class Living extends Entity{
 
 	protected function destroyCycles() : void{
 		unset(
-			$this->armorInventory,
 			$this->effectManager
 		);
 		parent::destroyCycles();

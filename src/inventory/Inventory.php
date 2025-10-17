@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
+use pocketmine\player\InventoryWindow;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 
@@ -97,6 +98,13 @@ interface Inventory{
 	 * Returns how many items from the given itemstack can be added to this inventory.
 	 */
 	public function getAddableItemQuantity(Item $item) : int;
+
+	/**
+	 * Returns the number of items in the inventory that match the given item.
+	 *
+	 * @param bool $checkTags If true, the NBT of the items will also be checked and must be the same to be counted.
+	 */
+	public function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int;
 
 	/**
 	 * Returns whether the total amount of matching items is at least the stack size of the given item. Multiple stacks
@@ -180,11 +188,16 @@ interface Inventory{
 	public function getViewers() : array;
 
 	/**
+	 * Tells all Players viewing this inventory to stop viewing it and discard associated windows.
+	 */
+	public function removeAllWindows() : void;
+
+	/**
 	 * Called when a player opens this inventory.
 	 */
-	public function onOpen(Player $who) : void;
+	public function onOpen(InventoryWindow $window) : void;
 
-	public function onClose(Player $who) : void;
+	public function onClose(InventoryWindow $window) : void;
 
 	/**
 	 * Returns whether the specified slot exists in the inventory.

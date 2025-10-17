@@ -492,7 +492,7 @@ abstract class Entity{
 				new FloatTag($this->location->pitch)
 			]));
 
-		if(!($this instanceof Player)){
+		if(!($this instanceof NeverSavedWithChunkEntity)){
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
@@ -939,7 +939,7 @@ abstract class Entity{
 		return false;
 	}
 
-	public function getHorizontalFacing() : int{
+	public function getHorizontalFacing() : Facing{
 		$angle = fmod($this->location->yaw, 360);
 		if($angle < 0){
 			$angle += 360.0;
@@ -1161,7 +1161,7 @@ abstract class Entity{
 		$wantedZ = $dz;
 
 		if($this->keepMovement){
-			$this->boundingBox->offset($dx, $dy, $dz);
+			$this->boundingBox = $this->boundingBox->offsetCopy($dx, $dy, $dz);
 		}else{
 			$this->ySize *= self::STEP_CLIP_MULTIPLIER;
 
@@ -1175,7 +1175,7 @@ abstract class Entity{
 				$dy = $bb->calculateYOffset($moveBB, $dy);
 			}
 
-			$moveBB->offset(0, $dy, 0);
+			$moveBB = $moveBB->offsetCopy(0, $dy, 0);
 
 			$fallingFlag = ($this->onGround || ($dy !== $wantedY && $wantedY < 0));
 
@@ -1183,13 +1183,13 @@ abstract class Entity{
 				$dx = $bb->calculateXOffset($moveBB, $dx);
 			}
 
-			$moveBB->offset($dx, 0, 0);
+			$moveBB = $moveBB->offsetCopy($dx, 0, 0);
 
 			foreach($list as $bb){
 				$dz = $bb->calculateZOffset($moveBB, $dz);
 			}
 
-			$moveBB->offset(0, 0, $dz);
+			$moveBB = $moveBB->offsetCopy(0, 0, $dz);
 
 			$stepHeight = $this->getStepHeight();
 
@@ -1208,26 +1208,26 @@ abstract class Entity{
 					$dy = $bb->calculateYOffset($stepBB, $dy);
 				}
 
-				$stepBB->offset(0, $dy, 0);
+				$stepBB = $stepBB->offsetCopy(0, $dy, 0);
 
 				foreach($list as $bb){
 					$dx = $bb->calculateXOffset($stepBB, $dx);
 				}
 
-				$stepBB->offset($dx, 0, 0);
+				$stepBB = $stepBB->offsetCopy($dx, 0, 0);
 
 				foreach($list as $bb){
 					$dz = $bb->calculateZOffset($stepBB, $dz);
 				}
 
-				$stepBB->offset(0, 0, $dz);
+				$stepBB = $stepBB->offsetCopy(0, 0, $dz);
 
 				$reverseDY = -$dy;
 				foreach($list as $bb){
 					$reverseDY = $bb->calculateYOffset($stepBB, $reverseDY);
 				}
 				$dy += $reverseDY;
-				$stepBB->offset(0, $reverseDY, 0);
+				$stepBB = $stepBB->offsetCopy(0, $reverseDY, 0);
 
 				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
@@ -1401,8 +1401,15 @@ abstract class Entity{
 	public function setRotation(float $yaw, float $pitch) : void{
 		Utils::checkFloatNotInfOrNaN("yaw", $yaw);
 		Utils::checkFloatNotInfOrNaN("pitch", $pitch);
-		$this->location->yaw = $yaw;
-		$this->location->pitch = $pitch;
+		//TODO: maybe it's time to think about pulling rotation into a separate structure?
+		$this->location = new Location(
+			$this->location->x,
+			$this->location->y,
+			$this->location->z,
+			$this->location->world,
+			$yaw,
+			$pitch
+		);
 		$this->scheduleUpdate();
 	}
 
@@ -1508,7 +1515,7 @@ abstract class Entity{
 		return $this->hasSpawned;
 	}
 
-	abstract public static function getNetworkTypeId() : string;
+	abstract public function getNetworkTypeId() : string;
 
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
@@ -1517,7 +1524,7 @@ abstract class Entity{
 		$player->getNetworkSession()->sendDataPacket(AddActorPacket::create(
 			$this->getId(), //TODO: actor unique ID
 			$this->getId(),
-			static::getNetworkTypeId(),
+			$this->getNetworkTypeId(),
 			$this->getOffsetPosition($this->location->asVector3()),
 			$this->getMotion(),
 			$this->location->pitch,

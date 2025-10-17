@@ -25,10 +25,11 @@ namespace pocketmine\event\server;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 
-class DataPacketReceiveEvent extends ServerEvent implements Cancellable{
+class DataPacketReceiveEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(

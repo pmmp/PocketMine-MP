@@ -23,19 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use pocketmine\utils\LegacyEnumShimTrait;
 use function mb_strtolower;
 
-/**
- * TODO: These tags need to be removed once we get rid of LegacyEnumShimTrait (PM6)
- *  These are retained for backwards compatibility only.
- *
- * @method static PluginEnableOrder POSTWORLD()
- * @method static PluginEnableOrder STARTUP()
- */
 enum PluginEnableOrder{
-	use LegacyEnumShimTrait;
-
 	case STARTUP;
 	case POSTWORLD;
 

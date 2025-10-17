@@ -37,7 +37,7 @@ use function in_array;
 
 abstract class BaseRail extends Flowable{
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, Facing $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace->getAdjacentSupportType(Facing::DOWN)->hasEdgeSupport()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -89,8 +89,9 @@ abstract class BaseRail extends Flowable{
 
 		/** @var int $connection */
 		foreach($this->getCurrentShapeConnections() as $connection){
-			$other = $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND);
-			$otherConnection = Facing::opposite($connection & ~RailConnectionInfo::FLAG_ASCEND);
+			$connectionFace = Facing::from($connection & ~RailConnectionInfo::FLAG_ASCEND);
+			$other = $this->getSide($connectionFace);
+			$otherConnection = Facing::opposite($connectionFace)->value;
 
 			if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0){
 				$other = $other->getSide(Facing::UP);
@@ -122,10 +123,10 @@ abstract class BaseRail extends Flowable{
 			case 0:
 				//No constraints, can connect in any direction
 				$possible = [
-					Facing::NORTH => true,
-					Facing::SOUTH => true,
-					Facing::WEST => true,
-					Facing::EAST => true
+					Facing::NORTH->value => true,
+					Facing::SOUTH->value => true,
+					Facing::WEST->value => true,
+					Facing::EAST->value => true
 				];
 				foreach($possible as $p => $_){
 					$possible[$p | RailConnectionInfo::FLAG_ASCEND] = true;
@@ -146,13 +147,13 @@ abstract class BaseRail extends Flowable{
 	 * @phpstan-return array<int, true>
 	 */
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
-		$opposite = Facing::opposite($constraint & ~RailConnectionInfo::FLAG_ASCEND);
+		$opposite = Facing::opposite(Facing::from($constraint & ~RailConnectionInfo::FLAG_ASCEND));
 
-		$possible = [$opposite => true];
+		$possible = [$opposite->value => true];
 
 		if(($constraint & RailConnectionInfo::FLAG_ASCEND) === 0){
 			//We can slope the other way if this connection isn't already a slope
-			$possible[$opposite | RailConnectionInfo::FLAG_ASCEND] = true;
+			$possible[$opposite->value | RailConnectionInfo::FLAG_ASCEND] = true;
 		}
 
 		return $possible;
@@ -168,9 +169,10 @@ abstract class BaseRail extends Flowable{
 			$continue = false;
 
 			foreach($possible as $thisSide => $_){
-				$otherSide = Facing::opposite($thisSide & ~RailConnectionInfo::FLAG_ASCEND);
+				$thisSideEnum = Facing::from($thisSide & ~RailConnectionInfo::FLAG_ASCEND);
+				$otherSide = Facing::opposite($thisSideEnum)->value;
 
-				$other = $this->getSide($thisSide & ~RailConnectionInfo::FLAG_ASCEND);
+				$other = $this->getSide($thisSideEnum);
 
 				if(($thisSide & RailConnectionInfo::FLAG_ASCEND) !== 0){
 					$other = $other->getSide(Facing::UP);
@@ -212,7 +214,7 @@ abstract class BaseRail extends Flowable{
 	 */
 	private function setConnections(array $connections) : void{
 		if(count($connections) === 1){
-			$connections[] = Facing::opposite($connections[0] & ~RailConnectionInfo::FLAG_ASCEND);
+			$connections[] = Facing::opposite(Facing::from($connections[0] & ~RailConnectionInfo::FLAG_ASCEND))->value;
 		}elseif(count($connections) !== 2){
 			throw new \InvalidArgumentException("Expected exactly 2 connections, got " . count($connections));
 		}
@@ -226,7 +228,7 @@ abstract class BaseRail extends Flowable{
 			$world->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
-				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP)->hasEdgeSupport()){
+				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$this->getSide(Facing::from($connection & ~RailConnectionInfo::FLAG_ASCEND))->getSupportType(Facing::UP)->hasEdgeSupport()){
 					$world->useBreakOn($this->position);
 					break;
 				}

@@ -26,7 +26,7 @@ namespace pocketmine\entity\effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\event\entity\EntityExhaustEvent;
 
 class HungerEffect extends Effect{
 
@@ -36,7 +36,7 @@ class HungerEffect extends Effect{
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
 		if($entity instanceof Human){
-			$entity->getHungerManager()->exhaust(0.1 * $instance->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
+			$entity->getHungerManager()->exhaust(0.1 * $instance->getEffectLevel(), EntityExhaustEvent::CAUSE_POTION);
 		}
 	}
 }

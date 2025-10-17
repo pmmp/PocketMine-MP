@@ -80,8 +80,8 @@ class BigDripleafHead extends BaseBigDripleaf{
 		if(!$entity instanceof Projectile && $this->leafState === DripleafState::STABLE){
 			//the entity must be standing on top of the leaf - do not collapse if the entity is standing underneath
 			$intersection = AxisAlignedBB::one()
-				->offset($this->position->x, $this->position->y, $this->position->z)
-				->trim(Facing::DOWN, 1 - $this->getLeafTopOffset());
+				->offsetCopy($this->position->x, $this->position->y, $this->position->z)
+				->trimmedCopy(Facing::DOWN, 1 - $this->getLeafTopOffset());
 			if($entity->getBoundingBox()->intersectsWith($intersection)){
 				$this->setTiltAndScheduleTick(DripleafState::UNSTABLE);
 				return false;
@@ -116,8 +116,8 @@ class BigDripleafHead extends BaseBigDripleaf{
 		if($this->leafState !== DripleafState::FULL_TILT){
 			return [
 				AxisAlignedBB::one()
-					->trim(Facing::DOWN, 11 / 16)
-					->trim(Facing::UP, $this->getLeafTopOffset())
+					->trimmedCopy(Facing::DOWN, 11 / 16)
+					->trimmedCopy(Facing::UP, $this->getLeafTopOffset())
 			];
 		}
 		return [];

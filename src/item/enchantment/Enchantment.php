@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-use DaveRandom\CallbackValidator\CallbackType;
-use DaveRandom\CallbackValidator\ParameterType;
-use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\lang\Translatable;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
@@ -44,25 +41,18 @@ class Enchantment{
 	/**
 	 * @phpstan-param null|(\Closure(int $level) : int) $minEnchantingPower
 	 *
-	 * @param int $primaryItemFlags     @deprecated
-	 * @param int $secondaryItemFlags   @deprecated
 	 * @param int $enchantingPowerRange Value used to calculate the maximum enchanting power (minEnchantingPower + enchantingPowerRange)
 	 */
 	public function __construct(
 		private Translatable|string $name,
 		private int $rarity,
-		private int $primaryItemFlags,
-		private int $secondaryItemFlags,
 		private int $maxLevel,
 		?\Closure $minEnchantingPower = null,
 		private int $enchantingPowerRange = 50
 	){
 		$this->minEnchantingPower = $minEnchantingPower ?? fn(int $level) : int => 1;
 
-		Utils::validateCallableSignature(new CallbackType(
-			new ReturnType("int"),
-			new ParameterType("level", "int")
-		), $this->minEnchantingPower);
+		Utils::validateCallableSignature(fn(int $level) : int => die(), $this->minEnchantingPower);
 	}
 
 	/**
@@ -77,47 +67,6 @@ class Enchantment{
 	 */
 	public function getRarity() : int{
 		return $this->rarity;
-	}
-
-	/**
-	 * Returns a bitset indicating what item types can have this item applied from an enchanting table.
-	 *
-	 * @deprecated
-	 * @see AvailableEnchantmentRegistry::getPrimaryItemTags()
-	 */
-	public function getPrimaryItemFlags() : int{
-		return $this->primaryItemFlags;
-	}
-
-	/**
-	 * Returns a bitset indicating what item types cannot have this item applied from an enchanting table, but can from
-	 * an anvil.
-	 *
-	 * @deprecated
-	 * @see AvailableEnchantmentRegistry::getSecondaryItemTags()
-	 */
-	public function getSecondaryItemFlags() : int{
-		return $this->secondaryItemFlags;
-	}
-
-	/**
-	 * Returns whether this enchantment can apply to the item type from an enchanting table.
-	 *
-	 * @deprecated
-	 * @see AvailableEnchantmentRegistry
-	 */
-	public function hasPrimaryItemType(int $flag) : bool{
-		return ($this->primaryItemFlags & $flag) !== 0;
-	}
-
-	/**
-	 * Returns whether this enchantment can apply to the item type from an anvil, if it is not a primary item.
-	 *
-	 * @deprecated
-	 * @see AvailableEnchantmentRegistry
-	 */
-	public function hasSecondaryItemType(int $flag) : bool{
-		return ($this->secondaryItemFlags & $flag) !== 0;
 	}
 
 	/**
