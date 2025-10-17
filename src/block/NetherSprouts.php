@@ -23,14 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-final class BlockTypeTags{
-	private const PREFIX = "pocketmine:";
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\math\Facing;
 
-	public const DIRT = self::PREFIX . "dirt";
-	public const MUD = self::PREFIX . "mud";
-	public const SAND = self::PREFIX . "sand";
-	public const POTTABLE_PLANTS = self::PREFIX . "pottable";
-	public const FIRE = self::PREFIX . "fire";
-	public const HANGING_SIGN = self::PREFIX . "hanging_sign";
-	public const NYLIUM = self::PREFIX . "nylium";
+class NetherSprouts extends Flowable{
+	use StaticSupportTrait;
+
+	private function canBeSupportedAt(Block $block) : bool{
+		//TODO: moss
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
+			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+	}
 }
