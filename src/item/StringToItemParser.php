@@ -38,6 +38,7 @@ use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
 use function array_keys;
+use function count;
 use function strtolower;
 
 /**
@@ -1606,6 +1607,20 @@ final class StringToItemParser extends StringToTParser{
 		parent::register($alias, $callback);
 		$item = $callback($alias);
 		$this->reverseMap[$item->getStateId()][$alias] = true;
+	}
+
+	public function override(string $alias, \Closure $callback) : void{
+		$oldItem = $this->parse($alias);
+		if($oldItem !== null){
+			$oldStateId = $oldItem->getStateId();
+			unset($this->reverseMap[$oldStateId][$alias]);
+			if(count($this->reverseMap[$oldStateId]) === 0){
+				unset($this->reverseMap[$oldStateId]);
+			}
+		}
+		parent::override($alias, $callback);
+		$newItem = $callback($alias);
+		$this->reverseMap[$newItem->getStateId()][$alias] = true;
 	}
 
 	/** @phpstan-param \Closure(string $input) : Block $callback */
