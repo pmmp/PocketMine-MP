@@ -47,10 +47,7 @@ class NetherTree extends Tree{
 	}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
-		if($this->planted){
-			return true;
-		}
-		return parent::canPlaceObject($world, $x, $y, $z, $random);
+		return true;
 	}
 
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
@@ -59,13 +56,13 @@ class NetherTree extends Tree{
 		}
 
 		$transaction = new BlockTransaction($world);
-		$this->placeStem($x, $y, $z, $random, $this->generateTrunkHeight($random), $transaction);
-		$this->placeHat($x, $y, $z, $random, $transaction);
+		$this->placeTrunk($x, $y, $z, $random, $this->generateTrunkHeight($random), $transaction);
+		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
 		return $transaction;
 	}
 
-	protected function placeStem(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
+	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
 		$i = $this->huge ? 1 : 0;
 
 		for($j = -$i; $j <= $i; ++$j){
@@ -78,11 +75,7 @@ class NetherTree extends Tree{
 					$blockZ = $z + $k;
 
 					if($this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
-						if($isCorner){
-							if($random->nextFloat() < 0.1){
-								$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
-							}
-						}else{
+						if(!$isCorner || $random->nextFloat() < 0.1){
 							$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
 						}
 					}
@@ -91,7 +84,7 @@ class NetherTree extends Tree{
 		}
 	}
 
-	protected function placeHat(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
+	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{
 		$isCrimson = $this->hasVines;
 		$i = min($random->nextBoundedInt(1 + (int) ($this->treeHeight / 3)) + 5, $this->treeHeight);
 		$j = $this->treeHeight - $i;

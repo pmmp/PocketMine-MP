@@ -40,7 +40,7 @@ class NetherFungus extends Flowable{
 
 	/**
 	 * @param int      $nyliumTypeId The type id of the nylium block this fungus can grow on.
-	 * @param TreeType $treeType The TreeType that this fungus will grow into when bone-mealed.
+	 * @param TreeType $treeType     The TreeType that this fungus will grow into when bone-mealed.
 	 */
 	public function __construct(
 		BlockIdentifier $idInfo,
@@ -65,13 +65,9 @@ class NetherFungus extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$down = $this->getSide(Facing::DOWN);
-			if($down->getTypeId() === $this->nyliumTypeId){
-				if(mt_rand(1, 100) <= 40){
-					if($this->grow($player)){
-						$item->pop();
-						return true;
-					}
-				}
+			if($down->getTypeId() === $this->nyliumTypeId && mt_rand(1, 100) <= 40 && $this->grow($player)){
+				$item->pop();
+				return true;
 			}
 		}
 		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
