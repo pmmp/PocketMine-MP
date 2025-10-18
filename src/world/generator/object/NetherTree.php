@@ -74,10 +74,8 @@ class NetherTree extends Tree{
 					$blockY = $y + $l;
 					$blockZ = $z + $k;
 
-					if($this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
-						if(!$isCorner || $random->nextFloat() < 0.1){
-							$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
-						}
+					if((!$isCorner || $random->nextFloat() < 0.1) && $this->canOverride($transaction->fetchBlockAt($blockX, $blockY, $blockZ))){
+						$transaction->addBlockAt($blockX, $blockY, $blockZ, $this->trunkBlock);
 					}
 				}
 			}
