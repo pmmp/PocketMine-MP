@@ -33,7 +33,14 @@ use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use function count;
 
-final class Nylium extends Block{
+class Nylium extends Block{
+
+	/**
+	 * @param Block[] $vegetation An array of Block instances that can be grown on this Nylium block using Bone Meal.
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, private readonly array $vegetation){
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
@@ -48,7 +55,7 @@ final class Nylium extends Block{
 	public function onRandomTick() : void{
 		$world = $this->position->getWorld();
 		$above = $this->getSide(Facing::UP);
-		if($above instanceof Opaque){
+		if(!$above->isTransparent()){
 			BlockEventHelper::spread($this, VanillaBlocks::NETHERRACK(), $this);
 			return;
 		}
@@ -57,7 +64,7 @@ final class Nylium extends Block{
 		for($i = 0; $i < 4; ++$i){
 			$pos = $this->position->add($random->nextRange(-1, 1), $random->nextRange(-2, 0), $random->nextRange(-1, 1));
 			$block = $world->getBlock($pos);
-			if($block instanceof Netherrack && !$world->getBlock($pos->up()) instanceof Opaque){
+			if($block->getTypeId() === BlockTypeIds::NETHERRACK && $world->getBlock($pos->up())->isTransparent()){
 				BlockEventHelper::spread($block, $this, $this);
 			}
 		}
@@ -76,21 +83,12 @@ final class Nylium extends Block{
 		$world = $this->position->getWorld();
 		$tx = new BlockTransaction($world);
 
-		$vegetation = $this->getTypeId() === BlockTypeIds::CRIMSON_NYLIUM ? [
-			VanillaBlocks::CRIMSON_FUNGUS(),
-			VanillaBlocks::CRIMSON_ROOTS()
-		] : [
-			VanillaBlocks::WARPED_FUNGUS(),
-			VanillaBlocks::WARPED_ROOTS(),
-			VanillaBlocks::NETHER_SPROUTS()
-		];
-
 		for($x = -2; $x <= 2; ++$x){
 			for($z = -2; $z <= 2; ++$z){
 				if($random->nextBoundedInt(3) === 0){
 					$pos = $this->position->add($x, 1, $z);
 					$replace = $world->getBlock($pos);
-					$place = $vegetation[$random->nextBoundedInt(count($vegetation))];
+					$place = $this->vegetation[$random->nextBoundedInt(count($this->vegetation))];
 					if($replace->getTypeId() === BlockTypeIds::AIR && $place->canBePlacedAt($replace, Vector3::zero(), Facing::DOWN, true)){
 						$tx->addBlock($pos, $place);
 					}

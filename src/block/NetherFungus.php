@@ -38,6 +38,20 @@ use function mt_rand;
 class NetherFungus extends Flowable{
 	use StaticSupportTrait;
 
+	/**
+	 * @param int      $nyliumTypeId The type id of the nylium block this fungus can grow on.
+	 * @param TreeType $treeType The TreeType that this fungus will grow into when bone-mealed.
+	 */
+	public function __construct(
+		BlockIdentifier $idInfo,
+		string $name,
+		BlockTypeInfo $typeInfo,
+		private readonly int $nyliumTypeId,
+		private readonly TreeType $treeType
+	){
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
+
 	private function canBeSupportedAt(Block $block) : bool{
 		//TODO: moss
 		$supportBlock = $block->getSide(Facing::DOWN);
@@ -51,10 +65,7 @@ class NetherFungus extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
 			$down = $this->getSide(Facing::DOWN);
-			if(
-				($this->getTypeId() === BlockTypeIds::CRIMSON_FUNGUS && $down->getTypeId() === BlockTypeIds::CRIMSON_NYLIUM) ||
-				($this->getTypeId() === BlockTypeIds::WARPED_FUNGUS && $down->getTypeId() === BlockTypeIds::WARPED_NYLIUM)
-			){
+			if($down->getTypeId() === $this->nyliumTypeId){
 				if(mt_rand(1, 100) <= 40){
 					if($this->grow($player)){
 						$item->pop();
@@ -67,10 +78,8 @@ class NetherFungus extends Flowable{
 	}
 
 	private function grow(?Player $player) : bool{
-		$treeType = $this->getTypeId() === BlockTypeIds::CRIMSON_FUNGUS ? TreeType::CRIMSON_FUNGUS_PLANTED : TreeType::WARPED_FUNGUS_PLANTED;
-
 		$random = new Random(mt_rand());
-		$tree = TreeFactory::get($random, $treeType);
+		$tree = TreeFactory::get($random, $this->treeType);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
 			return false;
