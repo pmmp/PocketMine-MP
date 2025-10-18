@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\object;
 
 use pocketmine\block\Block;
-use pocketmine\block\NetherFungus;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\NetherVines;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
@@ -182,7 +182,7 @@ class NetherTree extends Tree{
 	}
 
 	protected function canOverride(Block $block) : bool{
-		return $block->canBeReplaced() || $block instanceof NetherFungus || $block instanceof NetherVines;
+		return $block->canBeReplaced() || $block->hasTypeTag(BlockTypeTags::HUGE_FUNGUS_REPLACEABLE);
 	}
 
 	protected function generateTrunkHeight(Random $random) : int{

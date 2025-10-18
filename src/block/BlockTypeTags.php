@@ -33,4 +33,5 @@ final class BlockTypeTags{
 	public const FIRE = self::PREFIX . "fire";
 	public const HANGING_SIGN = self::PREFIX . "hanging_sign";
 	public const NYLIUM = self::PREFIX . "nylium";
+	public const HUGE_FUNGUS_REPLACEABLE = self::PREFIX . "huge_fungus_replaceable";
 }
