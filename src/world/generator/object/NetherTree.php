@@ -174,7 +174,9 @@ class NetherTree extends Tree{
 
 			for($v = 0; $v < $i; ++$v){
 				$vy = $currentY - $v;
-				if($vy < 0) break;
+				if($vy < 0){
+					break;
+				}
 
 				if($this->canOverride($transaction->fetchBlockAt($x, $vy, $z))){
 					$vineAge = min($maxAge, $startAge + $v);

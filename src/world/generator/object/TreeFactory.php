@@ -38,8 +38,8 @@ final class TreeFactory{
 			TreeType::JUNGLE => new JungleTree(),
 			TreeType::ACACIA => new AcaciaTree(),
 			TreeType::BIRCH => new BirchTree($random->nextBoundedInt(39) === 0),
-			TreeType::CRIMSON_FUNGUS_PLANTED => new NetherTree(VanillaBlocks::CRIMSON_STEM(), VanillaBlocks::NETHER_WART_BLOCK(), $random, true, true),
-			TreeType::WARPED_FUNGUS_PLANTED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), $random, false, true),
+			TreeType::CRIMSON_FUNGUS_PLANTED => new NetherTree(VanillaBlocks::CRIMSON_STEM(), VanillaBlocks::NETHER_WART_BLOCK(), $random, hasVines: true, planted: true),
+			TreeType::WARPED_FUNGUS_PLANTED => new NetherTree(VanillaBlocks::WARPED_STEM(), VanillaBlocks::WARPED_WART_BLOCK(), $random, hasVines: false, planted: true),
 			default => null,
 		};
 	}
