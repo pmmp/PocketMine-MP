@@ -2863,6 +2863,48 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_TICKOVERLOAD, []);
 	}
 
+	public static function pocketmine_server_url_bugReporting(Translatable|string $bugReportingUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_BUGREPORTING, [
+			"bugReportingUrl" => $bugReportingUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_discord(Translatable|string $discordUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DISCORD, [
+			"discordUrl" => $discordUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_docs(Translatable|string $docsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DOCS, [
+			"docsUrl" => $docsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_donations(Translatable|string $donationsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DONATIONS, [
+			"donationsUrl" => $donationsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_freePlugins(Translatable|string $pluginsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_FREEPLUGINS, [
+			"pluginsUrl" => $pluginsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_sourceCode(Translatable|string $sourceUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_SOURCECODE, [
+			"sourceUrl" => $sourceUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_translations(Translatable|string $translationsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_TRANSLATIONS, [
+			"translationsUrl" => $translationsUrl,
+		]);
+	}
+
 	public static function pocketmine_plugins() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGINS, []);
 	}
