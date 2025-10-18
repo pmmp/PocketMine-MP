@@ -25,7 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\TallGrassTrait;
+use pocketmine\item\Fertilizer;
+use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class TallGrass extends Flowable{
 	use TallGrassTrait;
@@ -34,5 +38,31 @@ class TallGrass extends Flowable{
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if ($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR) {
+			return false;
+		}
+
+		$world = $this->position->getWorld();
+		if ($item instanceof Fertilizer) {
+			$doubleVariant = match ($this->getTypeId()) {
+				BlockTypeIds::TALL_GRASS => VanillaBlocks::DOUBLE_TALLGRASS(),
+				BlockTypeIds::FERN => VanillaBlocks::LARGE_FERN(),
+				default => VanillaBlocks::DOUBLE_TALLGRASS()
+			};
+
+			$bottom = (clone $doubleVariant)->setTop(false);
+			$top = (clone $doubleVariant)->setTop(true);
+
+			$world->setBlock($this->position, $bottom);
+			$world->setBlock($this->position->getSide(Facing::UP), $top);
+
+			$item->pop();
+			return true;
+		}
+
+		return false;
 	}
 }
