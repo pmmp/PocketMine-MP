@@ -1724,8 +1724,8 @@ final class VanillaBlocks{
 		self::register("respawn_anchor", fn(BID $id) => new RespawnAnchor($id, "Respawn Anchor", new Info(BreakInfo::pickaxe(50.0, ToolTier::DIAMOND, 6000.0))));
 
 		$netherFungusInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS, Tags::HUGE_FUNGUS_REPLACEABLE]);
-		self::register("crimson_fungus", fn(BID $id) => new NetherFungus($id, "Crimson Fungus", $netherFungusInfo, BlockTypeIds::CRIMSON_NYLIUM, TreeType::CRIMSON_FUNGUS_PLANTED));
-		self::register("warped_fungus", fn(BID $id) => new NetherFungus($id, "Warped Fungus", $netherFungusInfo, BlockTypeIds::WARPED_NYLIUM, TreeType::WARPED_FUNGUS_PLANTED));
+		self::register("crimson_fungus", fn(BID $id) => new NetherFungus($id, "Crimson Fungus", $netherFungusInfo, BlockTypeIds::CRIMSON_NYLIUM, TreeType::PLANTED_CRIMSON));
+		self::register("warped_fungus", fn(BID $id) => new NetherFungus($id, "Warped Fungus", $netherFungusInfo, BlockTypeIds::WARPED_NYLIUM, TreeType::PLANTED_WARPED));
 
 		self::register("nether_sprouts", fn(BID $id) => new NetherSprouts($id, "Nether Sprouts", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
