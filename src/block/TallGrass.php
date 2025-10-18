@@ -39,7 +39,7 @@ class TallGrass extends Flowable{
 	private \Closure $doublePlantVariant;
 
 	/**
-	 * @param \Closure() : DoublePlant $doublePlantVariant
+	 * @phpstan-param \Closure() : DoublePlant $doublePlantVariant
 	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, \Closure $doublePlantVariant){
 		parent::__construct($idInfo, $name, $typeInfo);
