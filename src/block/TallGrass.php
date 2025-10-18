@@ -35,9 +35,12 @@ class TallGrass extends Flowable{
 	use TallGrassTrait;
 	use StaticSupportTrait;
 
-	/** @var \Closure() : DoublePlant */
+	/** @phpstan-var \Closure() : DoublePlant */
 	private \Closure $doublePlantVariant;
 
+	/**
+	 * @param \Closure() : DoublePlant $doublePlantVariant
+	 */
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, \Closure $doublePlantVariant){
 		parent::__construct($idInfo, $name, $typeInfo);
 		$this->doublePlantVariant = $doublePlantVariant;
@@ -70,7 +73,7 @@ class TallGrass extends Flowable{
 		return false;
 	}
 
-	public function getDoublePlantVariant() : DoublePlant{
+	private function getDoublePlantVariant() : DoublePlant{
 		return ($this->doublePlantVariant)();
 	}
 }
