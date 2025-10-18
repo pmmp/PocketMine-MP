@@ -35,23 +35,27 @@ class TallGrass extends Flowable{
 	use TallGrassTrait;
 	use StaticSupportTrait;
 
+	/** @var \Closure() : DoublePlant */
+	private \Closure $doublePlantVariant;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, \Closure $doublePlantVariant){
+		parent::__construct($idInfo, $name, $typeInfo);
+		$this->doublePlantVariant = $doublePlantVariant;
+	}
+
 	private function canBeSupportedAt(Block $block) : bool{
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if ($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR) {
+		if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
 			return false;
 		}
 
 		$world = $this->position->getWorld();
-		if ($item instanceof Fertilizer) {
-			$doubleVariant = match ($this->getTypeId()) {
-				BlockTypeIds::TALL_GRASS => VanillaBlocks::DOUBLE_TALLGRASS(),
-				BlockTypeIds::FERN => VanillaBlocks::LARGE_FERN(),
-				default => VanillaBlocks::DOUBLE_TALLGRASS()
-			};
+		if($item instanceof Fertilizer){
+			$doubleVariant = $this->getDoublePlantVariant();
 
 			$bottom = (clone $doubleVariant)->setTop(false);
 			$top = (clone $doubleVariant)->setTop(true);
@@ -64,5 +68,9 @@ class TallGrass extends Flowable{
 		}
 
 		return false;
+	}
+
+	public function getDoublePlantVariant() : DoublePlant{
+		return ($this->doublePlantVariant)();
 	}
 }
