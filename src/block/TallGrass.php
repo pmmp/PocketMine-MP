@@ -54,7 +54,7 @@ class TallGrass extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		$world = $this->position->getWorld();
 		$upPos = $this->position->getSide(Facing::UP);
-		if(!$world->isInWorld($upPos->x, $upPos->y, $upPos->z) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+		if(!$world->isInWorld($upPos->getFloorX(), $upPos->getFloorY(), $upPos->getFloorZ()) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
 			return false;
 		}
 
