@@ -35,43 +35,43 @@ class TallGrass extends Flowable{
 	use TallGrassTrait;
 	use StaticSupportTrait;
 
-    /** @phpstan-var \Closure() : DoublePlant|null */
-    private ?\Closure $doublePlantVariant;
+	/** @phpstan-var \Closure() : DoublePlant|null */
+	private ?\Closure $doublePlantVariant;
 
-    /**
-     * @phpstan-param \Closure() : DoublePlant|null $doublePlantVariant
-     */
-    public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, ?\Closure $doublePlantVariant = null){
-        parent::__construct($idInfo, $name, $typeInfo);
-        $this->doublePlantVariant = $doublePlantVariant;
-    }
+	/**
+	 * @phpstan-param \Closure() : DoublePlant|null $doublePlantVariant
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, ?\Closure $doublePlantVariant = null){
+		parent::__construct($idInfo, $name, $typeInfo);
+		$this->doublePlantVariant = $doublePlantVariant;
+	}
 
-    private function canBeSupportedAt(Block $block) : bool{
-        $supportBlock = $block->getSide(Facing::DOWN);
-        return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
-    }
+	private function canBeSupportedAt(Block $block) : bool{
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
+	}
 
-    public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-        $world = $this->position->getWorld();
-        $upPos = $this->position->getSide(Facing::UP);
-        if(!$world->isInWorld($upPos->x, $upPos->y, $upPos->z) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
-            return false;
-        }
-        
-        if($item instanceof Fertilizer && ($doubleVariant = $this->getDoublePlantVariant()) !== null){
-            $bottom = (clone $doubleVariant)->setTop(false);
-            $top = (clone $doubleVariant)->setTop(true);
-            $world->setBlock($this->position, $bottom);
-            $world->setBlock($this->position->getSide(Facing::UP), $top);
-            $item->pop();
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$world = $this->position->getWorld();
+		$upPos = $this->position->getSide(Facing::UP);
+		if(!$world->isInWorld($upPos->x, $upPos->y, $upPos->z) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+			return false;
+		}
 
-            return true;
-        }
+		if($item instanceof Fertilizer && ($doubleVariant = $this->getDoublePlantVariant()) !== null){
+			$bottom = (clone $doubleVariant)->setTop(false);
+			$top = (clone $doubleVariant)->setTop(true);
+			$world->setBlock($this->position, $bottom);
+			$world->setBlock($this->position->getSide(Facing::UP), $top);
+			$item->pop();
 
-        return false;
-    }
+			return true;
+		}
+
+		return false;
+	}
 
 	private function getDoublePlantVariant() : ?DoublePlant{
-    	return $this->doublePlantVariant !== null ? ($this->doublePlantVariant)() : null;
+		return $this->doublePlantVariant !== null ? ($this->doublePlantVariant)() : null;
 	}
 }
