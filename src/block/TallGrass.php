@@ -52,25 +52,24 @@ class TallGrass extends Flowable{
     }
 
     public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-        if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+        $world = $this->position->getWorld();
+        $upPos = $this->position->getSide(Facing::UP);
+        if(!$world->isInWorld($upPos->x, $upPos->y, $upPos->z) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
             return false;
         }
+        
+        if($item instanceof Fertilizer && ($doubleVariant = $this->getDoublePlantVariant()) !== null){
+            $bottom = (clone $doubleVariant)->setTop(false);
+            $top = (clone $doubleVariant)->setTop(true);
+            $world->setBlock($this->position, $bottom);
+            $world->setBlock($this->position->getSide(Facing::UP), $top);
+            $item->pop();
 
-		if($item instanceof Fertilizer && ($doubleVariant = $this->getDoublePlantVariant()) !== null){
-            $world = $this->position->getWorld();
+            return true;
+        }
 
-			$bottom = (clone $doubleVariant)->setTop(false);
-			$top = (clone $doubleVariant)->setTop(true);
-
-			$world->setBlock($this->position, $bottom);
-			$world->setBlock($this->position->getSide(Facing::UP), $top);
-
-			$item->pop();
-			return true;
-		}
-
-		return false;
-	}
+        return false;
+    }
 
 	private function getDoublePlantVariant() : ?DoublePlant{
     	return $this->doublePlantVariant !== null ? ($this->doublePlantVariant)() : null;
