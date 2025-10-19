@@ -56,12 +56,8 @@ class TallGrass extends Flowable{
             return false;
         }
 
-		$world = $this->position->getWorld();
-		if($item instanceof Fertilizer){
-			$doubleVariant = $this->getDoublePlantVariant();
-            if($doubleVariant === null){
-                return false;
-            }
+		if($item instanceof Fertilizer && ($doubleVariant = $this->getDoublePlantVariant()) !== null){
+            $world = $this->position->getWorld();
 
 			$bottom = (clone $doubleVariant)->setTop(false);
 			$top = (clone $doubleVariant)->setTop(true);
