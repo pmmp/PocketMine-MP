@@ -30,7 +30,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
-use pocketmine\world\BlockTransaction;
 use function count;
 
 class Nylium extends Block{
