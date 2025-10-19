@@ -1,0 +1,66 @@
+name: Download new translations from Crowdin
+
+on:
+  schedule:
+    - cron: 0 21 * * * #every day at 9pm
+  workflow_dispatch:
+
+jobs:
+  download:
+    name: Download translations
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        branch:
+          - stable
+          - minor-next
+          - major-next
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.branch }}
+
+      - name: Download translations
+        uses: crowdin/github-action@v2
+        with:
+          upload_sources: false
+          upload_translations: false
+          download_translations: true
+          create_pull_request: false
+          push_translations: false
+          export_only_approved: true #irrespective of project config, only accept approved translations here
+          crowdin_branch_name: ${{ matrix.branch }}
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
+      - name: Post-process placeholders back into PocketMine format
+        working-directory: resources/translations
+        run: |
+          sed -i -r 's/\{([A-Za-z0-9]+)\}/\{%\1\}/g' *.ini
+          git diff
+          git status
+
+      - name: Delete translation files with no translations
+        working-directory: resources/translations
+        run: |
+          for file in *.ini; do
+            if grep -q -P '^[A-Za-z0-9_\-\.]+=' $file; then
+              echo "Not empty: $file"
+            else
+              echo "Deleting empty file: $file"
+              rm "$file"
+            fi
+          done
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: '*.ini'
+          commit-message: 'New translations from Crowdin (${{ matrix.branch }})'
+          branch: crowdin-auto-fetch/${{ matrix.branch }}
+          title: 'New translations from Crowdin'
+          base: ${{ matrix.branch }}
