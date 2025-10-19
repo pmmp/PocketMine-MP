@@ -1,0 +1,38 @@
+name: Upload translations to Crowdin
+
+on:
+  push:
+    paths:
+      - resources/translations/eng.ini
+    branches:
+      - stable
+      - minor-next
+      - major-next
+  workflow_dispatch:
+
+jobs:
+  upload:
+    name: Upload translations
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Preprocess eng.ini placeholders so Crowdin can understand them
+        working-directory: resources/translations
+        run: |
+          sed -i -r 's/\{%([A-Za-z0-9]+)\}/\{\1\}/g' eng.ini
+          cat eng.ini
+
+      - name: Upload eng.ini to Crowdin
+        uses: crowdin/github-action@v2
+        with:
+          upload_sources: true
+          upload_translations: false
+          download_translations: false
+          create_pull_request: false
+          crowdin_branch_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
