@@ -1236,8 +1236,8 @@ final class VanillaBlocks{
 		self::register("sugarcane", fn(BID $id) => new Sugarcane($id, "Sugarcane", new Info(BreakInfo::instant())));
 		self::register("sweet_berry_bush", fn(BID $id) => new SweetBerryBush($id, "Sweet Berry Bush", new Info(BreakInfo::instant())));
 		self::register("tnt", fn(BID $id) => new TNT($id, "TNT", new Info(BreakInfo::instant())));
-		self::register("fern", fn(BID $id) => new TallGrass($id, "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
-		self::register("tall_grass", fn(BID $id) => new TallGrass($id, "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("fern", fn(BID $id) => new TallGrass($id, "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS]), fn() => VanillaBlocks::LARGE_FERN()));
+		self::register("tall_grass", fn(BID $id) => new TallGrass($id, "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1)), fn() => VanillaBlocks::DOUBLE_TALLGRASS()));
 
 		self::register("blue_torch", fn(BID $id) => new Torch($id, "Blue Torch", new Info(BreakInfo::instant())));
 		self::register("copper_torch", fn(BID $id) => new Torch($id, "Copper Torch", new Info(BreakInfo::instant())));
