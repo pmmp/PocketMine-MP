@@ -64,28 +64,27 @@ class NetherFungus extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($item instanceof Fertilizer){
-			$down = $this->getSide(Facing::DOWN);
-			if($down->getTypeId() === $this->nyliumTypeId && mt_rand(1, 100) <= 40 && $this->grow($player)){
-				$item->pop();
-				return true;
+			$item->pop();
+			if($this->getSide(Facing::DOWN)->getTypeId() === $this->nyliumTypeId && ($player === null || !$player->hasFiniteResources() || mt_rand(1, 100) <= 40)){
+				$this->grow($player);
 			}
+			return true;
 		}
-		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+		return false;
 	}
 
-	private function grow(?Player $player) : bool{
+	private function grow(?Player $player) : void{
 		$random = new Random(mt_rand());
 		$tree = TreeFactory::get($random, $this->treeType);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
-			return false;
+			return;
 		}
 
 		$ev = new StructureGrowEvent($this, $transaction, $player);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			return $transaction->apply();
+			$transaction->apply();
 		}
-		return false;
 	}
 }

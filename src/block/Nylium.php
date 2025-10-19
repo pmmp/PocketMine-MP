@@ -32,7 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use function count;
 
-class Nylium extends Block{
+class Nylium extends Opaque{
 
 	/**
 	 * @param Block[] $vegetation An array of Block instances that can be grown on this Nylium block using Bone Meal.
@@ -45,6 +45,10 @@ class Nylium extends Block{
 		return [
 			VanillaBlocks::NETHERRACK()->asItem()
 		];
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	public function ticksRandomly() : bool{
@@ -75,7 +79,7 @@ class Nylium extends Block{
 			$this->growVegetation(new Random());
 			return true;
 		}
-		return parent::onInteract($item, $face, $clickVector, $player, $returnedItems);
+		return false;
 	}
 
 	private function growVegetation(Random $random) : void{
@@ -87,7 +91,7 @@ class Nylium extends Block{
 					$pos = $this->position->add($x, 1, $z);
 					$replace = $world->getBlock($pos);
 					$place = $this->vegetation[$random->nextBoundedInt(count($this->vegetation))];
-					if($replace->getTypeId() === BlockTypeIds::AIR && $place->canBePlacedAt($replace, Vector3::zero(), Facing::DOWN, true)){
+					if($world->isInWorld($pos->x, $pos->y, $pos->z) && $replace->getTypeId() === BlockTypeIds::AIR && $place->canBePlacedAt($replace, Vector3::zero(), Facing::DOWN, true)){
 						$world->setBlock($pos, $place);
 					}
 				}
