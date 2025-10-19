@@ -35,26 +35,26 @@ class TallGrass extends Flowable{
 	use TallGrassTrait;
 	use StaticSupportTrait;
 
-	/** @phpstan-var \Closure() : DoublePlant */
-	private \Closure $doublePlantVariant;
+    /** @phpstan-var \Closure() : DoublePlant|null */
+    private ?\Closure $doublePlantVariant;
 
-	/**
-	 * @phpstan-param \Closure() : DoublePlant $doublePlantVariant
-	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, \Closure $doublePlantVariant){
-		parent::__construct($idInfo, $name, $typeInfo);
-		$this->doublePlantVariant = $doublePlantVariant;
-	}
+    /**
+     * @phpstan-param \Closure() : DoublePlant|null $doublePlantVariant
+     */
+    public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, ?\Closure $doublePlantVariant = null){
+        parent::__construct($idInfo, $name, $typeInfo);
+        $this->doublePlantVariant = $doublePlantVariant;
+    }
 
-	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
-	}
+    private function canBeSupportedAt(Block $block) : bool{
+        $supportBlock = $block->getSide(Facing::DOWN);
+        return $supportBlock->hasTypeTag(BlockTypeTags::DIRT) || $supportBlock->hasTypeTag(BlockTypeTags::MUD);
+    }
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
-			return false;
-		}
+    public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+        if($this->doublePlantVariant === null || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+            return false;
+        }
 
 		$world = $this->position->getWorld();
 		if($item instanceof Fertilizer){
@@ -73,7 +73,7 @@ class TallGrass extends Flowable{
 		return false;
 	}
 
-	private function getDoublePlantVariant() : DoublePlant{
-		return ($this->doublePlantVariant)();
+	private function getDoublePlantVariant() : ?DoublePlant{
+    	return $this->doublePlantVariant !== null ? ($this->doublePlantVariant)() : null;
 	}
 }
