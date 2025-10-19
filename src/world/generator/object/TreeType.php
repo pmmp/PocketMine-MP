@@ -34,8 +34,6 @@ use pocketmine\utils\LegacyEnumShimTrait;
  * @method static TreeType DARK_OAK()
  * @method static TreeType JUNGLE()
  * @method static TreeType OAK()
- * @method static TreeType PLANTED_CRIMSON()
- * @method static TreeType PLANTED_WARPED()
  * @method static TreeType SPRUCE()
  */
 enum TreeType{

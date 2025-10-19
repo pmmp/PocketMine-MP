@@ -50,18 +50,6 @@ class NetherTree extends Tree{
 		return true;
 	}
 
-	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
-		if(!$this->canPlaceObject($world, $x, $y, $z, $random)){
-			return null;
-		}
-
-		$transaction = new BlockTransaction($world);
-		$this->placeTrunk($x, $y, $z, $random, $this->generateTrunkHeight($random), $transaction);
-		$this->placeCanopy($x, $y, $z, $random, $transaction);
-
-		return $transaction;
-	}
-
 	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
 		$i = $this->huge ? 1 : 0;
 
