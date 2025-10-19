@@ -35,15 +35,15 @@ use function min;
 
 class NetherTree extends Tree{
 
-	private bool $huge;
-
-	public function __construct(Block $stemBlock, Block $hatBlock, Random $random, private readonly bool $hasVines, private readonly bool $planted = false){
-		$i = $random->nextBoundedInt(9) + 4;
-		if($random->nextBoundedInt(12) === 0){
-			$i *= 2;
-		}
-		$this->huge = !$this->planted && $random->nextFloat() < 0.06;
-		parent::__construct($stemBlock, $hatBlock, $i);
+	public function __construct(
+		Block $stemBlock,
+		Block $hatBlock,
+		private readonly Block $decorBlock,
+		int $treeHeight,
+		private readonly bool $hasVines,
+		private readonly bool $huge
+	){
+		parent::__construct($stemBlock, $hatBlock, $treeHeight);
 	}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
@@ -118,7 +118,7 @@ class NetherTree extends Tree{
 
 	protected function placeHatBlock(int $x, int $y, int $z, Random $random, BlockTransaction $transaction, float $decorChance, float $hatChance, float $vineChance) : void{
 		if($random->nextFloat() < $decorChance){
-			$transaction->addBlockAt($x, $y, $z, VanillaBlocks::SHROOMLIGHT());
+			$transaction->addBlockAt($x, $y, $z, $this->decorBlock);
 		}elseif($random->nextFloat() < $hatChance){
 			$transaction->addBlockAt($x, $y, $z, $this->leafBlock);
 			if($random->nextFloat() < $vineChance){

@@ -81,7 +81,6 @@ class Nylium extends Block{
 
 	private function growVegetation(Random $random) : void{
 		$world = $this->position->getWorld();
-		$tx = new BlockTransaction($world);
 
 		for($x = -2; $x <= 2; ++$x){
 			for($z = -2; $z <= 2; ++$z){
@@ -90,11 +89,10 @@ class Nylium extends Block{
 					$replace = $world->getBlock($pos);
 					$place = $this->vegetation[$random->nextBoundedInt(count($this->vegetation))];
 					if($replace->getTypeId() === BlockTypeIds::AIR && $place->canBePlacedAt($replace, Vector3::zero(), Facing::DOWN, true)){
-						$tx->addBlock($pos, $place);
+						$world->setBlock($pos, $place);
 					}
 				}
 			}
 		}
-		$tx->apply();
 	}
 }
