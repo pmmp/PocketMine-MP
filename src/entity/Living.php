@@ -930,12 +930,12 @@ abstract class Living extends Entity{
 	 * their heads to turn.
 	 */
 	public function lookAt(Vector3 $target) : void{
-		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);
-		$vertical = $target->y - ($this->location->y + $this->getEyeHeight());
-		$pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
-
 		$xDist = $target->x - $this->location->x;
 		$zDist = $target->z - $this->location->z;
+
+		$horizontal = sqrt($xDist ** 2 + $zDist ** 2);
+		$vertical = $target->y - ($this->location->y + $this->getEyeHeight());
+		$pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
 
 		$yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
 		if($yaw < 0){
