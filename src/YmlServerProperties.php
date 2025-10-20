@@ -108,6 +108,6 @@ final class YmlServerProperties{
 	public const TICKS_PER_AUTOSAVE = 'ticks-per.autosave';
 	public const TIMINGS = 'timings';
 	public const TIMINGS_HOST = 'timings.host';
-	public const TIMINGS_AUTO_PASTE = 'timings.auto-paste';
+	public const TIMINGS_SHUTDOWN_AUTO_PASTE = 'timings.shutdown-auto-paste';
 	public const WORLDS = 'worlds';
 }

@@ -30,6 +30,8 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\YmlServerProperties;
+
 use function count;
 use function strtolower;
 
@@ -78,12 +80,9 @@ class TimingsCommand extends VanillaCommand{
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
-			$timingsPromise = TimingsHandler::requestPrintTimings();
+			$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-			$timingsPromise->onCompletion(
-				fn(array $lines) => $paste ? TimingsHandler::uploadReport($lines, $sender) : TimingsHandler::createReportFile($lines, $sender),
-				fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
-			);
+			$paste ? TimingsHandler::uploadReport($sender, $host) : TimingsHandler::createReportFile($sender);
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}

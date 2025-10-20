@@ -153,7 +153,7 @@ timings:
   host: timings.pmmp.io
   #Enable or disable automatic timings report uploading.
   #If enabled, a report will be sent when the server shuts down. (if timings were on)
-  auto-paste: false
+  shutdown-auto-paste: false
 
 console:
   #Whether to accept commands via the console. If disabled, anything typed on the console will be ignored.

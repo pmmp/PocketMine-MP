@@ -1501,15 +1501,11 @@ class Server{
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
 
-			$autoPaste = $this->getConfigGroup()->getPropertyBool(Yml::TIMINGS_AUTO_PASTE, false);
-
-			if($autoPaste && TimingsHandler::isEnabled() && (($sender = $this->consoleSender) instanceof ConsoleCommandSender)){
-				$timingsPromise = TimingsHandler::requestPrintTimings();
+			$autoPaste = $this->getConfigGroup()->getPropertyBool(Yml::TIMINGS_SHUTDOWN_AUTO_PASTE, false);
+			$host = $this->getConfigGroup()->getPropertyString(Yml::TIMINGS_HOST, "timings.pmmp.io");
+			if($autoPaste && TimingsHandler::isEnabled() && (($sender = $this->consoleSender) instanceof ConsoleCommandSender)){				
+				TimingsHandler::uploadReport($sender, $host);
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-				$timingsPromise->onCompletion(
-					fn(array $lines) => TimingsHandler::uploadReport($lines, $sender),
-					fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
-				);
 				TimingsHandler::setEnabled(false);
 			}
 		}
