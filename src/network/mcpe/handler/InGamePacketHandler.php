@@ -44,6 +44,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -490,7 +491,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
 				if($spamBug){
-					return true;
+					throw new FilterNoisyPacketException();
 				}
 				//TODO: end hack for client spam bug
 
@@ -748,7 +749,9 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		return true; //Not used
+		//this spams harder than a firehose on left click if "Improved Input Response" is enabled, and we don't even
+		//use it anyway :<
+		throw new FilterNoisyPacketException();
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{

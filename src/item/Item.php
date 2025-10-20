@@ -775,6 +775,24 @@ class Item implements \JsonSerializable{
 		}
 	}
 
+	/**
+	 * Same as nbtDeserialize(), but purposely suppresses data errors and returns AIR if deserialization fails.
+	 * An error will be logged to the global logger if this happens.
+	 *
+	 * @param string $errorLogContext Used in log messages if deserialization fails to aid debugging (e.g. inventory owner, slot number, etc.)
+	 */
+	public static function safeNbtDeserialize(CompoundTag $tag, string $errorLogContext, ?\Logger $logger = null) : Item{
+		try{
+			return self::nbtDeserialize($tag);
+		}catch(SavedDataLoadingException $e){
+			//TODO: what if the intention was to suppress logging?
+			$logger ??= \GlobalLogger::get();
+			$logger->error("$errorLogContext: Error deserializing item (item will be replaced by AIR): " . $e->getMessage());
+			//no trace here, otherwise things could get very noisy
+			return VanillaItems::AIR();
+		}
+	}
+
 	public function __clone(){
 		$this->nbt = clone $this->nbt;
 		if($this->blockEntityTag !== null){
