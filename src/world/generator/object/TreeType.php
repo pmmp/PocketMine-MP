@@ -48,7 +48,6 @@ enum TreeType{
 	case CRIMSON;
 	case WARPED;
 	//TODO: cherry blossom, mangrove, azalea
-	//TODO: do crimson and warped "trees" belong here? I'm not sure if they're actually trees or just fungi
 	//TODO: perhaps huge mushrooms should be here too???
 
 	public function getDisplayName() : string{
