@@ -1501,7 +1501,7 @@ class Server{
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
 
-			$autoPaste = $this->getConfigGroup()->getPropertyBool(YmlServerProperties::TIMINGS_AUTO_PASTE, false);
+			$autoPaste = $this->getConfigGroup()->getPropertyBool(Yml::TIMINGS_AUTO_PASTE, false);
 
 			if($autoPaste && TimingsHandler::isEnabled() && (($sender = $this->consoleSender) instanceof ConsoleCommandSender)){
 				$timingsPromise = TimingsHandler::requestPrintTimings();
