@@ -1,0 +1,7 @@
+files:
+  - source: resources/translations/eng.ini
+    translation: /resources/translations/%three_letters_code%.ini
+    languages_mapping:
+      three_letters_code:
+        zh-CN: chs
+        pt-BR: bra
