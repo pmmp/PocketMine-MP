@@ -83,6 +83,6 @@ class Netherrack extends Opaque{
 			$hasWarpedNylium => VanillaBlocks::WARPED_NYLIUM(),
 			$hasCrimsonNylium => VanillaBlocks::CRIMSON_NYLIUM(),
 		});
-		return false;
+		return true;
 	}
 }
