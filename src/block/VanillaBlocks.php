@@ -60,6 +60,8 @@ use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\PillarRotation;
+use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\SaplingType;
 use pocketmine\block\utils\WoodType;
 use pocketmine\crafting\FurnaceType;
@@ -495,6 +497,7 @@ use function strtolower;
  * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
  * @method static InfestedStone INFESTED_COBBLESTONE()
  * @method static InfestedStone INFESTED_CRACKED_STONE_BRICK()
+ * @method static InfestedStone INFESTED_DEEPSLATE()
  * @method static InfestedStone INFESTED_MOSSY_STONE_BRICK()
  * @method static InfestedStone INFESTED_STONE()
  * @method static InfestedStone INFESTED_STONE_BRICK()
@@ -1734,7 +1737,7 @@ final class VanillaBlocks{
 		self::register("raw_iron", fn(BID $id) => new Opaque($id, "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
 
 		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD, 30.0));
-		self::register("deepslate", fn(BID $id) => new class($id, "Deepslate", $deepslateBreakInfo) extends SimplePillar{
+		$deepslate = self::register("deepslate", fn(BID $id) => new class($id, "Deepslate", $deepslateBreakInfo) extends SimplePillar{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLED_DEEPSLATE()->asItem()];
 			}
@@ -1805,6 +1808,10 @@ final class VanillaBlocks{
 		self::register("small_dripleaf", fn(BID $id) => new SmallDripleaf($id, "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", fn(BID $id) => new BigDripleafHead($id, "Big Dripleaf", new Info(new BreakInfo(0.1))));
 		self::register("big_dripleaf_stem", fn(BID $id) => new BigDripleafStem($id, "Big Dripleaf Stem", new Info(new BreakInfo(0.1))));
+
+		self::register("infested_deepslate", fn(BID $id) => new class($id, "Infested Deepslate", new Info(BreakInfo::pickaxe(1.5, blastResistance: 3.75)), $deepslate) extends InfestedStone implements PillarRotation{
+			use PillarRotationTrait;
+		});
 	}
 
 	private static function registerBlocksR18() : void{

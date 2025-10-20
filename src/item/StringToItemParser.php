@@ -717,6 +717,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("infested_chiseled_stone_brick", fn() => Blocks::INFESTED_CHISELED_STONE_BRICK());
 		$result->registerBlock("infested_cobblestone", fn() => Blocks::INFESTED_COBBLESTONE());
 		$result->registerBlock("infested_cracked_stone_brick", fn() => Blocks::INFESTED_CRACKED_STONE_BRICK());
+		$result->registerBlock("infested_deepslate", fn() => Blocks::INFESTED_DEEPSLATE());
 		$result->registerBlock("infested_mossy_stone_brick", fn() => Blocks::INFESTED_MOSSY_STONE_BRICK());
 		$result->registerBlock("infested_stone", fn() => Blocks::INFESTED_STONE());
 		$result->registerBlock("infested_stone_brick", fn() => Blocks::INFESTED_STONE_BRICK());
