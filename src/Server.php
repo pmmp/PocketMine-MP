@@ -25,6 +25,7 @@ declare(strict_types=1);
  * PocketMine-MP is the Minecraft: PE multiplayer server software
  * Homepage: http://www.pocketmine.net/
  */
+
 namespace pocketmine;
 
 use pocketmine\command\Command;
@@ -1385,9 +1386,9 @@ class Server{
 	}
 
 	/**
-	 * @param int           $fadeIn     Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int           $stay       Duration in ticks to stay on screen for
-	 * @param int           $fadeOut    Duration in ticks for fade-out.
+	 * @param int           $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int           $stay Duration in ticks to stay on screen for
+	 * @param int           $fadeOut Duration in ticks for fade-out.
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
@@ -1401,6 +1402,8 @@ class Server{
 	}
 
 	/**
+	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
+	 *
 	 * @internal
 	 * Promises to compress the given batch buffer using the selected compressor, optionally on a separate thread.
 	 *
@@ -1411,7 +1414,6 @@ class Server{
 	 * If the buffer is larger than the async-compression-threshold (usually 10,000), the buffer may be compressed in
 	 * a separate thread (if available).
 	 *
-	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
 	public function prepareBatch(string $buffer, Compressor $compressor, ?bool $sync = null, ?TimingsHandler $timings = null) : CompressBatchPromise|string{
 		$timings ??= Timings::$playerNetworkSendCompress;
@@ -1484,6 +1486,18 @@ class Server{
 		if($this->isRunning){
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
+
+			$autoPaste = $this->getConfigGroup()->getPropertyBool(YmlServerProperties::TIMINGS_AUTO_PASTE, false);
+
+			if($autoPaste && TimingsHandler::isEnabled() && (($sender = $this->consoleSender) instanceof ConsoleCommandSender)){
+				$timingsPromise = TimingsHandler::requestPrintTimings();
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
+				$timingsPromise->onCompletion(
+					fn(array $lines) => TimingsHandler::uploadReport($lines, $sender),
+					fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
+				);
+				TimingsHandler::setEnabled(false);
+			}
 		}
 	}
 
@@ -1567,11 +1581,13 @@ class Server{
 	}
 
 	/**
-	 * @param mixed[][]|null $trace
+	 * @param mixed[][]|null                          $trace
+	 *
 	 * @phpstan-param list<array<string, mixed>>|null $trace
 	 */
 	public function exceptionHandler(\Throwable $e, ?array $trace = null) : void{
-		while(@ob_end_flush()){}
+		while(@ob_end_flush()){
+		}
 		global $lastError;
 
 		if($trace === null){
@@ -1637,7 +1653,8 @@ class Server{
 	}
 
 	public function crashDump() : void{
-		while(@ob_end_flush()){}
+		while(@ob_end_flush()){
+		}
 		if(!$this->isRunning){
 			return;
 		}
@@ -1705,7 +1722,8 @@ class Server{
 			$this->logger->logException($e);
 			try{
 				$this->logger->critical($this->language->translate(KnownTranslationFactory::pocketmine_crash_error($e->getMessage())));
-			}catch(\Throwable $e){}
+			}catch(\Throwable $e){
+			}
 		}
 
 		$this->forceShutdown();

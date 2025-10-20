@@ -29,6 +29,17 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
+use pocketmine\command\Command;
+use pocketmine\command\CommandSender;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\player\Player;
+use pocketmine\scheduler\BulkCurlTask;
+use pocketmine\scheduler\BulkCurlTaskOperation;
+use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
+use pocketmine\YmlServerProperties;
+use Symfony\Component\Filesystem\Path;
 use function array_merge;
 use function array_push;
 use function hrtime;
@@ -331,5 +342,99 @@ class TimingsHandler{
 		$this->rootRecord = null;
 		$this->recordsByParent = [];
 		$this->timingDepth = 0;
+	}
+
+	/**
+	 * Creates a timings report file locally in the server data folder.
+	 *
+	 * @param string[] $lines
+	 * @phpstan-param list<string> $lines
+	 */
+	public static function createReportFile(array $lines, CommandSender $sender) : void{
+		$server = $sender->getServer();
+		$timingsFolder = Path::join($server->getDataPath(), "timings");
+
+		if(!file_exists($timingsFolder)){
+			mkdir($timingsFolder, 0777);
+		}
+
+		$index = 0;
+		$timingsFile = Path::join($timingsFolder, "timings.txt");
+		while(file_exists($timingsFile)){
+			$timingsFile = Path::join($timingsFolder, "timings" . (++$index) . ".txt");
+		}
+
+		$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
+		foreach($lines as $line){
+			fwrite($handle, $line . PHP_EOL);
+		}
+		fclose($handle);
+
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
+	}
+
+	/**
+	 * Uploads a timings report to the configured host and provides the link to the user.
+	 *
+	 * @param string[] $lines
+	 * @phpstan-param list<string> $lines
+	 */
+	public static function uploadReport(array $lines, CommandSender $sender) : void{
+		$server = $sender->getServer();
+		$agent = $server->getName() . " " . $server->getPocketMineVersion();
+		$data = [
+			"browser" => $agent,
+			"data" => implode("\n", $lines),
+			"private" => "true"
+		];
+
+		$host = $server->getConfigGroup()->getPropertyString(
+			YmlServerProperties::TIMINGS_HOST,
+			"timings.pmmp.io"
+		);
+
+		$server->getAsyncPool()->submitTask(new BulkCurlTask(
+			[new BulkCurlTaskOperation(
+				"https://$host?upload=true",
+				10,
+				[],
+				[
+					CURLOPT_HTTPHEADER => [
+						"User-Agent: $agent",
+						"Content-Type: application/x-www-form-urlencoded"
+					],
+					CURLOPT_POST => true,
+					CURLOPT_POSTFIELDS => http_build_query($data),
+					CURLOPT_AUTOREFERER => false,
+					CURLOPT_FOLLOWLOCATION => false
+				]
+			)],
+			function(array $results) use ($sender, $host) : void{
+				/** @phpstan-var array<InternetRequestResult|InternetException> $results */
+				if($sender instanceof Player && !$sender->isOnline()){
+					return;
+				}
+
+				$result = $results[0];
+				if($result instanceof InternetException){
+					$sender->getServer()->getLogger()->logException($result);
+					return;
+				}
+
+				$response = json_decode($result->getBody(), true);
+				if(is_array($response) && isset($response["id"]) && (is_int($response["id"]) || is_string($response["id"]))){
+					$url = "https://{$host}/?id={$response["id"]}";
+					if(isset($response["access_token"]) && is_string($response["access_token"])){
+						$url .= "&access_token={$response["access_token"]}";
+					}else{
+						$sender->getServer()->getLogger()->warning("Your chosen timings host does not support private reports. Anyone will be able to see your report if they guess the ID.");
+					}
+					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead($url));
+				}else{
+					$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
+					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
+				}
+			}
+		));
 	}
 }

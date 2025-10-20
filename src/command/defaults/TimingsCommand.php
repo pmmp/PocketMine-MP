@@ -26,37 +26,12 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\player\Player;
-use pocketmine\scheduler\BulkCurlTask;
-use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\InternetException;
-use pocketmine\utils\InternetRequestResult;
-use pocketmine\YmlServerProperties;
-use Symfony\Component\Filesystem\Path;
 use function count;
-use function fclose;
-use function file_exists;
-use function fopen;
-use function fwrite;
-use function http_build_query;
-use function implode;
-use function is_array;
-use function is_int;
-use function is_string;
-use function json_decode;
-use function mkdir;
 use function strtolower;
-use const CURLOPT_AUTOREFERER;
-use const CURLOPT_FOLLOWLOCATION;
-use const CURLOPT_HTTPHEADER;
-use const CURLOPT_POST;
-use const CURLOPT_POSTFIELDS;
-use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -106,7 +81,7 @@ class TimingsCommand extends VanillaCommand{
 			$timingsPromise = TimingsHandler::requestPrintTimings();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
 			$timingsPromise->onCompletion(
-				fn(array $lines) => $paste ? $this->uploadReport($lines, $sender) : $this->createReportFile($lines, $sender),
+				fn(array $lines) => $paste ? TimingsHandler::uploadReport($lines, $sender) : TimingsHandler::createReportFile($lines, $sender),
 				fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
 			);
 		}else{
@@ -114,86 +89,5 @@ class TimingsCommand extends VanillaCommand{
 		}
 
 		return true;
-	}
-
-	/**
-	 * @param string[] $lines
-	 * @phpstan-param list<string> $lines
-	 */
-	private function createReportFile(array $lines, CommandSender $sender) : void{
-		$index = 0;
-		$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
-
-		if(!file_exists($timingFolder)){
-			mkdir($timingFolder, 0777);
-		}
-		$timings = Path::join($timingFolder, "timings.txt");
-		while(file_exists($timings)){
-			$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
-		}
-
-		$fileTimings = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timings, "a+b"));
-		foreach($lines as $line){
-			fwrite($fileTimings, $line . PHP_EOL);
-		}
-		fclose($fileTimings);
-
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
-	}
-
-	/**
-	 * @param string[] $lines
-	 * @phpstan-param list<string> $lines
-	 */
-	private function uploadReport(array $lines, CommandSender $sender) : void{
-		$data = [
-			"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
-			"data" => implode("\n", $lines),
-			"private" => "true"
-		];
-
-		$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
-
-		$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
-			[new BulkCurlTaskOperation(
-				"https://$host?upload=true",
-				10,
-				[],
-				[
-					CURLOPT_HTTPHEADER => [
-						"User-Agent: $agent",
-						"Content-Type: application/x-www-form-urlencoded"
-					],
-					CURLOPT_POST => true,
-					CURLOPT_POSTFIELDS => http_build_query($data),
-					CURLOPT_AUTOREFERER => false,
-					CURLOPT_FOLLOWLOCATION => false
-				]
-			)],
-			function(array $results) use ($sender, $host) : void{
-				/** @phpstan-var array<InternetRequestResult|InternetException> $results */
-				if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
-					return;
-				}
-				$result = $results[0];
-				if($result instanceof InternetException){
-					$sender->getServer()->getLogger()->logException($result);
-					return;
-				}
-				$response = json_decode($result->getBody(), true);
-				if(is_array($response) && isset($response["id"]) && (is_int($response["id"]) || is_string($response["id"]))){
-					$url = "https://" . $host . "/?id=" . $response["id"];
-					if(isset($response["access_token"]) && is_string($response["access_token"])){
-						$url .= "&access_token=" . $response["access_token"];
-					}else{
-						$sender->getServer()->getLogger()->warning("Your chosen timings host does not support private reports. Anyone will be able to see your report if they guess the ID.");
-					}
-					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead($url));
-				}else{
-					$sender->getServer()->getLogger()->debug("Invalid response from timings server (" . $result->getCode() . "): " . $result->getBody());
-					Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
-				}
-			}
-		));
 	}
 }
