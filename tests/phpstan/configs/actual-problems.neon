@@ -589,6 +589,12 @@ parameters:
 			path: ../../../src/data/bedrock/block/convert/VanillaBlockMappings.php
 
 		-
+			message: '#^Parameter \#1 \$properties of method pocketmine\\data\\bedrock\\block\\convert\\Model\<pocketmine\\block\\InfestedStone\>\:\:properties\(\) expects list\<pocketmine\\data\\bedrock\\block\\convert\\property\\Property\<contravariant pocketmine\\block\\InfestedStone\>\>, array\{pocketmine\\data\\bedrock\\block\\convert\\property\\ValueFromStringProperty\<pocketmine\\block\\utils\\PillarRotation, int\>\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/data/bedrock/block/convert/VanillaBlockMappings.php
+
+		-
 			message: '#^Parameter \#1 \$blockToItemId of class pocketmine\\data\\bedrock\\item\\BlockItemIdMap constructor expects array\<string, string\>, array\<mixed, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
