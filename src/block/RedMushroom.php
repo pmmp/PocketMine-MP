@@ -46,8 +46,7 @@ class RedMushroom extends Flowable{
 		$position = $this->position;
 		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
 		$downId = $down->getTypeId();
-		//TODO: nylium support
-		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL){
+		if(($lightLevel <= 12 && !$down->isTransparent()) || $downId === BlockTypeIds::MYCELIUM || $downId === BlockTypeIds::PODZOL || $down->hasTypeTag(BlockTypeTags::NYLIUM)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
