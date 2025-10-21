@@ -347,15 +347,14 @@ class TimingsHandler{
 	 * Creates a timings report file locally in the server data folder or a custom location.
 	 * Collects timings data and returns a promise that resolves with the timings lines.
 	 *
-	 * @param string 	  $fileName A given name to the timings file
 	 * @param string|null $filePath Optional custom directory path. If null, uses server data/timings folder
 	 *
 	 * @phpstan-return Promise<list<string>>
 	 */
-	public static function createReportFile(CommandSender $sender, string $fileName = "timings", ?string $filePath = null) : Promise{
+	public static function createReportFile(CommandSender $sender, ?string $filePath = null) : Promise{
 		$timingsPromise = self::requestPrintTimings();
 		$timingsPromise->onCompletion(
-			function(array $lines) use ($sender, $fileName, $filePath) : void{
+			function(array $lines) use ($sender, $filePath) : void{
 				$server = $sender->getServer();
 
 				if($filePath === null){
@@ -367,12 +366,13 @@ class TimingsHandler{
 				if(!file_exists($timingsFolder)){
 					mkdir($timingsFolder, 0777, true);
 				}
-				$date = date("Y-m-d_H-i-s");
+				$date = date('Y-m-d_H.i.s_T');
 				$index = 0;
-				$timingsFile = Path::join($timingsFolder, "{$fileName}-{$date}.txt");
-				while(file_exists($timingsFile)){
-					$timingsFile = Path::join($timingsFolder, "{$fileName}-{$date}-(" . (++$index) . ").txt");
-				}
+				$timingsFile = Path::join($timingsFolder, "{$date}.txt");
+				// do we need this?
+				// while(file_exists($timingsFile)){
+				// 	$timingsFile = Path::join($timingsFolder, "{$date}-(" . (++$index) . ").txt");
+				// }
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);

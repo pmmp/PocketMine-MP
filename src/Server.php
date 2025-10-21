@@ -1501,10 +1501,8 @@ class Server{
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
 
-			$autoPaste = $this->getConfigGroup()->getPropertyBool(Yml::TIMINGS_SHUTDOWN_AUTO_PASTE, false);
-			$host = $this->getConfigGroup()->getPropertyString(Yml::TIMINGS_HOST, "timings.pmmp.io");
-			if($autoPaste && TimingsHandler::isEnabled() && (($sender = $this->consoleSender) !== null)){				
-				TimingsHandler::uploadReport($sender, $host);
+			if(TimingsHandler::isEnabled() && (($sender = $this->consoleSender) !== null)){				
+				TimingsHandler::createReportFile($sender);
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
 				TimingsHandler::setEnabled(false);
 			}
