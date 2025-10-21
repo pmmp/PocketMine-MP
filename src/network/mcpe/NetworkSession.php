@@ -73,6 +73,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\serializer\AvailableCommandsPacketAssembler;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -88,7 +89,7 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
-use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandHardEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
@@ -119,6 +120,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use function array_map;
+use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
@@ -1143,7 +1145,7 @@ class NetworkSession{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
 				}
-				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", $aliases);
+				$aliasObj = new CommandHardEnum(ucfirst($command->getLabel()) . "Aliases", $aliases);
 			}
 
 			$description = $command->getDescription();
@@ -1162,7 +1164,7 @@ class NetworkSession{
 			$commandData[$command->getLabel()] = $data;
 		}
 
-		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
+		$this->sendDataPacket(AvailableCommandsPacketAssembler::assemble(array_values($commandData), [], []));
 	}
 
 	/**
