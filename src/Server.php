@@ -1502,9 +1502,13 @@ class Server{
 			$this->signalHandler->unregister();
 
 			if(TimingsHandler::isEnabled() && (($sender = $this->consoleSender) !== null)){				
-				TimingsHandler::createReportFile($sender);
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-				TimingsHandler::setEnabled(false);
+				TimingsHandler::createReportFile($sender)->onCompletion(
+					function(string $timingsFile) use ($sender) : void{
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));				
+						TimingsHandler::setEnabled(false);
+					},
+					fn() => throw new \AssertionError("This promise is not expected to be rejected")
+				);
 			}
 		}
 	}

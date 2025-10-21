@@ -29,7 +29,6 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\YmlServerProperties;
 
 use function count;
@@ -82,7 +81,17 @@ class TimingsCommand extends VanillaCommand{
 		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-			$paste ? TimingsHandler::uploadReport($sender, $host) : TimingsHandler::createReportFile($sender);
+
+			if($paste){
+				TimingsHandler::uploadReport($sender, $host);
+			}else{
+				TimingsHandler::createReportFile($sender)->onCompletion(
+					function(string $timingsFile) use ($sender) : void{
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
+					},
+					fn() => throw new \AssertionError("This promise is not expected to be rejected")
+				);
+			}
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
