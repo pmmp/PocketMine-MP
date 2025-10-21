@@ -123,6 +123,8 @@ abstract class Living extends Entity{
 	protected int $breathTicks = self::DEFAULT_BREATH_TICKS;
 	protected int $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
+	protected int $freezeTicks = 0;
+
 	protected Attribute $healthAttr;
 	protected Attribute $absorptionAttr;
 	protected Attribute $knockbackResistanceAttr;
@@ -334,6 +336,30 @@ abstract class Living extends Entity{
 
 	public function getEffects() : EffectManager{
 		return $this->effectManager;
+	}
+
+	public function getFreezeTicks() : int{
+		return $this->freezeTicks;
+	}
+
+	public function setFreezeTicks(int $ticks) : void{
+		$this->freezeTicks = max(0, $ticks);
+		$this->networkPropertiesDirty = true;
+	}
+
+	public function addFreezeTicks(int $ticks = 1) : void{
+		$this->freezeTicks += $ticks;
+		$this->networkPropertiesDirty = true;
+	}
+
+	public function resetFreezeTicks() : void{
+		$this->freezeTicks = 0;
+		$this->networkPropertiesDirty = true;
+	}
+
+	public function getPercentFrozen() : float{
+		$threshold = 140;
+		return min(1.0, $this->freezeTicks / max(1, $threshold));
 	}
 
 	/**
@@ -981,6 +1007,8 @@ abstract class Living extends Entity{
 
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
+
+		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getPercentFrozen());
 
 		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);

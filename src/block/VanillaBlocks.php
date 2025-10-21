@@ -677,6 +677,7 @@ use function strtolower;
  * @method static Flower POPPY()
  * @method static Potato POTATOES()
  * @method static PotionCauldron POTION_CAULDRON()
+ * @method static PowderSnow POWDER_SNOW()
  * @method static PoweredRail POWERED_RAIL()
  * @method static Opaque PRISMARINE()
  * @method static Opaque PRISMARINE_BRICKS()
@@ -1805,6 +1806,8 @@ final class VanillaBlocks{
 		self::register("small_dripleaf", fn(BID $id) => new SmallDripleaf($id, "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", fn(BID $id) => new BigDripleafHead($id, "Big Dripleaf", new Info(new BreakInfo(0.1))));
 		self::register("big_dripleaf_stem", fn(BID $id) => new BigDripleafStem($id, "Big Dripleaf Stem", new Info(new BreakInfo(0.1))));
+
+		self::register("powder_snow", fn(BID $id) => new PowderSnow($id, "Powder Snow", new Info(new BreakInfo(0.25))));
 	}
 
 	private static function registerBlocksR18() : void{

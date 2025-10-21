@@ -461,6 +461,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::WHITE_TULIP(), Ids::WHITE_TULIP);
 
 		$reg->mapSimple(Blocks::CACTUS_FLOWER(), Ids::CACTUS_FLOWER);
+		$reg->mapSimple(Blocks::POWDER_SNOW(), Ids::POWDER_SNOW);
 	}
 
 	private static function registerColoredMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties) : void{

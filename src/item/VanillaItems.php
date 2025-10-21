@@ -36,6 +36,7 @@ use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\sound\BucketEmptyPowderSnowSound;
 use pocketmine\world\World;
 use function is_int;
 use function mb_strtoupper;
@@ -264,6 +265,7 @@ use function strtolower;
  * @method static Item POPPED_CHORUS_FRUIT()
  * @method static Potato POTATO()
  * @method static Potion POTION()
+ * @method static SolidBucket POWDER_SNOW_BUCKET()
  * @method static Item PRISMARINE_CRYSTALS()
  * @method static Item PRISMARINE_SHARD()
  * @method static Pufferfish PUFFERFISH()
@@ -578,6 +580,7 @@ final class VanillaItems{
 		self::register("popped_chorus_fruit", fn(IID $id) => new Item($id, "Popped Chorus Fruit"));
 		self::register("potato", fn(IID $id) => new Potato($id, "Potato"));
 		self::register("potion", fn(IID $id) => new Potion($id, "Potion"));
+		self::register("powder_snow_bucket", fn(IID $id) => new SolidBucket($id, "Powder Snow Bucket", Blocks::POWDER_SNOW(), new BucketEmptyPowderSnowSound()));
 		self::register("prismarine_crystals", fn(IID $id) => new Item($id, "Prismarine Crystals"));
 		self::register("prismarine_shard", fn(IID $id) => new Item($id, "Prismarine Shard"));
 		self::register("pufferfish", fn(IID $id) => new Pufferfish($id, "Pufferfish"));
