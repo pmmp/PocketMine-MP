@@ -49,3 +49,18 @@ jobs:
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@2.0.0
+
+  translations:
+    name: Translation checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.35.5
+        with:
+          php-version: 8.3
+
+      - name: Verify translations
+        run: php .github/workflows/verify-translations.php ${{ github.workspace }}/resources/translations

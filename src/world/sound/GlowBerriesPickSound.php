@@ -30,6 +30,6 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 class GlowBerriesPickSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::CAVE_VINES_PICK_BERRIES, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::PICK_BERRIES_CAVE_VINES, $pos, false)];
 	}
 }

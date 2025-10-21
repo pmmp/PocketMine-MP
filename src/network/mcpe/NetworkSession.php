@@ -73,6 +73,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\serializer\AvailableCommandsPacketAssembler;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -88,7 +89,7 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
-use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandHardEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
@@ -1148,7 +1149,7 @@ class NetworkSession{
 			//use filtered aliases for command name discovery - this allows /help to still be shown as /pocketmine:help
 			//on the client without conflicting with the client's built-in /help command
 			$lname = strtolower($firstNetworkAlias);
-			$aliasObj = new CommandEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases);
+			$aliasObj = new CommandHardEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases);
 
 			$description = $command->getDescription();
 			$data = new CommandData(
@@ -1166,7 +1167,7 @@ class NetworkSession{
 			$commandData[] = $data;
 		}
 
-		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
+		$this->sendDataPacket(AvailableCommandsPacketAssembler::assemble($commandData, [], []));
 	}
 
 	/**

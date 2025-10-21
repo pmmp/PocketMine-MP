@@ -39,6 +39,7 @@ use pocketmine\world\generator\populator\GroundCover;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
 use pocketmine\world\World;
+use function fmod;
 
 class Normal extends Generator{
 
@@ -123,7 +124,10 @@ class Normal extends Generator{
 	private function pickBiome(int $x, int $z) : Biome{
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->seed;
 		$hash *= $hash + 223;
-		$hash = (int) $hash;
+		//the above operations may result in a float. This probably wasn't intended, but we need to stick with it to
+		//avoid cliff edges in existing user worlds.
+		//We need to mod this so it doesn't generate an error in PHP 8.5 when we cast it back to an int.
+		$hash = (int) fmod($hash, 2.0 ** 63);
 		$xNoise = $hash >> 20 & 3;
 		$zNoise = $hash >> 22 & 3;
 		if($xNoise === 3){
