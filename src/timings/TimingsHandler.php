@@ -355,6 +355,7 @@ class TimingsHandler{
 	public static function createReportFile(CommandSender $sender, ?string $fileName = null, ?string $filePath = null) : Promise{
 		$timingsPromise = self::requestPrintTimings();
 
+		/** @var PromiseResolver<string> $resolver */
 		$resolver = new PromiseResolver();
 
 		$timingsPromise->onCompletion(
