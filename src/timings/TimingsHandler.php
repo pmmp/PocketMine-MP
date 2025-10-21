@@ -378,10 +378,16 @@ class TimingsHandler{
 		$timingsPromise->onCompletion(
 			function(array $lines) use ($fileName, $filePath, $resolver) : void{
 				$date = date('Y-m-d_H.i.s_T');
-
-				$timingsFolder = $filePath ?? Path::join($filePath, "timings");
-				$timingsName = $fileName === null ? "timings_{$date}.txt" : "{$fileName}.txt";
-
+				if($filePath === null){
+					$timingsFolder = Path::join($filePath, "timings");
+				}else{
+					$timingsFolder = $filePath;
+				}
+				if($fileName === null){
+					$timingsName = "timings_{$date}.txt";
+				}else{
+					$timingsName = "{$fileName}.txt";
+				}				
 				if(!file_exists($timingsFolder)){
 					mkdir($timingsFolder, 0777, true);
 				}
