@@ -361,37 +361,31 @@ class TimingsHandler{
 	}
 
 	/**
-	 * Creates a timings report file locally in the server data folder or a custom location.
-	 * Collects timings data and returns a promise that resolves with the created file path.
-	 *
+	 * Creates a timings report file locally in the provided file path.
+	 * Collects timings data and returns a promise that resolves with the created file.
+	 * 
+	 * @param string $filePath directory path to the timings folder.
 	 * @param string|null $fileName Optional custom file name, If null, uses default timings file naming
-	 * @param string|null $filePath Optional custom directory path. If null, uses server data/timings folder
 	 *
 	 * @phpstan-return Promise<string>
 	 */
-	public static function createReportFile(CommandSender $sender, ?string $fileName = null, ?string $filePath = null) : Promise{
+	public static function createReportFile(string $filePath, ?string $fileName = null) : Promise{
 		$timingsPromise = self::requestPrintTimings();
 
 		/** @var PromiseResolver<string> $resolver */
 		$resolver = new PromiseResolver();
 
 		$timingsPromise->onCompletion(
-			function(array $lines) use ($sender, $fileName, $filePath, $resolver) : void{
-				$server = $sender->getServer();
+			function(array $lines) use ($fileName, $filePath, $resolver) : void{
 				$date = date('Y-m-d_H.i.s_T');
-				if($filePath === null){
-					$timingsFolder = Path::join($server->getDataPath(), "timings");
-				}else{
-					$timingsFolder = $filePath;
-				}
-				if($fileName === null){
-					$timingsName = "timings_{$date}.txt";
-				}else{
-					$timingsName = "{$fileName}.txt";
-				}
+
+				$timingsFolder = $filePath ?? Path::join($filePath, "timings");
+				$timingsName = $fileName === null ? "timings_{$date}.txt" : "{$fileName}.txt";
+
 				if(!file_exists($timingsFolder)){
 					mkdir($timingsFolder, 0777, true);
 				}
+				
 				$timingsFile = Path::join($timingsFolder, $timingsName);
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
