@@ -364,7 +364,7 @@ class TimingsHandler{
 	 * Creates a timings report file locally in the provided file path.
 	 * Collects timings data and returns a promise that resolves with the created file.
 	 * 
-	 * @param string 	  $filePath directory path to the timings folder.
+	 * @param string      $filePath directory path to the timings folder.
 	 * @param string|null $fileName Optional custom file name, If null, uses default timings file naming
 	 *
 	 * @phpstan-return Promise<string>
@@ -378,20 +378,15 @@ class TimingsHandler{
 		$timingsPromise->onCompletion(
 			function(array $lines) use ($fileName, $filePath, $resolver) : void{
 				$date = date('Y-m-d_H.i.s_T');
-				if($filePath === null){
-					$timingsFolder = Path::join($filePath, "timings");
-				}else{
-					$timingsFolder = $filePath;
-				}
 				if($fileName === null){
 					$timingsName = "timings_{$date}.txt";
 				}else{
 					$timingsName = "{$fileName}.txt";
-				}				
-				if(!file_exists($timingsFolder)){
-					mkdir($timingsFolder, 0777, true);
+				}		
+				if(!file_exists($filePath)){
+					mkdir($filePath, 0777, true);
 				}
-				$timingsFile = Path::join($timingsFolder, $timingsName);
+				$timingsFile = Path::join($filePath, $timingsName);
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);
