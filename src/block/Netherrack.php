@@ -45,7 +45,7 @@ class Netherrack extends Opaque{
 		return false;
 	}
 
-	public function tryTransform() : bool{
+	private function tryTransform() : bool{
 		$world = $this->position->getWorld();
 		$pos = $this->position;
 
