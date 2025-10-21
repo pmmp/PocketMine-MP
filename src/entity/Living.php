@@ -47,6 +47,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\item\VanillaArmorMaterials;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -122,8 +123,6 @@ abstract class Living extends Entity{
 	protected bool $breathing = true;
 	protected int $breathTicks = self::DEFAULT_BREATH_TICKS;
 	protected int $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
-
-	protected int $freezeTicks = 0;
 
 	protected Attribute $healthAttr;
 	protected Attribute $absorptionAttr;
@@ -338,30 +337,6 @@ abstract class Living extends Entity{
 		return $this->effectManager;
 	}
 
-	public function getFreezeTicks() : int{
-		return $this->freezeTicks;
-	}
-
-	public function setFreezeTicks(int $ticks) : void{
-		$this->freezeTicks = max(0, $ticks);
-		$this->networkPropertiesDirty = true;
-	}
-
-	public function addFreezeTicks(int $ticks = 1) : void{
-		$this->freezeTicks += $ticks;
-		$this->networkPropertiesDirty = true;
-	}
-
-	public function resetFreezeTicks() : void{
-		$this->freezeTicks = 0;
-		$this->networkPropertiesDirty = true;
-	}
-
-	public function getPercentFrozen() : float{
-		$threshold = 140;
-		return min(1.0, $this->freezeTicks / max(1, $threshold));
-	}
-
 	/**
 	 * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
 	 * etc.
@@ -462,6 +437,42 @@ abstract class Living extends Entity{
 
 	public function setOnFire(int $seconds) : void{
 		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::FIRE_PROTECTION()) * 0.15));
+	}
+
+	public function canFreeze() : bool{
+		foreach($this->armorInventory->getContents() as $item){
+			if($item instanceof Armor && $item->getMaterial() === VanillaArmorMaterials::LEATHER()){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	protected function doFrozenTick(int $tickDiff) : bool{
+		if(!$this->canFreeze()){
+			if($this->freezeTicks > 0){
+				$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
+				return true;
+			}
+			return false;
+		}
+
+		if($this->wasFreezing){
+			$this->setFreezeTicks(min($this->getTicksRequiredToFreeze(), $this->freezeTicks + $tickDiff));
+			if($this->freezeTicks >= $this->getTicksRequiredToFreeze()){
+				//TODO: 2 second damage
+				$this->dealFrozenDamage();
+			}
+
+			return true;
+		}
+
+		if($this->freezeTicks > 0){
+			$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -719,6 +730,10 @@ abstract class Living extends Entity{
 						$this->armorInventory->setItem($index, $item);
 					}
 				}
+			}
+
+			if($this->doFrozenTick($tickDiff)){
+				$hasUpdate = true;
 			}
 		}
 
@@ -1007,8 +1022,6 @@ abstract class Living extends Entity{
 
 		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
 		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
-
-		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getPercentFrozen());
 
 		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);

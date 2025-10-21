@@ -78,6 +78,7 @@ use function floatval;
 use function floor;
 use function fmod;
 use function get_class;
+use function max;
 use function min;
 use function sin;
 use function spl_object_id;
@@ -144,6 +145,10 @@ abstract class Entity{
 	public int $ticksLived = 0;
 	public int $lastUpdate;
 	protected int $fireTicks = 0;
+
+	protected int $freezeTicks = 0;
+	protected bool $isFreezing = false;
+	protected bool $wasFreezing = false;
 
 	private bool $savedWithChunk = true;
 
@@ -678,6 +683,9 @@ abstract class Entity{
 			}
 		}
 
+		$this->wasFreezing = $this->isFreezing;
+		$this->isFreezing = false;
+
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
@@ -757,6 +765,48 @@ abstract class Entity{
 	 */
 	protected function dealFireDamage() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
+		$this->attack($ev);
+	}
+
+	public function getFreezeTicks() : int{
+		return $this->freezeTicks;
+	}
+
+	public function setFreezeTicks(int $freezeTicks) : void{
+		if($freezeTicks < 0 || $freezeTicks > $this->getTicksRequiredToFreeze()){
+			throw new \InvalidArgumentException("Freeze ticks must be between 0 and " . $this->getTicksRequiredToFreeze() . ", got $freezeTicks");
+		}
+		$this->freezeTicks = $freezeTicks;
+		$this->networkPropertiesDirty = true;
+	}
+
+	public function getPercentFrozen() : float{
+		return min(1.0, $this->freezeTicks / max(1, $this->getTicksRequiredToFreeze()));
+	}
+
+	public function getTicksRequiredToFreeze() : int{
+		return 140;
+	}
+
+	public function getFrozenDamage() : int{
+		return 1;
+	}
+
+	public function isFreezing() : bool{
+		return $this->isFreezing;
+	}
+
+	public function setFreezing(bool $freezing) : void{
+		$this->isFreezing = $freezing;
+	}
+
+	public function canFreeze() : bool{
+		return false;
+	}
+
+	protected function dealFrozenDamage() : void{
+		//TODO
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_CONTACT, $this->getFrozenDamage());
 		$this->attack($ev);
 	}
 
@@ -1697,6 +1747,7 @@ abstract class Entity{
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
+		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getPercentFrozen());
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
 		$properties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
