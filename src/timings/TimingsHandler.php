@@ -347,7 +347,7 @@ class TimingsHandler{
 	 * Creates a timings report file locally in the server data folder or a custom location.
 	 * Collects timings data and returns a promise that resolves with the timings lines.
 	 *
-	 * @param string $fileName A given name to the timings file
+	 * @param string 	  $fileName A given name to the timings file
 	 * @param string|null $filePath Optional custom directory path. If null, uses server data/timings folder
 	 *
 	 * @phpstan-return Promise<list<string>>
