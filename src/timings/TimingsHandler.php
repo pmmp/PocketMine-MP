@@ -367,7 +367,7 @@ class TimingsHandler{
 					$timingsFolder = $filePath;
 				}
 				if($fileName === null){
-					$timingsName = "timings:{$date}.txt";
+					$timingsName = "timings_{$date}.txt";
 				}else{
 					$timingsName = "{$fileName}.txt";
 				}
