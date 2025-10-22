@@ -148,7 +148,6 @@ abstract class Entity{
 
 	protected int $freezeTicks = 0;
 	protected bool $isFreezing = false;
-	protected bool $wasFreezing = false;
 
 	private bool $savedWithChunk = true;
 
@@ -683,7 +682,9 @@ abstract class Entity{
 			}
 		}
 
-		$this->wasFreezing = $this->isFreezing;
+		if($this->doFrozenTick($tickDiff)){
+			$hasUpdate = true;
+		}
 		$this->isFreezing = false;
 
 		$this->ticksLived += $tickDiff;
@@ -788,10 +789,6 @@ abstract class Entity{
 		return 140;
 	}
 
-	public function getFrozenDamage() : int{
-		return 1;
-	}
-
 	public function isFreezing() : bool{
 		return $this->isFreezing;
 	}
@@ -804,9 +801,28 @@ abstract class Entity{
 		return false;
 	}
 
+	protected function doFrozenTick(int $tickDiff) : bool{
+		if($this->isFreezing){
+			$this->setFreezeTicks(min($this->getTicksRequiredToFreeze(), $this->freezeTicks + $tickDiff));
+			if($this->freezeTicks >= $this->getTicksRequiredToFreeze()){
+				//TODO: 2 second damage
+				$this->dealFrozenDamage();
+			}
+
+			return true;
+		}
+
+		if($this->freezeTicks > 0){
+			$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
+			return true;
+		}
+
+		return false;
+	}
+
 	protected function dealFrozenDamage() : void{
-		//TODO
-		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_CONTACT, $this->getFrozenDamage());
+		//TODO: Use EntityDamageByBlockEvent here instead
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$this->attack($ev);
 	}
 

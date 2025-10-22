@@ -448,33 +448,6 @@ abstract class Living extends Entity{
 		return true;
 	}
 
-	protected function doFrozenTick(int $tickDiff) : bool{
-		if(!$this->canFreeze()){
-			if($this->freezeTicks > 0){
-				$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
-				return true;
-			}
-			return false;
-		}
-
-		if($this->wasFreezing){
-			$this->setFreezeTicks(min($this->getTicksRequiredToFreeze(), $this->freezeTicks + $tickDiff));
-			if($this->freezeTicks >= $this->getTicksRequiredToFreeze()){
-				//TODO: 2 second damage
-				$this->dealFrozenDamage();
-			}
-
-			return true;
-		}
-
-		if($this->freezeTicks > 0){
-			$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
-			return true;
-		}
-
-		return false;
-	}
-
 	/**
 	 * Called prior to EntityDamageEvent execution to apply modifications to the event's damage, such as reduction due
 	 * to effects or armour.
@@ -730,10 +703,6 @@ abstract class Living extends Entity{
 						$this->armorInventory->setItem($index, $item);
 					}
 				}
-			}
-
-			if($this->doFrozenTick($tickDiff)){
-				$hasUpdate = true;
 			}
 		}
 

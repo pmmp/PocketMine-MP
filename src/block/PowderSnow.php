@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
-use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -37,48 +36,35 @@ use pocketmine\world\sound\BucketFillPowderSnowSound;
 use function lcg_value;
 use function mt_rand;
 
-class PowderSnow extends Transparent {
-	private const HORIZONTAL_SPEED_MULTIPLIER = 0.9;
-	private const VERTICAL_SPEED_MULTIPLIER = 1.5;
-	private const FALLING_COLLISION_HEIGHT = 0.9;
+class PowderSnow extends Transparent{
 
-	public function isSolid() : bool {
+	public function isSolid() : bool{
 		return false;
 	}
 
-	public function canBeReplaced() : bool {
+	public function hasEntityCollision() : bool{
 		return true;
 	}
 
-	public function hasEntityCollision() : bool {
-		return true;
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array {
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
 
-	public function onEntityInside(Entity $entity) : bool {
-		if ($entity instanceof Living) {
+	public function onEntityInside(Entity $entity) : bool{
+		$entity->resetFallDistance();
+		if($entity->canFreeze()){
 			$entity->setFreezing(true);
-			$motion = $entity->getMotion();
-			$entity->setMotion($motion->multiply(self::HORIZONTAL_SPEED_MULTIPLIER));
-			$entity->resetFallDistance();
-
-			$bb = $entity->getBoundingBox();
-			if($bb->maxY > $this->getPosition()->y && $bb->minY < $this->getPosition()->y + self::FALLING_COLLISION_HEIGHT){
-				$entity->setMotion($entity->getMotion()->add(0, -0.05 * self::VERTICAL_SPEED_MULTIPLIER, 0));
-			}
 		}
 
-		if(mt_rand(0, 5) === 0 && $entity->hasMovementUpdate()){
+		if(mt_rand(0, 5) === 0){
+			// TODO: Detect entity movement inside powder snow (see #4704)
 			$this->getPosition()->getWorld()->addParticle($this->getPosition()->add(lcg_value(), lcg_value(), lcg_value()), new SnowflakeParticle());
 		}
 
-		if ($entity->isOnFire()) {
+		if($entity->isOnFire()){
 			$entity->extinguish(EntityExtinguishEvent::CAUSE_POWDER_SNOW);
 			$this->position->getWorld()->useBreakOn($this->position);
-			//we should add an event here
+			//we could add a cancellable event here
 		}
 		return true;
 	}
@@ -87,9 +73,9 @@ class PowderSnow extends Transparent {
 		return SupportType::NONE;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool {
-		if ($player !== null && $item->getTypeId() === ItemTypeIds::BUCKET) {
-			if (!$player->isCreative()) {
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($player !== null && $item->getTypeId() === ItemTypeIds::BUCKET){
+			if(!$player->isCreative()){
 				$item->pop();
 				$returnedItems[] = VanillaItems::POWDER_SNOW_BUCKET();
 			}
@@ -100,5 +86,9 @@ class PowderSnow extends Transparent {
 		}
 
 		return false;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 }
