@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\Facing;
 
-final class NetherRoots extends Flowable{
+class NetherSprouts extends Flowable{
 	use StaticSupportTrait;
 
 	private function canBeSupportedAt(Block $block) : bool{

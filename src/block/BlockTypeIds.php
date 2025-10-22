@@ -212,7 +212,9 @@ final class BlockTypeIds{
 	public const CRIMSON_DOOR = self::PREFIX . "crimson_door";
 	public const CRIMSON_FENCE = self::PREFIX . "crimson_fence";
 	public const CRIMSON_FENCE_GATE = self::PREFIX . "crimson_fence_gate";
+	public const CRIMSON_FUNGUS = self::PREFIX . "crimson_fungus";
 	public const CRIMSON_HYPHAE = self::PREFIX . "crimson_hyphae";
+	public const CRIMSON_NYLIUM = self::PREFIX . "crimson_nylium";
 	public const CRIMSON_PLANKS = self::PREFIX . "crimson_planks";
 	public const CRIMSON_PRESSURE_PLATE = self::PREFIX . "crimson_pressure_plate";
 	public const CRIMSON_ROOTS = self::PREFIX . "crimson_roots";
@@ -556,6 +558,7 @@ final class BlockTypeIds{
 	public const NETHER_PORTAL = self::PREFIX . "nether_portal";
 	public const NETHER_QUARTZ_ORE = self::PREFIX . "nether_quartz_ore";
 	public const NETHER_REACTOR_CORE = self::PREFIX . "nether_reactor_core";
+	public const NETHER_SPROUTS = self::PREFIX . "nether_sprouts";
 	public const NETHER_WART = self::PREFIX . "nether_wart";
 	public const NETHER_WART_BLOCK = self::PREFIX . "nether_wart_block";
 	public const NOTE_BLOCK = self::PREFIX . "note_block";
@@ -792,7 +795,9 @@ final class BlockTypeIds{
 	public const WARPED_DOOR = self::PREFIX . "warped_door";
 	public const WARPED_FENCE = self::PREFIX . "warped_fence";
 	public const WARPED_FENCE_GATE = self::PREFIX . "warped_fence_gate";
+	public const WARPED_FUNGUS = self::PREFIX . "warped_fungus";
 	public const WARPED_HYPHAE = self::PREFIX . "warped_hyphae";
+	public const WARPED_NYLIUM = self::PREFIX . "warped_nylium";
 	public const WARPED_PLANKS = self::PREFIX . "warped_planks";
 	public const WARPED_PRESSURE_PLATE = self::PREFIX . "warped_pressure_plate";
 	public const WARPED_ROOTS = self::PREFIX . "warped_roots";

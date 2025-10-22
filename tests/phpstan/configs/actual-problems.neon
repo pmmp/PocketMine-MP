@@ -367,6 +367,24 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
 			message: '#^Offset 0\|1\|2\|3\|4\|5\|6\|7\|8\|9 might not exist on array\{array\{2, 3\}, array\{5, 4\}, array\{4, 16777221\}, array\{5, 16777220\}, array\{3, 16777218\}, array\{2, 16777219\}\}\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
