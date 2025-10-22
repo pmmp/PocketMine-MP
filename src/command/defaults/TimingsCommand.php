@@ -33,6 +33,7 @@ use pocketmine\YmlServerProperties;
 
 use function count;
 use function strtolower;
+use const DIRECTORY_SEPARATOR;
 
 class TimingsCommand extends VanillaCommand{
 
