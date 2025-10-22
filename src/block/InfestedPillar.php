@@ -26,6 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\utils\PillarRotation;
 use pocketmine\block\utils\PillarRotationTrait;
 
-class InfestedRotatedPillarBlock extends InfestedStone implements PillarRotation{
+class InfestedPillar extends InfestedStone implements PillarRotation{
 	use PillarRotationTrait;
 }
