@@ -451,7 +451,6 @@ abstract class Living extends Entity{
 	}
 
 	protected function onFreezeAttributeModifierChanged(float $addValue) : void{
-		//TODO: Implement network AttributeModifier correctly.
 		$base = $this->moveSpeedAttr->getDefaultValue();
 		$oldAdd = $this->freezeMovementAdd;
 		$denom = max(1e-6, $base + $oldAdd);

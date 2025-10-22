@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\item\Item;
@@ -34,11 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\BucketFillPowderSnowSound;
 
-class PowderSnow extends Transparent{
-
-	public function isSolid() : bool{
-		return false;
-	}
+class PowderSnow extends Flowable{
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -61,10 +56,6 @@ class PowderSnow extends Transparent{
 		return true;
 	}
 
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE;
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($player !== null && $item->getTypeId() === ItemTypeIds::BUCKET){
 			if(!$player->isCreative()){
@@ -78,9 +69,5 @@ class PowderSnow extends Transparent{
 		}
 
 		return false;
-	}
-
-	protected function recalculateCollisionBoxes() : array{
-		return [];
 	}
 }
