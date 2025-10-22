@@ -28,6 +28,7 @@ use function array_keys;
 use function fclose;
 use function fopen;
 use function fwrite;
+use function sort;
 use function strtolower;
 use const SORT_STRING;
 use const STDERR;
