@@ -32,7 +32,7 @@ class SubChunkTest extends TestCase{
 	 * Test that a cloned SubChunk instance doesn't influence the original
 	 */
 	public function testClone() : void{
-		$sub1 = new SubChunk(0, [], new PalettedBlockArray(BiomeIds::OCEAN));
+		$sub1 = new SubChunk(0, null, null, new PalettedBlockArray(BiomeIds::OCEAN));
 
 		$sub1->setBlockStateId(0, 0, 0, 1);
 		$sub1->getBlockLightArray()->set(0, 0, 0, 1);

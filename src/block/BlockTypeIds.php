@@ -123,6 +123,7 @@ final class BlockTypeIds{
 	public const BROWN_MUSHROOM_BLOCK = self::PREFIX . "brown_mushroom_block";
 	public const BUDDING_AMETHYST = self::PREFIX . "budding_amethyst";
 	public const CACTUS = self::PREFIX . "cactus";
+	public const CACTUS_FLOWER = self::PREFIX . "cactus_flower";
 	public const CAKE = self::PREFIX . "cake";
 	public const CAKE_WITH_CANDLE = self::PREFIX . "cake_with_candle";
 	public const CAKE_WITH_DYED_CANDLE = self::PREFIX . "cake_with_dyed_candle";
@@ -186,10 +187,14 @@ final class BlockTypeIds{
 	public const CONCRETE = self::PREFIX . "concrete";
 	public const CONCRETE_POWDER = self::PREFIX . "concrete_powder";
 	public const COPPER = self::PREFIX . "copper";
+	public const COPPER_BARS = self::PREFIX . "copper_bars";
 	public const COPPER_BULB = self::PREFIX . "copper_bulb";
+	public const COPPER_CHAIN = self::PREFIX . "copper_chain";
 	public const COPPER_DOOR = self::PREFIX . "copper_door";
 	public const COPPER_GRATE = self::PREFIX . "copper_grate";
+	public const COPPER_LANTERN = self::PREFIX . "copper_lantern";
 	public const COPPER_ORE = self::PREFIX . "copper_ore";
+	public const COPPER_TORCH = self::PREFIX . "copper_torch";
 	public const COPPER_TRAPDOOR = self::PREFIX . "copper_trapdoor";
 	public const CORAL = self::PREFIX . "coral";
 	public const CORAL_BLOCK = self::PREFIX . "coral_block";

@@ -59,6 +59,7 @@ use pocketmine\world\particle\PortalParticle;
 use pocketmine\world\particle\RainSplashParticle;
 use pocketmine\world\particle\RedstoneParticle;
 use pocketmine\world\particle\SmokeParticle;
+use pocketmine\world\particle\SonicExplosionParticle;
 use pocketmine\world\particle\SplashParticle;
 use pocketmine\world\particle\SporeParticle;
 use pocketmine\world\particle\TerrainParticle;
@@ -74,9 +75,10 @@ use function strtolower;
 
 class ParticleCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"particle",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_particle_description(),
 			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);
@@ -234,6 +236,8 @@ class ParticleCommand extends VanillaCommand{
 					}
 				}
 				break;
+			case "sonicexplosion":
+				return new SonicExplosionParticle();
 		}
 
 		return null;

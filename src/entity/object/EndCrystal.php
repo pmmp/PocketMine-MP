@@ -52,6 +52,8 @@ class EndCrystal extends Entity implements Explosive{
 	protected bool $showBase = false;
 	protected ?Vector3 $beamTarget = null;
 
+	private bool $primed = false;
+
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(2.0, 2.0); }
 
 	protected function getInitialDragMultiplier() : float{ return 1.0; }
@@ -88,11 +90,9 @@ class EndCrystal extends Entity implements Explosive{
 		parent::attack($source);
 		if(
 			$source->getCause() !== EntityDamageEvent::CAUSE_VOID &&
-			!$this->isFlaggedForDespawn() &&
 			!$source->isCancelled()
 		){
-			$this->flagForDespawn();
-			$this->explode();
+			$this->primed = true;
 		}
 	}
 
@@ -123,6 +123,13 @@ class EndCrystal extends Entity implements Explosive{
 			$nbt->setInt(self::TAG_BLOCKTARGET_Z, $this->beamTarget->getFloorZ());
 		}
 		return $nbt;
+	}
+
+	protected function onDeathUpdate(int $tickDiff) : bool{
+		if($this->primed){
+			$this->explode();
+		}
+		return true;
 	}
 
 	public function explode() : void{

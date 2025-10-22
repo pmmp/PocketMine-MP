@@ -48,4 +48,8 @@ final class FloorSign extends BaseSign implements SignLikeRotation{
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
+
+	protected function getFacingDegrees() : float{
+		return $this->rotation * 22.5;
+	}
 }

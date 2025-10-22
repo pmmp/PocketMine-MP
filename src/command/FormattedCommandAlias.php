@@ -50,10 +50,11 @@ class FormattedCommandAlias extends Command{
 	 * @param string[] $formatStrings
 	 */
 	public function __construct(
-		string $alias,
+		string $namespace,
+		string $name,
 		private array $formatStrings
 	){
-		parent::__construct($alias, KnownTranslationFactory::pocketmine_command_userDefined_description());
+		parent::__construct($namespace, $name, KnownTranslationFactory::pocketmine_command_userDefined_description());
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -95,18 +96,22 @@ class FormattedCommandAlias extends Command{
 				throw new AssumptionFailedError("This should have been checked before construction");
 			}
 
-			if(($target = $commandMap->getCommand($commandLabel)) !== null){
-				$timings = Timings::getCommandDispatchTimings($target->getLabel());
+			//formatted command aliases don't use user-specific aliases since they are globally defined in pocketmine.yml
+			//using user-specific aliases might break the behaviour
+			if(($target = $commandMap->getCommand($commandLabel)) instanceof Command){
+
+				$timings = Timings::getCommandDispatchTimings($target->getId());
 				$timings->startTiming();
 
 				try{
 					$target->execute($sender, $commandLabel, $commandArgs);
 				}catch(InvalidCommandSyntaxException $e){
-					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage() ?? "/$commandLabel")));
 				}finally{
 					$timings->stopTiming();
 				}
 			}else{
+				//TODO: this seems suspicious - why do we continue alias execution if one of the commands is borked?
 				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));
 
 				//to match the behaviour of SimpleCommandMap::dispatch()

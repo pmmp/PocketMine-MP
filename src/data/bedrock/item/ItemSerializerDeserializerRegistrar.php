@@ -40,6 +40,7 @@ use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
+use pocketmine\item\FireworkStar;
 use pocketmine\item\GoatHorn;
 use pocketmine\item\Item;
 use pocketmine\item\Medicine;
@@ -140,7 +141,6 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Block(Ids::CAKE, Blocks::CAKE());
 		$this->map1to1Block(Ids::CAMPFIRE, Blocks::CAMPFIRE());
 		$this->map1to1Block(Ids::CAULDRON, Blocks::CAULDRON());
-		$this->map1to1Block(Ids::CHAIN, Blocks::CHAIN());
 		$this->map1to1Block(Ids::CHERRY_DOOR, Blocks::CHERRY_DOOR());
 		$this->map1to1Block(Ids::COMPARATOR, Blocks::REDSTONE_COMPARATOR());
 		$this->map1to1Block(Ids::CRIMSON_DOOR, Blocks::CRIMSON_DOOR());
@@ -246,6 +246,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::EYE_ARMOR_TRIM_SMITHING_TEMPLATE, Items::EYE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::FEATHER, Items::FEATHER());
 		$this->map1to1Item(Ids::FERMENTED_SPIDER_EYE, Items::FERMENTED_SPIDER_EYE());
+		$this->map1to1Item(Ids::FIREWORK_ROCKET, Items::FIREWORK_ROCKET());
 		$this->map1to1Item(Ids::FIRE_CHARGE, Items::FIRE_CHARGE());
 		$this->map1to1Item(Ids::FISHING_ROD, Items::FISHING_ROD());
 		$this->map1to1Item(Ids::FLINT, Items::FLINT());
@@ -403,6 +404,7 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::TORCHFLOWER_SEEDS, Items::TORCHFLOWER_SEEDS());
 		$this->map1to1Item(Ids::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, Items::TIDE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::TOTEM_OF_UNDYING, Items::TOTEM());
+		$this->map1to1Item(Ids::TRIDENT, Items::TRIDENT());
 		$this->map1to1Item(Ids::TROPICAL_FISH, Items::CLOWNFISH());
 		$this->map1to1Item(Ids::TURTLE_HELMET, Items::TURTLE_HELMET());
 		$this->map1to1Item(Ids::VEX_ARMOR_TRIM_SMITHING_TEMPLATE, Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
@@ -501,12 +503,28 @@ final class ItemSerializerDeserializerRegistrar{
 	 */
 	private function register1to1ItemWithMetaMappings() : void{
 		$this->map1to1ItemWithMeta(
+			Ids::FIREWORK_STAR,
+			Items::FIREWORK_STAR(),
+			function(FireworkStar $item, int $meta) : void{
+				// Colors will be defined by CompoundTag deserialization.
+			},
+			fn(FireworkStar $item) => DyeColorIdMap::getInstance()->toInvertedId($item->getExplosion()->getFlashColor())
+		);
+		$this->map1to1ItemWithMeta(
 			Ids::GOAT_HORN,
 			Items::GOAT_HORN(),
 			function(GoatHorn $item, int $meta) : void{
 				$item->setHornType(GoatHornTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown goat horn type ID $meta"));
 			},
 			fn(GoatHorn $item) => GoatHornTypeIdMap::getInstance()->toId($item->getHornType())
+		);
+		$this->map1to1ItemWithMeta(
+			Ids::LINGERING_POTION,
+			Items::LINGERING_POTION(),
+			function(SplashPotion $item, int $meta) : void{
+				$item->setType(PotionTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown potion type ID $meta"));
+			},
+			fn(SplashPotion $item) => PotionTypeIdMap::getInstance()->toId($item->getType())
 		);
 		$this->map1to1ItemWithMeta(
 			Ids::MEDICINE,

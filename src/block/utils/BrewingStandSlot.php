@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\window\BrewingStandInventoryWindow;
 
 enum BrewingStandSlot{
 	case EAST;
@@ -35,9 +35,9 @@ enum BrewingStandSlot{
 	 */
 	public function getSlotNumber() : int{
 		return match($this){
-			self::EAST => BrewingStandInventory::SLOT_BOTTLE_LEFT,
-			self::NORTHWEST => BrewingStandInventory::SLOT_BOTTLE_MIDDLE,
-			self::SOUTHWEST => BrewingStandInventory::SLOT_BOTTLE_RIGHT
+			self::EAST => BrewingStandInventoryWindow::SLOT_BOTTLE_LEFT,
+			self::NORTHWEST => BrewingStandInventoryWindow::SLOT_BOTTLE_MIDDLE,
+			self::SOUTHWEST => BrewingStandInventoryWindow::SLOT_BOTTLE_RIGHT
 		};
 	}
 }

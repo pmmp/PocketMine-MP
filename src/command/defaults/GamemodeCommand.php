@@ -33,9 +33,10 @@ use function count;
 
 class GamemodeCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"gamemode",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_gamemode_description(),
 			KnownTranslationFactory::commands_gamemode_usage()
 		);
@@ -56,7 +57,7 @@ class GamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_GAMEMODE_SELF, DefaultPermissionNames::COMMAND_GAMEMODE_OTHER);
 		if($target === null){
 			return true;
 		}

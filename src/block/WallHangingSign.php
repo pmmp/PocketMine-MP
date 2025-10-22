@@ -80,4 +80,13 @@ final class WallHangingSign extends BaseSign implements HorizontalFacing{
 			($block instanceof WallHangingSign && Facing::axis(Facing::rotateY($block->getFacing()->toFacing(), clockwise: true)) === Facing::axis($face)) ||
 			$block->getSupportType(Facing::opposite($face)) === SupportType::FULL;
 	}
+
+	protected function getFacingDegrees() : float{
+		return match($this->facing){
+			HorizontalFacingOption::SOUTH => 0,
+			HorizontalFacingOption::WEST => 90,
+			HorizontalFacingOption::NORTH => 180,
+			HorizontalFacingOption::EAST => 270,
+		};
+	}
 }

@@ -145,7 +145,7 @@ class Armor extends Durable{
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
-		$player->getInventory()->setItemInHand($existing);
+		$player->setMainHandItem($existing);
 		$sound = $new->getMaterial()->getEquipSound();
 		if($sound !== null){
 			$player->broadcastSound($sound);

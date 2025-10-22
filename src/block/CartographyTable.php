@@ -23,20 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\CartographyTableInventory;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
+use pocketmine\block\inventory\window\CartographyTableInventoryWindow;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-final class CartographyTable extends Opaque{
+final class CartographyTable extends Opaque implements MenuAccessor{
+	use MenuAccessorTrait;
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$player->setCurrentWindow(new CartographyTableInventory($this->position));
-		}
-
-		return true;
+	protected function newMenu(Player $player, Position $position) : CartographyTableInventoryWindow{
+		return new CartographyTableInventoryWindow($player, $position);
 	}
 
 	public function getFuelTime() : int{

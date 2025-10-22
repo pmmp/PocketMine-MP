@@ -25,15 +25,20 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\SimpleCommandMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
 use function array_chunk;
+use function array_key_first;
 use function array_pop;
 use function count;
 use function explode;
 use function implode;
+use function is_array;
 use function is_numeric;
 use function ksort;
 use function min;
@@ -45,12 +50,12 @@ use const SORT_NATURAL;
 
 class HelpCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"help",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_help_description(),
-			KnownTranslationFactory::commands_help_usage(),
-			["?"]
+			KnownTranslationFactory::commands_help_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
 	}
@@ -72,15 +77,23 @@ class HelpCommand extends VanillaCommand{
 
 		$pageHeight = $sender->getScreenLineHeight();
 
+		//TODO: maybe inject this in the constructor instead of assuming the server's command map?
+		$commandMap = $sender->getServer()->getCommandMap();
+		$userAliasMap = $sender->getCommandAliasMap();
 		if($commandName === ""){
 			$commands = [];
-			foreach($sender->getServer()->getCommandMap()->getCommands() as $command){
+			foreach($commandMap->getUniqueCommands() as $command){
 				if($command->testPermissionSilent($sender)){
-					$commands[$command->getLabel()] = $command;
+					$userAliases = $userAliasMap->getMergedAliases($command->getId(), $commandMap->getAliasMap());
+					$preferredAlias = $userAliases[array_key_first($userAliases)];
+					if(isset($commands[$preferredAlias])){
+						throw new AssumptionFailedError("Something weird happened during user/global alias resolving");
+					}
+					$commands[$preferredAlias] = $command;
 				}
 			}
 			ksort($commands, SORT_NATURAL | SORT_FLAG_CASE);
-			$commands = array_chunk($commands, $pageHeight);
+			$commands = array_chunk($commands, $pageHeight, preserve_keys: true);
 			$pageNumber = min(count($commands), $pageNumber);
 			if($pageNumber < 1){
 				$pageNumber = 1;
@@ -88,31 +101,35 @@ class HelpCommand extends VanillaCommand{
 			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
 			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
-				foreach($commands[$pageNumber - 1] as $command){
+				foreach(Utils::promoteKeys($commands[$pageNumber - 1]) as $preferredAlias => $command){
 					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getLabel() . ": " . TextFormat::RESET . $descriptionString);
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/$preferredAlias: " . TextFormat::RESET . $descriptionString);
 				}
 			}
 
 			return true;
 		}else{
-			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
-				if($cmd->testPermissionSilent($sender)){
+			if(($command = $commandMap->getCommand(strtolower($commandName), $userAliasMap)) !== null){
+				if(is_array($command)){
+					SimpleCommandMap::handleConflicted($sender, $commandName, $command, $commandMap->getAliasMap());
+					return true;
+				}
+				if($command->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
-					$description = $cmd->getDescription();
+					$description = $command->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getLabel())
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($commandName)
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::RESET, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::RESET . $descriptionString)
 						->prefix(TextFormat::GOLD));
 
-					$usage = $cmd->getUsage();
+					$usage = $command->getUsage() ?? "/$commandName";
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::RESET . implode("\n" . TextFormat::RESET, explode("\n", $usageString, limit: PHP_INT_MAX)))
 						->prefix(TextFormat::GOLD));
 
-					$aliases = $cmd->getAliases();
+					$aliases = $userAliasMap->getMergedAliases($command->getId(), $commandMap->getAliasMap());
 					sort($aliases, SORT_NATURAL);
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::RESET . implode(", ", $aliases))
 						->prefix(TextFormat::GOLD));
@@ -120,7 +137,7 @@ class HelpCommand extends VanillaCommand{
 					return true;
 				}
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/help")->prefix(TextFormat::RED));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/" . $userAliasMap->getPreferredAlias("pocketmine:help", $commandMap->getAliasMap()))->prefix(TextFormat::RED));
 
 			return true;
 		}

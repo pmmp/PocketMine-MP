@@ -30,9 +30,10 @@ use pocketmine\player\Player;
 
 class SeedCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"seed",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_seed_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SEED);

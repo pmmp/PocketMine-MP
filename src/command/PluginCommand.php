@@ -24,17 +24,20 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\Translatable;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginOwned;
 
 final class PluginCommand extends Command implements PluginOwned{
 	public function __construct(
+		string $namespace,
 		string $name,
 		private Plugin $owner,
-		private CommandExecutor $executor
+		private CommandExecutor $executor,
+		Translatable|string $description = "",
+		Translatable|string|null $usageMessage = null
 	){
-		parent::__construct($name);
-		$this->usageMessage = "";
+		parent::__construct($namespace, $name, $description, $usageMessage);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -43,13 +46,11 @@ final class PluginCommand extends Command implements PluginOwned{
 			return false;
 		}
 
-		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
-
-		if(!$success && $this->usageMessage !== ""){
+		if(!$this->executor->onCommand($sender, $this, $commandLabel, $args)){
 			throw new InvalidCommandSyntaxException();
 		}
 
-		return $success;
+		return true;
 	}
 
 	public function getOwningPlugin() : Plugin{

@@ -172,7 +172,7 @@ class Arrow extends Projectile{
 		$item = VanillaItems::ARROW();
 		$playerInventory = match(true){
 			!$player->hasFiniteResources() => null, //arrows are not picked up in creative
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+			$player->getOffHandItem()->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};

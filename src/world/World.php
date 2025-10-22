@@ -42,6 +42,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
+use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -280,7 +281,6 @@ class World implements ChunkManager{
 	private float $sunAnglePercentage = 0.0;
 	private int $skyLightReduction = 0;
 
-	private string $folderName;
 	private string $displayName;
 
 	/**
@@ -481,11 +481,10 @@ class World implements ChunkManager{
 	 */
 	public function __construct(
 		private Server $server,
-		string $name, //TODO: this should be folderName (named arguments BC break)
+		private string $folderName,
 		private WritableWorldProvider $provider,
 		private AsyncPool $workerPool
 	){
-		$this->folderName = $name;
 		$this->worldId = self::$worldIdCounter++;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
@@ -1486,27 +1485,16 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Identical to {@link World::notifyNeighbourBlockUpdate()}, but without the Vector3 requirement. We don't want or
-	 * need Vector3 in the places where this is called.
+	 * Notify the blocks at and around the position that the block at the position may have changed.
+	 * This will cause onNearbyBlockChange() to be called for these blocks.
 	 *
-	 * TODO: make this the primary method in PM6
+	 * @see Block::onNearbyBlockChange()
 	 */
-	private function internalNotifyNeighbourBlockUpdate(int $x, int $y, int $z) : void{
+	public function notifyNeighbourBlockUpdate(int $x, int $y, int $z) : void{
 		$this->tryAddToNeighbourUpdateQueue($x, $y, $z);
 		foreach(Facing::OFFSET as [$dx, $dy, $dz]){
 			$this->tryAddToNeighbourUpdateQueue($x + $dx, $y + $dy, $z + $dz);
 		}
-	}
-
-	/**
-	 * Notify the blocks at and around the position that the block at the position may have changed.
-	 * This will cause onNearbyBlockChange() to be called for these blocks.
-	 * TODO: Accept plain integers in PM6 - the Vector3 requirement is an unnecessary inconvenience
-	 *
-	 * @see Block::onNearbyBlockChange()
-	 */
-	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
-		$this->internalNotifyNeighbourBlockUpdate($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 	}
 
 	/**
@@ -2064,7 +2052,7 @@ class World implements ChunkManager{
 
 		if($update){
 			$this->updateAllLight($x, $y, $z);
-			$this->internalNotifyNeighbourBlockUpdate($x, $y, $z);
+			$this->notifyNeighbourBlockUpdate($x, $y, $z);
 		}
 
 		$this->timings->setBlock->stopTiming();
@@ -2757,7 +2745,7 @@ class World implements ChunkManager{
 				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
 			}
 		}
-		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof Player){
+		if(!EntityFactory::getInstance()->isRegistered($entity::class) && !$entity instanceof NeverSavedWithChunkEntity){
 			//canSaveWithChunk is mutable, so that means it could be toggled after adding the entity and cause a crash
 			//later on. Better we just force all entities to have a save ID, even if it might not be needed.
 			throw new \LogicException("Entity " . $entity::class . " is not registered for a save ID in EntityFactory");

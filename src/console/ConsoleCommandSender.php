@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pocketmine\command\CommandAliasMap;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
@@ -42,11 +43,14 @@ class ConsoleCommandSender implements CommandSender{
 	/** @phpstan-var positive-int|null */
 	protected ?int $lineHeight = null;
 
+	private CommandAliasMap $commandAliasMap;
+
 	public function __construct(
 		private Server $server,
 		private Language $language
 	){
 		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_CONSOLE => true]);
+		$this->commandAliasMap = new CommandAliasMap();
 	}
 
 	public function getServer() : Server{
@@ -81,4 +85,6 @@ class ConsoleCommandSender implements CommandSender{
 		}
 		$this->lineHeight = $height;
 	}
+
+	public function getCommandAliasMap() : CommandAliasMap{ return $this->commandAliasMap; }
 }

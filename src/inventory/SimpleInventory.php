@@ -25,6 +25,10 @@ namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\player\InventoryWindow;
+use pocketmine\player\Player;
+use function array_map;
+use function spl_object_id;
 
 /**
  * This class provides a complete implementation of a regular inventory.
@@ -35,6 +39,12 @@ class SimpleInventory extends BaseInventory{
 	 * @phpstan-var \SplFixedArray<Item|null>
 	 */
 	protected \SplFixedArray $slots;
+
+	/**
+	 * @var InventoryWindow[]
+	 * @phpstan-var array<int, InventoryWindow>
+	 */
+	protected array $windows = [];
 
 	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
@@ -84,12 +94,46 @@ class SimpleInventory extends BaseInventory{
 		}
 	}
 
-	protected function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
+	public function getMatchingItemCount(int $slot, Item $test, bool $checkTags) : int{
 		$slotItem = $this->slots[$slot];
 		return $slotItem !== null && $slotItem->equals($test, true, $checkTags) ? $slotItem->getCount() : 0;
 	}
 
 	public function isSlotEmpty(int $index) : bool{
 		return $this->slots[$index] === null || $this->slots[$index]->isNull();
+	}
+
+	/**
+	 * @return Player[]
+	 */
+	public function getViewers() : array{
+		$result = [];
+		//this can't use array_map - the result needs to be keyed by spl_object_id(player), not spl_object_id(window)
+		foreach($this->windows as $window){
+			$player = $window->getViewer();
+			$result[spl_object_id($player)] = $player;
+		}
+		return $result;
+	}
+
+	/**
+	 * Gets rid of any inventory windows known to be referencing this inventory
+	 */
+	public function removeAllWindows() : void{
+		foreach($this->windows as $hash => $window){
+			$viewer = $window->getViewer();
+			if($window->getViewer()->getCurrentWindow() === $window){
+				$viewer->removeCurrentWindow();
+			}
+			unset($this->windows[$hash]);
+		}
+	}
+
+	public function onOpen(InventoryWindow $window) : void{
+		$this->windows[spl_object_id($window)] = $window;
+	}
+
+	public function onClose(InventoryWindow $window) : void{
+		unset($this->windows[spl_object_id($window)]);
 	}
 }

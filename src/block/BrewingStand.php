@@ -23,20 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\window\BrewingStandInventoryWindow;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\Container;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
-use pocketmine\item\Item;
+use pocketmine\inventory\Inventory;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 use function array_key_exists;
 use function spl_object_id;
 
-class BrewingStand extends Transparent{
+class BrewingStand extends Transparent implements Container{
+	use ContainerTrait;
 
 	/**
 	 * @var BrewingStandSlot[]
@@ -95,15 +99,8 @@ class BrewingStand extends Transparent{
 		return $this;
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$stand = $this->position->getWorld()->getTile($this->position);
-			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
-				$player->setCurrentWindow($stand->getInventory());
-			}
-		}
-
-		return true;
+	protected function newMenu(Player $player, Inventory $inventory, Position $position) : BrewingStandInventoryWindow{
+		return new BrewingStandInventoryWindow($player, $inventory, $position);
 	}
 
 	public function onScheduledUpdate() : void{

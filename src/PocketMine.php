@@ -98,6 +98,7 @@ namespace pocketmine {
 			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
+			"encoding" => "pmmp/ext-encoding",
 			"gmp" => "GMP",
 			"hash" => "Hash",
 			"igbinary" => "igbinary",
@@ -152,6 +153,12 @@ namespace pocketmine {
 			//make sure level 0 compression is available
 			if(version_compare($libdeflate_version, "0.2.0") < 0 || version_compare($libdeflate_version, "0.3.0") >= 0){
 				$messages[] = "php-libdeflate ^0.2.0 is required, while you have $libdeflate_version.";
+			}
+		}
+
+		if(($encoding_version = phpversion("encoding")) !== false){
+			if(version_compare($encoding_version, "1.0.0") < 0 || version_compare($encoding_version, "2.0.0") >= 0){
+				$messages[] = "pmmp/ext-encoding ^1.0.0 is required, while you have $encoding_version.";
 			}
 		}
 

@@ -66,4 +66,13 @@ final class CeilingEdgesHangingSign extends BaseSign implements HorizontalFacing
 			$supportBlock->getSupportType(Facing::DOWN) === SupportType::FULL ||
 			(($supportBlock instanceof WallHangingSign || $supportBlock instanceof CeilingEdgesHangingSign) && Facing::axis($supportBlock->getFacing()->toFacing()) === Facing::axis($this->facing->toFacing()));
 	}
+
+	protected function getFacingDegrees() : float{
+		return match($this->facing){
+			HorizontalFacingOption::SOUTH => 0,
+			HorizontalFacingOption::WEST => 90,
+			HorizontalFacingOption::NORTH => 180,
+			HorizontalFacingOption::EAST => 270,
+		};
+	}
 }

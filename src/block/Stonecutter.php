@@ -23,24 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\StonecutterInventory;
+use pocketmine\block\inventory\window\StonecutterInventoryWindow;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacing;
+use pocketmine\block\utils\MenuAccessor;
+use pocketmine\block\utils\MenuAccessorTrait;
 use pocketmine\block\utils\SupportType;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-class Stonecutter extends Transparent implements HorizontalFacing{
+class Stonecutter extends Transparent implements HorizontalFacing, MenuAccessor{
 	use FacesOppositePlacingPlayerTrait;
+	use MenuAccessorTrait;
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null){
-			$player->setCurrentWindow(new StonecutterInventory($this->position));
-		}
-		return true;
+	protected function newMenu(Player $player, Position $position) : StonecutterInventoryWindow{
+		return new StonecutterInventoryWindow($player, $position);
 	}
 
 	protected function recalculateCollisionBoxes() : array{

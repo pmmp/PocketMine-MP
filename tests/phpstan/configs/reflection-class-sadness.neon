@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call\-site variance of covariant pocketmine\\event\\Event in generic type ReflectionClass\<covariant pocketmine\\event\\Event\> in PHPDoc tag @param for parameter \$class is redundant, template type T of object of class ReflectionClass has the same variance\.$#'
+			identifier: generics.callSiteVarianceRedundant
+			count: 2
+			path: ../../phpunit/event/HandlerListManagerTest.php
+
+		-
+			message: '#^Call\-site variance of covariant pocketmine\\event\\Event in generic type ReflectionClass\<covariant pocketmine\\event\\Event\> in PHPDoc tag @param for parameter \$expect is redundant, template type T of object of class ReflectionClass has the same variance\.$#'
+			identifier: generics.callSiteVarianceRedundant
+			count: 1
+			path: ../../phpunit/event/HandlerListManagerTest.php
+
+		-
+			message: '#^Call\-site variance of covariant pocketmine\\event\\Event in generic type ReflectionClass\<covariant pocketmine\\event\\Event\> in PHPDoc tag @return is redundant, template type T of object of class ReflectionClass has the same variance\.$#'
+			identifier: generics.callSiteVarianceRedundant
+			count: 3
+			path: ../../phpunit/event/HandlerListManagerTest.php
+
+		-
+			message: '#^Call\-site variance of covariant pocketmine\\event\\Event in generic type ReflectionClass\<covariant pocketmine\\event\\Event\> in PHPDoc tag @var for property pocketmine\\event\\HandlerListManagerTest\:\:\$isValidFunc is redundant, template type T of object of class ReflectionClass has the same variance\.$#'
+			identifier: generics.callSiteVarianceRedundant
+			count: 1
+			path: ../../phpunit/event/HandlerListManagerTest.php
+
+		-
+			message: '#^Call\-site variance of covariant pocketmine\\event\\Event in generic type ReflectionClass\<covariant pocketmine\\event\\Event\> in PHPDoc tag @var for property pocketmine\\event\\HandlerListManagerTest\:\:\$resolveParentFunc is redundant, template type T of object of class ReflectionClass has the same variance\.$#'
+			identifier: generics.callSiteVarianceRedundant
+			count: 2
+			path: ../../phpunit/event/HandlerListManagerTest.php

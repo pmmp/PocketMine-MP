@@ -35,9 +35,10 @@ use function count;
 
 class OpCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"op",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_op_description(),
 			KnownTranslationFactory::commands_op_usage()
 		);

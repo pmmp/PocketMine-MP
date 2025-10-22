@@ -30,9 +30,10 @@ use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOffCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"save-off",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_saveoff_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);

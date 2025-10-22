@@ -39,9 +39,10 @@ use function min;
 
 class ClearCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"clear",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_clear_description(),
 			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
@@ -53,7 +54,7 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$target = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
+		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
 		if($target === null){
 			return true;
 		}

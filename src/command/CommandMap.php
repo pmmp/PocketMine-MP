@@ -24,18 +24,39 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 interface CommandMap{
-
 	/**
-	 * @param Command[] $commands
+	 * Registering a command with (command(namespace="myplugin", name="mycommand"), otherAliases=["myc"]) will bind:
+	 * - /myplugin:mycommand (always works, error thrown if not unique)
+	 * - /mycommand (only works if not conflicted, not required to be unique)
+	 * - /myc (only works if not conflicted, not required to be unique)
+	 *
+	 * If two commands claim the same alias, it will become conflicted, and neither command will be usable with that
+	 * alias unless the alias is explicitly rebound in the alias map.
+	 * The user will be shown an error when trying to use it, listing all namespaced names (not aliases) of the commands
+	 * bound to it. The user can then use one of the namespaced names to run the command they want.
+	 *
+	 * @param string[] $otherAliases
+	 *
+	 * @phpstan-param list<string> $otherAliases
 	 */
-	public function registerAll(string $fallbackPrefix, array $commands) : void;
-
-	public function register(string $fallbackPrefix, Command $command, ?string $label = null) : bool;
+	public function register(Command $command, array $otherAliases = []) : void;
 
 	public function dispatch(CommandSender $sender, string $cmdLine) : bool;
 
 	public function clearCommands() : void;
 
-	public function getCommand(string $name) : ?Command;
+	/**
+	 * Returns the command(s) bound to the given name or alias.
+	 * This will return an array if the alias is conflicted (multiple commands bound to it).
+	 *
+	 * @return Command|Command[]|null
+	 * @phpstan-return Command|array<int, Command>|null
+	 */
+	public function getCommand(string $name, ?CommandAliasMap $senderAliasMap = null) : Command|array|null;
 
+	/**
+	 * Returns the global alias map for this command map.
+	 * Aliases in this map will be used as a fallback when user-specific aliases don't give any results.
+	 */
+	public function getAliasMap() : CommandAliasMap;
 }

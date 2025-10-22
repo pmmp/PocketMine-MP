@@ -73,7 +73,7 @@ class Chunk{
 
 		foreach($this->subChunks as $y => $null){
 			//TODO: we should probably require all subchunks to be provided here
-			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(Block::EMPTY_STATE_ID, [], new PalettedBlockArray(BiomeIds::OCEAN));
+			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(Block::EMPTY_STATE_ID, null, null, new PalettedBlockArray(BiomeIds::OCEAN));
 		}
 
 		$val = (self::MAX_SUBCHUNK_INDEX + 1) * SubChunk::EDGE_LENGTH;
@@ -298,7 +298,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
-		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(Block::EMPTY_STATE_ID, [], new PalettedBlockArray(BiomeIds::OCEAN));
+		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(Block::EMPTY_STATE_ID, null, null, new PalettedBlockArray(BiomeIds::OCEAN));
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 

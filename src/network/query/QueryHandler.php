@@ -27,16 +27,16 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\query;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
-use pocketmine\utils\Binary;
-use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\BinaryStream;
-use function chr;
 use function hash;
 use function random_bytes;
-use function strlen;
 use function substr;
 
 class QueryHandler implements RawPacketHandler{
@@ -80,51 +80,53 @@ class QueryHandler implements RawPacketHandler{
 	}
 
 	public static function getTokenString(string $token, string $salt) : int{
-		return Binary::readInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
+		return BE::unpackSignedInt(substr(hash("sha512", $salt . ":" . $token, true), 7, 4));
 	}
 
 	public function handle(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : bool{
 		try{
-			$stream = new BinaryStream($packet);
-			$header = $stream->get(2);
+			$stream = new ByteBufferReader($packet);
+			$header = $stream->readByteArray(2);
 			if($header !== "\xfe\xfd"){ //TODO: have this filtered by the regex filter we installed above
 				return false;
 			}
-			$packetType = $stream->getByte();
-			$sessionID = $stream->getInt();
+			$packetType = Byte::readUnsigned($stream);
+			$sessionID = BE::readUnsignedInt($stream);
 
 			switch($packetType){
 				case self::HANDSHAKE: //Handshake
-					$reply = chr(self::HANDSHAKE);
-					$reply .= Binary::writeInt($sessionID);
-					$reply .= self::getTokenString($this->token, $address) . "\x00";
+					$writer = new ByteBufferWriter();
+					Byte::writeUnsigned($writer, self::HANDSHAKE);
+					BE::writeUnsignedInt($writer, $sessionID);
+					$writer->writeByteArray(self::getTokenString($this->token, $address) . "\x00");
 
-					$interface->sendRawPacket($address, $port, $reply);
+					$interface->sendRawPacket($address, $port, $writer->getData());
 
 					return true;
 				case self::STATISTICS: //Stat
-					$token = $stream->getInt();
+					$token = BE::readUnsignedInt($stream);
 					if($token !== ($t1 = self::getTokenString($this->token, $address)) && $token !== ($t2 = self::getTokenString($this->lastToken, $address))){
 						$this->logger->debug("Bad token $token from $address $port, expected $t1 or $t2");
 
 						return true;
 					}
-					$reply = chr(self::STATISTICS);
-					$reply .= Binary::writeInt($sessionID);
+					$writer = new ByteBufferWriter();
+					Byte::writeUnsigned($writer, self::STATISTICS);
+					BE::writeUnsignedInt($writer, $sessionID);
 
-					$remaining = $stream->getRemaining();
-					if(strlen($remaining) === 4){ //TODO: check this! according to the spec, this should always be here and always be FF FF FF 01
-						$reply .= $this->server->getQueryInformation()->getLongQuery();
+					$remaining = $stream->getUnreadLength();
+					if($remaining === 4){ //TODO: check this! according to the spec, this should always be here and always be FF FF FF 01
+						$writer->writeByteArray($this->server->getQueryInformation()->getLongQuery());
 					}else{
-						$reply .= $this->server->getQueryInformation()->getShortQuery();
+						$writer->writeByteArray($this->server->getQueryInformation()->getShortQuery());
 					}
-					$interface->sendRawPacket($address, $port, $reply);
+					$interface->sendRawPacket($address, $port, $writer->getData());
 
 					return true;
 				default:
 					return false;
 			}
-		}catch(BinaryDataException $e){
+		}catch(DataDecodeException $e){
 			$this->logger->debug("Bad packet from $address $port: " . $e->getMessage());
 			return false;
 		}

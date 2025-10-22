@@ -23,13 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
+use pocketmine\player\InventoryWindow;
 use function spl_object_id;
 
 final class TransactionBuilder{
 
-	/** @var TransactionBuilderInventory[] */
+	/** @var SlotChangeActionBuilder[] */
 	private array $inventories = [];
 
 	/** @var InventoryAction[] */
@@ -39,9 +39,9 @@ final class TransactionBuilder{
 		$this->extraActions[spl_object_id($action)] = $action;
 	}
 
-	public function getInventory(Inventory $inventory) : TransactionBuilderInventory{
+	public function getActionBuilder(InventoryWindow $inventory) : SlotChangeActionBuilder{
 		$id = spl_object_id($inventory);
-		return $this->inventories[$id] ??= new TransactionBuilderInventory($inventory);
+		return $this->inventories[$id] ??= new SlotChangeActionBuilder($inventory);
 	}
 
 	/**

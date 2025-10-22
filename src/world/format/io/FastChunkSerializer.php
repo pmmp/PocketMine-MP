@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\block\Block;
 use pocketmine\block\BlockIdentifier;
-use pocketmine\utils\Binary;
-use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -47,32 +49,32 @@ final class FastChunkSerializer{
 		//NOOP
 	}
 
-	private static function serializeBiomeArray(BinaryStream $stream, PalettedBlockArray $array) : void{
+	private static function serializeBiomeArray(ByteBufferWriter $stream, PalettedBlockArray $array) : void{
 		$wordArray = $array->getWordArray();
 		$palette = $array->getPalette();
 
-		$stream->putByte($array->getBitsPerBlock());
-		$stream->put($wordArray);
+		Byte::writeUnsigned($stream, $array->getBitsPerBlock());
+		$stream->writeByteArray($wordArray);
 		$serialPalette = pack("L*", ...$palette);
-		$stream->putInt(strlen($serialPalette));
-		$stream->put($serialPalette);
+		BE::writeUnsignedInt($stream, strlen($serialPalette));
+		$stream->writeByteArray($serialPalette);
 	}
 
-	private static function serializeBlockArray(BinaryStream $stream, PalettedBlockArray $array) : void{
-		$stream->putByte($array->getBitsPerBlock());
-		$stream->put($array->getWordArray());
+	private static function serializeBlockArray(ByteBufferWriter $stream, PalettedBlockArray $array) : void{
+		Byte::writeUnsigned($stream, $array->getBitsPerBlock());
+		$stream->writeByteArray($array->getWordArray());
 
 		$palette = $array->getPalette();
-		$stream->putInt(count($palette));
+		BE::writeUnsignedInt($stream, count($palette));
 		//TODO: this probably won't be great for performance :(
 		foreach($palette as $stateId){
 			$typeNumber = $stateId >> Block::INTERNAL_STATE_DATA_BITS;
 			$typeId = BlockIdentifier::lookupTypeIdFromTypeNumber($typeNumber);
 			$stateData = $stateId ^ BlockIdentifier::stateIdXorMask($typeNumber);
 
-			$stream->putInt(strlen($typeId));
-			$stream->put($typeId);
-			$stream->putInt($stateData);
+			BE::writeUnsignedInt($stream, strlen($typeId));
+			$stream->writeByteArray($typeId);
+			BE::writeUnsignedInt($stream, $stateData);
 		}
 	}
 
@@ -81,49 +83,49 @@ final class FastChunkSerializer{
 	 * TODO: tiles and entities
 	 */
 	public static function serializeTerrain(Chunk $chunk) : string{
-		$stream = new BinaryStream();
-		$stream->putByte(
-			($chunk->isPopulated() ? self::FLAG_POPULATED : 0)
-		);
+		$stream = new ByteBufferWriter();
+		Byte::writeUnsigned($stream, ($chunk->isPopulated() ? self::FLAG_POPULATED : 0));
 
 		//subchunks
 		$subChunks = $chunk->getSubChunks();
 		$count = count($subChunks);
-		$stream->putByte($count);
+		Byte::writeUnsigned($stream, $count);
 
 		foreach($subChunks as $y => $subChunk){
-			$stream->putByte($y);
-			$stream->putInt($subChunk->getEmptyBlockId());
+			Byte::writeSigned($stream, $y);
+			BE::writeUnsignedInt($stream, $subChunk->getEmptyBlockId());
+
 			$layers = $subChunk->getBlockLayers();
-			$stream->putByte(count($layers));
+			Byte::writeUnsigned($stream, count($layers));
 			foreach($layers as $blocks){
 				self::serializeBlockArray($stream, $blocks);
 			}
 			self::serializeBiomeArray($stream, $subChunk->getBiomeArray());
 		}
 
-		return $stream->getBuffer();
+		return $stream->getData();
 	}
 
-	private static function deserializeBiomeArray(BinaryStream $stream) : PalettedBlockArray{
-		$bitsPerBlock = $stream->getByte();
-		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+	private static function deserializeBiomeArray(ByteBufferReader $stream) : PalettedBlockArray{
+		$bitsPerBlock = Byte::readUnsigned($stream);
+		$words = $stream->readByteArray(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+		$paletteSize = BE::readUnsignedInt($stream);
 		/** @var int[] $unpackedPalette */
-		$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
+		$unpackedPalette = unpack("L*", $stream->readByteArray($paletteSize)); //unpack() will never fail here
 		$palette = array_values($unpackedPalette);
 
 		return PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 	}
 
-	private static function deserializeBlockArray(BinaryStream $stream) : PalettedBlockArray{
-		$bitsPerBlock = $stream->getByte();
-		$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+	private static function deserializeBlockArray(ByteBufferReader $stream) : PalettedBlockArray{
+		$bitsPerBlock = Byte::readUnsigned($stream);
+		$words = $stream->readByteArray(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
 
 		$palette = [];
-		for($i = 0, $size = $stream->getInt(); $i < $size; $i++){
-			$typeId = $stream->get($stream->getInt());
+		for($i = 0, $size = BE::readUnsignedInt($stream); $i < $size; $i++){
+			$typeId = $stream->readByteArray(BE::readUnsignedInt($stream));
 			$typeNumber = BlockIdentifier::lookupTypeNumberFromTypeId($typeId);
-			$stateData = $stream->getInt();
+			$stateData = BE::readUnsignedInt($stream);
 
 			$stateId = $stateData ^ BlockIdentifier::stateIdXorMask($typeNumber);
 			$palette[] = $stateId;
@@ -136,24 +138,28 @@ final class FastChunkSerializer{
 	 * Deserializes a fast-serialized chunk
 	 */
 	public static function deserializeTerrain(string $data) : Chunk{
-		$stream = new BinaryStream($data);
+		$stream = new ByteBufferReader($data);
 
-		$flags = $stream->getByte();
+		$flags = Byte::readUnsigned($stream);
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
 
 		$subChunks = [];
 
-		$count = $stream->getByte();
+		$count = Byte::readUnsigned($stream);
 		for($subCount = 0; $subCount < $count; ++$subCount){
-			$y = Binary::signByte($stream->getByte());
-			$airBlockId = $stream->getInt();
+			$y = Byte::readSigned($stream);
+			//TODO: why the heck are we using big-endian here?
+			$airBlockId = BE::readUnsignedInt($stream);
 
-			$layers = [];
-			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-				$layers[] = self::deserializeBlockArray($stream);
+			$layerCount = Byte::readUnsigned($stream);
+			if($layerCount > 2){
+				throw new \UnexpectedValueException("Expected at most 2 layers, but got $layerCount");
 			}
+			$layer0 = $layerCount >= 1 ? self::deserializeBlockArray($stream) : null;
+			$layer1 = $layerCount === 2 ? self::deserializeBlockArray($stream) : null;
+
 			$biomeArray = self::deserializeBiomeArray($stream);
-			$subChunks[$y] = new SubChunk($airBlockId, $layers, $biomeArray);
+			$subChunks[$y] = new SubChunk($airBlockId, $layer0, $layer1, $biomeArray);
 		}
 
 		return new Chunk($subChunks, $terrainPopulated);

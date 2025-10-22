@@ -35,9 +35,10 @@ use function implode;
 
 class SayCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"say",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_say_description(),
 			KnownTranslationFactory::commands_say_usage()
 		);

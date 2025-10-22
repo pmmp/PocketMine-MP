@@ -23,19 +23,28 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\tile\Barrel as TileBarrel;
+use pocketmine\block\utils\AnimatedContainerLike;
+use pocketmine\block\utils\AnimatedContainerLikeTrait;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
+use pocketmine\block\utils\Container;
+use pocketmine\block\utils\ContainerTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
+use pocketmine\world\sound\BarrelCloseSound;
+use pocketmine\world\sound\BarrelOpenSound;
+use pocketmine\world\sound\Sound;
 use function abs;
 
-class Barrel extends Opaque implements AnyFacing{
+class Barrel extends Opaque implements AnimatedContainerLike, AnyFacing, Container{
+	use AnimatedContainerLikeTrait;
 	use AnyFacingTrait;
+	use ContainerTrait;
 
 	protected bool $open = false;
 
@@ -74,22 +83,23 @@ class Barrel extends Opaque implements AnyFacing{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onInteract(Item $item, Facing $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
-			$barrel = $this->position->getWorld()->getTile($this->position);
-			if($barrel instanceof TileBarrel){
-				if(!$barrel->canOpenWith($item->getCustomName())){
-					return true;
-				}
-
-				$player->setCurrentWindow($barrel->getInventory());
-			}
-		}
-
-		return true;
-	}
-
 	public function getFuelTime() : int{
 		return 300;
+	}
+
+	protected function getOpenSound() : Sound{
+		return new BarrelOpenSound();
+	}
+
+	protected function getCloseSound() : Sound{
+		return new BarrelCloseSound();
+	}
+
+	protected function playAnimationVisual(Position $position, bool $isOpen) : void{
+		$world = $position->getWorld();
+		$block = $world->getBlock($position);
+		if($block instanceof Barrel){
+			$world->setBlock($position, $block->setOpen($isOpen));
+		}
 	}
 }

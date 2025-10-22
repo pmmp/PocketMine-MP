@@ -23,29 +23,43 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\inventory\ShulkerBoxInventory;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\SavedDataLoadingException;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\transaction\action\validator\CallbackSlotValidator;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
-class ShulkerBox extends Spawnable implements Container, Nameable{
+class ShulkerBox extends Spawnable implements ContainerTile, Nameable{
 	use NameableTrait {
 		addAdditionalSpawnData as addNameSpawnData;
 	}
-	use ContainerTrait;
+	use ContainerTileTrait;
 
 	public const TAG_FACING = "facing";
 
 	protected Facing $facing = Facing::NORTH;
 
-	protected ShulkerBoxInventory $inventory;
+	protected Inventory $inventory;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new ShulkerBoxInventory($this->position);
+		$this->inventory = new SimpleInventory(27);
+
+		$this->inventory->getSlotValidators()->add(new CallbackSlotValidator(static function(Inventory $_, Item $item) : ?TransactionValidationException{ //remaining params not needed
+			$blockTypeId = ItemTypeIds::toBlockTypeId($item->getTypeId());
+			if($blockTypeId === BlockTypeIds::SHULKER_BOX || $blockTypeId === BlockTypeIds::DYED_SHULKER_BOX){
+				return new TransactionValidationException("Shulker box inventory cannot contain shulker boxes");
+			}
+
+			return null;
+		}));
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -71,7 +85,7 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 
 	public function close() : void{
 		if(!$this->closed){
-			$this->inventory->removeAllViewers();
+			$this->inventory->removeAllWindows();
 			parent::close();
 		}
 	}
@@ -96,11 +110,11 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 		$this->facing = $facing;
 	}
 
-	public function getInventory() : ShulkerBoxInventory{
+	public function getInventory() : Inventory{
 		return $this->inventory;
 	}
 
-	public function getRealInventory() : ShulkerBoxInventory{
+	public function getRealInventory() : Inventory{
 		return $this->inventory;
 	}
 

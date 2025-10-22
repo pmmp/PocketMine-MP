@@ -36,9 +36,10 @@ use const SORT_STRING;
 
 class ListCommand extends VanillaCommand{
 
-	public function __construct(){
+	public function __construct(string $namespace, string $name){
 		parent::__construct(
-			"list",
+			$namespace,
+			$name,
 			KnownTranslationFactory::pocketmine_command_list_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);

@@ -47,4 +47,23 @@ final class WallSign extends BaseSign implements HorizontalFacing{
 		$this->facing = $hzFacing;
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
+
+	protected function getHitboxCenter() : Vector3{
+		[$xOffset, $zOffset] = match($this->facing){
+			HorizontalFacingOption::NORTH => [0, 15 / 16],
+			HorizontalFacingOption::SOUTH => [0, 1 / 16],
+			HorizontalFacingOption::WEST => [15 / 16, 0],
+			HorizontalFacingOption::EAST => [1 / 16, 0],
+		};
+		return $this->position->add($xOffset, 0.5, $zOffset);
+	}
+
+	protected function getFacingDegrees() : float{
+		return match($this->facing){
+			HorizontalFacingOption::SOUTH => 0,
+			HorizontalFacingOption::WEST => 90,
+			HorizontalFacingOption::NORTH => 180,
+			HorizontalFacingOption::EAST => 270,
+		};
+	}
 }

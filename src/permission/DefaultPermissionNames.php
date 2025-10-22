@@ -29,6 +29,9 @@ final class DefaultPermissionNames{
 	public const COMMAND_BAN_IP = "pocketmine.command.ban.ip";
 	public const COMMAND_BAN_LIST = "pocketmine.command.ban.list";
 	public const COMMAND_BAN_PLAYER = "pocketmine.command.ban.player";
+	public const COMMAND_CMDALIAS_LIST = "pocketmine.command.cmdalias.list";
+	public const COMMAND_CMDALIAS_EDIT_SELF = "pocketmine.command.cmdalias.edit.self";
+	public const COMMAND_CMDALIAS_EDIT_GLOBAL = "pocketmine.command.cmdalias.edit.global";
 	public const COMMAND_CLEAR_OTHER = "pocketmine.command.clear.other";
 	public const COMMAND_CLEAR_SELF = "pocketmine.command.clear.self";
 	public const COMMAND_DEFAULTGAMEMODE = "pocketmine.command.defaultgamemode";
