@@ -769,10 +769,18 @@ abstract class Entity{
 		$this->attack($ev);
 	}
 
+	/**
+	 * Returns the number of ticks this entity has accumulated toward being frozen.
+	 */
 	public function getFreezeProgressTicks() : int{
 		return $this->freezeProgressTicks;
 	}
 
+	/**
+	 * Set the entity's freeze progress in ticks.
+	 *
+	 * @throws \InvalidArgumentException if $freezeProgressTicks is negative
+	 */
 	public function setFreezeProgressTicks(int $freezeProgressTicks) : void{
 		if($freezeProgressTicks < 0){
 			throw new \InvalidArgumentException("Freeze ticks cannot be negative");
@@ -814,10 +822,17 @@ abstract class Entity{
 	}
 
 	/**
-	 * Returns whether this entity type is susceptible to freezing.
+	 * Whether this entity can be frozen (i.e. accumulate freeze progress from environments such as powder snow).
 	 */
 	public function isFreezable() : bool{
 		return false;
+	}
+
+	/**
+	 * Hook called when freeze-based movement modifier should be (re)applied.
+	 */
+	protected function onFreezeAttributeModifierChanged(float $addValue) : void{
+
 	}
 
 	protected function updateFreezeState(int $tickDiff) : bool{
@@ -828,11 +843,13 @@ abstract class Entity{
 				$this->applyFreezeDamage();
 			}
 
+			$this->onFreezeAttributeModifierChanged(-0.05 * $this->getFreezeProgressRatio());
 			return true;
 		}
 
 		if($this->freezeProgressTicks > 0){
 			$this->setFreezeProgressTicks(max(0, min($this->freezeProgressTicks, $threshold) - 2 * $tickDiff));
+			$this->onFreezeAttributeModifierChanged(-0.05 * $this->getFreezeProgressRatio());
 			return true;
 		}
 

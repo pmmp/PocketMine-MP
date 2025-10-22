@@ -129,6 +129,8 @@ abstract class Living extends Entity{
 	protected Attribute $knockbackResistanceAttr;
 	protected Attribute $moveSpeedAttr;
 
+	protected float $freezeMovementAdd = 0.0;
+
 	protected bool $sprinting = false;
 	protected bool $sneaking = false;
 	protected bool $gliding = false;
@@ -446,6 +448,18 @@ abstract class Living extends Entity{
 			}
 		}
 		return true;
+	}
+
+	protected function onFreezeAttributeModifierChanged(float $addValue) : void{
+		//TODO: Implement network AttributeModifier correctly.
+		$base = $this->moveSpeedAttr->getDefaultValue();
+		$oldAdd = $this->freezeMovementAdd;
+		$denom = max(1e-6, $base + $oldAdd);
+		$multiplier = $this->getMovementSpeed() / $denom;
+		$target = ($base + $addValue) * $multiplier;
+
+		$this->setMovementSpeed(max(0.0, $target));
+		$this->freezeMovementAdd = $addValue;
 	}
 
 	/**
