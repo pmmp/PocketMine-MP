@@ -390,9 +390,9 @@ class TimingsHandler{
 				$timingsFile = Path::join($filePath, $timingsName . ".txt");
 				while(file_exists($timingsFile)){
 					if(!is_file($timingsFile)){
-                    	$resolver->reject();
-                    	return;
-                	}
+						$resolver->reject();
+						return;
+					}
 					$timingsFile = Path::join($filePath, $timingsName . (++$index) . ".txt");
 				}
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
