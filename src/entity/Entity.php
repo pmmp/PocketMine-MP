@@ -146,8 +146,8 @@ abstract class Entity{
 	public int $lastUpdate;
 	protected int $fireTicks = 0;
 
-	protected int $freezeTicks = 0;
-	protected bool $isFreezing = false;
+	protected int $freezeProgressTicks = 0;
+	protected bool $isAccumulatingFreeze = false;
 
 	private bool $savedWithChunk = true;
 
@@ -682,10 +682,10 @@ abstract class Entity{
 			}
 		}
 
-		if($this->doFrozenTick($tickDiff)){
+		if($this->updateFreezeState($tickDiff)){
 			$hasUpdate = true;
 		}
-		$this->isFreezing = false;
+		$this->isAccumulatingFreeze = false;
 
 		$this->ticksLived += $tickDiff;
 
@@ -769,60 +769,78 @@ abstract class Entity{
 		$this->attack($ev);
 	}
 
-	public function getFreezeTicks() : int{
-		return $this->freezeTicks;
+	public function getFreezeProgressTicks() : int{
+		return $this->freezeProgressTicks;
 	}
 
-	public function setFreezeTicks(int $freezeTicks) : void{
-		if($freezeTicks < 0 || $freezeTicks > $this->getTicksRequiredToFreeze()){
-			throw new \InvalidArgumentException("Freeze ticks must be between 0 and " . $this->getTicksRequiredToFreeze() . ", got $freezeTicks");
+	public function setFreezeProgressTicks(int $freezeProgressTicks) : void{
+		if($freezeProgressTicks < 0){
+			throw new \InvalidArgumentException("Freeze ticks cannot be negative");
 		}
-		$this->freezeTicks = $freezeTicks;
+		$this->freezeProgressTicks = $freezeProgressTicks;
 		$this->networkPropertiesDirty = true;
 	}
 
-	public function getPercentFrozen() : float{
-		return min(1.0, $this->freezeTicks / max(1, $this->getTicksRequiredToFreeze()));
+	/**
+	 * Returns freeze progress as a normalized value between 0.0 and 1.0.
+	 * This is the value sent to clients to control the freezing visual effect.
+	 */
+	public function getFreezeProgressRatio() : float{
+		return min(1.0, $this->freezeProgressTicks / max(1, $this->getFreezeThresholdTicks()));
 	}
 
-	public function getTicksRequiredToFreeze() : int{
+	/**
+	 * Returns the number of ticks required for this entity to be considered fully frozen.
+	 */
+	public function getFreezeThresholdTicks() : int{
 		return 140;
 	}
 
-	public function isFreezing() : bool{
-		return $this->isFreezing;
+	/**
+	 * Returns whether the entity is currently flagged as accumulating freeze progress (transient).
+	 */
+	public function isAccumulatingFreeze() : bool{
+		return $this->isAccumulatingFreeze;
 	}
 
-	public function setFreezing(bool $freezing) : void{
-		$this->isFreezing = $freezing;
+	/**
+	 * Sets the transient freezing flag. This flag indicates that the entity should accumulate freeze progress during
+	 * the next run of `entityBaseTick()`.
+	 *
+	 * @param bool $accumulating Whether to start accumulating freeze progress
+	 */
+	public function setAccumulatingFreeze(bool $accumulating) : void{
+		$this->isAccumulatingFreeze = $accumulating;
 	}
 
-	public function canFreeze() : bool{
+	/**
+	 * Returns whether this entity type is susceptible to freezing.
+	 */
+	public function isFreezable() : bool{
 		return false;
 	}
 
-	protected function doFrozenTick(int $tickDiff) : bool{
-		if($this->isFreezing){
-			$this->setFreezeTicks(min($this->getTicksRequiredToFreeze(), $this->freezeTicks + $tickDiff));
-			if($this->freezeTicks >= $this->getTicksRequiredToFreeze()){
-				//TODO: 2 second damage
-				$this->dealFrozenDamage();
+	protected function updateFreezeState(int $tickDiff) : bool{
+		$threshold = $this->getFreezeThresholdTicks();
+		if($this->isAccumulatingFreeze){
+			$this->setFreezeProgressTicks($this->freezeProgressTicks + $tickDiff);
+			if($this->freezeProgressTicks >= $threshold && (($this->fireTicks % 40 === 0) || $tickDiff > 40)){
+				$this->applyFreezeDamage();
 			}
 
 			return true;
 		}
 
-		if($this->freezeTicks > 0){
-			$this->setFreezeTicks(max(0, $this->freezeTicks - 2));
+		if($this->freezeProgressTicks > 0){
+			$this->setFreezeProgressTicks(max(0, min($this->freezeProgressTicks, $threshold) - 2 * $tickDiff));
 			return true;
 		}
 
 		return false;
 	}
 
-	protected function dealFrozenDamage() : void{
-		//TODO: Use EntityDamageByBlockEvent here instead
-		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_CONTACT, 1);
+	protected function applyFreezeDamage() : void{
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FREEZE, 1);
 		$this->attack($ev);
 	}
 
@@ -1763,7 +1781,7 @@ abstract class Entity{
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
-		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getPercentFrozen());
+		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getFreezeProgressRatio());
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
 		$properties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);

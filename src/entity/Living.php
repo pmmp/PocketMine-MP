@@ -439,7 +439,7 @@ abstract class Living extends Entity{
 		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::FIRE_PROTECTION()) * 0.15));
 	}
 
-	public function canFreeze() : bool{
+	public function isFreezable() : bool{
 		foreach($this->armorInventory->getContents() as $item){
 			if($item instanceof Armor && $item->getMaterial() === VanillaArmorMaterials::LEATHER()){
 				return false;

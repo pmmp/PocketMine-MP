@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
@@ -52,8 +53,8 @@ class PowderSnow extends Transparent{
 
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
-		if($entity->canFreeze()){
-			$entity->setFreezing(true);
+		if($entity->isFreezable()){
+			$entity->setAccumulatingFreeze(true);
 		}
 
 		if(mt_rand(0, 5) === 0){
@@ -63,8 +64,7 @@ class PowderSnow extends Transparent{
 
 		if($entity->isOnFire()){
 			$entity->extinguish(EntityExtinguishEvent::CAUSE_POWDER_SNOW);
-			$this->position->getWorld()->useBreakOn($this->position);
-			//we could add a cancellable event here
+			BlockEventHelper::melt($this, VanillaBlocks::AIR());
 		}
 		return true;
 	}
