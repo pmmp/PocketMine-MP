@@ -93,7 +93,8 @@
          "@php build/generate-item-type-names.php vendor/pocketmine/bedrock-data/required_item_list.json",
          "@php build/generate-known-translation-apis.php",
          "@php build/generate-pocketmine-yml-property-consts.php",
-         "@php build/generate-registry-annotations.php src"
+         "@php build/generate-registry-annotations.php src",
+         "@php build/generate-block-type-ids.php"
       ]
    }
 }
