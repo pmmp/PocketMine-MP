@@ -39,6 +39,7 @@ use pocketmine\world\generator\populator\GroundCover;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
 use pocketmine\world\World;
+use function fmod;
 
 class Normal extends Generator{
 
