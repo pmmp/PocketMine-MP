@@ -824,7 +824,7 @@ abstract class Entity{
 		$threshold = $this->getFreezeThresholdTicks();
 		if($this->isAccumulatingFreeze){
 			$this->setFreezeProgressTicks($this->freezeProgressTicks + $tickDiff);
-			if($this->freezeProgressTicks >= $threshold && (($this->fireTicks % 40 === 0) || $tickDiff > 40)){
+			if($this->freezeProgressTicks >= $threshold && (($this->freezeProgressTicks % 40 === 0) || $tickDiff > 40)){
 				$this->applyFreezeDamage();
 			}
 
