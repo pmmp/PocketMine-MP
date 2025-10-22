@@ -85,7 +85,7 @@ class TimingsCommand extends VanillaCommand{
 			if($paste){
 				TimingsHandler::uploadReport($sender, $host);
 			}else{
-				TimingsHandler::createReportFile($sender->getServer()->getDataPath())->onCompletion(
+				TimingsHandler::createReportFile($sender->getServer()->getDataPath() . DIRECTORY_SEPARATOR . "timings")->onCompletion(
 					function(string $timingsFile) use ($sender) : void{
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
 					},

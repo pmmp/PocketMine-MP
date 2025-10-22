@@ -363,7 +363,7 @@ class TimingsHandler{
 	/**
 	 * Creates a timings report file locally in the provided file path.
 	 * Collects timings data and returns a promise that resolves with the created file.
-	 * 
+	 *
 	 * @param string      $filePath directory path to the timings folder.
 	 * @param string|null $fileName Optional custom file name, If null, uses default timings file naming
 	 *
@@ -379,14 +379,18 @@ class TimingsHandler{
 			function(array $lines) use ($fileName, $filePath, $resolver) : void{
 				$date = date('Y-m-d_H.i.s_T');
 				if($fileName === null){
-					$timingsName = "timings_{$date}.txt";
+					$timingsName = "timings_{$date}";
 				}else{
-					$timingsName = "{$fileName}.txt";
-				}		
+					$timingsName = "{$fileName}";
+				}
 				if(!file_exists($filePath)){
 					mkdir($filePath, 0777, true);
 				}
-				$timingsFile = Path::join($filePath, $timingsName);
+				$index = 0;
+				$timingsFile = Path::join($filePath, $timingsName . ".txt");
+				while(file_exists($timingsFile)){
+					$timingsFile = Path::join($filePath, $timingsName . (++$index) . ".txt");
+				}
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);
