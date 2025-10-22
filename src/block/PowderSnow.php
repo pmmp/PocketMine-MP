@@ -32,10 +32,7 @@ use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\particle\SnowflakeParticle;
 use pocketmine\world\sound\BucketFillPowderSnowSound;
-use function lcg_value;
-use function mt_rand;
 
 class PowderSnow extends Transparent{
 
@@ -55,11 +52,6 @@ class PowderSnow extends Transparent{
 		$entity->resetFallDistance();
 		if($entity->isFreezable()){
 			$entity->setAccumulatingFreeze(true);
-		}
-
-		if(mt_rand(0, 5) === 0){
-			// TODO: Detect entity movement inside powder snow (see #4704)
-			$this->getPosition()->getWorld()->addParticle($this->getPosition()->add(lcg_value(), lcg_value(), lcg_value()), new SnowflakeParticle());
 		}
 
 		if($entity->isOnFire()){
