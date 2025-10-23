@@ -142,7 +142,7 @@ function main() : void{
 	if(isset($opts["git"])){
 		$gitHash = $opts["git"];
 	}else{
-		$gitHash = Git::getRepositoryStatePretty(__dir__);
+		$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
 		echo "Git hash detected as $gitHash" . PHP_EOL;
 	}
 	if(isset($opts["build"])){
