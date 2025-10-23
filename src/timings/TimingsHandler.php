@@ -50,6 +50,7 @@ use function hrtime;
 use function http_build_query;
 use function implode;
 use function is_array;
+use function is_file;
 use function is_int;
 use function is_string;
 use function json_decode;
@@ -386,15 +387,15 @@ class TimingsHandler{
 				if(!file_exists($filePath)){
 					mkdir($filePath, 0777, true);
 				}
-				$index = 0;
-				$timingsFile = Path::join($filePath, $timingsName . ".txt");
-				while(file_exists($timingsFile)){
-					if(!is_file($timingsFile)){
-						$resolver->reject();
-						return;
-					}
-					$timingsFile = Path::join($filePath, $timingsName . (++$index) . ".txt");
-				}
+                $timingsFile = Path::join($filePath, $timingsName . ".txt");
+                if(file_exists($timingsFile)){
+                    if(!is_file($timingsFile)){
+                        $resolver->reject();
+                        return;
+                    }
+                    $resolver->reject();
+                    return;
+                }
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);
