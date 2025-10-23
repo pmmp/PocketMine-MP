@@ -283,12 +283,6 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php
 
 		-
-			message: '#^Casting to int something that''s already int\.$#'
-			identifier: cast.useless
-			count: 1
-			path: ../../../src/world/generator/normal/Normal.php
-
-		-
 			message: '#^Call to static method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to true\.$#'
 			identifier: staticMethod.alreadyNarrowedType
 			count: 1
