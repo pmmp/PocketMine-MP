@@ -387,15 +387,15 @@ class TimingsHandler{
 				if(!file_exists($filePath)){
 					mkdir($filePath, 0777, true);
 				}
-                $timingsFile = Path::join($filePath, $timingsName . ".txt");
-                if(file_exists($timingsFile)){
-                    if(!is_file($timingsFile)){
-                        $resolver->reject();
-                        return;
-                    }
-                    $resolver->reject();
-                    return;
-                }
+				$timingsFile = Path::join($filePath, $timingsName . ".txt");
+				if(file_exists($timingsFile)){
+					if(!is_file($timingsFile)){
+						$resolver->reject();
+						return;
+					}
+					$resolver->reject();
+					return;
+				}
 				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);
