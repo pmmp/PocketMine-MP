@@ -1297,6 +1297,12 @@ parameters:
 			path: ../../../src/world/generator/normal/Normal.php
 
 		-
+			message: '#^Method pocketmine\\world\\generator\\normal\\Normal\:\:generateBiomes\(\) should return array\{pocketmine\\world\\format\\PalettedBlockArray, non\-empty\-array\<int, float\>, non\-empty\-array\<int, float\>\} but returns array\{pocketmine\\world\\format\\PalettedBlockArray, array\<int, \(float\|int\)\>, array\<int, \(float\|int\)\>\}\.$#'
+			identifier: return.type
+			count: 1
+			path: ../../../src/world/generator/normal/Normal.php
+
+		-
 			message: '#^Parameter \#1 \$start of method pocketmine\\utils\\Random\:\:nextRange\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 2

@@ -50,6 +50,10 @@ class GroundCover implements Populator{
 					}
 
 					$startY = $chunk->getHighestBlockAt($x, $z);
+					if($startY === null){
+						//ground cover is supposed to replace preexisting blocks, nothing to do if there are no blocks
+						continue;
+					}
 					for(; $startY > 0; --$startY){
 						if(!$factory->fromStateId($chunk->getBlockStateId($x, $startY, $z))->isTransparent()){
 							break;

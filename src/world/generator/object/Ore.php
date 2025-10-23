@@ -26,6 +26,7 @@ namespace pocketmine\world\generator\object;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use function sin;
 use const M_PI;
 
@@ -53,6 +54,8 @@ class Ore{
 		$z2 = $z + 8 - $offset->y;
 		$y1 = $y + $this->random->nextBoundedInt(3) + 2;
 		$y2 = $y + $this->random->nextBoundedInt(3) + 2;
+
+		$tried = [];
 		for($count = 0; $count <= $clusterSize; ++$count){
 			$seedX = $x1 + ($x2 - $x1) * $count / $clusterSize;
 			$seedY = $y1 + ($y2 - $y1) * $count / $clusterSize;
@@ -80,8 +83,15 @@ class Ore{
 								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 && $world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces)){
-									$world->setBlockAt($xx, $yy, $zz, $this->type->material);
+								if(($sizeX + $sizeY + $sizeZ) < 1){
+									$hash = World::blockHash($xx, $yy, $zz);
+									if(isset($tried[$hash])){
+										continue;
+									}
+									$tried[$hash] = true;
+									if($world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces)){
+										$world->setBlockAt($xx, $yy, $zz, $this->type->material);
+									}
 								}
 							}
 						}
