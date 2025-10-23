@@ -23,12 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\normal;
 
+use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\PalettedBlockArray;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\biome\BiomeSelector;
 use pocketmine\world\generator\Gaussian;
 use pocketmine\world\generator\Generator;
@@ -39,7 +42,11 @@ use pocketmine\world\generator\populator\GroundCover;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
 use pocketmine\world\World;
+use function ceil;
+use function floor;
 use function fmod;
+use function max;
+use function min;
 
 class Normal extends Generator{
 
@@ -51,6 +58,8 @@ class Normal extends Generator{
 	private Simplex $noiseBase;
 	private BiomeSelector $selector;
 	private Gaussian $gaussian;
+
+	private const NOISE_SAMPLING_RATE_Y = 8;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
@@ -143,12 +152,8 @@ class Normal extends Generator{
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
-		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
-
 		//TODO: why don't we just create and set the chunk here directly?
 		$chunk = $world->getChunk($chunkX, $chunkZ) ?? throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not yet exist");
-
-		$biomeCache = [];
 
 		$bedrock = VanillaBlocks::BEDROCK()->getStateId();
 		$stillWater = VanillaBlocks::WATER()->getStateId();
@@ -156,6 +161,99 @@ class Normal extends Generator{
 
 		$baseX = $chunkX * Chunk::EDGE_LENGTH;
 		$baseZ = $chunkZ * Chunk::EDGE_LENGTH;
+
+		[$biomeArray, $minNoiseHeights, $maxNoiseHeights] = $this->generateBiomes($baseX, $baseZ);
+
+		$lowestNoiseBlock = (int) floor(min($minNoiseHeights));
+		$highestNoiseBlock = (int) ceil(max($maxNoiseHeights));
+
+		//getFastNoise3D expects the inputs to be aligned with the sampling rate, otherwise the samples will be taken
+		//from different coordinates than we originally used when we first implemented this generator
+		$noiseMin = (int) floor($lowestNoiseBlock / self::NOISE_SAMPLING_RATE_Y) * self::NOISE_SAMPLING_RATE_Y;
+		$noiseMax = (int) ceil($highestNoiseBlock / self::NOISE_SAMPLING_RATE_Y) * self::NOISE_SAMPLING_RATE_Y;
+
+		//we only need to generate noise for the blocks which could be affected
+		//outside these bounds we'll just flood-fill blocks to save time
+		$noise = $this->noiseBase->getFastNoise3D(
+			xSize: Chunk::EDGE_LENGTH,
+			ySize: $noiseMax - $noiseMin,
+			zSize: Chunk::EDGE_LENGTH,
+			xSamplingRate: 4,
+			ySamplingRate: self::NOISE_SAMPLING_RATE_Y,
+			zSamplingRate: 4,
+			x: $chunkX * Chunk::EDGE_LENGTH,
+			y: $noiseMin,
+			z: $chunkZ * Chunk::EDGE_LENGTH
+		);
+
+		$minNoiseSubChunk = (int) floor($noiseMin / SubChunk::EDGE_LENGTH);
+		foreach($chunk->getSubChunks() as $y => $subChunk){
+			if($y >= 0 && $y < $minNoiseSubChunk){
+				//Everything above 0 and below noiseMin is always solid stone, which can be flood-filled instead of
+				//setting the blocks one at a time - this is vastly faster
+				$fillId = $stone;
+			}else{
+				$fillId = Block::EMPTY_STATE_ID;
+			}
+			$chunk->setSubChunk($y, new SubChunk(Block::EMPTY_STATE_ID, [new PalettedBlockArray($fillId)], clone $biomeArray));
+		}
+
+		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
+				$chunk->setBlockStateId($x, 0, $z, $bedrock);
+
+				$columnIndex = World::chunkHash($x, $z);
+				$minSum = $minNoiseHeights[$columnIndex];
+				$maxSum = $maxNoiseHeights[$columnIndex];
+				$maxBlockY = max($maxSum, $this->waterHeight);
+				$smoothHeight = ($maxSum - $minSum) / 2;
+
+				//Everything below minSum is always solid stone - we already flood-filled the subchunks below though, so
+				//we only need to fill the gap in the column here
+				for($y = $minNoiseSubChunk * SubChunk::EDGE_LENGTH; $y < $minSum; $y++){
+					$chunk->setBlockStateId($x, $y, $z, $stone);
+				}
+				for($y = (int) floor($minSum); $y <= $maxBlockY; ++$y){
+					//noiseValue would anyway be <= 0 above maxSum because the smoothing term is >= 1
+					$noiseValue = $y > $noiseMax ?
+						-1 :
+						$noise[$x][$z][$y - $noiseMin] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
+
+					if($noiseValue > 0){
+						$chunk->setBlockStateId($x, $y, $z, $stone);
+					}elseif($y <= $this->waterHeight){
+						$chunk->setBlockStateId($x, $y, $z, $stillWater);
+					}
+				}
+			}
+		}
+
+		foreach($this->generationPopulators as $populator){
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
+		}
+	}
+
+	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
+		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
+		foreach($this->populators as $populator){
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
+		}
+
+		$chunk = $world->getChunk($chunkX, $chunkZ);
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7, 7));
+		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
+	}
+
+	/**
+	 * @return int[][]|PalettedBlockArray[]
+	 * @phpstan-return array{PalettedBlockArray, non-empty-array<int, float>, non-empty-array<int, float>}
+	 */
+	private function generateBiomes(int $baseX, int $baseZ) : array{
+		$biomeCache = [];
+
+		$minHeights = [];
+		$maxHeights = [];
+		$biomeArray = new PalettedBlockArray(BiomeIds::OCEAN);
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			$absoluteX = $baseX + $x;
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
@@ -164,9 +262,11 @@ class Normal extends Generator{
 				$maxSum = 0;
 				$weightSum = 0;
 
-				$biome = $this->pickBiome($absoluteX, $absoluteZ);
-				for($y = World::Y_MIN; $y < World::Y_MAX; $y++){
-					$chunk->setBiomeId($x, $y, $z, $biome->getId());
+				$columnIndex = World::chunkHash($x, $z);
+				$biome = $biomeCache[$columnIndex] ??= $this->pickBiome($absoluteX, $absoluteZ);
+
+				for($y = 0; $y < 16; $y++){
+					$biomeArray->set($x, $y, $z, $biome->getId());
 				}
 
 				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
@@ -195,37 +295,11 @@ class Normal extends Generator{
 				$minSum /= $weightSum;
 				$maxSum /= $weightSum;
 
-				$smoothHeight = ($maxSum - $minSum) / 2;
-
-				for($y = 0; $y < 128; ++$y){
-					if($y === 0){
-						$chunk->setBlockStateId($x, $y, $z, $bedrock);
-						continue;
-					}
-					$noiseValue = $noise[$x][$z][$y] - 1 / $smoothHeight * ($y - $smoothHeight - $minSum);
-
-					if($noiseValue > 0){
-						$chunk->setBlockStateId($x, $y, $z, $stone);
-					}elseif($y <= $this->waterHeight){
-						$chunk->setBlockStateId($x, $y, $z, $stillWater);
-					}
-				}
+				$minHeights[$columnIndex] = $minSum;
+				$maxHeights[$columnIndex] = $maxSum;
 			}
 		}
 
-		foreach($this->generationPopulators as $populator){
-			$populator->populate($world, $chunkX, $chunkZ, $this->random);
-		}
-	}
-
-	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
-		foreach($this->populators as $populator){
-			$populator->populate($world, $chunkX, $chunkZ, $this->random);
-		}
-
-		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7, 7));
-		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
+		return [$biomeArray, $minHeights, $maxHeights];
 	}
 }
