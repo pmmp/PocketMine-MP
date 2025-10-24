@@ -1507,7 +1507,7 @@ class Server{
 						$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile)));
 						TimingsHandler::setEnabled(false);
 					},
-					fn() => throw new \AssertionError("This promise is not expected to be rejected")
+					fn() => throw new AssumptionFailedError("Failed to create timings report file")
 				);
 			}
 		}
