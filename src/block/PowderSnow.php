@@ -43,6 +43,11 @@ class PowderSnow extends Flowable{
 		return [];
 	}
 
+	public function onEntityLand(Entity $entity) : ?float{
+		$entity->resetFallDistance();
+		return null;
+	}
+
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
 		if($entity->isFreezable()){

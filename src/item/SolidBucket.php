@@ -57,8 +57,4 @@ class SolidBucket extends Item{
 
 		return ItemUseResult::FAIL;
 	}
-
-	public function getBlock(?int $clickedFace = null) : Block{
-		return $this->block;
-	}
 }
