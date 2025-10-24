@@ -828,37 +828,8 @@ abstract class Entity{
 		return false;
 	}
 
-	/**
-	 * Hook called when freeze-based movement modifier should be (re)applied.
-	 */
-	protected function onFreezeAttributeModifierChanged(float $addValue) : void{
-
-	}
-
 	protected function updateFreezeState(int $tickDiff) : bool{
-		$threshold = $this->getFreezeThresholdTicks();
-		if($this->isAccumulatingFreeze){
-			$this->setFreezeProgressTicks($this->freezeProgressTicks + $tickDiff);
-			if($this->freezeProgressTicks >= $threshold && (($this->freezeProgressTicks % 40 === 0) || $tickDiff > 40)){
-				$this->applyFreezeDamage();
-			}
-
-			$this->onFreezeAttributeModifierChanged(-0.05 * $this->getFreezeProgressRatio());
-			return true;
-		}
-
-		if($this->freezeProgressTicks > 0){
-			$this->setFreezeProgressTicks(max(0, min($this->freezeProgressTicks, $threshold) - 2 * $tickDiff));
-			$this->onFreezeAttributeModifierChanged(-0.05 * $this->getFreezeProgressRatio());
-			return true;
-		}
-
 		return false;
-	}
-
-	protected function applyFreezeDamage() : void{
-		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FREEZE, 1);
-		$this->attack($ev);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
