@@ -34,8 +34,8 @@ use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
 use pocketmine\YmlServerProperties;
-
 use function count;
 use function http_build_query;
 use function implode;
@@ -49,7 +49,6 @@ use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
-use const DIRECTORY_SEPARATOR;
 
 class TimingsCommand extends VanillaCommand{
 
