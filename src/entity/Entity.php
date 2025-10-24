@@ -146,9 +146,6 @@ abstract class Entity{
 	public int $lastUpdate;
 	protected int $fireTicks = 0;
 
-	protected int $freezeProgressTicks = 0;
-	protected bool $isAccumulatingFreeze = false;
-
 	private bool $savedWithChunk = true;
 
 	public bool $isCollided = false;
@@ -682,11 +679,6 @@ abstract class Entity{
 			}
 		}
 
-		if($this->updateFreezeState($tickDiff)){
-			$hasUpdate = true;
-		}
-		$this->isAccumulatingFreeze = false;
-
 		$this->ticksLived += $tickDiff;
 
 		return $hasUpdate;
@@ -767,69 +759,6 @@ abstract class Entity{
 	protected function dealFireDamage() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FIRE_TICK, 1);
 		$this->attack($ev);
-	}
-
-	/**
-	 * Returns the number of ticks this entity has accumulated toward being frozen.
-	 */
-	public function getFreezeProgressTicks() : int{
-		return $this->freezeProgressTicks;
-	}
-
-	/**
-	 * Set the entity's freeze progress in ticks.
-	 *
-	 * @throws \InvalidArgumentException if $freezeProgressTicks is negative
-	 */
-	public function setFreezeProgressTicks(int $freezeProgressTicks) : void{
-		if($freezeProgressTicks < 0){
-			throw new \InvalidArgumentException("Freeze ticks cannot be negative");
-		}
-		$this->freezeProgressTicks = $freezeProgressTicks;
-		$this->networkPropertiesDirty = true;
-	}
-
-	/**
-	 * Returns freeze progress as a normalized value between 0.0 and 1.0.
-	 * This is the value sent to clients to control the freezing visual effect.
-	 */
-	public function getFreezeProgressRatio() : float{
-		return min(1.0, $this->freezeProgressTicks / max(1, $this->getFreezeThresholdTicks()));
-	}
-
-	/**
-	 * Returns the number of ticks required for this entity to be considered fully frozen.
-	 */
-	public function getFreezeThresholdTicks() : int{
-		return 140;
-	}
-
-	/**
-	 * Returns whether the entity is currently flagged as accumulating freeze progress (transient).
-	 */
-	public function isAccumulatingFreeze() : bool{
-		return $this->isAccumulatingFreeze;
-	}
-
-	/**
-	 * Sets the transient freezing flag. This flag indicates that the entity should accumulate freeze progress during
-	 * the next run of `entityBaseTick()`.
-	 *
-	 * @param bool $accumulating Whether to start accumulating freeze progress
-	 */
-	public function setAccumulatingFreeze(bool $accumulating) : void{
-		$this->isAccumulatingFreeze = $accumulating;
-	}
-
-	/**
-	 * Whether this entity can be frozen (i.e. accumulate freeze progress from environments such as powder snow).
-	 */
-	public function isFreezable() : bool{
-		return false;
-	}
-
-	protected function updateFreezeState(int $tickDiff) : bool{
-		return false;
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
@@ -1769,7 +1698,6 @@ abstract class Entity{
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
-		$properties->setFloat(EntityMetadataProperties::FREEZING_EFFECT_STRENGTH, $this->getFreezeProgressRatio());
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
 		$properties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
