@@ -91,31 +91,13 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
-			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
-			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
@@ -383,6 +365,24 @@ parameters:
 			identifier: argument.type
 			count: 3
 			path: ../../../src/block/Mycelium.php
+
+		-
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
 
 		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
@@ -1293,6 +1293,12 @@ parameters:
 		-
 			message: '#^Cannot call method getBiomeId\(\) on pocketmine\\world\\format\\Chunk\|null\.$#'
 			identifier: method.nonObject
+			count: 1
+			path: ../../../src/world/generator/normal/Normal.php
+
+		-
+			message: '#^Method pocketmine\\world\\generator\\normal\\Normal\:\:generateBiomes\(\) should return array\{pocketmine\\world\\format\\PalettedBlockArray, non\-empty\-array\<int, float\>, non\-empty\-array\<int, float\>\} but returns array\{pocketmine\\world\\format\\PalettedBlockArray, array\<int, \(float\|int\)\>, array\<int, \(float\|int\)\>\}\.$#'
+			identifier: return.type
 			count: 1
 			path: ../../../src/world/generator/normal/Normal.php
 

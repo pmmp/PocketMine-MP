@@ -24,12 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_known_translation_apis;
 
 use pocketmine\lang\Translatable;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
 use function count;
 use function dirname;
+use function fclose;
 use function file_put_contents;
+use function fopen;
 use function fwrite;
 use function implode;
 use function is_numeric;
@@ -37,6 +40,7 @@ use function ksort;
 use function ob_get_clean;
 use function ob_start;
 use function parse_ini_file;
+use function preg_last_error_msg;
 use function preg_match_all;
 use function str_replace;
 use function strtoupper;
@@ -44,6 +48,8 @@ use const INI_SCANNER_RAW;
 use const SORT_NUMERIC;
 use const SORT_STRING;
 use const STDERR;
+
+const PARAMETER_REGEX = '/{%(.+?)}/';
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -121,6 +127,51 @@ HEADER;
  * @param string[] $languageDefinitions
  * @phpstan-param array<string, string> $languageDefinitions
  */
+function generate_known_translation_parameter_info(array $languageDefinitions) : void{
+	$file = fopen(dirname(__DIR__) . '/src/lang/KnownTranslationParameterInfo.php', 'wb');
+	if($file === false){
+		fwrite(STDERR, "Unable to open KnownTranslationParameterInfo file\n");
+		exit(1);
+	}
+
+	fwrite($file, SHARED_HEADER);
+	fwrite($file, <<<'HEADER'
+use pocketmine\lang\KnownTranslationKeys as Keys;
+
+/**
+ * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
+ * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
+ */
+final class KnownTranslationParameterInfo{
+HEADER);
+	ksort($languageDefinitions, SORT_STRING);
+
+	fwrite($file, "\n\tpublic const TABLE = [\n");
+	foreach(Utils::stringifyKeys($languageDefinitions) as $k => $v){
+		if(preg_match_all(PARAMETER_REGEX, $v, $matches) === false){
+			throw new AssumptionFailedError(preg_last_error_msg());
+		}
+		$uniqueParameters = [];
+		foreach($matches[1] as $parameterName){
+			$uniqueParameters[$parameterName] = $parameterName;
+		}
+		fwrite($file, "\t\tKeys::" . constantify($k) . " => [" . implode(", ", array_map(fn(string $s) => "\"$s\"", $uniqueParameters)) . "],\n");
+	}
+	fwrite($file, "\t];\n");
+
+	fwrite($file, "}\n");
+
+	fclose($file);
+
+	echo "Done generating KnownTranslationParameterInfo.\n";
+}
+
+/**
+ * @param string[] $languageDefinitions
+ * @phpstan-param array<string, string> $languageDefinitions
+ */
 function generate_known_translation_factory(array $languageDefinitions) : void{
 	ob_start();
 
@@ -138,7 +189,7 @@ final class KnownTranslationFactory{
 HEADER;
 	ksort($languageDefinitions, SORT_STRING);
 
-	$parameterRegex = '/{%(.+?)}/';
+	$parameterRegex = PARAMETER_REGEX;
 
 	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
 	foreach(Utils::stringifyKeys($languageDefinitions) as $key => $value){
@@ -190,4 +241,5 @@ if($lang === false){
 }
 
 generate_known_translation_keys($lang);
+generate_known_translation_parameter_info($lang);
 generate_known_translation_factory($lang);

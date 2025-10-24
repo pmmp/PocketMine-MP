@@ -67,7 +67,7 @@ jobs:
           repositories: RestrictedActions
 
       - name: Dispatch post-release restricted action
-        uses: peter-evans/repository-dispatch@v3
+        uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ steps.generate-token.outputs.token }}
           repository: ${{ github.repository_owner }}/RestrictedActions
@@ -87,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.35.4
+        uses: shivammathur/setup-php@2.35.5
         with:
           php-version: ${{ env.PHP_VERSION }}
 
@@ -165,7 +165,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.18.0
+        uses: ncipollo/release-action@v1.20.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst

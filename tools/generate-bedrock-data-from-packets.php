@@ -589,10 +589,7 @@ class ParserPacketHandler extends PacketHandler{
 			$data->id = $entry->getId();
 			$data->temperature = round($entry->getTemperature(), 3);
 			$data->downfall = round($entry->getDownfall(), 3);
-			$data->redSporeDensity = round($entry->getRedSporeDensity(), 3);
-			$data->blueSporeDensity = round($entry->getBlueSporeDensity(), 3);
-			$data->ashDensity = round($entry->getAshDensity(), 3);
-			$data->whiteAshDensity = round($entry->getWhiteAshDensity(), 3);
+			$data->foliageSnow = round($entry->getFoliageSnow(), 3);
 			$data->depth = round($entry->getDepth(), 3);
 			$data->scale = round($entry->getScale(), 3);
 			$data->mapWaterColour = $mapWaterColor;

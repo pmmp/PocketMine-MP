@@ -112,7 +112,6 @@ final class ItemTypeNames{
 	public const CAT_SPAWN_EGG = "minecraft:cat_spawn_egg";
 	public const CAULDRON = "minecraft:cauldron";
 	public const CAVE_SPIDER_SPAWN_EGG = "minecraft:cave_spider_spawn_egg";
-	public const CHAIN = "minecraft:chain";
 	public const CHAINMAIL_BOOTS = "minecraft:chainmail_boots";
 	public const CHAINMAIL_CHESTPLATE = "minecraft:chainmail_chestplate";
 	public const CHAINMAIL_HELMET = "minecraft:chainmail_helmet";
@@ -160,6 +159,7 @@ final class ItemTypeNames{
 	public const COPPER_GOLEM_SPAWN_EGG = "minecraft:copper_golem_spawn_egg";
 	public const COPPER_HELMET = "minecraft:copper_helmet";
 	public const COPPER_HOE = "minecraft:copper_hoe";
+	public const COPPER_HORSE_ARMOR = "minecraft:copper_horse_armor";
 	public const COPPER_INGOT = "minecraft:copper_ingot";
 	public const COPPER_LEGGINGS = "minecraft:copper_leggings";
 	public const COPPER_NUGGET = "minecraft:copper_nugget";
