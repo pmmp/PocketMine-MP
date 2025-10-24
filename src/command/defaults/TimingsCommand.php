@@ -120,7 +120,6 @@ class TimingsCommand extends VanillaCommand{
 
 	/**
 	 * @param string[] $lines
-	 *
 	 * @phpstan-param list<string> $lines
 	 */
 	private function uploadReport(array $lines, CommandSender $sender) : void{
