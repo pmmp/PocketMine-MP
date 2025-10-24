@@ -37,7 +37,18 @@ use pocketmine\utils\InternetException;
 use pocketmine\YmlServerProperties;
 
 use function count;
+use function http_build_query;
+use function implode;
+use function is_array;
+use function is_int;
+use function is_string;
+use function json_decode;
 use function strtolower;
+use const CURLOPT_AUTOREFERER;
+use const CURLOPT_FOLLOWLOCATION;
+use const CURLOPT_HTTPHEADER;
+use const CURLOPT_POST;
+use const CURLOPT_POSTFIELDS;
 use const DIRECTORY_SEPARATOR;
 
 class TimingsCommand extends VanillaCommand{
@@ -111,7 +122,7 @@ class TimingsCommand extends VanillaCommand{
 	}
 
 	/**
-	 * @param string[]             $lines
+	 * @param string[] $lines
 	 *
 	 * @phpstan-param list<string> $lines
 	 */
