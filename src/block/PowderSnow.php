@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
@@ -50,7 +51,7 @@ class PowderSnow extends Flowable{
 
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
-		if($entity->isFreezable()){
+		if($entity instanceof Living && $entity->isFreezable()){
 			$entity->setAccumulatingFreeze(true);
 		}
 
