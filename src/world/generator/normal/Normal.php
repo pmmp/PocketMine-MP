@@ -26,6 +26,7 @@ namespace pocketmine\world\generator\normal;
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
@@ -45,6 +46,7 @@ use pocketmine\world\World;
 use function ceil;
 use function floor;
 use function fmod;
+use function is_int;
 use function max;
 use function min;
 
@@ -251,55 +253,122 @@ class Normal extends Generator{
 	private function generateBiomes(int $baseX, int $baseZ) : array{
 		$biomeCache = [];
 
-		$minHeights = [];
-		$maxHeights = [];
 		$biomeArray = new PalettedBlockArray(BiomeIds::OCEAN);
-		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
+
+		$uniform = null;
+		$padding = $this->gaussian->smoothSize;
+		$start = -$padding;
+		$end = Chunk::EDGE_LENGTH + $padding;
+		for($x = $start; $x < $end; ++$x){
 			$absoluteX = $baseX + $x;
-			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
+			for($z = $start; $z < $end; ++$z){
 				$absoluteZ = $baseZ + $z;
-				$minSum = 0;
-				$maxSum = 0;
-				$weightSum = 0;
 
 				$columnIndex = World::chunkHash($x, $z);
-				$biome = $biomeCache[$columnIndex] ??= $this->pickBiome($absoluteX, $absoluteZ);
+				$biome = $biomeCache[$columnIndex] = $this->pickBiome($absoluteX, $absoluteZ);
+				$biomeId = $biome->getId();
+				$uniform = match ($uniform) {
+					null, $biomeId => $biomeId,
+					default => false
+				};
 
-				for($y = 0; $y < 16; $y++){
-					$biomeArray->set($x, $y, $z, $biome->getId());
-				}
-
-				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
-					for($sz = -$this->gaussian->smoothSize; $sz <= $this->gaussian->smoothSize; ++$sz){
-
-						$weight = $this->gaussian->kernel[$sx + $this->gaussian->smoothSize][$sz + $this->gaussian->smoothSize];
-
-						if($sx === 0 && $sz === 0){
-							$adjacent = $biome;
-						}else{
-							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);
-							if(isset($biomeCache[$index])){
-								$adjacent = $biomeCache[$index];
-							}else{
-								$biomeCache[$index] = $adjacent = $this->pickBiome($absoluteX + $sx, $absoluteZ + $sz);
-							}
-						}
-
-						$minSum += ($adjacent->getMinElevation() - 1) * $weight;
-						$maxSum += $adjacent->getMaxElevation() * $weight;
-
-						$weightSum += $weight;
+				if($x >= 0 && $x < Chunk::EDGE_LENGTH && $z >= 0 && $z < Chunk::EDGE_LENGTH){
+					for($y = 0; $y < 16; $y++){
+						$biomeArray->set($x, $y, $z, $biomeId);
 					}
 				}
+			}
+		}
 
-				$minSum /= $weightSum;
-				$maxSum /= $weightSum;
+		if($uniform === false){
+			[$minHeights, $maxHeights] = $this->gaussianSmoothElevation($start, $end, $biomeCache);
+		}else{
+			//If all the biomes in the blurred area are the same, we can save some performance by skipping blurring
+			//With the current generator as of 2025-10-23, blurring can be skipped in two-thirds of chunks
+			if(!is_int($uniform)){
+				throw new AssumptionFailedError();
+			}
+			$biome = BiomeRegistry::getInstance()->getBiome($uniform);
+			/** @phpstan-var non-empty-array<int, float> $minHeights */
+			$minHeights = [];
+			/** @phpstan-var non-empty-array<int, float> $maxHeights */
+			$maxHeights = [];
 
-				$minHeights[$columnIndex] = $minSum;
-				$maxHeights[$columnIndex] = $maxSum;
+			$minElevation = $biome->getMinElevation() - 1;
+			$maxElevation = $biome->getMaxElevation();
+			for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
+				for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
+					$columnIndex = World::chunkHash($x, $z);
+					$minHeights[$columnIndex] = $minElevation;
+					$maxHeights[$columnIndex] = $maxElevation;
+				}
 			}
 		}
 
 		return [$biomeArray, $minHeights, $maxHeights];
+	}
+
+	/**
+	 * @param Biome[] $biomeCache
+	 * @phpstan-param array<int, Biome> $biomeCache
+	 *
+	 * @return float[][]
+	 * @phpstan-return array{non-empty-array<int, float>, non-empty-array<int, float>}
+	 */
+	private function gaussianSmoothElevation(int $start, int $end, array $biomeCache) : array{
+		$minHeightsX = [];
+		$maxHeightsX = [];
+		//blur along the X axis first
+		for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
+			//while we don't need to smooth the padding corners, we do need to make sure that the contributions of
+			//those corners are included in Z padding, otherwise we can get artifacts at chunk corners
+			for($z = $start; $z < $end; $z++){
+				$columnIndex = World::chunkHash($x, $z);
+
+				$minSum = 0;
+				$maxSum = 0;
+
+				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
+					$weight = $this->gaussian->kernel1D[$sx + $this->gaussian->smoothSize];
+					$adjacent = $biomeCache[World::chunkHash($x + $sx, $z)];
+
+					$minSum += ($adjacent->getMinElevation() - 1) * $weight;
+					$maxSum += $adjacent->getMaxElevation() * $weight;
+				}
+
+				$minHeightsX[$columnIndex] = $minSum / $this->gaussian->weightSum1D;
+				$maxHeightsX[$columnIndex] = $maxSum / $this->gaussian->weightSum1D;
+			}
+		}
+
+		/** @phpstan-var non-empty-array<int, float> $minHeights */
+		$minHeights = [];
+		/** @phpstan-var non-empty-array<int, float> $maxHeights */
+		$maxHeights = [];
+
+		//then the Z axis, using the blurred values from the previous loop
+		for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
+				$columnIndex = World::chunkHash($x, $z);
+
+				$minSum = 0;
+				$maxSum = 0;
+
+				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
+					$weight = $this->gaussian->kernel1D[$sx + $this->gaussian->smoothSize];
+					$adjacentIndex = World::chunkHash($x, $z + $sx);
+					$minElevation = $minHeightsX[$adjacentIndex];
+					$maxElevation = $maxHeightsX[$adjacentIndex];
+
+					$minSum += $minElevation * $weight;
+					$maxSum += $maxElevation * $weight;
+				}
+
+				$minHeights[$columnIndex] = $minSum / $this->gaussian->weightSum1D;
+				$maxHeights[$columnIndex] = $maxSum / $this->gaussian->weightSum1D;
+			}
+		}
+
+		return [$minHeights, $maxHeights];
 	}
 }
