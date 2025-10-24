@@ -1502,7 +1502,7 @@ class Server{
 			$this->signalHandler->unregister();
 
 			if(TimingsHandler::isEnabled()){
-				TimingsHandler::createReportFile($this->getDataPath() . DIRECTORY_SEPARATOR . "timings")->onCompletion(
+				TimingsHandler::createReportFile(Path::join($this->getDataPath(), "timings"))->onCompletion(
 					function(string $timingsFile) : void{
 						$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile)));
 						TimingsHandler::setEnabled(false);

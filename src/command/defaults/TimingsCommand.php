@@ -36,6 +36,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\YmlServerProperties;
+use Symfony\Component\Filesystem\Path;
+
 use function count;
 use function http_build_query;
 use function implode;
@@ -49,7 +51,6 @@ use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
-use const DIRECTORY_SEPARATOR;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -104,7 +105,7 @@ class TimingsCommand extends VanillaCommand{
 					fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
 				);
 			}else{
-				TimingsHandler::createReportFile($sender->getServer()->getDataPath() . DIRECTORY_SEPARATOR . "timings")->onCompletion(
+				TimingsHandler::createReportFile(Path::join($sender->getServer()->getDataPath(), "timings"))->onCompletion(
 					function(string $timingsFile) use ($sender) : void{
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
 					},
