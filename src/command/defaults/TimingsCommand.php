@@ -37,7 +37,6 @@ use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
-
 use function count;
 use function http_build_query;
 use function implode;
