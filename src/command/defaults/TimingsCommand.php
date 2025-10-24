@@ -96,9 +96,6 @@ class TimingsCommand extends VanillaCommand{
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
-			$host = $sender->getServer()->getConfigGroup()->getPropertyString(YmlServerProperties::TIMINGS_HOST, "timings.pmmp.io");
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-
 			if($paste){
 				$timingsPromise = TimingsHandler::requestPrintTimings();
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
@@ -111,7 +108,7 @@ class TimingsCommand extends VanillaCommand{
 					function(string $timingsFile) use ($sender) : void{
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
 					},
-					fn() => throw new AssumptionFailedError("Failed to create timings report file")
+					fn() => $sender->getServer()->getLogger()->error("Failed to create timings report file")
 				);
 			}
 		}else{

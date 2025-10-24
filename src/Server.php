@@ -1507,7 +1507,7 @@ class Server{
 						$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile)));
 						TimingsHandler::setEnabled(false);
 					},
-					fn() => throw new AssumptionFailedError("Failed to create timings report file")
+					fn() => $this->logger->error("Failed to create timings report file")
 				);
 			}
 		}
