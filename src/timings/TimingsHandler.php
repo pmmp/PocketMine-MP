@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
@@ -382,7 +383,7 @@ class TimingsHandler{
 
 				$resolver->resolve($timingsFile);
 			},
-			fn() => throw new \AssertionError("This promise is not expected to be rejected")
+			fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
 		);
 
 		return $resolver->getPromise();
