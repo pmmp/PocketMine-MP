@@ -35,12 +35,11 @@ use function array_merge;
 use function array_push;
 use function date;
 use function fclose;
-use function file_exists;
 use function fopen;
 use function fwrite;
 use function hrtime;
 use function implode;
-use function is_file;
+use function is_dir;
 use function mkdir;
 use function spl_object_id;
 use const PHP_EOL;
@@ -347,38 +346,35 @@ class TimingsHandler{
 	 * Creates a timings report file locally in the provided file path.
 	 * Collects timings data and returns a promise that resolves with the created file.
 	 *
-	 * @param string      $filePath directory path to the timings folder.
-	 * @param string|null $fileName Optional custom file name, If null, uses default timings file naming
+	 * @param string      $directory directory path to the timings folder.
+	 * @param string|null $fileName  Optional custom file name, If null, uses default timings file naming
 	 *
 	 * @phpstan-return Promise<string>
 	 */
-	public static function createReportFile(string $filePath, ?string $fileName = null) : Promise{
+	public static function createReportFile(string $directory, ?string $fileName = null) : Promise{
 		$timingsPromise = self::requestPrintTimings();
 
 		/** @var PromiseResolver<string> $resolver */
 		$resolver = new PromiseResolver();
 
 		$timingsPromise->onCompletion(
-			function(array $lines) use ($fileName, $filePath, $resolver) : void{
-				$date = date('Y-m-d_H.i.s_T');
+			function(array $lines) use ($fileName, $directory, $resolver) : void{
 				if($fileName === null){
-					$timingsName = "timings_{$date}";
-				}else{
-					$timingsName = "{$fileName}";
+					$date = date('Y-m-d_H.i.s_T');
+					$fileName = "timings_{$date}";
 				}
-				if(!file_exists($filePath)){
-					mkdir($filePath, 0777, true);
-				}
-				$timingsFile = Path::join($filePath, $timingsName . ".txt");
-				if(file_exists($timingsFile)){
-					if(!is_file($timingsFile)){
-						$resolver->reject();
-						return;
-					}
+				if(!@mkdir($directory, 0777, true) && !is_dir($directory)){
 					$resolver->reject();
 					return;
 				}
-				$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "a+b"));
+				$timingsFile = Path::join($directory, $fileName . ".txt");
+				try{
+					$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "x+b"));
+				}catch(\ErrorException){
+					//TODO: it'd be better if we could report this to the promise callback
+					$resolver->reject();
+					return;
+				}
 				foreach($lines as $line){
 					fwrite($handle, $line . PHP_EOL);
 				}

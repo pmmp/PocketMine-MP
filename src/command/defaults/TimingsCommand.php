@@ -49,6 +49,7 @@ use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
+use const DIRECTORY_SEPARATOR;
 
 class TimingsCommand extends VanillaCommand{
 
