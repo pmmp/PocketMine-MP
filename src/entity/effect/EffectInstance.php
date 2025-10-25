@@ -36,7 +36,7 @@ class EffectInstance{
 	private Color $color;
 
 	/**
-	 * @param int|null $duration Passing null will use the effect type's default duration
+	 * @param int|null $duration Passing null will use the effect type's default duration, While passing Limits::INT32_MAX will provide an Infinite effect
 	 */
 	public function __construct(Effect $effectType, ?int $duration = null, int $amplifier = 0, bool $visible = true, bool $ambient = false, ?Color $overrideColor = null){
 		$this->effectType = $effectType;
@@ -173,5 +173,12 @@ class EffectInstance{
 		$this->color = $this->effectType->getColor();
 
 		return $this;
+	}
+
+	/**
+	 * Returns wether the effect is meant to last indefinitely
+	 */
+	public function isInfinite() : bool{
+		return $this->duration === Limits::INT32_MAX;
 	}
 }

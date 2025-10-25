@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
@@ -191,7 +192,7 @@ abstract class Living extends Entity{
 
 				$this->effectManager->add(new EffectInstance(
 					$effect,
-					$e->getInt(self::TAG_EFFECT_DURATION),
+					$e->getInt(self::TAG_EFFECT_DURATION) === -1 ? Limits::INT32_MAX : $e->getInt(self::TAG_EFFECT_DURATION),
 					Binary::unsignByte($e->getByte(self::TAG_EFFECT_AMPLIFIER)),
 					$e->getByte(self::TAG_EFFECT_SHOW_PARTICLES, 1) !== 0,
 					$e->getByte(self::TAG_EFFECT_AMBIENT, 0) !== 0
@@ -321,7 +322,7 @@ abstract class Living extends Entity{
 				$effects[] = CompoundTag::create()
 					->setByte(self::TAG_EFFECT_ID, EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte(self::TAG_EFFECT_AMPLIFIER, Binary::signByte($effect->getAmplifier()))
-					->setInt(self::TAG_EFFECT_DURATION, $effect->getDuration())
+					->setInt(self::TAG_EFFECT_DURATION, $effect->getDuration() === Limits::INT32_MAX ? -1 : $effect->getDuration())
 					->setByte(self::TAG_EFFECT_AMBIENT, $effect->isAmbient() ? 1 : 0)
 					->setByte(self::TAG_EFFECT_SHOW_PARTICLES, $effect->isVisible() ? 1 : 0);
 			}
