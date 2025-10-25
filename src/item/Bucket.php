@@ -41,11 +41,17 @@ class Bucket extends Item{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 
-		[$resultBlock, $liquid] = match(true){
-			$blockClicked instanceof CoveredByWater && ($cover = $blockClicked->getWaterCover()) !== null && $cover->isSource() => [(clone $blockClicked)->setWaterCover(null), $blockClicked->getWaterCover()],
-			$blockClicked instanceof Liquid && $blockClicked->isSource() => [VanillaBlocks::AIR(), $blockClicked],
-			default => [null, null]
-		};
+		if($blockClicked instanceof CoveredByWater && ($cover = $blockClicked->getWaterCover()) !== null && $cover->isSource()){
+			$resultBlock = (clone $blockClicked)->setWaterCover(null);
+			$liquid = $blockClicked->getWaterCover();
+		}elseif($blockClicked instanceof Liquid && $blockClicked->isSource()){
+			$resultBlock = VanillaBlocks::AIR();
+			$liquid = $blockClicked;
+		}else{
+			$resultBlock = null;
+			$liquid = null;
+		}
+
 		if($resultBlock !== null && $liquid !== null){
 			$stack = clone $this;
 			$stack->pop();

@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\TNT;
 use pocketmine\block\utils\SupportType;
-use pocketmine\block\utils\WaterCoverHelper;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockExplodeEvent;
@@ -50,6 +49,7 @@ use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
 use function min;
+use function max;
 use function mt_rand;
 use function sqrt;
 
@@ -136,16 +136,14 @@ class Explosion{
 							}
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							$displacedState = $subChunk->getDisplacedBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
+							$blastResistance = max($blockFactory->blastResistance[$state] ?? 0, $blockFactory->blastResistance[$displacedState] ?? 0);
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $this->world->getBlockAt($vBlockX, $vBlockY, $vBlockZ, true, false);
-										if(WaterCoverHelper::isWater($_block)){
-											continue;
-										}
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
 											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$posHash = World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z);

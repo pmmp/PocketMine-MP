@@ -1152,12 +1152,14 @@ class World implements ChunkManager{
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);
-			$packets[] = UpdateBlockPacket::create(
-				$blockPosition,
-				$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()?->getStateId() ?? Block::EMPTY_STATE_ID),
-				UpdateBlockPacket::FLAG_NETWORK,
-				UpdateBlockPacket::DATA_LAYER_LIQUID
-			);
+			if($fullBlock->getTypeId() === BlockTypeIds::AIR || $fullBlock instanceof CoveredByWater){
+				$packets[] = UpdateBlockPacket::create(
+					$blockPosition,
+					$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()?->getStateId() ?? Block::EMPTY_STATE_ID),
+					UpdateBlockPacket::FLAG_NETWORK,
+					UpdateBlockPacket::DATA_LAYER_LIQUID
+				);
+			}
 
 			if($tile instanceof Spawnable){
 				$packets[] = BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound());
@@ -2027,7 +2029,7 @@ class World implements ChunkManager{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
-				$displacedBlock = $this->blockStateRegistry->fromStateId($chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$displacedBlock = $chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
@@ -2038,7 +2040,8 @@ class World implements ChunkManager{
 			$displacedBlock = null;
 		}
 
-		if($block instanceof CoveredByWater){
+		if($block instanceof CoveredByWater && $displacedBlock !== Block::EMPTY_STATE_ID){
+			$displacedBlock = $this->blockStateRegistry->fromStateId($displacedBlock);
 			$block->setWaterCover($displacedBlock instanceof Water ? $displacedBlock : null);
 		}
 		$block->position($this, $x, $y, $z);
