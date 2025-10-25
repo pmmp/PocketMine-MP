@@ -26,6 +26,9 @@ namespace pocketmine\world\generator\object;
 use pocketmine\math\VectorMath;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\SubChunk;
+use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
 use function sin;
 use const M_PI;
@@ -55,7 +58,11 @@ class Ore{
 		$y1 = $y + $this->random->nextBoundedInt(3) + 2;
 		$y2 = $y + $this->random->nextBoundedInt(3) + 2;
 
+		$explorer = new SubChunkExplorer($world);
+
 		$tried = [];
+		$replaceableStateIds = [];
+		$materialStateId = $this->type->material->getStateId();
 		for($count = 0; $count <= $clusterSize; ++$count){
 			$seedX = $x1 + ($x2 - $x1) * $count / $clusterSize;
 			$seedY = $y1 + ($y2 - $y1) * $count / $clusterSize;
@@ -89,8 +96,13 @@ class Ore{
 										continue;
 									}
 									$tried[$hash] = true;
-									if($world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces)){
-										$world->setBlockAt($xx, $yy, $zz, $this->type->material);
+									if($explorer->moveTo($xx, $yy, $zz) === SubChunkExplorerStatus::INVALID || $explorer->currentSubChunk === null){
+										throw new \LogicException("Unavailable chunk at block x=$xx, y=$yy, z=$zz");
+									}
+									$stateId = $explorer->currentSubChunk->getBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK);
+									$replaceable = $replaceableStateIds[$stateId] ??= $world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces);
+									if($replaceable){
+										$explorer->currentSubChunk->setBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK, $materialStateId);
 									}
 								}
 							}

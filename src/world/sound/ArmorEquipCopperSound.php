@@ -21,34 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class InfestedStone extends Opaque{
+class ArmorEquipCopperSound implements Sound{
 
-	private int $imitated;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, Block $imitated){
-		parent::__construct($idInfo, $name, $typeInfo);
-		$this->imitated = $imitated->getStateId();
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ARMOR_EQUIP_COPPER, $pos, false)];
 	}
-
-	public function getImitatedBlock() : Block{
-		return RuntimeBlockStateRegistry::getInstance()->fromStateId($this->imitated);
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
-
-	public function getSilkTouchDrops(Item $item) : array{
-		return [$this->getImitatedBlock()->asItem()];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	//TODO
 }

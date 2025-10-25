@@ -719,6 +719,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("infested_chiseled_stone_brick", fn() => Blocks::INFESTED_CHISELED_STONE_BRICK());
 		$result->registerBlock("infested_cobblestone", fn() => Blocks::INFESTED_COBBLESTONE());
 		$result->registerBlock("infested_cracked_stone_brick", fn() => Blocks::INFESTED_CRACKED_STONE_BRICK());
+		$result->registerBlock("infested_deepslate", fn() => Blocks::INFESTED_DEEPSLATE());
 		$result->registerBlock("infested_mossy_stone_brick", fn() => Blocks::INFESTED_MOSSY_STONE_BRICK());
 		$result->registerBlock("infested_stone", fn() => Blocks::INFESTED_STONE());
 		$result->registerBlock("infested_stone_brick", fn() => Blocks::INFESTED_STONE_BRICK());
@@ -1345,7 +1346,12 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("cooked_rabbit", fn() => Items::COOKED_RABBIT());
 		$result->register("cooked_salmon", fn() => Items::COOKED_SALMON());
 		$result->register("cookie", fn() => Items::COOKIE());
+		$result->register("copper_boots", fn() => Items::COPPER_BOOTS());
+		$result->register("copper_chestplate", fn() => Items::COPPER_CHESTPLATE());
+		$result->register("copper_helmet", fn() => Items::COPPER_HELMET());
 		$result->register("copper_ingot", fn() => Items::COPPER_INGOT());
+		$result->register("copper_leggings", fn() => Items::COPPER_LEGGINGS());
+		$result->register("copper_nugget", fn() => Items::COPPER_NUGGET());
 		$result->register("crimson_hanging_sign", fn() => Items::CRIMSON_HANGING_SIGN());
 		$result->register("dark_oak_boat", fn() => Items::DARK_OAK_BOAT());
 		$result->register("dark_oak_hanging_sign", fn() => Items::DARK_OAK_HANGING_SIGN());
