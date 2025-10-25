@@ -45,6 +45,7 @@ use pocketmine\world\sound\ArmorEquipNetheriteSound;
  * @method static ArmorMaterial LEATHER()
  * @method static ArmorMaterial NETHERITE()
  * @method static ArmorMaterial TURTLE()
+ * @method static ArmorMaterial COPPER()
  */
 final class VanillaArmorMaterials{
 	use RegistryTrait;
@@ -76,5 +77,6 @@ final class VanillaArmorMaterials{
 		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound()));
 		self::register("diamond", new ArmorMaterial(10, new ArmorEquipDiamondSound()));
 		self::register("netherite", new ArmorMaterial(15, new ArmorEquipNetheriteSound()));
+		self::register("copper", new ArmorMaterial(14, new ArmorEquipGenericSound()));
 	}
 }

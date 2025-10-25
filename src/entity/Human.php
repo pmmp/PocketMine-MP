@@ -309,11 +309,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 && $slot < 104){ //Armor
-					$armorSlot = $slot - 100;
-					$armorInventoryItems[$armorSlot] = Item::safeNbtDeserialize($item, "Human armor slot $armorSlot");
+					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
 				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
-					$inventorySlot = $slot - 9;
-					$inventoryItems[$inventorySlot] = Item::safeNbtDeserialize($item, "Human inventory slot $inventorySlot");
+					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
 				}
 			}
 
@@ -322,7 +320,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$offHand = $nbt->getCompoundTag(self::TAG_OFF_HAND_ITEM);
 		if($offHand !== null){
-			$this->offHandInventory->setItem(0, Item::safeNbtDeserialize($offHand, "Human off-hand item"));
+			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
 			$this->getViewers(),
@@ -333,9 +331,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($enderChestInventoryTag !== null){
 			$enderChestInventoryItems = [];
 
-			foreach($enderChestInventoryTag as $item){
-				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
-				$enderChestInventoryItems[$slot] = Item::safeNbtDeserialize($item, "Human ender chest slot $slot");
+			foreach($enderChestInventoryTag as $i => $item){
+				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
 			}
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}

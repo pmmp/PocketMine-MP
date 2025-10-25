@@ -157,7 +157,7 @@ function main() : void{
 		}
 		$pharPath = $opts["out"];
 	}else{
-		$pharPath = getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar";
+		$pharPath = getcwd() . DIRECTORY_SEPARATOR . "Tunaly.phar";
 	}
 	foreach(buildPhar(
 		$pharPath,

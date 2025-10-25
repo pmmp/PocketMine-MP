@@ -72,6 +72,9 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_GIVE_OTHER, l10n::pocketmine_permission_command_give_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_GIVE_SELF, l10n::pocketmine_permission_command_give_self()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_HELP, l10n::pocketmine_permission_command_help()), [$everyoneRoot]);
+		// Biomes command - available to all users
+		self::registerPermission(new Permission(Names::COMMAND_BIOMES, "Allows listing available biomes"), [$everyoneRoot]);
+
 		self::registerPermission(new Permission(Names::COMMAND_KICK, l10n::pocketmine_permission_command_kick()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_KILL_OTHER, l10n::pocketmine_permission_command_kill_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_KILL_SELF, l10n::pocketmine_permission_command_kill_self()), [$everyoneRoot]);
@@ -114,5 +117,7 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(Names::COMMAND_WHITELIST_REMOVE, l10n::pocketmine_permission_command_whitelist_remove()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_XP_OTHER, l10n::pocketmine_permission_command_xp_other()), [$operatorRoot]);
 		self::registerPermission(new Permission(Names::COMMAND_XP_SELF, l10n::pocketmine_permission_command_xp_self()), [$operatorRoot]);
+		// Locate command permission
+		self::registerPermission(new Permission(Names::COMMAND_LOCATE, "Allows use of /locate command"), [$operatorRoot]);
 	}
 }

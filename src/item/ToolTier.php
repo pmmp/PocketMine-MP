@@ -47,6 +47,7 @@ enum ToolTier{
 	case IRON;
 	case DIAMOND;
 	case NETHERITE;
+	case COPPER;
 
 	/**
 	 * This function exists only to permit the use of named arguments and to make the code easier to read in PhpStorm.
@@ -66,7 +67,8 @@ enum ToolTier{
 			self::STONE => self::meta(3, 132, 6, 4, 5),
 			self::IRON => self::meta(4, 251, 7, 6, 14),
 			self::DIAMOND => self::meta(5, 1562, 8, 8, 10),
-			self::NETHERITE => self::meta(6, 2032, 9, 9, 15)
+			self::NETHERITE => self::meta(6, 2032, 9, 9, 15),
+			self::COPPER => self::meta(2, 200, 5, 5, 10)
 		};
 	}
 

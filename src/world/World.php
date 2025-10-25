@@ -1042,15 +1042,45 @@ class World implements ChunkManager{
 			$this->checkSleep();
 		}
 
+		// Throttle total packets sent per tick to avoid huge network/CPU spikes when many blocks change at once.
+		$perTickLimit = $this->server->getConfigGroup()->getPropertyInt(YmlServerProperties::CHUNK_SENDING_PER_TICK, 256);
+		$sentCount = 0;
+		$leftoverBuffers = [];
 		foreach($this->packetBuffersByChunk as $index => $entries){
+			if($sentCount >= $perTickLimit){
+				// we've reached the per-tick quota; carry all remaining entries to next tick
+				$leftoverBuffers[$index] = $entries;
+				continue;
+			}
+
 			World::getXZ($index, $chunkX, $chunkZ);
 			$chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
-			if(count($chunkPlayers) > 0){
+			if(count($chunkPlayers) === 0){
+				// no viewers, drop packets
+				continue;
+			}
+
+			$remainingQuota = $perTickLimit - $sentCount;
+			$entryCount = count($entries);
+			if($entryCount <= $remainingQuota){
 				NetworkBroadcastUtils::broadcastPackets($chunkPlayers, $entries);
+				$sentCount += $entryCount;
+			}else{
+				// send only up to remaining quota, keep the rest for next tick
+				$toSend = array_slice($entries, 0, $remainingQuota);
+				$rest = array_slice($entries, $remainingQuota);
+				if(count($toSend) > 0){
+					NetworkBroadcastUtils::broadcastPackets($chunkPlayers, $toSend);
+					$sentCount += count($toSend);
+				}
+				if(count($rest) > 0){
+					$leftoverBuffers[$index] = $rest;
+				}
 			}
 		}
 
-		$this->packetBuffersByChunk = [];
+		// any leftovers get sent on subsequent ticks
+		$this->packetBuffersByChunk = $leftoverBuffers;
 	}
 
 	public function checkSleep() : void{

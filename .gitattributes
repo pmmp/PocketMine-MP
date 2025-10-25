@@ -9,9 +9,6 @@
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
 
-# Not sure why these use CRLF, but keeping consistent with the old repository for now
-/resources/translations/*.ini text eol=crlf
-
 # Custom for Visual Studio
 *.cs     diff=csharp
 *.sln    merge=union

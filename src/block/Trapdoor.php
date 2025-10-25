@@ -26,6 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggedTrait;
+use pocketmine\block\Liquid;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -35,8 +38,9 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
-class Trapdoor extends Transparent implements HorizontalFacing{
+class Trapdoor extends Transparent implements HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
+	use WaterloggedTrait;
 
 	protected bool $open = false;
 	protected bool $top = false;
@@ -45,6 +49,7 @@ class Trapdoor extends Transparent implements HorizontalFacing{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->top);
 		$w->bool($this->open);
+		$this->describeWaterloggedState($w);
 	}
 
 	public function isOpen() : bool{ return $this->open; }
@@ -77,6 +82,12 @@ class Trapdoor extends Transparent implements HorizontalFacing{
 		}
 		if(($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN){
 			$this->top = true;
+		}
+
+		if($blockReplace instanceof Liquid){
+			$this->setWaterlogged(true);
+		}else{
+			$this->setWaterlogged(false);
 		}
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

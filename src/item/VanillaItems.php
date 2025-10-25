@@ -37,6 +37,8 @@ use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
+use pocketmine\world\sound\BucketEmptyPowderSnowSound;
+
 use function is_int;
 use function mb_strtoupper;
 use function strtolower;
@@ -155,6 +157,8 @@ use function strtolower;
  * @method static Item DISC_FRAGMENT_5()
  * @method static Item DRAGON_BREATH()
  * @method static DriedKelp DRIED_KELP()
+ * @method static Kelp KELP()
+ * @method static Seagrass SEAGRASS()
  * @method static Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Dye DYE()
  * @method static Item ECHO_SHARD()
@@ -222,7 +226,6 @@ use function strtolower;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
- * @method static SplashPotion LINGERING_POTION()
  * @method static Item MAGMA_CREAM()
  * @method static Boat MANGROVE_BOAT()
  * @method static HangingSign MANGROVE_HANGING_SIGN()
@@ -359,10 +362,12 @@ use function strtolower;
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
  */
-final class VanillaItems{
+final class VanillaItems
+{
 	use CloningRegistryTrait;
 
-	private function __construct(){
+	private function __construct()
+	{
 		//NOOP
 	}
 
@@ -371,13 +376,14 @@ final class VanillaItems{
 	 * @phpstan-param \Closure(IID) : TItem $createItem
 	 * @phpstan-return TItem
 	 */
-	protected static function register(string $name, \Closure $createItem) : Item{
+	protected static function register(string $name, \Closure $createItem): Item
+	{
 		//this sketchy hack allows us to avoid manually writing the constants inline
 		//since type IDs are generated from this class anyway, I'm OK with this hack
 		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
 		$reflect = new \ReflectionClass(ItemTypeIds::class);
 		$typeId = $reflect->getConstant(mb_strtoupper($name));
-		if(!is_int($typeId)){
+		if (!is_int($typeId)) {
 			//this allows registering new stuff without adding new type ID constants
 			//this reduces the number of mandatory steps to test new features in local development
 			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
@@ -395,14 +401,16 @@ final class VanillaItems{
 	 * @return Item[]
 	 * @phpstan-return array<string, Item>
 	 */
-	public static function getAll() : array{
+	public static function getAll(): array
+	{
 		//phpstan doesn't support generic traits yet :(
 		/** @var Item[] $result */
 		$result = self::_registryGetAll();
 		return $result;
 	}
 
-	protected static function setup() : void{
+	protected static function setup(): void
+	{
 		self::registerArmorItems();
 		self::registerSpawnEggs();
 		self::registerTierToolItems();
@@ -502,6 +510,8 @@ final class VanillaItems{
 		self::register("disc_fragment_5", fn(IID $id) => new Item($id, "Disc Fragment (5)"));
 		self::register("dragon_breath", fn(IID $id) => new Item($id, "Dragon's Breath"));
 		self::register("dried_kelp", fn(IID $id) => new DriedKelp($id, "Dried Kelp"));
+		self::register("kelp", fn(IID $id) => new Kelp($id, "Kelp"));
+		self::register("seagrass", fn(IID $id) => new Seagrass($id, "Seagrass"));
 		//TODO: add interface to dye-colour objects
 		self::register("dye", fn(IID $id) => new Dye($id, "Dye"));
 		self::register("echo_shard", fn(IID $id) => new Item($id, "Echo Shard"));
@@ -544,7 +554,6 @@ final class VanillaItems{
 		self::register("lapis_lazuli", fn(IID $id) => new Item($id, "Lapis Lazuli"));
 		self::register("lava_bucket", fn(IID $id) => new LiquidBucket($id, "Lava Bucket", Blocks::LAVA()));
 		self::register("leather", fn(IID $id) => new Item($id, "Leather"));
-		self::register("lingering_potion", fn(IID $id) => new SplashPotion($id, "Lingering Potion", linger: true));
 		self::register("magma_cream", fn(IID $id) => new Item($id, "Magma Cream"));
 		self::register("mangrove_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::MANGROVE_SIGN(), Blocks::MANGROVE_WALL_SIGN()));
 		self::register("mangrove_hanging_sign", fn(IID $id) => new HangingSign($id, "Mangrove Hanging Sign", Blocks::MANGROVE_CEILING_CENTER_HANGING_SIGN(), Blocks::MANGROVE_CEILING_EDGES_HANGING_SIGN(), Blocks::MANGROVE_WALL_HANGING_SIGN()));
@@ -559,11 +568,17 @@ final class VanillaItems{
 		self::register("nether_brick", fn(IID $id) => new Item($id, "Nether Brick"));
 		self::register("nether_quartz", fn(IID $id) => new Item($id, "Nether Quartz"));
 		self::register("nether_star", fn(IID $id) => new Item($id, "Nether Star"));
-		self::register("netherite_ingot", fn(IID $id) => new class($id, "Netherite Ingot") extends Item{
-			public function isFireProof() : bool{ return true; }
+		self::register("netherite_ingot", fn(IID $id) => new class($id, "Netherite Ingot") extends Item {
+			public function isFireProof(): bool
+			{
+				return true;
+			}
 		});
-		self::register("netherite_scrap", fn(IID $id) => new class($id, "Netherite Scrap") extends Item{
-			public function isFireProof() : bool{ return true; }
+		self::register("netherite_scrap", fn(IID $id) => new class($id, "Netherite Scrap") extends Item {
+			public function isFireProof(): bool
+			{
+				return true;
+			}
 		});
 		self::register("oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
 		self::register("oak_hanging_sign", fn(IID $id) => new HangingSign($id, "Oak Hanging Sign", Blocks::OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::OAK_WALL_HANGING_SIGN()));
@@ -578,6 +593,8 @@ final class VanillaItems{
 		self::register("popped_chorus_fruit", fn(IID $id) => new Item($id, "Popped Chorus Fruit"));
 		self::register("potato", fn(IID $id) => new Potato($id, "Potato"));
 		self::register("potion", fn(IID $id) => new Potion($id, "Potion"));
+		self::register("powder_snow_bucket", fn(IID $id) => new SolidBucket($id, "Powder Snow Bucket", Blocks::POWDER_SNOW(), new BucketEmptyPowderSnowSound()));
+
 		self::register("prismarine_crystals", fn(IID $id) => new Item($id, "Prismarine Crystals"));
 		self::register("prismarine_shard", fn(IID $id) => new Item($id, "Prismarine Shard"));
 		self::register("pufferfish", fn(IID $id) => new Pufferfish($id, "Pufferfish"));
@@ -589,6 +606,8 @@ final class VanillaItems{
 		self::register("raw_beef", fn(IID $id) => new RawBeef($id, "Raw Beef"));
 		self::register("raw_chicken", fn(IID $id) => new RawChicken($id, "Raw Chicken"));
 		self::register("raw_copper", fn(IID $id) => new Item($id, "Raw Copper"));
+		// register copper chest as a block-item (use the block's asItem() to get proper block-based item identifier)
+		self::_registryRegister("copper_chest", Blocks::COPPER_CHEST()->asItem());
 		self::register("raw_fish", fn(IID $id) => new RawFish($id, "Raw Fish"));
 		self::register("raw_gold", fn(IID $id) => new Item($id, "Raw Gold"));
 		self::register("raw_iron", fn(IID $id) => new Item($id, "Raw Iron"));
@@ -646,31 +665,36 @@ final class VanillaItems{
 		self::register("writable_book", fn(IID $id) => new WritableBook($id, "Book & Quill"));
 		self::register("written_book", fn(IID $id) => new WrittenBook($id, "Written Book"));
 
-		foreach(BoatType::cases() as $type){
+		foreach (BoatType::cases() as $type) {
 			//boat type is static, because different types of wood may have different properties
 			self::register(strtolower($type->name) . "_boat", fn(IID $id) => new Boat($id, $type->getDisplayName() . " Boat", $type));
 		}
 	}
 
-	private static function registerSpawnEggs() : void{
-		self::register("zombie_spawn_egg", fn(IID $id) => new class($id, "Zombie Spawn Egg") extends SpawnEgg{
-			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+	private static function registerSpawnEggs(): void
+	{
+		self::register("zombie_spawn_egg", fn(IID $id) => new class($id, "Zombie Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("squid_spawn_egg", fn(IID $id) => new class($id, "Squid Spawn Egg") extends SpawnEgg{
-			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+		self::register("squid_spawn_egg", fn(IID $id) => new class($id, "Squid Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg{
-			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 	}
 
-	private static function registerTierToolItems() : void{
+	private static function registerTierToolItems(): void
+	{
 		self::register("diamond_axe", fn(IID $id) => new Axe($id, "Diamond Axe", ToolTier::DIAMOND, [EnchantmentTags::AXE]));
 		self::register("golden_axe", fn(IID $id) => new Axe($id, "Golden Axe", ToolTier::GOLD, [EnchantmentTags::AXE]));
 		self::register("iron_axe", fn(IID $id) => new Axe($id, "Iron Axe", ToolTier::IRON, [EnchantmentTags::AXE]));
@@ -683,6 +707,7 @@ final class VanillaItems{
 		self::register("netherite_hoe", fn(IID $id) => new Hoe($id, "Netherite Hoe", ToolTier::NETHERITE, [EnchantmentTags::HOE]));
 		self::register("stone_hoe", fn(IID $id) => new Hoe($id, "Stone Hoe", ToolTier::STONE, [EnchantmentTags::HOE]));
 		self::register("wooden_hoe", fn(IID $id) => new Hoe($id, "Wooden Hoe", ToolTier::WOOD, [EnchantmentTags::HOE]));
+		self::register("copper_hoe", fn(IID $id) => new Hoe($id, "Copper Hoe", ToolTier::COPPER, [EnchantmentTags::HOE]));
 		self::register("diamond_pickaxe", fn(IID $id) => new Pickaxe($id, "Diamond Pickaxe", ToolTier::DIAMOND, [EnchantmentTags::PICKAXE]));
 		self::register("golden_pickaxe", fn(IID $id) => new Pickaxe($id, "Golden Pickaxe", ToolTier::GOLD, [EnchantmentTags::PICKAXE]));
 		self::register("iron_pickaxe", fn(IID $id) => new Pickaxe($id, "Iron Pickaxe", ToolTier::IRON, [EnchantmentTags::PICKAXE]));
@@ -701,9 +726,14 @@ final class VanillaItems{
 		self::register("netherite_sword", fn(IID $id) => new Sword($id, "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
 		self::register("stone_sword", fn(IID $id) => new Sword($id, "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
 		self::register("wooden_sword", fn(IID $id) => new Sword($id, "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
+		self::register("copper_sword", fn(IID $id) => new Sword($id, "Copper Sword", ToolTier::COPPER, [EnchantmentTags::SWORD]));
+		self::register("copper_pickaxe", fn(IID $id) => new Pickaxe($id, "Copper Pickaxe", ToolTier::COPPER, [EnchantmentTags::PICKAXE]));
+		self::register("copper_shovel", fn(IID $id) => new Shovel($id, "Copper Shovel", ToolTier::COPPER, [EnchantmentTags::SHOVEL]));
+		self::register("copper_axe", fn(IID $id) => new Axe($id, "Copper Axe", ToolTier::COPPER, [EnchantmentTags::AXE]));
 	}
 
-	private static function registerArmorItems() : void{
+	private static function registerArmorItems(): void
+	{
 		self::register("chainmail_boots", fn(IID $id) => new Armor($id, "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::BOOTS]));
 		self::register("diamond_boots", fn(IID $id) => new Armor($id, "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::BOOTS]));
 		self::register("golden_boots", fn(IID $id) => new Armor($id, "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET, material: ArmorMaterials::GOLD()), [EnchantmentTags::BOOTS]));
@@ -732,9 +762,15 @@ final class VanillaItems{
 		self::register("iron_leggings", fn(IID $id) => new Armor($id, "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::IRON()), [EnchantmentTags::LEGGINGS]));
 		self::register("leather_pants", fn(IID $id) => new Armor($id, "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::LEATHER()), [EnchantmentTags::LEGGINGS]));
 		self::register("netherite_leggings", fn(IID $id) => new Armor($id, "Netherite Leggings", new ArmorTypeInfo(6, 556, ArmorInventory::SLOT_LEGS, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::LEGGINGS]));
+
+		self::register("copper_leggings", fn(IID $id) => new Armor($id, "Copper Leggings", new ArmorTypeInfo(5, 201, ArmorInventory::SLOT_LEGS, material: ArmorMaterials::COPPER()), [EnchantmentTags::LEGGINGS]));
+		self::register("copper_chestplate", fn(IID $id) => new Armor($id, "Copper Chestplate", new ArmorTypeInfo(4, 176, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::COPPER()), [EnchantmentTags::CHESTPLATE]));
+		self::register("copper_boots", fn(IID $id) => new Armor($id, "Copper Boots", new ArmorTypeInfo(2, 151, ArmorInventory::SLOT_FEET, material: ArmorMaterials::COPPER()), [EnchantmentTags::BOOTS]));
+		self::register("copper_helmet", fn(IID $id) => new Armor($id, "Copper Helmet", new ArmorTypeInfo(2, 121, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::COPPER()), [EnchantmentTags::HELMET]));
 	}
 
-	private static function registerSmithingTemplates() : void{
+	private static function registerSmithingTemplates(): void
+	{
 		self::register("netherite_upgrade_smithing_template", fn(IID $id) => new Item($id, "Netherite Upgrade Smithing Template"));
 		self::register("coast_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Coast Armor Trim Smithing Template"));
 		self::register("dune_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Dune Armor Trim Smithing Template"));
@@ -753,5 +789,4 @@ final class VanillaItems{
 		self::register("wayfinder_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Wayfinder Armor Trim Smithing Template"));
 		self::register("wild_armor_trim_smithing_template", fn(IID $id) => new Item($id, "Wild Armor Trim Smithing Template"));
 	}
-
 }

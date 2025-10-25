@@ -25,14 +25,16 @@ namespace pocketmine\world\biome;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\generator\populator\TallGrass;
+use pocketmine\world\generator\populator\SeagrassPopulator;
 
 class OceanBiome extends Biome{
 
 	public function __construct(){
+		// Use a sand-dominant ground cover for more natural sea floors (sand + gravel mixed)
 		$this->setGroundCover([
-			VanillaBlocks::GRAVEL(),
-			VanillaBlocks::GRAVEL(),
-			VanillaBlocks::GRAVEL(),
+			VanillaBlocks::SAND(),
+			VanillaBlocks::SAND(),
+			VanillaBlocks::SAND(),
 			VanillaBlocks::GRAVEL(),
 			VanillaBlocks::GRAVEL()
 		]);
@@ -41,6 +43,15 @@ class OceanBiome extends Biome{
 		$tallGrass->setBaseAmount(5);
 
 		$this->addPopulator($tallGrass);
+
+		$seagrass = new SeagrassPopulator();
+		$seagrass->setBaseAmount(20);
+		$this->addPopulator($seagrass);
+
+		// Kelp for deeper/warm ocean areas
+		$kelp = new \pocketmine\world\generator\populator\KelpPopulator();
+		$kelp->setBaseAmount(8);
+		$this->addPopulator($kelp);
 
 		$this->setElevation(46, 58);
 

@@ -485,7 +485,21 @@ class Item implements \JsonSerializable{
 	protected final function tryPlacementTransaction(Block $blockPlace, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player) : ?BlockTransaction{
 		$position = $blockReplace->getPosition();
 		$blockPlace->position($position->getWorld(), $position->getFloorX(), $position->getFloorY(), $position->getFloorZ());
-		if(!$blockPlace->canBePlacedAt($blockReplace, $clickVector, $face, $blockReplace->getPosition()->equals($blockClicked->getPosition()))){
+		// Determine whether the player effectively clicked the block that is being replaced.
+		// For example, when clicking the top face of a solid block where a liquid sits above,
+		// $blockReplace may be the liquid above the clicked block. Treat this as a clicked block
+		// if the clicked block's side at $face equals the replace position.
+		$isClickedBlock = $position->equals($blockClicked->getPosition());
+		try{
+			$sideBlock = $blockClicked->getSide($face);
+			if($sideBlock->getPosition()->equals($position)){
+				$isClickedBlock = true;
+			}
+		}catch(\Throwable $e){
+			// ignore and keep original equality
+		}
+
+		if(!$blockPlace->canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock)){
 			return null;
 		}
 		$transaction = new BlockTransaction($position->getWorld());
@@ -772,24 +786,6 @@ class Item implements \JsonSerializable{
 			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemData);
 		}catch(ItemTypeDeserializeException $e){
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
-		}
-	}
-
-	/**
-	 * Same as nbtDeserialize(), but purposely suppresses data errors and returns AIR if deserialization fails.
-	 * An error will be logged to the global logger if this happens.
-	 *
-	 * @param string $errorLogContext Used in log messages if deserialization fails to aid debugging (e.g. inventory owner, slot number, etc.)
-	 */
-	public static function safeNbtDeserialize(CompoundTag $tag, string $errorLogContext, ?\Logger $logger = null) : Item{
-		try{
-			return self::nbtDeserialize($tag);
-		}catch(SavedDataLoadingException $e){
-			//TODO: what if the intention was to suppress logging?
-			$logger ??= \GlobalLogger::get();
-			$logger->error("$errorLogContext: Error deserializing item (item will be replaced by AIR): " . $e->getMessage());
-			//no trace here, otherwise things could get very noisy
-			return VanillaItems::AIR();
 		}
 	}
 

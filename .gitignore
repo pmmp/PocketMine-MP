@@ -56,3 +56,36 @@ Documentation/*
 
 # install-local-protocol.sh
 /composer-local-protocol.*
+/tools
+/tests
+
+# Local IDE, build and runtime artifacts - do not push these
+.vscode/
+/.idea/
+*.iml
+/.phpstorm.meta.php
+
+# Build / runtime
+/build/
+/bin/
+/vendor/
+/logs/
+/crashdumps/
+/backups/
+
+# World / player data
+/players/
+/worlds/
+/memory_dumps/
+
+# Environment / secrets
+.env
+.env.*
+
+# Misc
+*.log
+*.cache
+*.sqlite
+*.db
+/changelogs/
+/tests/

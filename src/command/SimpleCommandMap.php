@@ -136,6 +136,8 @@ class SimpleCommandMap implements CommandMap{
 			new VersionCommand(),
 			new WhitelistCommand(),
 			new XpCommand(),
+			new \pocketmine\command\defaults\LocateCommand(),
+			new \pocketmine\command\defaults\BiomesCommand(),
 		]);
 	}
 

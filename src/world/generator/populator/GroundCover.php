@@ -43,6 +43,8 @@ class GroundCover implements Populator{
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, 0, $z));
 				$cover = $biome->getGroundCover();
+				// If this biome is ocean-like, adjust cover based on depth: shallow -> sand, deep -> gravel
+				$isOcean = stripos($biome->getName(), 'ocean') !== false;
 				if(count($cover) > 0){
 					$diffY = 0;
 					if(!$cover[0]->isSolid()){
@@ -58,7 +60,41 @@ class GroundCover implements Populator{
 					$startY = min(127, $startY + $diffY);
 					$endY = $startY - count($cover);
 					for($y = $startY; $y > $endY && $y >= 0; --$y){
-						$b = $cover[$startY - $y];
+						// choose base block
+						if($isOcean){
+							// Use a default water level of 62 for depth calculations (generator sets similar default)
+							$waterLevel = 62;
+							$depth = max(0, ($waterLevel - $y));
+							// Smooth transition:
+							// depth <= 2: sand
+							// depth 3-6: blend sand/gravel
+							// depth 7-20: gravel
+							// depth > 20: stone
+							if($depth <= 2){
+								$b = \pocketmine\block\VanillaBlocks::SAND();
+							}elseif($depth <= 6){
+								// interpolation probability towards gravel as depth increases
+								$blendFactor = ($depth - 3) / 3.0; // 0..1 when depth 3..6
+								if($random->nextFloat() < $blendFactor){
+									$b = \pocketmine\block\VanillaBlocks::GRAVEL();
+								}else{
+									$b = \pocketmine\block\VanillaBlocks::SAND();
+								}
+							}elseif($depth <= 20){
+								// mix in clay occasionally in mid-depths and near shore for variety
+								if($random->nextFloat() < 0.12){
+									$b = \pocketmine\block\VanillaBlocks::CLAY();
+								}elseif($random->nextFloat() < 0.35){
+									$b = \pocketmine\block\VanillaBlocks::GRAVEL();
+								}else{
+									$b = \pocketmine\block\VanillaBlocks::SAND();
+								}
+							}else{
+								$b = \pocketmine\block\VanillaBlocks::STONE();
+							}
+						}else{
+							$b = $cover[$startY - $y];
+						}
 						$id = $factory->fromStateId($chunk->getBlockStateId($x, $y, $z));
 						if($id->getTypeId() === BlockTypeIds::AIR && $b->isSolid()){
 							break;

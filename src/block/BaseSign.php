@@ -30,6 +30,9 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggedTrait;
+use pocketmine\block\Liquid;
 use pocketmine\color\Color;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Dye;
@@ -49,8 +52,9 @@ use function fmod;
 use function rad2deg;
 use function strlen;
 
-abstract class BaseSign extends Transparent implements WoodMaterial{
+abstract class BaseSign extends Transparent implements WoodMaterial, Waterloggable{
 	use WoodTypeTrait;
+	use WaterloggedTrait;
 
 	protected SignText $text; //TODO: rename this (BC break)
 	protected SignText $backText;
@@ -123,7 +127,17 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		if($player !== null){
 			$this->editorEntityRuntimeId = $player->getId();
 		}
+		if($blockReplace instanceof Liquid){
+			$this->setWaterlogged(true);
+		}else{
+			$this->setWaterlogged(false);
+		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	protected function describeBlockOnlyState(\pocketmine\data\runtime\RuntimeDataDescriber $w) : void{
+		// BaseSign subclasses should call parent::describeBlockOnlyState() if overriding.
+		$this->describeWaterloggedState($w);
 	}
 
 	public function onPostPlace() : void{

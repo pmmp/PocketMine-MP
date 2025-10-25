@@ -44,7 +44,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -491,7 +490,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
 				if($spamBug){
-					throw new FilterNoisyPacketException();
+					return true;
 				}
 				//TODO: end hack for client spam bug
 
@@ -749,9 +748,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		//this spams harder than a firehose on left click if "Improved Input Response" is enabled, and we don't even
-		//use it anyway :<
-		throw new FilterNoisyPacketException();
+		return true; //Not used
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
@@ -760,7 +757,21 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
-		return true; //this packet is useless
+		// Use hotbar packet (sent by client when scrolling the hotbar) as a spectator-flight-speed toggle
+		try{
+			if($this->player->isSpectator()){
+				// toggle between default and fast (4x) flight speed
+				$default = \pocketmine\player\Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
+				$current = $this->player->getFlightSpeedMultiplier();
+				$fast = $default * 4.0;
+				$new = ($current === $default) ? $fast : $default;
+				$this->player->setFlightSpeedMultiplier($new);
+				$this->session->getLogger()->debug("Spectator flight speed toggled to " . $new);
+			}
+		}catch(\Throwable $e){
+			$this->session->getLogger()->debug("Error toggling spectator flight speed: " . $e->getMessage());
+		}
+		return true;
 	}
 
 	/**

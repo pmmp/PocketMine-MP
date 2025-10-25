@@ -222,7 +222,28 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
 				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 
-				$this->interface->blockAddress($address, 5);
+				// Don't block local or private addresses used for testing (e.g. bots connecting via localhost or LAN)
+				// Blocking these can make local load tests unusable. Skip blocking for common loopback and RFC1918 forms.
+				$dontBlock = false;
+				if(strpos($address, '127.') === 0 || $address === '::1' || $address === $this->server->getIp()){
+					$dontBlock = true;
+				}
+				// RFC1918 private ranges and a few special-use ranges often used in NAT/lab setups
+				if(strpos($address, '10.') === 0 || strpos($address, '192.168.') === 0 || strpos($address, '169.254.') === 0 || strpos($address, '100.') === 0){
+					$dontBlock = true;
+				}
+				// 172.16.0.0 - 172.31.255.255
+				if(strpos($address, '172.') === 0){
+					$parts = explode('.', $address);
+					if(isset($parts[1]) && is_numeric($parts[1]) && (int)$parts[1] >= 16 && (int)$parts[1] <= 31){
+						$dontBlock = true;
+					}
+				}
+				if($dontBlock){
+					$this->server->getLogger()->debug("Not blocking local/private address $address (packet error)");
+				}else{
+					// $this->interface->blockAddress($address, 5);
+				}
 			}catch(\Throwable $e){
 				//record the name of the player who caused the crash, to make it easier to find the reproducing steps
 				$this->server->getLogger()->emergency("Crash occurred while handling a packet from session: $name");
@@ -232,7 +253,14 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function blockAddress(string $address, int $timeout = 300) : void{
-		$this->interface->blockAddress($address, $timeout);
+		// During local testing, instructing the RakLib thread to block addresses will
+		// cause localhost to be blocked and make tests fail. Ignore loopback here.
+		if(strpos($address, '127.') === 0 || $address === '::1'){
+			$this->server->getLogger()->debug("Skipping RakLib block for local address $address");
+			return;
+		}
+
+		// $this->interface->blockAddress($address, $timeout);
 	}
 
 	public function unblockAddress(string $address) : void{

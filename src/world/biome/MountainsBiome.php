@@ -50,7 +50,8 @@ class MountainsBiome extends GrassyBiome{
 
 		$this->addPopulator($ores);
 
-		$this->setElevation(63, 127);
+		// Lower maximum elevation to reduce overly steep peaks
+		$this->setElevation(63, 110);
 
 		$this->temperature = 0.4;
 		$this->rainfall = 0.5;

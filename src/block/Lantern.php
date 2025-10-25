@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\block\utils\WaterloggedTrait;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -33,7 +35,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Lantern extends Transparent{
+class Lantern extends Transparent implements Waterloggable{
+	use WaterloggedTrait;
 	private int $lightLevel; //readonly
 
 	protected bool $hanging = false;
@@ -45,6 +48,7 @@ class Lantern extends Transparent{
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->bool($this->hanging);
+		$this->describeWaterloggedState($w);
 	}
 
 	public function isHanging() : bool{ return $this->hanging; }
@@ -80,6 +84,16 @@ class Lantern extends Transparent{
 		}
 
 		$this->hanging = $face === Facing::DOWN || !$downSupport;
+
+		// If placing into a liquid, place a waterlogged lantern variant
+		if($blockReplace instanceof Liquid){
+			$b = clone $this;
+			$b->hanging = $this->hanging;
+			$b->setWaterlogged(true);
+			$tx->addBlock($blockReplace->position, $b);
+			return true;
+		}
+
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 

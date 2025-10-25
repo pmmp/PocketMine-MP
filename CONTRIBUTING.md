@@ -4,12 +4,6 @@ Small contributions (e.g. minor bug fixes) can be submitted as pull requests dir
 
 Larger contributions like feature additions should be preceded by a [Change Proposal](#rfcs--change-proposals) to allow maintainers and other people to discuss and decide if it's a good idea or not.
 
-> [!TIP]
-> Want to contribute (non-English) translations? Visit our
-> [Crowdin Translation Project](https://crowdin.com/project/pocketmine) instead.
->
-> Translations need to go through a different review process, so we can't accept changes to them in PRs.
-
 ## Useful documentation from github.com
 - [About pull requests](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
 - [About forks](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/about-forks)
@@ -43,24 +37,22 @@ Take a look at the table below if you can't find the class or function you're lo
 ## Choosing a target branch
 PocketMine-MP has three primary branches of development.
 
-| Type of change                                                                                           | `stable` |          `minor-next`           | `major-next` |
-|:---------------------------------------------------------------------------------------------------------|:--------:|:-------------------------------:|:------------:|
-| Bug fixes                                                                                                |    ✔️    |               ✔️                |      ✔️      |
-| Improvements to API docs                                                                                 |    ✔️    |               ✔️                |      ✔️      |
-| Fixing base (`eng.ini`) language strings, or adding new ones                                             |    ✔️    |               ✔️                |      ✔️      |
-| Changes to existing base (`eng.ini`) language strings (e.g. changing parameters, renaming/removing keys) |    ❌     |               ✔️                |      ✔️      |
-| Cleaning up code                                                                                         |    ❌     |               ✔️                |      ✔️      |
-| Changing code formatting or style                                                                        |    ❌     |               ✔️                |      ✔️      |
-| Addition of new core features                                                                            |    ❌     |    🟡 Only if non-disruptive    |      ✔️      |
-| Changing core behaviour (e.g. making something use threads)                                              |    ❌     |               ✔️                |      ✔️      |
-| Addition of new configuration options                                                                    |    ❌     |       🟡 Only if optional       |      ✔️      |
-| Addition of new API classes, methods or constants                                                        |    ❌     |               ✔️                |      ✔️      |
-| Deprecating API classes, methods or constants                                                            |    ❌     |               ✔️                |      ✔️      |
-| Adding optional parameters to an API method                                                              |    ❌     |               ✔️                |      ✔️      |
-| Changing API behaviour                                                                                   |    ❌     | 🟡 Only if backwards-compatible |      ✔️      |
-| Removal of API                                                                                           |    ❌     |                ❌                |      ✔️      |
-| Backwards-incompatible API change (e.g. renaming a method)                                               |    ❌     |                ❌                |      ✔️      |
-| Backwards-incompatible internals change (e.g. changing things in `pocketmine\network\mcpe`)              |    ❌     |               ✔️                |      ✔️      |
+| Type of change                                                                              | `stable` |          `minor-next`           | `major-next` |
+|:--------------------------------------------------------------------------------------------|:--------:|:-------------------------------:|:------------:|
+| Bug fixes                                                                                   |    ✔️    |               ✔️                |      ✔️      |
+| Improvements to API docs                                                                    |    ✔️    |               ✔️                |      ✔️      |
+| Cleaning up code                                                                            |    ❌     |               ✔️                |      ✔️      |
+| Changing code formatting or style                                                           |    ❌     |               ✔️                |      ✔️      |
+| Addition of new core features                                                               |    ❌     |    🟡 Only if non-disruptive    |      ✔️      |
+| Changing core behaviour (e.g. making something use threads)                                 |    ❌     |               ✔️                |      ✔️      |
+| Addition of new configuration options                                                       |    ❌     |       🟡 Only if optional       |      ✔️      |
+| Addition of new API classes, methods or constants                                           |    ❌     |               ✔️                |      ✔️      |
+| Deprecating API classes, methods or constants                                               |    ❌     |               ✔️                |      ✔️      |
+| Adding optional parameters to an API method                                                 |    ❌     |               ✔️                |      ✔️      |
+| Changing API behaviour                                                                      |    ❌     | 🟡 Only if backwards-compatible |      ✔️      |
+| Removal of API                                                                              |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible API change (e.g. renaming a method)                                  |    ❌     |                ❌                |      ✔️      |
+| Backwards-incompatible internals change (e.g. changing things in `pocketmine\network\mcpe`) |    ❌     |               ✔️                |      ✔️      |
 
 ### Notes
 - **Non-disruptive** means that usage should not be significantly altered by the change.

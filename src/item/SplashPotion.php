@@ -33,16 +33,6 @@ class SplashPotion extends ProjectileItem{
 
 	private PotionType $potionType = PotionType::WATER;
 
-	public function __construct(
-		ItemIdentifier $identifier,
-		string $name = "Splash Potion",
-		array $enchantmentTags = [],
-		private bool $linger = false
-	){
-		//TODO: remove unnecessary default parameters in PM6, they remain because backward compatibility
-		parent::__construct($identifier, $name, $enchantmentTags);
-	}
-
 	protected function describeState(RuntimeDataDescriber $w) : void{
 		$w->enum($this->potionType);
 	}
@@ -62,19 +52,10 @@ class SplashPotion extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		$projectile = new SplashPotionEntity($location, $thrower, $this->potionType);
-		$projectile->setLinger($this->linger);
-		return $projectile;
+		return new SplashPotionEntity($location, $thrower, $this->potionType);
 	}
 
 	public function getThrowForce() : float{
 		return 0.5;
-	}
-
-	/**
-	 * Returns whether this splash potion will create an area-effect cloud on impact.
-	 */
-	public function willLinger() : bool{
-		return $this->linger;
 	}
 }

@@ -21,11 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\CopperMaterial;
-use pocketmine\block\utils\CopperTrait;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class CopperChain extends Chain implements CopperMaterial{
-	use CopperTrait;
+class BucketEmptyPowderSnowSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BUCKET_EMPTY_POWDER_SNOW, $pos, false)];
+	}
 }

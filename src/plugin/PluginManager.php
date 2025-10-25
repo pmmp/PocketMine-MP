@@ -533,11 +533,18 @@ class PluginManager{
 	}
 
 	public function tickSchedulers(int $currentTick) : void{
+		$warningThresholdSeconds = 0.05; // 50 ms threshold for plugin scheduler execution
 		foreach(Utils::promoteKeys($this->enabledPlugins) as $pluginName => $p){
-			if(isset($this->enabledPlugins[$pluginName])){
-				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
-				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
-				$p->getScheduler()->mainThreadHeartbeat($currentTick);
+			if(!isset($this->enabledPlugins[$pluginName])){
+				continue;
+			}
+			//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
+			//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
+			$start = microtime(true);
+			$p->getScheduler()->mainThreadHeartbeat($currentTick);
+			$elapsed = microtime(true) - $start;
+			if($elapsed >= $warningThresholdSeconds){
+				$this->server->getLogger()->warning("Plugin scheduler for $pluginName took " . round($elapsed * 1000, 2) . "ms (threshold " . ($warningThresholdSeconds * 1000) . "ms)");
 			}
 		}
 	}

@@ -137,6 +137,21 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 	}
 
 	public function blockAddress(string $address, int $timeout = 300) : void{
+		// Don't block loopback or private addresses used for local testing
+		if(strpos($address, '127.') === 0 || $address === '::1' || strpos($address, '10.') === 0 || strpos($address, '192.168.') === 0 || strpos($address, '169.254.') === 0 || strpos($address, '100.') === 0){
+			$this->logger->debug("Skipping block for local/private address $address");
+			return;
+		}
+
+		// 172.16.0.0 - 172.31.255.255
+		if(strpos($address, '172.') === 0){
+			$parts = explode('.', $address);
+			if(isset($parts[1]) && is_numeric($parts[1]) && (int)$parts[1] >= 16 && (int)$parts[1] <= 31){
+				$this->logger->debug("Skipping block for local/private address $address");
+				return;
+			}
+		}
+
 		$this->blockedIps[$address] = $timeout > 0 ? time() + $timeout : PHP_INT_MAX;
 	}
 

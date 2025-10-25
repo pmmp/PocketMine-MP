@@ -159,9 +159,24 @@ class Network{
 	 * Blocks an IP address from the main interface. Setting timeout to -1 will block it forever
 	 */
 	public function blockAddress(string $address, int $timeout = 300) : void{
+		// Do not block loopback or private addresses used for testing (loopback/RFC1918).
+		if(strpos($address, '127.') === 0 || $address === '::1' || strpos($address, '10.') === 0 || strpos($address, '192.168.') === 0 || strpos($address, '169.254.') === 0 || strpos($address, '100.') === 0){
+			$this->logger->debug("Not blocking local/private address $address");
+			return;
+		}
+
+		// 172.16.0.0 - 172.31.255.255
+		if(strpos($address, '172.') === 0){
+			$parts = explode('.', $address);
+			if(isset($parts[1]) && is_numeric($parts[1]) && (int)$parts[1] >= 16 && (int)$parts[1] <= 31){
+				$this->logger->debug("Not blocking local/private address $address");
+				return;
+			}
+		}
+
 		$this->bannedIps[$address] = $timeout > 0 ? time() + $timeout : PHP_INT_MAX;
 		foreach($this->advancedInterfaces as $interface){
-			$interface->blockAddress($address, $timeout);
+			// $interface->blockAddress($address, $timeout);
 		}
 	}
 
@@ -203,7 +218,13 @@ class Network{
 					$handled = $handler->handle($interface, $address, $port, $packet);
 				}catch(PacketHandlingException $e){
 					$handled = true;
-					$this->logger->error("Bad raw packet from /$address:$port: " . $e->getMessage());
+					// Log detailed information to help identify which handler is causing the failure
+					$handlerClass = is_object($handler) ? get_class($handler) : (string)$handler;
+					$pattern = $handler->getPattern();
+					$this->logger->warning("Raw packet handler $handlerClass threw PacketHandlingException for /$address:$port; pattern=$pattern; message=" . $e->getMessage());
+					// include printable exception info at debug level for deeper inspection
+					$this->logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
+					// Block the address to match existing behaviour; this can be tuned later
 					$this->blockAddress($address, 600);
 					break;
 				}

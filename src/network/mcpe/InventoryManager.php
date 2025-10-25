@@ -392,6 +392,11 @@ class InventoryManager{
 	}
 
 	public function onClientOpenMainInventory() : void{
+		// If the player is currently a spectator, ignore client requests to open the main inventory
+		if($this->player->isSpectator()){
+			$this->session->getLogger()->debug("Ignored client main-inventory open because player is spectator");
+			return;
+		}
 		$this->onCurrentWindowRemove();
 
 		$this->openWindowDeferred(function() : void{
@@ -417,6 +422,23 @@ class InventoryManager{
 			$this->pendingCloseWindowId = $this->lastInventoryNetworkId;
 			$this->enchantingTableOptions = [];
 		}
+	}
+
+	/**
+	 * Force-close all tracked windows (used when switching to spectator to guarantee client UI is closed)
+	 */
+	public function forceCloseAll() : void{
+		// send close for every tracked network window id
+		foreach(array_keys($this->networkIdToInventoryMap) as $id){
+			$inv = $this->networkIdToInventoryMap[$id];
+			$this->remove($id);
+			// send a close packet; false indicates server-initiated close without immediate ack
+			$this->session->sendDataPacket(ContainerClosePacket::create($id, $this->currentWindowType, true));
+		}
+		// Also ensure any pending open/close state is cleared
+		$this->pendingCloseWindowId = null;
+		$this->pendingOpenWindowCallback = null;
+		$this->enchantingTableOptions = [];
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
