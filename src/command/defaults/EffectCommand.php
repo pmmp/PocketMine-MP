@@ -118,13 +118,11 @@ class EffectCommand extends VanillaCommand{
 			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
 			$effectManager->add($instance);
 
-			$durationDisplay = $duration === Limits::INT32_MAX ? "infinite" : (string) ($instance->getDuration() / 20);
-			self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success(
-				$effect->getName(),
-				(string) $instance->getAmplifier(),
-				$player->getDisplayName(),
-				$durationDisplay
-			));
+			if($duration === Limits::INT32_MAX){
+				self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success_infinite($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName()));
+			}else{
+				self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName(), (string) ($instance->getDuration() / 20)));
+			}
 		}
 
 		return true;

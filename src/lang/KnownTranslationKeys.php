@@ -66,6 +66,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_EFFECT_FAILURE_NOTACTIVE_ALL = "commands.effect.failure.notActive.all";
 	public const COMMANDS_EFFECT_NOTFOUND = "commands.effect.notFound";
 	public const COMMANDS_EFFECT_SUCCESS = "commands.effect.success";
+	public const COMMANDS_EFFECT_SUCCESS_INFINITE = "commands.effect.success.infinite";
 	public const COMMANDS_EFFECT_SUCCESS_REMOVED = "commands.effect.success.removed";
 	public const COMMANDS_EFFECT_SUCCESS_REMOVED_ALL = "commands.effect.success.removed.all";
 	public const COMMANDS_EFFECT_USAGE = "commands.effect.usage";

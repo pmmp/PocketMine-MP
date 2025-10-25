@@ -227,6 +227,14 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function commands_effect_success_infinite(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_INFINITE, [
+			0 => $param0,
+			1 => $param1,
+			2 => $param2,
+		]);
+	}
+
 	public static function commands_effect_success_removed(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED, [
 			0 => $param0,

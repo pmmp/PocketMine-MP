@@ -69,6 +69,7 @@ final class KnownTranslationParameterInfo{
 		Keys::COMMANDS_EFFECT_FAILURE_NOTACTIVE_ALL => ["0"],
 		Keys::COMMANDS_EFFECT_NOTFOUND => ["0"],
 		Keys::COMMANDS_EFFECT_SUCCESS => ["0", "1", "2", "3"],
+		Keys::COMMANDS_EFFECT_SUCCESS_INFINITE => ["0", "1", "2"],
 		Keys::COMMANDS_EFFECT_SUCCESS_REMOVED => ["0", "1"],
 		Keys::COMMANDS_EFFECT_SUCCESS_REMOVED_ALL => ["0"],
 		Keys::COMMANDS_EFFECT_USAGE => [],
