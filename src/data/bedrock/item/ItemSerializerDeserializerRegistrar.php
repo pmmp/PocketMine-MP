@@ -216,7 +216,12 @@ final class ItemSerializerDeserializerRegistrar{
 		$this->map1to1Item(Ids::COOKED_RABBIT, Items::COOKED_RABBIT());
 		$this->map1to1Item(Ids::COOKED_SALMON, Items::COOKED_SALMON());
 		$this->map1to1Item(Ids::COOKIE, Items::COOKIE());
+		$this->map1to1Item(Ids::COPPER_BOOTS, Items::COPPER_BOOTS());
+		$this->map1to1Item(Ids::COPPER_CHESTPLATE, Items::COPPER_CHESTPLATE());
+		$this->map1to1Item(Ids::COPPER_HELMET, Items::COPPER_HELMET());
 		$this->map1to1Item(Ids::COPPER_INGOT, Items::COPPER_INGOT());
+		$this->map1to1Item(Ids::COPPER_LEGGINGS, Items::COPPER_LEGGINGS());
+		$this->map1to1Item(Ids::COPPER_NUGGET, Items::COPPER_NUGGET());
 		$this->map1to1Item(Ids::CRIMSON_HANGING_SIGN, Items::CRIMSON_HANGING_SIGN());
 		$this->map1to1Item(Ids::CRIMSON_SIGN, Items::CRIMSON_SIGN());
 		$this->map1to1Item(Ids::DARK_OAK_BOAT, Items::DARK_OAK_BOAT());
