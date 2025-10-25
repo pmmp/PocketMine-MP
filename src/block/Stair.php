@@ -145,7 +145,6 @@ class Stair extends Transparent implements HorizontalFacing, CoveredByWater{
 		}
 		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
 
-		$this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }
