@@ -37,7 +37,8 @@ abstract class VanillaCommand extends Command{
 	public const MIN_COORD = -30000000;
 
 	protected function fetchPermittedPlayerTarget(CommandSender $sender, ?string $target, string $selfPermission, string $otherPermission) : ?Player{
-		if($target !== null){
+		//TODO: we need proper command selector support, but this one is useful and easy to hack in for now
+		if($target !== null && $target !== "@s"){
 			$player = $sender->getServer()->getPlayerByPrefix($target);
 		}elseif($sender instanceof Player){
 			$player = $sender;

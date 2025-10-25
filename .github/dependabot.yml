@@ -7,12 +7,6 @@ updates:
     time: "10:00"
   open-pull-requests-limit: 10
   ignore:
-    #only allow patch updates for locale-data - this has to be updated manually due to codegen
-    - dependency-name: pocketmine/locale-data
-      update-types:
-        - "version-update:semver-major"
-        - "version-update:semver-minor"
-
     #since we lock this to exact versions, it causes conflicts with minor-next & major-next in composer.lock
     #better to just test updates to this locally anyway since almost every version breaks something
     - dependency-name: phpstan/phpstan
