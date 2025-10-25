@@ -78,7 +78,6 @@ use function floatval;
 use function floor;
 use function fmod;
 use function get_class;
-use function max;
 use function min;
 use function sin;
 use function spl_object_id;
