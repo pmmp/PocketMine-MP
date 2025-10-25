@@ -31,10 +31,12 @@ use pocketmine\utils\StringToTParser;
  *
  * @phpstan-extends StringToTParser<Effect>
  */
-final class StringToEffectParser extends StringToTParser{
+final class StringToEffectParser extends StringToTParser
+{
 	use SingletonTrait;
 
-	private static function make() : self{
+	private static function make(): self
+	{
 		$result = new self();
 
 		$result->register("absorption", fn() => VanillaEffects::ABSORPTION());
@@ -64,11 +66,13 @@ final class StringToEffectParser extends StringToTParser{
 		$result->register("water_breathing", fn() => VanillaEffects::WATER_BREATHING());
 		$result->register("weakness", fn() => VanillaEffects::WEAKNESS());
 		$result->register("wither", fn() => VanillaEffects::WITHER());
+		$result->register("slow_falling", fn() => VanillaEffects::SLOW_FALLING());
 
 		return $result;
 	}
 
-	public function parse(string $input) : ?Effect{
+	public function parse(string $input): ?Effect
+	{
 		return parent::parse($input);
 	}
 }

@@ -72,6 +72,7 @@ use function strtolower;
  * @method static Fertilizer BONE_MEAL()
  * @method static Book BOOK()
  * @method static Bow BOW()
+ * @method static Crossbow CROSSBOW()
  * @method static Bowl BOWL()
  * @method static Bread BREAD()
  * @method static Item BRICK()
@@ -440,6 +441,7 @@ final class VanillaItems
 		self::register("bone_meal", fn(IID $id) => new Fertilizer($id, "Bone Meal"));
 		self::register("book", fn(IID $id) => new Book($id, "Book", [EnchantmentTags::ALL]));
 		self::register("bow", fn(IID $id) => new Bow($id, "Bow", [EnchantmentTags::BOW]));
+		self::register("crossbow", fn(IID $id) => new Crossbow($id, "Crossbow", [EnchantmentTags::CROSSBOW]));
 		self::register("bowl", fn(IID $id) => new Bowl($id, "Bowl"));
 		self::register("bread", fn(IID $id) => new Bread($id, "Bread"));
 		self::register("brick", fn(IID $id) => new Item($id, "Brick"));

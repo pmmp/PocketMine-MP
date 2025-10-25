@@ -21,21 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
-
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory
-{
-	use BlockInventoryTrait;
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
-	public function __construct(Position $holder)
-	{
-		$this->holder = $holder;
-		parent::__construct(3);
-	}
+final class ArmorTrimMaterialTypeIds{
+	public const AMETHYST = "amethyst";
+	public const COPPER = "copper";
+	public const DIAMOND = "diamond";
+	public const EMERALD = "emerald";
+	public const GOLD = "gold";
+	public const IRON = "iron";
+	public const LAPIS = "lapis";
+	public const NETHERITE = "netherite";
+	public const QUARTZ = "quartz";
+	public const REDSTONE = "redstone";
+	public const RESIN = "resin";
 }

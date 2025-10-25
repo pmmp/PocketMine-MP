@@ -78,7 +78,8 @@ use function spl_object_id;
  *
  * @phpstan-type TMetadata array{0: string, 1: \Closure() : list<EffectInstance>}
  */
-enum PotionType{
+enum PotionType
+{
 	use LegacyEnumShimTrait;
 
 	case WATER;
@@ -128,11 +129,12 @@ enum PotionType{
 	/**
 	 * @phpstan-return TMetadata
 	 */
-	private function getMetadata() : array{
+	private function getMetadata(): array
+	{
 		/** @phpstan-var array<int, TMetadata> $cache */
 		static $cache = [];
 
-		return $cache[spl_object_id($this)] ??= match($this){
+		return $cache[spl_object_id($this)] ??= match ($this) {
 			self::WATER => ["Water", fn() => []],
 			self::MUNDANE => ["Mundane", fn() => []],
 			self::LONG_MUNDANE => ["Long Mundane", fn() => []],
@@ -247,10 +249,10 @@ enum PotionType{
 				new EffectInstance(VanillaEffects::RESISTANCE(), 20 * 20, 3),
 			]],
 			self::SLOW_FALLING => ["Slow Falling", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOW_FALLING(), 1800)
 			]],
 			self::LONG_SLOW_FALLING => ["Long Slow Falling", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOW_FALLING(), 4800)
 			]],
 			self::STRONG_SLOWNESS => ["Strong Slowness", fn() => [
 				new EffectInstance(VanillaEffects::SLOWNESS(), 20 * 20, 3)
@@ -258,13 +260,17 @@ enum PotionType{
 		};
 	}
 
-	public function getDisplayName() : string{ return $this->getMetadata()[0]; }
+	public function getDisplayName(): string
+	{
+		return $this->getMetadata()[0];
+	}
 
 	/**
 	 * @return EffectInstance[]
 	 * @phpstan-return list<EffectInstance>
 	 */
-	public function getEffects() : array{
+	public function getEffects(): array
+	{
 		return ($this->getMetadata()[1])();
 	}
 }

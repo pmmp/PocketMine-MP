@@ -508,6 +508,19 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
+				// If the client is trying to start using an item, but the server deems it not startable
+				// (for example: a charged crossbow), immediately clear the using state so the client
+				// doesn't remain stuck in the hold animation.
+				$itemInHand = $this->player->getInventory()->getItemInHand();
+				if($itemInHand instanceof \pocketmine\item\Releasable && !$itemInHand->canStartUsingItem($this->player)){
+					// If the server deems the item not startable (for example a charged crossbow),
+					// clear the using state so the client doesn't get stuck in the hold animation,
+					// but continue to handle the click so onClickAir/onReleaseUsing can run (and fire the
+					// charged projectile). Previously we returned early here which prevented the
+					// crossbow from firing.
+					$this->player->setUsingItem(false);
+					// fall through to call useHeldItem() below so the item action runs
+				}
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();

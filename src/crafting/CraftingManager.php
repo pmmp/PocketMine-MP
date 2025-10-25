@@ -37,7 +37,8 @@ use function ksort;
 use function spl_object_id;
 use const SORT_STRING;
 
-class CraftingManager{
+class CraftingManager
+{
 	use DestructorCallbackTrait;
 
 	/**
@@ -69,6 +70,36 @@ class CraftingManager{
 	 */
 	protected array $potionTypeRecipes = [];
 
+
+	/**
+	 * @var SmithingRecipe[]
+	 * @phpstan-var list<SmithingRecipe>
+	 */
+
+	/**
+	 * @return SmithingRecipe[]
+	 * @phpstan-return list<SmithingRecipe>
+	 */
+	public function getSmithingRecipes(): array
+	{
+		return $this->smithingRecipes;
+	}
+
+	public function registerSmithingRecipe(SmithingRecipe $recipe): void
+	{
+		$this->smithingRecipes[] = $recipe;
+
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
+			$callback();
+		}
+	}
+
+	public function getSmithingRecipeFromIndex(int $index): ?SmithingRecipe
+	{
+		return $this->smithingRecipes[$index] ?? null;
+	}
+	protected array $smithingRecipes = [];
+
 	/**
 	 * @var PotionContainerChangeRecipe[]
 	 * @phpstan-var list<PotionContainerChangeRecipe>
@@ -84,16 +115,17 @@ class CraftingManager{
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
-	public function __construct(){
+	public function __construct()
+	{
 		$this->recipeRegisteredCallbacks = new ObjectSet();
-		foreach(FurnaceType::cases() as $furnaceType){
+		foreach (FurnaceType::cases() as $furnaceType) {
 			$this->furnaceRecipeManagers[spl_object_id($furnaceType)] = new FurnaceRecipeManager();
 		}
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
-		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
-			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
-				foreach($recipeRegisteredCallbacks as $callback){
+		foreach ($this->furnaceRecipeManagers as $furnaceRecipeManager) {
+			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function (FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks): void {
+				foreach ($recipeRegisteredCallbacks as $callback) {
 					$callback();
 				}
 			});
@@ -101,20 +133,25 @@ class CraftingManager{
 	}
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
-	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
+	public function getRecipeRegisteredCallbacks(): ObjectSet
+	{
+		return $this->recipeRegisteredCallbacks;
+	}
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
 	 * @deprecated
 	 */
-	public static function sort(Item $i1, Item $i2) : int{
+	public static function sort(Item $i1, Item $i2): int
+	{
 		//Use spaceship operator to compare each property, then try the next one if they are equivalent.
 		($retval = $i1->getStateId() <=> $i2->getStateId()) === 0 && ($retval = $i1->getCount() <=> $i2->getCount()) === 0;
 
 		return $retval;
 	}
 
-	private static function hashOutput(Item $output) : string{
+	private static function hashOutput(Item $output): string
+	{
 		$write = new ByteBufferWriter();
 		VarInt::writeSignedInt($write, $output->getStateId());
 		//TODO: the NBT serializer allocates its own ByteBufferWriter, we should change the API in the future to
@@ -127,12 +164,13 @@ class CraftingManager{
 	/**
 	 * @param Item[] $outputs
 	 */
-	private static function hashOutputs(array $outputs) : string{
-		if(count($outputs) === 1){
+	private static function hashOutputs(array $outputs): string
+	{
+		if (count($outputs) === 1) {
 			return self::hashOutput(array_shift($outputs));
 		}
 		$unique = [];
-		foreach($outputs as $o){
+		foreach ($outputs as $o) {
 			//count is not written because the outputs might be from multiple repetitions of a single recipe
 			//this reduces the accuracy of the hash, but it won't matter in most cases.
 			$hash = self::hashOutput($o);
@@ -146,7 +184,8 @@ class CraftingManager{
 	 * @return ShapelessRecipe[][]
 	 * @phpstan-return array<string, list<ShapelessRecipe>>
 	 */
-	public function getShapelessRecipes() : array{
+	public function getShapelessRecipes(): array
+	{
 		return $this->shapelessRecipes;
 	}
 
@@ -154,7 +193,8 @@ class CraftingManager{
 	 * @return ShapedRecipe[][]
 	 * @phpstan-return array<string, list<ShapedRecipe>>
 	 */
-	public function getShapedRecipes() : array{
+	public function getShapedRecipes(): array
+	{
 		return $this->shapedRecipes;
 	}
 
@@ -162,15 +202,18 @@ class CraftingManager{
 	 * @return CraftingRecipe[]
 	 * @phpstan-return array<int, CraftingRecipe>
 	 */
-	public function getCraftingRecipeIndex() : array{
+	public function getCraftingRecipeIndex(): array
+	{
 		return $this->craftingRecipeIndex;
 	}
 
-	public function getCraftingRecipeFromIndex(int $index) : ?CraftingRecipe{
+	public function getCraftingRecipeFromIndex(int $index): ?CraftingRecipe
+	{
 		return $this->craftingRecipeIndex[$index] ?? null;
 	}
 
-	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
+	public function getFurnaceRecipeManager(FurnaceType $furnaceType): FurnaceRecipeManager
+	{
 		return $this->furnaceRecipeManagers[spl_object_id($furnaceType)];
 	}
 
@@ -178,7 +221,8 @@ class CraftingManager{
 	 * @return PotionTypeRecipe[]
 	 * @phpstan-return list<PotionTypeRecipe>
 	 */
-	public function getPotionTypeRecipes() : array{
+	public function getPotionTypeRecipes(): array
+	{
 		return $this->potionTypeRecipes;
 	}
 
@@ -186,40 +230,45 @@ class CraftingManager{
 	 * @return PotionContainerChangeRecipe[]
 	 * @phpstan-return list<PotionContainerChangeRecipe>
 	 */
-	public function getPotionContainerChangeRecipes() : array{
+	public function getPotionContainerChangeRecipes(): array
+	{
 		return $this->potionContainerChangeRecipes;
 	}
 
-	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
+	public function registerShapedRecipe(ShapedRecipe $recipe): void
+	{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback){
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
 			$callback();
 		}
 	}
 
-	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
+	public function registerShapelessRecipe(ShapelessRecipe $recipe): void
+	{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback){
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
 			$callback();
 		}
 	}
 
-	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
+	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe): void
+	{
 		$this->potionTypeRecipes[] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback){
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
 			$callback();
 		}
 	}
 
-	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
+	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe): void
+	{
 		$this->potionContainerChangeRecipes[] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback){
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
 			$callback();
 		}
 	}
@@ -227,22 +276,23 @@ class CraftingManager{
 	/**
 	 * @param Item[] $outputs
 	 */
-	public function matchRecipe(CraftingGrid $grid, array $outputs) : ?CraftingRecipe{
+	public function matchRecipe(CraftingGrid $grid, array $outputs): ?CraftingRecipe
+	{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
 
 		$outputHash = self::hashOutputs($outputs);
 
-		if(isset($this->shapedRecipes[$outputHash])){
-			foreach($this->shapedRecipes[$outputHash] as $recipe){
-				if($recipe->matchesCraftingGrid($grid)){
+		if (isset($this->shapedRecipes[$outputHash])) {
+			foreach ($this->shapedRecipes[$outputHash] as $recipe) {
+				if ($recipe->matchesCraftingGrid($grid)) {
 					return $recipe;
 				}
 			}
 		}
 
-		if(isset($this->shapelessRecipes[$outputHash])){
-			foreach($this->shapelessRecipes[$outputHash] as $recipe){
-				if($recipe->matchesCraftingGrid($grid)){
+		if (isset($this->shapelessRecipes[$outputHash])) {
+			foreach ($this->shapelessRecipes[$outputHash] as $recipe) {
+				if ($recipe->matchesCraftingGrid($grid)) {
 					return $recipe;
 				}
 			}
@@ -257,40 +307,42 @@ class CraftingManager{
 	 * @return CraftingRecipe[]|\Generator
 	 * @phpstan-return \Generator<int, CraftingRecipe, void, void>
 	 */
-	public function matchRecipeByOutputs(array $outputs) : \Generator{
+	public function matchRecipeByOutputs(array $outputs): \Generator
+	{
 		//TODO: try to match special recipes before anything else (first they need to be implemented!)
 
 		$outputHash = self::hashOutputs($outputs);
 
-		if(isset($this->shapedRecipes[$outputHash])){
-			foreach($this->shapedRecipes[$outputHash] as $recipe){
+		if (isset($this->shapedRecipes[$outputHash])) {
+			foreach ($this->shapedRecipes[$outputHash] as $recipe) {
 				yield $recipe;
 			}
 		}
 
-		if(isset($this->shapelessRecipes[$outputHash])){
-			foreach($this->shapelessRecipes[$outputHash] as $recipe){
+		if (isset($this->shapelessRecipes[$outputHash])) {
+			foreach ($this->shapelessRecipes[$outputHash] as $recipe) {
 				yield $recipe;
 			}
 		}
 	}
 
-	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
+	public function matchBrewingRecipe(Item $input, Item $ingredient): ?BrewingRecipe
+	{
 		$inputHash = $input->getStateId();
 		$ingredientHash = $ingredient->getStateId();
 		$cached = $this->brewingRecipeCache[$inputHash][$ingredientHash] ?? null;
-		if($cached !== null){
+		if ($cached !== null) {
 			return $cached;
 		}
 
-		foreach($this->potionContainerChangeRecipes as $recipe){
-			if($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null){
+		foreach ($this->potionContainerChangeRecipes as $recipe) {
+			if ($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null) {
 				return $this->brewingRecipeCache[$inputHash][$ingredientHash] = $recipe;
 			}
 		}
 
-		foreach($this->potionTypeRecipes as $recipe){
-			if($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null){
+		foreach ($this->potionTypeRecipes as $recipe) {
+			if ($recipe->getIngredient()->accepts($ingredient) && $recipe->getResultFor($input) !== null) {
 				return $this->brewingRecipeCache[$inputHash][$ingredientHash] = $recipe;
 			}
 		}

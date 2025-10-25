@@ -363,7 +363,12 @@ final class ItemTypeIds{
 
 	public const COPPER_HOE = 20323;
 
-	public const FIRST_UNUSED_ITEM_ID = 20324;
+	/**
+	 * Static constant for Crossbow to avoid dynamic id generation log messages.
+	 */
+	public const CROSSBOW = 20324;
+
+	public const FIRST_UNUSED_ITEM_ID = 20325;
 
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;

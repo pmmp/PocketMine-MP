@@ -62,6 +62,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
+use pocketmine\entity\effect\SlowFallEffect;
+
 use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
 use pocketmine\world\sound\EntityLandSound;
@@ -163,11 +165,18 @@ abstract class Living extends Entity
 		parent::initEntity($nbt);
 
 		$this->effectManager = new EffectManager($this);
-		$this->effectManager->getEffectAddHooks()->add(function (): void {
-			$this->networkPropertiesDirty = true;
+		// $this->effectManager->getEffectAddHooks()->add(function (): void {
+		// 	$this->networkPropertiesDirty = true;
+		// });
+		// $this->effectManager->getEffectRemoveHooks()->add(function (): void {
+		// 	$this->networkPropertiesDirty = true;
+		// });
+
+		$this->effectManager->getEffectAddHooks()->add(function (EffectInstance $effect): void {
+			$this->onEffectAdded($effect);
 		});
-		$this->effectManager->getEffectRemoveHooks()->add(function (): void {
-			$this->networkPropertiesDirty = true;
+		$this->effectManager->getEffectRemoveHooks()->add(function (EffectInstance $effect): void {
+			$this->onEffectRemoved($effect);
 		});
 
 		$this->armorInventory = new ArmorInventory($this);
@@ -1180,6 +1189,22 @@ abstract class Living extends Entity
 
 		$this->setMovementSpeed(max(0.0, $target));
 		$this->freezeMovementAdd = $addValue;
+	}
+
+	protected function onEffectAdded(EffectInstance $effect): void
+	{
+		if ($effect->getType() instanceof SlowFallEffect) {
+			$this->gravity = 0.01;
+		}
+		$this->networkPropertiesDirty = true;
+	}
+
+	protected function onEffectRemoved(EffectInstance $effect): void
+	{
+		if ($effect->getType() instanceof SlowFallEffect) {
+			$this->gravity = $this->getInitialGravity();
+		}
+		$this->networkPropertiesDirty = true;
 	}
 
 	protected function updateFreezeState(int $tickDiff): bool

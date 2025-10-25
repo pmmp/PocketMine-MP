@@ -51,6 +51,8 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function make() : self{
 		$result = new self();
+		// Ensure block registry is populated before we register aliases that resolve to Blocks::...()
+		\pocketmine\block\VanillaBlocks::getAll();
 
 		self::registerDynamicBlocks($result);
 		self::registerBlocks($result);
@@ -279,7 +281,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("concrete", fn() => Blocks::CONCRETE());
 		$result->registerBlock("concrete_powder", fn() => Blocks::CONCRETE_POWDER());
 		$result->registerBlock("concretepowder", fn() => Blocks::CONCRETE_POWDER());
-		$result->registerBlock("copper_ore", fn() => Blocks::COPPER_ORE());
 		$result->registerBlock("coral", fn() => Blocks::CORAL());
 		$result->registerBlock("coral_block", fn() => Blocks::CORAL_BLOCK());
 		$result->registerBlock("coral_fan", fn() => Blocks::CORAL_FAN());
@@ -1258,6 +1259,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("book", fn() => Items::BOOK());
 		$result->register("bottle_o_enchanting", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("bow", fn() => Items::BOW());
+		$result->register("crossbow", fn() => Items::CROSSBOW());
 		$result->register("bowl", fn() => Items::BOWL());
 		$result->register("bread", fn() => Items::BREAD());
 		$result->register("brick", fn() => Items::BRICK());

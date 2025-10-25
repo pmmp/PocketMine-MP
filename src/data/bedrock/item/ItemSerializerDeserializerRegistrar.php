@@ -194,6 +194,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::BONE_MEAL, Items::BONE_MEAL());
 		$this->map1to1Item(Ids::BOOK, Items::BOOK());
 		$this->map1to1Item(Ids::BOW, Items::BOW());
+		$this->map1to1Item(Ids::CROSSBOW, Items::CROSSBOW());
 		$this->map1to1Item(Ids::BOWL, Items::BOWL());
 		$this->map1to1Item(Ids::BREAD, Items::BREAD());
 		$this->map1to1Item(Ids::BRICK, Items::BRICK());

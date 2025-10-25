@@ -97,5 +97,10 @@ enum GameMode{
 		return $this->getMetadata()[2];
 	}
 
-	//TODO: ability sets per gamemode
+	// gamemode spectator invisble inventory
+	
+
+
+
+
 }

@@ -138,6 +138,7 @@ final class CreativeInventoryCache{
 				//TODO: HACK! In 1.21.60, Workaround glitchy behaviour when an item is used as an icon for a group it
 				//doesn't belong to. Without this hack, both instances of the item will show a +, but neither of them
 				//will actually expand the group work correctly.
+
 				$groupIcon->getNamedTag()->setInt("___GroupBugWorkaround___", $index);
 				$groupName = $group->getName();
 				$groupEntries[] = new CreativeGroupEntry(

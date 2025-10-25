@@ -34,59 +34,90 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
+
+
+use pocketmine\data\bedrock\ArmorTrimMaterialTypeIdMap;
+use pocketmine\data\bedrock\ArmorTrimPatternTypeIdMap;
 use function mt_rand;
 
-class Armor extends Durable{
+class Armor extends Durable
+{
 
 	public const TAG_CUSTOM_COLOR = "customColor"; //TAG_Int
 
 	private ArmorTypeInfo $armorInfo;
+
+	private const TAG_TRIM = "Trim"; // TAG_Compound
+	private const TAG_TRIM_MATERIAL = "Material"; //TAG_String
+	private const TAG_TRIM_PATTERN = "Pattern"; //TAG_String
+	private ?ArmorTrim $armorTrim = null;
 
 	protected ?Color $customColor = null;
 
 	/**
 	 * @param string[] $enchantmentTags
 	 */
-	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = []){
+	public function __construct(ItemIdentifier $identifier, string $name, ArmorTypeInfo $info, array $enchantmentTags = [])
+	{
 		parent::__construct($identifier, $name, $enchantmentTags);
 		$this->armorInfo = $info;
 	}
+	public function getTrim(): ?ArmorTrim
+	{
+		return $this->armorTrim;
+	}
 
-	public function getMaxDurability() : int{
+	/** @return $this */
+	public function setTrim(?ArmorTrim $trim): self
+	{
+		$this->armorTrim = $trim;
+		return $this;
+	}
+
+
+	public function getMaxDurability(): int
+	{
 		return $this->armorInfo->getMaxDurability();
 	}
 
-	public function getDefensePoints() : int{
+	public function getDefensePoints(): int
+	{
 		return $this->armorInfo->getDefensePoints();
 	}
 
 	/**
 	 * @see ArmorInventory
 	 */
-	public function getArmorSlot() : int{
+	public function getArmorSlot(): int
+	{
 		return $this->armorInfo->getArmorSlot();
 	}
 
-	public function getMaxStackSize() : int{
+	public function getMaxStackSize(): int
+	{
 		return 1;
 	}
 
-	public function isFireProof() : bool{
+	public function isFireProof(): bool
+	{
 		return $this->armorInfo->isFireProof();
 	}
 
-	public function getMaterial() : ArmorMaterial{
+	public function getMaterial(): ArmorMaterial
+	{
 		return $this->armorInfo->getMaterial();
 	}
 
-	public function getEnchantability() : int{
+	public function getEnchantability(): int
+	{
 		return $this->armorInfo->getMaterial()->getEnchantability();
 	}
 
 	/**
 	 * Returns the dyed colour of this armour piece. This generally only applies to leather armour.
 	 */
-	public function getCustomColor() : ?Color{
+	public function getCustomColor(): ?Color
+	{
 		return $this->customColor;
 	}
 
@@ -95,13 +126,15 @@ class Armor extends Durable{
 	 *
 	 * @return $this
 	 */
-	public function setCustomColor(Color $color) : self{
+	public function setCustomColor(Color $color): self
+	{
 		$this->customColor = $color;
 		return $this;
 	}
 
 	/** @return $this */
-	public function clearCustomColor() : self{
+	public function clearCustomColor(): self
+	{
 		$this->customColor = null;
 		return $this;
 	}
@@ -110,12 +143,13 @@ class Armor extends Durable{
 	 * Returns the total enchantment protection factor this armour piece offers from all applicable protection
 	 * enchantments on the item.
 	 */
-	public function getEnchantmentProtectionFactor(EntityDamageEvent $event) : int{
+	public function getEnchantmentProtectionFactor(EntityDamageEvent $event): int
+	{
 		$epf = 0;
 
-		foreach($this->getEnchantments() as $enchantment){
+		foreach ($this->getEnchantments() as $enchantment) {
 			$type = $enchantment->getType();
-			if($type instanceof ProtectionEnchantment && $type->isApplicable($event)){
+			if ($type instanceof ProtectionEnchantment && $type->isApplicable($event)) {
 				$epf += $type->getProtectionFactor($enchantment->getLevel());
 			}
 		}
@@ -123,13 +157,14 @@ class Armor extends Durable{
 		return $epf;
 	}
 
-	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0){
+	protected function getUnbreakingDamageReduction(int $amount): int
+	{
+		if (($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0) {
 			$negated = 0;
 
 			$chance = 1 / ($unbreakingLevel + 1);
-			for($i = 0; $i < $amount; ++$i){
-				if(mt_rand(1, 100) > 60 && Utils::getRandomFloat() > $chance){ //unbreaking only applies to armor 40% of the time at best
+			for ($i = 0; $i < $amount; ++$i) {
+				if (mt_rand(1, 100) > 60 && Utils::getRandomFloat() > $chance) { //unbreaking only applies to armor 40% of the time at best
 					$negated++;
 				}
 			}
@@ -140,36 +175,54 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems): ItemUseResult
+	{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
 		$thisCopy = clone $this;
 		$new = $thisCopy->pop();
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $new);
 		$player->getInventory()->setItemInHand($existing);
 		$sound = $new->getMaterial()->getEquipSound();
-		if($sound !== null){
+		if ($sound !== null) {
 			$player->broadcastSound($sound);
 		}
-		if(!$thisCopy->isNull()){
+		if (!$thisCopy->isNull()) {
 			//if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins)
 			$returnedItems[] = $thisCopy;
 		}
 		return ItemUseResult::SUCCESS;
 	}
 
-	protected function deserializeCompoundTag(CompoundTag $tag) : void{
+	protected function deserializeCompoundTag(CompoundTag $tag): void
+	{
 		parent::deserializeCompoundTag($tag);
-		if(($colorTag = $tag->getTag(self::TAG_CUSTOM_COLOR)) instanceof IntTag){
+		if (($colorTag = $tag->getTag(self::TAG_CUSTOM_COLOR)) instanceof IntTag) {
 			$this->customColor = Color::fromARGB(Binary::unsignInt($colorTag->getValue()));
-		}else{
+		} else {
 			$this->customColor = null;
+		}
+		$trimTag = $tag->getTag(self::TAG_TRIM);
+		if ($trimTag instanceof CompoundTag) {
+			$material = ArmorTrimMaterialTypeIdMap::getInstance()->fromId($trimTag->getString(self::TAG_TRIM_MATERIAL));
+			$pattern = ArmorTrimPatternTypeIdMap::getInstance()->fromId($trimTag->getString(self::TAG_TRIM_PATTERN));
+
+			if ($material !== null && $pattern !== null) {
+				$this->armorTrim = new ArmorTrim($material, $pattern);
+			}
 		}
 	}
 
-	protected function serializeCompoundTag(CompoundTag $tag) : void{
+	protected function serializeCompoundTag(CompoundTag $tag): void
+	{
 		parent::serializeCompoundTag($tag);
 		$this->customColor !== null ?
 			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
+
+		$this->armorTrim !== null ?
+			$tag->setTag(self::TAG_TRIM, CompoundTag::create()
+				->setString(self::TAG_TRIM_MATERIAL, ArmorTrimMaterialTypeIdMap::getInstance()->toId($this->armorTrim->getMaterial()))
+				->setString(self::TAG_TRIM_PATTERN, ArmorTrimPatternTypeIdMap::getInstance()->toId($this->armorTrim->getPattern()))) :
+			$tag->removeTag(self::TAG_TRIM);
 	}
 }

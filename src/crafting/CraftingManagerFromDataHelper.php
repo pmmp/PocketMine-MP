@@ -43,26 +43,30 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
 use Symfony\Component\Filesystem\Path;
+use pocketmine\crafting\json\SmithingTransformRecipeData;
+use pocketmine\crafting\json\SmithingTrimRecipeData;
 use function base64_decode;
 use function get_debug_type;
 use function is_array;
 use function is_object;
 use function json_decode;
 
-final class CraftingManagerFromDataHelper{
+final class CraftingManagerFromDataHelper
+{
 
-	private static function deserializeIngredient(RecipeIngredientData $data) : ?RecipeIngredient{
-		if(isset($data->count) && $data->count !== 1){
+	private static function deserializeIngredient(RecipeIngredientData $data): ?RecipeIngredient
+	{
+		if (isset($data->count) && $data->count !== 1) {
 			//every case we've seen so far where this isn't the case, it's been a bug and the count was ignored anyway
 			//e.g. gold blocks crafted from 9 ingots, but each input item individually had a count of 9
 			throw new SavedDataLoadingException("Recipe inputs should have a count of exactly 1");
 		}
-		if(isset($data->tag)){
+		if (isset($data->tag)) {
 			return new TagWildcardRecipeIngredient($data->tag);
 		}
 
 		$meta = $data->meta ?? null;
-		if($meta === RecipeIngredientData::WILDCARD_META_VALUE){
+		if ($meta === RecipeIngredientData::WILDCARD_META_VALUE) {
 			//this could be an unimplemented item, but it doesn't really matter, since the item shouldn't be able to
 			//be obtained anyway - filtering unknown items is only really important for outputs, to prevent players
 			//obtaining them
@@ -78,14 +82,15 @@ final class CraftingManagerFromDataHelper{
 			[],
 			[]
 		);
-		if($itemStack === null){
+		if ($itemStack === null) {
 			//probably unknown item
 			return null;
 		}
 		return new ExactRecipeIngredient($itemStack);
 	}
 
-	public static function deserializeItemStack(ItemStackData $data) : ?Item{
+	public static function deserializeItemStack(ItemStackData $data): ?Item
+	{
 		//count, name, block_name, block_states, meta, nbt, can_place_on, can_destroy
 		return self::deserializeItemStackFromFields(
 			$data->name,
@@ -102,23 +107,23 @@ final class CraftingManagerFromDataHelper{
 	 * @param string[] $canPlaceOn
 	 * @param string[] $canDestroy
 	 */
-	private static function deserializeItemStackFromFields(string $name, ?int $meta, ?int $count, ?string $blockStatesRaw, ?string $nbtRaw, array $canPlaceOn, array $canDestroy) : ?Item{
+	private static function deserializeItemStackFromFields(string $name, ?int $meta, ?int $count, ?string $blockStatesRaw, ?string $nbtRaw, array $canPlaceOn, array $canDestroy): ?Item
+	{
 		$meta ??= 0;
 		$count ??= 1;
 
 		$blockName = BlockItemIdMap::getInstance()->lookupBlockId($name);
-		if($blockName !== null){
-			if($meta !== 0){
+		if ($blockName !== null) {
+			if ($meta !== 0) {
 				throw new SavedDataLoadingException("Meta should not be specified for blockitems");
 			}
 			$blockStatesTag = $blockStatesRaw === null ?
-				[] :
-				(new LittleEndianNbtSerializer())
-					->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
-					->mustGetCompoundTag()
-					->getValue();
+				[] : (new LittleEndianNbtSerializer())
+				->read(ErrorToExceptionHandler::trapAndRemoveFalse(fn() => base64_decode($blockStatesRaw, true)))
+				->mustGetCompoundTag()
+				->getValue();
 			$blockStateData = BlockStateData::current($blockName, $blockStatesTag);
-		}else{
+		} else {
 			$blockStateData = null;
 		}
 
@@ -140,9 +145,9 @@ final class CraftingManagerFromDataHelper{
 			$canDestroy,
 		);
 
-		try{
+		try {
 			return GlobalItemDataHandlers::getDeserializer()->deserializeStack($itemStackData);
-		}catch(ItemTypeDeserializeException){
+		} catch (ItemTypeDeserializeException) {
 			//probably unknown item
 			return null;
 		}
@@ -155,9 +160,10 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-param class-string<TData> $modelCLass
 	 * @phpstan-return list<TData>
 	 */
-	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass) : array{
+	public static function loadJsonArrayOfObjectsFile(string $filePath, string $modelCLass): array
+	{
 		$recipes = json_decode(Filesystem::fileGetContents($filePath));
-		if(!is_array($recipes)){
+		if (!is_array($recipes)) {
 			throw new SavedDataLoadingException("$filePath root should be an array, got " . get_debug_type($recipes));
 		}
 
@@ -174,11 +180,12 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-param class-string<TRecipeData> $modelClass
 	 * @phpstan-return TRecipeData
 	 */
-	private static function loadJsonObjectIntoModel(\JsonMapper $mapper, string $modelClass, object $data) : object{
+	private static function loadJsonObjectIntoModel(\JsonMapper $mapper, string $modelClass, object $data): object
+	{
 		//JsonMapper does this for subtypes, but not for the base type :(
-		try{
+		try {
 			return $mapper->map($data, (new \ReflectionClass($modelClass))->newInstanceWithoutConstructor());
-		}catch(\JsonMapper_Exception $e){
+		} catch (\JsonMapper_Exception $e) {
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
 	}
@@ -191,47 +198,49 @@ final class CraftingManagerFromDataHelper{
 	 * @phpstan-param class-string<TRecipeData> $modelClass
 	 * @phpstan-return list<TRecipeData>
 	 */
-	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data) : array{
+	private static function loadJsonObjectListIntoModel(\JsonMapper $mapper, string $modelClass, array $data): array
+	{
 		$result = [];
-		foreach(Utils::promoteKeys($data) as $i => $item){
-			if(!is_object($item)){
+		foreach (Utils::promoteKeys($data) as $i => $item) {
+			if (!is_object($item)) {
 				throw new SavedDataLoadingException("Invalid entry at index $i: expected object, got " . get_debug_type($item));
 			}
-			try{
+			try {
 				$result[] = self::loadJsonObjectIntoModel($mapper, $modelClass, $item);
-			}catch(SavedDataLoadingException $e){
+			} catch (SavedDataLoadingException $e) {
 				throw new SavedDataLoadingException("Invalid entry at index $i: " . $e->getMessage(), 0, $e);
 			}
 		}
 		return $result;
 	}
 
-	public static function make(string $directoryPath) : CraftingManager{
+	public static function make(string $directoryPath): CraftingManager
+	{
 		$result = new CraftingManager();
 
-		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe){
-			$recipeType = match($recipe->block){
+		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shapeless_crafting.json'), ShapelessRecipeData::class) as $recipe) {
+			$recipeType = match ($recipe->block) {
 				"crafting_table" => ShapelessRecipeType::CRAFTING,
 				"stonecutter" => ShapelessRecipeType::STONECUTTER,
 				"smithing_table" => ShapelessRecipeType::SMITHING,
 				"cartography_table" => ShapelessRecipeType::CARTOGRAPHY,
 				default => null
 			};
-			if($recipeType === null){
+			if ($recipeType === null) {
 				continue;
 			}
 			$inputs = [];
-			foreach($recipe->input as $inputData){
+			foreach ($recipe->input as $inputData) {
 				$input = self::deserializeIngredient($inputData);
-				if($input === null){ //unknown input item
+				if ($input === null) { //unknown input item
 					continue 2;
 				}
 				$inputs[] = $input;
 			}
 			$outputs = [];
-			foreach($recipe->output as $outputData){
+			foreach ($recipe->output as $outputData) {
 				$output = self::deserializeItemStack($outputData);
-				if($output === null){ //unknown output item
+				if ($output === null) { //unknown output item
 					continue 2;
 				}
 				$outputs[] = $output;
@@ -243,22 +252,22 @@ final class CraftingManagerFromDataHelper{
 				$recipeType
 			));
 		}
-		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shaped_crafting.json'), ShapedRecipeData::class) as $recipe){
-			if($recipe->block !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'shaped_crafting.json'), ShapedRecipeData::class) as $recipe) {
+			if ($recipe->block !== "crafting_table") { //TODO: filter others out for now to avoid breaking economics
 				continue;
 			}
 			$inputs = [];
-			foreach(Utils::stringifyKeys($recipe->input) as $symbol => $inputData){
+			foreach (Utils::stringifyKeys($recipe->input) as $symbol => $inputData) {
 				$input = self::deserializeIngredient($inputData);
-				if($input === null){ //unknown input item
+				if ($input === null) { //unknown input item
 					continue 2;
 				}
 				$inputs[$symbol] = $input;
 			}
 			$outputs = [];
-			foreach($recipe->output as $outputData){
+			foreach ($recipe->output as $outputData) {
 				$output = self::deserializeItemStack($outputData);
-				if($output === null){ //unknown output item
+				if ($output === null) { //unknown output item
 					continue 2;
 				}
 				$outputs[] = $output;
@@ -270,8 +279,8 @@ final class CraftingManagerFromDataHelper{
 				$outputs
 			));
 		}
-		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe){
-			$furnaceType = match ($recipe->block){
+		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smelting.json'), FurnaceRecipeData::class) as $recipe) {
+			$furnaceType = match ($recipe->block) {
 				"furnace" => FurnaceType::FURNACE,
 				"blast_furnace" => FurnaceType::BLAST_FURNACE,
 				"smoker" => FurnaceType::SMOKER,
@@ -279,15 +288,15 @@ final class CraftingManagerFromDataHelper{
 				"soul_campfire" => FurnaceType::SOUL_CAMPFIRE,
 				default => null
 			};
-			if($furnaceType === null){
+			if ($furnaceType === null) {
 				continue;
 			}
 			$output = self::deserializeItemStack($recipe->output);
-			if($output === null){
+			if ($output === null) {
 				continue;
 			}
 			$input = self::deserializeIngredient($recipe->input);
-			if($input === null){
+			if ($input === null) {
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
@@ -295,45 +304,28 @@ final class CraftingManagerFromDataHelper{
 				$input
 			));
 		}
-
-		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_type.json'), PotionTypeRecipeData::class) as $recipe){
+		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing.json'), SmithingTransformRecipeData::class) as $recipe) {
 			$input = self::deserializeIngredient($recipe->input);
-			$ingredient = self::deserializeIngredient($recipe->ingredient);
+			$template = self::deserializeIngredient($recipe->template);
+			$addition = self::deserializeIngredient($recipe->addition);
 			$output = self::deserializeItemStack($recipe->output);
-			if($input === null || $ingredient === null || $output === null){
+
+			//TODO: smithing
+			if ($input === null || $template === null || $addition === null || $output === null) {
 				continue;
 			}
-			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
-				$input,
-				$ingredient,
-				$output
-			));
+			$result->registerSmithingRecipe(new SmithingTransformRecipe($input, $addition, $template, $output));
 		}
-		foreach(self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'potion_container_change.json'), PotionContainerChangeRecipeData::class) as $recipe){
-			$ingredient = self::deserializeIngredient($recipe->ingredient);
-			if($ingredient === null){
+		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing_trim.json'), SmithingTrimRecipeData::class) as $recipe) {
+			$input = self::deserializeIngredient($recipe->input);
+			$addition = self::deserializeIngredient($recipe->addition);
+			$template = self::deserializeIngredient($recipe->template);
+
+			if ($input === null || $template === null || $addition === null) {
 				continue;
 			}
-
-			$inputId = $recipe->input_item_name;
-			$outputId = $recipe->output_item_name;
-
-			//TODO: this is a really awful way to just check if an ID is recognized ...
-			if(
-				self::deserializeItemStackFromFields($inputId, null, null, null, null, [], []) === null ||
-				self::deserializeItemStackFromFields($outputId, null, null, null, null, [], []) === null
-			){
-				//unknown item
-				continue;
-			}
-			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
-				$inputId,
-				$ingredient,
-				$outputId
-			));
+			$result->registerSmithingRecipe(new SmithingTrimRecipe($input, $addition, $template));
 		}
-
-		//TODO: smithing
 
 		return $result;
 	}

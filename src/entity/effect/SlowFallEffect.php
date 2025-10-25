@@ -21,21 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\entity\effect;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory
-{
-	use BlockInventoryTrait;
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
-	public function __construct(Position $holder)
-	{
-		$this->holder = $holder;
-		parent::__construct(3);
+class SlowFallEffect extends Effect{
+	public function canTick(EffectInstance $instance) : bool{
+		return true;
+	}
+
+	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
+		$entity->resetFallDistance();
 	}
 }

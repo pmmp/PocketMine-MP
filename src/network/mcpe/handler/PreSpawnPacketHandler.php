@@ -46,22 +46,36 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\VersionInfo;
 use Ramsey\Uuid\Uuid;
+use pocketmine\data\bedrock\ArmorTrimMaterialTypeIdMap;
+use pocketmine\data\bedrock\ArmorTrimPatternTypeIdMap;
+use pocketmine\item\ArmorTrimMaterial;
+use pocketmine\item\ArmorTrimPattern;
+use pocketmine\network\mcpe\protocol\TrimDataPacket;
+
+use pocketmine\network\mcpe\protocol\types\TrimMaterial;
+use pocketmine\network\mcpe\protocol\types\TrimPattern;
+use pocketmine\world\format\io\GlobalItemDataHandlers;
+
+use function array_map;
+
 use function sprintf;
 
 /**
  * Handler used for the pre-spawn phase of the session.
  */
-class PreSpawnPacketHandler extends PacketHandler{
+class PreSpawnPacketHandler extends PacketHandler
+{
 	public function __construct(
 		private Server $server,
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){}
+	) {}
 
-	public function setUp() : void{
+	public function setUp(): void
+	{
 		Timings::$playerNetworkSendPreSpawnGameData->startTiming();
-		try{
+		try {
 			$location = $this->player->getLocation();
 			$world = $location->getWorld();
 
@@ -134,7 +148,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->session->syncAdventureSettings();
 
 			$this->session->getLogger()->debug("Sending effects");
-			foreach($this->player->getEffects()->all() as $effect){
+			foreach ($this->player->getEffects()->all() as $effect) {
 				$this->session->getEntityEventBroadcaster()->onEntityEffectAdded([$this->session], $this->player, $effect, false);
 			}
 
@@ -147,24 +161,37 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 			$this->session->getLogger()->debug("Sending creative inventory data");
 			$this->inventoryManager->syncCreative();
+			$this->session->getLogger()->debug("Sending armor trim data");
 
+			$serializer = GlobalItemDataHandlers::getSerializer();
+			$patternMap = ArmorTrimPatternTypeIdMap::getInstance();
+			$materialMap = ArmorTrimMaterialTypeIdMap::getInstance();
+
+			$this->session->sendDataPacket(
+				TrimDataPacket::create(
+					array_map(fn(ArmorTrimPattern $pattern) => new TrimPattern($serializer->serializeType($pattern->getItem())->getName(), $patternMap->toId($pattern)), $patternMap->getAllPatterns()),
+					array_map(fn(ArmorTrimMaterial $material) => new TrimMaterial($materialMap->toId($material), $material->getColor(), $serializer->serializeType($material->getItem())->getName()), $materialMap->getAllMaterials())
+				)
+			);
 			$this->session->getLogger()->debug("Sending crafting data");
 			$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
 
 			$this->session->getLogger()->debug("Sending player list");
 			$this->session->syncPlayerList($this->server->getOnlinePlayers());
-		}finally{
+		} finally {
 			Timings::$playerNetworkSendPreSpawnGameData->stopTiming();
 		}
 	}
 
-	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
+	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet): bool
+	{
 		$this->player->setViewDistance($packet->radius);
 
 		return true;
 	}
 
-	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet): bool
+	{
 		//the client will send this every tick once we start sending chunks, but we don't handle it in this stage
 		//this is very spammy so we filter it out
 		return true;
