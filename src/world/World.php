@@ -2033,11 +2033,11 @@ class World implements ChunkManager{
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
-				$displacedBlock = null;
+				$displacedBlock = Block::EMPTY_STATE_ID;
 			}
 		}else{
 			$block = VanillaBlocks::AIR();
-			$displacedBlock = null;
+			$displacedBlock = Block::EMPTY_STATE_ID;
 		}
 
 		if($block instanceof CoveredByWater && $displacedBlock !== Block::EMPTY_STATE_ID){

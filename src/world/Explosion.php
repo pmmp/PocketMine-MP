@@ -48,8 +48,8 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
-use function min;
 use function max;
+use function min;
 use function mt_rand;
 use function sqrt;
 
