@@ -44,6 +44,10 @@ class PowderSnow extends Flowable{
 		return [];
 	}
 
+	public function getPickedItem(bool $addUserData = false) : Item{
+		return VanillaItems::POWDER_SNOW_BUCKET();
+	}
+
 	public function onEntityLand(Entity $entity) : ?float{
 		$entity->resetFallDistance();
 		return null;
