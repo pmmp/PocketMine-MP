@@ -130,6 +130,7 @@ abstract class Living extends Entity{
 	protected Attribute $moveSpeedAttr;
 
 	protected bool $isAccumulatingFreeze = false;
+	protected bool $freezeLocked = false;
 	protected int $freezeProgressTicks = 0;
 	protected float $freezeMovementAdd = 0.0;
 
@@ -496,6 +497,23 @@ abstract class Living extends Entity{
 	}
 
 	/**
+	 * Returns whether freeze ticking is currently locked for this entity.
+	 */
+	public function isFreezeTickingLocked() : bool{
+		return $this->freezeLocked;
+	}
+
+	/**
+	 * Locks or unlocks freeze ticking for this entity. When locked, the entity will not accumulate or lose freeze
+	 * progress.
+	 *
+	 * @param bool $locked Whether to lock freeze ticking
+	 */
+	public function lockFreezeTicks(bool $locked = true) : void{
+		$this->freezeLocked = $locked;
+	}
+
+	/**
 	 * Whether this entity can be frozen (i.e. accumulate freeze progress from environments such as powder snow).
 	 */
 	public function isFreezable() : bool{
@@ -523,7 +541,7 @@ abstract class Living extends Entity{
 
 	protected function updateFreezeState(int $tickDiff) : bool{
 		$threshold = $this->getFreezeThresholdTicks();
-		if($this->isAccumulatingFreeze){
+		if($this->isAccumulatingFreeze && !$this->freezeLocked){
 			$this->setFreezeProgressTicks($this->freezeProgressTicks + $tickDiff);
 			if($this->freezeProgressTicks >= $threshold && (($this->freezeProgressTicks % 40 === 0) || $tickDiff > 40)){
 				$this->applyFreezeDamage();
@@ -533,7 +551,7 @@ abstract class Living extends Entity{
 			return true;
 		}
 
-		if($this->freezeProgressTicks > 0){
+		if($this->freezeProgressTicks > 0 && !$this->freezeLocked){
 			$this->setFreezeProgressTicks(max(0, min($this->freezeProgressTicks, $threshold) - 2 * $tickDiff));
 			$this->onFreezeAttributeModifierChanged(-0.05 * $this->getFreezeProgressRatio());
 			return true;
