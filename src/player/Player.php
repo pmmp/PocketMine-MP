@@ -290,7 +290,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
-	protected bool $sneakBindPressed = false;
+	protected bool $sneakPressed = false;
 
 	protected float $flightSpeedMultiplier = self::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 
@@ -1281,8 +1281,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
-	public function isSneakBindPressed() : bool{
-		return $this->sneakBindPressed;
+	public function isSneakPressed() : bool{
+		return $this->sneakPressed;
 	}
 
 	/**
@@ -2080,16 +2080,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak, bool $sneakBindPressed) : bool{
-		if($sneak === $this->sneaking && $sneakBindPressed === $this->sneakBindPressed){
+	public function toggleSneak(bool $sneak, bool $sneakPressed) : bool{
+		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
 
-		$ev = new PlayerToggleSneakEvent($this, $sneak, $sneakBindPressed);
+		$ev = new PlayerToggleSneakEvent($this, $sneak, $sneakPressed);
 		if($sneak === $this->sneaking) {
 			$ev->cancel();
 		}
-		$this->sneakBindPressed = $sneakBindPressed;
+		$this->sneakPressed = $sneakPressed;
 
 		$ev->call();
 		if($ev->isCancelled()){
