@@ -2080,7 +2080,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak, bool $sneakPressed) : bool{
+	public function toggleSneak(bool $sneak, bool $sneakPressed = true) : bool{
 		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
