@@ -290,6 +290,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+	protected bool $sneakBindPressed = false;
 
 	protected float $flightSpeedMultiplier = self::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 
@@ -1280,6 +1281,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
+	public function isSneakBindPressed() : bool{
+		return $this->sneakBindPressed;
+	}
+
 	/**
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
@@ -2085,6 +2090,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			return false;
 		}
 		$this->setSneaking($sneak);
+		return true;
+	}
+
+	public function toggleSneakBindPressed(bool $bind) : bool{
+		if($bind === $this->sneakBindPressed) {
+			return true;
+		}
+		$this->sneakBindPressed = $bind;
 		return true;
 	}
 
