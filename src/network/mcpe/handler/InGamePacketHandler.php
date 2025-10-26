@@ -220,9 +220,6 @@ class InGamePacketHandler extends PacketHandler{
 			$this->lastPlayerAuthInputFlags = $inputFlags;
 
 			$sneakBind = $inputFlags->get(PlayerAuthInputFlags::SNEAKING);
-			if($this->player->isSneakBindPressed() === $sneakBind){
-				$sneakBind = null;
-			}
 
 			$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
@@ -230,8 +227,7 @@ class InGamePacketHandler extends PacketHandler{
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
 			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
-				(($sneaking !== null || $sneakBind !== null) &&
-					!$this->player->toggleSneak($sneaking ?? $this->player->isSneaking(), $sneakBind ?? $this->player->isSneakBindPressed())) |
+				($sneaking !== null && !$this->player->toggleSneak($sneaking, $sneakBind)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
 				($gliding !== null && !$this->player->toggleGlide($gliding)) |
