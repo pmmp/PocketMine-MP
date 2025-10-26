@@ -698,6 +698,12 @@ final class VanillaBlockMappings
 				->idComponents([...$commonProperties->copperIdPrefixes, "copper_chest"])
 				->properties([$commonProperties->horizontalFacingCardinal])
 		);
+		// copper golem statue family (including exposed/weathered/oxidized and waxed variants)
+		$reg->mapFlattenedId(
+			FlattenedIdModel::create(Blocks::COPPER_GOLEM_STATUE())
+				->idComponents([...$commonProperties->copperIdPrefixes, "copper_golem_statue"])
+				->properties([$commonProperties->horizontalFacingCardinal])
+		);
 	}
 
 	private static function registerFlattenedEnumMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties): void

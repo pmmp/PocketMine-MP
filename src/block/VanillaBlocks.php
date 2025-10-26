@@ -849,6 +849,15 @@ use function strtolower;
  * @method static Flower WHITE_TULIP()
  * @method static WitherRose WITHER_ROSE()
  * @method static Wool WOOL()
+ * @method static WaxedCopperGolemStatue WAXED_COPPER_GOLEM_STATUE()
+ * @method static WaxedExposedCopperGolemStatue WAXED_EXPOSED_COPPER_GOLEM_STATUE()
+ * @method static WaxedOxidizedCopperGolemStatue WAXED_OXIDIZED_COPPER_GOLEM_STATUE()
+ * @method static WaxedWeatheredCopperGolemStatue WAXED_WEATHERED_COPPER_GOLEM_STATUE()
+ * @method static WeatheredCopperGolemStatue WEATHERED_COPPER_GOLEM_STATUE()
+ * @method static OxidizedCopperGolemStatue OXIDIZED_COPPER_GOLEM_STATUE()
+ * @method static ExposedCopperGolemStatue EXPOSED_COPPER_GOLEM_STATUE()
+ * @method static CopperGolemStatue COPPER_GOLEM_STATUE()
+ * 
  */
 final class VanillaBlocks
 {
@@ -1817,6 +1826,15 @@ final class VanillaBlocks
 		self::register("cut_copper_slab", fn(BID $id) => new CopperSlab($id, "Cut Copper Slab", $copperBreakInfo));
 		self::register("cut_copper_stairs", fn(BID $id) => new CopperStairs($id, "Cut Copper Stairs", $copperBreakInfo));
 		self::register("copper_bulb", fn(BID $id) => new CopperBulb($id, "Copper Bulb", $copperBreakInfo));
+		// copper golem statues (oxidation + waxed variants)
+		self::register("copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Copper Golem Statue", $copperBreakInfo));
+		self::register("exposed_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Exposed Copper Golem Statue", $copperBreakInfo));
+		self::register("weathered_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Weathered Copper Golem Statue", $copperBreakInfo));
+		self::register("oxidized_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Oxidized Copper Golem Statue", $copperBreakInfo));
+		self::register("waxed_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Copper Golem Statue", $copperBreakInfo));
+		self::register("waxed_exposed_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Exposed Copper Golem Statue", $copperBreakInfo));
+		self::register("waxed_weathered_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Weathered Copper Golem Statue", $copperBreakInfo));
+		self::register("waxed_oxidized_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Oxidized Copper Golem Statue", $copperBreakInfo));
 		
 
 		self::register("copper_door", fn(BID $id) => new CopperDoor($id, "Copper Door", new Info(BreakInfo::pickaxe(3.0, blastResistance: 30.0))));

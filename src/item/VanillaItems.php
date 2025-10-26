@@ -610,6 +610,16 @@ final class VanillaItems
 		self::register("raw_copper", fn(IID $id) => new Item($id, "Raw Copper"));
 		// register copper chest as a block-item (use the block's asItem() to get proper block-based item identifier)
 		self::_registryRegister("copper_chest", Blocks::COPPER_CHEST()->asItem());
+				
+		self::_registryRegister("copper_golem_statue", Blocks::COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("exposed_copper_golem_statue", Blocks::EXPOSED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("weathered_copper_golem_statue", Blocks::WEATHERED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("oxidized_copper_golem_statue", Blocks::OXIDIZED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("waxed_copper_golem_statue", Blocks::WAXED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("waxed_exposed_copper_golem_statue", Blocks::WAXED_EXPOSED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("waxed_weathered_copper_golem_statue", Blocks::WAXED_WEATHERED_COPPER_GOLEM_STATUE()->asItem());
+		self::_registryRegister("waxed_oxidized_copper_golem_statue", Blocks::WAXED_OXIDIZED_COPPER_GOLEM_STATUE()->asItem());
+
 		self::register("raw_fish", fn(IID $id) => new RawFish($id, "Raw Fish"));
 		self::register("raw_gold", fn(IID $id) => new Item($id, "Raw Gold"));
 		self::register("raw_iron", fn(IID $id) => new Item($id, "Raw Iron"));

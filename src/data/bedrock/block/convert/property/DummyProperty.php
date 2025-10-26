@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock\block\convert\property;
 
 use pocketmine\data\bedrock\block\convert\BlockStateReader;
 use pocketmine\data\bedrock\block\convert\BlockStateWriter;
+use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\utils\AssumptionFailedError;
 use function is_bool;
 use function is_int;
@@ -44,7 +45,13 @@ final class DummyProperty implements Property{
 	}
 
 	public function deserialize(object $block, BlockStateReader $in) : void{
-		$in->ignored($this->name);
+		// If the incoming blockstate data does not include this dummy property (older saved data),
+		// ignore the missing property instead of throwing so old item/block NBT remains readable.
+		try{
+			$in->ignored($this->name);
+		}catch(BlockStateDeserializeException $e){
+			// intentionally ignore missing/wrong-type for dummy properties to preserve backwards compatibility
+		}
 	}
 
 	public function serialize(object $block, BlockStateWriter $out) : void{

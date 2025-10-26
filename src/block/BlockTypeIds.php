@@ -824,7 +824,17 @@ final class BlockTypeIds{
 	public const WARPED_WALL_HANGING_SIGN = 10794;
 
 	// Reserve two IDs for seagrass and kelp
-	public const FIRST_UNUSED_BLOCK_ID = 10806;
+	// Add constants for copper golem statue variants (8 IDs)
+	public const COPPER_GOLEM_STATUE = 10806;
+	public const EXPOSED_COPPER_GOLEM_STATUE = 10807;
+	public const WEATHERED_COPPER_GOLEM_STATUE = 10808;
+	public const OXIDIZED_COPPER_GOLEM_STATUE = 10809;
+	public const WAXED_COPPER_GOLEM_STATUE = 10810;
+	public const WAXED_EXPOSED_COPPER_GOLEM_STATUE = 10811;
+	public const WAXED_WEATHERED_COPPER_GOLEM_STATUE = 10812;
+	public const WAXED_OXIDIZED_COPPER_GOLEM_STATUE = 10813;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10814;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

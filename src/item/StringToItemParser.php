@@ -1202,6 +1202,15 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("workbench", fn() => Blocks::CRAFTING_TABLE());
 		$result->registerBlock("yellow_flower", fn() => Blocks::DANDELION());
 		$result->registerBlock("zombie_head", fn() => Blocks::MOB_HEAD()->setMobHeadType(MobHeadType::ZOMBIE));
+
+		$result->registerBlock("copper_golem_statue", fn() => Blocks::COPPER_GOLEM_STATUE());
+		$result->registerBlock("exposed_copper_golem_statue", fn() => Blocks::EXPOSED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("weathered_copper_golem_statue", fn() => Blocks::WEATHERED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("oxidized_copper_golem_statue", fn() => Blocks::OXIDIZED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("waxed_copper_golem_statue", fn() => Blocks::WAXED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("waxed_exposed_copper_golem_statue", fn() => Blocks::WAXED_EXPOSED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("waxed_weathered_copper_golem_statue", fn() => Blocks::WAXED_WEATHERED_COPPER_GOLEM_STATUE());
+		$result->registerBlock("waxed_oxidized_copper_golem_statue", fn() => Blocks::WAXED_OXIDIZED_COPPER_GOLEM_STATUE());
 	}
 
 	private static function registerDynamicItems(self $result) : void{
