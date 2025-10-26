@@ -45,6 +45,7 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\IceBomb;
 use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\projectile\Trident;
 use pocketmine\item\Item;
@@ -163,6 +164,10 @@ final class EntityFactory{
 		$this->register(Snowball::class, function(World $world, CompoundTag $nbt) : Snowball{
 			return new Snowball(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['Snowball', 'minecraft:snowball']);
+
+		$this->register(WindCharge::class, function(World $world, CompoundTag $nbt) : WindCharge{
+			return new WindCharge(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['WindCharge', 'minecraft:wind_charge', 'minecraft:wind_charge_projectile', 'minecraft:breeze_wind_charge_projectile']);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
 			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort(SplashPotion::TAG_POTION_ID, PotionTypeIds::WATER));

@@ -130,6 +130,8 @@ class FireworkRocket extends Entity implements Explosive, NeverSavedWithChunkEnt
 				$this->addMotion($this->motion->x * 0.15, 0.04, $this->motion->z * 0.15);
 			}
 
+			// If this rocket has an owning entity and that entity is gliding, apply a small boost to it each tick.
+
 			if($this->ticksLived >= $this->maxFlightTimeTicks){
 				$this->flagForDespawn();
 				$this->explode();
@@ -147,6 +149,24 @@ class FireworkRocket extends Entity implements Explosive, NeverSavedWithChunkEnt
 				if($explosion->willTwinkle()){
 					$this->broadcastSound(new FireworkCrackleSound());
 				}
+			}
+
+			// If this rocket was launched by a gliding entity (elytra), apply a single impulse boost to the owner
+			// at explosion time to mimic vanilla firework boost behavior.
+			$owner = $this->getOwningEntity();
+			if($owner instanceof Living && $owner->isGliding()){
+				$dir = $owner->getDirectionVector();
+				// Smaller, capped boost strength to avoid excessive speed. Scale roughly with flight time.
+				$boostStrength = min(1.2, 0.3 + ($this->maxFlightTimeTicks / 40));
+				$impulseX = $dir->x * $boostStrength;
+				$impulseY = $dir->y * $boostStrength + 0.1; // small upward assist
+				$impulseZ = $dir->z * $boostStrength;
+				// Clamp vertical impulse to avoid launching mostly upwards when looking up
+				if($impulseY > 0.7) $impulseY = 0.7;
+				if($impulseY < -0.5) $impulseY = -0.5;
+				$owner->setMotion($owner->getMotion()->add($impulseX, $impulseY, $impulseZ));
+				// Do NOT forcibly set gliding or reset fall distance here; let client/server glide state and
+				// fall-distance logic determine damage. Forcing them caused incorrect damage suppression.
 			}
 
 			$force = ($explosionCount * 2) + 5;

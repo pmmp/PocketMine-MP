@@ -39,6 +39,15 @@ class LegacySkinAdapter implements SkinAdapter{
 
 	public function toSkinData(Skin $skin) : SkinData{
 		$capeData = $skin->getCapeData();
+		// Debug: log cape presence/length for troubleshooting cape display issues
+		try{
+			$logger = \pocketmine\Server::getInstance()->getLogger();
+			$len = $capeData === "" ? 0 : strlen($capeData);
+			// Use info level so this appears in normal server logs while debugging cape visibility issues
+			$logger->info("[SKIN_DEBUG] toSkinData: skinId={$skin->getSkinId()} capeLength={$len} md5=" . ($len > 0 ? md5(substr($capeData, 0, 64)) : "<none>"));
+		}catch(\Throwable $e){
+			// swallow logging errors in case Server isn't initialized in some contexts
+		}
 		$capeImage = $capeData === "" ? new SkinImage(0, 0, "") : new SkinImage(32, 64, $capeData);
 		$geometryName = $skin->getGeometryName();
 		if($geometryName === ""){

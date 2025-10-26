@@ -39,6 +39,7 @@ use function spl_object_id;
  * @method static RecordType DISK_BLOCKS()
  * @method static RecordType DISK_CAT()
  * @method static RecordType DISK_CHIRP()
+ * @method static RecordType MUSIC_DISC_LAVA_CHICKEN()
  * @method static RecordType DISK_FAR()
  * @method static RecordType DISK_MALL()
  * @method static RecordType DISK_MELLOHI()
@@ -51,7 +52,8 @@ use function spl_object_id;
  *
  * @phpstan-type TMetadata array{0: string, 1: LevelSoundEvent::*, 2: Translatable}
  */
-enum RecordType{
+enum RecordType
+{
 	use LegacyEnumShimTrait;
 
 	case DISK_13;
@@ -73,15 +75,18 @@ enum RecordType{
 	case DISK_WARD;
 	case DISK_11;
 	case DISK_WAIT;
+		// MUSIC_DISC_LAVA_CHICKEN
+	case MUSIC_DISC_LAVA_CHICKEN;
 
 	/**
 	 * @phpstan-return TMetadata
 	 */
-	private function getMetadata() : array{
+	private function getMetadata(): array
+	{
 		/** @phpstan-var array<int, TMetadata> $cache */
 		static $cache = [];
 
-		return $cache[spl_object_id($this)] ??= match($this){
+		return $cache[spl_object_id($this)] ??= match ($this) {
 			self::DISK_13 => ["C418 - 13", LevelSoundEvent::RECORD_13, KnownTranslationFactory::item_record_13_desc()],
 			self::DISK_5 => ["Samuel Åberg - 5", LevelSoundEvent::RECORD_5, KnownTranslationFactory::item_record_5_desc()],
 			self::DISK_CAT => ["C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()],
@@ -100,19 +105,23 @@ enum RecordType{
 			self::DISK_STRAD => ["C418 - strad", LevelSoundEvent::RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()],
 			self::DISK_WARD => ["C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()],
 			self::DISK_11 => ["C418 - 11", LevelSoundEvent::RECORD_11, KnownTranslationFactory::item_record_11_desc()],
-			self::DISK_WAIT => ["C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc()]
+			self::DISK_WAIT => ["C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc()],
+			self::MUSIC_DISC_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", LevelSoundEvent::MUSIC_DISC_LAVA_CHICKEN, KnownTranslationFactory::item_music_disc_lava_chicken_desc()],
 		};
 	}
 
-	public function getSoundName() : string{
+	public function getSoundName(): string
+	{
 		return $this->getMetadata()[0];
 	}
 
-	public function getSoundId() : int{
+	public function getSoundId(): int
+	{
 		return $this->getMetadata()[1];
 	}
 
-	public function getTranslatableName() : Translatable{
+	public function getTranslatableName(): Translatable
+	{
 		return $this->getMetadata()[2];
 	}
 }

@@ -367,8 +367,15 @@ final class ItemTypeIds{
 	 * Static constant for Crossbow to avoid dynamic id generation log messages.
 	 */
 	public const CROSSBOW = 20324;
+	public const ELYTRA = 20325;
 
-	public const FIRST_UNUSED_ITEM_ID = 20325;
+	// New record: Lava Chicken (added to match Bedrock/record mappings)
+	public const RECORD_LAVA_CHICKEN = 20326;
+
+	public const MACE = 20327;
+	public const WIND_CHARGE = 20328;
+
+	public const FIRST_UNUSED_ITEM_ID = 20329;
 
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;

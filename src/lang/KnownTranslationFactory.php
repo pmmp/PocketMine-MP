@@ -1052,6 +1052,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_13_DESC, []);
 	}
 
+	//self::MUSIC_DISC_LAVA_CHICKEN => ["Lena Raine - Lava Chicken", LevelSoundEvent::MUSIC_DISC_LAVA_CHICKEN, KnownTranslationFactory::item_music_disc_lava_chicken_desc()],
+
+	public static function item_music_disc_lava_chicken_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_MUSIC_DISC_LAVA_CHICKEN_DESC, []);
+	}
+
 	public static function item_record_5_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_5_DESC, []);
 	}

@@ -890,6 +890,12 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+		// Debug: log incoming PlayerSkinPacket flags for troubleshooting
+		try{
+			$logger = \pocketmine\Server::getInstance()->getLogger();
+			// Promote this to info to ensure we see incoming skin flags (persona/cape) in normal logs
+			$logger->info("[SKIN_DEBUG] handlePlayerSkin: fullSkinId=" . $packet->skin->getFullSkinId() . " isPersona=" . ($packet->skin->isPersona() ? '1' : '0') . " isPersonaCapeOnClassic=" . ($packet->skin->isPersonaCapeOnClassic() ? '1' : '0'));
+		}catch(\Throwable $e){ }
 		if($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId){
 			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
 			//it's using. We need to prevent this from causing a feedback loop.

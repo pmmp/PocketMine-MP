@@ -395,6 +395,8 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
 	public const MUSIC_DISC_WAIT = "minecraft:music_disc_wait";
 	public const MUSIC_DISC_WARD = "minecraft:music_disc_ward";
+	// MUSIC_DISC_CHICKEN
+	public const MUSIC_DISC_CHICKEN = "minecraft:music_disc_chicken";
 	public const MUTTON = "minecraft:mutton";
 	public const NAME_TAG = "minecraft:name_tag";
 	public const NAUTILUS_SHELL = "minecraft:nautilus_shell";

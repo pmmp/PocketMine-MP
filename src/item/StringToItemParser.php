@@ -1360,6 +1360,11 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("diamond_shovel", fn() => Items::DIAMOND_SHOVEL());
 		$result->register("diamond_sword", fn() => Items::DIAMOND_SWORD());
 
+		// mace
+		$result->register("mace", fn() => Items::MACE());
+		// wind charge
+		$result->register("wind_charge", fn() => Items::WIND_CHARGE());
+
 		// copper tools
 		$result->register("copper_sword", fn() => Items::COPPER_SWORD());
 		$result->register("copper_pickaxe", fn() => Items::COPPER_PICKAXE());
@@ -1544,6 +1549,10 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("record_strad", fn() => Items::RECORD_STRAD());
 		$result->register("record_wait", fn() => Items::RECORD_WAIT());
 		$result->register("record_ward", fn() => Items::RECORD_WARD());
+		// Register the Lava Chicken music disc (Java name: record_lava_chicken, older alias: music_disc_lava_chicken)
+		$result->register("record_lava_chicken", fn() => Items::RECORD_LAVA_CHICKEN());
+		$result->register("music_disc_lava_chicken", fn() => Items::RECORD_LAVA_CHICKEN());
+
 		$result->register("recovery_compass", fn() => Items::RECOVERY_COMPASS());
 		$result->register("redstone", fn() => Items::REDSTONE_DUST());
 		$result->register("redstone_dust", fn() => Items::REDSTONE_DUST());
@@ -1588,6 +1597,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("totem", fn() => Items::TOTEM());
 		$result->register("trident", fn() => Items::TRIDENT());
 		$result->register("turtle_helmet", fn() => Items::TURTLE_HELMET());
+		$result->register("elytra", fn() => Items::ELYTRA());
 		$result->register("vex_armor_trim_smithing_template", fn() => Items::VEX_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("turtle_shell_piece", fn() => Items::SCUTE());
 		$result->register("villager_spawn_egg", fn() => Items::VILLAGER_SPAWN_EGG());

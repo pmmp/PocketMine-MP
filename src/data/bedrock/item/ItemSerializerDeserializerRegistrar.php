@@ -334,6 +334,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::MUSIC_DISC_5, Items::RECORD_5());
 		$this->map1to1Item(Ids::MUSIC_DISC_BLOCKS, Items::RECORD_BLOCKS());
 		$this->map1to1Item(Ids::MUSIC_DISC_CAT, Items::RECORD_CAT());
+	$this->map1to1Item(Ids::MUSIC_DISC_LAVA_CHICKEN, Items::RECORD_LAVA_CHICKEN());
 		$this->map1to1Item(Ids::MUSIC_DISC_CHIRP, Items::RECORD_CHIRP());
 		$this->map1to1Item(Ids::MUSIC_DISC_CREATOR, Items::RECORD_CREATOR());
 		$this->map1to1Item(Ids::MUSIC_DISC_CREATOR_MUSIC_BOX, Items::RECORD_CREATOR_MUSIC_BOX());
@@ -344,6 +345,8 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::MUSIC_DISC_PIGSTEP, Items::RECORD_PIGSTEP());
 		$this->map1to1Item(Ids::MUSIC_DISC_PRECIPICE, Items::RECORD_PRECIPICE());
 		$this->map1to1Item(Ids::MUSIC_DISC_RELIC, Items::RECORD_RELIC());
+		$this->map1to1Item(Ids::MACE, Items::MACE());
+		$this->map1to1Item(Ids::WIND_CHARGE, Items::WIND_CHARGE());
 		$this->map1to1Item(Ids::MUSIC_DISC_STAL, Items::RECORD_STAL());
 		$this->map1to1Item(Ids::MUSIC_DISC_STRAD, Items::RECORD_STRAD());
 		$this->map1to1Item(Ids::MUSIC_DISC_WAIT, Items::RECORD_WAIT());
@@ -356,6 +359,9 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::NETHERITE_AXE, Items::NETHERITE_AXE());
 		$this->map1to1Item(Ids::NETHERITE_BOOTS, Items::NETHERITE_BOOTS());
 		$this->map1to1Item(Ids::NETHERITE_CHESTPLATE, Items::NETHERITE_CHESTPLATE());
+		$this->map1to1Item(Ids::ELYTRA, Items::ELYTRA());
+
+		
 		$this->map1to1Item(Ids::NETHERITE_HELMET, Items::NETHERITE_HELMET());
 		$this->map1to1Item(Ids::NETHERITE_HOE, Items::NETHERITE_HOE());
 		$this->map1to1Item(Ids::NETHERITE_INGOT, Items::NETHERITE_INGOT());

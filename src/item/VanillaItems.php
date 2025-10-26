@@ -362,6 +362,7 @@ use function strtolower;
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
+ * @method static Record RECORD_LAVA_CHICKEN()
  */
 final class VanillaItems
 {
@@ -628,6 +629,13 @@ final class VanillaItems
 		self::register("raw_rabbit", fn(IID $id) => new RawRabbit($id, "Raw Rabbit"));
 		self::register("raw_salmon", fn(IID $id) => new RawSalmon($id, "Raw Salmon"));
 		self::register("record_11", fn(IID $id) => new Record($id, RecordType::DISK_11, "Record 11"));
+
+	// minecraft:music_disc_lava_chicken
+	// Register under the "record_*" name to match existing RECORD_* accessors used elsewhere
+	self::register("record_lava_chicken", fn(IID $id) => new Record($id, RecordType::MUSIC_DISC_LAVA_CHICKEN, "Music Disc Lava Chicken"));
+
+
+
 		self::register("record_13", fn(IID $id) => new Record($id, RecordType::DISK_13, "Record 13"));
 		self::register("record_5", fn(IID $id) => new Record($id, RecordType::DISK_5, "Record 5"));
 		self::register("record_blocks", fn(IID $id) => new Record($id, RecordType::DISK_BLOCKS, "Record Blocks"));
@@ -742,6 +750,16 @@ final class VanillaItems
 		self::register("copper_pickaxe", fn(IID $id) => new Pickaxe($id, "Copper Pickaxe", ToolTier::COPPER, [EnchantmentTags::PICKAXE]));
 		self::register("copper_shovel", fn(IID $id) => new Shovel($id, "Copper Shovel", ToolTier::COPPER, [EnchantmentTags::SHOVEL]));
 		self::register("copper_axe", fn(IID $id) => new Axe($id, "Copper Axe", ToolTier::COPPER, [EnchantmentTags::AXE]));
+
+		// mace
+		self::register("mace", fn(IID $id) => new Mace($id, "Mace", ToolTier::IRON, [EnchantmentTags::WEAPONS]));
+
+		// wind charge
+		self::register("wind_charge", fn(IID $id) => new WindCharge($id, "Wind Charge"));
+
+		// public const MACE = "minecraft:mace";
+		
+
 	}
 
 	private static function registerArmorItems(): void
@@ -759,6 +777,7 @@ final class VanillaItems
 		self::register("iron_chestplate", fn(IID $id) => new Armor($id, "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::IRON()), [EnchantmentTags::CHESTPLATE]));
 		self::register("leather_tunic", fn(IID $id) => new Armor($id, "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::LEATHER()), [EnchantmentTags::CHESTPLATE]));
 		self::register("netherite_chestplate", fn(IID $id) => new Armor($id, "Netherite Chestplate", new ArmorTypeInfo(8, 593, ArmorInventory::SLOT_CHEST, 3, true, material: ArmorMaterials::NETHERITE()), [EnchantmentTags::CHESTPLATE]));
+		self::register("elytra", fn(IID $id) => new Elytra($id, "Elytra", new ArmorTypeInfo(0, 432, ArmorInventory::SLOT_CHEST, material: ArmorMaterials::LEATHER()), [EnchantmentTags::CHESTPLATE]));
 
 		self::register("chainmail_helmet", fn(IID $id) => new Armor($id, "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD, material: ArmorMaterials::CHAINMAIL()), [EnchantmentTags::HELMET]));
 		self::register("diamond_helmet", fn(IID $id) => new Armor($id, "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD, 2, material: ArmorMaterials::DIAMOND()), [EnchantmentTags::HELMET]));

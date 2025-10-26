@@ -47,6 +47,7 @@ use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\item\Mace;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryOpenEvent;
@@ -1569,7 +1570,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	protected function calculateFallDamage(float $fallDistance): float
 	{
-		return $this->flying ? 0 : parent::calculateFallDamage($fallDistance);
+		// Players who are flying or gliding with Elytra should not take fall damage on landing (vanilla behaviour)
+		if ($this->flying || $this->isGliding()) {
+			return 0.0;
+		}
+
+		return parent::calculateFallDamage($fallDistance);
 	}
 
 	public function jump(): void
@@ -2106,6 +2112,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
+		// Mace special: add fall-based bonus damage (approx 1 extra per block fallen, capped at 30)
+		if($heldItem instanceof Mace && $this->fallDistance > 0){
+			$bonus = (int) min(30, floor($this->fallDistance));
+			if($bonus > 0){
+				$ev->setModifier($ev->getModifier(EntityDamageEvent::MODIFIER_STRENGTH) + $bonus, EntityDamageEvent::MODIFIER_STRENGTH);
+			}
+		}
+
 		if (!$this->isSprinting() && !$this->isFlying() && $this->fallDistance > 0 && !$this->effectManager->has(VanillaEffects::BLINDNESS()) && !$this->isUnderwater()) {
 			$ev->setModifier($ev->getFinalDamage() / 2, EntityDamageEvent::MODIFIER_CRITICAL);
 		}
@@ -2237,6 +2251,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if ($glide === $this->gliding) {
 			return true;
 		}
+
+		// Only allow starting glide if the player is wearing a functional Elytra or is allowed to fly
+		if ($glide && !$this->gliding) {
+			$chest = $this->armorInventory->getChestplate();
+			$hasElytra = $chest instanceof \pocketmine\item\Elytra && !$chest->isBroken();
+			if (!$this->allowFlight && !$hasElytra && !$this->isSpectator()) {
+				return false;
+			}
+		}
+
 		$ev = new PlayerToggleGlideEvent($this, $glide);
 		$ev->call();
 		if ($ev->isCancelled()) {

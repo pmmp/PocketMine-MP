@@ -165,6 +165,14 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @param Player[]|null $targets
 	 */
 	public function sendSkin(?array $targets = null) : void{
+		// Debug: log when server is sending skin data (cape length)
+		try{
+			$logger = \pocketmine\Server::getInstance()->getLogger();
+			$capeLen = ($this->skin->getCapeData() === "" ? 0 : strlen($this->skin->getCapeData()));
+			// Use info so administrators can see when skins (and capes) are being pushed to clients
+			$logger->info("[SKIN_DEBUG] sendSkin: player=" . $this->getName() . " skinId=" . $this->skin->getSkinId() . " capeLength=" . $capeLen);
+		}catch(\Throwable $e){ }
+
 		NetworkBroadcastUtils::broadcastPackets($targets ?? $this->hasSpawned, [
 			PlayerSkinPacket::create($this->getUniqueId(), "", "", TypeConverter::getInstance()->getSkinAdapter()->toSkinData($this->skin))
 		]);
@@ -305,6 +313,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$armorInventoryItems = [];
 
 			foreach($inventoryTag as $i => $item){
+				/** @var CompoundTag $item */
 				$slot = $item->getByte(SavedItemStackData::TAG_SLOT);
 				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
@@ -332,6 +341,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$enderChestInventoryItems = [];
 
 			foreach($enderChestInventoryTag as $i => $item){
+				/** @var CompoundTag $item */
 				$enderChestInventoryItems[$item->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($item);
 			}
 			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);

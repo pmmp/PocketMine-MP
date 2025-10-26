@@ -112,6 +112,26 @@ class FireworkRocket extends Item{
 		return ItemUseResult::SUCCESS;
 	}
 
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
+		// When used in air (for example while gliding), spawn the firework entity in front of the player
+		$position = $player->getEyePos()->addVector($directionVector->multiply(0.5));
+
+		$randomDuration = (($this->flightTimeMultiplier + 1) * 10) + mt_rand(0, 12);
+
+		$entity = new FireworkEntity(Location::fromObject($position, $player->getWorld(), Utils::getRandomFloat() * 360, 90), $randomDuration, $this->explosions);
+		$entity->setOwningEntity($player);
+		$entity->setMotion(new Vector3(
+			($directionVector->x * 0.1) + (Utils::getRandomFloat() - Utils::getRandomFloat()) * 0.0023,
+			0.05,
+			($directionVector->z * 0.1) + (Utils::getRandomFloat() - Utils::getRandomFloat()) * 0.0023
+		));
+		$entity->spawnToAll();
+
+		$this->pop();
+
+		return ItemUseResult::SUCCESS;
+	}
+
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		parent::deserializeCompoundTag($tag);
 
