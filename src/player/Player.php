@@ -1281,6 +1281,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
+	public function setSneakPressed(bool $sneakPressed) : void{
+		$this->sneakPressed = $sneakPressed;
+	}
+
 	public function isSneakPressed() : bool{
 		return $this->sneakPressed;
 	}
@@ -1484,10 +1488,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			return true;
 		}
 		return false;
-	}
-
-	public function setSneakPressed(bool $sneakPressed) : void{
-		$this->sneakPressed = $sneakPressed;
 	}
 
 	protected function updateMovement(bool $teleport = false) : void{
