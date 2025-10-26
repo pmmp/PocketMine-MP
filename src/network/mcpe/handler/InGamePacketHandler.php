@@ -148,8 +148,7 @@ class InGamePacketHandler extends PacketHandler{
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){
-	}
+	){}
 
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type === TextPacket::TYPE_CHAT){
@@ -966,7 +965,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		//for redundancy, in case of protocol changes, we don't want to pass these directly
-		$action = match ($packet->type) {
+		$action = match($packet->type){
 			BookEditPacket::TYPE_REPLACE_PAGE => PlayerEditBookEvent::ACTION_REPLACE_PAGE,
 			BookEditPacket::TYPE_ADD_PAGE => PlayerEditBookEvent::ACTION_ADD_PAGE,
 			BookEditPacket::TYPE_DELETE_PAGE => PlayerEditBookEvent::ACTION_DELETE_PAGE,
