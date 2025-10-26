@@ -516,7 +516,7 @@ abstract class Living extends Entity{
 	/**
 	 * Whether this entity can be frozen (i.e. accumulate freeze progress from environments such as powder snow).
 	 */
-	public function isFreezable() : bool{
+	public function canFreeze() : bool{
 		foreach($this->armorInventory->getContents() as $item){
 			if($item instanceof Armor && $item->getMaterial() === VanillaArmorMaterials::LEATHER()){
 				return false;

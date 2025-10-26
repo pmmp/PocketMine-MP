@@ -28,11 +28,9 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use pocketmine\world\sound\BucketFillPowderSnowSound;
+use pocketmine\world\sound\Sound;
 
 class PowderSnow extends Flowable{
 
@@ -48,6 +46,10 @@ class PowderSnow extends Flowable{
 		return VanillaItems::POWDER_SNOW_BUCKET();
 	}
 
+	public function getBucketFillSound() : Sound{
+		return new BucketFillPowderSnowSound();
+	}
+
 	public function onEntityLand(Entity $entity) : ?float{
 		$entity->resetFallDistance();
 		return null;
@@ -55,7 +57,7 @@ class PowderSnow extends Flowable{
 
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
-		if($entity instanceof Living && $entity->isFreezable()){
+		if($entity instanceof Living && $entity->canFreeze()){
 			$entity->setAccumulatingFreeze(true);
 		}
 
@@ -64,20 +66,5 @@ class PowderSnow extends Flowable{
 			BlockEventHelper::melt($this, VanillaBlocks::AIR());
 		}
 		return true;
-	}
-
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player !== null && $item->getTypeId() === ItemTypeIds::BUCKET){
-			if(!$player->isCreative()){
-				$item->pop();
-				$returnedItems[] = VanillaItems::POWDER_SNOW_BUCKET();
-			}
-			$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::AIR());
-			$this->getPosition()->getWorld()->addSound($this->getPosition(), new BucketFillPowderSnowSound());
-
-			return true;
-		}
-
-		return false;
 	}
 }
