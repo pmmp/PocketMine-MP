@@ -148,7 +148,8 @@ class InGamePacketHandler extends PacketHandler{
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){}
+	){
+	}
 
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type === TextPacket::TYPE_CHAT){
@@ -229,8 +230,8 @@ class InGamePacketHandler extends PacketHandler{
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
 			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
-				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
-				($sneakBind !== null && !$this->player->toggleSneakBindPressed($sneakBind)) |
+				(($sneaking !== null || $sneakBind !== null) &&
+					!$this->player->toggleSneak($sneaking ?? $this->player->isSneaking(), $sneakBind ?? $this->player->isSneakBindPressed())) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
 				($gliding !== null && !$this->player->toggleGlide($gliding)) |
@@ -969,7 +970,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		//for redundancy, in case of protocol changes, we don't want to pass these directly
-		$action = match($packet->type){
+		$action = match ($packet->type) {
 			BookEditPacket::TYPE_REPLACE_PAGE => PlayerEditBookEvent::ACTION_REPLACE_PAGE,
 			BookEditPacket::TYPE_ADD_PAGE => PlayerEditBookEvent::ACTION_ADD_PAGE,
 			BookEditPacket::TYPE_DELETE_PAGE => PlayerEditBookEvent::ACTION_DELETE_PAGE,

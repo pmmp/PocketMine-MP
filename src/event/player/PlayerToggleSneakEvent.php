@@ -32,12 +32,17 @@ class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
 
 	public function __construct(
 		Player $player,
-		protected bool $isSneaking
+		protected bool $isSneaking,
+		protected bool $isSneakBindPressed,
 	){
 		$this->player = $player;
 	}
 
 	public function isSneaking() : bool{
 		return $this->isSneaking;
+	}
+
+	public function isSneakBindPressed() : bool{
+		return $this->isSneakBindPressed;
 	}
 }
