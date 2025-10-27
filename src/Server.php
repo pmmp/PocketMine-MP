@@ -1014,22 +1014,11 @@ class Server{
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->dataPath, "resource_packs"), $this->logger);
 
-			$pluginGraylist = null;
-			$graylistFile = Path::join($this->dataPath, "plugin_list.yml");
-			if(!file_exists($graylistFile)){
-				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
+			$array = $this->getConfigGroup()->getProperty(Yml::PLUGIN_LIST);
+			if(!is_array($array)){
+				throw new \InvalidArgumentException("Expected array for root, but have " . gettype($array));
 			}
-			try{
-				$array = yaml_parse(Filesystem::fileGetContents($graylistFile));
-				if(!is_array($array)){
-					throw new \InvalidArgumentException("Expected array for root, but have " . gettype($array));
-				}
-				$pluginGraylist = PluginGraylist::fromArray($array);
-			}catch(\InvalidArgumentException $e){
-				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
-				$this->forceShutdownExit();
-				return;
-			}
+			$pluginGraylist = PluginGraylist::fromArray($array);
 			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool(Yml::PLUGINS_LEGACY_DATA_DIR, true) ? null : Path::join($this->dataPath, "plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());

@@ -109,4 +109,7 @@ final class YmlServerProperties{
 	public const TIMINGS = 'timings';
 	public const TIMINGS_HOST = 'timings.host';
 	public const WORLDS = 'worlds';
+	public const PLUGIN_LIST = 'plugin_list';
+	public const PLUGIN_LIST_MODE = 'plugin_list.mode';
+	public const PLUGIN_LIST_PLUGINS = 'plugin_list.plugins';
 }
