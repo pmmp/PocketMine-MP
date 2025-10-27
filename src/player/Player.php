@@ -2088,6 +2088,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
+		$this->setSneakPressed($sneakPressed);
 
 		$ev = new PlayerToggleSneakEvent($this, $sneak, $sneakPressed);
 		if($sneak === $this->sneaking) {
@@ -2095,7 +2096,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 		$ev->call();
 
-		$this->setSneakPressed($sneakPressed);
 		if($ev->isCancelled()){
 			return false;
 		}
