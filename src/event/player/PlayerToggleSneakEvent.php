@@ -47,7 +47,8 @@ class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
 	 * isSneakPressed is different from isSneaking because is responsible for interaction limitation and don't change visual player state.
 	 * isSneaking is responsible for visual player state (hitbox height, sneaking).
 	 *
-	 * Returns true when the player is actually holding the sneak key.
+	 * Returns whether the player is pressing the sneak key.
+	 * The player may still be sneaking even if this is false due to gameplay mechanics (e.g. releasing sneak while in a 1.5 block high space).
 	 */
 	public function isSneakPressed() : bool{
 		return $this->isSneakPressed;
