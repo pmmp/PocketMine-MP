@@ -121,7 +121,6 @@ class WindCharge extends ProjectileItem
 	{
 		$entity = new WindChargeEntity($location, $thrower);
 		$entity->setSource('player');
-		$entity->setNoClientPredictions();
 		return $entity;
 	}
 }
