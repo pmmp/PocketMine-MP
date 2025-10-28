@@ -1286,10 +1286,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	}
 
 	/**
-	 * Since 1.20.10, sneaking has multiple states that affects interacting with items/blocks.
-	 * isSneakPressed is different from isSneaking because is responsible for interaction limitation and don't change visual player state.
-	 * isSneaking is responsible for visual player state (hitbox height, sneaking).
-	 *
 	 * Returns whether the player is pressing the sneak key.
 	 * The player may still be sneaking even if this is false due to gameplay mechanics (e.g. releasing sneak while in a 1.5 block high space).
 	 */
