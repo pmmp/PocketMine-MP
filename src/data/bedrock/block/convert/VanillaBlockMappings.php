@@ -1326,6 +1326,7 @@ final class VanillaBlockMappings
 				[Blocks::RED_TORCH(), Ids::COLORED_TORCH_RED],
 				[Blocks::SOUL_TORCH(), Ids::SOUL_TORCH],
 				[Blocks::TORCH(), Ids::TORCH],
+				[Blocks::COPPER_TORCH(), Ids::COPPER_TORCH],
 				[Blocks::UNDERWATER_TORCH(), Ids::UNDERWATER_TORCH]
 			] as [$block, $id]
 		) {

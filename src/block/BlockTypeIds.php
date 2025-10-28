@@ -672,6 +672,7 @@ final class BlockTypeIds{
 	public const DEEPSLATE_GOLD_ORE = 10642;
 	public const DEEPSLATE_COPPER_ORE = 10643;
 	public const COPPER_ORE = 10644;
+
 	public const NETHER_GOLD_ORE = 10645;
 	public const MUD = 10646;
 	public const MUD_BRICKS = 10647;
@@ -856,6 +857,7 @@ final class BlockTypeIds{
 	public const COPPER_CHEST = 10797;
 	public const POWDER_SNOW = 10798;
 
+	public const COPPER_TORCH = 10799;
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
 	/**

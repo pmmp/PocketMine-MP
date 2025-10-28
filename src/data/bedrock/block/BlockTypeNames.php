@@ -252,6 +252,7 @@ final class BlockTypeNames{
 	public const COLORED_TORCH_GREEN = "minecraft:colored_torch_green";
 	public const COLORED_TORCH_PURPLE = "minecraft:colored_torch_purple";
 	public const COLORED_TORCH_RED = "minecraft:colored_torch_red";
+	
 	public const COMMAND_BLOCK = "minecraft:command_block";
 	public const COMPOSTER = "minecraft:composter";
 	public const COMPOUND_CREATOR = "minecraft:compound_creator";
