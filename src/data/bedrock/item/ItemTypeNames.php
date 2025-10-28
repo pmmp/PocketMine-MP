@@ -31,6 +31,7 @@ final class ItemTypeNames{
 	public const ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 	public const ACACIA_DOOR = "minecraft:acacia_door";
 	public const ACACIA_HANGING_SIGN = "minecraft:acacia_hanging_sign";
+	public const ACACIA_SHELF = "minecraft:acacia_shelf";
 	public const ACACIA_SIGN = "minecraft:acacia_sign";
 	public const AGENT_SPAWN_EGG = "minecraft:agent_spawn_egg";
 	public const ALLAY_SPAWN_EGG = "minecraft:allay_spawn_egg";
@@ -51,6 +52,7 @@ final class ItemTypeNames{
 	public const BAMBOO_DOOR = "minecraft:bamboo_door";
 	public const BAMBOO_HANGING_SIGN = "minecraft:bamboo_hanging_sign";
 	public const BAMBOO_RAFT = "minecraft:bamboo_raft";
+	public const BAMBOO_SHELF = "minecraft:bamboo_shelf";
 	public const BAMBOO_SIGN = "minecraft:bamboo_sign";
 	public const BANNER = "minecraft:banner";
 	public const BANNER_PATTERN = "minecraft:banner_pattern";
@@ -65,6 +67,7 @@ final class ItemTypeNames{
 	public const BIRCH_CHEST_BOAT = "minecraft:birch_chest_boat";
 	public const BIRCH_DOOR = "minecraft:birch_door";
 	public const BIRCH_HANGING_SIGN = "minecraft:birch_hanging_sign";
+	public const BIRCH_SHELF = "minecraft:birch_shelf";
 	public const BIRCH_SIGN = "minecraft:birch_sign";
 	public const BLACK_BUNDLE = "minecraft:black_bundle";
 	public const BLACK_DYE = "minecraft:black_dye";
@@ -122,6 +125,7 @@ final class ItemTypeNames{
 	public const CHERRY_CHEST_BOAT = "minecraft:cherry_chest_boat";
 	public const CHERRY_DOOR = "minecraft:cherry_door";
 	public const CHERRY_HANGING_SIGN = "minecraft:cherry_hanging_sign";
+	public const CHERRY_SHELF = "minecraft:cherry_shelf";
 	public const CHERRY_SIGN = "minecraft:cherry_sign";
 	public const CHEST_BOAT = "minecraft:chest_boat";
 	public const CHEST_MINECART = "minecraft:chest_minecart";
@@ -176,6 +180,7 @@ final class ItemTypeNames{
 	public const CREEPER_SPAWN_EGG = "minecraft:creeper_spawn_egg";
 	public const CRIMSON_DOOR = "minecraft:crimson_door";
 	public const CRIMSON_HANGING_SIGN = "minecraft:crimson_hanging_sign";
+	public const CRIMSON_SHELF = "minecraft:crimson_shelf";
 	public const CRIMSON_SIGN = "minecraft:crimson_sign";
 	public const CROSSBOW = "minecraft:crossbow";
 	public const CYAN_BUNDLE = "minecraft:cyan_bundle";
@@ -186,6 +191,7 @@ final class ItemTypeNames{
 	public const DARK_OAK_CHEST_BOAT = "minecraft:dark_oak_chest_boat";
 	public const DARK_OAK_DOOR = "minecraft:dark_oak_door";
 	public const DARK_OAK_HANGING_SIGN = "minecraft:dark_oak_hanging_sign";
+	public const DARK_OAK_SHELF = "minecraft:dark_oak_shelf";
 	public const DARK_OAK_SIGN = "minecraft:dark_oak_sign";
 	public const DEBUG_STICK = "minecraft:debug_stick";
 	public const DIAMOND = "minecraft:diamond";
@@ -323,6 +329,7 @@ final class ItemTypeNames{
 	public const JUNGLE_CHEST_BOAT = "minecraft:jungle_chest_boat";
 	public const JUNGLE_DOOR = "minecraft:jungle_door";
 	public const JUNGLE_HANGING_SIGN = "minecraft:jungle_hanging_sign";
+	public const JUNGLE_SHELF = "minecraft:jungle_shelf";
 	public const JUNGLE_SIGN = "minecraft:jungle_sign";
 	public const KELP = "minecraft:kelp";
 	public const LAPIS_LAZULI = "minecraft:lapis_lazuli";
@@ -361,6 +368,7 @@ final class ItemTypeNames{
 	public const MANGROVE_CHEST_BOAT = "minecraft:mangrove_chest_boat";
 	public const MANGROVE_DOOR = "minecraft:mangrove_door";
 	public const MANGROVE_HANGING_SIGN = "minecraft:mangrove_hanging_sign";
+	public const MANGROVE_SHELF = "minecraft:mangrove_shelf";
 	public const MANGROVE_SIGN = "minecraft:mangrove_sign";
 	public const MEDICINE = "minecraft:medicine";
 	public const MELON_SEEDS = "minecraft:melon_seeds";
@@ -395,8 +403,6 @@ final class ItemTypeNames{
 	public const MUSIC_DISC_TEARS = "minecraft:music_disc_tears";
 	public const MUSIC_DISC_WAIT = "minecraft:music_disc_wait";
 	public const MUSIC_DISC_WARD = "minecraft:music_disc_ward";
-	// MUSIC_DISC_CHICKEN
-	public const MUSIC_DISC_CHICKEN = "minecraft:music_disc_chicken";
 	public const MUTTON = "minecraft:mutton";
 	public const NAME_TAG = "minecraft:name_tag";
 	public const NAUTILUS_SHELL = "minecraft:nautilus_shell";
@@ -420,6 +426,7 @@ final class ItemTypeNames{
 	public const OAK_BOAT = "minecraft:oak_boat";
 	public const OAK_CHEST_BOAT = "minecraft:oak_chest_boat";
 	public const OAK_HANGING_SIGN = "minecraft:oak_hanging_sign";
+	public const OAK_SHELF = "minecraft:oak_shelf";
 	public const OAK_SIGN = "minecraft:oak_sign";
 	public const OCELOT_SPAWN_EGG = "minecraft:ocelot_spawn_egg";
 	public const OMINOUS_BOTTLE = "minecraft:ominous_bottle";
@@ -433,6 +440,7 @@ final class ItemTypeNames{
 	public const PALE_OAK_CHEST_BOAT = "minecraft:pale_oak_chest_boat";
 	public const PALE_OAK_DOOR = "minecraft:pale_oak_door";
 	public const PALE_OAK_HANGING_SIGN = "minecraft:pale_oak_hanging_sign";
+	public const PALE_OAK_SHELF = "minecraft:pale_oak_shelf";
 	public const PALE_OAK_SIGN = "minecraft:pale_oak_sign";
 	public const PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 	public const PAPER = "minecraft:paper";
@@ -531,6 +539,7 @@ final class ItemTypeNames{
 	public const SPRUCE_CHEST_BOAT = "minecraft:spruce_chest_boat";
 	public const SPRUCE_DOOR = "minecraft:spruce_door";
 	public const SPRUCE_HANGING_SIGN = "minecraft:spruce_hanging_sign";
+	public const SPRUCE_SHELF = "minecraft:spruce_shelf";
 	public const SPRUCE_SIGN = "minecraft:spruce_sign";
 	public const SPYGLASS = "minecraft:spyglass";
 	public const SQUID_SPAWN_EGG = "minecraft:squid_spawn_egg";
@@ -581,6 +590,7 @@ final class ItemTypeNames{
 	public const WARPED_DOOR = "minecraft:warped_door";
 	public const WARPED_FUNGUS_ON_A_STICK = "minecraft:warped_fungus_on_a_stick";
 	public const WARPED_HANGING_SIGN = "minecraft:warped_hanging_sign";
+	public const WARPED_SHELF = "minecraft:warped_shelf";
 	public const WARPED_SIGN = "minecraft:warped_sign";
 	public const WATER_BUCKET = "minecraft:water_bucket";
 	public const WAXED_COPPER_DOOR = "minecraft:waxed_copper_door";
@@ -620,4 +630,5 @@ final class ItemTypeNames{
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = "minecraft:zombie_pigman_spawn_egg";
 	public const ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 	public const ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
+	
 }

@@ -157,7 +157,8 @@ class WindCharge extends Throwable
     private function processBlockInteraction(Block $block, Vector3 $position): void
     {
         $world = $this->getWorld();
-        if ($block instanceof Door && !str_contains(strtolower($block->getName()), "iron")) {
+    // Only allow opening non-iron doors (iron doors require redstone)
+    if ($block instanceof Door && $block->getTypeId() !== \pocketmine\block\BlockTypeIds::IRON_DOOR) {
             $block->setOpen(!$block->isOpen());
             $other = $block->getSide($block->isTop() ? Facing::DOWN : Facing::UP);
             if ($other instanceof Door && $other->hasSameTypeId($block)) {
@@ -168,7 +169,8 @@ class WindCharge extends Throwable
             $world->addSound($block->getPosition(), new DoorSound());
         }
 
-        if ($block instanceof Trapdoor && !str_contains(strtolower($block->getName()), "iron")) {
+    // Only allow toggling non-iron trapdoors
+    if ($block instanceof Trapdoor && $block->getTypeId() !== \pocketmine\block\BlockTypeIds::IRON_TRAPDOOR) {
             $block->setOpen(!$block->isOpen());
             $world->setBlock($position, $block);
             $world->addSound($block->getPosition(), new DoorSound());

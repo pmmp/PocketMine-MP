@@ -29,8 +29,7 @@ namespace pocketmine\lang;
  *
  * @internal
  */
-final class KnownTranslationKeys
-{
+final class KnownTranslationKeys{
 	public const ABILITY_FLIGHT = "ability.flight";
 	public const ABILITY_NOCLIP = "ability.noclip";
 	public const ACCEPT_LICENSE = "accept_license";
@@ -230,6 +229,7 @@ final class KnownTranslationKeys
 	public const IP_CONFIRM = "ip_confirm";
 	public const IP_GET = "ip_get";
 	public const IP_WARNING = "ip_warning";
+	public const ITEM_MUSIC_DISC_LAVA_CHICKEN_DESC = "item.music_disc_lava_chicken.desc";
 	public const ITEM_RECORD_11_DESC = "item.record_11.desc";
 	public const ITEM_RECORD_13_DESC = "item.record_13.desc";
 	public const ITEM_RECORD_5_DESC = "item.record_5.desc";
@@ -237,7 +237,6 @@ final class KnownTranslationKeys
 	public const ITEM_RECORD_CAT_DESC = "item.record_cat.desc";
 	public const ITEM_RECORD_CHIRP_DESC = "item.record_chirp.desc";
 	public const ITEM_RECORD_CREATOR_DESC = "item.record_creator.desc";
-	public const ITEM_MUSIC_DISC_LAVA_CHICKEN_DESC = "item.music_disc_lava_chicken.desc";
 	public const ITEM_RECORD_CREATOR_MUSIC_BOX_DESC = "item.record_creator_music_box.desc";
 	public const ITEM_RECORD_FAR_DESC = "item.record_far.desc";
 	public const ITEM_RECORD_MALL_DESC = "item.record_mall.desc";

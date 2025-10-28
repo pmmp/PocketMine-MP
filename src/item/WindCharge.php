@@ -15,6 +15,7 @@ use pocketmine\world\particle\WindBurstParticle;
 use pocketmine\world\sound\ThrowSound;
 use pocketmine\world\sound\WindChargeShootSound;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
+use pocketmine\block\BlockTypeIds;
 
 class WindCharge extends ProjectileItem
 {

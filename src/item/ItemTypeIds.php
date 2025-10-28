@@ -375,7 +375,21 @@ final class ItemTypeIds{
 	public const MACE = 20327;
 	public const WIND_CHARGE = 20328;
 
-	public const FIRST_UNUSED_ITEM_ID = 20329;
+	// Shelves (1.21.100)
+	public const ACACIA_SHELF = 20329;
+	public const BAMBOO_SHELF = 20330;
+	public const BIRCH_SHELF = 20331;
+	public const CHERRY_SHELF = 20332;
+	public const CRIMSON_SHELF = 20333;
+	public const DARK_OAK_SHELF = 20334;
+	public const JUNGLE_SHELF = 20335;
+	public const MANGROVE_SHELF = 20336;
+	public const OAK_SHELF = 20337;
+	public const PALE_OAK_SHELF = 20338;
+	public const SPRUCE_SHELF = 20339;
+	public const WARPED_SHELF = 20340;
+
+	public const FIRST_UNUSED_ITEM_ID = 20341;
 
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;

@@ -34,6 +34,7 @@ use pocketmine\block\utils\FroglightType;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
+use pocketmine\block\utils\WoodType;
 use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
@@ -88,6 +89,50 @@ final class StringToItemParser extends StringToTParser{
 			$register("coral_block", fn() => Blocks::CORAL_BLOCK()->setCoralType($coralType));
 			//wall and floor coral fans are the same item
 			$register("coral_fan", fn() => Blocks::CORAL_FAN()->setCoralType($coralType));
+		}
+
+		// Register wooden shelf aliases (oak_shelf, spruce_shelf, etc.)
+		foreach (WoodType::cases() as $woodType) {
+			$lower = strtolower($woodType->name);
+			switch ($woodType) {
+				case WoodType::OAK:
+					$cb = fn() => Blocks::OAK_SHELF();
+					break;
+				case WoodType::SPRUCE:
+					$cb = fn() => Blocks::SPRUCE_SHELF();
+					break;
+				case WoodType::BIRCH:
+					$cb = fn() => Blocks::BIRCH_SHELF();
+					break;
+				case WoodType::JUNGLE:
+					$cb = fn() => Blocks::JUNGLE_SHELF();
+					break;
+				case WoodType::ACACIA:
+					$cb = fn() => Blocks::ACACIA_SHELF();
+					break;
+				case WoodType::DARK_OAK:
+					$cb = fn() => Blocks::DARK_OAK_SHELF();
+					break;
+				case WoodType::MANGROVE:
+					$cb = fn() => Blocks::MANGROVE_SHELF();
+					break;
+				case WoodType::CRIMSON:
+					$cb = fn() => Blocks::CRIMSON_SHELF();
+					break;
+				case WoodType::WARPED:
+					$cb = fn() => Blocks::WARPED_SHELF();
+					break;
+				case WoodType::CHERRY:
+					$cb = fn() => Blocks::CHERRY_SHELF();
+					break;
+				case WoodType::PALE_OAK:
+					$cb = fn() => Blocks::PALE_OAK_SHELF();
+					break;
+				default:
+					$cb = fn() => Blocks::OAK_SHELF();
+			}
+
+			$result->registerBlock($lower . "_shelf", $cb);
 		}
 		for($i = Light::MIN_LIGHT_LEVEL; $i <= Light::MAX_LIGHT_LEVEL; $i++){
 			//helper aliases, since we don't support passing data values in /give
@@ -1211,6 +1256,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("waxed_exposed_copper_golem_statue", fn() => Blocks::WAXED_EXPOSED_COPPER_GOLEM_STATUE());
 		$result->registerBlock("waxed_weathered_copper_golem_statue", fn() => Blocks::WAXED_WEATHERED_COPPER_GOLEM_STATUE());
 		$result->registerBlock("waxed_oxidized_copper_golem_statue", fn() => Blocks::WAXED_OXIDIZED_COPPER_GOLEM_STATUE());
+
+	
 	}
 
 	private static function registerDynamicItems(self $result) : void{

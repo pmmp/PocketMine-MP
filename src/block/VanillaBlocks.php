@@ -57,6 +57,7 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Smoker as TileSmoker;
+use pocketmine\block\tile\Shelf as TileShelf;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\AmethystTrait;
 use pocketmine\block\utils\LeavesType;
@@ -91,6 +92,7 @@ use function strtolower;
  * @method static Planks ACACIA_PLANKS()
  * @method static WoodenPressurePlate ACACIA_PRESSURE_PLATE()
  * @method static Sapling ACACIA_SAPLING()
+ * @method static Shelf ACACIA_SHELF()
  * @method static FloorSign ACACIA_SIGN()
  * @method static WoodenSlab ACACIA_SLAB()
  * @method static WoodenStairs ACACIA_STAIRS()
@@ -136,6 +138,7 @@ use function strtolower;
  * @method static Planks BIRCH_PLANKS()
  * @method static WoodenPressurePlate BIRCH_PRESSURE_PLATE()
  * @method static Sapling BIRCH_SAPLING()
+ * @method static Shelf BIRCH_SHELF()
  * @method static FloorSign BIRCH_SIGN()
  * @method static WoodenSlab BIRCH_SLAB()
  * @method static WoodenStairs BIRCH_STAIRS()
@@ -186,6 +189,7 @@ use function strtolower;
  * @method static Wood CHERRY_LOG()
  * @method static Planks CHERRY_PLANKS()
  * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()
+ * @method static Shelf CHERRY_SHELF()
  * @method static FloorSign CHERRY_SIGN()
  * @method static WoodenSlab CHERRY_SLAB()
  * @method static WoodenStairs CHERRY_STAIRS()
@@ -226,7 +230,9 @@ use function strtolower;
  * @method static ConcretePowder CONCRETE_POWDER()
  * @method static Copper COPPER()
  * @method static CopperBulb COPPER_BULB()
+ * @method static CopperChest COPPER_CHEST()
  * @method static CopperDoor COPPER_DOOR()
+ * @method static CopperGolemStatue COPPER_GOLEM_STATUE()
  * @method static CopperGrate COPPER_GRATE()
  * @method static CopperOre COPPER_ORE()
  * @method static CopperTrapdoor COPPER_TRAPDOOR()
@@ -250,6 +256,7 @@ use function strtolower;
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
  * @method static NetherRoots CRIMSON_ROOTS()
+ * @method static Shelf CRIMSON_SHELF()
  * @method static FloorSign CRIMSON_SIGN()
  * @method static WoodenSlab CRIMSON_SLAB()
  * @method static WoodenStairs CRIMSON_STAIRS()
@@ -277,6 +284,7 @@ use function strtolower;
  * @method static Planks DARK_OAK_PLANKS()
  * @method static WoodenPressurePlate DARK_OAK_PRESSURE_PLATE()
  * @method static Sapling DARK_OAK_SAPLING()
+ * @method static Shelf DARK_OAK_SHELF()
  * @method static FloorSign DARK_OAK_SIGN()
  * @method static WoodenSlab DARK_OAK_SLAB()
  * @method static WoodenStairs DARK_OAK_STAIRS()
@@ -318,8 +326,6 @@ use function strtolower;
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
- * @method static Seagrass SEAGRASS()
- * @method static Kelp KELP()
  * @method static DyedCandle DYED_CANDLE()
  * @method static DyedShulkerBox DYED_SHULKER_BOX()
  * @method static Element ELEMENT_ACTINIUM()
@@ -453,6 +459,7 @@ use function strtolower;
  * @method static Slab END_STONE_BRICK_SLAB()
  * @method static Stair END_STONE_BRICK_STAIRS()
  * @method static Wall END_STONE_BRICK_WALL()
+ * @method static CopperGolemStatue EXPOSED_COPPER_GOLEM_STATUE()
  * @method static Slab FAKE_WOODEN_SLAB()
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
@@ -516,6 +523,7 @@ use function strtolower;
  * @method static Planks JUNGLE_PLANKS()
  * @method static WoodenPressurePlate JUNGLE_PRESSURE_PLATE()
  * @method static Sapling JUNGLE_SAPLING()
+ * @method static Shelf JUNGLE_SHELF()
  * @method static FloorSign JUNGLE_SIGN()
  * @method static WoodenSlab JUNGLE_SLAB()
  * @method static WoodenStairs JUNGLE_STAIRS()
@@ -523,6 +531,7 @@ use function strtolower;
  * @method static WallHangingSign JUNGLE_WALL_HANGING_SIGN()
  * @method static WallSign JUNGLE_WALL_SIGN()
  * @method static Wood JUNGLE_WOOD()
+ * @method static Kelp KELP()
  * @method static ChemistryTable LAB_TABLE()
  * @method static Ladder LADDER()
  * @method static Lantern LANTERN()
@@ -553,6 +562,7 @@ use function strtolower;
  * @method static Planks MANGROVE_PLANKS()
  * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
  * @method static MangroveRoots MANGROVE_ROOTS()
+ * @method static Shelf MANGROVE_SHELF()
  * @method static FloorSign MANGROVE_SIGN()
  * @method static WoodenSlab MANGROVE_SLAB()
  * @method static WoodenStairs MANGROVE_STAIRS()
@@ -606,6 +616,7 @@ use function strtolower;
  * @method static Planks OAK_PLANKS()
  * @method static WoodenPressurePlate OAK_PRESSURE_PLATE()
  * @method static Sapling OAK_SAPLING()
+ * @method static Shelf OAK_SHELF()
  * @method static FloorSign OAK_SIGN()
  * @method static WoodenSlab OAK_SLAB()
  * @method static WoodenStairs OAK_STAIRS()
@@ -618,6 +629,7 @@ use function strtolower;
  * @method static OminousWallBanner OMINOUS_WALL_BANNER()
  * @method static Flower ORANGE_TULIP()
  * @method static Flower OXEYE_DAISY()
+ * @method static CopperGolemStatue OXIDIZED_COPPER_GOLEM_STATUE()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static WoodenButton PALE_OAK_BUTTON()
@@ -630,6 +642,7 @@ use function strtolower;
  * @method static Wood PALE_OAK_LOG()
  * @method static Planks PALE_OAK_PLANKS()
  * @method static WoodenPressurePlate PALE_OAK_PRESSURE_PLATE()
+ * @method static Shelf PALE_OAK_SHELF()
  * @method static FloorSign PALE_OAK_SIGN()
  * @method static WoodenSlab PALE_OAK_SLAB()
  * @method static WoodenStairs PALE_OAK_STAIRS()
@@ -674,6 +687,7 @@ use function strtolower;
  * @method static Flower POPPY()
  * @method static Potato POTATOES()
  * @method static PotionCauldron POTION_CAULDRON()
+ * @method static PowderSnow POWDER_SNOW()
  * @method static PoweredRail POWERED_RAIL()
  * @method static Opaque PRISMARINE()
  * @method static Opaque PRISMARINE_BRICKS()
@@ -734,6 +748,7 @@ use function strtolower;
  * @method static Stair SANDSTONE_STAIRS()
  * @method static Wall SANDSTONE_WALL()
  * @method static Sculk SCULK()
+ * @method static Seagrass SEAGRASS()
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
  * @method static Opaque SHROOMLIGHT()
@@ -775,6 +790,7 @@ use function strtolower;
  * @method static Planks SPRUCE_PLANKS()
  * @method static WoodenPressurePlate SPRUCE_PRESSURE_PLATE()
  * @method static Sapling SPRUCE_SAPLING()
+ * @method static Shelf SPRUCE_SHELF()
  * @method static FloorSign SPRUCE_SIGN()
  * @method static WoodenSlab SPRUCE_SLAB()
  * @method static WoodenStairs SPRUCE_STAIRS()
@@ -832,6 +848,7 @@ use function strtolower;
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
  * @method static NetherRoots WARPED_ROOTS()
+ * @method static Shelf WARPED_SHELF()
  * @method static FloorSign WARPED_SIGN()
  * @method static WoodenSlab WARPED_SLAB()
  * @method static WoodenStairs WARPED_STAIRS()
@@ -842,6 +859,11 @@ use function strtolower;
  * @method static Opaque WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
+ * @method static CopperGolemStatue WAXED_COPPER_GOLEM_STATUE()
+ * @method static CopperGolemStatue WAXED_EXPOSED_COPPER_GOLEM_STATUE()
+ * @method static CopperGolemStatue WAXED_OXIDIZED_COPPER_GOLEM_STATUE()
+ * @method static CopperGolemStatue WAXED_WEATHERED_COPPER_GOLEM_STATUE()
+ * @method static CopperGolemStatue WEATHERED_COPPER_GOLEM_STATUE()
  * @method static NetherVines WEEPING_VINES()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -849,16 +871,10 @@ use function strtolower;
  * @method static Flower WHITE_TULIP()
  * @method static WitherRose WITHER_ROSE()
  * @method static Wool WOOL()
- * @method static WaxedCopperGolemStatue WAXED_COPPER_GOLEM_STATUE()
- * @method static WaxedExposedCopperGolemStatue WAXED_EXPOSED_COPPER_GOLEM_STATUE()
- * @method static WaxedOxidizedCopperGolemStatue WAXED_OXIDIZED_COPPER_GOLEM_STATUE()
- * @method static WaxedWeatheredCopperGolemStatue WAXED_WEATHERED_COPPER_GOLEM_STATUE()
- * @method static WeatheredCopperGolemStatue WEATHERED_COPPER_GOLEM_STATUE()
- * @method static OxidizedCopperGolemStatue OXIDIZED_COPPER_GOLEM_STATUE()
- * @method static ExposedCopperGolemStatue EXPOSED_COPPER_GOLEM_STATUE()
- * @method static CopperGolemStatue COPPER_GOLEM_STATUE()
- * 
  */
+
+	
+
 final class VanillaBlocks
 {
 	use CloningRegistryTrait;
@@ -958,7 +974,7 @@ final class VanillaBlocks
 
 		$chestBreakInfo = new Info(BreakInfo::axe(2.5));
 		self::register("chest", fn(BID $id) => new Chest($id, "Chest", $chestBreakInfo), TileChest::class);
-	self::register("copper_chest", fn(BID $id) => new CopperChest($id, "Copper Chest", $chestBreakInfo), TileChest::class);
+		self::register("copper_chest", fn(BID $id) => new CopperChest($id, "Copper Chest", $chestBreakInfo), TileChest::class);
 		self::register("clay", fn(BID $id) => new Clay($id, "Clay Block", new Info(BreakInfo::shovel(0.6))));
 		self::register("coal", fn(BID $id) => new Coal($id, "Coal Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
 
@@ -1475,6 +1491,23 @@ final class VanillaBlocks
 			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+
+			// SHELF - with asItem to avoid ItemTranslator issues
+			$shelfAsItem = match ($woodType) {
+				WoodType::OAK => VanillaItems::OAK_SHELF(...),
+				WoodType::SPRUCE => VanillaItems::SPRUCE_SHELF(...),
+				WoodType::BIRCH => VanillaItems::BIRCH_SHELF(...),
+				
+				WoodType::JUNGLE => VanillaItems::JUNGLE_SHELF(...),
+				WoodType::ACACIA => VanillaItems::ACACIA_SHELF(...),
+				WoodType::DARK_OAK => VanillaItems::DARK_OAK_SHELF(...),
+				WoodType::MANGROVE => VanillaItems::MANGROVE_SHELF(...),
+				WoodType::CRIMSON => VanillaItems::CRIMSON_SHELF(...),
+				WoodType::WARPED => VanillaItems::WARPED_SHELF(...),
+				WoodType::CHERRY => VanillaItems::CHERRY_SHELF(...),
+				WoodType::PALE_OAK => VanillaItems::PALE_OAK_SHELF(...),
+			};
+			self::register($idName("shelf"), fn(BID $id) => new Shelf($id, $name . " Shelf", new Info(BreakInfo::axe(1.0)), $woodType, $shelfAsItem), TileShelf::class);
 		}
 	}
 
@@ -1835,7 +1868,7 @@ final class VanillaBlocks
 		self::register("waxed_exposed_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Exposed Copper Golem Statue", $copperBreakInfo));
 		self::register("waxed_weathered_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Weathered Copper Golem Statue", $copperBreakInfo));
 		self::register("waxed_oxidized_copper_golem_statue", fn(BID $id) => new CopperGolemStatue($id, "Waxed Oxidized Copper Golem Statue", $copperBreakInfo));
-		
+
 
 		self::register("copper_door", fn(BID $id) => new CopperDoor($id, "Copper Door", new Info(BreakInfo::pickaxe(3.0, blastResistance: 30.0))));
 		self::register("copper_trapdoor", fn(BID $id) => new CopperTrapdoor($id, "Copper Trapdoor", new Info(BreakInfo::pickaxe(3.0, ToolTier::STONE, 30.0))));

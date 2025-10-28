@@ -834,7 +834,22 @@ final class BlockTypeIds{
 	public const WAXED_WEATHERED_COPPER_GOLEM_STATUE = 10812;
 	public const WAXED_OXIDIZED_COPPER_GOLEM_STATUE = 10813;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10814;
+	// Bedrock 1.21.100: shelf block variants
+	public const OAK_SHELF = 10814;
+	public const SPRUCE_SHELF = 10815;
+	public const BIRCH_SHELF = 10816;
+	public const JUNGLE_SHELF = 10817;
+	public const ACACIA_SHELF = 10818;
+	public const DARK_OAK_SHELF = 10819;
+	public const MANGROVE_SHELF = 10820;
+	public const CRIMSON_SHELF = 10821;
+	public const WARPED_SHELF = 10822;
+	public const CHERRY_SHELF = 10823;
+	public const PALE_OAK_SHELF = 10824;
+
+	public const BAMBOO_SHELF = 10825;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10826;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

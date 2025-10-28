@@ -35,7 +35,8 @@ use function in_array;
 use function is_a;
 use function reset;
 
-final class TileFactory{
+final class TileFactory
+{
 	use SingletonTrait;
 
 	/**
@@ -49,7 +50,8 @@ final class TileFactory{
 	 */
 	private array $saveNames = [];
 
-	public function __construct(){
+	public function __construct()
+	{
 		$this->register(Barrel::class, ["Barrel", "minecraft:barrel"]);
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
 		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
@@ -73,9 +75,11 @@ final class TileFactory{
 		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
+		$this->register(Shelf::class, ["Shelf", "minecraft:shelf"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
+
 		$this->register(SporeBlossom::class, ["SporeBlossom", "minecraft:spore_blossom"]);
 		$this->register(MobHead::class, ["Skull", "minecraft:skull"]);
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
@@ -100,15 +104,16 @@ final class TileFactory{
 	 * @param string[] $saveNames
 	 * @phpstan-param class-string<Tile> $className
 	 */
-	public function register(string $className, array $saveNames = []) : void{
+	public function register(string $className, array $saveNames = []): void
+	{
 		Utils::testValidInstance($className, Tile::class);
 
 		$shortName = (new \ReflectionClass($className))->getShortName();
-		if(!in_array($shortName, $saveNames, true)){
+		if (!in_array($shortName, $saveNames, true)) {
 			$saveNames[] = $shortName;
 		}
 
-		foreach($saveNames as $name){
+		foreach ($saveNames as $name) {
 			$this->knownTiles[$name] = $className;
 		}
 
@@ -118,7 +123,8 @@ final class TileFactory{
 	/**
 	 * @phpstan-param class-string<Tile> $class
 	 */
-	public function isRegistered(string $class) : bool{
+	public function isRegistered(string $class): bool
+	{
 		return isset($this->saveNames[$class]);
 	}
 
@@ -126,10 +132,11 @@ final class TileFactory{
 	 * @internal
 	 * @throws SavedDataLoadingException
 	 */
-	public function createFromData(World $world, CompoundTag $nbt) : ?Tile{
-		try{
+	public function createFromData(World $world, CompoundTag $nbt): ?Tile
+	{
+		try {
 			$type = $nbt->getString(Tile::TAG_ID, "");
-			if(!isset($this->knownTiles[$type])){
+			if (!isset($this->knownTiles[$type])) {
 				return null;
 			}
 			$class = $this->knownTiles[$type];
@@ -140,7 +147,7 @@ final class TileFactory{
 			 */
 			$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
 			$tile->readSaveData($nbt);
-		}catch(NbtException $e){
+		} catch (NbtException $e) {
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
 
@@ -150,8 +157,9 @@ final class TileFactory{
 	/**
 	 * @phpstan-param class-string<Tile> $class
 	 */
-	public function getSaveId(string $class) : string{
-		if(isset($this->saveNames[$class])){
+	public function getSaveId(string $class): string
+	{
+		if (isset($this->saveNames[$class])) {
 			return $this->saveNames[$class];
 		}
 		throw new \InvalidArgumentException("Tile $class is not registered");

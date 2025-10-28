@@ -96,6 +96,9 @@ final class YmlServerProperties{
 	public const PLAYER_VERIFY_XUID = 'player.verify-xuid';
 	public const PLUGINS = 'plugins';
 	public const PLUGINS_LEGACY_DATA_DIR = 'plugins.legacy-data-dir';
+	public const PLUGIN_LIST = 'plugin_list';
+	public const PLUGIN_LIST_MODE = 'plugin_list.mode';
+	public const PLUGIN_LIST_PLUGINS = 'plugin_list.plugins';
 	public const SETTINGS = 'settings';
 	public const SETTINGS_ASYNC_WORKERS = 'settings.async-workers';
 	public const SETTINGS_ENABLE_DEV_BUILDS = 'settings.enable-dev-builds';
@@ -109,7 +112,4 @@ final class YmlServerProperties{
 	public const TIMINGS = 'timings';
 	public const TIMINGS_HOST = 'timings.host';
 	public const WORLDS = 'worlds';
-	public const PLUGIN_LIST = 'plugin_list';
-	public const PLUGIN_LIST_MODE = 'plugin_list.mode';
-	public const PLUGIN_LIST_PLUGINS = 'plugin_list.plugins';
 }

@@ -39,13 +39,13 @@ use pocketmine\world\sound\ArmorEquipNetheriteSound;
  * @generate-registry-docblock
  *
  * @method static ArmorMaterial CHAINMAIL()
+ * @method static ArmorMaterial COPPER()
  * @method static ArmorMaterial DIAMOND()
  * @method static ArmorMaterial GOLD()
  * @method static ArmorMaterial IRON()
  * @method static ArmorMaterial LEATHER()
  * @method static ArmorMaterial NETHERITE()
  * @method static ArmorMaterial TURTLE()
- * @method static ArmorMaterial COPPER()
  */
 final class VanillaArmorMaterials{
 	use RegistryTrait;

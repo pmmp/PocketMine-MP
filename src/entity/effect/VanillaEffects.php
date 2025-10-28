@@ -55,6 +55,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static Effect RESISTANCE()
  * @method static SaturationEffect SATURATION()
  * @method static SlownessEffect SLOWNESS()
+ * @method static SlowFallEffect SLOW_FALLING()
  * @method static SpeedEffect SPEED()
  * @method static Effect STRENGTH()
  * @method static Effect WATER_BREATHING()
