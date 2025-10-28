@@ -841,7 +841,8 @@ class Server{
 					ServerProperties::AUTO_SAVE => true,
 					ServerProperties::VIEW_DISTANCE => self::DEFAULT_MAX_VIEW_DISTANCE,
 					ServerProperties::XBOX_AUTH => true,
-					ServerProperties::LANGUAGE => "eng"
+					ServerProperties::LANGUAGE => "eng",
+					ServerProperties::WEATHER_ENABLED => true
 				])
 			);
 

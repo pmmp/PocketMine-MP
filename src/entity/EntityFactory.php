@@ -195,6 +195,10 @@ final class EntityFactory{
 			'ThrownTrident' //as above
 		]);
 
+		$this->register(LightningBolt::class, function(World $world, CompoundTag $nbt) : LightningBolt{
+		  return new LightningBolt(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['lightning_bolt', 'minecraft:lightning_bolt']);
+
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Squid', 'minecraft:squid']);

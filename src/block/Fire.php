@@ -76,7 +76,11 @@ class Fire extends BaseFire implements Ageable{
 		$canSpread = true;
 
 		if(!$down->burnsForever()){
-			//TODO: check rain
+			$world = $this->position->getWorld();
+			if($world->isRaining($this->position)){
+				return;
+			}
+
 			if($this->age === self::MAX_AGE){
 				if(!$down->isFlammable() && mt_rand(0, 3) === 3){ //1/4 chance to extinguish
 					$canSpread = false;
@@ -187,8 +191,9 @@ class Fire extends BaseFire implements Ageable{
 					if($block->getTypeId() !== BlockTypeIds::AIR){
 						continue;
 					}
-
-					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
+					if($world->isRaining($block->position)){
+						continue;
+					}
 
 					$encouragement = 0;
 					foreach($block->position->sides() as $vector3){

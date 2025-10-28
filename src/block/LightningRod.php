@@ -39,6 +39,8 @@ final class LightningRod extends Transparent implements AnyFacing, CopperMateria
 	use CopperTrait;
 	use AnyFacingTrait;
 
+	// TODO: Add lightning attraction behavior when thunderstorms occur
+
 	protected function recalculateCollisionBoxes() : array{
 		$myAxis = Facing::axis($this->facing);
 

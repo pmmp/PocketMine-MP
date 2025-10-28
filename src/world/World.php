@@ -41,6 +41,7 @@ use pocketmine\data\bedrock\block\BlockStateDeserializeException;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
+use pocketmine\entity\LightningBolt;
 use pocketmine\entity\Location;
 use pocketmine\entity\NeverSavedWithChunkEntity;
 use pocketmine\entity\object\ExperienceOrb;
@@ -53,6 +54,7 @@ use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
 use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
+use pocketmine\event\world\WeatherChangeEvent;
 use pocketmine\event\world\WorldDifficultyChangeEvent;
 use pocketmine\event\world\WorldDisplayNameChangeEvent;
 use pocketmine\event\world\WorldParticleEvent;
@@ -73,7 +75,9 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
@@ -81,6 +85,7 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\ServerConfigGroup;
+use pocketmine\ServerProperties;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
@@ -115,6 +120,7 @@ use function array_key_exists;
 use function array_keys;
 use function array_map;
 use function array_merge;
+use function array_rand;
 use function array_sum;
 use function array_values;
 use function assert;
@@ -224,6 +230,12 @@ class World implements ChunkManager{
 
 	private int $minY;
 	private int $maxY;
+
+	private int $weatherDuration = 0;
+	private int $weatherTick = 0;
+	private bool $weatherEnabled = true;
+	private float $rainLevel = 0.0;
+	private float $thunderLevel = 0.0;
 
 	/**
 	 * @var ChunkTicker[][] chunkHash => [spl_object_id => ChunkTicker]
@@ -517,6 +529,8 @@ class World implements ChunkManager{
 				$this->worldId
 			);
 
+		$this->weatherEnabled = $this->getServer()->getConfigGroup()->getConfigBool(ServerProperties::WEATHER_ENABLED, true);
+
 		$this->chunkPopulationRequestQueue = new \SplQueue();
 		$this->addOnUnloadCallback(function() : void{
 			$this->logger->debug("Cancelling unfulfilled generation requests");
@@ -586,6 +600,139 @@ class World implements ChunkManager{
 				$this->randomTickBlocks[$state->getStateId()] = true;
 			}
 		}
+	}
+
+	public function setWeather(float $rainLevel, float $thunderLevel, int $duration = 6000) : void{
+		$ev = new WeatherChangeEvent($this, $this->rainLevel, $this->thunderLevel, $rainLevel, $thunderLevel);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$this->rainLevel = $ev->getNewRainLevel();
+		$this->thunderLevel = $ev->getNewThunderLevel();
+		$this->weatherDuration = $duration;
+		$this->weatherTick = 0;
+
+		$this->broadcastWeatherPackets();
+	}
+
+	private function tickWeather() : void{
+		if(!$this->weatherEnabled){
+			return;
+		}
+
+		$this->rainLevel = max(0.0, min(1.0, $this->rainLevel + (mt_rand(-2, 2) / 100)));
+		$this->thunderLevel = max(0.0, min(1.0, $this->thunderLevel + (mt_rand(-1, 1) / 100)));
+
+		$this->weatherTick++;
+
+		if($this->weatherTick >= $this->weatherDuration && $this->weatherDuration > 0){
+			$this->autoChangeWeather();
+		}
+
+		if($this->thunderLevel > 0.8 && mt_rand(0, 200) === 0){
+			$players = $this->getPlayers();
+			if(count($players) > 0){
+				$target = $players[array_rand($players)];
+				$spawn = $target->getPosition();
+				$x = (int) $spawn->x + mt_rand(-30, 30);
+				$z = (int) $spawn->z + mt_rand(-30, 30);
+				$y = $this->getHighestBlockAt($x, $z) ?? max(64, (int) $spawn->y);
+
+				$loc = Location::fromObject(new Vector3($x, $y, $z), $this);
+				(new LightningBolt($loc))->spawnToAll();
+			}
+		}
+	}
+
+	private function autoChangeWeather() : void{
+		$roll = mt_rand(1, 100);
+
+		if($roll <= 70){
+			$this->setWeather(0.0, 0.0, mt_rand(6000, 12000));
+		}elseif($roll <= 90){
+			$this->setWeather(1.0, 0.0, mt_rand(4000, 9000));
+		}else{
+			$this->setWeather(1.0, 1.0, mt_rand(2000, 6000));
+		}
+	}
+
+	private function broadcastWeatherPackets() : void{
+		$players = $this->getPlayers();
+		if(count($players) === 0){
+			return;
+		}
+
+		$rainInt = (int) ($this->rainLevel * 65535);
+		$thunderInt = (int) ($this->thunderLevel * 65535);
+
+		$packets = [];
+
+		if($this->rainLevel > 0.0){
+			$packets[] = LevelEventPacket::create(LevelEvent::START_RAIN, $rainInt, null);
+		}else{
+			$packets[] = LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
+		}
+
+		if($this->thunderLevel > 0.0){
+			$packets[] = LevelEventPacket::create(LevelEvent::START_THUNDER, $thunderInt, null);
+		}else{
+			$packets[] = LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
+		}
+		NetworkBroadcastUtils::broadcastPackets($players, $packets);
+	}
+
+	public function getRainLevel() : float{
+		return $this->rainLevel;
+	}
+
+	public function setRainLevel(float $level) : void {
+		if($level < 0.0 || $level > 1.0){
+			throw new \InvalidArgumentException("Rain level must be between 0.0 and 1.0, $level given");
+		}
+		$this->rainLevel = $level;
+	}
+
+	public function getThunderLevel() : float{
+		return $this->thunderLevel;
+	}
+
+	public function setThunderLevel(float $level) : void {
+		if($level < 0.0 || $level > 1.0){
+			throw new \InvalidArgumentException("Thunder level must be between 0.0 and 1.0, $level given");
+		}
+		$this->thunderLevel = $level;
+	}
+
+	public function isWeatherEnabled() : bool{
+		return $this->weatherEnabled;
+	}
+
+	public function isRainingAt(int $x, int $y, int $z) : bool{
+		if($this->getRainLevel() <= 0.0){
+			return false;
+		}
+
+		if(!$this->isChunkLoaded($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)){
+			return false;
+		}
+
+		$highestY = $this->getHighestBlockAt($x, $z);
+
+		for($currentY = $highestY; $currentY > $y; $currentY--){
+			$block = $this->getBlockAt($x, $currentY, $z);
+
+			if($block->getLightFilter() >= 15 || $block->isSolid()){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public function isRaining(Vector3 $pos) : bool{
+		return $this->isRainingAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 	}
 
 	public function getTickRateTime() : float{
@@ -939,6 +1086,7 @@ class World implements ChunkManager{
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
+		$this->tickWeather();
 
 		if(++$this->sendTimeTicker === 200){
 			$this->sendTime();
@@ -1435,6 +1583,8 @@ class World implements ChunkManager{
 		$timings->startTiming();
 
 		$this->provider->getWorldData()->setTime($this->time);
+		$this->provider->getWorldData()->setRainLevel($this->rainLevel);
+		$this->provider->getWorldData()->setLightningLevel($this->thunderLevel);
 		$this->saveChunks();
 		$this->provider->getWorldData()->save();
 
@@ -1740,7 +1890,9 @@ class World implements ChunkManager{
 	public function computeSkyLightReduction() : int{
 		$percentage = max(0, min(1, -(cos($this->getSunAngleRadians()) * 2 - 0.5)));
 
-		//TODO: check rain and thunder level
+		$weatherDarkness = max($this->rainLevel, $this->thunderLevel) * 0.8;
+
+		$percentage = min(1, $percentage + $weatherDarkness);
 
 		return (int) ($percentage * 11);
 	}

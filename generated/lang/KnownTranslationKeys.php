@@ -122,6 +122,14 @@ final class KnownTranslationKeys{
 	public const COMMANDS_UNBANIP_INVALID = "commands.unbanip.invalid";
 	public const COMMANDS_UNBANIP_SUCCESS = "commands.unbanip.success";
 	public const COMMANDS_UNBANIP_USAGE = "commands.unbanip.usage";
+	public const COMMANDS_WEATHER_CLEAR = "commands.weather.clear";
+	public const COMMANDS_WEATHER_DISABLED = "commands.weather.disabled";
+	public const COMMANDS_WEATHER_QUERY = "commands.weather.query";
+	public const COMMANDS_WEATHER_QUERY_CLEAR = "commands.weather.query.clear";
+	public const COMMANDS_WEATHER_QUERY_RAIN = "commands.weather.query.rain";
+	public const COMMANDS_WEATHER_QUERY_THUNDER = "commands.weather.query.thunder";
+	public const COMMANDS_WEATHER_RAIN = "commands.weather.rain";
+	public const COMMANDS_WEATHER_THUNDER = "commands.weather.thunder";
 	public const COMMANDS_WHITELIST_ADD_SUCCESS = "commands.whitelist.add.success";
 	public const COMMANDS_WHITELIST_ADD_USAGE = "commands.whitelist.add.usage";
 	public const COMMANDS_WHITELIST_DISABLED = "commands.whitelist.disabled";
@@ -443,6 +451,9 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_VERSION_SERVERSOFTWARENAME = "pocketmine.command.version.serverSoftwareName";
 	public const POCKETMINE_COMMAND_VERSION_SERVERSOFTWAREVERSION = "pocketmine.command.version.serverSoftwareVersion";
 	public const POCKETMINE_COMMAND_VERSION_USAGE = "pocketmine.command.version.usage";
+	public const POCKETMINE_COMMAND_WEATHER_DESCRIPTION = "pocketmine.command.weather.description";
+	public const POCKETMINE_COMMAND_WEATHER_DISABLE = "pocketmine.command.weather.disable";
+	public const POCKETMINE_COMMAND_WEATHER_USAGE = "pocketmine.command.weather.usage";
 	public const POCKETMINE_COMMAND_WHITELIST_DESCRIPTION = "pocketmine.command.whitelist.description";
 	public const POCKETMINE_COMMAND_XP_DESCRIPTION = "pocketmine.command.xp.description";
 	public const POCKETMINE_COMMAND_XP_USAGE = "pocketmine.command.xp.usage";
@@ -549,6 +560,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PERMISSION_COMMAND_UNBAN_IP = "pocketmine.permission.command.unban.ip";
 	public const POCKETMINE_PERMISSION_COMMAND_UNBAN_PLAYER = "pocketmine.permission.command.unban.player";
 	public const POCKETMINE_PERMISSION_COMMAND_VERSION = "pocketmine.permission.command.version";
+	public const POCKETMINE_PERMISSION_COMMAND_WEATHER = "pocketmine.permission.command.weather";
 	public const POCKETMINE_PERMISSION_COMMAND_WHITELIST_ADD = "pocketmine.permission.command.whitelist.add";
 	public const POCKETMINE_PERMISSION_COMMAND_WHITELIST_DISABLE = "pocketmine.permission.command.whitelist.disable";
 	public const POCKETMINE_PERMISSION_COMMAND_WHITELIST_ENABLE = "pocketmine.permission.command.whitelist.enable";
