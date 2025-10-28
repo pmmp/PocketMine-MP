@@ -188,7 +188,7 @@ class Server{
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
 	public const DEFAULT_SERVER_NAME = VersionInfo::NAME . " Server";
-	public const DEFAULT_SUB_MOTD = "BeeltyMine " . VersionInfo::BASE_VERSION;
+	public const DEFAULT_SUB_MOTD = VersionInfo::NAME . VersionInfo::BASE_VERSION;
 	public const DEFAULT_MAX_PLAYERS = 20;
 	public const DEFAULT_PORT_IPV4 = 19132;
 	public const DEFAULT_PORT_IPV6 = 19133;
@@ -875,7 +875,6 @@ class Server{
 
 			if(!file_exists($eulaFile)){
 				$date = gmdate("D M d H:i:s") . " GMT+03:00 " . gmdate("Y");
-
 				$content  = "#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA)." . PHP_EOL;
 				$content .= "#".$date . PHP_EOL;
 				$content .= "eula=false" . PHP_EOL;
@@ -884,8 +883,6 @@ class Server{
 			}
 
 			$this->eula = new Config($eulaFile, Config::PROPERTIES);
-
-			var_dump($this->eula->getAll());
 
 			if($this->eula->get("eula") !== true){
 				$this->logger->emergency("You need to agree the EULA in order to run the server. Go to eula.txt for more info.");
