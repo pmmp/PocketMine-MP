@@ -1,8 +1,8 @@
 <p align="center">
 	<a href="https://github.com/ayrzDev/BeeltyMine">
 		<picture>
-			<source srcset="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-dark-rgb.gif" media="(prefers-color-scheme: dark)">
-			<img src="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-rgb.gif" loading="eager" />
+			<source srcset="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/beetlymine-dark.gif" media="(prefers-color-scheme: dark)">
+			<img src="https://raw.githubusercontent.com/pmmp/beetlymine-MP/stable/.github/readme/beetlymine.gif" loading="eager" />
 		</picture>
 	</a><br>
 	<b>A highly customizable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
