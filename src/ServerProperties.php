@@ -47,6 +47,7 @@ final class ServerProperties{
 	public const LANGUAGE = "language";
 	public const MAX_PLAYERS = "max-players";
 	public const MOTD = "motd";
+	public const SUB_MOTD = "sub_motd";
 	public const PVP = "pvp";
 	public const SERVER_IPV4 = "server-ip";
 	public const SERVER_IPV6 = "server-ipv6";
