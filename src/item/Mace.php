@@ -11,6 +11,8 @@ use pocketmine\player\Player;
 use pocketmine\math\Vector3;
 use pocketmine\entity\Living;
 use pocketmine\block\BlockToolType;
+use pocketmine\world\sound\MaceHeavySmashGroundSound;
+use pocketmine\world\particle\BlockBreakParticle;
 
 class Mace extends TieredTool{
 
@@ -61,6 +63,28 @@ class Mace extends TieredTool{
                     $horiz = min(1.5, $fall * 0.15);
                     $vert = min(Living::DEFAULT_KNOCKBACK_VERTICAL_LIMIT, $fall * 0.12);
                     $victim->setMotion($victim->getMotion()->add($dir->x * $horiz, $vert, $dir->z * $horiz));
+
+                    // Play heavy smash ground sound at the victim position
+                    $world = $damager->getWorld();
+                    $world->addSound($victim->getPosition(), new MaceHeavySmashGroundSound());
+
+                    // Spawn block-break particles around the victim using the block under them
+                    try{
+                        $center = $victim->getPosition();
+                        $blockUnder = $world->getBlockAt((int)floor($center->x), (int)floor($center->y) - 1, (int)floor($center->z));
+                        $positions = [];
+                        for($ox = -1; $ox <= 1; $ox++){
+                            for($oz = -1; $oz <= 1; $oz++){
+                                $positions[] = $center->add(0.5 + $ox, 0.1, 0.5 + $oz);
+                            }
+                        }
+
+                        foreach($positions as $particlePos){
+                            $world->addParticle($particlePos, new BlockBreakParticle($blockUnder));
+                        }
+                    }catch(\Throwable $e){
+                        // Non-fatal: particle/sound should not crash attack; swallow exceptions silently
+                    }
                 }
             }
         }
