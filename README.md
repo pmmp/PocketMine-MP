@@ -1,8 +1,8 @@
 <p align="center">
 	<a href="https://github.com/ayrzDev/BeeltyMine">
 		<picture>
-			<source srcset=".github/readme/beetlymine-dark.gif" media="(prefers-color-scheme: dark)">
-			<img src=".github/readme/beetlymine.gif" alt="BeeltyMine logo" loading="eager" />
+			<source srcset=".github/readme/beeltymine-dark.gif" media="(prefers-color-scheme: dark)">
+			<img src=".github/readme/beeltymine.gif" alt="BeeltyMine logo" loading="eager" />
 		</picture>
 	</a><br>
 	<b>A highly customizable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
