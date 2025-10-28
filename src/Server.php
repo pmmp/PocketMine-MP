@@ -188,6 +188,7 @@ class Server{
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
 	public const DEFAULT_SERVER_NAME = VersionInfo::NAME . " Server";
+	public const DEFAULT_SUB_MOTD = "BeeltyMine " . VersionInfo::BASE_VERSION;
 	public const DEFAULT_MAX_PLAYERS = 20;
 	public const DEFAULT_PORT_IPV4 = 19132;
 	public const DEFAULT_PORT_IPV6 = 19133;
@@ -225,6 +226,7 @@ class Server{
 	private BanList $banByIP;
 
 	private Config $operators;
+	private Config $eula;
 
 	private Config $whitelist;
 
@@ -421,6 +423,10 @@ class Server{
 
 	public function getMotd() : string{
 		return $this->configGroup->getConfigString(ServerProperties::MOTD, self::DEFAULT_SERVER_NAME);
+	}
+
+	public function getSubMotd() : string{
+		return $this->configGroup->getConfigString(ServerProperties::SUB_MOTD, self::DEFAULT_SUB_MOTD);
 	}
 
 	public function getLoader() : ThreadSafeClassLoader{
@@ -823,6 +829,7 @@ class Server{
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
 					ServerProperties::MOTD => self::DEFAULT_SERVER_NAME,
+					ServerProperties::SUB_MOTD => self::DEFAULT_SUB_MOTD,
 					ServerProperties::SERVER_PORT_IPV4 => self::DEFAULT_PORT_IPV4,
 					ServerProperties::SERVER_PORT_IPV6 => self::DEFAULT_PORT_IPV6,
 					ServerProperties::ENABLE_IPV6 => true,
@@ -862,6 +869,27 @@ class Server{
 					$this->logger->emergency("Fallback language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
 					return;
 				}
+			}
+
+			$eulaFile = Path::join($this->dataPath, "eula.txt");
+
+			if(!file_exists($eulaFile)){
+				$date = gmdate("D M d H:i:s") . " GMT+03:00 " . gmdate("Y");
+
+				$content  = "#By changing the setting below to TRUE you are indicating your agreement to our EULA (https://aka.ms/MinecraftEULA)." . PHP_EOL;
+				$content .= "#".$date . PHP_EOL;
+				$content .= "eula=false" . PHP_EOL;
+
+				file_put_contents($eulaFile, $content);
+			}
+
+			$this->eula = new Config($eulaFile, Config::PROPERTIES);
+
+			var_dump($this->eula->getAll());
+
+			if($this->eula->get("eula") !== true){
+				$this->logger->emergency("You need to agree the EULA in order to run the server. Go to eula.txt for more info.");
+				$this->forceShutdownExit();
 			}
 
 			$this->logger->info($this->language->translate(KnownTranslationFactory::language_selected($this->language->getName(), $this->language->getLang())));
@@ -960,11 +988,7 @@ class Server{
 			$this->operators = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
 			$this->whitelist = new Config(Path::join($this->dataPath, "white-list.txt"), Config::ENUM);
 
-			$bannedTxt = Path::join($this->dataPath, "banned.txt");
 			$bannedPlayersTxt = Path::join($this->dataPath, "banned-players.txt");
-			if(file_exists($bannedTxt) && !file_exists($bannedPlayersTxt)){
-				@rename($bannedTxt, $bannedPlayersTxt);
-			}
 			@touch($bannedPlayersTxt);
 			$this->banByName = new BanList($bannedPlayersTxt);
 			$this->banByName->load();
