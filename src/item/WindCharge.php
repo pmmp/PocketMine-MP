@@ -4,147 +4,123 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\entity\Location;
+use pocketmine\entity\projectile\Throwable;
 use pocketmine\entity\projectile\WindCharge as WindChargeEntity;
+use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\item\ItemIdentifier;
-use pocketmine\item\ItemUseResult;
-use pocketmine\item\ProjectileItem;
 use pocketmine\world\particle\WindBurstParticle;
+use pocketmine\world\sound\ThrowSound;
 use pocketmine\world\sound\WindChargeShootSound;
-use pocketmine\world\sound\ExplodeSound;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class WindCharge extends ProjectileItem
 {
+	private const FORWARD_MULTIPLIER = 0.60;
+	private const H_SPEED_CLAMP = 1.20;
+	private const PRESERVE_FACTOR = 0.2;
 
-    /** Ayarlar (isteğe göre değiştir) */
-    private const POWER_DEFAULT     = 2.5;   // ileri itişi etkiler
-    private const TARGET_HEIGHT     = 12.0;  // yaklaşık ulaşılmak istenen maksimum yükseklik (blok)
-    private const FORWARD_MULTIPLIER = 0.60;  // yatay itiş çarpanı
-    private const H_SPEED_CLAMP     = 1.20;  // yatay hız üst sınırı (anticheat dostu)
-    private const COOLDOWN_TICKS    = 10;    // 10 tick = 0.5s, Bedrock uyumu
+	public function __construct(ItemIdentifier $identifier, string $name = "Wind Charge")
+	{
+		parent::__construct($identifier, $name);
+	}
 
-    public function __construct(ItemIdentifier $identifier, string $name = "Wind Charge")
-    {
-        parent::__construct($identifier, $name);
-    }
+	public function getCooldownTicks(): int
+	{
+		return 10;
+	}
 
-    /** 40 tick = ~2 sn (PMMP item cooldown mekanizması için sinyal) */
-    public function getCooldownTicks(): int
-    {
-        return self::COOLDOWN_TICKS;
-    }
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
+		if($player->hasItemCooldown($this)){
+			return ItemUseResult::FAIL;
+		}
 
-    /**
-     * Wind Charge mantığı:
-     * - Bakılan yöne doğru ileri itiş + yukarı hız ver
-     * - Düşme hasarını engellemek için fallDistance reset
-     * - Efekt yok (gerçek mekanikle tutarlı)
-     */
-    public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems): ItemUseResult
-    {
-        // Custom spawn flow copied from ProjectileItem::onClickAir so we can ensure motion & source are set correctly
-        $location = $player->getLocation();
+		$dir = $player->getDirectionVector();
+		$force = $this->getThrowForce();
+		$currentMotion = $player->getMotion();
 
-        $projectile = $this->createEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $location->yaw, $location->pitch), $player);
-        // Compute a view-aligned motion so the projectile follows where the player is looking
-        $dir = $player->getDirectionVector();
-        $force = $this->getThrowForce();
+		$forward = new Vector3($dir->x, 0.0, $dir->z);
+		if($forward->lengthSquared() > 0.0){
+			$forward = $forward->normalize();
+		}
 
-        // horizontal forward vector (yaw only)
-        $forward = new Vector3($dir->x, 0.0, $dir->z);
-        if($forward->lengthSquared() > 0.0){
-            $forward = $forward->normalize();
-        }
+		$hNewX = $currentMotion->x * self::PRESERVE_FACTOR + $forward->x * ($force * self::FORWARD_MULTIPLIER);
+		$hNewZ = $currentMotion->z * self::PRESERVE_FACTOR + $forward->z * ($force * self::FORWARD_MULTIPLIER);
 
-    // preserve a small amount of player's current horizontal motion to feel natural while running
-    $cur = $player->getMotion();
-    $preserveFactor = 0.2; // reduce preserved horizontal momentum to avoid sideways launches
-        $hNewX = $cur->x * $preserveFactor + $forward->x * ($force * self::FORWARD_MULTIPLIER);
-        $hNewZ = $cur->z * $preserveFactor + $forward->z * ($force * self::FORWARD_MULTIPLIER);
+		$lookDownFactor = max(0.0, -$dir->y);
+		$horizontalSuppression = 1.0 - ($lookDownFactor * 0.95);
+		$hNewX *= $horizontalSuppression;
+		$hNewZ *= $horizontalSuppression;
 
-        // if player is looking downwards, suppress horizontal to avoid strong sideways push underfoot
-        $lookDownFactor = max(0.0, -$dir->y); // 0..1 (1 = straight down)
-        $horizontalSuppression = 1.0 - ($lookDownFactor * 0.95); // near-straight-down -> ~5% horizontal remains
-        $hNewX *= $horizontalSuppression;
-        $hNewZ *= $horizontalSuppression;
+		$horizontalLength = sqrt($hNewX * $hNewX + $hNewZ * $hNewZ);
+		if($horizontalLength > self::H_SPEED_CLAMP && $horizontalLength > 0.0){
+			$scale = self::H_SPEED_CLAMP / $horizontalLength;
+			$hNewX *= $scale;
+			$hNewZ *= $scale;
+		}
 
-        // clamp horizontal speed
-        $hLen = sqrt($hNewX * $hNewX + $hNewZ * $hNewZ);
-        if($hLen > self::H_SPEED_CLAMP && $hLen > 0.0){
-            $scale = self::H_SPEED_CLAMP / $hLen;
-            $hNewX *= $scale;
-            $hNewZ *= $scale;
-        }
+		$verticalVelocity = 1.2;
 
-        // Determine whether the player is targeting a block under their feet (used to decide when to force a large upward launch)
-        $target = $player->getTargetBlock(6);
-        $isTargetUnderfoot = false;
-        if ($target !== null) {
-            $playerY = $player->getPosition()->y;
-            $targetY = $target->getPosition()->y;
-            // if the target block is at least ~1 block below the player's feet, consider it "underfoot"
-            if (($playerY - $targetY) >= 1.0) {
-                $isTargetUnderfoot = true;
-            }
-        }
+		$player->setMotion(new Vector3($hNewX, $verticalVelocity, $hNewZ));
+		$player->fallDistance = 0.0;
 
-        // vertical: compute required upward velocity to reach approx TARGET_HEIGHT using v = sqrt(2*g*h)
-        $g = $player->getGravity();
-        if($g <= 0.0){
-            $g = 0.08;
-        }
-        $desiredVY = sqrt(2.0 * $g * self::TARGET_HEIGHT);
-        // scale player's pitch component; only enforce the large minimum upward velocity when
-        // the player is looking notably downwards (throwing underfoot). This avoids forcing
-        // a large upward launch when player is aiming forward or slightly up.
-        $verticalMultiplier = 1.8;
-        if($dir->y < -0.4 && $isTargetUnderfoot){ // looking sufficiently downwards and targeting underfoot
-            // ensure a minimum upward velocity so underfoot throws reliably lift
-            $vY = max($cur->y, $desiredVY * 0.9);
-        }else{
-            // follow player's vertical aim otherwise
-            $vY = max($cur->y, $dir->y * $force * $verticalMultiplier);
-        }
+		$position = $player->getPosition();
+		$world = $player->getWorld();
 
-        $projectile->setMotion(new Vector3($hNewX, $vY, $hNewZ));
+		$pitch = mt_rand(33, 60) / 100.0;
+		$world->addSound($position, new WindChargeShootSound(LevelSoundEvent::WIND_CHARGE_BURST, $pitch));
+		$world->addParticle($position, new WindBurstParticle());
+		$world->addSound($position, new ThrowSound());
 
+		$player->resetItemCooldown($this);
 
-        $projectileEv = new \pocketmine\event\entity\ProjectileLaunchEvent($projectile);
-        $projectileEv->call();
-        if ($projectileEv->isCancelled()) {
-            $projectile->flagForDespawn();
-            return ItemUseResult::FAIL;
-        }
+		$this->pop();
+		return ItemUseResult::SUCCESS;
+	}
 
-        $projectile->spawnToAll();
+	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems): ItemUseResult
+	{
+		if($player->hasItemCooldown($this)){
+			return ItemUseResult::FAIL;
+		}
 
-        $pos = $player->getPosition()->add(0.5, 0.5, 0.5);
-        $world = $player->getWorld();
-        $pitch = mt_rand(33, 60) / 100.0; // 0.33 .. 0.60
-        $world->addSound($pos, new WindChargeShootSound(LevelSoundEvent::WIND_CHARGE_BURST, $pitch));
-        $world->addParticle($pos, new WindBurstParticle());
+		$location = $player->getLocation();
+		$projectile = $this->createEntity(Location::fromObject($player->getEyePos(), $player->getWorld(), $location->yaw, $location->pitch), $player);
 
-        // also play vanilla throw sound
-        $location->getWorld()->addSound($location, new \pocketmine\world\sound\ThrowSound());
+		$projectile->setMotion($player->getDirectionVector()->multiply($this->getThrowForce()));
 
-        $this->pop();
+		$projectileEv = new ProjectileLaunchEvent($projectile);
+		$projectileEv->call();
+		if($projectileEv->isCancelled()){
+			$projectile->flagForDespawn();
+			return ItemUseResult::FAIL;
+		}
 
-        return ItemUseResult::SUCCESS;
-    }
+		$projectile->spawnToAll();
 
-    public function getThrowForce(): float
-    {
-        return self::POWER_DEFAULT;
-    }
+		$position = $player->getPosition();
+		$world = $player->getWorld();
 
-    protected function createEntity(Location $location, Player $thrower): \pocketmine\entity\projectile\Throwable
-    {
-        $ent = new WindChargeEntity($location, $thrower);
-        // mark source as player so projectile can choose correct burst behavior
-        $ent->setSource('player');
-        return $ent;
-    }
+		$world->addSound($position, new ThrowSound());
+
+		$player->hasItemCooldown($this);
+
+		$this->pop();
+
+		return ItemUseResult::SUCCESS;
+	}
+
+	public function getThrowForce(): float
+	{
+		return 1.5;
+	}
+
+	protected function createEntity(Location $location, Player $thrower): Throwable
+	{
+		$entity = new WindChargeEntity($location, $thrower);
+		$entity->setSource('player');
+		return $entity;
+	}
 }
