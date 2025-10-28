@@ -5,7 +5,7 @@
 			<img src="https://raw.githubusercontent.com/pmmp/PocketMine-MP/stable/.github/readme/pocketmine-rgb.gif" loading="eager" />
 		</picture>
 	</a><br>
-	<b>A highly customizable, open source server software for Minecraft: Bedrock Edition written in PHP</b> 
+	<b>A highly customizable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
 </p>
 
 <p align="center">
