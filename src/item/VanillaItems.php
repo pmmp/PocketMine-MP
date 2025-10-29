@@ -215,6 +215,7 @@ use function strtolower;
  * @method static Sword GOLDEN_SWORD()
  * @method static Item GOLD_INGOT()
  * @method static Item GOLD_NUGGET()
+ * @method static Item COPPER_NUGGET()
  * @method static Item GUNPOWDER()
  * @method static Item HEART_OF_THE_SEA()
  * @method static Item HONEYCOMB()
@@ -580,6 +581,7 @@ final class VanillaItems
 		self::register("goat_horn", fn(IID $id) => new GoatHorn($id, "Goat Horn"));
 		self::register("gold_ingot", fn(IID $id) => new Item($id, "Gold Ingot"));
 		self::register("gold_nugget", fn(IID $id) => new Item($id, "Gold Nugget"));
+		self::register("copper_nugget", fn(IID $id) => new Item($id, "Copper Nugget"));
 		self::register("golden_apple", fn(IID $id) => new GoldenApple($id, "Golden Apple"));
 		self::register("golden_carrot", fn(IID $id) => new GoldenCarrot($id, "Golden Carrot"));
 		self::register("gunpowder", fn(IID $id) => new Item($id, "Gunpowder"));
@@ -629,6 +631,7 @@ final class VanillaItems
 		
 		self::register("ominous_banner", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::OMINOUS_BANNER(), Blocks::OMINOUS_WALL_BANNER()));
 		self::register("painting", fn(IID $id) => new PaintingItem($id, "Painting"));
+	self::register("armor_stand", fn(IID $id) => new ArmorStandItem($id, "Armor Stand"));
 		self::register("pale_oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::PALE_OAK_SIGN(), Blocks::PALE_OAK_WALL_SIGN()));
 		self::register("pale_oak_hanging_sign", fn(IID $id) => new HangingSign($id, "Pale Oak Hanging Sign", Blocks::PALE_OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::PALE_OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::PALE_OAK_WALL_HANGING_SIGN()));
 		self::register("pale_oak_shelf", fn() => new ItemBlock(Blocks::PALE_OAK_SHELF()));

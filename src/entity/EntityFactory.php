@@ -38,6 +38,7 @@ use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
+use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
@@ -156,6 +157,10 @@ final class EntityFactory{
 
 			return new Painting(Helper::parseLocation($nbt, $world), $blockIn, $facing, $motive, $nbt);
 		}, ['Painting', 'minecraft:painting']);
+
+		$this->register(ArmorStand::class, function(World $world, CompoundTag $nbt) : ArmorStand{
+			return new ArmorStand(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['ArmorStand', 'minecraft:armor_stand']);
 
 		$this->register(PrimedTNT::class, function(World $world, CompoundTag $nbt) : PrimedTNT{
 			return new PrimedTNT(Helper::parseLocation($nbt, $world), $nbt);

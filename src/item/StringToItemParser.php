@@ -1466,6 +1466,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("gold_ingot", fn() => Items::GOLD_INGOT());
 		$result->register("gold_leggings", fn() => Items::GOLDEN_LEGGINGS());
 		$result->register("gold_nugget", fn() => Items::GOLD_NUGGET());
+		$result->register("copper_nugget", fn() => Items::COPPER_NUGGET());
 		$result->register("gold_pickaxe", fn() => Items::GOLDEN_PICKAXE());
 		$result->register("gold_shovel", fn() => Items::GOLDEN_SHOVEL());
 		$result->register("gold_sword", fn() => Items::GOLDEN_SWORD());
@@ -1546,6 +1547,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("oak_boat", fn() => Items::OAK_BOAT());
 		$result->register("oak_hanging_sign", fn() => Items::OAK_HANGING_SIGN());
 		$result->register("painting", fn() => Items::PAINTING());
+		// allow parsing /give armor_stand -> VanillaItems::ARMOR_STAND()
+		$result->register("armor_stand", fn() => Items::ARMOR_STAND());
 		$result->register("pale_oak_hanging_sign", fn() => Items::PALE_OAK_HANGING_SIGN());
 		$result->register("paper", fn() => Items::PAPER());
 		$result->register("phantom_membrane", fn() => Items::PHANTOM_MEMBRANE());

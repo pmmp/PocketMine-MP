@@ -389,7 +389,12 @@ final class ItemTypeIds{
 	public const SPRUCE_SHELF = 20339;
 	public const WARPED_SHELF = 20340;
 
-	public const FIRST_UNUSED_ITEM_ID = 20341;
+	public const FIRST_UNUSED_ITEM_ID = 20342;
+
+	// Armor stand item type id (added so VanillaItems::register finds a constant and does not generate a dynamic id)
+	public const ARMOR_STAND = 20341;
+	public const COPPER_NUGGET = 20343;
+
 
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;

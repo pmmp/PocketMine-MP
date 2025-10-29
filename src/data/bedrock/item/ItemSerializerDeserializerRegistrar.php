@@ -271,6 +271,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::GLOWSTONE_DUST, Items::GLOWSTONE_DUST());
 		$this->map1to1Item(Ids::GOLD_INGOT, Items::GOLD_INGOT());
 		$this->map1to1Item(Ids::GOLD_NUGGET, Items::GOLD_NUGGET());
+		$this->map1to1Item(Ids::COPPER_NUGGET, Items::COPPER_NUGGET());
 		$this->map1to1Item(Ids::GOLDEN_APPLE, Items::GOLDEN_APPLE());
 		$this->map1to1Item(Ids::GOLDEN_AXE, Items::GOLDEN_AXE());
 		$this->map1to1Item(Ids::GOLDEN_BOOTS, Items::GOLDEN_BOOTS());
@@ -377,6 +378,8 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::PAINTING, Items::PAINTING());
 		$this->map1to1Item(Ids::PALE_OAK_HANGING_SIGN, Items::PALE_OAK_HANGING_SIGN());
 		$this->map1to1Item(Ids::PALE_OAK_SIGN, Items::PALE_OAK_SIGN());
+		// Armor stand item mapping
+		$this->map1to1Item(Ids::ARMOR_STAND, Items::ARMOR_STAND());
 		$this->map1to1Item(Ids::PAPER, Items::PAPER());
 		$this->map1to1Item(Ids::PHANTOM_MEMBRANE, Items::PHANTOM_MEMBRANE());
 		$this->map1to1Item(Ids::PITCHER_POD, Items::PITCHER_POD());
