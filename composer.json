@@ -56,7 +56,7 @@
       "phpstan/phpstan": "2.1.25",
       "phpstan/phpstan-phpunit": "^2.0.0",
       "phpstan/phpstan-strict-rules": "^2.0.0",
-      "phpunit/phpunit": "^10.5.24"
+      "phpunit/phpunit": "^10.5"
    },
    "replace": {
       "symfony/polyfill-ctype": "*",

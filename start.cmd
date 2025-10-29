@@ -22,10 +22,10 @@ if "%PHP_BINARY%"=="" (
 	exit 1
 )
 
-if exist Tunaly.phar (
-	set POCKETMINE_FILE=Tunaly.phar
+if exist BeeltyMine-MP.phar (
+	set POCKETMINE_FILE=BeeltyMine-MP.phar
 ) else (
-	echo PocketMine-MP.phar not found
+	echo BeeltyMine-MP.phar not found
 	echo Downloads can be found at https://github.com/pmmp/PocketMine-MP/releases
 	pause
 	exit 1
