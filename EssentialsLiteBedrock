@@ -1,0 +1,21 @@
+name: EssentialsLiteBedrock
+main: EssentialsLiteBedrock\Main
+version: 1.0
+api: 5.0.0
+author: Dastan & Yana
+commands:
+  spawn:
+  setspawn:
+  home:
+  sethome:
+  delhome:
+  tp:
+  tpa:
+  tpaccept:
+  fly:
+  gm:
+permissions:
+  ess.fly:
+    default: op
+  ess.gm:
+    default: op
