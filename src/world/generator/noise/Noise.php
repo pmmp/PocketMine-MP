@@ -292,7 +292,7 @@ abstract class Noise{
 		assert($zSize % $zSamplingRate === 0, new \InvalidArgumentException("zSize % zSamplingRate must return 0"));
 		assert($ySize % $ySamplingRate === 0, new \InvalidArgumentException("ySize % ySamplingRate must return 0"));
 
-		$noiseArray = array_fill(0, $xSize + 1, array_fill(0, $zSize + 1, []));
+		$noiseArray = array_fill(0, $xSize + 1, array_fill(0, $zSize + 1, array_fill(0, $ySize + 1, 0)));
 
 		for($xx = 0; $xx <= $xSize; $xx += $xSamplingRate){
 			for($zz = 0; $zz <= $zSize; $zz += $zSamplingRate){
@@ -303,51 +303,70 @@ abstract class Noise{
 		}
 
 		/**
-		 * The following code originally called trilinearLerp() in a loop, but it was later inlined to elide function
-		 * call overhead.
-		 * Later, it became apparent that some of the logic was being repeated unnecessarily in the inner loop, so the
-		 * code was changed further to avoid this, which produced visible performance improvements.
+		 * The following code is equivalent to calling trilinearLerp inside 3 nested for loops. However, for bulk data
+		 * processing, this is substantially faster, since many of the operations can be done significantly fewer times
+		 * if the data is processed in an optimal order.
 		 *
-		 * In any language with a compiler, a compiler would most likely have noticed that these optimisations could be
-		 * made and made these changes automatically, but in PHP we don't have a compiler, so the task falls to us.
+		 * TODO: Maybe we should consider extracting this into its own function, since trilinearLerp() is comically slow
 		 *
 		 * @see Noise::trilinearLerp()
 		 */
-		for($xx = 0; $xx < $xSize; ++$xx){
-			$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
-			$nnx = $nx + $xSamplingRate;
+		$xLerpStep = 1 / $xSamplingRate;
+		$yLerpStep = 1 / $ySamplingRate;
+		$zLerpStep = 1 / $zSamplingRate;
 
-			$dx1 = (($nnx - $xx) / ($nnx - $nx));
-			$dx2 = (($xx - $nx) / ($nnx - $nx));
+		for($leftX = 0; $leftX < $xSize; $leftX += $xSamplingRate){
+			$rightX = $leftX + $xSamplingRate;
 
-			for($zz = 0; $zz < $zSize; ++$zz){
-				$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
-				$nnz = $nz + $zSamplingRate;
+			for($leftZ = 0; $leftZ < $zSize; $leftZ += $zSamplingRate){
+				$rightZ = $leftZ + $zSamplingRate;
 
-				$dz1 = ($nnz - $zz) / ($nnz - $nz);
-				$dz2 = ($zz - $nz) / ($nnz - $nz);
+				for($leftY = 0; $leftY < $ySize; $leftY += $ySamplingRate){
+					$rightY = $leftY + $ySamplingRate;
 
-				for($yy = 0; $yy < $ySize; ++$yy){
-					if($xx % $xSamplingRate !== 0 || $zz % $zSamplingRate !== 0 || $yy % $ySamplingRate !== 0){
-						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
-						$nny = $ny + $ySamplingRate;
+					//Fetch the corner samples first - this avoids multidimensional array lookups in the inner loops,
+					//which are slow
+					$c000 = $noiseArray[$leftX][$leftZ][$leftY];
+					$c100 = $noiseArray[$rightX][$leftZ][$leftY];
+					$c001 = $noiseArray[$leftX][$leftZ][$rightY];
+					$c101 = $noiseArray[$rightX][$leftZ][$rightY];
+					$c010 = $noiseArray[$leftX][$rightZ][$leftY];
+					$c110 = $noiseArray[$rightX][$rightZ][$leftY];
+					$c011 = $noiseArray[$leftX][$rightZ][$rightY];
+					$c111 = $noiseArray[$rightX][$rightZ][$rightY];
 
-						$dy1 = (($nny - $yy) / ($nny - $ny));
-						$dy2 = (($yy - $ny) / ($nny - $ny));
+					//Now, lerp all the cells enclosed by the corner samples
+					for($xStep = 0; $xStep < $xSamplingRate; $xStep++){
+						$xx = $leftX + $xStep;
+						$dx2 = $xStep * $xLerpStep;
+						$dx1 = 1 - $dx2;
 
-						$noiseArray[$xx][$zz][$yy] = $dz1 * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
-								)
-							) + $dz2 * (
-								$dy1 * (
-									$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
-								) + $dy2 * (
-									$dx1 * $noiseArray[$nx][$nnz][$nny] + $dx2 * $noiseArray[$nnx][$nnz][$nny]
-								)
-							);
+						//Lerp along the x axis first
+						$x00 = ($c000 * $dx1) + ($c100 * $dx2);
+						$x01 = ($c001 * $dx1) + ($c101 * $dx2);
+						$x10 = ($c010 * $dx1) + ($c110 * $dx2);
+						$x11 = ($c011 * $dx1) + ($c111 * $dx2);
+
+						for($zStep = 0; $zStep < $zSamplingRate; $zStep++){
+							$zz = $leftZ + $zStep;
+							$dz2 = $zStep * $zLerpStep;
+							$dz1 = 1 - $dz2;
+
+							//Then, lerp the x lerped axis values along the z axis
+							$z0 = $x00 * $dz1 + $x10 * $dz2;
+							$z1 = $x01 * $dz1 + $x11 * $dz2;
+
+							//Skip first row if these are both zero
+							$yStart = $xStep === 0 && $zStep === 0 ? 1 : 0;
+							for($yStep = $yStart; $yStep < $ySamplingRate; $yStep++){
+								$yy = $leftY + $yStep;
+								$dy2 = $yStep * $yLerpStep;
+								$dy1 = 1 - $dy2;
+
+								//Finally, lerp the x/z lerped values along the y axis
+								$noiseArray[$xx][$zz][$yy] = $dy1 * $z0 + $dy2 * $z1;
+							}
+						}
 					}
 				}
 			}

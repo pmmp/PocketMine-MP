@@ -21,32 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\player;
+namespace pocketmine\block;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
-use pocketmine\player\Player;
+final class StructureVoid extends Transparent{
 
-class PlayerToggleSneakEvent extends PlayerEvent implements Cancellable{
-	use CancellableTrait;
-
-	public function __construct(
-		Player $player,
-		protected bool $isSneaking,
-		protected bool $isSneakPressed
-	){
-		$this->player = $player;
+	protected function recalculateCollisionBoxes() : array{
+		return [];
 	}
 
-	public function isSneaking() : bool{
-		return $this->isSneaking;
-	}
-
-	/**
-	 * Returns whether the player is pressing the sneak key.
-	 * The player may still be sneaking even if this is false due to gameplay mechanics (e.g. releasing sneak while in a 1.5 block high space).
-	 */
-	public function isSneakPressed() : bool{
-		return $this->isSneakPressed;
+	public function isSolid() : bool{
+		return false;
 	}
 }
