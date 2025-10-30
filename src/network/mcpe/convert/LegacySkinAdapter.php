@@ -35,45 +35,42 @@ use function random_bytes;
 use function str_repeat;
 use const JSON_THROW_ON_ERROR;
 
-class LegacySkinAdapter implements SkinAdapter{
+class LegacySkinAdapter implements SkinAdapter
+{
 
-	public function toSkinData(Skin $skin) : SkinData{
+	public function toSkinData(Skin $skin): SkinData
+	{
 		$capeData = $skin->getCapeData();
-		// Debug: log cape presence/length for troubleshooting cape display issues
-		try{
-			$logger = \pocketmine\Server::getInstance()->getLogger();
-			$len = $capeData === "" ? 0 : strlen($capeData);
-			// Use info level so this appears in normal server logs while debugging cape visibility issues
-			$logger->info("[SKIN_DEBUG] toSkinData: skinId={$skin->getSkinId()} capeLength={$len} md5=" . ($len > 0 ? md5(substr($capeData, 0, 64)) : "<none>"));
-		}catch(\Throwable $e){
-			// swallow logging errors in case Server isn't initialized in some contexts
-		}
+
 		$capeImage = $capeData === "" ? new SkinImage(0, 0, "") : new SkinImage(32, 64, $capeData);
 		$geometryName = $skin->getGeometryName();
-		if($geometryName === ""){
+		if ($geometryName === "") {
 			$geometryName = "geometry.humanoid.custom";
 		}
 		return new SkinData(
 			$skin->getSkinId(),
 			"", //TODO: playfab ID
 			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
-			SkinImage::fromLegacy($skin->getSkinData()), [],
+			SkinImage::fromLegacy($skin->getSkinData()),
+			[],
 			$capeImage,
 			$skin->getGeometryData()
 		);
 	}
 
-	public function fromSkinData(SkinData $data) : Skin{
-		if($data->isPersona()){
+	public function fromSkinData(SkinData $data): Skin
+	{
+		// Debug: dump incoming SkinData details to help trace persona/geometry conversion
+		if ($data->isPersona()) {
 			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
 
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();
 
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
-		if(is_array($resourcePatch) && isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])){
+		if (is_array($resourcePatch) && isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])) {
 			$geometryName = $resourcePatch["geometry"]["default"];
-		}else{
+		} else {
 			throw new InvalidSkinException("Missing geometry name field");
 		}
 

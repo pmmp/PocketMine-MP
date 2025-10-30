@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
+use pocketmine\network\mcpe\protocol\types\skin\SkinData as ProtocolSkinData;
 use pocketmine\utils\TextFormat;
 use Ramsey\Uuid\UuidInterface;
 
@@ -40,9 +41,18 @@ class PlayerInfo{
 		private UuidInterface $uuid,
 		private Skin $skin,
 		private string $locale,
-		private array $extraData = []
+		private array $extraData = [],
+		private ?ProtocolSkinData $rawSkinData = null
 	){
 		$this->username = TextFormat::clean($username);
+	}
+
+	public function getRawSkinData(): ?ProtocolSkinData{
+		return $this->rawSkinData;
+	}
+
+	public function setRawSkinData(?ProtocolSkinData $data): void{
+		$this->rawSkinData = $data;
 	}
 
 	public function getUsername() : string{

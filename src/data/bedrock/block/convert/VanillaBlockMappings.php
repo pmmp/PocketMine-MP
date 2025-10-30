@@ -1371,6 +1371,12 @@ final class VanillaBlockMappings
 			$commonProperties->anyFacingClassic,
 			new BoolProperty(StateNames::OPEN_BIT, fn(Barrel $b) => $b->isOpen(), fn(Barrel $b, bool $v) => $b->setOpen($v))
 		]));
+
+		// Beehive - facing + honey level (0-5)
+		$reg->mapModel(Model::create(Blocks::BEEHIVE(), Ids::BEEHIVE)->properties([
+			$commonProperties->horizontalFacingSWNE,
+			new IntProperty(StateNames::HONEY_LEVEL, 0, 5, fn(\pocketmine\block\BeeHive $b) => $b->getHoneyLevel(), fn(\pocketmine\block\BeeHive $b, int $v) => $b->setHoneyLevel($v))
+		]));
 		$reg->mapModel(Model::create(Blocks::BASALT(), Ids::BASALT)->properties([$commonProperties->pillarAxis]));
 		$reg->mapModel(Model::create(Blocks::BED(), Ids::BED)->properties([
 			new BoolProperty(StateNames::HEAD_PIECE_BIT, fn(Bed $b) => $b->isHeadPart(), fn(Bed $b, bool $v) => $b->setHead($v)),
@@ -1487,6 +1493,13 @@ final class VanillaBlockMappings
 
 		//L
 		$reg->mapModel(Model::create(Blocks::LADDER(), Ids::LADDER)->properties([$commonProperties->horizontalFacingClassic]));
+		// Temporary shim: map Bedrock's minecraft:scaffolding to AIR so old player/world NBT
+		// containing scaffolding does not cause an Unknown block ID exception while a
+		// full scaffolding implementation is prepared.
+		// Only register a deserializer for the Bedrock id so saved NBT containing
+		// "minecraft:scaffolding" can be loaded. We intentionally avoid adding a
+		// serializer for this id to prevent conflicts with the real AIR mapping.
+		$reg->deserializer->map(Ids::SCAFFOLDING, fn(Reader $in): Block => Blocks::AIR());
 		$reg->mapModel(Model::create(Blocks::LANTERN(), Ids::LANTERN)->properties([
 			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v))
 		]));

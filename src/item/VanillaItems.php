@@ -483,6 +483,7 @@ final class VanillaItems
 		self::register("bread", fn(IID $id) => new Bread($id, "Bread"));
 		self::register("brick", fn(IID $id) => new Item($id, "Brick"));
 		self::register("bucket", fn(IID $id) => new Bucket($id, "Bucket"));
+		self::register("bee_bucket", fn(IID $id) => new BeeBucket($id, "Bee Bucket"));
 		self::register("carrot", fn(IID $id) => new Carrot($id, "Carrot"));
 		self::register("charcoal", fn(IID $id) => new Coal($id, "Charcoal"));
 		self::register("cherry_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
@@ -588,6 +589,12 @@ final class VanillaItems
 		self::register("heart_of_the_sea", fn(IID $id) => new Item($id, "Heart of the Sea"));
 		self::register("honey_bottle", fn(IID $id) => new HoneyBottle($id, "Honey Bottle"));
 		self::register("honeycomb", fn(IID $id) => new Item($id, "Honeycomb"));
+		// Register beehive as a block-item so it appears in inventories and can be placed
+		self::_registryRegister("beehive", Blocks::BEEHIVE()->asItem());
+		// Temporarily register scaffolding as a plain item (not ItemBlock).
+		// This allows /give scaffolding to work without triggering blockstate serialization
+		// while a full scaffolding bedrock mapping is prepared.
+		self::register("scaffolding", fn(IID $id) => new Item($id, "Scaffolding"));
 		self::register("ice_bomb", fn(IID $id) => new IceBomb($id, "Ice Bomb"));
 		self::register("ink_sac", fn(IID $id) => new Item($id, "Ink Sac"));
 		self::register("iron_ingot", fn(IID $id) => new Item($id, "Iron Ingot"));

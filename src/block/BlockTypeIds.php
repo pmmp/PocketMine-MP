@@ -850,7 +850,8 @@ final class BlockTypeIds{
 
 	public const BAMBOO_SHELF = 10825;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10826;
+	public const BEEHIVE = 10826;
+	public const FIRST_UNUSED_BLOCK_ID = 10827;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

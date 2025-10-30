@@ -1338,13 +1338,15 @@ class NetworkSession
 	public function syncPlayerList(array $players): void
 	{
 		$this->sendDataPacket(PlayerListPacket::add(array_map(function (Player $player): PlayerListEntry {
-			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $this->typeConverter->getSkinAdapter()->toSkinData($player->getSkin()), $player->getXuid());
+			$skinData = $player->getPlayerInfo()->getRawSkinData() ?? $this->typeConverter->getSkinAdapter()->toSkinData($player->getSkin());
+			return PlayerListEntry::createAdditionEntry($player->getUniqueId(), $player->getId(), $player->getDisplayName(), $skinData, $player->getXuid());
 		}, $players)));
 	}
 
 	public function onPlayerAdded(Player $p): void
 	{
-		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), $this->typeConverter->getSkinAdapter()->toSkinData($p->getSkin()), $p->getXuid())]));
+		$skinData = $p->getPlayerInfo()->getRawSkinData() ?? $this->typeConverter->getSkinAdapter()->toSkinData($p->getSkin());
+		$this->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($p->getUniqueId(), $p->getId(), $p->getDisplayName(), $skinData, $p->getXuid())]));
 	}
 
 	public function onPlayerRemoved(Player $p): void

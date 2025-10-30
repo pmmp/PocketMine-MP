@@ -891,11 +891,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
 		// Debug: log incoming PlayerSkinPacket flags for troubleshooting
-		try{
-			$logger = \pocketmine\Server::getInstance()->getLogger();
-			// Promote this to info to ensure we see incoming skin flags (persona/cape) in normal logs
-			$logger->info("[SKIN_DEBUG] handlePlayerSkin: fullSkinId=" . $packet->skin->getFullSkinId() . " isPersona=" . ($packet->skin->isPersona() ? '1' : '0') . " isPersonaCapeOnClassic=" . ($packet->skin->isPersonaCapeOnClassic() ? '1' : '0'));
-		}catch(\Throwable $e){ }
+	
 		if($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId){
 			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
 			//it's using. We need to prevent this from causing a feedback loop.
@@ -909,6 +905,39 @@ class InGamePacketHandler extends PacketHandler{
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){
 			throw PacketHandlingException::wrap($e, "Invalid skin in PlayerSkinPacket");
+		}
+
+		// Preserve the raw protocol SkinData so we can forward persona/raw skins unchanged when sending to other clients
+		try{
+			$this->player->getPlayerInfo()->setRawSkinData($packet->skin);
+		}catch(\Throwable $e){
+			// ignore - best effort
+		}
+
+		// If the converted Skin has an image that's all 0x00 bytes, treat this as a geometry-only packet
+		// coming from some clients/resource-packs. Merge the new geometry into the player's existing skin
+		// instead of applying a blank texture which would break appearance.
+		try{
+			$skinData = $skin->getSkinData();
+			if(strlen($skinData) > 0 && strspn($skinData, "\x00") === strlen($skinData)){
+				$oldSkin = $this->player->getSkin();
+				// Build a new Skin keeping old texture/cape but using new geometry
+				try{
+					$skin = new \pocketmine\entity\Skin(
+						$oldSkin->getSkinId(),
+						$oldSkin->getSkinData(),
+						$oldSkin->getCapeData(),
+						$skin->getGeometryName(),
+						$skin->getGeometryData()
+					);
+				}catch(\Throwable $e){
+					// fallback: if merge fails, refuse to apply malformed skin
+					$this->session->getLogger()->warning("Failed to merge geometry into existing skin for " . $this->player->getName() . ": " . $e->getMessage());
+					return true;
+				}
+			}
+		}catch(\Throwable $e){
+			// swallow any unexpected errors in sanity checks to avoid disconnecting the player
 		}
 		return $this->player->changeSkin($skin, $packet->newSkinName, $packet->oldSkinName);
 	}

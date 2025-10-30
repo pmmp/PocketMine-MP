@@ -85,6 +85,9 @@ final class TileFactory
 		$this->register(GlowingItemFrame::class, ["GlowItemFrame"]);
 		$this->register(HangingSign::class, ["HangingSign", "minecraft:hanging_sign"]);
 
+		// BeeHive tile
+		$this->register(BeeHive::class, ["Beehive", "minecraft:beehive"]);
+
 		//TODO: ChalkboardBlock
 		//TODO: ChemistryTable
 		//TODO: CommandBlock

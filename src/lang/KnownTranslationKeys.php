@@ -29,7 +29,8 @@ namespace pocketmine\lang;
  *
  * @internal
  */
-final class KnownTranslationKeys{
+final class KnownTranslationKeys
+{
 	public const ABILITY_FLIGHT = "ability.flight";
 	public const ABILITY_NOCLIP = "ability.noclip";
 	public const ACCEPT_LICENSE = "accept_license";
@@ -252,6 +253,7 @@ final class KnownTranslationKeys{
 	public const ITEMGROUP_NAME_ANVIL = "itemGroup.name.anvil";
 	public const ITEMGROUP_NAME_ARROW = "itemGroup.name.arrow";
 	public const ITEMGROUP_NAME_AXE = "itemGroup.name.axe";
+
 	public const ITEMGROUP_NAME_BANNER = "itemGroup.name.banner";
 	public const ITEMGROUP_NAME_BANNER_PATTERN = "itemGroup.name.banner_pattern";
 	public const ITEMGROUP_NAME_BED = "itemGroup.name.bed";
@@ -281,6 +283,7 @@ final class KnownTranslationKeys{
 	public const ITEMGROUP_NAME_FLOWER = "itemGroup.name.flower";
 	public const ITEMGROUP_NAME_GLASS = "itemGroup.name.glass";
 	public const ITEMGROUP_NAME_GLASSPANE = "itemGroup.name.glassPane";
+	public const ITEMGROUP_NAME_HARD_GLASS = "itemGroup.name.hard_glass";
 	public const ITEMGROUP_NAME_GLAZEDTERRACOTTA = "itemGroup.name.glazedTerracotta";
 	public const ITEMGROUP_NAME_GOATHORN = "itemGroup.name.goatHorn";
 	public const ITEMGROUP_NAME_GRASS = "itemGroup.name.grass";

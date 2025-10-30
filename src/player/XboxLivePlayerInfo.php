@@ -32,8 +32,9 @@ use Ramsey\Uuid\UuidInterface;
 final class XboxLivePlayerInfo extends PlayerInfo{
 	private string $xuid;
 
-	public function __construct(string $xuid, string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
-		parent::__construct($username, $uuid, $skin, $locale, $extraData);
+
+	public function __construct(string $xuid, string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = [], ?\pocketmine\network\mcpe\protocol\types\skin\SkinData $rawSkinData = null){
+			parent::__construct($username, $uuid, $skin, $locale, $extraData, $rawSkinData);
 		$this->xuid = $xuid;
 	}
 
@@ -51,7 +52,8 @@ final class XboxLivePlayerInfo extends PlayerInfo{
 			$this->getUuid(),
 			$this->getSkin(),
 			$this->getLocale(),
-			$this->getExtraData()
+			$this->getExtraData(),
+			$this->getRawSkinData()
 		);
 	}
 }

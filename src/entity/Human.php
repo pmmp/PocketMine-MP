@@ -166,15 +166,20 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 */
 	public function sendSkin(?array $targets = null) : void{
 		// Debug: log when server is sending skin data (cape length)
-		try{
-			$logger = \pocketmine\Server::getInstance()->getLogger();
-			$capeLen = ($this->skin->getCapeData() === "" ? 0 : strlen($this->skin->getCapeData()));
-			// Use info so administrators can see when skins (and capes) are being pushed to clients
-			$logger->info("[SKIN_DEBUG] sendSkin: player=" . $this->getName() . " skinId=" . $this->skin->getSkinId() . " capeLength=" . $capeLen);
-		}catch(\Throwable $e){ }
+		$skinData = null;
+		if($this instanceof Player){
+			try{
+				$skinData = $this->getPlayerInfo()->getRawSkinData();
+			}catch(\Throwable $e){
+				$skinData = null;
+			}
+		}
+		if($skinData === null){
+			$skinData = TypeConverter::getInstance()->getSkinAdapter()->toSkinData($this->skin);
+		}
 
 		NetworkBroadcastUtils::broadcastPackets($targets ?? $this->hasSpawned, [
-			PlayerSkinPacket::create($this->getUniqueId(), "", "", TypeConverter::getInstance()->getSkinAdapter()->toSkinData($this->skin))
+			PlayerSkinPacket::create($this->getUniqueId(), "", "", $skinData)
 		]);
 	}
 
@@ -502,8 +507,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function sendSpawnPacket(Player $player) : void{
 		$networkSession = $player->getNetworkSession();
 		$typeConverter = $networkSession->getTypeConverter();
+		$skinData = null;
+		if($this instanceof Player){
+			$skinData = $this->getPlayerInfo()->getRawSkinData();
+		}
+		if($skinData === null){
+			$skinData = $typeConverter->getSkinAdapter()->toSkinData($this->skin);
+		}
 		if(!($this instanceof Player)){
-			$networkSession->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $typeConverter->getSkinAdapter()->toSkinData($this->skin))]));
+			$networkSession->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), $skinData)]));
 		}
 
 		$networkSession->sendDataPacket(AddPlayerPacket::create(

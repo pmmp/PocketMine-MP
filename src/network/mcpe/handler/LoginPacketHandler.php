@@ -167,8 +167,10 @@ class LoginPacketHandler extends PacketHandler{
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 
+		$protoSkinData = ClientDataToSkinDataHelper::fromClientData($clientData);
+
 		try{
-			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
+			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData($protoSkinData);
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->disconnectWithError(
 				reason: "Invalid skin: " . $e->getMessage(),
@@ -185,7 +187,8 @@ class LoginPacketHandler extends PacketHandler{
 				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				(array) $clientData,
+				$protoSkinData
 			);
 		}else{
 			$playerInfo = new PlayerInfo(
@@ -193,7 +196,8 @@ class LoginPacketHandler extends PacketHandler{
 				$legacyUuid,
 				$skin,
 				$clientData->LanguageCode,
-				(array) $clientData
+				(array) $clientData,
+				$protoSkinData
 			);
 		}
 		($this->playerInfoConsumer)($playerInfo);

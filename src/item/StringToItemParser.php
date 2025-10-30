@@ -164,6 +164,9 @@ final class StringToItemParser extends StringToTParser{
 
 	private static function registerBlocks(self $result) : void{
 		$result->registerBlock("acacia_button", fn() => Blocks::ACACIA_BUTTON());
+		// Register beehive so /give and other parsers recognize the block-item
+		$result->registerBlock("beehive", fn() => Blocks::BEEHIVE());
+		// scaffolding parser alias removed until full scaffolding implementation is stable
 		$result->registerBlock("acacia_door", fn() => Blocks::ACACIA_DOOR());
 		$result->registerBlock("acacia_door_block", fn() => Blocks::ACACIA_DOOR());
 		$result->registerBlock("acacia_fence", fn() => Blocks::ACACIA_FENCE());
@@ -1485,6 +1488,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("gunpowder", fn() => Items::GUNPOWDER());
 		$result->register("heart_of_the_sea", fn() => Items::HEART_OF_THE_SEA());
 		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
+		$result->register("bee_bucket", fn() => Items::BEE_BUCKET());
+		// Allow parsing /give scaffolding -> VanillaItems::SCAFFOLDING()
+		$result->register("scaffolding", fn() => Items::SCAFFOLDING());
 		$result->register("host_armor_trim_smithing_template", fn() => Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("ice_bomb", fn() => Items::ICE_BOMB());

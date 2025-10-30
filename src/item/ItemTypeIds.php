@@ -295,6 +295,7 @@ final class ItemTypeIds{
 	public const SPYGLASS = 20256;
 	public const NETHERITE_SCRAP = 20257;
 	public const POWDER_SNOW_BUCKET = 20258;
+	public const BEE_BUCKET = 20259;
 	public const LINGERING_POTION = 20259;
 	public const FIRE_CHARGE = 20260;
 	public const SUSPICIOUS_STEW = 20261;
@@ -388,8 +389,10 @@ final class ItemTypeIds{
 	public const PALE_OAK_SHELF = 20338;
 	public const SPRUCE_SHELF = 20339;
 	public const WARPED_SHELF = 20340;
+	// Scaffolding item type id: present so VanillaItems won't generate a dynamic id at runtime.
+	public const SCAFFOLDING = 20342;
 
-	public const FIRST_UNUSED_ITEM_ID = 20342;
+	public const FIRST_UNUSED_ITEM_ID = 99999;
 
 	// Armor stand item type id (added so VanillaItems::register finds a constant and does not generate a dynamic id)
 	public const ARMOR_STAND = 20341;

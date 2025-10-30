@@ -33,6 +33,7 @@ use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\Bell as TileBell;
+use pocketmine\block\tile\BeeHive as TileBeeHive;
 use pocketmine\block\tile\BlastFurnace as TileBlastFurnace;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Campfire as TileCampfire;
@@ -1082,6 +1083,7 @@ final class VanillaBlocks
 
 		self::register("jukebox", fn(BID $id) => new Jukebox($id, "Jukebox", new Info(BreakInfo::axe(2.0, blastResistance: 30.0))), TileJukebox::class);
 		self::register("ladder", fn(BID $id) => new Ladder($id, "Ladder", new Info(BreakInfo::axe(0.4))));
+		// Scaffolding registration removed temporarily until a full bedrock mapping is implemented.
 
 		$lanternBreakInfo = new Info(BreakInfo::pickaxe(3.5));
 		self::register("lantern", fn(BID $id) => new Lantern($id, "Lantern", $lanternBreakInfo, 15));
@@ -1707,6 +1709,8 @@ final class VanillaBlocks
 	private static function registerBlocksR14(): void
 	{
 		self::register("honeycomb", fn(BID $id) => new Opaque($id, "Honeycomb Block", new Info(new BreakInfo(0.6))));
+		// Beehive block with tile to track occupants
+		self::register("beehive", fn(BID $id) => new BeeHive($id, "Beehive", new Info(new BreakInfo(0.6))), TileBeeHive::class);
 	}
 
 	private static function registerBlocksR16(): void
