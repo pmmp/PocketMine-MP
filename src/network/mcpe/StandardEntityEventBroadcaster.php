@@ -44,8 +44,6 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
-use pocketmine\utils\Limits;
-
 use function array_map;
 use function count;
 use function ksort;
@@ -90,7 +88,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			EffectIdMap::getInstance()->toId($effect->getType()),
 			$effect->getAmplifier(),
 			$effect->isVisible(),
-			$effect->getDuration() === Limits::INT32_MAX ? -1 : $effect->getDuration(),
+			$effect->isInfinite() ? -1 : $effect->getDuration(),
 			tick: 0
 		));
 	}

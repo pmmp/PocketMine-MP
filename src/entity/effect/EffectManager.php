@@ -87,11 +87,9 @@ class EffectManager extends EffectCollection{
 			if($type->canTick($instance)){
 				$type->applyEffect($this->entity, $instance);
 			}
-			if(!$instance->isInfinite()){
-				$instance->decreaseDuration($tickDiff);
-				if($instance->hasExpired()){
-					$this->remove($instance->getType());
-				}
+			$instance->decreaseDuration($tickDiff);
+			if($instance->hasExpired()){
+				$this->remove($instance->getType());
 			}
 		}
 

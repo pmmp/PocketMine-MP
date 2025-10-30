@@ -73,10 +73,12 @@ class EffectCommand extends VanillaCommand{
 		}
 
 		$amplification = 0;
+		$infinite = false;
 
 		if(count($args) >= 3){
 			if(strtolower($args[2]) === "infinite"){
-				$duration = Limits::INT32_MAX;
+				$duration = null;
+				$infinite = true;
 			}else{
 				if(($d = $this->getBoundedInt($sender, $args[2], 0, (int) (Limits::INT32_MAX / 20))) === null){
 					return false;
@@ -115,10 +117,10 @@ class EffectCommand extends VanillaCommand{
 			$effectManager->remove($effect);
 			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed($effect->getName(), $player->getDisplayName()));
 		}else{
-			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
+			$instance = new EffectInstance($effect, $duration, $amplification, $visible, infinite: $infinite);
 			$effectManager->add($instance);
 
-			if($duration === Limits::INT32_MAX){
+			if($infinite){
 				self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success_infinite($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName()));
 			}else{
 				self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName(), (string) ($instance->getDuration() / 20)));
