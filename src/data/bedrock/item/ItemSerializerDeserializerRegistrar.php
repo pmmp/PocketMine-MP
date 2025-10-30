@@ -519,6 +519,14 @@ final class ItemSerializerDeserializerRegistrar{
 			fn(GoatHorn $item) => GoatHornTypeIdMap::getInstance()->toId($item->getHornType())
 		);
 		$this->map1to1ItemWithMeta(
+			Ids::LINGERING_POTION,
+			Items::LINGERING_POTION(),
+			function(SplashPotion $item, int $meta) : void{
+				$item->setType(PotionTypeIdMap::getInstance()->fromId($meta) ?? throw new ItemTypeDeserializeException("Unknown potion type ID $meta"));
+			},
+			fn(SplashPotion $item) => PotionTypeIdMap::getInstance()->toId($item->getType())
+		);
+		$this->map1to1ItemWithMeta(
 			Ids::MEDICINE,
 			Items::MEDICINE(),
 			function(Medicine $item, int $meta) : void{

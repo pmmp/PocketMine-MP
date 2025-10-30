@@ -33,12 +33,14 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function mt_rand;
 
 class Cactus extends Transparent implements Ageable{
 	use AgeableTrait;
 	use StaticSupportTrait;
 
 	public const MAX_AGE = 15;
+	public const MAX_HEIGHT = 3;
 
 	public function hasEntityCollision() : bool{
 		return true;
@@ -78,26 +80,52 @@ class Cactus extends Transparent implements Ageable{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->getSide(Facing::DOWN)->hasSameTypeId($this)){
-			$world = $this->position->getWorld();
-			if($this->age === self::MAX_AGE){
-				for($y = 1; $y < 3; ++$y){
-					if(!$world->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
-						break;
-					}
-					$b = $world->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
-					if($b->getTypeId() === BlockTypeIds::AIR){
-						BlockEventHelper::grow($b, VanillaBlocks::CACTUS(), null);
-					}else{
-						break;
-					}
+		$up = $this->getSide(Facing::UP);
+		if($up->getTypeId() !== BlockTypeIds::AIR){
+			return;
+		}
+
+		$world = $this->position->getWorld();
+
+		if(!$world->isInWorld($up->position->x, $up->position->y, $up->position->z)){
+			return;
+		}
+
+		$height = 1;
+		while($height < self::MAX_HEIGHT && $this->getSide(Facing::DOWN, $height)->hasSameTypeId($this)){
+			$height++;
+		}
+
+		if($this->age === 9){
+			$canGrowFlower = true;
+			foreach(Facing::HORIZONTAL as $side){
+				if($up->getSide($side)->isSolid()){
+					$canGrowFlower = false;
+					break;
 				}
-				$this->age = 0;
-				$world->setBlock($this->position, $this, update: false);
-			}else{
-				++$this->age;
-				$world->setBlock($this->position, $this, update: false);
+			}
+
+			if($canGrowFlower){
+				$chance = $height >= self::MAX_HEIGHT ? 25 : 10;
+				if(mt_rand(1, 100) <= $chance){
+					if(BlockEventHelper::grow($up, VanillaBlocks::CACTUS_FLOWER(), null)){
+						$this->age = 0;
+						$world->setBlock($this->position, $this, update: false);
+					}
+					return;
+				}
 			}
 		}
+
+		if($this->age === self::MAX_AGE){
+			$this->age = 0;
+
+			if($height < self::MAX_HEIGHT){
+				BlockEventHelper::grow($up, VanillaBlocks::CACTUS(), null);
+			}
+		}else{
+			++$this->age;
+		}
+		$world->setBlock($this->position, $this, update: false);
 	}
 }

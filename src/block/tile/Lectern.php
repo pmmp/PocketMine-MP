@@ -45,7 +45,7 @@ class Lectern extends Spawnable{
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->viewedPage = $nbt->getInt(self::TAG_PAGE, 0);
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_BOOK)) !== null){
-			$book = Item::nbtDeserialize($itemTag);
+			$book = Item::safeNbtDeserialize($itemTag, "Lectern ($this->position) book");
 			if($book instanceof WritableBookBase && !$book->isNull()){
 				$this->book = $book;
 			}

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\data\bedrock\item\SavedItemStackData;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
@@ -56,14 +55,10 @@ trait ContainerTrait{
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 			$newContents = [];
+			$errorLogContext = "Container (" . $this->getPosition() . ")";
 			foreach($inventoryTag as $itemNBT){
-				try{
-					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
-				}catch(SavedDataLoadingException $e){
-					//TODO: not the best solution
-					\GlobalLogger::get()->logException($e);
-					continue;
-				}
+				$slotId = $itemNBT->getByte(SavedItemStackData::TAG_SLOT);
+				$newContents[$slotId] = Item::safeNbtDeserialize($itemNBT, "$errorLogContext slot $slotId");
 			}
 			$inventory->setContents($newContents);
 

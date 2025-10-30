@@ -38,6 +38,7 @@ use pocketmine\item\VanillaItems as Items;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
 use function array_keys;
+use function count;
 use function strtolower;
 
 /**
@@ -106,6 +107,10 @@ final class StringToItemParser extends StringToTParser{
 				$register("copper_bulb", fn() => Blocks::COPPER_BULB()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("copper_door", fn() => Blocks::COPPER_DOOR()->setOxidation($oxidation)->setWaxed($waxed));
 				$register("copper_trapdoor", fn() => Blocks::COPPER_TRAPDOOR()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("copper_bars", fn() => Blocks::COPPER_BARS()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("copper_chain", fn() => Blocks::COPPER_CHAIN()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("copper_lantern", fn() => Blocks::COPPER_LANTERN()->setOxidation($oxidation)->setWaxed($waxed));
+				$register("lightning_rod", fn() => Blocks::LIGHTNING_ROD()->setOxidation($oxidation)->setWaxed($waxed));
 			}
 		}
 
@@ -207,6 +212,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("burning_furnace", fn() => Blocks::FURNACE());
 		$result->registerBlock("bush", fn() => Blocks::DEAD_BUSH());
 		$result->registerBlock("cactus", fn() => Blocks::CACTUS());
+		$result->registerBlock("cactus_flower", fn() => Blocks::CACTUS_FLOWER());
 		$result->registerBlock("cake", fn() => Blocks::CAKE());
 		$result->registerBlock("cake_block", fn() => Blocks::CAKE());
 		$result->registerBlock("calcite", fn() => Blocks::CALCITE());
@@ -279,6 +285,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("concrete_powder", fn() => Blocks::CONCRETE_POWDER());
 		$result->registerBlock("concretepowder", fn() => Blocks::CONCRETE_POWDER());
 		$result->registerBlock("copper_ore", fn() => Blocks::COPPER_ORE());
+		$result->registerBlock("copper_torch", fn() => Blocks::COPPER_TORCH());
 		$result->registerBlock("coral", fn() => Blocks::CORAL());
 		$result->registerBlock("coral_block", fn() => Blocks::CORAL_BLOCK());
 		$result->registerBlock("coral_fan", fn() => Blocks::CORAL_FAN());
@@ -771,7 +778,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("light", fn() => Blocks::LIGHT());
 		$result->registerBlock("light_block", fn() => Blocks::LIGHT());
 		$result->registerBlock("light_weighted_pressure_plate", fn() => Blocks::WEIGHTED_PRESSURE_PLATE_LIGHT());
-		$result->registerBlock("lightning_rod", fn() => Blocks::LIGHTNING_ROD());
 		$result->registerBlock("lilac", fn() => Blocks::LILAC());
 		$result->registerBlock("lily_of_the_valley", fn() => Blocks::LILY_OF_THE_VALLEY());
 		$result->registerBlock("lily_pad", fn() => Blocks::LILY_PAD());
@@ -1226,6 +1232,7 @@ final class StringToItemParser extends StringToTParser{
 
 			$result->register($prefix("potion"), fn() => Items::POTION()->setType($potionType));
 			$result->register($prefix("splash_potion"), fn() => Items::SPLASH_POTION()->setType($potionType));
+			$result->register($prefix("lingering_potion"), fn() => Items::LINGERING_POTION()->setType($potionType));
 		}
 	}
 
@@ -1595,6 +1602,20 @@ final class StringToItemParser extends StringToTParser{
 		parent::register($alias, $callback);
 		$item = $callback($alias);
 		$this->reverseMap[$item->getStateId()][$alias] = true;
+	}
+
+	public function override(string $alias, \Closure $callback) : void{
+		$oldItem = $this->parse($alias);
+		if($oldItem !== null){
+			$oldStateId = $oldItem->getStateId();
+			unset($this->reverseMap[$oldStateId][$alias]);
+			if(count($this->reverseMap[$oldStateId]) === 0){
+				unset($this->reverseMap[$oldStateId]);
+			}
+		}
+		parent::override($alias, $callback);
+		$newItem = $callback($alias);
+		$this->reverseMap[$newItem->getStateId()][$alias] = true;
 	}
 
 	/** @phpstan-param \Closure(string $input) : Block $callback */

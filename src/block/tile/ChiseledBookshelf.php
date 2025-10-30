@@ -26,7 +26,6 @@ namespace pocketmine\block\tile;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\data\bedrock\item\SavedItemStackData;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -99,18 +98,13 @@ class ChiseledBookshelf extends Tile implements Container{
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 			$newContents = [];
+			$errorLogContext = "ChiseledBookshelf ($this->position)";
 			foreach($inventoryTag as $slot => $itemNBT){
-				try{
-					$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
-					if($count === 0){
-						continue;
-					}
-					$newContents[$slot] = Item::nbtDeserialize($itemNBT);
-				}catch(SavedDataLoadingException $e){
-					//TODO: not the best solution
-					\GlobalLogger::get()->logException($e);
+				$count = $itemNBT->getByte(SavedItemStackData::TAG_COUNT);
+				if($count === 0){
 					continue;
 				}
+				$newContents[$slot] = Item::safeNbtDeserialize($itemNBT, "$errorLogContext slot $slot");
 			}
 			$inventory->setContents($newContents);
 

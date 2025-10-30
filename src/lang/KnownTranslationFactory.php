@@ -31,14 +31,6 @@ namespace pocketmine\lang;
  * @internal
  */
 final class KnownTranslationFactory{
-	public static function ability_flight() : Translatable{
-		return new Translatable(KnownTranslationKeys::ABILITY_FLIGHT, []);
-	}
-
-	public static function ability_noclip() : Translatable{
-		return new Translatable(KnownTranslationKeys::ABILITY_NOCLIP, []);
-	}
-
 	public static function accept_license() : Translatable{
 		return new Translatable(KnownTranslationKeys::ACCEPT_LICENSE, []);
 	}
@@ -289,10 +281,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_USAGE, []);
 	}
 
-	public static function commands_generic_notFound() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_GENERIC_NOTFOUND, []);
-	}
-
 	public static function commands_generic_num_tooBig(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GENERIC_NUM_TOOBIG, [
 			0 => $param0,
@@ -305,10 +293,6 @@ final class KnownTranslationFactory{
 			0 => $param0,
 			1 => $param1,
 		]);
-	}
-
-	public static function commands_generic_permission() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION, []);
 	}
 
 	public static function commands_generic_player_notFound() : Translatable{
@@ -441,14 +425,6 @@ final class KnownTranslationFactory{
 
 	public static function commands_save_enabled() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_ENABLED, []);
-	}
-
-	public static function commands_save_start() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_START, []);
-	}
-
-	public static function commands_save_success() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_SUCCESS, []);
 	}
 
 	public static function commands_say_usage() : Translatable{
@@ -1432,22 +1408,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_WOOLCARPET, []);
 	}
 
-	public static function kick_admin() : Translatable{
-		return new Translatable(KnownTranslationKeys::KICK_ADMIN, []);
-	}
-
-	public static function kick_admin_reason(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::KICK_ADMIN_REASON, [
-			0 => $param0,
-		]);
-	}
-
-	public static function kick_reason_cheat(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::KICK_REASON_CHEAT, [
-			0 => $param0,
-		]);
-	}
-
 	public static function language_name() : Translatable{
 		return new Translatable(KnownTranslationKeys::LANGUAGE_NAME, []);
 	}
@@ -1568,14 +1528,6 @@ final class KnownTranslationFactory{
 	public static function pocketmine_command_error_playerNotFound(Translatable|string $playerName) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PLAYERNOTFOUND, [
 			"playerName" => $playerName,
-		]);
-	}
-
-	public static function pocketmine_command_exception(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_EXCEPTION, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
 		]);
 	}
 
@@ -1799,12 +1751,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_command_timings_timingsUpload(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_TIMINGSUPLOAD, [
-			0 => $param0,
-		]);
-	}
-
 	public static function pocketmine_command_timings_timingsWrite(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_TIMINGSWRITE, [
 			0 => $param0,
@@ -1948,27 +1894,11 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_data_playerNotFound(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_DATA_PLAYERNOTFOUND, [
-			0 => $param0,
-		]);
-	}
-
-	public static function pocketmine_data_playerOld(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_DATA_PLAYEROLD, [
-			0 => $param0,
-		]);
-	}
-
 	public static function pocketmine_data_saveError(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_DATA_SAVEERROR, [
 			0 => $param0,
 			1 => $param1,
 		]);
-	}
-
-	public static function pocketmine_debug_enable() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_DEBUG_ENABLE, []);
 	}
 
 	public static function pocketmine_disconnect_ban(Translatable|string $reason) : Translatable{
@@ -2138,12 +2068,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [
 			0 => $param0,
 			1 => $param1,
-		]);
-	}
-
-	public static function pocketmine_level_notFound(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_NOTFOUND, [
-			0 => $param0,
 		]);
 	}
 
@@ -2459,18 +2383,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_USER, []);
 	}
 
-	public static function pocketmine_player_invalidEntity(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLAYER_INVALIDENTITY, [
-			0 => $param0,
-		]);
-	}
-
-	public static function pocketmine_player_invalidMove(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLAYER_INVALIDMOVE, [
-			0 => $param0,
-		]);
-	}
-
 	public static function pocketmine_player_logIn(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3, Translatable|string $param4, Translatable|string $param5, Translatable|string $param6, Translatable|string $param7) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLAYER_LOGIN, [
 			0 => $param0,
@@ -2481,15 +2393,6 @@ final class KnownTranslationFactory{
 			5 => $param5,
 			6 => $param6,
 			7 => $param7,
-		]);
-	}
-
-	public static function pocketmine_player_logOut(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLAYER_LOGOUT, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
-			3 => $param3,
 		]);
 	}
 
@@ -2519,14 +2422,6 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_plugin_commandError(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_COMMANDERROR, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
-		]);
-	}
-
-	public static function pocketmine_plugin_deprecatedEvent(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_DEPRECATEDEVENT, [
 			0 => $param0,
 			1 => $param1,
 			2 => $param2,
@@ -2582,12 +2477,6 @@ final class KnownTranslationFactory{
 	public static function pocketmine_plugin_extensionNotLoaded(Translatable|string $extensionName) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_EXTENSIONNOTLOADED, [
 			"extensionName" => $extensionName,
-		]);
-	}
-
-	public static function pocketmine_plugin_genericLoadError(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_GENERICLOADERROR, [
-			0 => $param0,
 		]);
 	}
 
@@ -2719,10 +2608,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_AUTHPROPERTY_DISABLED, []);
 	}
 
-	public static function pocketmine_server_authProperty_enabled() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_AUTHPROPERTY_ENABLED, []);
-	}
-
 	public static function pocketmine_server_authWarning() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_AUTHWARNING, []);
 	}
@@ -2773,12 +2658,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_DEVBUILD_WARNING3, []);
 	}
 
-	public static function pocketmine_server_donate(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_DONATE, [
-			0 => $param0,
-		]);
-	}
-
 	public static function pocketmine_server_forcingShutdown() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_FORCINGSHUTDOWN, []);
 	}
@@ -2787,15 +2666,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_INFO, [
 			0 => $param0,
 			1 => $param1,
-		]);
-	}
-
-	public static function pocketmine_server_info_extended(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_INFO_EXTENDED, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
-			3 => $param3,
 		]);
 	}
 
@@ -2861,6 +2731,48 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_server_tickOverload() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_TICKOVERLOAD, []);
+	}
+
+	public static function pocketmine_server_url_bugReporting(Translatable|string $bugReportingUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_BUGREPORTING, [
+			"bugReportingUrl" => $bugReportingUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_discord(Translatable|string $discordUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DISCORD, [
+			"discordUrl" => $discordUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_docs(Translatable|string $docsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DOCS, [
+			"docsUrl" => $docsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_donations(Translatable|string $donationsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_DONATIONS, [
+			"donationsUrl" => $donationsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_freePlugins(Translatable|string $pluginsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_FREEPLUGINS, [
+			"pluginsUrl" => $pluginsUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_sourceCode(Translatable|string $sourceUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_SOURCECODE, [
+			"sourceUrl" => $sourceUrl,
+		]);
+	}
+
+	public static function pocketmine_server_url_translations(Translatable|string $translationsUrl) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_URL_TRANSLATIONS, [
+			"translationsUrl" => $translationsUrl,
+		]);
 	}
 
 	public static function pocketmine_plugins() : Translatable{

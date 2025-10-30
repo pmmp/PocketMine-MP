@@ -51,6 +51,9 @@ class PrepareEncryptionTask extends AsyncTask{
 		private string $clientPub,
 		\Closure $onCompletion
 	){
+		//make sure the key is valid before we break the stack trace
+		//TODO: maybe in the future we should require OpenSSLAsymmetricKey here instead of string
+		JwtUtils::parseDerPublicKey($this->clientPub);
 		if(self::$SERVER_PRIVATE_KEY === null){
 			$serverPrivateKey = openssl_pkey_new(["ec" => ["curve_name" => "secp384r1"]]);
 			if($serverPrivateKey === false){
