@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -347,7 +347,7 @@ abstract class Liquid extends Transparent{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$world = $this->position->getWorld();
-				if((!$block instanceof CoveredByWater || !$block->canBeCoveredByFlowing()) && $block->getTypeId() !== BlockTypeIds::AIR){
+				if((!$block instanceof Waterloggable || !$block->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE)) && $block->getTypeId() !== BlockTypeIds::AIR){
 					$world->useBreakOn($block->position);
 				}
 

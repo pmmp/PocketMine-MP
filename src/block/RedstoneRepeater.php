@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstone;
@@ -39,15 +39,15 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class RedstoneRepeater extends CoveredFlowable implements PoweredByRedstone, HorizontalFacing, CoveredByWater{
+class RedstoneRepeater extends CoveredFlowable implements PoweredByRedstone, HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 	use StaticSupportTrait{
 		StaticSupportTrait::onNearbyBlockChange as onSupportBlockChange;
 	}
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		place as waterPlace;
-		CoveredByWaterTrait::onNearbyBlockChange as onWaterBlockChange;
+		WaterloggableTrait::onNearbyBlockChange as onWaterBlockChange;
 	}
 
 	public const MIN_DELAY = 1;
@@ -74,10 +74,6 @@ class RedstoneRepeater extends CoveredFlowable implements PoweredByRedstone, Hor
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
-	}
-
-	public function canBeCoveredByFlowing() : bool{
-		return true;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

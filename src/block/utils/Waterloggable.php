@@ -26,25 +26,22 @@ namespace pocketmine\block\utils;
 use pocketmine\block\Block;
 use pocketmine\block\Water;
 
-interface CoveredByWater{
+interface Waterloggable{
 
-	public function getWaterCover() : ?Water;
+	public function getContainedWater() : ?Water;
 
 	/**
 	 * @return $this
 	 */
-	public function setWaterCover(?Water $waterCover) : self;
+	public function setContainedWater(?Water $waterCover) : self;
 
 	public function liquidCollide(Block $cause, Block $result) : bool;
 
 	/**
-	 * Returns whether block can be covered by water at the current moment.
+	 * Returns whether block can be waterlogged at the current moment.
 	 * For example, double slabs can't be waterlogged, while single can.
 	 */
-	public function canBeCovered() : bool;
-
-	/** Returns whether the block can be covered not only by source water, but also by the flowing. */
-	public function canBeCoveredByFlowing() : bool;
+	public function canBeWaterlogged() : bool;
 
 	/** Returns whether water can flow through the given side. */
 	public function isSideOpenToFlow(int $face) : bool;

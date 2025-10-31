@@ -27,20 +27,20 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Water;
 
-final class WaterCoverHelper{
+final class WaterHelper{
 
 	private function __construct(){
 		//NOOP
 	}
 
 	public static function isWater(Block $block) : bool{
-		return $block->getTypeId() === BlockTypeIds::WATER || $block instanceof CoveredByWater && $block->getWaterCover() !== null;
+		return $block->getTypeId() === BlockTypeIds::WATER || $block instanceof Waterloggable && $block->getContainedWater() !== null;
 	}
 
 	public static function getWater(Block $block) : ?Water{
 		if($block instanceof Water){
 			return $block;
 		}
-		return $block instanceof CoveredByWater && ($cover = $block->getWaterCover()) !== null ? $cover : null;
+		return $block instanceof Waterloggable && ($water = $block->getContainedWater()) !== null ? $water : null;
 	}
 }

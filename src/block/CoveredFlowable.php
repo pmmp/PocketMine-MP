@@ -23,17 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\math\Vector3;
 
 /**
  * Flowable blocks that can be waterlogged.
  */
-abstract class CoveredFlowable extends Flowable implements CoveredByWater{
+abstract class CoveredFlowable extends Flowable implements Waterloggable{
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return
-			($this->canBeCovered() && $blockReplace instanceof Water && ($blockReplace->isSource() || $this->canBeCoveredByFlowing())) ||
+			($this->canBeWaterlogged() && $blockReplace instanceof Water && ($blockReplace->isSource() || $this->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE))) ||
 			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 }

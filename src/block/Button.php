@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -37,9 +37,9 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
-abstract class Button extends Transparent implements AnyFacing, CoveredByWater{
+abstract class Button extends Transparent implements AnyFacing, Waterloggable{
 	use AnyFacingTrait;
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		place as waterPlace;
 		onNearbyBlockChange as onWaterBlockChange;
 	}

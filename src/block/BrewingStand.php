@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -38,8 +38,8 @@ use pocketmine\player\Player;
 use function array_key_exists;
 use function spl_object_id;
 
-class BrewingStand extends Transparent implements CoveredByWater{
-	use CoveredByWaterTrait;
+class BrewingStand extends Transparent implements Waterloggable{
+	use WaterloggableTrait;
 
 	/**
 	 * @var BrewingStandSlot[]

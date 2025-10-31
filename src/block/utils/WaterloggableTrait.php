@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
@@ -31,30 +32,26 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-trait CoveredByWaterTrait{
+trait WaterloggableTrait{
 
-	protected ?Water $waterCover = null;
+	protected ?Water $containedWater = null;
 
-	public function getWaterCover() : ?Water{
-		return $this->waterCover !== null ? clone $this->waterCover : null;
+	public function getContainedWater() : ?Water{
+		return $this->containedWater !== null ? clone $this->containedWater : null;
 	}
 
 	/** @return $this */
-	public function setWaterCover(?Water $waterCover) : self{
-		$this->waterCover = $waterCover !== null ? clone $waterCover : null;
+	public function setContainedWater(?Water $containedWater) : self{
+		$this->containedWater = $containedWater !== null ? clone $containedWater : null;
 		return $this;
 	}
 
 	public function liquidCollide(Block $cause, Block $result) : bool{
-		return $this->waterCover?->liquidCollide($cause, $result) ?? false;
+		return $this->containedWater?->liquidCollide($cause, $result) ?? false;
 	}
 
-	public function canBeCovered() : bool{
+	public function canBeWaterlogged() : bool{
 		return true;
-	}
-
-	public function canBeCoveredByFlowing() : bool{
-		return false;
 	}
 
 	public function isSideOpenToFlow(int $face) : bool{
@@ -62,12 +59,12 @@ trait CoveredByWaterTrait{
 	}
 
 	public function getDisplacedBlock() : ?Block{
-		return $this->waterCover !== null ? $this->waterCover : null;
+		return $this->containedWater !== null ? $this->containedWater : null;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockReplace instanceof Water && ($this->canBeCoveredByFlowing() || $blockReplace->isSource())){
-			$this->waterCover = clone $blockReplace;
+		if($blockReplace instanceof Water && ($this->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE) || $blockReplace->isSource())){
+			$this->containedWater = clone $blockReplace;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -77,25 +74,25 @@ trait CoveredByWaterTrait{
 	}
 
 	public function readStateFromWorld() : Block{
-		$this->waterCover?->readStateFromWorld();
+		$this->containedWater?->readStateFromWorld();
 		return $this;
 	}
 
 	public function addVelocityToEntity(Entity $entity) : ?Vector3{
-		if($this->waterCover !== null && $entity->canBeMovedByCurrents()){
-			return $this->waterCover->getFlowVector();
+		if($this->containedWater !== null && $entity->canBeMovedByCurrents()){
+			return $this->containedWater->getFlowVector();
 		}
 		return null;
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		$this->waterCover?->onEntityInside($entity);
+		$this->containedWater?->onEntityInside($entity);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->waterCover !== null){
-			$this->position->getWorld()->delayDisplacedBlockUpdate($this->position, $this->waterCover->tickRate());
+		if($this->containedWater !== null){
+			$this->position->getWorld()->delayDisplacedBlockUpdate($this->position, $this->containedWater->tickRate());
 		}
 	}
 }

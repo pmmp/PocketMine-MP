@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\WaterCoverHelper;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterHelper;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\world\sound\BucketEmptyWaterSound;
@@ -64,29 +64,29 @@ class Water extends Liquid{
 	protected function canFlowInto(Block $block) : bool{
 		return
 			parent::canFlowInto($block) ||
-			$block instanceof CoveredByWater &&
-			$block->getWaterCover() === null &&
-			$block->canBeCoveredByFlowing();
+			$block instanceof Waterloggable &&
+			$block->getContainedWater() === null &&
+			$block->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE);
 	}
 
 	protected function getFlowResult(Block $target, int $newFlowDecay, bool $falling) : Block{
 		$result = parent::getFlowResult($target, $newFlowDecay, $falling);
 
-		if($target instanceof CoveredByWater && $target->canBeCoveredByFlowing() && $result instanceof Water){
-			$result = (clone $target)->setWaterCover($result);
+		if($target instanceof Waterloggable && $target->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE) && $result instanceof Water){
+			$result = (clone $target)->setContainedWater($result);
 		}
 		return $result;
 	}
 
 	protected function getDecayResult(Block $oldForm) : Block{
-		return $oldForm instanceof CoveredByWater ? (clone $oldForm)->setWaterCover(null) : VanillaBlocks::AIR();
+		return $oldForm instanceof Waterloggable ? (clone $oldForm)->setContainedWater(null) : VanillaBlocks::AIR();
 	}
 
 	protected function isSideAvailable(Block $block, int $face) : bool{
-		return $block instanceof CoveredByWater ? $block->isSideOpenToFlow($face) : true;
+		return $block instanceof Waterloggable ? $block->isSideOpenToFlow($face) : true;
 	}
 
 	protected function unpackLiquid(Block $block) : Block{
-		return WaterCoverHelper::getWater($block) ?? $block;
+		return WaterHelper::getWater($block) ?? $block;
 	}
 }

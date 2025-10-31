@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
@@ -38,9 +38,9 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Stair extends Transparent implements HorizontalFacing, CoveredByWater{
+class Stair extends Transparent implements HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		place as waterPlace;
 		readStateFromWorld as readWaterStateFromWorld;
 	}

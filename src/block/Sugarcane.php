@@ -27,7 +27,7 @@ use pocketmine\block\utils\Ageable;
 use pocketmine\block\utils\AgeableTrait;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\block\utils\WaterCoverHelper;
+use pocketmine\block\utils\WaterHelper;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -126,7 +126,7 @@ class Sugarcane extends Flowable implements Ageable{
 		//support criteria are checked by FixedSupportTrait, but this part applies to placement only
 		foreach(Facing::HORIZONTAL as $side){
 			$sideBlock = $down->getSide($side);
-			if(WaterCoverHelper::isWater($sideBlock) || $sideBlock instanceof FrostedIce){
+			if(WaterHelper::isWater($sideBlock) || $sideBlock instanceof FrostedIce){
 				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 			}
 		}
@@ -136,7 +136,7 @@ class Sugarcane extends Flowable implements Ageable{
 
 	private function hasNearbyWater(Block $down) : bool{
 		foreach($down->getHorizontalSides() as $sideBlock){
-			if(WaterCoverHelper::isWater($sideBlock) || $sideBlock->getTypeId() === BlockTypeIds::FROSTED_ICE){
+			if(WaterHelper::isWater($sideBlock) || $sideBlock->getTypeId() === BlockTypeIds::FROSTED_ICE){
 				return true;
 			}
 		}

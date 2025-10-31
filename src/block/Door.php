@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
@@ -37,9 +37,9 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
-class Door extends Transparent implements HorizontalFacing, CoveredByWater{
+class Door extends Transparent implements HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		readStateFromWorld as readWaterStateFromWorld;
 		onNearbyBlockChange as onWaterBlockChange;
 	}
@@ -143,10 +143,10 @@ class Door extends Transparent implements HorizontalFacing, CoveredByWater{
 			$topHalf->top = true;
 
 			if($blockReplace instanceof Water && $blockReplace->isSource()){
-				$this->waterCover = clone $blockReplace;
+				$this->containedWater = clone $blockReplace;
 			}
 			if($blockUp instanceof Water && $blockUp->isSource()){
-				$topHalf->waterCover = clone $blockUp;
+				$topHalf->containedWater = clone $blockUp;
 			}
 
 			$tx->addBlock($blockReplace->position, $this)->addBlock($blockUp->position, $topHalf);

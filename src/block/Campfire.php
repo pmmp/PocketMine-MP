@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\Lightable;
@@ -63,14 +63,14 @@ use function count;
 use function min;
 use function mt_rand;
 
-class Campfire extends Transparent implements Lightable, HorizontalFacing, CoveredByWater{
+class Campfire extends Transparent implements Lightable, HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait{
 		HorizontalFacingTrait::describeBlockOnlyState as encodeFacingState;
 	}
 	use LightableTrait{
 		LightableTrait::describeBlockOnlyState as encodeLitState;
 	}
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		place as waterPlace;
 		readStateFromWorld as readWaterStateFromWorld;
 		onNearbyBlockChange as onWaterBlockChange;
@@ -195,7 +195,7 @@ class Campfire extends Transparent implements Lightable, HorizontalFacing, Cover
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!$this->lit){
-			if($this->waterCover === null){
+			if($this->containedWater === null){
 				if($item->getTypeId() === ItemTypeIds::FIRE_CHARGE){
 					$item->pop();
 					$this->ignite();
@@ -229,7 +229,7 @@ class Campfire extends Transparent implements Lightable, HorizontalFacing, Cover
 
 	public function onNearbyBlockChange() : void{
 		$this->onWaterBlockChange();
-		if($this->lit && ($this->waterCover !== null || $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::WATER)){
+		if($this->lit && ($this->containedWater !== null || $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::WATER)){
 			$this->extinguish();
 		}
 	}

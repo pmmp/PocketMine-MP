@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
@@ -35,8 +35,8 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Slab extends Transparent implements CoveredByWater{
-	use CoveredByWaterTrait{
+class Slab extends Transparent implements Waterloggable{
+	use WaterloggableTrait{
 		place as waterPlace;
 	}
 
@@ -69,7 +69,7 @@ class Slab extends Transparent implements CoveredByWater{
 		return $this;
 	}
 
-	public function canBeCovered() : bool{
+	public function canBeWaterlogged() : bool{
 		return $this->slabType !== SlabType::DOUBLE;
 	}
 

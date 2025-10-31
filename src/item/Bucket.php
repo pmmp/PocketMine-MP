@@ -26,7 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
-use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
@@ -41,9 +41,9 @@ class Bucket extends Item{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 
-		if($blockClicked instanceof CoveredByWater && ($cover = $blockClicked->getWaterCover()) !== null && $cover->isSource()){
-			$resultBlock = (clone $blockClicked)->setWaterCover(null);
-			$liquid = $blockClicked->getWaterCover();
+		if($blockClicked instanceof Waterloggable && ($water = $blockClicked->getContainedWater()) !== null && $water->isSource()){
+			$resultBlock = (clone $blockClicked)->setContainedWater(null);
+			$liquid = $blockClicked->getContainedWater();
 		}elseif($blockClicked instanceof Liquid && $blockClicked->isSource()){
 			$resultBlock = VanillaBlocks::AIR();
 			$liquid = $blockClicked;

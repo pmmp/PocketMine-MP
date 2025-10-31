@@ -26,15 +26,15 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralTypeTrait;
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use function mt_rand;
 
-abstract class BaseCoral extends CoveredFlowable implements CoralMaterial, CoveredByWater{
+abstract class BaseCoral extends CoveredFlowable implements CoralMaterial, Waterloggable{
 	use CoralTypeTrait;
-	use CoveredByWaterTrait{
+	use WaterloggableTrait{
 		onNearbyBlockChange as onWaterBlockChange;
 	}
 
@@ -62,7 +62,7 @@ abstract class BaseCoral extends CoveredFlowable implements CoralMaterial, Cover
 	public function isSolid() : bool{ return false; }
 
 	protected function isCoveredWithWater() : bool{
-		return $this->waterCover !== null;
+		return $this->containedWater !== null;
 	}
 
 	protected function recalculateCollisionBoxes() : array{ return []; }

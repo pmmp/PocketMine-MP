@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
 
-class Fence extends Transparent implements CoveredByWater{
-	use CoveredByWaterTrait{
+class Fence extends Transparent implements Waterloggable{
+	use WaterloggableTrait{
 		readStateFromWorld as readWaterStateFromWorld;
 	}
 

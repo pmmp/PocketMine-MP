@@ -34,4 +34,5 @@ final class BlockTypeTags{
 	public const HANGING_SIGN = self::PREFIX . "hanging_sign";
 	public const NYLIUM = self::PREFIX . "nylium";
 	public const HUGE_FUNGUS_REPLACEABLE = self::PREFIX . "huge_fungus_replaceable";
+	public const NON_SOURCE_WATERLOGGABLE = self::PREFIX . "non_source_waterloggable";
 }

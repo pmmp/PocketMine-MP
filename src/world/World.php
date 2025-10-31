@@ -34,7 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
-use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Water;
 use pocketmine\data\bedrock\BiomeIds;
@@ -1152,7 +1152,7 @@ class World implements ChunkManager{
 				UpdateBlockPacket::FLAG_NETWORK,
 				UpdateBlockPacket::DATA_LAYER_NORMAL
 			);
-			if($fullBlock->getTypeId() === BlockTypeIds::AIR || $fullBlock instanceof CoveredByWater){
+			if($fullBlock->getTypeId() === BlockTypeIds::AIR || $fullBlock instanceof Waterloggable){
 				$packets[] = UpdateBlockPacket::create(
 					$blockPosition,
 					$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()?->getStateId() ?? Block::EMPTY_STATE_ID),
@@ -2040,9 +2040,9 @@ class World implements ChunkManager{
 			$displacedBlock = Block::EMPTY_STATE_ID;
 		}
 
-		if($block instanceof CoveredByWater && $displacedBlock !== Block::EMPTY_STATE_ID){
+		if($block instanceof Waterloggable && $displacedBlock !== Block::EMPTY_STATE_ID){
 			$displacedBlock = $this->blockStateRegistry->fromStateId($displacedBlock);
-			$block->setWaterCover($displacedBlock instanceof Water ? $displacedBlock : null);
+			$block->setContainedWater($displacedBlock instanceof Water ? $displacedBlock : null);
 		}
 		$block->position($this, $x, $y, $z);
 

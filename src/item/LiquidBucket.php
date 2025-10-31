@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
-use pocketmine\block\utils\CoveredByWater;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\Water;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
@@ -62,15 +63,15 @@ class LiquidBucket extends Item{
 		$targetBlock = null;
 		$resultBlock = null;
 
-		$coveredBlock = match(true){
-			$blockClicked instanceof CoveredByWater && $blockClicked->canBeCovered() => $blockClicked,
-			$blockReplace instanceof CoveredByWater && $blockReplace->canBeCovered() => $blockReplace,
+		$waterloggable = match(true){
+			$blockClicked instanceof Waterloggable && $blockClicked->canBeWaterlogged() => $blockClicked,
+			$blockReplace instanceof Waterloggable && $blockReplace->canBeWaterlogged() => $blockReplace,
 			default => null
 		};
-		if($coveredBlock !== null && ($this->liquid instanceof Water || $coveredBlock->canBeCoveredByFlowing())){
-			$targetBlock = $coveredBlock;
+		if($waterloggable !== null && ($this->liquid instanceof Water || $waterloggable->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE))){
+			$targetBlock = $waterloggable;
 			$resultBlock = $this->liquid instanceof Water ?
-				(clone $targetBlock)->setWaterCover((clone $this->liquid)->setStill(false)) :
+				(clone $targetBlock)->setContainedWater((clone $this->liquid)->setStill(false)) :
 				clone $this->liquid;
 		}elseif($blockReplace->canBeReplaced()){
 			$targetBlock = $blockReplace;

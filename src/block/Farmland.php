@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\WaterCoverHelper;
+use pocketmine\block\utils\WaterHelper;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -171,7 +171,7 @@ class Farmland extends Transparent{
 			$raw = intdiv($raw, self::WATER_SEARCH_HORIZONTAL_LENGTH);
 			$y = $raw % self::WATER_SEARCH_VERTICAL_LENGTH;
 
-			if(WaterCoverHelper::isWater($world->getBlockAt($startX + $x, $startY + $y, $startZ + $z))){
+			if(WaterHelper::isWater($world->getBlockAt($startX + $x, $startY + $y, $startZ + $z))){
 				return true;
 			}
 		}
@@ -181,7 +181,7 @@ class Farmland extends Transparent{
 		for($y = 0; $y < self::WATER_SEARCH_VERTICAL_LENGTH; $y++){
 			for($x = 0; $x < self::WATER_SEARCH_HORIZONTAL_LENGTH; $x++){
 				for($z = 0; $z < self::WATER_SEARCH_HORIZONTAL_LENGTH; $z++){
-					if(WaterCoverHelper::isWater($world->getBlockAt($startX + $x, $startY + $y, $startZ + $z))){
+					if(WaterHelper::isWater($world->getBlockAt($startX + $x, $startY + $y, $startZ + $z))){
 						$this->waterPositionIndex = $x + ($z * self::WATER_SEARCH_HORIZONTAL_LENGTH) + ($y * self::WATER_SEARCH_HORIZONTAL_LENGTH ** 2);
 						return true;
 					}

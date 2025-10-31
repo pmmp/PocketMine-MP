@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoveredByWater;
-use pocketmine\block\utils\CoveredByWaterTrait;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
@@ -37,8 +37,8 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
-class Lever extends CoveredFlowable implements CoveredByWater{
-	use CoveredByWaterTrait{
+class Lever extends CoveredFlowable implements Waterloggable{
+	use WaterloggableTrait{
 		place as waterPlace;
 		onNearbyBlockChange as onWaterBlockChange;
 	}
@@ -89,10 +89,6 @@ class Lever extends CoveredFlowable implements CoveredByWater{
 		};
 
 		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function canBeCoveredByFlowing() : bool{
-		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
