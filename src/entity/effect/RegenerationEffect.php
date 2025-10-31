@@ -26,6 +26,7 @@ namespace pocketmine\entity\effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityRegainHealthEvent;
+use function max;
 
 class RegenerationEffect extends Effect{
 

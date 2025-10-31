@@ -26,6 +26,7 @@ namespace pocketmine\entity\effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageEvent;
+use function max;
 
 class WitherEffect extends Effect{
 

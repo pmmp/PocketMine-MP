@@ -28,6 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\Translatable;
+use function max;
 
 class PoisonEffect extends Effect{
 	private bool $fatal;
