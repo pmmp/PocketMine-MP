@@ -25,7 +25,7 @@ namespace pocketmine;
 
 /**
  * Constants for all the command-line options that PocketMine-MP supports.
- * Other options not listed here can be used to override server.properties and pocketmine.yml values temporarily.
+ * Other options not listed here can be used to override server.properties and beeltymine.yml values temporarily.
  *
  * @internal
  */

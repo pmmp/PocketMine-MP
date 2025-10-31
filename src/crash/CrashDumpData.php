@@ -87,7 +87,7 @@ final class CrashDumpData implements \JsonSerializable{
 		$result = (array) $this;
 		unset($result["serverDotProperties"]);
 		unset($result["pocketmineDotYml"]);
-		$result["pocketmine.yml"] = $this->pocketmineDotYml;
+		$result["beeltymine.yml"] = $this->pocketmineDotYml;
 		$result["server.properties"] = $this->serverDotProperties;
 		return $result;
 	}
