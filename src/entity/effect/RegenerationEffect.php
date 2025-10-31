@@ -29,11 +29,8 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 
 class RegenerationEffect extends Effect{
 
-	public function canTick(EffectInstance $instance) : bool{
-		if(($interval = (50 >> $instance->getAmplifier())) > 0){
-			return ($instance->getDuration() % $interval) === 0;
-		}
-		return true;
+	public function getApplyInterval(EffectInstance $instance) : int{
+		return max(1, 50 >> $instance->getAmplifier());
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
