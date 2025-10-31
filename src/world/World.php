@@ -2029,20 +2029,20 @@ class World implements ChunkManager{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
-				$displacedBlock = $chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
+				$displacedBlockStateId = $chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
-				$displacedBlock = Block::EMPTY_STATE_ID;
+				$displacedBlockStateId = Block::EMPTY_STATE_ID;
 			}
 		}else{
 			$block = VanillaBlocks::AIR();
-			$displacedBlock = Block::EMPTY_STATE_ID;
+			$displacedBlockStateId = Block::EMPTY_STATE_ID;
 		}
 
-		if($block instanceof Waterloggable && $displacedBlock !== Block::EMPTY_STATE_ID){
-			$displacedBlock = $this->blockStateRegistry->fromStateId($displacedBlock);
-			$block->setContainedWater($displacedBlock instanceof Water ? $displacedBlock : null);
+		if($block instanceof Waterloggable && $displacedBlockStateId !== Block::EMPTY_STATE_ID){
+			$displacedBlockStateId = $this->blockStateRegistry->fromStateId($displacedBlockStateId);
+			$block->setContainedWater($displacedBlockStateId instanceof Water ? $displacedBlockStateId : null);
 		}
 		$block->position($this, $x, $y, $z);
 
@@ -2298,7 +2298,7 @@ class World implements ChunkManager{
 	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = [], bool $interactContainedBlock = false) : bool{
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = [], bool $interactDisplacedBlock = false) : bool{
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -2332,7 +2332,7 @@ class World implements ChunkManager{
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
 			}else{
-				$ev->setUseBlock(!$interactContainedBlock);
+				$ev->setUseBlock(!$interactDisplacedBlock);
 			}
 			if($player->isSpectator()){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this

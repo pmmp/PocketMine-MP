@@ -503,16 +503,16 @@ class InGamePacketHandler extends PacketHandler{
 					$block = $this->player->getWorld()->getBlock($vBlockPos);
 					$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 					$clientRuntimeId = $data->getBlockRuntimeId();
-					$interactContainedBlock = false;
+					$interactDisplacedBlock = false;
 
 					if(($displaced = $block->getDisplacedBlock()) !== null && $blockTranslator->internalIdToNetworkId($displaced->getStateId()) === $clientRuntimeId){
-						$interactContainedBlock = true;
+						$interactDisplacedBlock = true;
 					}elseif($blockTranslator->internalIdToNetworkId($block->getStateId()) !== $clientRuntimeId){
 						$this->syncBlocksNearby($vBlockPos, $data->getFace());
 						return true;
 					}
 
-					$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos, $interactContainedBlock);
+					$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos, $interactDisplacedBlock);
 					if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
 						//always sync this in case plugins caused a different result than the client expected
 						//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
