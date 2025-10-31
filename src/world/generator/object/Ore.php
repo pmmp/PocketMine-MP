@@ -64,46 +64,70 @@ class Ore{
 		$replaceableStateIds = [];
 		$materialStateId = $this->type->material->getStateId();
 		for($count = 0; $count <= $clusterSize; ++$count){
-			$seedX = $x1 + ($x2 - $x1) * $count / $clusterSize;
-			$seedY = $y1 + ($y2 - $y1) * $count / $clusterSize;
-			$seedZ = $z1 + ($z2 - $z1) * $count / $clusterSize;
-			$size = ((sin($count * (M_PI / $clusterSize)) + 1) * $this->random->nextFloat() * $clusterSize / 16 + 1) / 2;
+			$centerX = $x1 + ($x2 - $x1) * $count / $clusterSize;
+			$centerY = $y1 + ($y2 - $y1) * $count / $clusterSize;
+			$centerZ = $z1 + ($z2 - $z1) * $count / $clusterSize;
+			$radius = ((sin($count * (M_PI / $clusterSize)) + 1) * $this->random->nextFloat() * $clusterSize / 16 + 1) / 2;
 
-			$startX = (int) ($seedX - $size);
-			$startY = (int) ($seedY - $size);
-			$startZ = (int) ($seedZ - $size);
-			$endX = (int) ($seedX + $size);
-			$endY = (int) ($seedY + $size);
-			$endZ = (int) ($seedZ + $size);
+			$this->placeSphere($world, $explorer, $centerX, $centerY, $centerZ, $radius, $tried, $replaceableStateIds, $materialStateId);
+		}
+	}
 
-			for($xx = $startX; $xx <= $endX; ++$xx){
-				$sizeX = ($xx + 0.5 - $seedX) / $size;
-				$sizeX *= $sizeX;
+	/**
+	 * Places a sphere of ore blocks centered at the given coordinates with the given radius.
+	 * Only the blocks that are replaceable according to the ore type will be replaced.
+	 *
+	 * @param true[] $visited
+	 * @param bool[] $replaceableStateIds
+	 *
+	 * @phpstan-param array<int, true> $visited
+	 * @phpstan-param array<int, bool> $replaceableStateIds
+	 */
+	private function placeSphere(
+		ChunkManager $world,
+		SubChunkExplorer $explorer,
+		float $centerX,
+		float $centerY,
+		float $centerZ,
+		float $radius,
+		array &$visited,
+		array &$replaceableStateIds,
+		int $materialStateId
+	) : void{
+		$startX = (int) ($centerX - $radius);
+		$startY = (int) ($centerY - $radius);
+		$startZ = (int) ($centerZ - $radius);
+		$endX = (int) ($centerX + $radius);
+		$endY = (int) ($centerY + $radius);
+		$endZ = (int) ($centerZ + $radius);
 
-				if($sizeX < 1){
-					for($yy = $startY; $yy <= $endY; ++$yy){
-						$sizeY = ($yy + 0.5 - $seedY) / $size;
-						$sizeY *= $sizeY;
+		for($xx = $startX; $xx <= $endX; ++$xx){
+			$sizeX = ($xx + 0.5 - $centerX) / $radius;
+			$sizeX *= $sizeX;
 
-						if($yy > 0 && ($sizeX + $sizeY) < 1){
-							for($zz = $startZ; $zz <= $endZ; ++$zz){
-								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
-								$sizeZ *= $sizeZ;
+			if($sizeX < 1){
+				for($yy = $startY; $yy <= $endY; ++$yy){
+					$sizeY = ($yy + 0.5 - $centerY) / $radius;
+					$sizeY *= $sizeY;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1){
-									$hash = World::blockHash($xx, $yy, $zz);
-									if(isset($tried[$hash])){
-										continue;
-									}
-									$tried[$hash] = true;
-									if($explorer->moveTo($xx, $yy, $zz) === SubChunkExplorerStatus::INVALID || $explorer->currentSubChunk === null){
-										throw new \LogicException("Unavailable chunk at block x=$xx, y=$yy, z=$zz");
-									}
-									$stateId = $explorer->currentSubChunk->getBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK);
-									$replaceable = $replaceableStateIds[$stateId] ??= $world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces);
-									if($replaceable){
-										$explorer->currentSubChunk->setBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK, $materialStateId);
-									}
+					if($yy > 0 && ($sizeX + $sizeY) < 1){
+						for($zz = $startZ; $zz <= $endZ; ++$zz){
+							$sizeZ = ($zz + 0.5 - $centerZ) / $radius;
+							$sizeZ *= $sizeZ;
+
+							if(($sizeX + $sizeY + $sizeZ) < 1){
+								$hash = World::blockHash($xx, $yy, $zz);
+								if(isset($visited[$hash])){
+									continue;
+								}
+								$visited[$hash] = true;
+								if($explorer->moveTo($xx, $yy, $zz) === SubChunkExplorerStatus::INVALID || $explorer->currentSubChunk === null){
+									throw new \LogicException("Unavailable chunk at block x=$xx, y=$yy, z=$zz");
+								}
+								$stateId = $explorer->currentSubChunk->getBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK);
+								$replaceable = $replaceableStateIds[$stateId] ??= $world->getBlockAt($xx, $yy, $zz)->hasSameTypeId($this->type->replaces);
+								if($replaceable){
+									$explorer->currentSubChunk->setBlockStateId($xx & SubChunk::COORD_MASK, $yy & SubChunk::COORD_MASK, $zz & SubChunk::COORD_MASK, $materialStateId);
 								}
 							}
 						}
