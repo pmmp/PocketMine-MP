@@ -40,6 +40,8 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\TridentHitBlockSound;
 use pocketmine\world\sound\TridentHitEntitySound;
+use pocketmine\world\sound\TridentReturnSound;
+use pocketmine\block\Water;
 
 class Trident extends Projectile{
 
@@ -55,6 +57,8 @@ class Trident extends Projectile{
 	protected bool $canCollide = true;
 
 	protected bool $spawnedInCreative = false;
+	/** If true, the trident is currently returning to its owner due to Loyalty enchant */
+	protected bool $returning = false;
 
 	public function __construct(
 		Location $location,
@@ -74,6 +78,17 @@ class Trident extends Projectile{
 	protected function getInitialDragMultiplier() : float{ return 0.01; }
 
 	protected function getInitialGravity() : float{ return 0.1; }
+
+	/**
+	 * Trident should not be stopped by water blocks when thrown.
+	 */
+	protected function calculateInterceptWithBlock(Block $block, Vector3 $start, Vector3 $end) : ?RayTraceResult{
+		if($block instanceof Water){
+			return null;
+		}
+
+		return parent::calculateInterceptWithBlock($block, $start, $end);
+	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -99,9 +114,56 @@ class Trident extends Projectile{
 		if($this->closed){
 			return false;
 		}
-		//TODO: Loyalty enchantment.
+		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		return parent::entityBaseTick($tickDiff);
+		// Loyalty: if the trident is stuck and has Loyalty, return to owner
+		$owner = $this->getOwningEntity();
+		$loyaltyLevel = $this->item->getEnchantmentLevel(\pocketmine\item\enchantment\VanillaEnchantments::TRIDENT_LOYALTY());
+
+		if(($this->blockHit !== null || $this->onGround) && $loyaltyLevel > 0 && $owner instanceof Player && !$this->returning){
+			// begin returning
+			$this->returning = true;
+			// free from being stuck
+			$this->blockHit = null;
+			$this->isCollided = false;
+			$this->onGround = false;
+			// make it non-collectible while returning
+			$this->canCollide = false;
+			$this->setHasGravity(false);
+			$this->setTargetEntity($owner);
+			// sound for starting return
+			$this->broadcastSound(new TridentReturnSound());
+		}
+
+		if($this->returning){
+			if(!($owner instanceof Player) || !$owner->isAlive() || $owner->isClosed()){
+				// owner gone -> drop trident as item
+				$this->returning = false;
+				$this->canCollide = true;
+				$this->setHasGravity(true);
+			}else{
+				// move towards owner
+				$to = $owner->getLocation()->asVector3();
+				$from = $this->location->asVector3();
+				$dir = $to->subtractVector($from);
+				$distance = $dir->length();
+				if($distance <= 2.0){
+					// close enough to give it back
+					if($owner instanceof Player){
+						$this->pickup($owner);
+					}else{
+						$this->flagForDespawn();
+					}
+				}else{
+					// interpolate velocity towards owner; stronger with higher loyalty
+					$speed = 1.0 + 0.5 * $loyaltyLevel;
+					$newMotion = $dir->normalize()->multiply($speed);
+					$this->setMotion($newMotion);
+				}
+			}
+		}
+
+	return $hasUpdate;
 	}
 
 	protected function despawnsOnEntityHit() : bool{
@@ -141,7 +203,7 @@ class Trident extends Projectile{
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{
-		if($this->blockHit !== null){
+		if($this->blockHit !== null || $this->returning){
 			$this->pickup($player);
 		}
 	}

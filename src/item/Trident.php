@@ -30,6 +30,7 @@ use pocketmine\entity\projectile\Trident as TridentEntity;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\player\Player;
 use pocketmine\world\sound\TridentThrowSound;
+use pocketmine\world\sound\TridentRiptideSound;
 use function min;
 
 class Trident extends Tool implements Releasable{
@@ -47,6 +48,51 @@ class Trident extends Tool implements Releasable{
 			return ItemUseResult::FAIL;
 		}
 
+		// Riptide: if the trident has RIPTIDE and the player is underwater (or in valid conditions),
+		// propel the player instead of spawning a projectile.
+		$riptideLevel = $this->getEnchantmentLevel(
+			\pocketmine\item\enchantment\VanillaEnchantments::TRIDENT_RIPTIDE()
+		);
+
+		$p = $diff / 20;
+		$baseForce = min((($p ** 2) + $p * 2) / 3, 1) * 2.4;
+
+		if($riptideLevel > 0){
+			// Vanilla allows Riptide when the player is in water or in rain. For now, require underwater.
+			if(!$player->isUnderwater()){
+				// not in valid environment for Riptide: fail to use
+				return ItemUseResult::FAIL;
+			}
+
+			// Propel the player forward/upwards depending on enchantment level
+			$dir = $player->getDirectionVector();
+			// base speed plus charge-based force
+			$baseSpeed = 1.5 + (0.5 * $riptideLevel) + $baseForce;
+
+			// If the player is fully submerged (deep water), give an additional multiplier so Riptide feels strong
+			$depthMultiplier = 1.0;
+			try{
+				$feetBlock = $player->getWorld()->getBlockAt((int) floor($player->getLocation()->x), (int) floor($player->getLocation()->y), (int) floor($player->getLocation()->z));
+				if($feetBlock instanceof \pocketmine\block\Water){
+					$depthMultiplier += 0.35 * $riptideLevel; // stronger in deeper water
+				}
+			}catch(\Throwable $e){
+				// ignore and use default multiplier
+			}
+
+			$speed = $baseSpeed * $depthMultiplier;
+			$verticalBoost = 0.4 + (0.25 * $riptideLevel);
+
+			$player->addMotion($dir->x * $speed, $dir->y * $speed + $verticalBoost, $dir->z * $speed);
+
+			// Play per-level riptide sound so clients hear different pitches for each level
+			$location->getWorld()->addSound($location, new TridentRiptideSound($riptideLevel));
+
+			// Do not consume or damage the item when using Riptide (the trident remains in hand)
+			return ItemUseResult::SUCCESS;
+		}
+
+		// Normal throw behaviour
 		$item = $this->pop();
 		if($player->hasFiniteResources()){
 			$item->applyDamage(self::DAMAGE_ON_THROW);
@@ -56,15 +102,17 @@ class Trident extends Tool implements Releasable{
 			//the start action and the release, so it's best to account for this anyway
 			return ItemUseResult::FAIL;
 		}
+		$eyePos = $player->getEyePos();
+		$dir = $player->getDirectionVector();
+		// spawn slightly in front of the player to avoid immediate collision with blocks/water
+		$spawnPos = $eyePos->add($dir->x * 0.5, $dir->y * 0.5, $dir->z * 0.5);
 		$entity = new TridentEntity(Location::fromObject(
-			$player->getEyePos(),
+			$spawnPos,
 			$player->getWorld(),
 			($location->yaw > 180 ? 360 : 0) - $location->yaw,
 			-$location->pitch
 		), $item, $player);
-		$p = $diff / 20;
-		$baseForce = min((($p ** 2) + $p * 2) / 3, 1) * 2.4;
-		$entity->setMotion($player->getDirectionVector()->multiply($baseForce));
+		$entity->setMotion($dir->multiply($baseForce));
 
 		$ev = new ProjectileLaunchEvent($entity);
 		$ev->call();
@@ -83,6 +131,15 @@ class Trident extends Tool implements Releasable{
 	}
 
 	public function canStartUsingItem(Player $player) : bool{
+		// Prevent starting Riptide charge outside valid environment
+		$riptideLevel = $this->getEnchantmentLevel(\pocketmine\item\enchantment\VanillaEnchantments::TRIDENT_RIPTIDE());
+		if($riptideLevel > 0){
+			// require underwater for now (vanilla also allows rain/thunder conditions)
+			if(!$player->isUnderwater()){
+				return false;
+			}
+		}
+
 		return $this->damage < $this->getMaxDurability() - self::DAMAGE_ON_THROW;
 	}
 
