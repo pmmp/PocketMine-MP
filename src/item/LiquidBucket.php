@@ -69,10 +69,13 @@ class LiquidBucket extends Item{
 			default => null
 		};
 		if($waterloggable !== null && ($this->liquid instanceof Water || $waterloggable->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE))){
-			$targetBlock = $waterloggable;
-			$resultBlock = $this->liquid instanceof Water ?
-				(clone $targetBlock)->setContainedWater((clone $this->liquid)->setStill(false)) :
-				clone $this->liquid;
+			if($this->liquid instanceof Water){
+				$targetBlock = $waterloggable;
+				$resultBlock = (clone $targetBlock)->setContainedWater((clone $this->liquid)->setStill(false));
+			}else{
+				$targetBlock = $blockReplace->canBeReplaced() ? $blockReplace : (($target = $blockReplace->getSide($face))->canBeReplaced() ? $target : null);
+				$resultBlock = clone $this->liquid;
+			}
 		}elseif($blockReplace->canBeReplaced()){
 			$targetBlock = $blockReplace;
 			$resultBlock = clone $this->liquid;
