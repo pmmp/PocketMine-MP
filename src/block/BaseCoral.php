@@ -32,7 +32,7 @@ use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\item\Item;
 use function mt_rand;
 
-abstract class BaseCoral extends CoveredFlowable implements CoralMaterial, Waterloggable{
+abstract class BaseCoral extends WaterloggableFlowable implements CoralMaterial, Waterloggable{
 	use CoralTypeTrait;
 	use WaterloggableTrait{
 		onNearbyBlockChange as onWaterBlockChange;

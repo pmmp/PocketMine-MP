@@ -29,7 +29,7 @@ use pocketmine\math\Vector3;
 /**
  * Flowable blocks that can be waterlogged.
  */
-abstract class CoveredFlowable extends Flowable implements Waterloggable{
+abstract class WaterloggableFlowable extends Flowable implements Waterloggable{
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		return

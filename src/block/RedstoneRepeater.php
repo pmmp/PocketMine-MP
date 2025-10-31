@@ -39,7 +39,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class RedstoneRepeater extends CoveredFlowable implements PoweredByRedstone, HorizontalFacing, Waterloggable{
+class RedstoneRepeater extends WaterloggableFlowable implements PoweredByRedstone, HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 	use StaticSupportTrait{
