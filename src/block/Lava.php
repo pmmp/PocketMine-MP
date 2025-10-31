@@ -72,7 +72,7 @@ class Lava extends Liquid{
 			return false;
 		}
 		foreach($this->getAdjacentBlocksExceptDown() as $colliding){
-			if($colliding instanceof Water || $colliding instanceof Waterloggable && $colliding->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE) && $colliding->getContainedWater() !== null){
+			if($colliding instanceof Water || $colliding instanceof Waterloggable && $colliding->getContainedWater() !== null){
 				if($this->decay === 0){
 					$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
 					return true;
