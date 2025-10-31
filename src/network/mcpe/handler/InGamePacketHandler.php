@@ -499,7 +499,7 @@ class InGamePacketHandler extends PacketHandler{
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				if($this->player->canInteract($vBlockPos->add(0.5, 0.5, 0.5), 15)){
+				if($vBlockPos->distanceSquared($this->player->getLocation()) < 10000){
 					$block = $this->player->getWorld()->getBlock($vBlockPos);
 					$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 					$clientRuntimeId = $data->getBlockRuntimeId();
