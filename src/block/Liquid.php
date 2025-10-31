@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockSpreadEvent;

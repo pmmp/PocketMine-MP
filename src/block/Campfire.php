@@ -25,13 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
-use pocketmine\block\utils\Waterloggable;
-use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\data\runtime\RuntimeDataDescriber;

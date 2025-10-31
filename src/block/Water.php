@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\utils\WaterHelper;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\world\sound\BucketEmptyWaterSound;

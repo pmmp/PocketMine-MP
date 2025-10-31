@@ -26,9 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\CoralMaterial;
 use pocketmine\block\utils\CoralTypeTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\utils\WaterloggableTrait;
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use function mt_rand;
 
