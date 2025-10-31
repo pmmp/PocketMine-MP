@@ -26,7 +26,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -39,24 +38,18 @@ use pocketmine\utils\InternetRequestResult;
 use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
 use function count;
-use function fclose;
-use function file_exists;
-use function fopen;
-use function fwrite;
 use function http_build_query;
 use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
 use function json_decode;
-use function mkdir;
 use function strtolower;
 use const CURLOPT_AUTOREFERER;
 use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
-use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -103,42 +96,26 @@ class TimingsCommand extends VanillaCommand{
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" || $mode === "report" || $paste){
-			$timingsPromise = TimingsHandler::requestPrintTimings();
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-			$timingsPromise->onCompletion(
-				fn(array $lines) => $paste ? $this->uploadReport($lines, $sender) : $this->createReportFile($lines, $sender),
-				fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
-			);
+			if($paste){
+				$timingsPromise = TimingsHandler::requestPrintTimings();
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
+				$timingsPromise->onCompletion(
+					fn(array $lines) => $this->uploadReport($lines, $sender),
+					fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
+				);
+			}else{
+				TimingsHandler::createReportFile(Path::join($sender->getServer()->getDataPath(), "timings"))->onCompletion(
+					function(string $timingsFile) use ($sender) : void{
+						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
+					},
+					fn() => $sender->getServer()->getLogger()->error("Failed to create timings report file")
+				);
+			}
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
 
 		return true;
-	}
-
-	/**
-	 * @param string[] $lines
-	 * @phpstan-param list<string> $lines
-	 */
-	private function createReportFile(array $lines, CommandSender $sender) : void{
-		$index = 0;
-		$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
-
-		if(!file_exists($timingFolder)){
-			mkdir($timingFolder, 0777);
-		}
-		$timings = Path::join($timingFolder, "timings.txt");
-		while(file_exists($timings)){
-			$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
-		}
-
-		$fileTimings = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timings, "a+b"));
-		foreach($lines as $line){
-			fwrite($fileTimings, $line . PHP_EOL);
-		}
-		fclose($fileTimings);
-
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
 	}
 
 	/**

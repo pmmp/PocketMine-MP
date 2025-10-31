@@ -724,6 +724,7 @@
         "STONE_PRESSURE_PLATE": 2,
         "STONE_SLAB": 3,
         "STONE_STAIRS": 8,
+        "STRUCTURE_VOID": 1,
         "SUGARCANE": 16,
         "SUNFLOWER": 2,
         "SWEET_BERRY_BUSH": 4,

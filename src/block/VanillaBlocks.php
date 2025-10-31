@@ -805,6 +805,7 @@ use function strtolower;
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
+ * @method static StructureVoid STRUCTURE_VOID()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
@@ -1649,6 +1650,7 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR13() : void{
 		self::register("light", fn(BID $id) => new Light($id, "Light Block", new Info(BreakInfo::indestructible())));
+		self::register("structure_void", fn(BID $id) => new StructureVoid($id, "Structure Void", new Info(BreakInfo::instant())));
 		self::register("wither_rose", fn(BID $id) => new WitherRose($id, "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 	}
 

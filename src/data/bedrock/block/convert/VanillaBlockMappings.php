@@ -439,6 +439,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::SPORE_BLOSSOM(), Ids::SPORE_BLOSSOM);
 		$reg->mapSimple(Blocks::STONE(), Ids::STONE);
 		$reg->mapSimple(Blocks::STONE_BRICKS(), Ids::STONE_BRICKS);
+		$reg->mapSimple(Blocks::STRUCTURE_VOID(), Ids::STRUCTURE_VOID);
 		$reg->mapSimple(Blocks::TALL_GRASS(), Ids::SHORT_GRASS);  //no, this is not a typo - tall_grass is now the double block, just to be confusing :(
 		$reg->mapSimple(Blocks::TINTED_GLASS(), Ids::TINTED_GLASS);
 		$reg->mapSimple(Blocks::TORCHFLOWER(), Ids::TORCHFLOWER);
