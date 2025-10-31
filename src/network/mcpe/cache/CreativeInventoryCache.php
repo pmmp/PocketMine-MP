@@ -93,13 +93,14 @@ final class CreativeInventoryCache{
 		}
 
 		//creative inventory may have holes if items were unregistered - ensure network IDs used are always consistent
+		// Store core items in the cache and perform per-session conversion to allow localization of item display (lore/name)
 		$items = [];
 		foreach($inventory->getAllEntries() as $k => $entry){
-			$items[] = new CreativeItemEntry(
-				$k,
-				$typeConverter->coreItemStackToNet($entry->getItem()),
-				$itemGroupIndexes[$k]
-			);
+			$items[] = [
+				'id' => $k,
+				'item' => $entry->getItem(),
+				'group' => $itemGroupIndexes[$k]
+			];
 		}
 
 		return new CreativeInventoryCacheEntry($categories, $groups, $items);
@@ -122,7 +123,7 @@ final class CreativeInventoryCache{
 			return $message;
 		};
 
-		$groupEntries = [];
+	$groupEntries = [];
 		foreach($cachedEntry->categories as $index => $category){
 			$group = $cachedEntry->groups[$index];
 			$categoryId = match ($category) {
@@ -149,6 +150,12 @@ final class CreativeInventoryCache{
 			}
 		}
 
-		return CreativeContentPacket::create($groupEntries, $cachedEntry->items);
+		// Convert cached core items to network ItemStacks now that we have a session (so we can localize lore)
+		$convertedItems = [];
+		foreach($cachedEntry->items as $it){
+			$convertedItems[] = new CreativeItemEntry($it['id'], $typeConverter->coreItemStackToNet($it['item'], $session), $it['group']);
+		}
+
+		return CreativeContentPacket::create($groupEntries, $convertedItems);
 	}
 }

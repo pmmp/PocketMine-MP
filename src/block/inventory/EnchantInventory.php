@@ -45,23 +45,37 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	 */
 	private array $options = [];
 
+	/**
+	 * Options mapped by viewer (spl_object_id(player) => list<EnchantingOption>)
+	 * @phpstan-var array<int, list<EnchantingOption>>
+	 */
+	private array $optionsByViewer = [];
+
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(2);
 	}
 
+	public function onClose(\pocketmine\player\Player $who) : void{
+		parent::onClose($who);
+		// Clean up any viewer-specific cached options to avoid unbounded growth
+		unset($this->optionsByViewer[spl_object_id($who)]);
+	}
+
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index === self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				$this->options = [];
+				// Generate options per viewer (depends on their enchantment seed)
 				$item = $this->getInput();
 				$options = Helper::generateOptions($this->holder, $item, $viewer->getEnchantmentSeed());
 
 				$event = new PlayerEnchantingOptionsRequestEvent($viewer, $this, $options);
 				$event->call();
 				if(!$event->isCancelled() && count($event->getOptions()) > 0){
-					$this->options = array_values($event->getOptions());
-					$viewer->getNetworkSession()->getInvManager()?->syncEnchantingTableOptions($this->options);
+					$this->optionsByViewer[spl_object_id($viewer)] = array_values($event->getOptions());
+					// Also keep a fallback default (last writer) for compatibility
+					$this->options = $this->optionsByViewer[spl_object_id($viewer)];
+					$viewer->getNetworkSession()->getInvManager()?->syncEnchantingTableOptions($this->optionsByViewer[spl_object_id($viewer)]);
 				}
 			}
 		}
@@ -77,12 +91,22 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $this->getItem(self::SLOT_LAPIS);
 	}
 
-	public function getOutput(int $optionId) : ?Item{
-		$option = $this->getOption($optionId);
+	public function getOutput(int $optionId, ?\pocketmine\player\Player $viewer = null) : ?Item{
+		$option = $this->getOption($optionId, $viewer);
 		return $option === null ? null : Helper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
-	public function getOption(int $optionId) : ?EnchantingOption{
+	public function getOption(int $optionId, ?\pocketmine\player\Player $viewer = null) : ?EnchantingOption{
+		if($viewer !== null){
+			$opts = $this->optionsByViewer[spl_object_id($viewer)] ?? null;
+			return $opts[$optionId] ?? null;
+		}
+		// Fallback: if only one viewer has options, return that
+		if(count($this->optionsByViewer) === 1){
+			$only = array_values($this->optionsByViewer)[0];
+			return $only[$optionId] ?? null;
+		}
+		// Last-writer fallback for compatibility
 		return $this->options[$optionId] ?? null;
 	}
 }

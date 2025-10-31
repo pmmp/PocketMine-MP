@@ -347,9 +347,9 @@ class ItemStackRequestExecutor{
 			$window = $this->player->getCurrentWindow();
 			if($window instanceof EnchantInventory){
 				$optionId = $this->inventoryManager->getEnchantingTableOptionIndex($action->getRecipeId());
-				if($optionId !== null && ($option = $window->getOption($optionId)) !== null){
+				if($optionId !== null && ($option = $window->getOption($optionId, $this->player)) !== null){
 					$this->specialTransaction = new EnchantingTransaction($this->player, $option, $optionId + 1);
-					$this->setNextCreatedItem($window->getOutput($optionId));
+					$this->setNextCreatedItem($window->getOutput($optionId, $this->player));
 				}
 			}elseif($window instanceof SmithingTableInventory){
 				$craftingManager = $this->player->getServer()->getCraftingManager();

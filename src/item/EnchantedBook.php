@@ -27,4 +27,49 @@ class EnchantedBook extends Item{
 	public function getMaxStackSize() : int{
 		return 1;
 	}
+
+	/**
+	 * Return lore for enchanted book: list of enchantments and levels when no custom lore is set.
+	 * This provides a visible hint in UIs (non-localized fallback).
+	 *
+	 * @return string[]
+	 */
+	public function getLore() : array{
+		$existing = parent::getLore();
+		if(count($existing) > 0){
+			return $existing;
+		}
+
+		if(!$this->hasEnchantments()){
+			return [];
+		}
+
+		$lines = [];
+		foreach($this->getEnchantments() as $enchantment){
+			$type = $enchantment->getType();
+			$name = $type->getName();
+			if(is_string($name)){
+				$base = $name;
+			}else{
+				// Translatable fallback: use translation key as fallback text
+				$base = $name->getText();
+			}
+			$level = $enchantment->getLevel();
+			$lines[] = $base . " " . $this->toRoman($level);
+		}
+
+		return $lines;
+	}
+
+	private function toRoman(int $num) : string{
+		$map = [1000 => 'M', 900 => 'CM', 500 => 'D', 400 => 'CD', 100 => 'C', 90 => 'XC', 50 => 'L', 40 => 'XL', 10 => 'X', 9 => 'IX', 5 => 'V', 4 => 'IV', 1 => 'I'];
+		$res = "";
+		foreach($map as $val => $rom){
+			while($num >= $val){
+				$res .= $rom;
+				$num -= $val;
+			}
+		}
+		return $res === '' ? 'I' : $res;
+	}
 }

@@ -298,6 +298,47 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 10 * $level,
 			5
 		));
+
+		// Trident-related enchantments (behavior implementation partially TODO in Trident entity)
+		self::register("TRIDENT_LOYALTY", new Enchantment(
+			KnownTranslationFactory::enchantment_tridentLoyalty(),
+			Rarity::RARE,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * $level,
+			15
+		));
+
+		self::register("TRIDENT_RIPTIDE", new Enchantment(
+			KnownTranslationFactory::enchantment_tridentRiptide(),
+			Rarity::RARE,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * $level,
+			15
+		));
+
+		self::register("TRIDENT_CHANNELING", new Enchantment(
+			KnownTranslationFactory::enchantment_tridentChanneling(),
+			Rarity::MYTHIC,
+			0,
+			0,
+			1,
+			null,
+			5
+		));
+
+		self::register("TRIDENT_IMPALING", new Enchantment(
+			KnownTranslationFactory::enchantment_tridentImpaling(),
+			Rarity::RARE,
+			0,
+			0,
+			5,
+			fn(int $level) : int => 5 * $level,
+			10
+		));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{

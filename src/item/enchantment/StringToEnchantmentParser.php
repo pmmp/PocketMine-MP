@@ -31,10 +31,12 @@ use pocketmine\utils\StringToTParser;
  *
  * @phpstan-extends StringToTParser<Enchantment>
  */
-final class StringToEnchantmentParser extends StringToTParser{
+final class StringToEnchantmentParser extends StringToTParser
+{
 	use SingletonTrait;
 
-	private static function make() : self{
+	private static function make(): self
+	{
 		$result = new self();
 
 		$result->register("blast_protection", fn() => VanillaEnchantments::BLAST_PROTECTION());
@@ -60,11 +62,14 @@ final class StringToEnchantmentParser extends StringToTParser{
 		$result->register("thorns", fn() => VanillaEnchantments::THORNS());
 		$result->register("unbreaking", fn() => VanillaEnchantments::UNBREAKING());
 		$result->register("vanishing", fn() => VanillaEnchantments::VANISHING());
-
+		$result->register("trident_loyalty", fn() => VanillaEnchantments::TRIDENT_LOYALTY());
+		$result->register("trident_riptide", fn() => VanillaEnchantments::TRIDENT_RIPTIDE());
+		$result->register("trident_channeling", fn() => VanillaEnchantments::TRIDENT_CHANNELING());
 		return $result;
 	}
 
-	public function parse(string $input) : ?Enchantment{
+	public function parse(string $input): ?Enchantment
+	{
 		return parent::parse($input);
 	}
 }

@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\block\tile\Container;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
@@ -42,6 +43,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\nbt\UnexpectedTagTypeException;
@@ -286,44 +288,86 @@ class TypeConverter{
 		return $tag;
 	}
 
-	public function coreItemStackToNet(Item $itemStack) : ItemStack{
-		if($itemStack->isNull()){
-			return ItemStack::null();
-		}
-		$nbt = $itemStack->getNamedTag();
-		if($nbt->count() === 0){
-			$nbt = null;
-		}else{
-			$nbt = $this->cleanupUnnecessaryItemNBT($nbt);
-		}
-
-		$idMeta = $this->itemTranslator->toNetworkIdQuiet($itemStack);
-		if($idMeta === null){
-			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
-			//other unmapped items.
-			[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
-			if($nbt === null){
-				$nbt = new CompoundTag();
+	public function coreItemStackToNet(Item $itemStack, ?NetworkSession $session = null) : ItemStack{
+			if($itemStack->isNull()){
+				return ItemStack::null();
 			}
-			$nbt->setLong(self::PM_ID_TAG, $itemStack->getStateId());
-		}else{
-			[$id, $meta, $blockRuntimeId] = $idMeta;
+			$origNbt = $itemStack->getNamedTag();
+			$nbt = $origNbt->count() === 0 ? null : $this->cleanupUnnecessaryItemNBT($origNbt);
+
+			// Generate localized lore for enchanted books / enchanted items when possible (per-session)
+			if($session !== null && $itemStack->hasEnchantments()){
+				// Only add automatic lore if no explicit lore is present
+				$display = $nbt?->getCompoundTag(Item::TAG_DISPLAY);
+				$existingLore = $display?->getListTag(Item::TAG_DISPLAY_LORE, StringTag::class);
+				if($existingLore === null){
+					$display ??= new CompoundTag();
+					$loreTag = new ListTag();
+					$player = $session->getPlayer();
+					$forceLanguage = $player->getServer()->isLanguageForced();
+					foreach($itemStack->getEnchantments() as $enchantment){
+						$type = $enchantment->getType();
+						$name = $type->getName();
+						if(is_string($name)){
+							$message = $name;
+						}else{
+							if(!$forceLanguage){
+								[$message,] = $session->prepareClientTranslatableMessage($name);
+							}else{
+								$message = $player->getLanguage()->translate($name);
+							}
+						}
+						$level = $enchantment->getLevel();
+						$line = $message . " " . self::toRoman($level);
+						$loreTag->push(new StringTag($line));
+					}
+					$display->setTag(Item::TAG_DISPLAY_LORE, $loreTag);
+					$nbt ??= new CompoundTag();
+					$nbt->setTag(Item::TAG_DISPLAY, $display);
+					// Re-run cleanup to ensure we don't leak block-entity NBT
+					$nbt = $this->cleanupUnnecessaryItemNBT($nbt);
+				}
+			}
+
+			$idMeta = $this->itemTranslator->toNetworkIdQuiet($itemStack);
+			if($idMeta === null){
+				//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
+				//other unmapped items.
+				[$id, $meta, $blockRuntimeId] = $this->itemTranslator->toNetworkId(VanillaBlocks::INFO_UPDATE()->asItem());
+				if($nbt === null){
+					$nbt = new CompoundTag();
+				}
+				$nbt->setLong(self::PM_ID_TAG, $itemStack->getStateId());
+			}else{
+				[$id, $meta, $blockRuntimeId] = $idMeta;
+			}
+
+			$extraData = $id === $this->shieldRuntimeId ?
+				new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
+				new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
+			$extraDataSerializer = new ByteBufferWriter();
+			$extraData->write($extraDataSerializer);
+
+			return new ItemStack(
+				$id,
+				$meta,
+				$itemStack->getCount(),
+				$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
+				$extraDataSerializer->getData(),
+			);
 		}
 
-		$extraData = $id === $this->shieldRuntimeId ?
-			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
-			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
-		$extraDataSerializer = new ByteBufferWriter();
-		$extraData->write($extraDataSerializer);
-
-		return new ItemStack(
-			$id,
-			$meta,
-			$itemStack->getCount(),
-			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
-			$extraDataSerializer->getData(),
-		);
-	}
+		private static function toRoman(int $num) : string{
+			$map = [1000 => 'M', 900 => 'CM', 500 => 'D', 400 => 'CD', 100 => 'C', 90 => 'XC', 50 => 'L', 40 => 'XL', 10 => 'X', 9 => 'IX', 5 => 'V', 4 => 'IV', 1 => 'I'];
+			$res = "";
+			foreach($map as $val => $rom){
+				while($num >= $val){
+					$res .= $rom;
+					$num -= $val;
+				}
+			}
+			return $res === '' ? 'I' : $res;
+		}
 
 	/**
 	 * WARNING: Avoid this in server-side code. If you need to compare ItemStacks provided by the client to the

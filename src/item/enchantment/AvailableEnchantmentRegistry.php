@@ -82,6 +82,11 @@ final class AvailableEnchantmentRegistry{
 		);
 		$this->register(Enchantments::VANISHING(), [], [Tags::ALL]);
 		$this->register(Enchantments::SWIFT_SNEAK(), [], [Tags::LEGGINGS]);
+		// Trident enchantments: allow enchanting table to offer these for tridents
+		$this->register(Enchantments::TRIDENT_LOYALTY(), [Tags::TRIDENT], []);
+		$this->register(Enchantments::TRIDENT_RIPTIDE(), [Tags::TRIDENT], []);
+		$this->register(Enchantments::TRIDENT_CHANNELING(), [Tags::TRIDENT], []);
+		$this->register(Enchantments::TRIDENT_IMPALING(), [Tags::TRIDENT], []);
 	}
 
 	/**
