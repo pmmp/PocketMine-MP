@@ -31,7 +31,7 @@ class MagicHitAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_CRITICAL_HIT, 15)
+			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_MAGICAL_CRITICAL_HIT, 15)
 		];
 	}
 }
