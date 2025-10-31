@@ -297,7 +297,7 @@ class WorldManager{
 						$oldProgress = (int) floor(($done / $total) * 100);
 						$newProgress = (int) floor((++$done / $total) * 100);
 						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total || $done === 1){
-							$world->getLogger()->info($world->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_spawnTerrainGenerationProgress(strval($done), strval($total), strval($newProgress))));
+							$world->getLogger()->debug($world->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_spawnTerrainGenerationProgress(strval($done), strval($total), strval($newProgress))));
 						}
 					},
 					static function() : void{
