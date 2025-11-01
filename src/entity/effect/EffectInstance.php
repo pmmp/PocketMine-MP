@@ -83,7 +83,6 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function decreaseDuration(int $ticks) : EffectInstance{
-		//Leave the flag set during subtraction - this prevents the
 		$newDuration = $this->duration - $ticks;
 		if($newDuration <= 0){
 			if($this->infinite){ //wrap around
