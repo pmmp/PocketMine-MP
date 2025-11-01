@@ -30,6 +30,8 @@ use pocketmine\command\utils\CommandException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
+use pocketmine\permission\Permission;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
@@ -107,7 +109,16 @@ abstract class Command{
 		$permissionManager = PermissionManager::getInstance();
 		foreach($permissions as $perm){
 			if($permissionManager->getPermission($perm) === null){
-				throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
+				// Auto-create missing permissions so commands can safely set them during construction.
+				// Register as granted by operator root so operators automatically get the permission.
+				$newPerm = new Permission($perm, (string)$this->description);
+				$operatorRoot = $permissionManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
+				if ($operatorRoot !== null) {
+					DefaultPermissions::registerPermission($newPerm, [$operatorRoot]);
+				} else {
+					// Fallback: add permission directly
+					$permissionManager->addPermission($newPerm);
+				}
 			}
 		}
 		$this->permission = $permissions;

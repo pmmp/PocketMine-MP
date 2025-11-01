@@ -26,6 +26,7 @@ namespace pocketmine\command;
 use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
+use pocketmine\command\defaults\BiomesCommand;
 use pocketmine\command\defaults\ClearCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
 use pocketmine\command\defaults\DeopCommand;
@@ -40,6 +41,7 @@ use pocketmine\command\defaults\HelpCommand;
 use pocketmine\command\defaults\KickCommand;
 use pocketmine\command\defaults\KillCommand;
 use pocketmine\command\defaults\ListCommand;
+use pocketmine\command\defaults\LocateCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
@@ -65,6 +67,7 @@ use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WeatherCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\defaults\WorldCommand;
 use pocketmine\command\defaults\XpCommand;
 use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
@@ -73,6 +76,8 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\world\World;
+
 use function array_shift;
 use function array_values;
 use function count;
@@ -130,9 +135,9 @@ class SimpleCommandMap implements CommandMap
 			new SeedCommand(),
 			new SetWorldSpawnCommand(),
 			new SpawnpointCommand(),
+			new TeleportCommand(),
 			new StatusCommand(),
 			new StopCommand(),
-			new TeleportCommand(),
 			new TellCommand(),
 			new TimeCommand(),
 			new TimingsCommand(),
@@ -141,8 +146,9 @@ class SimpleCommandMap implements CommandMap
 			new VersionCommand(),
 			new WhitelistCommand(),
 			new XpCommand(),
-			new \pocketmine\command\defaults\LocateCommand(),
-			new \pocketmine\command\defaults\BiomesCommand(),
+			new LocateCommand(),
+			new BiomesCommand(),
+			new WorldCommand(),
 		]);
 	}
 

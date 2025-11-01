@@ -123,6 +123,15 @@ final class KnownTranslationKeys
 	public const COMMANDS_TITLE_USAGE = "commands.title.usage";
 	public const COMMANDS_TP_SUCCESS = "commands.tp.success";
 	public const COMMANDS_TP_SUCCESS_COORDINATES = "commands.tp.success.coordinates";
+	public const COMMANDS_TP_NOPERMISSION = "commands.tp.noPermission";
+	public const COMMANDS_TP_VICTIMNOTFOUND = "commands.tp.victimNotFound";
+	public const COMMANDS_TP_DESTINATIONNOTFOUND = "commands.tp.destinationNotFound";
+	public const COMMANDS_TP_TELEPORTEDTO = "commands.tp.teleportedTo";
+	public const COMMANDS_TP_TELEPORTEDPLAYER = "commands.tp.teleportedPlayer";
+	public const COMMANDS_TP_TELEPORTEDCOORDS = "commands.tp.teleportedCoords";
+	public const COMMANDS_TP_TELEPORTEDPLAYERCOORDS = "commands.tp.teleportedPlayerCoords";
+	public const COMMANDS_TP_CONSOLECANOTTELEPORT = "commands.tp.consoleCannotTeleport";
+	public const COMMANDS_TP_INVALIDARGS = "commands.tp.invalidArgs";
 	public const COMMANDS_TP_USAGE = "commands.tp.usage";
 	public const COMMANDS_UNBAN_SUCCESS = "commands.unban.success";
 	public const COMMANDS_UNBAN_USAGE = "commands.unban.usage";

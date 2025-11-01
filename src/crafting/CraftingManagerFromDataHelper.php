@@ -304,6 +304,7 @@ final class CraftingManagerFromDataHelper
 				$input
 			));
 		}
+		
 		foreach (self::loadJsonArrayOfObjectsFile(Path::join($directoryPath, 'smithing.json'), SmithingTransformRecipeData::class) as $recipe) {
 			$input = self::deserializeIngredient($recipe->input);
 			$template = self::deserializeIngredient($recipe->template);
@@ -326,6 +327,7 @@ final class CraftingManagerFromDataHelper
 			}
 			$result->registerSmithingRecipe(new SmithingTrimRecipe($input, $addition, $template));
 		}
+		$result = AnvilCraftingManagerDataFiller::fillData($result);
 
 		return $result;
 	}

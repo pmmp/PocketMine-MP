@@ -24,33 +24,53 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
+use pocketmine\command\CommandoCommand;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\args\TargetArgument;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use function count;
+use pocketmine\player\Player;
 
-class KillCommand extends VanillaCommand{
+class KillCommand extends CommandoCommand{
 
 	public function __construct(){
 		parent::__construct(
 			"kill",
-			KnownTranslationFactory::pocketmine_command_kill_description(),
-			KnownTranslationFactory::pocketmine_command_kill_usage(),
+			"Commits suicide or kills another player",
+			"/kill [player]",
 			["suicide"]
 		);
-		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) >= 2){
-			throw new InvalidCommandSyntaxException();
-		}
+	protected function prepare(): void {
+		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
+		$this->registerArgument(0, new TargetArgument("target", true));
+	}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
-		if($player === null){
-			return true;
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
+		$targetName = $args["target"] ?? null;
+		
+		if($targetName === null){
+			if(!($sender instanceof Player)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
+				return;
+			}
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_SELF)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
+			$player = $sender;
+		}else{
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
+			$player = $sender->getServer()->getPlayerByPrefix($targetName);
+			if($player === null){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
+				return;
+			}
 		}
 
 		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, $player->getHealth()));
@@ -59,7 +79,5 @@ class KillCommand extends VanillaCommand{
 		}else{
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kill_successful($player->getName()));
 		}
-
-		return true;
 	}
 }

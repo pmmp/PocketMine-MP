@@ -1,124 +1,194 @@
 <?php
 
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
 declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\command\Command;
+use pocketmine\command\args\TargetArgument;
+use pocketmine\command\args\RelativeFloatArgument;
+use pocketmine\command\args\BooleanArgument;
+use pocketmine\command\CommandoCommand;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\player\Player;
+use pocketmine\world\Position;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\TextFormat;
-use pocketmine\world\World;
-use function array_shift;
-use function count;
-use function round;
 
-class TeleportCommand extends VanillaCommand{
+class TeleportCommand extends CommandoCommand
+{
 
-	public function __construct(){
-		parent::__construct(
-			"tp",
-			KnownTranslationFactory::pocketmine_command_tp_description(),
-			KnownTranslationFactory::commands_tp_usage(),
-			["teleport"]
-		);
-		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
-			DefaultPermissionNames::COMMAND_TELEPORT_OTHER
-		]);
+	public function __construct()
+	{
+		parent::__construct("tp", "Teleports entities", "/tp <destination> or /tp <victim> <destination>");
+		$this->setPermission("beeltymine.command.tp");
 	}
 
-	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
-		$subject = $sender->getServer()->getPlayerByPrefix($playerName);
-		if($subject === null){
-			$sender->sendMessage(TextFormat::RED . "Can't find player " . $playerName);
-			return null;
-		}
-		return $subject;
+	protected function prepare(): void
+	{
+		// Simplified overloads - only the most common use cases
+		
+		// Overload 1: /tp <destination: target> - teleport to a player
+		$this->registerArgument(0, new TargetArgument("destination", true));
+		
+		// Overload 2: /tp <x> <y> <z> - teleport to coordinates
+		$this->registerArgument(0, new RelativeFloatArgument("x", true));
+		$this->registerArgument(1, new RelativeFloatArgument("y", true));
+		$this->registerArgument(2, new RelativeFloatArgument("z", true));
+		
+		// Overload 3: /tp <victim: target> <destination: target> - teleport someone to a player
+		$this->registerArgument(0, new TargetArgument("victim", true));
+		$this->registerArgument(1, new TargetArgument("destination2", true));
+		
+		// Overload 4: /tp <victim: target> <x> <y> <z> - teleport someone to coordinates
+		// victim already registered at position 0
+		$this->registerArgument(1, new RelativeFloatArgument("x2", true));
+		$this->registerArgument(2, new RelativeFloatArgument("y2", true));
+		$this->registerArgument(3, new RelativeFloatArgument("z2", true));
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		switch(count($args)){
-			case 1: // /tp targetPlayer
-			case 3: // /tp x y z
-			case 5: // /tp x y z yaw pitch - TODO: 5 args could be target x y z yaw :(
-				$subjectName = null; //self
-				break;
-			case 2: // /tp player1 player2
-			case 4: // /tp player1 x y z - TODO: 4 args could be x y z yaw :(
-			case 6: // /tp player1 x y z yaw pitch
-				$subjectName = array_shift($args);
-				break;
-			default:
-				throw new InvalidCommandSyntaxException();
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void
+	{
+		if (!$this->testPermission($sender)) {
+			$sender->sendMessage(KnownTranslationFactory::commands_tp_noPermission());
+			return;
 		}
 
-		$subject = $this->fetchPermittedPlayerTarget($sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
-		if($subject === null){
-			return true;
+		// Normalize args - handle arrays from overlapping argument names
+		foreach ($args as $key => $value) {
+			if (is_array($value)) {
+				$args[$key] = $value[0] ?? "";
+			}
 		}
 
-		switch(count($args)){
-			case 1:
-				$targetPlayer = $this->findPlayer($sender, $args[0]);
-				if($targetPlayer === null){
-					return true;
+		// Detect which overload based on provided arguments
+		if (isset($args["victim"])) {
+			// Has victim - teleporting someone else
+			$victim = $this->resolveTarget($sender, $args["victim"]);
+			if (!$victim) {
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_victimNotFound());
+				return;
+			}
+			
+			if (isset($args["destination2"])) {
+				// /tp <victim> <destination>
+				$dest = $this->resolveTarget($sender, $args["destination2"]);
+				if (!$dest) {
+					$sender->sendMessage(KnownTranslationFactory::commands_tp_destinationNotFound());
+					return;
 				}
-
-				$subject->teleport($targetPlayer->getLocation());
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success($subject->getName(), $targetPlayer->getName()));
-
-				return true;
-			case 3:
-			case 5:
-				$base = $subject->getLocation();
-				if(count($args) === 5){
-					$yaw = (float) $args[3];
-					$pitch = (float) $args[4];
-				}else{
-					$yaw = $base->yaw;
-					$pitch = $base->pitch;
-				}
-
-				$x = $this->getRelativeDouble($base->x, $sender, $args[0]);
-				$y = $this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX);
-				$z = $this->getRelativeDouble($base->z, $sender, $args[2]);
-				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
-
-				$subject->teleport($targetLocation);
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(
-					$subject->getName(),
-					(string) round($targetLocation->x, 2),
-					(string) round($targetLocation->y, 2),
-					(string) round($targetLocation->z, 2)
+				$victim->teleport($dest->getPosition());
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_teleportedPlayer($victim->getName(), $dest->getName()));
+			} elseif (isset($args["x2"]) && isset($args["y2"]) && isset($args["z2"])) {
+				// /tp <victim> <x> <y> <z>
+				$x = $this->parseRelativeCoord($args["x2"], $victim->getPosition()->getX());
+				$y = $this->parseRelativeCoord($args["y2"], $victim->getPosition()->getY());
+				$z = $this->parseRelativeCoord($args["z2"], $victim->getPosition()->getZ());
+				
+				$pos = new Position($x, $y, $z, $victim->getWorld());
+				$victim->teleport($pos);
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_teleportedPlayerCoords(
+					$victim->getName(),
+					(string) round($x, 2),
+					(string) round($y, 2),
+					(string) round($z, 2)
 				));
-				return true;
-			default:
-				throw new AssumptionFailedError("This branch should be unreachable (for now)");
+			} else {
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_invalidArgs());
+			}
+		} elseif (isset($args["destination"])) {
+			// /tp <destination> - sender teleports to target
+			if (!($sender instanceof Player)) {
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_consoleCannotTeleport());
+				return;
+			}
+			
+			$dest = $this->resolveTarget($sender, $args["destination"]);
+			if (!$dest) {
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_destinationNotFound());
+				return;
+			}
+			
+			$sender->teleport($dest->getPosition());
+			$sender->sendMessage(KnownTranslationFactory::commands_tp_teleportedTo($dest->getName()));
+		} elseif (isset($args["x"]) && isset($args["y"]) && isset($args["z"])) {
+			// /tp <x> <y> <z> - sender teleports to coordinates
+			if (!($sender instanceof Player)) {
+				$sender->sendMessage(KnownTranslationFactory::commands_tp_consoleCannotTeleport());
+				return;
+			}
+			
+			$x = $this->parseRelativeCoord($args["x"], $sender->getPosition()->getX());
+			$y = $this->parseRelativeCoord($args["y"], $sender->getPosition()->getY());
+			$z = $this->parseRelativeCoord($args["z"], $sender->getPosition()->getZ());
+			
+			$pos = new Position($x, $y, $z, $sender->getWorld());
+			$sender->teleport($pos);
+			$sender->sendMessage(KnownTranslationFactory::commands_tp_teleportedCoords(
+				(string) round($x, 2),
+				(string) round($y, 2),
+				(string) round($z, 2)
+			));
+		} else {
+			$sender->sendMessage(KnownTranslationFactory::commands_tp_usage());
 		}
+	}
+	
+	private function resolveTarget(CommandSender $sender, string $target): ?Player {
+		// Handle target selectors
+		if (strlen($target) > 0 && $target[0] === '@') {
+			switch ($target) {
+				case '@s':
+					return $sender instanceof Player ? $sender : null;
+				case '@p':
+					// Nearest player
+					if ($sender instanceof Player) {
+						return $this->getNearestPlayer($sender);
+					}
+					return null;
+				case '@r':
+					// Random player
+					$players = $sender->getServer()->getOnlinePlayers();
+					return count($players) > 0 ? $players[array_rand($players)] : null;
+				case '@a':
+					// All players - for simplicity, return first (vanilla would handle multiple)
+					$players = $sender->getServer()->getOnlinePlayers();
+					return count($players) > 0 ? reset($players) : null;
+				case '@e':
+					// All entities - for simplicity, treat as @a
+					$players = $sender->getServer()->getOnlinePlayers();
+					return count($players) > 0 ? reset($players) : null;
+			}
+		}
+		
+		// Regular player name or prefix
+		return $sender->getServer()->getPlayerByPrefix($target);
+	}
+	
+	private function getNearestPlayer(Player $from): ?Player {
+		$nearest = null;
+		$minDist = PHP_FLOAT_MAX;
+		
+		foreach ($from->getServer()->getOnlinePlayers() as $player) {
+			if ($player === $from) continue;
+			if ($player->getWorld() !== $from->getWorld()) continue;
+			
+			$dist = $player->getPosition()->distance($from->getPosition());
+			if ($dist < $minDist) {
+				$minDist = $dist;
+				$nearest = $player;
+			}
+		}
+		
+		return $nearest;
+	}
+	
+	private function parseRelativeCoord(string $coord, float $current): float {
+		if ($coord === '~') {
+			return $current;
+		}
+		if (strlen($coord) > 1 && $coord[0] === '~') {
+			return $current + (float)substr($coord, 1);
+		}
+		return (float)$coord;
 	}
 }

@@ -1178,22 +1178,89 @@ class NetworkSession
 			}
 
 			$description = $command->getDescription();
+			
+			// Generate proper overloads for Commando-style commands (IArgumentable)
+			$overloads = [];
+			if ($command instanceof \pocketmine\command\traits\IArgumentable) {
+				// Get all argument combinations from the command
+				$argumentList = $command->getArgumentList();
+				if (count($argumentList) > 0) {
+					// Generate all parameter combinations
+					$paramCombinations = [];
+					$outputLength = array_product(array_map("count", $argumentList));
+					$indexes = array_fill(0, count($argumentList), 0);
+					
+					for ($i = 0; $i < $outputLength; $i++) {
+						$params = [];
+						foreach ($indexes as $pos => $idx) {
+							$params[] = $argumentList[$pos][$idx]->getNetworkParameterData();
+						}
+						$paramCombinations[] = new CommandOverload(chaining: false, parameters: $params);
+						
+						// Increment indexes
+						for ($j = 0; $j < count($indexes); $j++) {
+							$indexes[$j]++;
+							if ($indexes[$j] < count($argumentList[$j])) {
+								break;
+							}
+							$indexes[$j] = 0;
+						}
+					}
+					$overloads = $paramCombinations;
+				} else {
+					// No arguments - use empty overload
+					$overloads = [new CommandOverload(chaining: false, parameters: [])];
+				}
+			} else {
+				// Non-Commando commands use generic text argument
+				$overloads = [
+					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
+				];
+			}
+			
 			$data = new CommandData(
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
 				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
 				0,
 				0,
 				$aliasObj,
-				[
-					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
-				],
+				$overloads,
 				chainedSubCommandData: []
 			);
 
 			$commandData[$command->getLabel()] = $data;
 		}
 
-		$this->sendDataPacket(AvailableCommandsPacketAssembler::assemble(array_values($commandData), [], []));
+		// Include soft-enums (e.g., dynamic player list for /tp command autocomplete)
+		$softEnums = \pocketmine\command\store\SoftEnumStore::getEnums();
+		
+		// Debug: Log what we're sending
+		$this->server->getLogger()->debug("Sending AvailableCommandsPacket: " . count($commandData) . " commands, " . count($softEnums) . " soft-enums");
+		foreach ($softEnums as $name => $enum) {
+			if (method_exists($enum, 'getValues')) {
+				$this->server->getLogger()->debug("  Soft-enum '$name': " . implode(", ", $enum->getValues()));
+			}
+		}
+		
+		// Debug: Check /tp command specifically
+		if (isset($commandData['tp'])) {
+			$tpData = $commandData['tp'];
+			$this->server->getLogger()->debug("  TP command has " . count($tpData->overloads) . " overloads");
+			foreach ($tpData->overloads as $idx => $overload) {
+				$paramInfo = [];
+				foreach ($overload->getParameters() as $param) {
+					$info = "name=" . ($param->paramName ?? 'unknown');
+					if (isset($param->enum)) {
+						$enumName = method_exists($param->enum, 'getName') ? $param->enum->getName() : 'unnamed';
+						$info .= ", enum=$enumName";
+					}
+					$paramInfo[] = $info;
+				}
+				$this->server->getLogger()->debug("    Overload $idx: " . implode("; ", $paramInfo));
+			}
+		}
+		
+		$this->sendDataPacket(AvailableCommandsPacketAssembler::assemble(array_values($commandData), [], $softEnums));
 	}
 
 	/**

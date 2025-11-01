@@ -24,8 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
+use pocketmine\command\CommandoCommand;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\args\TargetArgument;
+use pocketmine\command\args\RawStringArgument;
+use pocketmine\command\args\IntegerArgument;
+use pocketmine\command\args\ItemEnumArgument;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
@@ -36,64 +40,83 @@ use pocketmine\nbt\NbtException;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
-use function count;
 use function implode;
 
-class GiveCommand extends VanillaCommand{
+class GiveCommand extends CommandoCommand{
 
 	public function __construct(){
 		parent::__construct(
 			"give",
-			KnownTranslationFactory::pocketmine_command_give_description(),
-			KnownTranslationFactory::pocketmine_command_give_usage()
+			"Gives an item to a player",
+			"/give <player> <item> [amount] [tags...]"
 		);
+	}
+
+	protected function prepare(): void {
 		$this->setPermissions([
 			DefaultPermissionNames::COMMAND_GIVE_SELF,
 			DefaultPermissionNames::COMMAND_GIVE_OTHER
 		]);
+		$this->registerArgument(0, new TargetArgument("player", false));
+		$this->registerArgument(1, new ItemEnumArgument("item", false));
+		$this->registerArgument(2, new IntegerArgument("amount", true));
+		$this->registerArgument(3, new RawStringArgument("tags", true));
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 2){
-			throw new InvalidCommandSyntaxException();
+	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
+		$targetName = $args["player"];
+		$player = $sender->getServer()->getPlayerByPrefix($targetName);
+		
+		if($player === null){
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
+			return;
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
-		if($player === null){
-			return true;
+		// Permission check
+		if($player === $sender){
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_GIVE_SELF)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
+		}else{
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_GIVE_OTHER)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
 		}
 
 		try{
-			$item = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
+			$item = StringToItemParser::getInstance()->parse($args["item"]) ?? LegacyStringToItemParser::getInstance()->parse($args["item"]);
 		}catch(LegacyStringToItemParserException $e){
-			$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
-			return true;
+			$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args["item"])->prefix(TextFormat::RED));
+			return;
 		}
 
-		if(!isset($args[2])){
+		if(!isset($args["amount"])){
 			$item->setCount($item->getMaxStackSize());
 		}else{
-			$count = $this->getBoundedInt($sender, $args[2], 1, 32767);
-			if($count === null){
-				return true;
+			$count = $args["amount"];
+			if($count < 1 || $count > 32767){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_num_tooBig((string)$count, "32767"));
+				return;
 			}
 			$item->setCount($count);
 		}
 
-		if(isset($args[3])){
-			$data = implode(" ", array_slice($args, 3));
+		if(isset($args["tags"])){
+			$data = $args["tags"]; // RawStringArgument already captures rest
 			try{
 				$tags = JsonNbtParser::parseJson($data);
 			}catch(NbtDataException $e){
 				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
-				return true;
+				return;
 			}
 
 			try{
 				$item->setNamedTag($tags);
 			}catch(NbtException $e){
 				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
-				return true;
+				return;
 			}
 		}
 
@@ -101,10 +124,9 @@ class GiveCommand extends VanillaCommand{
 		$player->getInventory()->addItem($item);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_give_success(
-			$item->getName() . " (" . $args[1] . ")",
+			$item->getName() . " (" . $args["item"] . ")",
 			(string) $item->getCount(),
 			$player->getName()
 		));
-		return true;
 	}
 }

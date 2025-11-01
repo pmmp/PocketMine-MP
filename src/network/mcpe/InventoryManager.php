@@ -337,7 +337,11 @@ class InventoryManager
 	{
 		//TODO: make this dynamic so plugins can add mappings for stuff not implemented by PM
 		return match (true) {
-			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+			$inventory instanceof AnvilInventory => [
+				0 => \pocketmine\block\inventory\AnvilInventory::SLOT_INPUT,
+				1 => \pocketmine\block\inventory\AnvilInventory::SLOT_MATERIAL,
+				2 => \pocketmine\block\inventory\AnvilInventory::SLOT_RESULT,
+			],
 			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 			$inventory instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],

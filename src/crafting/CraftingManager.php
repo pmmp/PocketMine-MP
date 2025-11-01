@@ -85,6 +85,17 @@ class CraftingManager
 		return $this->smithingRecipes;
 	}
 
+	/**
+	 * @var AnvilRecipe[]
+	 * @phpstan-var list<AnvilRecipe>
+	 */
+	private array $anvilRecipes = [];
+
+	/**
+	 * @var AnvilRecipe[][]
+	 * @phpstan-var array<int, array<int, AnvilRecipe>>
+	 */
+	private array $anvilRecipeCache = [];
 	public function registerSmithingRecipe(SmithingRecipe $recipe): void
 	{
 		$this->smithingRecipes[] = $recipe;
@@ -98,6 +109,15 @@ class CraftingManager
 	{
 		return $this->smithingRecipes[$index] ?? null;
 	}
+
+	/**
+	 * @return AnvilRecipe[][]
+	 * @phpstan-return list<AnvilRecipe>
+	 */
+	public function getAnvilRecipes(): array
+	{
+		return $this->anvilRecipes;
+	}
 	protected array $smithingRecipes = [];
 
 	/**
@@ -108,7 +128,7 @@ class CraftingManager
 
 	/**
 	 * @var BrewingRecipe[][]
-	 * @phpstan-var array<int, array<int, BrewingRecipe>>
+	 * @phpstan-var array<int, array<int, BrewingRecipe|PotionContainerChangeRecipe|PotionTypeRecipe>>
 	 */
 	private array $brewingRecipeCache = [];
 
@@ -198,6 +218,16 @@ class CraftingManager
 		return $this->shapedRecipes;
 	}
 
+	public function registerAnvilRecipe(AnvilRecipe $recipe): void
+	{
+		$this->anvilRecipes[] = $recipe;
+
+		foreach ($this->recipeRegisteredCallbacks as $callback) {
+			$callback();
+		}
+	}
+
+
 	/**
 	 * @return CraftingRecipe[]
 	 * @phpstan-return array<int, CraftingRecipe>
@@ -271,6 +301,24 @@ class CraftingManager
 		foreach ($this->recipeRegisteredCallbacks as $callback) {
 			$callback();
 		}
+	}
+
+
+	public function matchAnvilRecipe(Item $input, Item $material) : ?AnvilRecipe{
+		$inputHash = $input->getStateId();
+		$materialHash = $material->getStateId();
+		$cached = $this->anvilRecipeCache[$inputHash][$materialHash] ?? null;
+		if($cached !== null){
+			return $cached;
+		}
+
+		foreach($this->anvilRecipes as $recipe){
+			if($recipe->getResultFor($input, $material) !== null){
+				return $this->anvilRecipeCache[$inputHash][$materialHash] = $recipe;
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -625,6 +625,65 @@ final class KnownTranslationFactory
 		]);
 	}
 
+	public static function commands_tp_noPermission(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_NOPERMISSION, []);
+	}
+
+	public static function commands_tp_victimNotFound(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_VICTIMNOTFOUND, []);
+	}
+
+	public static function commands_tp_destinationNotFound(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_DESTINATIONNOTFOUND, []);
+	}
+
+	public static function commands_tp_teleportedTo(Translatable|string $param0): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_TELEPORTEDTO, [
+			0 => $param0,
+		]);
+	}
+
+	public static function commands_tp_teleportedPlayer(Translatable|string $param0, Translatable|string $param1): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_TELEPORTEDPLAYER, [
+			0 => $param0,
+			1 => $param1,
+		]);
+	}
+
+	public static function commands_tp_teleportedCoords(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_TELEPORTEDCOORDS, [
+			0 => $param0,
+			1 => $param1,
+			2 => $param2,
+		]);
+	}
+
+	public static function commands_tp_teleportedPlayerCoords(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_TELEPORTEDPLAYERCOORDS, [
+			0 => $param0,
+			1 => $param1,
+			2 => $param2,
+			3 => $param3,
+		]);
+	}
+
+	public static function commands_tp_consoleCannotTeleport(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_CONSOLECANOTTELEPORT, []);
+	}
+
+	public static function commands_tp_invalidArgs(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::COMMANDS_TP_INVALIDARGS, []);
+	}
+
 	public static function commands_tp_usage(): Translatable
 	{
 		return new Translatable(KnownTranslationKeys::COMMANDS_TP_USAGE, []);
