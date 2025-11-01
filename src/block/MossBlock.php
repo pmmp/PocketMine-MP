@@ -29,9 +29,18 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
+use pocketmine\world\Position;
 use function mt_rand;
 
 class MossBlock extends Opaque{
+
+	/**
+	 * @phpstan-param \Closure(BlockTransaction, Position): void $vegetationSelector
+	 */
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, private readonly \Closure $vegetationSelector){
+		parent::__construct($idInfo, $name, $typeInfo);
+	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!($item instanceof Fertilizer) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
@@ -93,32 +102,9 @@ class MossBlock extends Opaque{
 					($foundBlock === $this || BlockEventHelper::spread($foundBlock, (clone $this), $this))){
 					if(mt_rand(1, 100) <= 60){
 						$above = $foundBlock->getSide(Facing::UP);
-						$rand = mt_rand(1, 10000);
-						if($this->getTypeId() === BlockTypeIds::PALE_MOSS_BLOCK){
-							if($rand <= 5882){
-								$newVeg = VanillaBlocks::TALL_GRASS(); // Short Grass 58.82%
-							}elseif($rand <= 5882 + 2941){
-								$newVeg = VanillaBlocks::AIR(); // Pale Moss Carpet 29.41%
-							}else{
-								$newVeg = VanillaBlocks::DOUBLE_TALLGRASS(); // Tall Grass 11.76%
-							}
-						}else{
-							if($rand <= 5208){
-								$newVeg = VanillaBlocks::TALL_GRASS(); // Short Grass 52.08%
-							}elseif($rand <= 5208 + 2604){
-								$newVeg = VanillaBlocks::AIR(); // Moss Carpet 26.04%
-							}elseif($rand <= 5208 + 2604 + 1042){
-								$newVeg = VanillaBlocks::DOUBLE_TALLGRASS(); // Tall Grass 10.42%
-							}elseif($rand <= 5208 + 2604 + 1042 + 729){
-								$newVeg = VanillaBlocks::AIR(); // Azalea 7.29%
-							}else{
-								$newVeg = VanillaBlocks::AIR(); // Flowering Azalea 4.17%
-							}
-						}
-
-						if($newVeg->getTypeId() !== BlockTypeIds::AIR){
-							BlockEventHelper::grow($above, $newVeg, $player);
-						}
+						$tx = new BlockTransaction($world);
+						($this->vegetationSelector)($tx, $above->getPosition());
+						$tx->apply();
 					}
 				}
 			}

@@ -69,11 +69,13 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\CloningRegistryTrait;
-use pocketmine\utils\Random;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\generator\object\TreeType;
+use pocketmine\world\Position;
 use function is_int;
 use function mb_strtolower;
 use function mb_strtoupper;
+use function mt_rand;
 use function strtolower;
 
 /**
@@ -966,8 +968,30 @@ final class VanillaBlocks{
 		self::register("mossy_cobblestone_stairs", fn(BID $id) => new Stair($id, "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
 		$plantBreakInfo = new Info(BreakInfo::instant(), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
-		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $plantBreakInfo));
-		self::register("pale_moss_block", fn(BID $id) => new MossBlock($id, "Pale Moss Block", $plantBreakInfo));
+		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $plantBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
+			$rand = mt_rand(1, 10000);
+			if($rand <= 5208){
+				$tx->addBlock($pos, VanillaBlocks::TALL_GRASS());
+			}elseif($rand <= 5208 + 2604){
+				// Moss Carpet 26.04%
+			}elseif($rand <= 5208 + 2604 + 1042){
+				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
+			}elseif($rand <= 5208 + 2604 + 1042 + 729){
+				// Azalea 7.29%
+			}else{
+				// Flowering Azalea 4.17%
+			}
+		}));
+		self::register("pale_moss_block", fn(BID $id) => new MossBlock($id, "Pale Moss Block", $plantBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
+			$rand = mt_rand(1, 10000);
+			if($rand <= 5882){
+				$tx->addBlock($pos, VanillaBlocks::TALL_GRASS());
+			}elseif($rand <= 5882 + 2941){
+				// Pale Moss Carpet 29.41%
+			}else{
+				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
+			}
+		}));
 
 		self::register("cobweb", fn(BID $id) => new Cobweb($id, "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", fn(BID $id) => new CocoaBlock($id, "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
