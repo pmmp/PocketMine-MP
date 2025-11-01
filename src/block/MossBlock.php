@@ -23,163 +23,107 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Random;
-use pocketmine\world\World;
-use function var_dump;
+use function mt_rand;
 
 class MossBlock extends Opaque{
-	/**
-	 * @param array<float, \Closure(\pocketmine\utils\Random): \pocketmine\block\Block|null> $vegetationChances Array mapping chance (float) to closures that take a Random and return a Block or null
-	 * @param float $vegetationPlaceChance Chance to place vegetation on moss blocks (default 60%)
-	 */
-	public function __construct(
-		BlockIdentifier $id,
-		string $name,
-		BlockTypeInfo $info,
-		private readonly array $vegetationChances,
-		private readonly float $vegetationPlaceChance = 0.6
-	){
-		parent::__construct($id, $name, $info);
-	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($item instanceof Fertilizer && $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
-			$item->pop();
-			$this->generateMossPatch(new Random());
-			return true;
+		if(!($item instanceof Fertilizer) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
+			return false;
 		}
-		return false;
-	}
 
-	private function generateMossPatch(Random $random) : void{
-		$origin = $this->position;
-		$world = $origin->getWorld();
+		$world = $this->position->getWorld();
 
-		$xzRadiusX = $random->nextBoolean() ? 2 : 3;
-		$xzRadiusZ = $random->nextBoolean() ? 2 : 3;
+		$item->pop();
 
-		$positions = $this->placeGroundPatch($world, $random, $origin, $xzRadiusX, $xzRadiusZ);
-		$this->distributeVegetation($world, $random, $positions);
-	}
+		$maxX = mt_rand(0, 1) === 0 ? 2 : 3;
+		$maxZ = mt_rand(0, 1) === 0 ? 2 : 3;
 
-	/**
-	 * @return Vector3[]
-	 */
-	private function placeGroundPatch(World $world, Random $random, Vector3 $origin, int $xzRadiusX, int $xzRadiusZ) : array{
-		$positions = [];
+		$originX = $this->position->x;
+		$originY = $this->position->y;
+		$originZ = $this->position->z;
 
-		for($dx = -$xzRadiusX; $dx <= $xzRadiusX; ++$dx){
-			for($dz = -$xzRadiusZ; $dz <= $xzRadiusZ; ++$dz){
-				$borderX = ($dx === -$xzRadiusX) || ($dx === $xzRadiusX);
-				$borderZ = ($dz === -$xzRadiusZ) || ($dz === $xzRadiusZ);
-				$isCorner = $borderX && $borderZ;
-				$isEdge = ($borderX || $borderZ) && !$isCorner;
+		for($dx = -$maxX; $dx <= $maxX; ++$dx){
+			for($dz = -$maxZ; $dz <= $maxZ; ++$dz){
+				$absdx = $dx < 0 ? -$dx : $dx;
+				$absdz = $dz < 0 ? -$dz : $dz;
 
-				if($isCorner){
-					var_dump("placeGroundPatch skipping corner at dx=$dx, dz=$dz");
-					continue;
-				}
-				if($isEdge && $random->nextFloat() > 0.75){
-					var_dump("placeGroundPatch skipping edge at dx=$dx, dz=$dz");
+				if($absdx === $maxX && $absdz === $maxZ){
 					continue;
 				}
 
-				$searchPos = $origin->add($dx, 1, $dz);
+				if($absdx === $maxX || $absdz === $maxZ){
+					if(mt_rand(1, 100) > 75){
+						continue;
+					}
+				}
 
-				$mossPos = $this->findMossPlacementPosition($world, $searchPos);
-				// $mossPos = $this->findMossPlacementPosition($world, $origin);
-				if($mossPos !== null){
-					$world->setBlock($mossPos, $this);
-					var_dump("placeGroundPatch placed moss at " . $mossPos->x . ", " . $mossPos->y . ", " . $mossPos->z);
-					$positions[] = $mossPos;
+				$x = $originX + $dx;
+				$z = $originZ + $dz;
+				$startY = $originY + 1;
+
+				$foundBlock = null;
+
+				$startBlock = $world->getBlockAt($x, $startY, $z);
+				if($startBlock->getTypeId() === BlockTypeIds::AIR){
+					for($y = $startY; $y >= $startY - 6; --$y){
+						$b = $world->getBlockAt($x, $y, $z);
+						if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
+							$foundBlock = $b;
+							break;
+						}
+					}
+				}else{
+					for($y = $startY; $y <= $startY + 4; ++$y){
+						$b = $world->getBlockAt($x, $y, $z);
+						if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
+							$foundBlock = $b;
+							break;
+						}
+					}
+				}
+
+				if($foundBlock !== null && $foundBlock->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE) &&
+					($foundBlock === $this || BlockEventHelper::spread($foundBlock, (clone $this), $this))){
+					if(mt_rand(1, 100) <= 60){
+						$above = $foundBlock->getSide(Facing::UP);
+						$rand = mt_rand(1, 10000);
+						if($this->getTypeId() === BlockTypeIds::PALE_MOSS_BLOCK){
+							if($rand <= 5882){
+								$newVeg = VanillaBlocks::TALL_GRASS(); // Short Grass 58.82%
+							}elseif($rand <= 5882 + 2941){
+								$newVeg = VanillaBlocks::AIR(); // Pale Moss Carpet 29.41%
+							}else{
+								$newVeg = VanillaBlocks::DOUBLE_TALLGRASS(); // Tall Grass 11.76%
+							}
+						}else{
+							if($rand <= 5208){
+								$newVeg = VanillaBlocks::TALL_GRASS(); // Short Grass 52.08%
+							}elseif($rand <= 5208 + 2604){
+								$newVeg = VanillaBlocks::AIR(); // Moss Carpet 26.04%
+							}elseif($rand <= 5208 + 2604 + 1042){
+								$newVeg = VanillaBlocks::DOUBLE_TALLGRASS(); // Tall Grass 10.42%
+							}elseif($rand <= 5208 + 2604 + 1042 + 729){
+								$newVeg = VanillaBlocks::AIR(); // Azalea 7.29%
+							}else{
+								$newVeg = VanillaBlocks::AIR(); // Flowering Azalea 4.17%
+							}
+						}
+
+						if($newVeg->getTypeId() !== BlockTypeIds::AIR){
+							BlockEventHelper::grow($above, $newVeg, $player);
+						}
+					}
 				}
 			}
 		}
 
-		return $positions;
-	}
-
-	private function findMossPlacementPosition(World $world, Vector3 $startPos) : ?Vector3{
-		if(!$world->isInWorld($startPos->x, $startPos->y, $startPos->z)){
-			var_dump("findMossPlacementPosition: startPos out of world");
-			return null;
-		}
-
-		var_dump("findMossPlacementPosition: starting search downward from air block at y=" . $startPos->y);
-		for($i = -6; $i < 6; $i++){
-			$checkPos = $startPos->down($i);
-			if(!$world->isInWorld($checkPos->x, $checkPos->y, $checkPos->z)){
-				var_dump("findMossPlacementPosition: checkPos out of world at y=" . $checkPos->y);
-				break;
-			}
-
-			$checkBlock = $world->getBlock($checkPos);
-			$blockAbove = $world->getBlock($checkPos->up());
-
-			if($checkBlock->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE) && $blockAbove->getTypeId() === BlockTypeIds::AIR){
-				var_dump("findMossPlacementPosition: found moss position at " . $checkPos->x . ", " . $checkPos->y . ", " . $checkPos->z);
-				return $checkPos;
-			}
-		}
-		return null;
-	}
-
-	private function canReplaceBlock(Block $block) : bool{
-		return $block->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE);
-	}
-
-	/**
-	 * @param Vector3[] $positions
-	 */
-	private function distributeVegetation(World $world, Random $random, array $positions) : void{
-		if(empty($positions) || empty($this->vegetationChances)){
-			var_dump("distributeVegetation: no positions or vegetation chances");
-			return;
-		}
-
-		foreach($positions as $mossPos){
-			if($this->vegetationPlaceChance > 0.0 && $random->nextFloat() < $this->vegetationPlaceChance){
-				$vegPos = $mossPos->up();
-				if(!$world->isInWorld($vegPos->x, $vegPos->y, $vegPos->z)){
-					var_dump("distributeVegetation: vegPos out of world");
-					continue;
-				}
-
-				$targetBlock = $world->getBlock($vegPos);
-				if($targetBlock->getTypeId() !== BlockTypeIds::AIR){
-					var_dump("distributeVegetation: targetBlock not air at " . $vegPos->x . ", " . $vegPos->y . ", " . $vegPos->z);
-					continue;
-				}
-
-				$vegetationBlock = $this->getRandomVegetation($random);
-				if($vegetationBlock !== null && $vegetationBlock->canBePlacedAt($targetBlock, Vector3::zero(), Facing::DOWN, false)){
-					var_dump("distributeVegetation: placing vegetation at " . $vegPos->x . ", " . $vegPos->y . ", " . $vegPos->z);
-					$world->setBlock($vegPos, $vegetationBlock);
-				}
-			}
-		}
-	}
-
-	private function getRandomVegetation(Random $random) : ?Block{
-		if(empty($this->vegetationChances)){
-			return null;
-		}
-
-		$roll = $random->nextFloat() * 100;
-		$cumulative = 0.0;
-
-		foreach($this->vegetationChances as $chance => $vegetationBlock){
-			$cumulative += $chance;
-			if($roll < $cumulative){
-				return $vegetationBlock($random);
-			}
-		}
-
-		return null;
+		return true;
 	}
 }
