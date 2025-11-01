@@ -516,24 +516,23 @@ class World implements ChunkManager
 			return;
 		}
 
-		foreach ($players as $player) {
-			[$rainEvent, $thunderEvent] = match ($this->weather) {
-				WeatherType::CLEAR => [
-					LevelEventPacket::create(LevelEvent::STOP_RAIN, WeatherIntensity::NONE, null),
-					LevelEventPacket::create(LevelEvent::STOP_THUNDER, WeatherIntensity::NONE, null),
-				],
-				WeatherType::RAIN => [
-					LevelEventPacket::create(LevelEvent::START_RAIN, WeatherIntensity::RAIN_NORMAL, null),
-					LevelEventPacket::create(LevelEvent::STOP_THUNDER, WeatherIntensity::NONE, null),
-				],
-				WeatherType::THUNDER => [
-					LevelEventPacket::create(LevelEvent::START_RAIN, WeatherIntensity::RAIN_HEAVY, null),
-					LevelEventPacket::create(LevelEvent::START_THUNDER, WeatherIntensity::THUNDER_HEAVY, null),
-				],
-			};
+		// Create the level events once for the current weather, then broadcast to all players in one call
+		[$rainEvent, $thunderEvent] = match ($this->weather) {
+			WeatherType::CLEAR => [
+				LevelEventPacket::create(LevelEvent::STOP_RAIN, WeatherIntensity::NONE, null),
+				LevelEventPacket::create(LevelEvent::STOP_THUNDER, WeatherIntensity::NONE, null),
+			],
+			WeatherType::RAIN => [
+				LevelEventPacket::create(LevelEvent::START_RAIN, WeatherIntensity::RAIN_NORMAL, null),
+				LevelEventPacket::create(LevelEvent::STOP_THUNDER, WeatherIntensity::NONE, null),
+			],
+			WeatherType::THUNDER => [
+				LevelEventPacket::create(LevelEvent::START_RAIN, WeatherIntensity::RAIN_HEAVY, null),
+				LevelEventPacket::create(LevelEvent::START_THUNDER, WeatherIntensity::THUNDER_HEAVY, null),
+			],
+		};
 
-			NetworkBroadcastUtils::broadcastPackets([$player], [$rainEvent, $thunderEvent]);
-		}
+		NetworkBroadcastUtils::broadcastPackets($players, [$rainEvent, $thunderEvent]);
 	}
 
 	public function spawnLightning(Vector3 $pos): void
