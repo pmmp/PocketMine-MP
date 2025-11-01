@@ -730,7 +730,7 @@ final class VanillaItems
 		self::register("sweet_berries", fn(IID $id) => new SweetBerries($id, "Sweet Berries"));
 		self::register("torchflower_seeds", fn(IID $id) => new TorchflowerSeeds($id, "Torchflower Seeds"));
 		self::register("totem", fn(IID $id) => new Totem($id, "Totem of Undying"));
-		self::register("trident", fn(IID $id) => new Trident($id, "Trident"));
+	self::register("trident", fn(IID $id) => new Trident($id, "Trident", [EnchantmentTags::TRIDENT]));
 		self::register("warped_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("warped_hanging_sign", fn(IID $id) => new HangingSign($id, "Warped Hanging Sign", Blocks::WARPED_CEILING_CENTER_HANGING_SIGN(), Blocks::WARPED_CEILING_EDGES_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()));
 		self::register("warped_shelf", fn() => new ItemBlock(Blocks::WARPED_SHELF()));

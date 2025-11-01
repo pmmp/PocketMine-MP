@@ -56,6 +56,11 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment THORNS()
  * @method static Enchantment UNBREAKING()
  * @method static Enchantment VANISHING()
+ * @method static Enchantment TRIDENT_CHANNELING()
+ * @method static Enchantment TRIDENT_IMPALING()
+ * @method static Enchantment TRIDENT_LOYALTY()
+ * @method static Enchantment TRIDENT_RIPTIDE()
+ * 
  */
 final class VanillaEnchantments{
 	use RegistryTrait;

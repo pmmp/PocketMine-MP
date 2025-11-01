@@ -68,5 +68,10 @@ final class EnchantmentIdMap{
 		$this->register(EnchantmentIds::SWIFT_SNEAK, VanillaEnchantments::SWIFT_SNEAK());
 
 		$this->register(EnchantmentIds::FROST_WALKER, VanillaEnchantments::FROST_WALKER());
+		// Trident enchantments
+		$this->register(EnchantmentIds::IMPALING, VanillaEnchantments::TRIDENT_IMPALING());
+		$this->register(EnchantmentIds::RIPTIDE, VanillaEnchantments::TRIDENT_RIPTIDE());
+		$this->register(EnchantmentIds::LOYALTY, VanillaEnchantments::TRIDENT_LOYALTY());
+		$this->register(EnchantmentIds::CHANNELING, VanillaEnchantments::TRIDENT_CHANNELING());
 	}
 }
