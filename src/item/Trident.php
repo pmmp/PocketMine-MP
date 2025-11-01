@@ -83,7 +83,12 @@ class Trident extends Tool implements Releasable{
 			$speed = $baseSpeed * $depthMultiplier;
 			$verticalBoost = 0.4 + (0.25 * $riptideLevel);
 
+			// Preserve motion for the next tick so the server doesn't immediately zero it in Player::onUpdate
+			$player->preserveMotionNextTick();
 			$player->addMotion($dir->x * $speed, $dir->y * $speed + $verticalBoost, $dir->z * $speed);
+			// Immediately send the updated motion to the client so the client observes the impulse
+			// This reduces chances of the client/server movement reconciliation cancelling the motion.
+			$player->setMotion($player->getMotion());
 
 			// Play per-level riptide sound so clients hear different pitches for each level
 			$location->getWorld()->addSound($location, new TridentRiptideSound($riptideLevel));

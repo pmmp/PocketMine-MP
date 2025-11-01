@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-final class DefaultPermissionNames{
+final class DefaultPermissionNames
+{
 	public const BROADCAST_ADMIN = "pocketmine.broadcast.admin";
 	public const BROADCAST_USER = "pocketmine.broadcast.user";
 	public const COMMAND_BAN_IP = "pocketmine.command.ban.ip";
@@ -79,6 +80,8 @@ final class DefaultPermissionNames{
 	public const COMMAND_TRANSFERSERVER = "pocketmine.command.transferserver";
 	public const COMMAND_UNBAN_IP = "pocketmine.command.unban.ip";
 	public const COMMAND_UNBAN_PLAYER = "pocketmine.command.unban.player";
+	public const COMMAND_WEATHER = "pocketmine.command.weather";
+
 	public const COMMAND_VERSION = "pocketmine.command.version";
 	public const COMMAND_WHITELIST_ADD = "pocketmine.command.whitelist.add";
 	public const COMMAND_WHITELIST_DISABLE = "pocketmine.command.whitelist.disable";

@@ -294,6 +294,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
+	/**
+	 * If true, the player's motion will not be cleared at the start of the next onUpdate tick.
+	 * Used to allow temporary server-side motion (for example Riptide) which would otherwise be
+	 * zeroed by the player movement hack.
+	 */
+	protected bool $preserveMotionNextTick = false;
+
 	protected float $flightSpeedMultiplier = self::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 
 	/** @phpstan-var positive-int|null  */
@@ -800,6 +807,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	public function getItemUseDuration(): int
 	{
 		return $this->startAction === -1 ? -1 : ($this->server->getTick() - $this->startAction);
+	}
+
+	/**
+	 * Preserve server-side motion for the next onUpdate tick. Useful for short-lived
+	 * motions applied by items (e.g. Riptide) that would otherwise be cleared by the
+	 * player update hack.
+	 */
+	public function preserveMotionNextTick(): void
+	{
+		$this->preserveMotionNextTick = true;
 	}
 
 	/**
@@ -1625,7 +1642,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if ($this->spawned) {
 			Timings::$playerMove->startTiming();
 			$this->processMostRecentMovements();
-			$this->motion = Vector3::zero(); //TODO: HACK! (Fixes player knockback being messed up)
+			// Normally we clear server-side motion for players (client-authoritative). However certain
+			// use-cases (Riptide) rely on temporarily applying motion on the server. Respect a one-tick
+			// preserve flag so that addMotion()/setMotion() used immediately before update isn't wiped.
+			if ($this->preserveMotionNextTick) {
+				$this->preserveMotionNextTick = false;
+			} else {
+				$this->motion = Vector3::zero(); //TODO: HACK! (Fixes player knockback being messed up)
+			}
 			if ($this->onGround) {
 				$this->inAirTicks = 0;
 			} else {

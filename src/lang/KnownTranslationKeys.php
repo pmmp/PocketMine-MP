@@ -142,7 +142,19 @@ final class KnownTranslationKeys
 	public const COMMANDS_XP_SUCCESS = "commands.xp.success";
 	public const COMMANDS_XP_SUCCESS_LEVELS = "commands.xp.success.levels";
 	public const COMMANDS_XP_SUCCESS_NEGATIVE_LEVELS = "commands.xp.success.negative.levels";
+	public const COMMANDS_WEATHER_CLEAR = "commands.weather.clear";
+	public const COMMANDS_WEATHER_DISABLED = "commands.weather.disabled";
+	public const COMMANDS_WEATHER_QUERY = "commands.weather.query";
+	public const COMMANDS_WEATHER_QUERY_CLEAR = "commands.weather.query.clear";
+	public const COMMANDS_WEATHER_QUERY_RAIN = "commands.weather.query.rain";
+	public const COMMANDS_WEATHER_QUERY_THUNDER = "commands.weather.query.thunder";
+	public const COMMANDS_WEATHER_RAIN = "commands.weather.rain";
+	public const COMMANDS_WEATHER_THUNDER = "commands.weather.thunder";
 	public const DEATH_ATTACK_ANVIL = "death.attack.anvil";
+	public const POCKETMINE_COMMAND_WEATHER_DESCRIPTION = "pocketmine.command.weather.description";
+	public const POCKETMINE_COMMAND_WEATHER_USAGE = "pocketmine.command.weather.usage";
+		public const POCKETMINE_PERMISSION_COMMAND_WEATHER = "pocketmine.permission.command.weather";
+
 	public const DEATH_ATTACK_ARROW = "death.attack.arrow";
 	public const DEATH_ATTACK_ARROW_ITEM = "death.attack.arrow.item";
 	public const DEATH_ATTACK_CACTUS = "death.attack.cactus";

@@ -120,6 +120,24 @@ class Trident extends Projectile{
 		$owner = $this->getOwningEntity();
 		$loyaltyLevel = $this->item->getEnchantmentLevel(\pocketmine\item\enchantment\VanillaEnchantments::TRIDENT_LOYALTY());
 
+		// If the trident is essentially stopped (for example stuck in water where block collisions are ignored),
+		// treat it as stuck so Loyalty will trigger.
+		if (!$this->returning && $loyaltyLevel > 0 && $owner instanceof Player) {
+			// ticksLived threshold avoids immediate returns right after throw
+			if ($this->ticksLived > 5 && $this->motion->lengthSquared() < 0.0001) {
+				// begin returning
+				$this->returning = true;
+				$this->blockHit = null;
+				$this->isCollided = false;
+				$this->onGround = false;
+				$this->canCollide = false;
+				$this->setHasGravity(false);
+				$this->setTargetEntity($owner);
+				// sound for starting return
+				$this->broadcastSound(new TridentReturnSound());
+			}
+		}
+
 		if(($this->blockHit !== null || $this->onGround) && $loyaltyLevel > 0 && $owner instanceof Player && !$this->returning){
 			// begin returning
 			$this->returning = true;
