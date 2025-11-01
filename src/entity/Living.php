@@ -517,7 +517,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function applyFreezeDamage() : void{
-		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FREEZE, 1);
+		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FREEZING, 1);
 		$this->attack($ev);
 	}
 
