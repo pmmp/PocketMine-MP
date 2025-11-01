@@ -58,7 +58,7 @@ class PowderSnow extends Flowable{
 	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
 		if($entity instanceof Living && $entity->canFreeze()){
-			$entity->setAccumulatingFreeze(true);
+			$entity->setFreezeProgressState(true);
 		}
 
 		if($entity->isOnFire()){
