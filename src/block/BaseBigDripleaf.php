@@ -40,7 +40,6 @@ abstract class BaseBigDripleaf extends Transparent implements HorizontalFacing{
 	abstract protected function isHead() : bool;
 
 	private function canBeSupportedBy(Block $block, bool $head) : bool{
-		//TODO: Moss block
 		return
 			($block instanceof BaseBigDripleaf && $block->isHead() === $head) ||
 			$block->getTypeId() === BlockTypeIds::CLAY ||

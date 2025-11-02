@@ -30,7 +30,6 @@ final class NetherRoots extends Flowable{
 	use StaticSupportTrait;
 
 	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: moss
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return
 			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||

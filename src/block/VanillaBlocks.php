@@ -584,7 +584,7 @@ use function strtolower;
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
  * @method static MossBlock MOSS_BLOCK()
- * @method static Carpet MOSS_CARPET()
+ * @method static NormalCarpet MOSS_CARPET()
  * @method static Opaque MUD()
  * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
  * @method static Opaque MUD_BRICKS()
