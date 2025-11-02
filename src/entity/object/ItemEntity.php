@@ -205,6 +205,55 @@ class ItemEntity extends Entity{
 
 	protected function tryChangeMovement() : void{
 		$this->checkObstruction($this->location->x, $this->location->y, $this->location->z);
+
+		// If the item is in water, apply a simple buoyancy model so it floats to the surface
+		// Make behaviour closer to vanilla by using smaller impulses and limiting upward motion near the surface.
+		if ($this->isUnderwater()) {
+			$world = $this->getWorld();
+			$fx = (int) floor($this->location->x);
+			$fz = (int) floor($this->location->z);
+			$by = (int) floor($this->location->y);
+
+			// Try to find the water block around the entity to estimate the surface Y
+			$surfaceY = null;
+			for ($y = $by; $y <= $by + 2; $y++) {
+				$block = $world->getBlockAt($fx, $y, $fz);
+				if ($block instanceof \pocketmine\block\Water) {
+					$surfaceY = $y + 1 - ($block->getFluidHeightPercent() - 0.1111111);
+					break;
+				}
+			}
+
+			// Horizontal water drag (small)
+			$waterHorizontalFactor = 0.98;
+			$newX = $this->motion->x * $waterHorizontalFactor;
+			$newZ = $this->motion->z * $waterHorizontalFactor;
+
+			// Base buoyancy impulse
+			$buoyancy = 0.02; // smaller than before so items rise more gently
+			$newY = $this->motion->y + $buoyancy;
+
+			// If we're very close to the surface, reduce upward impulse to avoid overshooting
+			if ($surfaceY !== null && $this->location->y + 0.05 >= $surfaceY) {
+				// gentle stabilization near surface
+				$newY = min($newY, 0.06);
+			}
+
+			// Prevent runaway vertical velocity
+			$maxVertical = 0.06;
+			if ($newY > $maxVertical) {
+				$newY = $maxVertical;
+			}
+
+			$this->motion = $this->motion->withComponents($newX, $newY, $newZ);
+
+			// Let nearby flowing liquid blocks contribute currents
+			$this->checkBlockIntersections();
+
+			return;
+		}
+
+		// Default behaviour (air / non-water)
 		parent::tryChangeMovement();
 	}
 
