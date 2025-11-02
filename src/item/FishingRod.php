@@ -34,7 +34,7 @@ use pocketmine\world\sound\PopSound;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 use pocketmine\item\VanillaItems;
 
-class FishingRod extends ProjectileItem
+class FishingRod extends Durable
 {
 
 	/**
@@ -42,10 +42,6 @@ class FishingRod extends ProjectileItem
 	 * @var array<string, \Closure>
 	 */
 	private static array $heldIndexListeners = [];
-
-	// Durability-like properties (kept internal to avoid touching Durable parent class)
-	protected int $damage = 0;
-	private bool $unbreakable = false;
 
 	public function getMaxStackSize(): int
 	{
@@ -55,57 +51,6 @@ class FishingRod extends ProjectileItem
 	public function getMaxDurability(): int
 	{
 		return 384;
-	}
-
-	public function isUnbreakable(): bool
-	{
-		return $this->unbreakable;
-	}
-
-	public function setUnbreakable(bool $value = true): self
-	{
-		$this->unbreakable = $value;
-		return $this;
-	}
-
-	public function applyDamage(int $amount): bool
-	{
-		if ($this->isUnbreakable() || $this->isBroken()) {
-			return false;
-		}
-
-		// simple damage application; do not implement Unbreaking complexity here
-		$this->damage = min($this->damage + $amount, $this->getMaxDurability());
-		if ($this->isBroken()) {
-			$this->onBroken();
-		}
-
-		return true;
-	}
-
-	public function getDamage(): int
-	{
-		return $this->damage;
-	}
-
-	public function setDamage(int $damage): Item
-	{
-		if ($damage < 0 || $damage > $this->getMaxDurability()) {
-			throw new \InvalidArgumentException("Damage must be in range 0 - " . $this->getMaxDurability());
-		}
-		$this->damage = $damage;
-		return $this;
-	}
-
-	public function isBroken(): bool
-	{
-		return $this->damage >= $this->getMaxDurability() || $this->isNull();
-	}
-
-	protected function onBroken(): void
-	{
-		$this->pop();
-		$this->setDamage(0);
 	}
 
 	/* ProjectileItem specifics */
@@ -179,7 +124,7 @@ class FishingRod extends ProjectileItem
 			// prepare potential loot if we're reeling a fish
 			$loot = null;
 			if ($target === null && $existing instanceof FishHook && $existing->isInWater() && $existing->canCatch()) {
-				$loot = $this->generateFishingLoot();
+				$loot = $this->generateFishingLoot($player);
 			}
 
 			// Fire PlayerFishReelEvent so plugins can cancel or modify the reeling behaviour (and loot)
@@ -238,14 +183,14 @@ class FishingRod extends ProjectileItem
 					if (!empty($reelLoots)) {
 						if ($reelEvent->shouldAppendLoot()) {
 							// append plugin loots to the server's default loot (vanilla preserved first)
-							$default = $loot ?? $this->generateFishingLoot();
+							$default = $loot ?? $this->generateFishingLoot($player);
 							$lootsToSpawn = array_merge([$default], $reelLoots);
 						} else {
 							// plugin-provided loots replace default
 							$lootsToSpawn = $reelLoots;
 						}
 					} else {
-						$lootsToSpawn = [$loot ?? $this->generateFishingLoot()];
+						$lootsToSpawn = [$loot ?? $this->generateFishingLoot($player)];
 					}
 					// Spawn an item entity at the hook and launch it toward the player (vanilla-like behaviour)
 					try {
@@ -344,17 +289,40 @@ class FishingRod extends ProjectileItem
 		$player->broadcastAnimation(new \pocketmine\entity\animation\ArmSwingAnimation($player));
 		$projectile->broadcastAnimation(new \pocketmine\entity\animation\FishHookPosition($projectile));
 
-		$location->getWorld()->addSound($location, new ItemFrameAddItemSound());
+		// Play configured cast sound (fall back to ItemFrameAddItemSound)
+		try{
+			$cfg = $location->getWorld()->getServer()->getConfigGroup();
+			$soundKey = strtolower($cfg->getPropertyString("fishing.sounds.cast", "bow"));
+			$volume = (float) $cfg->getPropertyString("fishing.sounds.cast-volume", "0.5");
+			$pitch = (float) $cfg->getPropertyString("fishing.sounds.cast-pitch", "1.2");
+			switch($soundKey){
+				case "bow":
+					$location->getWorld()->addSound($location, new \pocketmine\world\sound\BowShootSound());
+					break;
+				case "itemframe_add":
+					$location->getWorld()->addSound($location, new ItemFrameAddItemSound());
+					break;
+				case "pop":
+					$location->getWorld()->addSound($location, new \pocketmine\world\sound\PopSound($pitch));
+					break;
+				default:
+					$location->getWorld()->addSound($location, new ItemFrameAddItemSound());
+					break;
+			}
+		}catch(\Throwable $_){
+			$location->getWorld()->addSound($location, new ItemFrameAddItemSound());
+		}
 
-		$this->pop();
+	$this->pop();
 
 		return ItemUseResult::SUCCESS;
 	}
 
 	/**
 	 * Generate a fishing loot item based on configured probabilities and enchantments on this rod.
+	 * Accepts an optional Player so server/player config can be consulted for loot distribution.
 	 */
-	private function generateFishingLoot(): Item
+	private function generateFishingLoot(?Player $player = null): Item
 	{
 		// Some builds may not include the Luck of the Sea enchantment in the vanilla registry.
 		// Guard against calling a missing registry member which throws an exception.
@@ -367,9 +335,53 @@ class FishingRod extends ProjectileItem
 				$luckLevel = 0;
 			}
 		}
-		$treasureChance = 5 + (2 * $luckLevel);
-		$junkChance = max(0, 10 - (2 * $luckLevel));
+		// Read configured base distribution (defaults provided in beeltymine.yml)
+		try {
+			$cfg = $player !== null ? $player->getServer()->getConfigGroup() : \pocketmine\Server::getInstance()->getConfigGroup();
+			$fishBase = (float) $cfg->getPropertyString("fishing.loot.fish", "70");
+			$treasureBase = (float) $cfg->getPropertyString("fishing.loot.treasure", "5");
+			$junkBase = (float) $cfg->getPropertyString("fishing.loot.junk", "25");
+		} catch (\Throwable $_) {
+			// Fallback to sensible defaults if config can't be read
+			$fishBase = 70.0;
+			$treasureBase = 5.0;
+			$junkBase = 25.0;
+		}
+
+		// Normalize base values to sum to 100 if they don't already
+		$sum = $fishBase + $treasureBase + $junkBase;
+		if ($sum <= 0) {
+			$fishBase = 70.0;
+			$treasureBase = 5.0;
+			$junkBase = 25.0;
+			$sum = 100.0;
+		}
+		if (abs($sum - 100.0) > 0.0001) {
+			$scale = 100.0 / $sum;
+			$fishBase *= $scale;
+			$treasureBase *= $scale;
+			$junkBase *= $scale;
+		}
+
+		// Apply Luck of the Sea adjustments (increase treasure, decrease junk)
+		$treasureChance = (int) round($treasureBase + (2 * $luckLevel));
+		$junkChance = (int) round(max(0.0, $junkBase - (2 * $luckLevel)));
 		$fishChance = 100 - $treasureChance - $junkChance;
+		if ($fishChance < 0) {
+			// Guard: ensure non-negative fish chance by clamping
+			$fishChance = 0;
+			// Re-normalize treasure/junk to fit 100
+			$over = $treasureChance + $junkChance - 100;
+			if ($over > 0) {
+				// reduce treasure first
+				$reduce = min($over, $treasureChance);
+				$treasureChance -= $reduce;
+				$over -= $reduce;
+				if ($over > 0) {
+					$junkChance = max(0, $junkChance - $over);
+				}
+			}
+		}
 
 		$r = mt_rand(1, 100);
 

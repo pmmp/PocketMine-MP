@@ -65,6 +65,10 @@ final class StringToEnchantmentParser extends StringToTParser
 		$result->register("trident_loyalty", fn() => VanillaEnchantments::TRIDENT_LOYALTY());
 		$result->register("trident_riptide", fn() => VanillaEnchantments::TRIDENT_RIPTIDE());
 		$result->register("trident_channeling", fn() => VanillaEnchantments::TRIDENT_CHANNELING());
+		// Fishing enchantments
+		$result->register("luck_of_the_sea", fn() => VanillaEnchantments::LUCK_OF_THE_SEA());
+		$result->register("lure", fn() => VanillaEnchantments::LURE());
+
 		return $result;
 	}
 

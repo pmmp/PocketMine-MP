@@ -171,7 +171,7 @@ final class AvailableEnchantmentRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getPrimaryEnchantmentsForItem(Item $item) : array{
-		$itemTags = $item->getEnchantmentTags();
+		$itemTags = $this->getItemEnchantmentTags($item);
 		if(count($itemTags) === 0 || $item->hasEnchantments()){
 			return [];
 		}
@@ -191,7 +191,7 @@ final class AvailableEnchantmentRegistry{
 	 * @return Enchantment[]
 	 */
 	public function getAllEnchantmentsForItem(Item $item) : array{
-		if(count($item->getEnchantmentTags()) === 0){
+		if(count($this->getItemEnchantmentTags($item)) === 0){
 			return [];
 		}
 
@@ -207,11 +207,33 @@ final class AvailableEnchantmentRegistry{
 	 * Warning: not suitable for checking the availability of enchantment for an enchanting table.
 	 */
 	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{
-		$itemTags = $item->getEnchantmentTags();
+		$itemTags = $this->getItemEnchantmentTags($item);
 		$tagRegistry = TagRegistry::getInstance();
 
 		return $tagRegistry->isTagArrayIntersection($this->getPrimaryItemTags($enchantment), $itemTags) ||
 			$tagRegistry->isTagArrayIntersection($this->getSecondaryItemTags($enchantment), $itemTags);
+	}
+
+	/**
+	 * Return enchantment tags for the item, with small fallbacks for items that may have lost tags during
+	 * deserialization or older data formats. This helps ensure enchantments like LURE / LUCK_OF_THE_SEA
+	 * are discoverable for fishing rods even if the item instance has empty tags.
+	 *
+	 * @return string[]
+	 */
+	private function getItemEnchantmentTags(Item $item) : array{
+		$tags = $item->getEnchantmentTags();
+		if(count($tags) === 0){
+			// Best-effort fallback: infer fishing rod tag for FishingRod instances
+			try{
+				if($item instanceof \pocketmine\item\FishingRod){
+					return [Tags::FISHING_ROD];
+				}
+			}catch(\Throwable $_){
+				// ignore and return original tags
+			}
+		}
+		return $tags;
 	}
 
 	/**
