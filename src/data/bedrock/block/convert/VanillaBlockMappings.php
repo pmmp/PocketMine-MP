@@ -32,6 +32,7 @@ use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Bell;
+use pocketmine\block\Composter;
 use pocketmine\block\BigDripleafHead;
 use pocketmine\block\Block;
 use pocketmine\block\BrewingStand;
@@ -1377,6 +1378,14 @@ final class VanillaBlockMappings
 		$reg->mapModel(Model::create(Blocks::BARREL(), Ids::BARREL)->properties([
 			$commonProperties->anyFacingClassic,
 			new BoolProperty(StateNames::OPEN_BIT, fn(Barrel $b) => $b->isOpen(), fn(Barrel $b, bool $v) => $b->setOpen($v))
+		]));
+
+		// Composter (Bedrock provides a composter_fill_level state) - register the property so the
+		// fill level is serialized/deserialized and clients can see the visual fill changes.
+		// Map Bedrock's "minecraft:composter" to the registered Composter block and expose the
+		// 0..8 fill level property using IntProperty bound to the Composter accessors.
+		$reg->mapModel(Model::create(Blocks::COMPOSTER(), Ids::COMPOSTER)->properties([
+			new IntProperty(StateNames::COMPOSTER_FILL_LEVEL, 0, 8, fn(Composter $b) => $b->getFillLevel(), fn(Composter $b, int $v) => $b->setFillLevel($v)),
 		]));
 
 		// Beehive - facing + honey level (0-5)

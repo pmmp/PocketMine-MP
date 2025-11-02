@@ -106,7 +106,7 @@ enum RecordType
 			self::DISK_WARD => ["C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()],
 			self::DISK_11 => ["C418 - 11", LevelSoundEvent::RECORD_11, KnownTranslationFactory::item_record_11_desc()],
 			self::DISK_WAIT => ["C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc()],
-			self::MUSIC_DISC_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", LevelSoundEvent::MUSIC_DISC_LAVA_CHICKEN, KnownTranslationFactory::item_music_disc_lava_chicken_desc()],
+			self::MUSIC_DISC_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", LevelSoundEvent::RECORD_LAVA_CHICKEN, KnownTranslationFactory::item_music_disc_lava_chicken_desc()],
 		};
 	}
 
