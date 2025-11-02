@@ -24,16 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class MossyCarpet extends Flowable{
+	use StaticSupportTrait;
 
 	protected bool $top = false;
 
@@ -67,6 +70,10 @@ class MossyCarpet extends Flowable{
 
 	public function getDrops(Item $item) : array{
 		return $this->isTop() ? [] : parent::getDrops($item);
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
 	}
 
 	protected function hasFaces() : bool{
@@ -131,7 +138,7 @@ class MossyCarpet extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$world = $this->position->getWorld();
-		if(!$this->canSurvive()){
+		if(!$this->canBeSupportedAt($this)){
 			$world->useBreakOn($this->position);
 			return;
 		}
@@ -145,8 +152,8 @@ class MossyCarpet extends Flowable{
 		}
 	}
 
-	protected function canSurvive() : bool{
-		$below = $this->getSide(Facing::DOWN);
+	private function canBeSupportedAt(Block $block) : bool{
+		$below = $block->getSide(Facing::DOWN);
 		if(!$this->isTop()){
 			return $below->getTypeId() !== BlockTypeIds::AIR;
 		}
@@ -184,5 +191,13 @@ class MossyCarpet extends Flowable{
 		}
 
 		return $new->hasFaces() ? $new : null;
+	}
+
+	public function getFlameEncouragement() : int{
+		return 15;
+	}
+
+	public function getFlammability() : int{
+		return 100;
 	}
 }

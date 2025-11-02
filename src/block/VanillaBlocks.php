@@ -970,7 +970,7 @@ final class VanillaBlocks{
 		self::register("cobblestone_stairs", fn(BID $id) => new Stair($id, "Cobblestone Stairs", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone_stairs", fn(BID $id) => new Stair($id, "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register("moss_carpet", fn(BID $id) => new Carpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("moss_carpet", fn(BID $id) => new NormalCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		self::register("pale_moss_carpet", fn(BID $id) => new MossyCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
 		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
@@ -987,7 +987,7 @@ final class VanillaBlocks{
 				// Flowering Azalea 4.17%
 			}
 		}));
-		self::register("pale_moss_block", fn(BID $id) => new MossBlock($id, "Pale Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
+		self::register("pale_moss_block", fn(BID $id) => new class($id, "Pale Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
 			$rand = mt_rand(1, 10000);
 			if($rand <= 5882){
 				$tx->addBlock($pos, VanillaBlocks::TALL_GRASS());
@@ -996,7 +996,15 @@ final class VanillaBlocks{
 			}else{
 				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
 			}
-		}));
+		}) extends MossBlock{
+			public function getFlameEncouragement() : int{
+				return 15;
+			}
+
+			public function getFlammability() : int{
+				return 100;
+			}
+		});
 
 		self::register("cobweb", fn(BID $id) => new Cobweb($id, "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", fn(BID $id) => new CocoaBlock($id, "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
