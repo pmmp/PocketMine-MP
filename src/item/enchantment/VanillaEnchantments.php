@@ -60,6 +60,8 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment TRIDENT_IMPALING()
  * @method static Enchantment TRIDENT_LOYALTY()
  * @method static Enchantment TRIDENT_RIPTIDE()
+ * @method static Enchantment LUCK_OF_THE_SEA()
+ * @method static Enchantment LURE()
  * 
  */
 final class VanillaEnchantments{
@@ -344,6 +346,27 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 5 * $level,
 			10
 		));
+
+		self::register("LUCK_OF_THE_SEA", new Enchantment(
+			KnownTranslationFactory::enchantment_lootBonusFishing(),
+			Rarity::RARE,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * ($level - 1) + 15,
+			25
+		));
+
+		self::register("LURE", new Enchantment(
+			KnownTranslationFactory::enchantment_fishingSpeed(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * ($level - 1) + 15,
+			25
+		));
+
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{

@@ -87,6 +87,8 @@ final class AvailableEnchantmentRegistry{
 		$this->register(Enchantments::TRIDENT_RIPTIDE(), [Tags::TRIDENT], []);
 		$this->register(Enchantments::TRIDENT_CHANNELING(), [Tags::TRIDENT], []);
 		$this->register(Enchantments::TRIDENT_IMPALING(), [Tags::TRIDENT], []);
+		$this->register(Enchantments::LUCK_OF_THE_SEA(), [Tags::FISHING_ROD], []);
+		$this->register(Enchantments::LURE(), [Tags::FISHING_ROD], []);
 	}
 
 	/**

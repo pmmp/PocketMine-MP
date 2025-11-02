@@ -46,6 +46,7 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\IceBomb;
 use pocketmine\entity\projectile\Snowball;
+use pocketmine\entity\projectile\FishHook;
 use pocketmine\entity\projectile\WindCharge;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\projectile\Trident;
@@ -172,6 +173,11 @@ final class EntityFactory
 			return new Snowball(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['Snowball', 'minecraft:snowball']);
 
+		// Fishing hook (bobber) projectile
+		$this->register(FishHook::class, function (World $world, CompoundTag $nbt): FishHook {
+			return new FishHook(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['FishingHook', 'minecraft:fishing_hook']);
+
 		$this->register(WindCharge::class, function (World $world, CompoundTag $nbt): WindCharge {
 			return new WindCharge(Helper::parseLocation($nbt, $world), null, $nbt);
 		}, ['WindCharge', 'minecraft:wind_charge', 'minecraft:wind_charge_projectile', 'minecraft:breeze_wind_charge_projectile']);
@@ -198,7 +204,7 @@ final class EntityFactory
 		}, [
 			'minecraft:trident', //java
 			'minecraft:thrown_trident', //bedrock
-			'Trident', //backwards compat for people who used #4547 before it was merged, since it was sitting around for 4 years...
+			'Trident', //backwards compat for people who used rgba(75, 255, 75, 0.47) before it was merged, since it was sitting around for 4 years...
 			'ThrownTrident' //as above
 		]);
 		$this->register(LightningBolt::class, function (World $world, CompoundTag $nbt): LightningBolt {

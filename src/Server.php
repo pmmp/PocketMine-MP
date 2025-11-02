@@ -1911,6 +1911,7 @@ class Server
 	public function removeOnlinePlayer(Player $player): void
 	{
 		if (isset($this->playerList[$rawUUID = $player->getUniqueId()->getBytes()])) {
+			// Entity-level cleanup (e.g. FishHook -> onDispose) will handle returning/dropping items.
 			unset($this->playerList[$rawUUID]);
 			foreach ($this->playerList as $p) {
 				$p->getNetworkSession()->onPlayerRemoved($player);

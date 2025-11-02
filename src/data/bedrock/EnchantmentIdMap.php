@@ -73,5 +73,8 @@ final class EnchantmentIdMap{
 		$this->register(EnchantmentIds::RIPTIDE, VanillaEnchantments::TRIDENT_RIPTIDE());
 		$this->register(EnchantmentIds::LOYALTY, VanillaEnchantments::TRIDENT_LOYALTY());
 		$this->register(EnchantmentIds::CHANNELING, VanillaEnchantments::TRIDENT_CHANNELING());
+
+		$this->register(EnchantmentIds::LUCK_OF_THE_SEA, VanillaEnchantments::LUCK_OF_THE_SEA());
+		$this->register(EnchantmentIds::LURE, VanillaEnchantments::LURE());
 	}
 }

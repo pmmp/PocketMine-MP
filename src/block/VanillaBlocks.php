@@ -873,6 +873,7 @@ use function strtolower;
  * @method static WitherRose WITHER_ROSE()
  * @method static Wool WOOL()
  * @method static Torch COPPER_TORCH()
+ * @method static PowderSnowCauldron POWDER_SNOW_CAULDRON()
  */
 
 	
@@ -1179,6 +1180,7 @@ final class VanillaBlocks
 		self::register("slime", fn(BID $id) => new Slime($id, "Slime Block", new Info(BreakInfo::instant())));
 		self::register("snow", fn(BID $id) => new Snow($id, "Snow Block", new Info(BreakInfo::shovel(0.2, ToolTier::WOOD))));
 		self::register("snow_layer", fn(BID $id) => new SnowLayer($id, "Snow Layer", new Info(BreakInfo::shovel(0.1, ToolTier::WOOD))));
+		// POWDER_SNOW_CAULDRON
 		self::register("soul_sand", fn(BID $id) => new SoulSand($id, "Soul Sand", new Info(BreakInfo::shovel(0.5))));
 		self::register("sponge", fn(BID $id) => new Sponge($id, "Sponge", new Info(new BreakInfo(0.6, ToolType::HOE))));
 		$shulkerBoxBreakInfo = new Info(BreakInfo::pickaxe(2));

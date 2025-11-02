@@ -50,6 +50,45 @@ class KillCommand extends CommandoCommand{
 
 	public function onRun(CommandSender $sender, string $aliasUsed, array $args): void {
 		$targetName = $args["target"] ?? null;
+
+		// Special shortcuts: allow administrators to clear entities or fish hooks quickly
+		if($targetName === "entities"){
+			if(!($sender instanceof Player)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
+				return;
+			}
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
+			$world = $sender->getWorld();
+			$count = 0;
+			foreach($world->getEntities() as $entity){
+				if(!($entity instanceof Player)){
+					$entity->flagForDespawn();
+					$count++;
+				}
+			}
+			$sender->sendMessage("Removed $count entities from world.");
+			return;
+		}
+		if($targetName === "hooks"){
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_permission());
+				return;
+			}
+			$count = 0;
+			foreach($sender->getServer()->getWorldManager()->getWorlds() as $w){
+				foreach($w->getEntities() as $entity){
+					if($entity instanceof \pocketmine\entity\projectile\FishHook){
+						$entity->flagForDespawn();
+						$count++;
+					}
+				}
+			}
+			$sender->sendMessage("Removed $count fishing hooks from all worlds.");
+			return;
+		}
 		
 		if($targetName === null){
 			if(!($sender instanceof Player)){
