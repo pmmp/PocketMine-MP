@@ -373,24 +373,6 @@ parameters:
 			path: ../../../src/block/MossBlock.php
 
 		-
-			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/block/MossyCarpet.php
-
-		-
-			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/block/MossyCarpet.php
-
-		-
-			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: ../../../src/block/MossyCarpet.php
-
-		-
 			message: '#^Parameter \#1 \$min of function mt_rand expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 3

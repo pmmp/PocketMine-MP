@@ -83,46 +83,49 @@ class MossyCarpet extends Flowable{
 		$tx->addBlock($blockReplace->position, $this);
 
 		$up = $blockReplace->getSide(Facing::UP);
-		if(($up->canBeReplaced() || $up->hasSameTypeId($this)) && $this->hasFaces()){
-			$top = $this->createTopperWithSide($this);
-			if($top !== null){
-				$tx->addBlock($up->position, $top);
-				return true;
-			}
-			return true;
+		if(!($up->canBeReplaced() || $up->hasSameTypeId($this)) || !$this->hasFaces()){
+			return false;
 		}
 
-		return false;
+		$top = $this->createTopperWithSide($this);
+		if($top !== null){
+			$tx->addBlock($up->position, $top);
+		}
+
+		return true;
 	}
 
 	protected function recalculateConnections() : bool{
-		$world = $this->position->getWorld();
 		$changed = 0;
+
 		foreach(Facing::HORIZONTAL as $f){
 			$lastWallside = $this->getSideConnection($f);
 			$wallside = null;
+
 			if($this->getAdjacentSupportType($f)->hasEdgeSupport()){
-				$wallside = !$this->isTop() ? WallConnectionType::SHORT : $this->getSideConnection($f) ?? null;
+				$wallside = $this->isTop() ? ($this->getSideConnection($f) ?? null) : WallConnectionType::SHORT;
 
 				if($wallside === WallConnectionType::SHORT){
-					$above = $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z);
+					$above = $this->getSide(Facing::UP);
 					if($above instanceof MossyCarpet && $above->hasSameTypeId($this) && $above->getSideConnection($f) !== null && $above->isTop()){
 						$wallside = WallConnectionType::TALL;
 					}
 
 					if($this->isTop()){
-						$below = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
+						$below = $this->getSide(Facing::DOWN);
 						if($below instanceof MossyCarpet && $below->hasSameTypeId($this) && $below->getSideConnection($f) === null){
 							$wallside = null;
 						}
 					}
 				}
 			}
+
 			if($lastWallside !== $wallside){
 				$this->setSideConnection($f, $wallside);
 				$changed++;
 			}
 		}
+
 		return $changed > 0;
 	}
 
