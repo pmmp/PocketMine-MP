@@ -65,6 +65,7 @@ use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\Light;
 use pocketmine\block\MobHead;
+use pocketmine\block\MossyCarpet;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
@@ -123,6 +124,7 @@ use pocketmine\data\bedrock\block\convert\property\ValueFromIntProperty;
 use pocketmine\data\bedrock\block\convert\property\ValueFromStringProperty;
 use pocketmine\data\bedrock\block\convert\property\ValueMappings;
 use pocketmine\data\bedrock\block\convert\property\ValueSetFromIntProperty;
+use pocketmine\data\bedrock\block\convert\property\WallConnectionTypeShim;
 use pocketmine\math\Facing;
 use function array_map;
 use function min;
@@ -384,7 +386,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::MOSSY_COBBLESTONE(), Ids::MOSSY_COBBLESTONE);
 		$reg->mapSimple(Blocks::MOSSY_STONE_BRICKS(), Ids::MOSSY_STONE_BRICKS);
 		$reg->mapSimple(Blocks::MOSS_BLOCK(), Ids::MOSS_BLOCK);
-		$reg->mapSimple(Blocks::PALE_MOSS_BLOCK(), Ids::PALE_MOSS_BLOCK);
+		$reg->mapSimple(Blocks::MOSS_CARPET(), Ids::MOSS_CARPET);
 		$reg->mapSimple(Blocks::MUD(), Ids::MUD);
 		$reg->mapSimple(Blocks::MUD_BRICKS(), Ids::MUD_BRICKS);
 		$reg->mapSimple(Blocks::MYCELIUM(), Ids::MYCELIUM);
@@ -400,6 +402,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::OBSIDIAN(), Ids::OBSIDIAN);
 		$reg->mapSimple(Blocks::PACKED_ICE(), Ids::PACKED_ICE);
 		$reg->mapSimple(Blocks::PACKED_MUD(), Ids::PACKED_MUD);
+		$reg->mapSimple(Blocks::PALE_MOSS_BLOCK(), Ids::PALE_MOSS_BLOCK);
 		$reg->mapSimple(Blocks::PODZOL(), Ids::PODZOL);
 		$reg->mapSimple(Blocks::POLISHED_ANDESITE(), Ids::POLISHED_ANDESITE);
 		$reg->mapSimple(Blocks::POLISHED_BLACKSTONE(), Ids::POLISHED_BLACKSTONE);
@@ -1399,6 +1402,13 @@ final class VanillaBlockMappings{
 		]));
 
 		//P
+		$reg->mapModel(Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([
+			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(MossyCarpet $b) => $b->isTop(), fn(MossyCarpet $b, bool $v) => $b->setTop($v)),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::NORTH)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::NORTH, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::EAST)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::EAST, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::SOUTH)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::SOUTH, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::WEST)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::WEST, $v->deserialize())),
+		]));
 		$reg->mapModel(Model::create(Blocks::PINK_PETALS(), Ids::PINK_PETALS)->properties([
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7
 			new IntProperty(StateNames::GROWTH, 0, 7, fn(PinkPetals $b) => $b->getCount(), fn(PinkPetals $b, int $v) => $b->setCount(min($v, PinkPetals::MAX_COUNT)), offset: 1),

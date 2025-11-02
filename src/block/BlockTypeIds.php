@@ -834,9 +834,11 @@ final class BlockTypeIds{
 	public const WARPED_NYLIUM = 10804;
 	public const INFESTED_DEEPSLATE = 10805;
 	public const MOSS_BLOCK = 10806;
-	public const PALE_MOSS_BLOCK = 10807;
+	public const MOSS_CARPET = 10807;
+	public const PALE_MOSS_BLOCK = 10808;
+	public const PALE_MOSS_CARPET = 10809;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10808;
+	public const FIRST_UNUSED_BLOCK_ID = 10810;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
