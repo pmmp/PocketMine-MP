@@ -317,6 +317,34 @@ class ItemStackRequestExecutor
 			throw new ItemStackRequestProcessException("Cannot craft a recipe more than 256 times");
 		}
 		$craftingManager = $this->player->getServer()->getCraftingManager();
+		// Handle smithing recipes which use a separate network ID range
+		if ($recipeId >= InventoryManager::SMITHING_RECIPE_NETWORK_OFFSET) {
+			$smithingIndex = $recipeId - InventoryManager::SMITHING_RECIPE_NETWORK_OFFSET;
+			$smithingRecipe = $craftingManager->getSmithingRecipeFromIndex($smithingIndex);
+			if ($smithingRecipe === null) {
+				throw new ItemStackRequestProcessException("No such smithing recipe index: $smithingIndex");
+			}
+
+			// Create a SmithingTransaction and prepare a preview result if possible
+			$this->specialTransaction = new SmithingTransaction($this->player, $smithingRecipe);
+
+			// Try to compute the resulting item from current smithing table contents and set preview
+			$window = $this->player->getCurrentWindow();
+			if ($window instanceof SmithingTableInventory) {
+				$inputs = [
+					$window->getItem(SmithingTableInventory::SLOT_INPUT),
+					$window->getItem(SmithingTableInventory::SLOT_ADDITION),
+					$window->getItem(SmithingTableInventory::SLOT_TEMPLATE),
+				];
+				$result = $smithingRecipe->getResultFor($inputs);
+				if ($result !== null) {
+					$this->setNextCreatedItem($result);
+				}
+			}
+
+			return;
+		}
+
 		$recipeIndex = $recipeId - CraftingDataCache::RECIPE_ID_OFFSET;
 		$recipe = $craftingManager->getCraftingRecipeFromIndex($recipeIndex);
 		if ($recipe === null) {
@@ -379,7 +407,8 @@ class ItemStackRequestExecutor
 			!$this->specialTransaction instanceof CraftingTransaction &&
 			!$this->specialTransaction instanceof EnchantingTransaction &&
 			!$this->specialTransaction instanceof AnvilTransaction &&
-			!$this->specialTransaction instanceof LoomTransaction
+			!$this->specialTransaction instanceof LoomTransaction &&
+			!$this->specialTransaction instanceof SmithingTransaction
 		) {
 			if ($this->specialTransaction === null) {
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
