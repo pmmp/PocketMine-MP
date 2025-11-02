@@ -23,15 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\item\Fertilizer;
+use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
 class MossyCarpet extends Flowable{
 
 	protected bool $top = false;
 
-	/** @var WallConnectionType[]|null */
+	/** @var WallConnectionType[] */
 	protected array $sides = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
@@ -59,10 +65,11 @@ class MossyCarpet extends Flowable{
 		return $this;
 	}
 
+	public function getDrops(Item $item) : array{
+		return $this->isTop() ? [] : parent::getDrops($item);
+	}
+
 	protected function hasFaces() : bool{
-		if(!$this->isTop()){
-			return true;
-		}
 		foreach(Facing::HORIZONTAL as $f){
 			if($this->getSideConnection($f) !== null){
 				return true;
@@ -71,32 +78,48 @@ class MossyCarpet extends Flowable{
 		return false;
 	}
 
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$this->recalculateConnections();
+		$tx->addBlock($blockReplace->position, $this);
+
+		$up = $blockReplace->getSide(Facing::UP);
+		if(($up->canBeReplaced() || $up->hasSameTypeId($this)) && $this->hasFaces()){
+			$top = $this->createTopperWithSide($this);
+			if($top !== null){
+				$tx->addBlock($up->position, $top);
+				return true;
+			}
+			return true;
+		}
+
+		return false;
+	}
+
 	protected function recalculateConnections() : bool{
-		$block = clone $this;
 		$world = $this->position->getWorld();
 		$changed = 0;
 		foreach(Facing::HORIZONTAL as $f){
-			$lastWallside = $block->getSideConnection($f);
+			$lastWallside = $this->getSideConnection($f);
 			$wallside = null;
 			if($this->getAdjacentSupportType($f)->hasEdgeSupport()){
-				$wallside = !$block->isTop() ? WallConnectionType::SHORT : $block->getSideConnection($f) ?? null;
+				$wallside = !$this->isTop() ? WallConnectionType::SHORT : $this->getSideConnection($f) ?? null;
 
 				if($wallside === WallConnectionType::SHORT){
 					$above = $world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z);
-					if($above instanceof MossyCarpet && $above->getSideConnection($f) !== null && $above->isTop()){
+					if($above instanceof MossyCarpet && $above->hasSameTypeId($this) && $above->getSideConnection($f) !== null && $above->isTop()){
 						$wallside = WallConnectionType::TALL;
 					}
 
-					if($block->isTop()){
+					if($this->isTop()){
 						$below = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-						if($below instanceof MossyCarpet && $below->getSideConnection($f) === null){
+						if($below instanceof MossyCarpet && $below->hasSameTypeId($this) && $below->getSideConnection($f) === null){
 							$wallside = null;
 						}
 					}
 				}
 			}
 			if($lastWallside !== $wallside){
-				$block->setSideConnection($f, $wallside);
+				$this->setSideConnection($f, $wallside);
 				$changed++;
 			}
 		}
@@ -110,7 +133,7 @@ class MossyCarpet extends Flowable{
 			return;
 		}
 		$updated = $this->recalculateConnections();
-		if(!$this->hasFaces()){
+		if($this->isTop() && !$this->hasFaces()){
 			$world->useBreakOn($this->position);
 			return;
 		}
@@ -124,6 +147,42 @@ class MossyCarpet extends Flowable{
 		if(!$this->isTop()){
 			return $below->getTypeId() !== BlockTypeIds::AIR;
 		}
-		return $below instanceof MossyCarpet && !$below->isTop();
+		return $below instanceof MossyCarpet && $below->hasSameTypeId($this) && !$below->isTop();
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		if($item instanceof Fertilizer){
+			if($this->isTop()){
+				return false;
+			}
+			$candidate = $this->createTopperWithSide($this);
+			if($candidate !== null){
+				if(BlockEventHelper::grow($this->getSide(Facing::UP), $candidate, $player)){
+					$item->pop();
+				}
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+
+	private function createTopperWithSide(Block $base) : ?MossyCarpet{
+		$above = $base->getSide(Facing::UP);
+		if($base instanceof MossyCarpet && $base->hasSameTypeId($this) && $above->canBeReplaced()){
+			$new = clone $this;
+			$new->setTop(true);
+			foreach(Facing::HORIZONTAL as $f){
+				$side = null;
+				if($above->getAdjacentSupportType($f)->hasEdgeSupport()){
+					if($base->getSideConnection($f) !== null){
+						$side = WallConnectionType::SHORT;
+					}
+				}
+				$new->setSideConnection($f, $side);
+			}
+			return $new->hasFaces() ? $new : null;
+		}
+		return null;
 	}
 }
