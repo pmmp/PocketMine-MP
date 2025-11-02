@@ -175,7 +175,8 @@ class MossyCarpet extends Flowable{
 
 	private function createTopperWithSide(Block $base) : ?MossyCarpet{
 		$above = $base->getSide(Facing::UP);
-		if(!($base instanceof MossyCarpet && $base->hasSameTypeId($this)) || !$above->canBeReplaced()){
+		if(!($base instanceof MossyCarpet && $base->hasSameTypeId($this)) ||
+			(!$above->canBeReplaced() && !($above instanceof MossyCarpet && $above->hasSameTypeId($this)))){
 			return null;
 		}
 
