@@ -2269,7 +2269,7 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if($player->isSneaking()){
+			if($player->isSneakPressed()){
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
 			}

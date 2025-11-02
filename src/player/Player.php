@@ -290,6 +290,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
+	protected bool $sneakPressed = false;
 
 	protected float $flightSpeedMultiplier = self::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 
@@ -1280,6 +1281,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return $this->gamemode === GameMode::SPECTATOR;
 	}
 
+	public function setSneakPressed(bool $sneakPressed) : void{
+		$this->sneakPressed = $sneakPressed;
+	}
+
+	/**
+	 * Returns whether the player is pressing the sneak key.
+	 * The player may still be sneaking even if this is false due to gameplay mechanics (e.g. releasing sneak while in a 1.5 block high space).
+	 */
+	public function isSneakPressed() : bool{
+		return $this->sneakPressed;
+	}
+
 	/**
 	 * TODO: make this a dynamic ability instead of being hardcoded
 	 */
@@ -2075,12 +2088,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak) : bool{
-		if($sneak === $this->sneaking){
+	public function toggleSneak(bool $sneak, bool $sneakPressed = true) : bool{
+		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
-		$ev = new PlayerToggleSneakEvent($this, $sneak);
+		$this->setSneakPressed($sneakPressed);
+
+		$ev = new PlayerToggleSneakEvent($this, $sneak, $sneakPressed);
+		if($sneak === $this->sneaking){
+			$ev->cancel();
+		}
 		$ev->call();
+
 		if($ev->isCancelled()){
 			return false;
 		}
