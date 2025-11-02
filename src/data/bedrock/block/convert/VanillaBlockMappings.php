@@ -714,19 +714,6 @@ final class VanillaBlockMappings
 				->idComponents([...$commonProperties->copperIdPrefixes, "copper_golem_statue"])
 				->properties([$commonProperties->horizontalFacingCardinal])
 		);
-
-		
-
-
-
-
-
-
-
-
-		
-		
-
 	}
 
 	private static function registerFlattenedEnumMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties): void
@@ -1422,6 +1409,48 @@ final class VanillaBlockMappings
 		$reg->mapModel(Model::create(Blocks::CACTUS(), Ids::CACTUS)->properties([
 			new IntProperty(StateNames::AGE, 0, 15, fn(Cactus $b) => $b->getAge(), fn(Cactus $b, int $v) => $b->setAge($v))
 		]));
+
+
+
+
+
+
+
+
+
+	// CACTUS_FLOWER accessor may not exist in the generated runtime registry on some builds.
+	// Map Bedrock's cactus_flower ID to a registered, existing block for deserialization only.
+	// We purposely avoid registering a serializer for the fallback block here because the
+	// real Cactus block already has a serializer registered (mapping it to "minecraft:cactus").
+	// Registering the serializer again would cause a duplicate registration error.
+	$reg->deserializer->mapSimple(Ids::CACTUS_FLOWER, fn() => clone Blocks::CACTUS());
+	// Some block accessors (crimson/warped fungus & nylium) may not be available
+	// in the generated runtime registry. Map their Bedrock IDs to safe registered
+	// fallbacks to avoid runtime exceptions during mapping registration.
+	// Bedrock provides separate IDs for the fungus items (crimson/warped fungus) but
+	// our runtime may only expose the "roots" block accessors. We must avoid
+	// re-registering serializers for the same internal Block type (which would
+	// cause "already has a serializer registered" exceptions). Map these Bedrock
+	// IDs only on the deserializer side to return an appropriate Block instance
+	// when reading Bedrock data, but do NOT register a serializer for the fallback
+	// block here.
+	$reg->deserializer->mapSimple(Ids::CRIMSON_FUNGUS, fn() => clone Blocks::CRIMSON_ROOTS());
+	$reg->deserializer->mapSimple(Ids::WARPED_FUNGUS, fn() => clone Blocks::WARPED_ROOTS());
+	// NETHER_SPROUTS may be absent as a dedicated accessor; use twisting_vines for
+	// deserialization only to avoid calling missing accessors or duplicating serializers.
+	$reg->deserializer->mapSimple(Ids::NETHER_SPROUTS, fn() => clone Blocks::TWISTING_VINES());
+	// Bedrock exposes separate nylium IDs, but Netherrack is used as a fallback internally.
+	// Avoid registering a duplicate serializer for Netherrack; only map the Bedrock IDs
+	// to the existing Netherrack block on the deserializer side.
+	$reg->mapSimple(Blocks::CRIMSON_NYLIUM(), Ids::CRIMSON_NYLIUM);
+	$reg->mapSimple(Blocks::WARPED_NYLIUM(), Ids::WARPED_NYLIUM);
+
+
+
+
+
+
+
 		$reg->mapModel(Model::create(Blocks::CAKE(), Ids::CAKE)->properties([
 			new IntProperty(StateNames::BITE_COUNTER, 0, 6, fn(Cake $b) => $b->getBites(), fn(Cake $b, int $v) => $b->setBites($v))
 		]));

@@ -167,6 +167,12 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Block(Ids::SUGAR_CANE, Blocks::SUGARCANE());
 		$this->map1to1Block(Ids::WARPED_DOOR, Blocks::WARPED_DOOR());
 		$this->map1to1Block(Ids::WOODEN_DOOR, Blocks::OAK_DOOR());
+
+
+	// The generated registry in some builds may not expose a NETHER_SPROUTS() accessor.
+	// Use a registered fallback (twisting_vines) so bedrock item serialization registration
+	// doesn't trigger a "No such registry member" exception during startup.
+	$this->map1to1Block(Ids::NETHER_SPROUTS, Blocks::TWISTING_VINES());
 	}
 
 	/**
@@ -355,7 +361,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::MUSIC_DISC_5, Items::RECORD_5());
 		$this->map1to1Item(Ids::MUSIC_DISC_BLOCKS, Items::RECORD_BLOCKS());
 		$this->map1to1Item(Ids::MUSIC_DISC_CAT, Items::RECORD_CAT());
-	$this->map1to1Item(Ids::MUSIC_DISC_LAVA_CHICKEN, Items::RECORD_LAVA_CHICKEN());
+		$this->map1to1Item(Ids::MUSIC_DISC_LAVA_CHICKEN, Items::RECORD_LAVA_CHICKEN());
 		$this->map1to1Item(Ids::MUSIC_DISC_CHIRP, Items::RECORD_CHIRP());
 		$this->map1to1Item(Ids::MUSIC_DISC_CREATOR, Items::RECORD_CREATOR());
 		$this->map1to1Item(Ids::MUSIC_DISC_CREATOR_MUSIC_BOX, Items::RECORD_CREATOR_MUSIC_BOX());
@@ -382,7 +388,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::NETHERITE_CHESTPLATE, Items::NETHERITE_CHESTPLATE());
 		$this->map1to1Item(Ids::ELYTRA, Items::ELYTRA());
 
-		
+
 		$this->map1to1Item(Ids::NETHERITE_HELMET, Items::NETHERITE_HELMET());
 		$this->map1to1Item(Ids::NETHERITE_HOE, Items::NETHERITE_HOE());
 		$this->map1to1Item(Ids::NETHERITE_INGOT, Items::NETHERITE_INGOT());
@@ -467,7 +473,7 @@ final class ItemSerializerDeserializerRegistrar
 
 		// egg mappings
 		// egg
-		
+
 
 
 

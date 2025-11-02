@@ -25,6 +25,12 @@ namespace pocketmine\permission;
 
 use pocketmine\lang\KnownTranslationFactory as l10n;
 use pocketmine\permission\DefaultPermissionNames as Names;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\lang\KnownTranslationParameterInfo;
+use pocketmine\lang\Translatable;
+use function count;
+use function preg_last_error_msg;
+use function preg_replace;
 
 abstract class DefaultPermissions{
 	public const ROOT_CONSOLE = Names::GROUP_CONSOLE;

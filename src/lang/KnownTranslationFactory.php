@@ -3833,4 +3833,19 @@ final class KnownTranslationFactory
 			0 => $param0,
 		]);
 	}
+
+	public static function item_minecraft_nether_fungus(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::ITEM_MINECRAFT_NETHER_FUNGUS, []);
+	}
+
+	public static function item_minecraft_nether_sprouts(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::ITEM_MINECRAFT_NETHER_SPROUTS, []);
+	}
+
+	public static function item_minecraft_nylium(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::ITEM_MINECRAFT_NYLIUM, []);
+	}
 }

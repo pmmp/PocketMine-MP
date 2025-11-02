@@ -277,6 +277,9 @@ final class KnownTranslationKeys
 	public const ITEM_MINECRAFT_ECHO_SHARD = "item.minecraft.echo_shard";
 	public const ITEM_MINECRAFT_WARPED_FUNGUS = "item.minecraft.warped_fungus";
 	public const ITEM_MINECRAFT_CRIMSON_FUNGUS = "item.minecraft.crimson_fungus";
+	public const ITEM_MINECRAFT_NETHER_FUNGUS = "item.minecraft.nether_fungus";
+	public const ITEM_MINECRAFT_NETHER_SPROUTS = "item.minecraft.nether_sprouts";
+	public const ITEM_MINECRAFT_NYLIUM = "item.minecraft.nylium";
 	public const ITEM_MINECRAFT_POINTED_DRIPSTONE = "item.minecraft.pointed_dripstone";
 	public const ITEM_MINECRAFT_DRIPSTONE_BLOCK = "item.minecraft.dripstone_block";
 	public const ITEM_MINECRAFT_MOSS_CARPET = "item.minecraft.moss_carpet";
