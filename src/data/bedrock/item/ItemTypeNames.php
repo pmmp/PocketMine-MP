@@ -145,6 +145,7 @@ final class ItemTypeNames{
 	public const COMMAND_BLOCK_MINECART = "minecraft:command_block_minecart";
 	public const COMPARATOR = "minecraft:comparator";
 	public const COMPASS = "minecraft:compass";
+	public const COMPOSTER = "minecraft:composter";
 	public const COMPOUND = "minecraft:compound";
 	public const CONCRETE = "minecraft:concrete";
 	public const CONCRETE_POWDER = "minecraft:concrete_powder";
@@ -300,8 +301,10 @@ final class ItemTypeNames{
 	public const HEART_OF_THE_SEA = "minecraft:heart_of_the_sea";
 	public const HEART_POTTERY_SHERD = "minecraft:heart_pottery_sherd";
 	public const HEARTBREAK_POTTERY_SHERD = "minecraft:heartbreak_pottery_sherd";
+	public const HEAVY_CORE = "minecraft:heavy_core";
 	public const HOGLIN_SPAWN_EGG = "minecraft:hoglin_spawn_egg";
 	public const HONEY_BOTTLE = "minecraft:honey_bottle";
+	public const HONEY_BLOCK = "minecraft:honey_block";
 	public const HONEYCOMB = "minecraft:honeycomb";
 	public const HOPPER = "minecraft:hopper";
 	public const HOPPER_MINECART = "minecraft:hopper_minecart";
@@ -344,6 +347,7 @@ final class ItemTypeNames{
 	public const LEAVES = "minecraft:leaves";
 	public const LEAVES2 = "minecraft:leaves2";
 	public const LIGHT_BLOCK = "minecraft:light_block";
+	public const LIGHTNING_ROD = "minecraft:lightning_rod";
 	public const LIGHT_BLUE_BUNDLE = "minecraft:light_blue_bundle";
 	public const LIGHT_BLUE_DYE = "minecraft:light_blue_dye";
 	public const LIGHT_BLUE_HARNESS = "minecraft:light_blue_harness";
@@ -496,6 +500,7 @@ final class ItemTypeNames{
 	public const REDSTONE = "minecraft:redstone";
 	public const REPEATER = "minecraft:repeater";
 	public const RESIN_BRICK = "minecraft:resin_brick";
+	public const RESIN_BRICKS = "minecraft:resin_bricks";
 	public const RIB_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:rib_armor_trim_smithing_template";
 	public const ROTTEN_FLESH = "minecraft:rotten_flesh";
 	public const SADDLE = "minecraft:saddle";
@@ -503,7 +508,14 @@ final class ItemTypeNames{
 	public const SALMON_BUCKET = "minecraft:salmon_bucket";
 	public const SALMON_SPAWN_EGG = "minecraft:salmon_spawn_egg";
 	public const SAPLING = "minecraft:sapling";
+	public const SAND = "minecraft:sand";
+	public const SANDSTONE = "minecraft:sandstone";
+	public const SANDSTONE_STAIRS = "minecraft:sandstone_stairs";
+	public const SANDSTONE_WALL = "minecraft:sandstone_wall";
+	public const SCAFFOLDING = "minecraft:scaffolding";
 	public const SCRAPE_POTTERY_SHERD = "minecraft:scrape_pottery_sherd";
+	public const SCULK = "minecraft:sculk";
+	public const SEAGRASS = "minecraft:seagrass";
 	public const SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:sentry_armor_trim_smithing_template";
 	public const SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:shaper_armor_trim_smithing_template";
 	public const SHEAF_POTTERY_SHERD = "minecraft:sheaf_pottery_sherd";
@@ -523,6 +535,7 @@ final class ItemTypeNames{
 	public const SKULL_POTTERY_SHERD = "minecraft:skull_pottery_sherd";
 	public const SLIME_BALL = "minecraft:slime_ball";
 	public const SLIME_SPAWN_EGG = "minecraft:slime_spawn_egg";
+	public const SMOOTH_STONE = "minecraft:smooth_stone";
 	public const SNIFFER_SPAWN_EGG = "minecraft:sniffer_spawn_egg";
 	public const SNORT_POTTERY_SHERD = "minecraft:snort_pottery_sherd";
 	public const SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:snout_armor_trim_smithing_template";
@@ -562,6 +575,8 @@ final class ItemTypeNames{
 	public const STRING = "minecraft:string";
 	public const SUGAR = "minecraft:sugar";
 	public const SUGAR_CANE = "minecraft:sugar_cane";
+	public const SUSPICIOUS_GRAVEL = "minecraft:suspicious_gravel";
+	public const SUSPICIOUS_SAND = "minecraft:suspicious_sand";
 	public const SUSPICIOUS_STEW = "minecraft:suspicious_stew";
 	public const SWEET_BERRIES = "minecraft:sweet_berries";
 	public const TADPOLE_BUCKET = "minecraft:tadpole_bucket";

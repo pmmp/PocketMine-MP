@@ -1055,6 +1055,8 @@ final class VanillaBlocks
 		self::register("grass", fn(BID $id) => new Grass($id, "Grass", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
 		self::register("grass_path", fn(BID $id) => new GrassPath($id, "Grass Path", new Info(BreakInfo::shovel(0.65))));
 		self::register("gravel", fn(BID $id) => new Gravel($id, "Gravel", new Info(BreakInfo::shovel(0.6))));
+		self::register("suspicious_sand", fn(BID $id) => new SuspiciousSand($id, "Suspicious Sand", new Info(BreakInfo::shovel(0.6))));
+		self::register("suspicious_gravel", fn(BID $id) => new SuspiciousGravel($id, "Suspicious Gravel", new Info(BreakInfo::shovel(0.6))));
 
 		self::register("hardened_clay", fn(BID $id) => new HardenedClay($id, "Hardened Clay", new Info(BreakInfo::pickaxe(1.25, ToolTier::WOOD, 21.0))));
 
@@ -1062,6 +1064,7 @@ final class VanillaBlocks
 		self::register("hardened_glass", fn(BID $id) => new HardenedGlass($id, "Hardened Glass", $hardenedGlassBreakInfo));
 		self::register("hardened_glass_pane", fn(BID $id) => new HardenedGlassPane($id, "Hardened Glass Pane", $hardenedGlassBreakInfo));
 		self::register("hay_bale", fn(BID $id) => new HayBale($id, "Hay Bale", new Info(new BreakInfo(0.5))));
+		self::register("honey_block", fn(BID $id) => new HoneyBlock($id, "Honey Block", new Info(BreakInfo::axe(0.45, ToolTier::WOOD))));
 		self::register("hopper", fn(BID $id) => new Hopper($id, "Hopper", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, 24.0))), TileHopper::class);
 		self::register("ice", fn(BID $id) => new Ice($id, "Ice", new Info(BreakInfo::pickaxe(0.5))));
 
@@ -1083,7 +1086,7 @@ final class VanillaBlocks
 
 		self::register("jukebox", fn(BID $id) => new Jukebox($id, "Jukebox", new Info(BreakInfo::axe(2.0, blastResistance: 30.0))), TileJukebox::class);
 		self::register("ladder", fn(BID $id) => new Ladder($id, "Ladder", new Info(BreakInfo::axe(0.4))));
-		// Scaffolding registration removed temporarily until a full bedrock mapping is implemented.
+		self::register("scaffolding", fn(BID $id) => new Scaffolding($id, "Scaffolding", new Info(BreakInfo::axe(0.4))));
 
 		$lanternBreakInfo = new Info(BreakInfo::pickaxe(3.5));
 		self::register("lantern", fn(BID $id) => new Lantern($id, "Lantern", $lanternBreakInfo, 15));

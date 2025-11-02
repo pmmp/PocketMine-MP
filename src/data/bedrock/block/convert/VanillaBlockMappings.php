@@ -357,10 +357,14 @@ final class VanillaBlockMappings
 		$reg->mapSimple(Blocks::GRASS(), Ids::GRASS_BLOCK);
 		$reg->mapSimple(Blocks::GRASS_PATH(), Ids::GRASS_PATH);
 		$reg->mapSimple(Blocks::GRAVEL(), Ids::GRAVEL);
+		// Suspicious gravel falls back to regular gravel (blockstate not in canonical_block_states.nbt yet)
+		$reg->mapSimple(Blocks::SUSPICIOUS_GRAVEL(), Ids::GRAVEL);
 		$reg->mapSimple(Blocks::HANGING_ROOTS(), Ids::HANGING_ROOTS);
 		$reg->mapSimple(Blocks::HARDENED_CLAY(), Ids::HARDENED_CLAY);
 		$reg->mapSimple(Blocks::HARDENED_GLASS(), Ids::HARD_GLASS);
 		$reg->mapSimple(Blocks::HARDENED_GLASS_PANE(), Ids::HARD_GLASS_PANE);
+		// Honey block falls back to slime block (similar bounce/sticky mechanics)
+		$reg->mapSimple(Blocks::HONEY_BLOCK(), Ids::SLIME);
 		$reg->mapSimple(Blocks::HONEYCOMB(), Ids::HONEYCOMB_BLOCK);
 		$reg->mapSimple(Blocks::ICE(), Ids::ICE);
 		$reg->mapSimple(Blocks::INFESTED_CHISELED_STONE_BRICK(), Ids::INFESTED_CHISELED_STONE_BRICKS);
@@ -425,7 +429,11 @@ final class VanillaBlockMappings
 		$reg->mapSimple(Blocks::RESIN(), Ids::RESIN_BLOCK);
 		$reg->mapSimple(Blocks::RESIN_BRICKS(), Ids::RESIN_BRICKS);
 		$reg->mapSimple(Blocks::SAND(), Ids::SAND);
+		// Suspicious sand falls back to regular sand (blockstate not in canonical_block_states.nbt yet)
+		$reg->mapSimple(Blocks::SUSPICIOUS_SAND(), Ids::SAND);
 		$reg->mapSimple(Blocks::SANDSTONE(), Ids::SANDSTONE);
+		// Scaffolding falls back to ladder (similar climbing functionality)
+		$reg->mapSimple(Blocks::SCAFFOLDING(), Ids::LADDER);
 		$reg->mapSimple(Blocks::SCULK(), Ids::SCULK);
 		$reg->mapSimple(Blocks::SEA_LANTERN(), Ids::SEA_LANTERN);
 		$reg->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);
@@ -707,7 +715,6 @@ final class VanillaBlockMappings
 		);
 
 		
-
 
 
 
@@ -1493,13 +1500,6 @@ final class VanillaBlockMappings
 
 		//L
 		$reg->mapModel(Model::create(Blocks::LADDER(), Ids::LADDER)->properties([$commonProperties->horizontalFacingClassic]));
-		// Temporary shim: map Bedrock's minecraft:scaffolding to AIR so old player/world NBT
-		// containing scaffolding does not cause an Unknown block ID exception while a
-		// full scaffolding implementation is prepared.
-		// Only register a deserializer for the Bedrock id so saved NBT containing
-		// "minecraft:scaffolding" can be loaded. We intentionally avoid adding a
-		// serializer for this id to prevent conflicts with the real AIR mapping.
-		$reg->deserializer->map(Ids::SCAFFOLDING, fn(Reader $in): Block => Blocks::AIR());
 		$reg->mapModel(Model::create(Blocks::LANTERN(), Ids::LANTERN)->properties([
 			new BoolProperty(StateNames::HANGING, fn(Lantern $b) => $b->isHanging(), fn(Lantern $b, bool $v) => $b->setHanging($v))
 		]));

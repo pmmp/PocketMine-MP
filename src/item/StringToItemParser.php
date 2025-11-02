@@ -1301,6 +1301,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("apple_enchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("appleenchanted", fn() => Items::ENCHANTED_GOLDEN_APPLE());
 		$result->register("arrow", fn() => Items::ARROW());
+		$result->register("axolotl_bucket", fn() => Items::AXOLOTL_BUCKET());
 		$result->register("baked_potato", fn() => Items::BAKED_POTATO());
 		$result->register("baked_potatoes", fn() => Items::BAKED_POTATO());
 		$result->register("beef", fn() => Items::RAW_BEEF());
@@ -1312,6 +1313,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("birch_hanging_sign", fn() => Items::BIRCH_HANGING_SIGN());
 		$result->register("blaze_powder", fn() => Items::BLAZE_POWDER());
 		$result->register("blaze_rod", fn() => Items::BLAZE_ROD());
+		$result->register("bordure_indented_banner_pattern", fn() => Items::BORDURE_INDENTED_BANNER_PATTERN());
+		$result->register("creeper_banner_pattern", fn() => Items::CREEPER_BANNER_PATTERN());
+		$result->register("field_masoned_banner_pattern", fn() => Items::FIELD_MASONED_BANNER_PATTERN());
+		$result->register("flow_banner_pattern", fn() => Items::FLOW_BANNER_PATTERN());
+		$result->register("flower_banner_pattern", fn() => Items::FLOWER_BANNER_PATTERN());
+		$result->register("globe_banner_pattern", fn() => Items::GLOBE_BANNER_PATTERN());
+		$result->register("guster_banner_pattern", fn() => Items::GUSTER_BANNER_PATTERN());
+		$result->register("mojang_banner_pattern", fn() => Items::MOJANG_BANNER_PATTERN());
+		$result->register("piglin_banner_pattern", fn() => Items::PIGLIN_BANNER_PATTERN());
+		$result->register("skull_banner_pattern", fn() => Items::SKULL_BANNER_PATTERN());
+		$result->register("breeze_rod", fn() => Items::BREEZE_ROD());
 		$result->register("bleach", fn() => Items::BLEACH());
 		$result->register("boat", fn() => Items::OAK_BOAT());
 		$result->register("bone", fn() => Items::BONE());
@@ -1324,6 +1336,11 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("bread", fn() => Items::BREAD());
 		$result->register("brick", fn() => Items::BRICK());
 		$result->register("bucket", fn() => Items::BUCKET());
+		$result->register("cod_bucket", fn() => Items::COD_BUCKET());
+		$result->register("pufferfish_bucket", fn() => Items::PUFFERFISH_BUCKET());
+		$result->register("salmon_bucket", fn() => Items::SALMON_BUCKET());
+		$result->register("tadpole_bucket", fn() => Items::TADPOLE_BUCKET());
+		$result->register("tropical_fish_bucket", fn() => Items::TROPICAL_FISH_BUCKET());
 		$result->register("carrot", fn() => Items::CARROT());
 		$result->register("chain_boots", fn() => Items::CHAINMAIL_BOOTS());
 		$result->register("chain_chestplate", fn() => Items::CHAINMAIL_CHESTPLATE());
@@ -1487,14 +1504,16 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("golden_sword", fn() => Items::GOLDEN_SWORD());
 		$result->register("gunpowder", fn() => Items::GUNPOWDER());
 		$result->register("heart_of_the_sea", fn() => Items::HEART_OF_THE_SEA());
+		$result->register("heavy_core", fn() => Items::HEAVY_CORE());
 		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
+		$result->register("honey_block", fn() => Items::HONEY_BLOCK());
 		$result->register("bee_bucket", fn() => Items::BEE_BUCKET());
-		// Allow parsing /give scaffolding -> VanillaItems::SCAFFOLDING()
+		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("scaffolding", fn() => Items::SCAFFOLDING());
 		$result->register("host_armor_trim_smithing_template", fn() => Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
-		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("ice_bomb", fn() => Items::ICE_BOMB());
 		$result->register("ink_sac", fn() => Items::INK_SAC());
+		$result->register("lightning_rod", fn() => Items::LIGHTNING_ROD());
 		$result->register("iron_axe", fn() => Items::IRON_AXE());
 		$result->register("iron_boots", fn() => Items::IRON_BOOTS());
 		$result->register("iron_chestplate", fn() => Items::IRON_CHESTPLATE());
@@ -1635,6 +1654,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("spruce_boat", fn() => Items::SPRUCE_BOAT());
 		$result->register("spruce_hanging_sign", fn() => Items::SPRUCE_HANGING_SIGN());
 		$result->register("spyglass", fn() => Items::SPYGLASS());
+		$result->register("shield", fn() => Items::SHIELD());
+		$result->register("brush", fn() => Items::BRUSH());
 		$result->register("squid_spawn_egg", fn() => Items::SQUID_SPAWN_EGG());
 		$result->register("steak", fn() => Items::STEAK());
 		$result->register("stick", fn() => Items::STICK());
@@ -1646,6 +1667,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("stone_sword", fn() => Items::STONE_SWORD());
 		$result->register("string", fn() => Items::STRING());
 		$result->register("sugar", fn() => Items::SUGAR());
+		$result->register("suspicious_gravel", fn() => Items::SUSPICIOUS_GRAVEL());
+		$result->register("suspicious_sand", fn() => Items::SUSPICIOUS_SAND());
 		$result->register("suspicious_stew", fn() => Items::SUSPICIOUS_STEW());
 		$result->register("sweet_berries", fn() => Items::SWEET_BERRIES());
 		$result->register("tonic", fn() => Items::MEDICINE()->setType(MedicineType::TONIC));
@@ -1682,6 +1705,16 @@ final class StringToItemParser extends StringToTParser{
 	private array $reverseMap = [];
 
 	public function register(string $alias, \Closure $callback) : void{
+		// If an alias is already registered, treat this as an override instead of
+		// letting parent::register throw an exception. This can happen when the
+		// same alias is registered both as a block and as an item (registerBlock
+		// registers the alias earlier), so prefer to replace the existing
+		// registration to keep the parser consistent.
+		if($this->parse($alias) !== null){
+			$this->override($alias, $callback);
+			return;
+		}
+
 		parent::register($alias, $callback);
 		$item = $callback($alias);
 		$this->reverseMap[$item->getStateId()][$alias] = true;

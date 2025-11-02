@@ -389,14 +389,39 @@ final class ItemTypeIds{
 	public const PALE_OAK_SHELF = 20338;
 	public const SPRUCE_SHELF = 20339;
 	public const WARPED_SHELF = 20340;
+	// Armor stand item type id (added so VanillaItems::register finds a constant and does not generate a dynamic id)
+	public const ARMOR_STAND = 20341;
 	// Scaffolding item type id: present so VanillaItems won't generate a dynamic id at runtime.
 	public const SCAFFOLDING = 20342;
+	public const COPPER_NUGGET = 20343;
+	public const SHIELD = 20344;
+	public const BRUSH = 20345;
+	public const BREEZE_ROD = 20346;
+	public const HEAVY_CORE = 20347;
+	public const AXOLOTL_BUCKET = 20348;
+	public const COD_BUCKET = 20349;
+	public const PUFFERFISH_BUCKET = 20350;
+	public const SALMON_BUCKET = 20351;
+	public const TADPOLE_BUCKET = 20352;
+	public const TROPICAL_FISH_BUCKET = 20353;
+	public const BORDURE_INDENTED_BANNER_PATTERN = 20354;
+	public const CREEPER_BANNER_PATTERN = 20355;
+	public const FIELD_MASONED_BANNER_PATTERN = 20356;
+	public const FLOW_BANNER_PATTERN = 20357;
+	public const FLOWER_BANNER_PATTERN = 20358;
+	public const GLOBE_BANNER_PATTERN = 20359;
+	public const GUSTER_BANNER_PATTERN = 20360;
+	public const MOJANG_BANNER_PATTERN = 20361;
+	public const PIGLIN_BANNER_PATTERN = 20362;
+	public const SKULL_BANNER_PATTERN = 20363;
+	public const LIGHTNING_ROD = 20364;
+	public const HONEY_BLOCK = 20365;
+	public const COMPOSTER = 20366;
+	public const SUSPICIOUS_SAND = 20367;
+	public const SUSPICIOUS_GRAVEL = 20368;
 
 	public const FIRST_UNUSED_ITEM_ID = 99999;
 
-	// Armor stand item type id (added so VanillaItems::register finds a constant and does not generate a dynamic id)
-	public const ARMOR_STAND = 20341;
-	public const COPPER_NUGGET = 20343;
 
 
 

@@ -103,6 +103,7 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
+use pocketmine\item\Shield;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
@@ -2060,6 +2061,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			$returnedItems = [];
+			// @phpstan-ignore-next-line: false positive until analyser picks up updated signature
 			if ($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)) {
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
@@ -2814,6 +2816,50 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}
 
+	private function isShieldBlockingAttack(EntityDamageByEntityEvent $source, Shield $shield): bool
+	{
+		if (!$this->isUsingItem() || $this->hasItemCooldown($shield)) {
+			return false;
+		}
+
+		$damager = $source->getDamager();
+		if ($damager === null) {
+			return false;
+		}
+
+		$playerPos = $this->location;
+		$damagerPos = $damager->location;
+
+		$dx = $damagerPos->x - $playerPos->x;
+		$dy = ($damagerPos->y + $damager->size->getHeight() * 0.5) - ($playerPos->y + $this->size->getHeight() * 0.5);
+		$dz = $damagerPos->z - $playerPos->z;
+
+		$distanceSq = $dx * $dx + $dy * $dy + $dz * $dz;
+		if ($distanceSq <= 1.0e-6) {
+			return true;
+		}
+
+		$invDistance = 1.0 / sqrt($distanceSq);
+		$dx *= $invDistance;
+		$dy *= $invDistance;
+		$dz *= $invDistance;
+
+		$look = $this->getDirectionVector();
+		$viewLenSq = $look->x * $look->x + $look->y * $look->y + $look->z * $look->z;
+		if ($viewLenSq <= 1.0e-6) {
+			return false;
+		}
+
+		$invViewLen = 1.0 / sqrt($viewLenSq);
+		$viewX = $look->x * $invViewLen;
+		$viewY = $look->y * $invViewLen;
+		$viewZ = $look->z * $invViewLen;
+
+		$dot = $dx * $viewX + $dy * $viewY + $dz * $viewZ;
+
+		return $dot >= 0.35; // roughly within a 70-degree cone in front of the player
+	}
+
 	public function attack(EntityDamageEvent $source): void
 	{
 		if (!$this->isAlive()) {
@@ -2827,6 +2873,22 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$source->cancel();
 		} elseif ($this->allowFlight && $source->getCause() === EntityDamageEvent::CAUSE_FALL) {
 			$source->cancel();
+		}
+
+		$heldItem = $this->inventory->getItemInHand();
+		if ($source instanceof EntityDamageByEntityEvent && $heldItem instanceof Shield && $this->isShieldBlockingAttack($source, $heldItem)) {
+			$source->cancel();
+			$source->setKnockBack(0.0);
+			$this->getWorld()->addSound($this->location, new EntityAttackNoDamageSound());
+
+			if ($heldItem->applyDamage(1)) {
+				$this->inventory->setItemInHand($heldItem);
+				if ($heldItem->isBroken()) {
+					$this->broadcastSound(new ItemBreakSound());
+				}
+			}
+
+			$this->resetItemCooldown($heldItem, $heldItem->getCooldownTicks());
 		}
 
 		parent::attack($source);

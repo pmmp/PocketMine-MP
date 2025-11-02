@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
@@ -465,6 +466,16 @@ final class VanillaItems
 		self::register("baked_potato", fn(IID $id) => new BakedPotato($id, "Baked Potato"));
 		self::register("bamboo", fn(IID $id) => new Bamboo($id, "Bamboo"));
 		self::register("banner", fn(IID $id) => new Banner($id, Blocks::BANNER(), Blocks::WALL_BANNER()));
+		self::register("bordure_indented_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Bordure Indented Banner Pattern", BannerPatternType::CURLY_BORDER));
+		self::register("creeper_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Creeper Charge Banner Pattern", BannerPatternType::CREEPER));
+		self::register("field_masoned_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Field Masoned Banner Pattern", BannerPatternType::BRICKS));
+		self::register("flow_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Flow Banner Pattern", BannerPatternType::FLOW));
+		self::register("flower_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Flower Charge Banner Pattern", BannerPatternType::FLOWER));
+		self::register("globe_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Globe Banner Pattern", BannerPatternType::GLOBE));
+		self::register("guster_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Guster Banner Pattern", BannerPatternType::GUSTER));
+		self::register("mojang_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Mojang Banner Pattern", BannerPatternType::MOJANG));
+		self::register("piglin_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Snout Banner Pattern", BannerPatternType::PIGLIN));
+		self::register("skull_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Skull Charge Banner Pattern", BannerPatternType::SKULL));
 		self::register("beetroot", fn(IID $id) => new Beetroot($id, "Beetroot"));
 		self::register("beetroot_seeds", fn(IID $id) => new BeetrootSeeds($id, "Beetroot Seeds"));
 		self::register("beetroot_soup", fn(IID $id) => new BeetrootSoup($id, "Beetroot Soup"));
@@ -473,6 +484,7 @@ final class VanillaItems
 		self::register("birch_shelf", fn() => new ItemBlock(Blocks::BIRCH_SHELF()));
 		self::register("blaze_powder", fn(IID $id) => new Item($id, "Blaze Powder"));
 		self::register("blaze_rod", fn(IID $id) => new BlazeRod($id, "Blaze Rod"));
+		self::register("breeze_rod", fn(IID $id) => new BreezeRod($id));
 		self::register("bleach", fn(IID $id) => new Item($id, "Bleach"));
 		self::register("bone", fn(IID $id) => new Item($id, "Bone"));
 		self::register("bone_meal", fn(IID $id) => new Fertilizer($id, "Bone Meal"));
@@ -483,7 +495,13 @@ final class VanillaItems
 		self::register("bread", fn(IID $id) => new Bread($id, "Bread"));
 		self::register("brick", fn(IID $id) => new Item($id, "Brick"));
 		self::register("bucket", fn(IID $id) => new Bucket($id, "Bucket"));
+		self::register("axolotl_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Axolotl"));
 		self::register("bee_bucket", fn(IID $id) => new BeeBucket($id, "Bee Bucket"));
+		self::register("cod_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Cod"));
+		self::register("pufferfish_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Pufferfish"));
+		self::register("salmon_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Salmon"));
+		self::register("tadpole_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Tadpole"));
+		self::register("tropical_fish_bucket", fn(IID $id) => new MobBucketItem($id, "Bucket of Tropical Fish"));
 		self::register("carrot", fn(IID $id) => new Carrot($id, "Carrot"));
 		self::register("charcoal", fn(IID $id) => new Coal($id, "Charcoal"));
 		self::register("cherry_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::CHERRY_SIGN(), Blocks::CHERRY_WALL_SIGN()));
@@ -587,16 +605,16 @@ final class VanillaItems
 		self::register("golden_carrot", fn(IID $id) => new GoldenCarrot($id, "Golden Carrot"));
 		self::register("gunpowder", fn(IID $id) => new Item($id, "Gunpowder"));
 		self::register("heart_of_the_sea", fn(IID $id) => new Item($id, "Heart of the Sea"));
+		self::register("heavy_core", fn(IID $id) => new HeavyCore($id));
 		self::register("honey_bottle", fn(IID $id) => new HoneyBottle($id, "Honey Bottle"));
 		self::register("honeycomb", fn(IID $id) => new Item($id, "Honeycomb"));
+		self::register("honey_block", fn() => new ItemBlock(Blocks::HONEY_BLOCK()));
 		// Register beehive as a block-item so it appears in inventories and can be placed
 		self::_registryRegister("beehive", Blocks::BEEHIVE()->asItem());
-		// Temporarily register scaffolding as a plain item (not ItemBlock).
-		// This allows /give scaffolding to work without triggering blockstate serialization
-		// while a full scaffolding bedrock mapping is prepared.
-		self::register("scaffolding", fn(IID $id) => new Item($id, "Scaffolding"));
+		self::register("scaffolding", fn() => new ItemBlock(Blocks::SCAFFOLDING()));
 		self::register("ice_bomb", fn(IID $id) => new IceBomb($id, "Ice Bomb"));
 		self::register("ink_sac", fn(IID $id) => new Item($id, "Ink Sac"));
+		self::register("lightning_rod", fn() => new ItemBlock(Blocks::LIGHTNING_ROD()));
 		self::register("iron_ingot", fn(IID $id) => new Item($id, "Iron Ingot"));
 		self::register("iron_nugget", fn(IID $id) => new Item($id, "Iron Nugget"));
 		self::register("jungle_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::JUNGLE_SIGN(), Blocks::JUNGLE_WALL_SIGN()));
@@ -722,10 +740,14 @@ final class VanillaItems
 		self::register("spruce_hanging_sign", fn(IID $id) => new HangingSign($id, "Spruce Hanging Sign", Blocks::SPRUCE_CEILING_CENTER_HANGING_SIGN(), Blocks::SPRUCE_CEILING_EDGES_HANGING_SIGN(), Blocks::SPRUCE_WALL_HANGING_SIGN()));
 		self::register("spruce_shelf", fn() => new ItemBlock(Blocks::SPRUCE_SHELF()));
 		self::register("spyglass", fn(IID $id) => new Spyglass($id, "Spyglass"));
+		self::register("shield", fn(IID $id) => new Shield($id, "Shield"));
+		self::register("brush", fn(IID $id) => new Brush($id, "Brush"));
 		self::register("steak", fn(IID $id) => new Steak($id, "Steak"));
 		self::register("stick", fn(IID $id) => new Stick($id, "Stick"));
 		self::register("string", fn(IID $id) => new StringItem($id, "String"));
 		self::register("sugar", fn(IID $id) => new Item($id, "Sugar"));
+		self::register("suspicious_gravel", fn() => new ItemBlock(Blocks::SUSPICIOUS_GRAVEL()));
+		self::register("suspicious_sand", fn() => new ItemBlock(Blocks::SUSPICIOUS_SAND()));
 		self::register("suspicious_stew", fn(IID $id) => new SuspiciousStew($id, "Suspicious Stew"));
 		self::register("sweet_berries", fn(IID $id) => new SweetBerries($id, "Sweet Berries"));
 		self::register("torchflower_seeds", fn(IID $id) => new TorchflowerSeeds($id, "Torchflower Seeds"));

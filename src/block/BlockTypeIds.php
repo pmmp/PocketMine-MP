@@ -851,7 +851,12 @@ final class BlockTypeIds{
 	public const BAMBOO_SHELF = 10825;
 
 	public const BEEHIVE = 10826;
-	public const FIRST_UNUSED_BLOCK_ID = 10827;
+	public const HONEY_BLOCK = 10827;
+	public const SUSPICIOUS_SAND = 10828;
+	public const SUSPICIOUS_GRAVEL = 10829;
+	public const COMPOSTER = 10830;
+	public const SCAFFOLDING = 10831;
+	public const FIRST_UNUSED_BLOCK_ID = 10832;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

@@ -1558,11 +1558,6 @@ final class KnownTranslationFactory
 	{
 		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GLASS, []);
 	}
-	public static function itemGroup_name_hard_glass(): Translatable
-	{
-		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_HARD_GLASS, []);
-	}
-
 	public static function itemGroup_name_glassPane(): Translatable
 	{
 		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_GLASSPANE, []);
