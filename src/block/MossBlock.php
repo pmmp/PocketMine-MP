@@ -47,13 +47,11 @@ class MossBlock extends Opaque{
 			return false;
 		}
 
-		$world = $this->position->getWorld();
-
 		$item->pop();
 
+		$world = $this->position->getWorld();
 		$maxX = mt_rand(0, 1) === 0 ? 2 : 3;
 		$maxZ = mt_rand(0, 1) === 0 ? 2 : 3;
-
 		$originX = $this->position->x;
 		$originY = $this->position->y;
 		$originZ = $this->position->z;
@@ -63,23 +61,16 @@ class MossBlock extends Opaque{
 				$absdx = $dx < 0 ? -$dx : $dx;
 				$absdz = $dz < 0 ? -$dz : $dz;
 
-				if($absdx === $maxX && $absdz === $maxZ){
+				if(($absdx === $maxX && $absdz === $maxZ) || (($absdx === $maxX || $absdz === $maxZ) && mt_rand(1, 100) > 75)){
 					continue;
-				}
-
-				if($absdx === $maxX || $absdz === $maxZ){
-					if(mt_rand(1, 100) > 75){
-						continue;
-					}
 				}
 
 				$x = $originX + $dx;
 				$z = $originZ + $dz;
 				$startY = $originY + 1;
-
 				$foundBlock = null;
-
 				$startBlock = $world->getBlockAt($x, $startY, $z);
+
 				if($startBlock->getTypeId() === BlockTypeIds::AIR){
 					for($y = $startY; $y >= $startY - 6; --$y){
 						$b = $world->getBlockAt($x, $y, $z);
@@ -99,13 +90,12 @@ class MossBlock extends Opaque{
 				}
 
 				if($foundBlock !== null && $foundBlock->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE) &&
-					($foundBlock === $this || BlockEventHelper::spread($foundBlock, (clone $this), $this))){
-					if(mt_rand(1, 100) <= 60){
-						$above = $foundBlock->getSide(Facing::UP);
-						$tx = new BlockTransaction($world);
-						($this->vegetationSelector)($tx, $above->getPosition());
-						$tx->apply();
-					}
+					($foundBlock === $this || BlockEventHelper::spread($foundBlock, (clone $this), $this)) &&
+					mt_rand(1, 100) <= 60){
+					$above = $foundBlock->getSide(Facing::UP);
+					$tx = new BlockTransaction($world);
+					($this->vegetationSelector)($tx, $above->getPosition());
+					$tx->apply();
 				}
 			}
 		}
