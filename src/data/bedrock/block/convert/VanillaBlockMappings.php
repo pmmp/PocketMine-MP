@@ -65,7 +65,7 @@ use pocketmine\block\Lectern;
 use pocketmine\block\Lever;
 use pocketmine\block\Light;
 use pocketmine\block\MobHead;
-use pocketmine\block\MossyCarpet;
+use pocketmine\block\PaleMossCarpet;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
@@ -1404,11 +1404,11 @@ final class VanillaBlockMappings{
 
 		//P
 		$reg->mapModel(Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([
-			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(MossyCarpet $b) => $b->isTop(), fn(MossyCarpet $b, bool $v) => $b->setTop($v)),
-			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::NORTH)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::NORTH, $v->deserialize())),
-			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::EAST)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::EAST, $v->deserialize())),
-			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::SOUTH)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::SOUTH, $v->deserialize())),
-			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(MossyCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::WEST)), fn(MossyCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::WEST, $v->deserialize())),
+			new BoolProperty(StateNames::UPPER_BLOCK_BIT, fn(PaleMossCarpet $b) => $b->isTop(), fn(PaleMossCarpet $b, bool $v) => $b->setTop($v)),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(PaleMossCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::NORTH)), fn(PaleMossCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::NORTH, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(PaleMossCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::EAST)), fn(PaleMossCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::EAST, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(PaleMossCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::SOUTH)), fn(PaleMossCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::SOUTH, $v->deserialize())),
+			new ValueFromStringProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, EnumFromRawStateMap::string(WallConnectionTypeShim::class, fn(WallConnectionTypeShim $case) => $case->getValue()), fn(PaleMossCarpet $b) => WallConnectionTypeShim::serialize($b->getSideConnection(Facing::WEST)), fn(PaleMossCarpet $b, WallConnectionTypeShim $v) => $b->setSideConnection(Facing::WEST, $v->deserialize())),
 		]));
 		$reg->mapModel(Model::create(Blocks::PINK_PETALS(), Ids::PINK_PETALS)->properties([
 			//Pink petals only uses 0-3, but GROWTH state can go up to 7

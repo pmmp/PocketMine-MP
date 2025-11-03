@@ -31,9 +31,11 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
+use function abs;
 use function mt_rand;
 
 class MossBlock extends Opaque{
+	protected const VERTICAL_RANGE = 5;
 
 	/**
 	 * @phpstan-param \Closure(BlockTransaction, Position): void $vegetationSelector
@@ -58,10 +60,10 @@ class MossBlock extends Opaque{
 
 		for($dx = -$maxX; $dx <= $maxX; ++$dx){
 			for($dz = -$maxZ; $dz <= $maxZ; ++$dz){
-				$absdx = $dx < 0 ? -$dx : $dx;
-				$absdz = $dz < 0 ? -$dz : $dz;
-
-				if(($absdx === $maxX && $absdz === $maxZ) || (($absdx === $maxX || $absdz === $maxZ) && mt_rand(1, 100) > 75)){
+				if(
+					(abs($dx) === $maxX && abs($dz) === $maxZ) ||
+					((abs($dx) === $maxX || abs($dz) === $maxZ) && mt_rand(1, 100) > 75)
+				){
 					continue;
 				}
 
@@ -69,29 +71,22 @@ class MossBlock extends Opaque{
 				$z = $originZ + $dz;
 				$startY = $originY + 1;
 				$foundBlock = null;
-				$startBlock = $world->getBlockAt($x, $startY, $z);
+				$direction = $world->getBlockAt($x, $startY, $z)->getTypeId() === BlockTypeIds::AIR ? -1 : 1;
+				$limit = $direction === -1 ? $originY - self::VERTICAL_RANGE : $originY + self::VERTICAL_RANGE;
 
-				if($startBlock->getTypeId() === BlockTypeIds::AIR){
-					for($y = $startY; $y >= $startY - 6; --$y){
-						$b = $world->getBlockAt($x, $y, $z);
-						if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
-							$foundBlock = $b;
-							break;
-						}
-					}
-				}else{
-					for($y = $startY; $y <= $startY + 4; ++$y){
-						$b = $world->getBlockAt($x, $y, $z);
-						if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
-							$foundBlock = $b;
-							break;
-						}
+				for($y = $startY; $direction === -1 ? $y >= $limit : $y <= $limit; $y += $direction){
+					$b = $world->getBlockAt($x, $y, $z);
+					if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
+						$foundBlock = $b;
+						break;
 					}
 				}
 
-				if($foundBlock !== null && $foundBlock->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE) &&
-					($foundBlock === $this || BlockEventHelper::spread($foundBlock, (clone $this), $this)) &&
-					mt_rand(1, 100) <= 60){
+				if(
+					$foundBlock !== null && $foundBlock->hasTypeTag(BlockTypeTags::MOSS_REPLACEABLE) &&
+					($foundBlock->hasSameTypeId($this) || BlockEventHelper::spread($foundBlock, (clone $this), $this)) &&
+					mt_rand(1, 100) <= 60
+				){
 					$above = $foundBlock->getSide(Facing::UP);
 					$tx = new BlockTransaction($world);
 					($this->vegetationSelector)($tx, $above->getPosition());

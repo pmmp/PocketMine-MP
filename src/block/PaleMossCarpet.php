@@ -35,7 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class MossyCarpet extends Flowable{
+class PaleMossCarpet extends Flowable{
 	use StaticSupportTrait;
 
 	protected bool $top = false;
@@ -114,13 +114,13 @@ class MossyCarpet extends Flowable{
 
 				if($wallside === WallConnectionType::SHORT){
 					$above = $this->getSide(Facing::UP);
-					if($above instanceof MossyCarpet && $above->hasSameTypeId($this) && $above->getSideConnection($f) !== null && $above->isTop()){
+					if($above instanceof PaleMossCarpet && $above->hasSameTypeId($this) && $above->getSideConnection($f) !== null && $above->isTop()){
 						$wallside = WallConnectionType::TALL;
 					}
 
 					if($this->isTop()){
 						$below = $this->getSide(Facing::DOWN);
-						if($below instanceof MossyCarpet && $below->hasSameTypeId($this) && $below->getSideConnection($f) === null){
+						if($below instanceof PaleMossCarpet && $below->hasSameTypeId($this) && $below->getSideConnection($f) === null){
 							$wallside = null;
 						}
 					}
@@ -157,7 +157,7 @@ class MossyCarpet extends Flowable{
 		if(!$this->isTop()){
 			return $below->getTypeId() !== BlockTypeIds::AIR;
 		}
-		return $below instanceof MossyCarpet && $below->hasSameTypeId($this) && !$below->isTop();
+		return $below instanceof PaleMossCarpet && $below->hasSameTypeId($this) && !$below->isTop();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -173,10 +173,10 @@ class MossyCarpet extends Flowable{
 		return false;
 	}
 
-	private function createTopperWithSide(Block $base) : ?MossyCarpet{
+	private function createTopperWithSide(Block $base) : ?PaleMossCarpet{
 		$above = $base->getSide(Facing::UP);
-		if(!($base instanceof MossyCarpet && $base->hasSameTypeId($this)) ||
-			(!$above->canBeReplaced() && !($above instanceof MossyCarpet && $above->hasSameTypeId($this)))){
+		if(!($base instanceof PaleMossCarpet && $base->hasSameTypeId($this)) ||
+			(!$above->canBeReplaced() && !($above instanceof PaleMossCarpet && $above->hasSameTypeId($this)))){
 			return null;
 		}
 

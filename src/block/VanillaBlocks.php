@@ -584,7 +584,7 @@ use function strtolower;
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
  * @method static MossBlock MOSS_BLOCK()
- * @method static NormalCarpet MOSS_CARPET()
+ * @method static MossCarpet MOSS_CARPET()
  * @method static Opaque MUD()
  * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
  * @method static Opaque MUD_BRICKS()
@@ -634,7 +634,7 @@ use function strtolower;
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
  * @method static MossBlock PALE_MOSS_BLOCK()
- * @method static MossyCarpet PALE_MOSS_CARPET()
+ * @method static PaleMossCarpet PALE_MOSS_CARPET()
  * @method static WoodenButton PALE_OAK_BUTTON()
  * @method static CeilingCenterHangingSign PALE_OAK_CEILING_CENTER_HANGING_SIGN()
  * @method static CeilingEdgesHangingSign PALE_OAK_CEILING_EDGES_HANGING_SIGN()
@@ -970,8 +970,8 @@ final class VanillaBlocks{
 		self::register("cobblestone_stairs", fn(BID $id) => new Stair($id, "Cobblestone Stairs", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone_stairs", fn(BID $id) => new Stair($id, "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register("moss_carpet", fn(BID $id) => new NormalCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
-		self::register("pale_moss_carpet", fn(BID $id) => new MossyCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
 		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
 			$rand = mt_rand(1, 10000);
@@ -982,9 +982,9 @@ final class VanillaBlocks{
 			}elseif($rand <= 5208 + 2604 + 1042){
 				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
 			}elseif($rand <= 5208 + 2604 + 1042 + 729){
-				// Azalea 7.29%
+				//TODO: Azalea 7.29%
 			}else{
-				// Flowering Azalea 4.17%
+				//TODO: Flowering Azalea 4.17%
 			}
 		}));
 		self::register("pale_moss_block", fn(BID $id) => new class($id, "Pale Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{

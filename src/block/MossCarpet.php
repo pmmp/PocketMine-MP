@@ -27,7 +27,7 @@ use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class NormalCarpet extends Flowable{
+class MossCarpet extends Flowable{
 	use StaticSupportTrait;
 
 	protected function recalculateCollisionBoxes() : array{
