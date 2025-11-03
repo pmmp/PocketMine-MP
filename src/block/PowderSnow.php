@@ -34,10 +34,6 @@ use pocketmine\world\sound\Sound;
 
 class PowderSnow extends Flowable{
 
-	public function hasEntityCollision() : bool{
-		return true;
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
@@ -53,6 +49,10 @@ class PowderSnow extends Flowable{
 	public function onEntityLand(Entity $entity) : ?float{
 		$entity->resetFallDistance();
 		return null;
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
 	}
 
 	public function onEntityInside(Entity $entity) : bool{

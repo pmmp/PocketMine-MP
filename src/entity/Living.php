@@ -504,7 +504,7 @@ abstract class Living extends Entity{
 			if($this->freezeProgressTicks >= $threshold && (($this->freezeProgressTicks % 40 === 0) || $tickDiff > 40)){
 				$this->applyFreezeDamage();
 			}
-			//apply movement modifier
+			//TODO: apply movement modifier
 			return true;
 		}
 
