@@ -69,13 +69,10 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\CloningRegistryTrait;
-use pocketmine\world\BlockTransaction;
 use pocketmine\world\generator\object\TreeType;
-use pocketmine\world\Position;
 use function is_int;
 use function mb_strtolower;
 use function mb_strtoupper;
-use function mt_rand;
 use function strtolower;
 
 /**
@@ -633,7 +630,7 @@ use function strtolower;
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
- * @method static MossBlock PALE_MOSS_BLOCK()
+ * @method static PaleMossBlock PALE_MOSS_BLOCK()
  * @method static PaleMossCarpet PALE_MOSS_CARPET()
  * @method static WoodenButton PALE_OAK_BUTTON()
  * @method static CeilingCenterHangingSign PALE_OAK_CEILING_CENTER_HANGING_SIGN()
@@ -970,42 +967,6 @@ final class VanillaBlocks{
 		self::register("cobblestone_stairs", fn(BID $id) => new Stair($id, "Cobblestone Stairs", $cobblestoneBreakInfo));
 		self::register("mossy_cobblestone_stairs", fn(BID $id) => new Stair($id, "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
-		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
-		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
-		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
-			$rand = mt_rand(1, 10000);
-			if($rand <= 5208){
-				$tx->addBlock($pos, VanillaBlocks::TALL_GRASS());
-			}elseif($rand <= 5208 + 2604){
-				$tx->addBlock($pos, VanillaBlocks::MOSS_CARPET());
-			}elseif($rand <= 5208 + 2604 + 1042){
-				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
-			}elseif($rand <= 5208 + 2604 + 1042 + 729){
-				//TODO: Azalea 7.29%
-			}else{
-				//TODO: Flowering Azalea 4.17%
-			}
-		}));
-		self::register("pale_moss_block", fn(BID $id) => new class($id, "Pale Moss Block", $mossBreakInfo, static function(BlockTransaction $tx, Position $pos) : void{
-			$rand = mt_rand(1, 10000);
-			if($rand <= 5882){
-				$tx->addBlock($pos, VanillaBlocks::TALL_GRASS());
-			}elseif($rand <= 5882 + 2941){
-				$tx->addBlock($pos, VanillaBlocks::PALE_MOSS_CARPET());
-			}else{
-				$tx->addBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS())->addBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
-			}
-		}) extends MossBlock{
-			public function getFlameEncouragement() : int{
-				return 15;
-			}
-
-			public function getFlammability() : int{
-				return 100;
-			}
-		});
-
 		self::register("cobweb", fn(BID $id) => new Cobweb($id, "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", fn(BID $id) => new CocoaBlock($id, "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
 		self::register("coral_block", fn(BID $id) => new CoralBlock($id, "Coral Block", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
@@ -1116,6 +1077,13 @@ final class VanillaBlocks{
 		self::register("melon", fn(BID $id) => new Melon($id, "Melon Block", new Info(BreakInfo::axe(1.0))));
 		self::register("melon_stem", fn(BID $id) => new MelonStem($id, "Melon Stem", new Info(BreakInfo::instant())));
 		self::register("monster_spawner", fn(BID $id) => new MonsterSpawner($id, "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))), TileMonsterSpawner::class);
+
+		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
+		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $mossBreakInfo));
+		self::register("pale_moss_block", fn(BID $id) => new PaleMossBlock($id, "Pale Moss Block", $mossBreakInfo));
+		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+
 		self::register("mycelium", fn(BID $id) => new Mycelium($id, "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 
 		$netherBrickBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));

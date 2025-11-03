@@ -29,20 +29,12 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 use function abs;
 use function mt_rand;
 
 class MossBlock extends Opaque{
 	protected const VERTICAL_RANGE = 5;
-
-	/**
-	 * @phpstan-param \Closure(BlockTransaction, Position): void $vegetationSelector
-	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, private readonly \Closure $vegetationSelector){
-		parent::__construct($idInfo, $name, $typeInfo);
-	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if(!($item instanceof Fertilizer) || $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR){
@@ -87,14 +79,33 @@ class MossBlock extends Opaque{
 					($foundBlock->hasSameTypeId($this) || BlockEventHelper::spread($foundBlock, (clone $this), $this)) &&
 					mt_rand(1, 100) <= 60
 				){
-					$above = $foundBlock->getSide(Facing::UP);
-					$tx = new BlockTransaction($world);
-					($this->vegetationSelector)($tx, $above->getPosition());
-					$tx->apply();
+					$this->selectVegetation($foundBlock->getSide(Facing::UP)->getPosition());
 				}
 			}
 		}
 
 		return true;
+	}
+
+	protected function selectVegetation(Position $pos) : void{
+		$world = $pos->getWorld();
+		if(!$world->isInWorld($pos->x, $pos->y, $pos->z)){
+			return;
+		}
+		$rand = mt_rand(1, 10000);
+		if($rand <= 5208){
+			$world->setBlock($pos, VanillaBlocks::TALL_GRASS());
+		}elseif($rand <= 5208 + 2604){
+			$world->setBlock($pos, VanillaBlocks::MOSS_CARPET());
+		}elseif($rand <= 5208 + 2604 + 1042){
+			if($world->isInWorld($pos->x, $pos->y + 1, $pos->z)){
+				$world->setBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS());
+				$world->setBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
+			}
+		}elseif($rand <= 5208 + 2604 + 1042 + 729){
+			//TODO: Azalea 7.29%
+		}else{
+			//TODO: Flowering Azalea 4.17%
+		}
 	}
 }
