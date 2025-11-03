@@ -42,7 +42,7 @@ class PaleMossCarpet extends Flowable{
 	protected array $sides = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->enumSet($this->sides, PaleMossCarpetVineGrowth::cases());
+		$w->paleMossCarpetSides($this->sides);
 	}
 
 	public function getVineGrowth(int $face) : PaleMossCarpetVineGrowth{
@@ -78,15 +78,14 @@ class PaleMossCarpet extends Flowable{
 		$tx->addBlock($blockReplace->position, $this);
 
 		$up = $blockReplace->getSide(Facing::UP);
-		if(!($up->canBeReplaced() || $up instanceof PaleMossCarpet) || !$this->hasFaces()){
-			return false;
-		}
+		if(($up->canBeReplaced() || $up instanceof PaleMossCarpet) && $this->hasFaces()){
+			$top = $this->createTopperWithSide($this);
+			if($top !== null){
+				$tx->addBlock($up->position, $top);
+			}
 
-		$top = $this->createTopperWithSide($this);
-		if($top !== null){
-			$tx->addBlock($up->position, $top);
+			return true;
 		}
-
 		return true;
 	}
 
@@ -102,7 +101,7 @@ class PaleMossCarpet extends Flowable{
 
 				if($side === PaleMossCarpetVineGrowth::HALF){
 					$above = $this->getSide(Facing::UP);
-					if($above instanceof PaleMossCarpet && $above->getVineGrowth($f) !== PaleMossCarpetVineGrowth::NONE && !$above->isCarpetPart()){
+					if($above instanceof PaleMossCarpet && !$above->isCarpetPart() && $above->getVineGrowth($f) !== PaleMossCarpetVineGrowth::NONE){
 						$side = PaleMossCarpetVineGrowth::FULL;
 					}
 

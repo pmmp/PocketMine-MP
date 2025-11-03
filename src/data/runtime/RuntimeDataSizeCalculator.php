@@ -97,6 +97,10 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(7);
 	}
 
+	public function paleMossCarpetSides(array &$sides) : void{
+		$this->addBits(7);
+	}
+
 	public function brewingStandSlots(array &$slots) : void{
 		$this->addBits(count(BrewingStandSlot::cases()));
 	}

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\PaleMossCarpetVineGrowth;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Facing;
 
@@ -76,6 +77,12 @@ interface RuntimeDataDescriber extends RuntimeEnumDescriber{
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, WallConnectionType> $connections
 	 */
 	public function wallConnections(array &$connections) : void;
+
+	/**
+	 * @param PaleMossCarpetVineGrowth[] $sides
+	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, PaleMossCarpetVineGrowth> $sides
+	 */
+	public function paleMossCarpetSides(array &$sides) : void;
 
 	/**
 	 * @param BrewingStandSlot[] $slots

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\PaleMossCarpetVineGrowth;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
@@ -190,6 +191,29 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 		}
 
 		$connections = $result;
+	}
+
+	/**
+	 * Read packed pale moss carpet vine growth for horizontal faces. Uses base-3 encoding like wallConnections.
+	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, PaleMossCarpetVineGrowth> $sides
+	 */
+	public function paleMossCarpetSides(array &$sides) : void{
+		$result = [];
+		$offset = 0;
+		$packed = $this->readBoundedIntAuto(0, (3 ** 4) - 1);
+		foreach(Facing::HORIZONTAL as $facing){
+			$type = intdiv($packed, (3 ** $offset)) % 3;
+			if($type !== 0){
+				$result[$facing] = match($type){
+					1 => PaleMossCarpetVineGrowth::HALF,
+					2 => PaleMossCarpetVineGrowth::FULL,
+					default => throw new AssumptionFailedError("Unreachable")
+				};
+			}
+			$offset++;
+		}
+
+		$sides = $result;
 	}
 
 	/**
