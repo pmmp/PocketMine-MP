@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
+use pocketmine\block\utils\PaleMossCarpetVineGrowth;
 use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\block\utils\WallConnectionType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -38,22 +38,19 @@ use pocketmine\world\BlockTransaction;
 class PaleMossCarpet extends Flowable{
 	use StaticSupportTrait;
 
-	protected bool $top = false;
-
-	/** @var WallConnectionType[] */
+	/** @var PaleMossCarpetVineGrowth[] */
 	protected array $sides = [];
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
-		$w->wallConnections($this->sides);
-		$w->bool($this->top);
+		$w->enumSet($this->sides, PaleMossCarpetVineGrowth::cases());
 	}
 
-	public function getSideConnection(int $face) : ?WallConnectionType{
-		return $this->sides[$face] ?? null;
+	public function getVineGrowth(int $face) : PaleMossCarpetVineGrowth{
+		return $this->sides[$face] ?? PaleMossCarpetVineGrowth::NONE;
 	}
 
-	public function setSideConnection(int $face, ?WallConnectionType $value) : self{
-		if($value === null){
+	public function setVineGrowth(int $face, PaleMossCarpetVineGrowth $value) : self{
+		if($value === PaleMossCarpetVineGrowth::NONE){
 			unset($this->sides[$face]);
 			return $this;
 		}
@@ -61,16 +58,7 @@ class PaleMossCarpet extends Flowable{
 		return $this;
 	}
 
-	public function isTop() : bool{ return $this->top; }
-
-	public function setTop(bool $top) : self{
-		$this->top = $top;
-		return $this;
-	}
-
-	public function getDrops(Item $item) : array{
-		return $this->isTop() ? [] : parent::getDrops($item);
-	}
+	public function isCarpetPart() : bool{ return true; }
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
@@ -78,7 +66,7 @@ class PaleMossCarpet extends Flowable{
 
 	protected function hasFaces() : bool{
 		foreach(Facing::HORIZONTAL as $f){
-			if($this->getSideConnection($f) !== null){
+			if($this->getVineGrowth($f) !== PaleMossCarpetVineGrowth::NONE){
 				return true;
 			}
 		}
@@ -90,7 +78,7 @@ class PaleMossCarpet extends Flowable{
 		$tx->addBlock($blockReplace->position, $this);
 
 		$up = $blockReplace->getSide(Facing::UP);
-		if(!($up->canBeReplaced() || $up->hasSameTypeId($this)) || !$this->hasFaces()){
+		if(!($up->canBeReplaced() || $up instanceof PaleMossCarpet) || !$this->hasFaces()){
 			return false;
 		}
 
@@ -106,29 +94,29 @@ class PaleMossCarpet extends Flowable{
 		$changed = 0;
 
 		foreach(Facing::HORIZONTAL as $f){
-			$lastWallside = $this->getSideConnection($f);
-			$wallside = null;
+			$lastSide = $this->getVineGrowth($f);
+			$side = PaleMossCarpetVineGrowth::NONE;
 
 			if($this->getAdjacentSupportType($f)->hasEdgeSupport()){
-				$wallside = $this->isTop() ? ($this->getSideConnection($f) ?? null) : WallConnectionType::SHORT;
+				$side = !$this->isCarpetPart() ? $this->getVineGrowth($f) : PaleMossCarpetVineGrowth::HALF;
 
-				if($wallside === WallConnectionType::SHORT){
+				if($side === PaleMossCarpetVineGrowth::HALF){
 					$above = $this->getSide(Facing::UP);
-					if($above instanceof PaleMossCarpet && $above->hasSameTypeId($this) && $above->getSideConnection($f) !== null && $above->isTop()){
-						$wallside = WallConnectionType::TALL;
+					if($above instanceof PaleMossCarpet && $above->getVineGrowth($f) !== PaleMossCarpetVineGrowth::NONE && !$above->isCarpetPart()){
+						$side = PaleMossCarpetVineGrowth::FULL;
 					}
 
-					if($this->isTop()){
+					if(!$this->isCarpetPart()){
 						$below = $this->getSide(Facing::DOWN);
-						if($below instanceof PaleMossCarpet && $below->hasSameTypeId($this) && $below->getSideConnection($f) === null){
-							$wallside = null;
+						if($below instanceof PaleMossCarpet && $below->getVineGrowth($f) === PaleMossCarpetVineGrowth::NONE){
+							$side = PaleMossCarpetVineGrowth::NONE;
 						}
 					}
 				}
 			}
 
-			if($lastWallside !== $wallside){
-				$this->setSideConnection($f, $wallside);
+			if($lastSide !== $side){
+				$this->setVineGrowth($f, $side);
 				$changed++;
 			}
 		}
@@ -143,7 +131,7 @@ class PaleMossCarpet extends Flowable{
 			return;
 		}
 		$updated = $this->recalculateConnections();
-		if($this->isTop() && !$this->hasFaces()){
+		if(!$this->isCarpetPart() && !$this->hasFaces()){
 			$world->useBreakOn($this->position);
 			return;
 		}
@@ -152,16 +140,16 @@ class PaleMossCarpet extends Flowable{
 		}
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
+	protected function canBeSupportedAt(Block $block) : bool{
 		$below = $block->getSide(Facing::DOWN);
-		if(!$this->isTop()){
+		if($this->isCarpetPart()){
 			return $below->getTypeId() !== BlockTypeIds::AIR;
 		}
-		return $below instanceof PaleMossCarpet && $below->hasSameTypeId($this) && !$below->isTop();
+		return $below instanceof PaleMossCarpet && $below->isCarpetPart();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(!$item instanceof Fertilizer || $this->isTop()){
+		if(!$item instanceof Fertilizer || !$this->isCarpetPart()){
 			return false;
 		}
 
@@ -173,22 +161,20 @@ class PaleMossCarpet extends Flowable{
 		return false;
 	}
 
-	private function createTopperWithSide(Block $base) : ?PaleMossCarpet{
+	protected function createTopperWithSide(Block $base) : ?PaleMossCarpet{
 		$above = $base->getSide(Facing::UP);
-		if(!($base instanceof PaleMossCarpet && $base->hasSameTypeId($this)) ||
-			(!$above->canBeReplaced() && !($above instanceof PaleMossCarpet && $above->hasSameTypeId($this)))){
+		if(!$base instanceof PaleMossCarpet || (!$above->canBeReplaced() && !$above instanceof PaleMossCarpet)){
 			return null;
 		}
 
-		$new = clone $this;
-		$new->setTop(true);
+		$new = VanillaBlocks::PALE_MOSS_CARPET_VINE();
 
 		foreach(Facing::HORIZONTAL as $f){
-			$side = null;
-			if($above->getAdjacentSupportType($f)->hasEdgeSupport() && $base->getSideConnection($f) !== null){
-				$side = WallConnectionType::SHORT;
+			$side = PaleMossCarpetVineGrowth::NONE;
+			if($above->getAdjacentSupportType($f)->hasEdgeSupport() && $base->getVineGrowth($f) !== PaleMossCarpetVineGrowth::NONE){
+				$side = PaleMossCarpetVineGrowth::HALF;
 			}
-			$new->setSideConnection($f, $side);
+			$new->setVineGrowth($f, $side);
 		}
 
 		return $new->hasFaces() ? $new : null;

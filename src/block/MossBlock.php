@@ -79,7 +79,7 @@ class MossBlock extends Opaque{
 					($foundBlock->hasSameTypeId($this) || BlockEventHelper::spread($foundBlock, (clone $this), $this)) &&
 					mt_rand(1, 100) <= 60
 				){
-					$this->selectVegetation($foundBlock->getSide(Facing::UP)->getPosition());
+					$this->generateVegetation($foundBlock->getSide(Facing::UP)->getPosition());
 				}
 			}
 		}
@@ -87,7 +87,7 @@ class MossBlock extends Opaque{
 		return true;
 	}
 
-	protected function selectVegetation(Position $pos) : void{
+	protected function generateVegetation(Position $pos) : void{
 		$world = $pos->getWorld();
 		if(!$world->isInWorld($pos->x, $pos->y, $pos->z)){
 			return;

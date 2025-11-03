@@ -36,7 +36,7 @@ class PaleMossBlock extends MossBlock{
 		return 100;
 	}
 
-	protected function selectVegetation(Position $pos) : void{
+	protected function generateVegetation(Position $pos) : void{
 		$world = $pos->getWorld();
 		if(!$world->isInWorld($pos->x, $pos->y, $pos->z)){
 			return;
