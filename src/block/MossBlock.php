@@ -44,8 +44,8 @@ class MossBlock extends Opaque{
 		$item->pop();
 
 		$world = $this->position->getWorld();
-		$maxX = mt_rand(0, 1) === 0 ? 2 : 3;
-		$maxZ = mt_rand(0, 1) === 0 ? 2 : 3;
+		$maxX = $this->getHorizontalRadius();
+		$maxZ = $this->getHorizontalRadius();
 		$originX = $this->position->x;
 		$originY = $this->position->y;
 		$originZ = $this->position->z;
@@ -59,19 +59,23 @@ class MossBlock extends Opaque{
 					continue;
 				}
 
-				$x = $originX + $dx;
-				$z = $originZ + $dz;
-				$startY = $originY + 1;
 				$foundBlock = null;
-				$direction = $world->getBlockAt($x, $startY, $z)->getTypeId() === BlockTypeIds::AIR ? -1 : 1;
-				$limit = $direction === -1 ? $originY - self::VERTICAL_RANGE : $originY + self::VERTICAL_RANGE;
+				if($dx !== 0 || $dz !== 0){
+					$x = $originX + $dx;
+					$z = $originZ + $dz;
+					$startY = $originY + 1;
+					$direction = $world->getBlockAt($x, $startY, $z)->getTypeId() === BlockTypeIds::AIR ? -1 : 1;
+					$limit = $direction === -1 ? $originY - self::VERTICAL_RANGE : $originY + self::VERTICAL_RANGE;
 
-				for($y = $startY; $direction === -1 ? $y >= $limit : $y <= $limit; $y += $direction){
-					$b = $world->getBlockAt($x, $y, $z);
-					if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
-						$foundBlock = $b;
-						break;
+					for($y = $startY; $direction === -1 ? $y >= $limit : $y <= $limit; $y += $direction){
+						$b = $world->getBlockAt($x, $y, $z);
+						if($b->getTypeId() !== BlockTypeIds::AIR && $world->getBlockAt($x, $y + 1, $z)->getTypeId() === BlockTypeIds::AIR){
+							$foundBlock = $b;
+							break;
+						}
 					}
+				}else{
+					$foundBlock = $this;
 				}
 
 				if(
@@ -85,6 +89,10 @@ class MossBlock extends Opaque{
 		}
 
 		return true;
+	}
+
+	protected function getHorizontalRadius() : int{
+		return mt_rand(0, 1) === 0 ? 2 : 3;
 	}
 
 	protected function generateVegetation(Position $pos) : void{
