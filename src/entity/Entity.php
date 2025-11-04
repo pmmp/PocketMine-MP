@@ -1228,9 +1228,13 @@ abstract class Entity
 	{
 		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), $blockY = (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
+		// Use WaterHelper to support both Water blocks and water inside Waterloggable blocks
 		$water = WaterHelper::getWater($block);
 		if ($water !== null) {
-			$f = ($blockY + 1) - ($water->getFluidHeightPercent() - 0.1111111);
+			// Compute the fluid surface Y for this block
+			$surfaceY = ($blockY + 1) - ($water->getFluidHeightPercent() - 0.1111111);
+			// If the entity's eye Y is below the fluid surface, we're underwater
+			return $y < $surfaceY;
 		}
 
 		return false;
