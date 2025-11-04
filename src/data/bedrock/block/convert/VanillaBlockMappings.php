@@ -1600,7 +1600,7 @@ final class VanillaBlockMappings{
 
 		$paleMossCarpetSideProperty = fn(string $stateName, int $facing) => new ValueFromStringProperty(
 			$stateName,
-			EnumFromRawStateMap::string(PaleMossCarpetVineGrowth::class, fn(PaleMossCarpetVineGrowth $case) => match ($case) {
+			EnumFromRawStateMap::string(PaleMossCarpetVineGrowth::class, fn(PaleMossCarpetVineGrowth $case) => match($case){
 				PaleMossCarpetVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
 				PaleMossCarpetVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
 				PaleMossCarpetVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL

@@ -194,7 +194,7 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	}
 
 	/**
-	 * Read packed pale moss carpet vine growth for horizontal faces. Uses base-3 encoding like wallConnections.
+	 * @param PaleMossCarpetVineGrowth[] $sides
 	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, PaleMossCarpetVineGrowth> $sides
 	 */
 	public function paleMossCarpetSides(array &$sides) : void{
