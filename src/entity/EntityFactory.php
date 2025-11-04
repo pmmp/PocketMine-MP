@@ -214,6 +214,10 @@ final class EntityFactory
 		$this->register(Squid::class, function (World $world, CompoundTag $nbt): Squid {
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Squid', 'minecraft:squid']);
+		
+		$this->register(Axolotl::class, function (World $world, CompoundTag $nbt): Axolotl {
+			return new Axolotl(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Axolotl', 'minecraft:axolotl']);
 
 		$this->register(Villager::class, function (World $world, CompoundTag $nbt): Villager {
 			return new Villager(Helper::parseLocation($nbt, $world), $nbt);

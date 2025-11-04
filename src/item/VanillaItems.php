@@ -31,6 +31,7 @@ use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
+use pocketmine\entity\Axolotl;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
@@ -396,7 +397,8 @@ use function strtolower;
  * @method static Sword WOODEN_SWORD()
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
- * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
+ * @method static SpawnEgg ZOMBIE_SPAWN_EGG() 
+ * @method static Item AXOLOTL_BUCKET()
  */
 final class VanillaItems
 {
@@ -651,10 +653,10 @@ final class VanillaItems
 		self::register("oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::OAK_SIGN(), Blocks::OAK_WALL_SIGN()));
 		self::register("oak_hanging_sign", fn(IID $id) => new HangingSign($id, "Oak Hanging Sign", Blocks::OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::OAK_WALL_HANGING_SIGN()));
 		self::register("oak_shelf", fn() => new ItemBlock(Blocks::OAK_SHELF()));
-		
+
 		self::register("ominous_banner", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::OMINOUS_BANNER(), Blocks::OMINOUS_WALL_BANNER()));
 		self::register("painting", fn(IID $id) => new PaintingItem($id, "Painting"));
-	self::register("armor_stand", fn(IID $id) => new ArmorStandItem($id, "Armor Stand"));
+		self::register("armor_stand", fn(IID $id) => new ArmorStandItem($id, "Armor Stand"));
 		self::register("pale_oak_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::PALE_OAK_SIGN(), Blocks::PALE_OAK_WALL_SIGN()));
 		self::register("pale_oak_hanging_sign", fn(IID $id) => new HangingSign($id, "Pale Oak Hanging Sign", Blocks::PALE_OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::PALE_OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::PALE_OAK_WALL_HANGING_SIGN()));
 		self::register("pale_oak_shelf", fn() => new ItemBlock(Blocks::PALE_OAK_SHELF()));
@@ -750,7 +752,7 @@ final class VanillaItems
 		self::register("sweet_berries", fn(IID $id) => new SweetBerries($id, "Sweet Berries"));
 		self::register("torchflower_seeds", fn(IID $id) => new TorchflowerSeeds($id, "Torchflower Seeds"));
 		self::register("totem", fn(IID $id) => new Totem($id, "Totem of Undying"));
-	self::register("trident", fn(IID $id) => new Trident($id, "Trident", [EnchantmentTags::TRIDENT]));
+		self::register("trident", fn(IID $id) => new Trident($id, "Trident", [EnchantmentTags::TRIDENT]));
 		self::register("warped_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("warped_hanging_sign", fn(IID $id) => new HangingSign($id, "Warped Hanging Sign", Blocks::WARPED_CEILING_CENTER_HANGING_SIGN(), Blocks::WARPED_CEILING_EDGES_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()));
 		self::register("warped_shelf", fn() => new ItemBlock(Blocks::WARPED_SHELF()));
@@ -778,6 +780,12 @@ final class VanillaItems
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
 			{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+		self::register("axolotl_spawn_egg", fn(IID $id) => new class($id, "Axolotl Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new Axolotl(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg {
