@@ -239,7 +239,6 @@ use function strtolower;
  * @method static HangingSign JUNGLE_HANGING_SIGN()
  * @method static ItemBlock JUNGLE_SHELF()
  * @method static ItemBlockWallOrFloor JUNGLE_SIGN()
- * @method static Kelp KELP()
  * @method static Item LAPIS_LAZULI()
  * @method static LiquidBucket LAVA_BUCKET()
  * @method static Item LEATHER()
@@ -571,7 +570,6 @@ final class VanillaItems
 		self::register("disc_fragment_5", fn(IID $id) => new Item($id, "Disc Fragment (5)"));
 		self::register("dragon_breath", fn(IID $id) => new Item($id, "Dragon's Breath"));
 		self::register("dried_kelp", fn(IID $id) => new DriedKelp($id, "Dried Kelp"));
-		self::register("kelp", fn(IID $id) => new Kelp($id, "Kelp"));
 		self::register("seagrass", fn(IID $id) => new Seagrass($id, "Seagrass"));
 		//TODO: add interface to dye-colour objects
 		self::register("dye", fn(IID $id) => new Dye($id, "Dye"));

@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-final class BlockTypeTags{
+final class BlockTypeTags
+{
 	private const PREFIX = "pocketmine:";
 
 	public const DIRT = self::PREFIX . "dirt";
 	public const MUD = self::PREFIX . "mud";
 	public const SAND = self::PREFIX . "sand";
 	public const POTTABLE_PLANTS = self::PREFIX . "pottable";
+	public const NON_SOURCE_WATERLOGGABLE = self::PREFIX . "non_source_waterloggable";
+
 	public const FIRE = self::PREFIX . "fire";
 	public const HANGING_SIGN = self::PREFIX . "hanging_sign";
 }

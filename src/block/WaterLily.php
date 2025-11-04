@@ -23,25 +23,31 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WaterHelper;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 
-class WaterLily extends Flowable{
+class WaterLily extends Flowable
+{
 	use StaticSupportTrait {
 		canBePlacedAt as supportedWhenPlacedAt;
 	}
 
-	protected function recalculateCollisionBoxes() : array{
+	protected function recalculateCollisionBoxes(): array
+	{
 		return [AxisAlignedBB::one()->contract(1 / 16, 0, 1 / 16)->trim(Facing::UP, 63 / 64)];
 	}
 
-	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock): bool
+	{
 		return !$blockReplace instanceof Water && $this->supportedWhenPlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
-	private function canBeSupportedAt(Block $block) : bool{
-		return $block->getSide(Facing::DOWN) instanceof Water;
+	private function canBeSupportedAt(Block $block): bool
+	{
+		// return $block->getSide(Facing::DOWN) instanceof Water;
+		return WaterHelper::isWater($block->getSide(Facing::DOWN));
 	}
 }

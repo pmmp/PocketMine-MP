@@ -33,22 +33,27 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use function array_key_exists;
 use function spl_object_id;
 
-class BrewingStand extends Transparent{
-
+class BrewingStand extends Transparent implements Waterloggable
+{
+	use WaterloggableTrait;
 	/**
 	 * @var BrewingStandSlot[]
 	 * @phpstan-var array<int, BrewingStandSlot>
 	 */
 	protected array $slots = [];
 
-	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w): void
+	{
 		$w->enumSet($this->slots, BrewingStandSlot::cases());
 	}
 
-	protected function recalculateCollisionBoxes() : array{
+	protected function recalculateCollisionBoxes(): array
+	{
 		return [
 			//bottom slab part - in PC this is also inset on X/Z by 1/16, but Bedrock sucks
 			AxisAlignedBB::one()->trim(Facing::UP, 7 / 8),
@@ -61,18 +66,21 @@ class BrewingStand extends Transparent{
 		];
 	}
 
-	public function getSupportType(int $facing) : SupportType{
+	public function getSupportType(int $facing): SupportType
+	{
 		return SupportType::NONE;
 	}
 
-	public function hasSlot(BrewingStandSlot $slot) : bool{
+	public function hasSlot(BrewingStandSlot $slot): bool
+	{
 		return array_key_exists(spl_object_id($slot), $this->slots);
 	}
 
-	public function setSlot(BrewingStandSlot $slot, bool $occupied) : self{
-		if($occupied){
+	public function setSlot(BrewingStandSlot $slot, bool $occupied): self
+	{
+		if ($occupied) {
 			$this->slots[spl_object_id($slot)] = $slot;
-		}else{
+		} else {
 			unset($this->slots[spl_object_id($slot)]);
 		}
 		return $this;
@@ -82,23 +90,26 @@ class BrewingStand extends Transparent{
 	 * @return BrewingStandSlot[]
 	 * @phpstan-return array<int, BrewingStandSlot>
 	 */
-	public function getSlots() : array{
+	public function getSlots(): array
+	{
 		return $this->slots;
 	}
 
 	/** @param BrewingStandSlot[] $slots */
-	public function setSlots(array $slots) : self{
+	public function setSlots(array $slots): self
+	{
 		$this->slots = [];
-		foreach($slots as $slot){
+		foreach ($slots as $slot) {
 			$this->slots[spl_object_id($slot)] = $slot;
 		}
 		return $this;
 	}
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player instanceof Player){
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []): bool
+	{
+		if ($player instanceof Player) {
 			$stand = $this->position->getWorld()->getTile($this->position);
-			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
+			if ($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())) {
 				$player->setCurrentWindow($stand->getInventory());
 			}
 		}
@@ -106,24 +117,25 @@ class BrewingStand extends Transparent{
 		return true;
 	}
 
-	public function onScheduledUpdate() : void{
+	public function onScheduledUpdate(): void
+	{
 		$world = $this->position->getWorld();
 		$brewing = $world->getTile($this->position);
-		if($brewing instanceof TileBrewingStand){
-			if($brewing->onUpdate()){
+		if ($brewing instanceof TileBrewingStand) {
+			if ($brewing->onUpdate()) {
 				$world->scheduleDelayedBlockUpdate($this->position, 1);
 			}
 
 			$changed = false;
-			foreach(BrewingStandSlot::cases() as $slot){
+			foreach (BrewingStandSlot::cases() as $slot) {
 				$occupied = !$brewing->getInventory()->isSlotEmpty($slot->getSlotNumber());
-				if($occupied !== $this->hasSlot($slot)){
+				if ($occupied !== $this->hasSlot($slot)) {
 					$this->setSlot($slot, $occupied);
 					$changed = true;
 				}
 			}
 
-			if($changed){
+			if ($changed) {
 				$world->setBlock($this->position, $this);
 			}
 		}

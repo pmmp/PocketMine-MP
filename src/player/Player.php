@@ -2079,7 +2079,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 *
 	 * @return bool if it did something
 	 */
-	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset): bool
+	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset, bool $interactDisplacedBlock = false): bool
 	{
 		$this->setUsingItem(false);
 
@@ -2088,7 +2088,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			$returnedItems = [];
-			if ($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems)) {
+			if ($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems, $interactDisplacedBlock)) {
+
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;
 			}
@@ -2139,9 +2140,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
 		// Mace special: add fall-based bonus damage (approx 1 extra per block fallen, capped at 30)
-		if($heldItem instanceof Mace && $this->fallDistance > 0){
+		if ($heldItem instanceof Mace && $this->fallDistance > 0) {
 			$bonus = (int) min(30, floor($this->fallDistance));
-			if($bonus > 0){
+			if ($bonus > 0) {
 				$ev->setModifier($ev->getModifier(EntityDamageEvent::MODIFIER_STRENGTH) + $bonus, EntityDamageEvent::MODIFIER_STRENGTH);
 			}
 		}

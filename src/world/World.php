@@ -90,6 +90,7 @@ use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
+use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use pocketmine\world\format\io\WritableWorldProvider;
@@ -114,6 +115,10 @@ use pocketmine\entity\LightningBolt;
 use pocketmine\event\weather\WeatherChangeEvent;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelEvent;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\Water;
+
+
 
 use function abs;
 use function array_filter;
@@ -195,6 +200,12 @@ class World implements ChunkManager
 	 * @phpstan-var array<int, Entity>
 	 */
 	private array $entities = [];
+
+	/**
+	 * @var int[] blockHash => tick delay
+	 * @phpstan-var array<BlockPosHash, int>
+	 */
+	private array $scheduledDisplacedBlockUpdateQueueIndex = [];
 	/**
 	 * @var Vector3[] entity runtime ID => Vector3
 	 * @phpstan-var array<int, Vector3>
@@ -206,6 +217,16 @@ class World implements ChunkManager
 	 * @phpstan-var array<ChunkPosHash, array<int, Entity>>
 	 */
 	private array $entitiesByChunk = [];
+
+	/** Light population throttling counters and queues */
+	private int $outstandingLightPopulationTasks = 0;
+	private int $maxParallelLightPopulationTasks = 2;
+	private \SplQueue $pendingLightPopulationQueue;
+	/** @var bool[] */
+	private array $pendingLightPopulationQueueIndex = [];
+
+	/** Map chunkHash => terrainHash used to validate async results without reserializing */
+	private array $pendingChunkTerrainHash = [];
 
 	/**
 	 * @var Entity[] entity runtime ID => Entity
@@ -314,6 +335,10 @@ class World implements ChunkManager
 
 	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
 	private ReversePriorityQueue $scheduledBlockUpdateQueue;
+
+	/** @phpstan-var ReversePriorityQueue<int, Vector3> */
+	private ReversePriorityQueue $scheduledDisplacedBlockUpdateQueue;
+
 	/**
 	 * @var int[] blockHash => tick delay
 	 * @phpstan-var array<BlockPosHash, int>
@@ -458,6 +483,26 @@ class World implements ChunkManager
 		$this->applyWeather();
 		$this->broadcastWeatherPackets();
 	}
+
+	/**
+	 * @internal
+	 * Similar to scheduleDelayedBlockUpdate, but used to delay an update of "displaced" blocks (e.g. water),
+	 * placed at the same position with their owning blocks, independently of their owning blocks updates.
+	 *
+	 * This is internal and used only in things such as waterlogging, plugins should NOT use this.
+	 */
+	public function delayDisplacedBlockUpdate(Vector3 $pos, int $delay): void
+	{
+		if (
+			!$this->isInWorld($pos->x, $pos->y, $pos->z) ||
+			(isset($this->scheduledDisplacedBlockUpdateQueueIndex[$index = World::blockHash($pos->x, $pos->y, $pos->z)]) && $this->scheduledDisplacedBlockUpdateQueueIndex[$index] <= $delay)
+		) {
+			return;
+		}
+		$this->scheduledDisplacedBlockUpdateQueueIndex[$index] = $delay;
+		$this->scheduledDisplacedBlockUpdateQueue->insert(new Vector3((int) $pos->x, (int) $pos->y, (int) $pos->z), $delay + $this->server->getTick());
+	}
+
 	public function tickWeather(): void
 	{
 		$this->weatherTick++;
@@ -644,6 +689,22 @@ class World implements ChunkManager
 			);
 
 		$this->chunkPopulationRequestQueue = new \SplQueue();
+
+		// Auto-configure maxParallelLightPopulationTasks based on logical CPU count (conservative default)
+		$cores = (int) (getenv('NUMBER_OF_PROCESSORS') ?: (getenv('PROCESSOR_COUNT') ?: 2));
+		$defaultParallel = max(1, $cores - 1);
+		// Allow server config override: 'max-parallel-light-population-tasks'
+		$configVal = $this->server->getConfigGroup()->getPropertyInt('max-parallel-light-population-tasks', -1);
+		if ($configVal > 0) {
+			$this->maxParallelLightPopulationTasks = $configVal;
+		} else {
+			$this->maxParallelLightPopulationTasks = $defaultParallel;
+		}
+	// pending queue init
+	$this->pendingLightPopulationQueue = new \SplQueue();
+	$this->pendingLightPopulationQueueIndex = [];
+	// Light population throttling
+	$this->outstandingLightPopulationTasks = 0;
 		$this->addOnUnloadCallback(function (): void {
 			$this->logger->debug("Cancelling unfulfilled generation requests");
 
@@ -660,6 +721,9 @@ class World implements ChunkManager
 
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
+
+		$this->scheduledDisplacedBlockUpdateQueue = new ReversePriorityQueue();
+		$this->scheduledDisplacedBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 
 		$this->neighbourBlockUpdateQueue = new \SplQueue();
 
@@ -1135,6 +1199,16 @@ class World implements ChunkManager
 			$block = $this->getBlock($vec);
 			$block->onScheduledUpdate();
 		}
+		while ($this->scheduledDisplacedBlockUpdateQueue->count() > 0 && $this->scheduledDisplacedBlockUpdateQueue->current()["priority"] <= $currentTick) {
+			/** @var Vector3 $vec */
+			$vec = $this->scheduledDisplacedBlockUpdateQueue->extract()["data"];
+			unset($this->scheduledDisplacedBlockUpdateQueueIndex[World::blockHash($vec->x, $vec->y, $vec->z)]);
+			if (!$this->isInLoadedTerrain($vec)) {
+				continue;
+			}
+			$block = $this->getBlock($vec)->getDisplacedBlock();
+			$block?->onDisplacedScheduledUpdate();
+		}
 		$this->timings->scheduledBlockUpdates->stopTiming();
 
 		$this->timings->neighbourBlockUpdates->startTiming();
@@ -1322,6 +1396,14 @@ class World implements ChunkManager
 						UpdateBlockPacket::FLAG_NETWORK,
 						UpdateBlockPacket::DATA_LAYER_NORMAL
 					);
+					if ($fullBlock->getTypeId() === BlockTypeIds::AIR || $fullBlock instanceof Waterloggable) {
+						$packets[] = UpdateBlockPacket::create(
+							$blockPosition,
+							$blockTranslator->internalIdToNetworkId($fullBlock->getDisplacedBlock()?->getStateId() ?? Block::EMPTY_STATE_ID),
+							UpdateBlockPacket::FLAG_NETWORK,
+							UpdateBlockPacket::DATA_LAYER_LIQUID
+						);
+					}
 				}
 			}
 			$packets[] = UpdateBlockPacket::create(
@@ -1338,6 +1420,7 @@ class World implements ChunkManager
 
 		return $packets;
 	}
+
 
 	public function clearCache(bool $force = false): void
 	{
@@ -1570,31 +1653,62 @@ class World implements ChunkManager
 			$this->chunks[$chunkHash]->setLightPopulated(null);
 			$this->markTickingChunkForRecheck($chunkX, $chunkZ);
 
-			$this->workerPool->submitTask(new LightPopulationTask(
-				$this->chunks[$chunkHash],
-				function (array $blockLight, array $skyLight, array $heightMap) use ($chunkX, $chunkZ): void {
-					/**
-					 * TODO: phpstan can't infer these types yet :(
-					 * @phpstan-var array<int, LightArray> $blockLight
-					 * @phpstan-var array<int, LightArray> $skyLight
-					 * @phpstan-var non-empty-list<int>    $heightMap
-					 */
-					if ($this->unloaded || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true) {
-						return;
-					}
-					//TODO: calculated light information might not be valid if the terrain changed during light calculation
-
-					$chunk->setHeightMapArray($heightMap);
-					foreach ($blockLight as $y => $lightArray) {
-						$chunk->getSubChunk($y)->setBlockLightArray($lightArray);
-					}
-					foreach ($skyLight as $y => $lightArray) {
-						$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
-					}
-					$chunk->setLightPopulated(true);
-					$this->markTickingChunkForRecheck($chunkX, $chunkZ);
+			// Throttle submissions to avoid saturating worker threads with heavy light tasks
+			if ($this->outstandingLightPopulationTasks >= $this->maxParallelLightPopulationTasks) {
+				if (!isset($this->pendingLightPopulationQueueIndex[$chunkHash])) {
+					$this->pendingLightPopulationQueue->enqueue($chunkHash);
+					$this->pendingLightPopulationQueueIndex[$chunkHash] = true;
 				}
-			));
+				return;
+			}
+
+			// create task and store terrain hash so we can validate results without reserializing on completion
+			$task = new LightPopulationTask(
+					$this->chunks[$chunkHash],
+					function (array $blockLight, array $skyLight, array $heightMap, string $terrainHash) use ($chunkX, $chunkZ, $chunkHash): void {
+						/**
+						 * TODO: phpstan can't infer these types yet :(
+						 * @phpstan-var array<int, LightArray> $blockLight
+						 * @phpstan-var array<int, LightArray> $skyLight
+						 * @phpstan-var non-empty-list<int>    $heightMap
+						 */
+						try {
+							if ($this->unloaded || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true) {
+								return;
+							}
+							// Koruma: validate using terrain hash saved at submission time to avoid reserializing the chunk here
+							if (!isset($this->pendingChunkTerrainHash[$chunkHash]) || $this->pendingChunkTerrainHash[$chunkHash] !== $terrainHash) {
+								$this->logger->debug("Discarding light result for chunk $chunkX $chunkZ due to terrain mismatch");
+								return;
+							}
+
+							$chunk->setHeightMapArray($heightMap);
+							foreach ($blockLight as $y => $lightArray) {
+								$chunk->getSubChunk($y)->setBlockLightArray($lightArray);
+							}
+							foreach ($skyLight as $y => $lightArray) {
+								$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
+							}
+							$chunk->setLightPopulated(true);
+							$this->markTickingChunkForRecheck($chunkX, $chunkZ);
+						} finally {
+							// cleanup pending terrain hash for this chunk
+							unset($this->pendingChunkTerrainHash[$chunkHash]);
+							// decrement outstanding counter and try to flush pending queue
+							$this->outstandingLightPopulationTasks--;
+							while ($this->outstandingLightPopulationTasks < $this->maxParallelLightPopulationTasks && !$this->pendingLightPopulationQueue->isEmpty()) {
+								$nextHash = $this->pendingLightPopulationQueue->dequeue();
+								unset($this->pendingLightPopulationQueueIndex[$nextHash]);
+								self::getXZ($nextHash, $nx, $nz);
+								$this->orderLightPopulation($nx, $nz);
+							}
+						}
+						}
+				);
+
+				$this->pendingChunkTerrainHash[$chunkHash] = $task->terrainHash;
+				$this->outstandingLightPopulationTasks++;
+				$this->workerPool->submitTask($task);
 		}
 	}
 
@@ -2265,14 +2379,20 @@ class World implements ChunkManager
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if ($chunk !== null) {
 				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
+				$displacedBlockStateId = $chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
 			} else {
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
+				$displacedBlockStateId = Block::EMPTY_STATE_ID;
 			}
 		} else {
 			$block = VanillaBlocks::AIR();
+			$displacedBlockStateId = Block::EMPTY_STATE_ID;
 		}
-
+		if ($block instanceof Waterloggable && $displacedBlockStateId !== Block::EMPTY_STATE_ID) {
+			$displacedBlockStateId = $this->blockStateRegistry->fromStateId($displacedBlockStateId);
+			$block->setContainedWater($displacedBlockStateId instanceof Water ? $displacedBlockStateId : null);
+		}
 		$block->position($this, $x, $y, $z);
 
 		if ($this->inDynamicStateRecalculation) {
@@ -2532,8 +2652,9 @@ class World implements ChunkManager
 	 * @param bool        $playSound      Whether to play a block-place sound if the block was placed successfully.
 	 * @param Item[]      &$returnedItems Items to be added to the target's inventory (or dropped if the inventory is full)
 	 */
-	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = []): bool
+	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = [], bool $interactDisplacedBlock = false): bool
 	{
+
 		$blockClicked = $this->getBlock($vector);
 		$blockReplace = $blockClicked->getSide($face);
 
@@ -2566,6 +2687,8 @@ class World implements ChunkManager
 			if ($player->isSneaking()) {
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
+			} else {
+				$ev->setUseBlock(!$interactDisplacedBlock);
 			}
 			if ($player->isSpectator()) {
 				$ev->cancel(); //set it to cancelled so plugins can bypass this

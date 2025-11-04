@@ -23,39 +23,82 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\WaterHelper;
+use pocketmine\block\utils\Waterloggable;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityExtinguishEvent;
 use pocketmine\world\sound\BucketEmptyWaterSound;
 use pocketmine\world\sound\BucketFillWaterSound;
 use pocketmine\world\sound\Sound;
 
-class Water extends Liquid{
+class Water extends Liquid
+{
 
-	public function getLightFilter() : int{
+	public function getLightFilter(): int
+	{
 		return 2;
 	}
 
-	public function getBucketFillSound() : Sound{
+	public function getBucketFillSound(): Sound
+	{
 		return new BucketFillWaterSound();
 	}
 
-	public function getBucketEmptySound() : Sound{
+	public function getBucketEmptySound(): Sound
+	{
 		return new BucketEmptyWaterSound();
 	}
 
-	public function tickRate() : int{
+	public function tickRate(): int
+	{
 		return 5;
 	}
 
-	public function getMinAdjacentSourcesToFormSource() : ?int{
+	public function getMinAdjacentSourcesToFormSource(): ?int
+	{
 		return 2;
 	}
 
-	public function onEntityInside(Entity $entity) : bool{
+	public function onEntityInside(Entity $entity): bool
+	{
 		$entity->resetFallDistance();
-		if($entity->isOnFire()){
+		if ($entity->isOnFire()) {
 			$entity->extinguish(EntityExtinguishEvent::CAUSE_WATER);
 		}
 		return true;
+	}
+
+	protected function canFlowInto(Block $block): bool
+	{
+		return
+			parent::canFlowInto($block) ||
+			$block instanceof Waterloggable &&
+			$block->getContainedWater() === null &&
+			$block->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE);
+	}
+
+	protected function getFlowResult(Block $target, int $newFlowDecay, bool $falling): Block
+	{
+		$result = parent::getFlowResult($target, $newFlowDecay, $falling);
+
+		if ($target instanceof Waterloggable && $target->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE) && $result instanceof Water) {
+			$result = (clone $target)->setContainedWater($result);
+		}
+		return $result;
+	}
+
+	protected function getDecayResult(Block $oldForm): Block
+	{
+		return $oldForm instanceof Waterloggable ? (clone $oldForm)->setContainedWater(null) : VanillaBlocks::AIR();
+	}
+
+	protected function isSideAvailable(Block $block, int $face): bool
+	{
+		return $block instanceof Waterloggable ? $block->isSideOpenToFlow($face) : true;
+	}
+
+	protected function unpackLiquid(Block $block): Block
+	{
+		return WaterHelper::getWater($block) ?? $block;
 	}
 }

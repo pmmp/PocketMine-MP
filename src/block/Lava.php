@@ -31,60 +31,71 @@ use pocketmine\math\Facing;
 use pocketmine\world\sound\BucketEmptyLavaSound;
 use pocketmine\world\sound\BucketFillLavaSound;
 use pocketmine\world\sound\Sound;
+use pocketmine\block\utils\Waterloggable;
 
-class Lava extends Liquid{
 
-	public function getLightLevel() : int{
+class Lava extends Liquid
+{
+
+	public function getLightLevel(): int
+	{
 		return 15;
 	}
 
-	public function getBucketFillSound() : Sound{
+	public function getBucketFillSound(): Sound
+	{
 		return new BucketFillLavaSound();
 	}
 
-	public function getBucketEmptySound() : Sound{
+	public function getBucketEmptySound(): Sound
+	{
 		return new BucketEmptyLavaSound();
 	}
 
-	public function tickRate() : int{
+	public function tickRate(): int
+	{
 		return 30;
 	}
 
-	public function getFlowDecayPerBlock() : int{
+	public function getFlowDecayPerBlock(): int
+	{
 		return 2; //TODO: this is 1 in the nether
 	}
 
 	/**
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
-	private function getAdjacentBlocksExceptDown() : \Generator{
-		foreach(Facing::ALL as $side){
-			if($side === Facing::DOWN){
+	private function getAdjacentBlocksExceptDown(): \Generator
+	{
+		foreach (Facing::ALL as $side) {
+			if ($side === Facing::DOWN) {
 				continue;
 			}
 			yield $this->getSide($side);
 		}
 	}
 
-	protected function checkForHarden() : bool{
-		if($this->falling){
+	protected function checkForHarden(): bool
+	{
+		if ($this->falling) {
 			return false;
 		}
-		foreach($this->getAdjacentBlocksExceptDown() as $colliding){
-			if($colliding instanceof Water){
-				if($this->decay === 0){
+		foreach ($this->getAdjacentBlocksExceptDown() as $colliding) {
+			if ($colliding instanceof Water || $colliding instanceof Waterloggable && $colliding->getContainedWater() !== null) {
+
+				if ($this->decay === 0) {
 					$this->liquidCollide($colliding, VanillaBlocks::OBSIDIAN());
 					return true;
-				}elseif($this->decay <= 4){
+				} elseif ($this->decay <= 4) {
 					$this->liquidCollide($colliding, VanillaBlocks::COBBLESTONE());
 					return true;
 				}
 			}
 		}
 
-		if($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SOIL){
-			foreach($this->getAdjacentBlocksExceptDown() as $colliding){
-				if($colliding->getTypeId() === BlockTypeIds::BLUE_ICE){
+		if ($this->getSide(Facing::DOWN)->getTypeId() === BlockTypeIds::SOUL_SOIL) {
+			foreach ($this->getAdjacentBlocksExceptDown() as $colliding) {
+				if ($colliding->getTypeId() === BlockTypeIds::BLUE_ICE) {
 					$this->liquidCollide($colliding, VanillaBlocks::BASALT());
 					return true;
 				}
@@ -94,22 +105,25 @@ class Lava extends Liquid{
 		return false;
 	}
 
-	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
-		if($block instanceof Water){
+	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling): void
+	{
+		if ($block instanceof Water || $block instanceof Waterloggable && $block->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE) && $block->getContainedWater() !== null) {
+
 			$block->liquidCollide($this, VanillaBlocks::STONE());
-		}else{
+		} else {
 			parent::flowIntoBlock($block, $newFlowDecay, $falling);
 		}
 	}
 
-	public function onEntityInside(Entity $entity) : bool{
+	public function onEntityInside(Entity $entity): bool
+	{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
 		$entity->attack($ev);
 
 		//in java burns entities for 15 seconds - seems to be a parity issue in bedrock
 		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
 		$ev->call();
-		if(!$ev->isCancelled()){
+		if (!$ev->isCancelled()) {
 			$entity->setOnFire($ev->getDuration());
 		}
 

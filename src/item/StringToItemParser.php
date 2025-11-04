@@ -1468,7 +1468,6 @@ final class StringToItemParser extends StringToTParser
 		$result->register("dragon_breath", fn() => Items::DRAGON_BREATH());
 		$result->register("dried_kelp", fn() => Items::DRIED_KELP());
 		// make raw kelp/seagrass obtainable via /give
-		$result->register("kelp", fn() => Items::KELP());
 		$result->register("seagrass", fn() => Items::SEAGRASS());
 		$result->register("dune_armor_trim_smithing_template", fn() => Items::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("dye", fn() => Items::INK_SAC());

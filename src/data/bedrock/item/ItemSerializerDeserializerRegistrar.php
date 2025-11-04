@@ -267,7 +267,6 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::DRAGON_BREATH, Items::DRAGON_BREATH());
 		$this->map1to1Item(Ids::DRIED_KELP, Items::DRIED_KELP());
 		// register kelp and seagrass so they can be serialized to Bedrock item IDs
-		$this->map1to1Item(Ids::KELP, Items::KELP());
 		// seagrass mapping omitted: Block/item name not present in generated block palette here; avoid mapping to unknown IDs
 		$this->map1to1Item(Ids::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, Items::DUNE_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::ECHO_SHARD, Items::ECHO_SHARD());

@@ -22,6 +22,7 @@
 /**
  * Implementation of MCPE-style chunks with subchunks with XZY ordering.
  */
+
 declare(strict_types=1);
 
 namespace pocketmine\world\format;
@@ -31,7 +32,8 @@ use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
 use function array_map;
 
-class Chunk{
+class Chunk
+{
 	public const DIRTY_FLAG_BLOCKS = 1 << 0;
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
@@ -68,10 +70,11 @@ class Chunk{
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks, bool $terrainPopulated){
+	public function __construct(array $subChunks, bool $terrainPopulated)
+	{
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
-		foreach($this->subChunks as $y => $null){
+		foreach ($this->subChunks as $y => $null) {
 			//TODO: we should probably require all subchunks to be provided here
 			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(Block::EMPTY_STATE_ID, [], new PalettedBlockArray(BiomeIds::OCEAN));
 		}
@@ -85,7 +88,8 @@ class Chunk{
 	/**
 	 * Returns the chunk height in count of subchunks.
 	 */
-	public function getHeight() : int{
+	public function getHeight(): int
+	{
 		return $this->subChunks->getSize();
 	}
 
@@ -98,15 +102,40 @@ class Chunk{
 	 *
 	 * @return int the blockstate ID of the given block
 	 */
-	public function getBlockStateId(int $x, int $y, int $z) : int{
+	public function getBlockStateId(int $x, int $y, int $z): int
+	{
 		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getBlockStateId($x, $y & SubChunk::COORD_MASK, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
-	public function setBlockStateId(int $x, int $y, int $z, int $block) : void{
+	public function setBlockStateId(int $x, int $y, int $z, int $block): void
+	{
 		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setBlockStateId($x, $y & SubChunk::COORD_MASK, $z, $block);
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
+	}
+
+	/**
+	 * Returns the internal ID of the blockstate placed at the second layer at the given coordinates.
+	 *
+	 * @param int $x 0-15
+	 * @param int $y dependent on the height of the world
+	 * @param int $z 0-15
+	 *
+	 * @return int the second layer blockstate ID of the given block
+	 */
+	public function getDisplacedBlockStateId(int $x, int $y, int $z): int
+	{
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getDisplacedBlockStateId($x, $y & SubChunk::COORD_MASK, $z);
+	}
+
+	/**
+	 * Sets the blockstate to the second layer at the given coordinate by internal ID.
+	 */
+	public function setDisplacedBlockStateId(int $x, int $y, int $z, int $block): void
+	{
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setDisplacedBlockStateId($x, $y & SubChunk::COORD_MASK, $z, $block);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
@@ -118,10 +147,11 @@ class Chunk{
 	 *
 	 * @return int|null the Y coordinate, or null if there are no blocks in the column
 	 */
-	public function getHighestBlockAt(int $x, int $z) : ?int{
-		for($y = self::MAX_SUBCHUNK_INDEX; $y >= self::MIN_SUBCHUNK_INDEX; --$y){
+	public function getHighestBlockAt(int $x, int $z): ?int
+	{
+		for ($y = self::MAX_SUBCHUNK_INDEX; $y >= self::MIN_SUBCHUNK_INDEX; --$y) {
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
-			if($height !== null){
+			if ($height !== null) {
 				return $height | ($y << SubChunk::COORD_BIT_SIZE);
 			}
 		}
@@ -135,7 +165,8 @@ class Chunk{
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 */
-	public function getHeightMap(int $x, int $z) : int{
+	public function getHeightMap(int $x, int $z): int
+	{
 		return $this->heightMap->get($x, $z);
 	}
 
@@ -145,7 +176,8 @@ class Chunk{
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 */
-	public function setHeightMap(int $x, int $z, int $value) : void{
+	public function setHeightMap(int $x, int $z, int $value): void
+	{
 		$this->heightMap->set($x, $z, $value);
 	}
 
@@ -158,7 +190,8 @@ class Chunk{
 	 *
 	 * @see BiomeIds
 	 */
-	public function getBiomeId(int $x, int $y, int $z) : int{
+	public function getBiomeId(int $x, int $y, int $z): int
+	{
 		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getBiomeArray()->get($x, $y, $z);
 	}
 
@@ -172,41 +205,48 @@ class Chunk{
 	 *
 	 * @see BiomeIds
 	 */
-	public function setBiomeId(int $x, int $y, int $z, int $biomeId) : void{
+	public function setBiomeId(int $x, int $y, int $z, int $biomeId): void
+	{
 		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getBiomeArray()->set($x, $y, $z, $biomeId);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
-	public function isLightPopulated() : ?bool{
+	public function isLightPopulated(): ?bool
+	{
 		return $this->lightPopulated;
 	}
 
-	public function setLightPopulated(?bool $value = true) : void{
+	public function setLightPopulated(?bool $value = true): void
+	{
 		$this->lightPopulated = $value;
 	}
 
-	public function isPopulated() : bool{
+	public function isPopulated(): bool
+	{
 		return $this->terrainPopulated;
 	}
 
-	public function setPopulated(bool $value = true) : void{
+	public function setPopulated(bool $value = true): void
+	{
 		$this->terrainPopulated = $value;
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
-	public function addTile(Tile $tile) : void{
-		if($tile->isClosed()){
+	public function addTile(Tile $tile): void
+	{
+		if ($tile->isClosed()) {
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
 
 		$pos = $tile->getPosition();
-		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) && $this->tiles[$index] !== $tile){
+		if (isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) && $this->tiles[$index] !== $tile) {
 			throw new \InvalidArgumentException("Another tile is already at this location");
 		}
 		$this->tiles[$index] = $tile;
 	}
 
-	public function removeTile(Tile $tile) : void{
+	public function removeTile(Tile $tile): void
+	{
 		$pos = $tile->getPosition();
 		unset($this->tiles[Chunk::blockHash($pos->x, $pos->y, $pos->z)]);
 	}
@@ -215,7 +255,8 @@ class Chunk{
 	 * @return Tile[]
 	 * @phpstan-return array<int, Tile>
 	 */
-	public function getTiles() : array{
+	public function getTiles(): array
+	{
 		return $this->tiles;
 	}
 
@@ -226,15 +267,17 @@ class Chunk{
 	 * @param int $y dependent on the height of the world
 	 * @param int $z 0-15
 	 */
-	public function getTile(int $x, int $y, int $z) : ?Tile{
+	public function getTile(int $x, int $y, int $z): ?Tile
+	{
 		return $this->tiles[Chunk::blockHash($x, $y, $z)] ?? null;
 	}
 
 	/**
 	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
-	public function onUnload() : void{
-		foreach($this->getTiles() as $tile){
+	public function onUnload(): void
+	{
+		foreach ($this->getTiles() as $tile) {
 			$tile->close();
 		}
 	}
@@ -243,7 +286,8 @@ class Chunk{
 	 * @return int[]
 	 * @phpstan-return non-empty-list<int>
 	 */
-	public function getHeightMapArray() : array{
+	public function getHeightMapArray(): array
+	{
 		return $this->heightMap->getValues();
 	}
 
@@ -251,40 +295,48 @@ class Chunk{
 	 * @param int[] $values
 	 * @phpstan-param non-empty-list<int> $values
 	 */
-	public function setHeightMapArray(array $values) : void{
+	public function setHeightMapArray(array $values): void
+	{
 		$this->heightMap = new HeightArray($values);
 	}
 
-	public function isTerrainDirty() : bool{
+	public function isTerrainDirty(): bool
+	{
 		return $this->terrainDirtyFlags !== self::DIRTY_FLAGS_NONE;
 	}
 
-	public function getTerrainDirtyFlag(int $flag) : bool{
+	public function getTerrainDirtyFlag(int $flag): bool
+	{
 		return ($this->terrainDirtyFlags & $flag) !== 0;
 	}
 
-	public function getTerrainDirtyFlags() : int{
+	public function getTerrainDirtyFlags(): int
+	{
 		return $this->terrainDirtyFlags;
 	}
 
-	public function setTerrainDirtyFlag(int $flag, bool $value) : void{
-		if($value){
+	public function setTerrainDirtyFlag(int $flag, bool $value): void
+	{
+		if ($value) {
 			$this->terrainDirtyFlags |= $flag;
-		}else{
+		} else {
 			$this->terrainDirtyFlags &= ~$flag;
 		}
 	}
 
-	public function setTerrainDirty() : void{
+	public function setTerrainDirty(): void
+	{
 		$this->terrainDirtyFlags = self::DIRTY_FLAGS_ALL;
 	}
 
-	public function clearTerrainDirtyFlags() : void{
+	public function clearTerrainDirtyFlags(): void
+	{
 		$this->terrainDirtyFlags = self::DIRTY_FLAGS_NONE;
 	}
 
-	public function getSubChunk(int $y) : SubChunk{
-		if($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX){
+	public function getSubChunk(int $y): SubChunk
+	{
+		if ($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX) {
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 		return $this->subChunks[$y - self::MIN_SUBCHUNK_INDEX];
@@ -293,8 +345,9 @@ class Chunk{
 	/**
 	 * Sets a subchunk in the chunk index
 	 */
-	public function setSubChunk(int $y, ?SubChunk $subChunk) : void{
-		if($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX){
+	public function setSubChunk(int $y, ?SubChunk $subChunk): void
+	{
+		if ($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX) {
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
@@ -306,9 +359,10 @@ class Chunk{
 	 * @return SubChunk[]
 	 * @phpstan-return array<int, SubChunk>
 	 */
-	public function getSubChunks() : array{
+	public function getSubChunks(): array
+	{
 		$result = [];
-		foreach($this->subChunks as $yOffset => $subChunk){
+		foreach ($this->subChunks as $yOffset => $subChunk) {
 			$result[$yOffset + self::MIN_SUBCHUNK_INDEX] = $subChunk;
 		}
 		return $result;
@@ -317,15 +371,17 @@ class Chunk{
 	/**
 	 * Disposes of empty subchunks and frees data where possible
 	 */
-	public function collectGarbage() : void{
-		foreach($this->subChunks as $y => $subChunk){
+	public function collectGarbage(): void
+	{
+		foreach ($this->subChunks as $y => $subChunk) {
 			$subChunk->collectGarbage();
 		}
 	}
 
-	public function __clone(){
+	public function __clone()
+	{
 		//we don't bother cloning entities or tiles since it's impractical to do so (too many dependencies)
-		$this->subChunks = \SplFixedArray::fromArray(array_map(function(SubChunk $subChunk) : SubChunk{
+		$this->subChunks = \SplFixedArray::fromArray(array_map(function (SubChunk $subChunk): SubChunk {
 			return clone $subChunk;
 		}, $this->subChunks->toArray()));
 		$this->heightMap = clone $this->heightMap;
@@ -338,7 +394,8 @@ class Chunk{
 	 * @param int $y dependent on the height of the world
 	 * @param int $z 0-15
 	 */
-	public static function blockHash(int $x, int $y, int $z) : int{
+	public static function blockHash(int $x, int $y, int $z): int
+	{
 		return ($y << (2 * SubChunk::COORD_BIT_SIZE)) |
 			(($z & SubChunk::COORD_MASK) << SubChunk::COORD_BIT_SIZE) |
 			($x & SubChunk::COORD_MASK);

@@ -532,7 +532,6 @@ use function strtolower;
  * @method static WallHangingSign JUNGLE_WALL_HANGING_SIGN()
  * @method static WallSign JUNGLE_WALL_SIGN()
  * @method static Wood JUNGLE_WOOD()
- * @method static Kelp KELP()
  * @method static ChemistryTable LAB_TABLE()
  * @method static Ladder LADDER()
  * @method static Lantern LANTERN()
@@ -1015,7 +1014,6 @@ final class VanillaBlocks
 		self::register("dragon_egg", fn(BID $id) => new DragonEgg($id, "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, blastResistance: 45.0))));
 		self::register("dried_kelp", fn(BID $id) => new DriedKelp($id, "Dried Kelp Block", new Info(new BreakInfo(0.5, ToolType::NONE, 0, 12.5))));
 		self::register("seagrass", fn(BID $id) => new Seagrass($id, "Seagrass", new Info(BreakInfo::instant())));
-		self::register("kelp", fn(BID $id) => new Kelp($id, "Kelp", new Info(BreakInfo::instant())));
 		self::register("emerald", fn(BID $id) => new Opaque($id, "Emerald Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
 		self::register("enchanting_table", fn(BID $id) => new EnchantingTable($id, "Enchanting Table", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))), TileEnchantingTable::class);
 		self::register("end_portal_frame", fn(BID $id) => new EndPortalFrame($id, "End Portal Frame", new Info(BreakInfo::indestructible(18000000.0))));

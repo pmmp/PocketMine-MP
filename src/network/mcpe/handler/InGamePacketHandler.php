@@ -42,6 +42,7 @@ use pocketmine\item\WritableBookPage;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\InventoryManager;
@@ -498,13 +499,34 @@ class InGamePacketHandler extends PacketHandler{
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
-				if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
-					//always sync this in case plugins caused a different result than the client expected
-					//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
-					//more information up the stack. For now I think this is good enough.
-					//if only the client would tell us what blocks it thinks changed...
-					$this->syncBlocksNearby($vBlockPos, $data->getFace());
+				// $this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
+				// if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+				// 	//always sync this in case plugins caused a different result than the client expected
+				// 	//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
+				// 	//more information up the stack. For now I think this is good enough.
+				// 	//if only the client would tell us what blocks it thinks changed...
+				// 	$this->syncBlocksNearby($vBlockPos, $data->getFace());
+					if($vBlockPos->distanceSquared($this->player->getLocation()) < 10000){
+					$block = $this->player->getWorld()->getBlock($vBlockPos);
+					$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
+					$clientRuntimeId = $data->getBlockRuntimeId();
+					$interactDisplacedBlock = false;
+
+					if(($displaced = $block->getDisplacedBlock()) !== null && $blockTranslator->internalIdToNetworkId($displaced->getStateId()) === $clientRuntimeId){
+						$interactDisplacedBlock = true;
+					}elseif($blockTranslator->internalIdToNetworkId($block->getStateId()) !== $clientRuntimeId){
+						$this->syncBlocksNearby($vBlockPos, $data->getFace());
+						return true;
+					}
+
+					$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos, $interactDisplacedBlock);
+					if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+						//always sync this in case plugins caused a different result than the client expected
+						//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
+						//more information up the stack. For now I think this is good enough.
+						//if only the client would tell us what blocks it thinks changed...
+						$this->syncBlocksNearby($vBlockPos, $data->getFace());
+					}
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:

@@ -42,12 +42,21 @@ class LightPopulationTask extends AsyncTask{
 	private string $resultHeightMap;
 	private string $resultSkyLightArrays;
 	private string $resultBlockLightArrays;
+	public string $terrainHash;
+
+	/**
+	 * Counters used to sample GC frequency to avoid calling GC every task and causing spikes.
+	 * These are per-process counters.
+	 */
+	private static int $runCounter = 0;
+	private static int $completionCounter = 0;
 
 	/**
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, non-empty-list<int> $heightMap) : void $onCompletion
 	 */
 	public function __construct(Chunk $chunk, \Closure $onCompletion){
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
+        $this->terrainHash = hash('sha256', $this->chunk);
 		$this->storeLocal(self::TLS_KEY_COMPLETION_CALLBACK, $onCompletion);
 	}
 
@@ -77,25 +86,59 @@ class LightPopulationTask extends AsyncTask{
 		}
 		$this->resultSkyLightArrays = igbinary_serialize($skyLightArrays);
 		$this->resultBlockLightArrays = igbinary_serialize($blockLightArrays);
+
+			// free heavy structures asap to reduce worker memory retention
+			unset($chunk, $manager, $blockFactory, $skyLightArrays, $blockLightArrays);
+
+			// Sample GC to avoid a GC call on every task which can create latency spikes.
+			if ((++self::$runCounter & 0b11) === 0) { // every 4 runs
+				\gc_collect_cycles();
+			}
 	}
 
 	public function onCompletion() : void{
 		/**
-		 * @var int[] $heightMapArray
-		 * @phpstan-var non-empty-list<int> $heightMapArray
+		 * Attempt to unserialize results; if this fails, log and abort applying results.
 		 */
-		$heightMapArray = igbinary_unserialize($this->resultHeightMap);
+		try{
+			/** @var int[] $heightMapArray */
+			$heightMapArray = igbinary_unserialize($this->resultHeightMap);
 
-		/** @var LightArray[] $skyLightArrays */
-		$skyLightArrays = igbinary_unserialize($this->resultSkyLightArrays);
-		/** @var LightArray[] $blockLightArrays */
-		$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
+			/** @var LightArray[] $skyLightArrays */
+			$skyLightArrays = igbinary_unserialize($this->resultSkyLightArrays);
+			/** @var LightArray[] $blockLightArrays */
+			$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
+		} catch (\Throwable $e) {
+			// Log and abort applying results to avoid corrupting world state
+			error_log("LightPopulationTask unserialize failed: " . $e->getMessage());
+			// cleanup
+			unset($this->resultHeightMap, $this->resultSkyLightArrays, $this->resultBlockLightArrays);
+			\gc_collect_cycles();
+			return;
+		}
 
 		/**
 		 * @var \Closure
-		 * @phpstan-var \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, non-empty-list<int> $heightMap) : void
+		 * @phpstan-var \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, non-empty-list<int> $heightMap, string $terrainHash) : void
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_COMPLETION_CALLBACK);
-		$callback($blockLightArrays, $skyLightArrays, $heightMapArray);
+		$callback($blockLightArrays, $skyLightArrays, $heightMapArray, $this->terrainHash);
+
+		// cleanup to free memory in main thread
+		unset($this->resultHeightMap, $this->resultSkyLightArrays, $this->resultBlockLightArrays, $heightMapArray, $skyLightArrays, $blockLightArrays);
+
+		// Run GC on completion only when main process memory is above a threshold to avoid
+		// regular GC-induced latency spikes. Threshold can be overridden with env var
+		// LIGHTPOP_GC_THRESHOLD (bytes). Set to 0 to disable.
+		$env = getenv('LIGHTPOP_GC_THRESHOLD');
+		if ($env !== false) {
+			$threshold = (int) $env; // bytes, 0 => disabled
+		} else {
+			// default threshold: 64 MB
+			$threshold = 64 * 1024 * 1024;
+		}
+		if ($threshold > 0 && memory_get_usage(true) > $threshold) {
+			\gc_collect_cycles();
+		}
 	}
 }

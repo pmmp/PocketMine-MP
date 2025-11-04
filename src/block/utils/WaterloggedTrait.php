@@ -8,6 +8,7 @@ use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\block\Water;
 
 trait WaterloggedTrait{
     /** @var bool */
@@ -49,5 +50,29 @@ trait WaterloggedTrait{
             $world->setBlockAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ(), VanillaBlocks::WATER());
         }
         return $res;
+    }
+
+    // Backwards-compatibility with the expanded Waterloggable interface:
+    public function getContainedWater() : ?Water{
+        return $this->waterlogged ? clone VanillaBlocks::WATER() : null;
+    }
+
+    /** @return $this */
+    public function setContainedWater(?Water $waterCover) : self{
+        $this->waterlogged = $waterCover !== null;
+        return $this;
+    }
+
+    public function liquidCollide(Block $cause, Block $result) : bool{
+        // Default: no special collision handling for legacy waterlogged blocks.
+        return false;
+    }
+
+    public function canBeWaterlogged() : bool{
+        return true;
+    }
+
+    public function isSideOpenToFlow(int $face) : bool{
+        return true;
     }
 }
