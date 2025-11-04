@@ -61,6 +61,8 @@ final class TileFactory
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Campfire::class, ["Campfire", "minecraft:campfire"]);
 		$this->register(Cauldron::class, ["Cauldron", "minecraft:cauldron"]);
+		// Copper Golem Statue tile - persists statue pose
+		$this->register(CopperGolemStatue::class, ["CopperGolemStatue", "minecraft:copper_golem_statue_tile"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(ChiseledBookshelf::class, ["ChiseledBookshelf", "minecraft:chiseled_bookshelf"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
