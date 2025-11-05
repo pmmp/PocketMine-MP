@@ -45,7 +45,6 @@ final class ItemTypeNames{
 	public const ARMS_UP_POTTERY_SHERD = "minecraft:arms_up_pottery_sherd";
 	public const ARROW = "minecraft:arrow";
 	public const AXOLOTL_BUCKET = "minecraft:axolotl_bucket";
-	public const AXOLOTL_SPAWN_EGG = "minecraft:axolotl_spawn_egg";
 	public const BAKED_POTATO = "minecraft:baked_potato";
 	public const BALLOON = "minecraft:balloon";
 	public const BAMBOO_CHEST_RAFT = "minecraft:bamboo_chest_raft";
@@ -645,5 +644,5 @@ final class ItemTypeNames{
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = "minecraft:zombie_pigman_spawn_egg";
 	public const ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 	public const ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
-	
+	public const AXOLOTL_SPAWN_EGG = "minecraft:axolotl_spawn_egg";
 }

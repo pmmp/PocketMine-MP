@@ -796,7 +796,7 @@ class InGamePacketHandler extends PacketHandler{
 		try{
 			if($this->player->isSpectator()){
 				// toggle between default and fast (4x) flight speed
-				$default = \pocketmine\player\Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
+				$default = Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
 				$current = $this->player->getFlightSpeedMultiplier();
 				$fast = $default * 4.0;
 				$new = ($current === $default) ? $fast : $default;

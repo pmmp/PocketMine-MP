@@ -32,11 +32,15 @@ namespace pocketmine\block;
 use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\LightableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
+use pocketmine\item\PotionType;
 use pocketmine\item\Shovel;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\FlintSteelSound;
@@ -95,9 +99,9 @@ class CopperTorch extends Torch implements Lightable
         parent::onNearbyBlockChange();
     }
 
-    public function onProjectileHit(\pocketmine\entity\projectile\Projectile $projectile, \pocketmine\math\RayTraceResult $hitResult): void
+    public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult): void
     {
-        if ($this->lit && $projectile instanceof \pocketmine\entity\projectile\SplashPotion && $projectile->getPotionType() === \pocketmine\item\PotionType::WATER) {
+        if ($this->lit && $projectile instanceof SplashPotion && $projectile->getPotionType() === PotionType::WATER) {
             $this->extinguish();
         }
     }

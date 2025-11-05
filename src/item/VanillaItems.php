@@ -32,6 +32,7 @@ use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\entity\Axolotl;
+use pocketmine\entity\ZombiePigman;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
@@ -40,6 +41,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\world\World;
 use pocketmine\world\sound\BucketEmptyPowderSnowSound;
+use pocketmine\utils\Utils;
 
 use function is_int;
 use function mb_strtoupper;
@@ -397,7 +399,9 @@ use function strtolower;
  * @method static Sword WOODEN_SWORD()
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
- * @method static SpawnEgg ZOMBIE_SPAWN_EGG() 
+ * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
+ * @method static SpawnEgg ZOMBIE_PIGMAN_SPAWN_EGG()
+ * @method static SpawnEgg AXOLOTL_SPAWN_EGG()
  * @method static Item AXOLOTL_BUCKET()
  */
 final class VanillaItems
@@ -776,18 +780,51 @@ final class VanillaItems
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
+		// zombie pigman
+		self::register("zombie_pigman_spawn_egg", fn(IID $id) => new class($id, "Zombie Pigman Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new ZombiePigman(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+
+		self::register("axolotl_spawn_egg", fn(IID $id) => new class($id, "Axolotl Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				$entity = new Axolotl(Location::fromObject($pos, $world, $yaw, $pitch));
+
+				// If the spawn egg has a Variant tag, use it. Otherwise pick a random variant.
+				$nbt = $this->getNamedTag();
+				$variant = $nbt->getInt("Variant", mt_rand(0, 4));
+				$entity->setVariant($variant);
+
+				// If the egg includes baby/entity_born/Age tags, honor them so eggs can spawn babies
+				// e.g. /summon axolotl {entity_born:1b} or egg with {Baby:1b}.
+				$isBaby = false;
+				if ($nbt->getByte("Baby", 0) === 1 || $nbt->getByte("entity_born", 0) === 1 || $nbt->getByte("EntityBorn", 0) === 1) {
+					$isBaby = true;
+				}
+				// Some tools use Age negative to indicate baby (Java). Honor that too if present.
+				if ($nbt->getInt("Age", 0) < 0) {
+					$isBaby = true;
+				}
+				$entity->setBaby($isBaby);
+
+				// Give spawned axolotls full air supply so they do not instantly suffocate when
+				// spawned via eggs.
+				$entity->setAirSupplyTicks($entity->getMaxAirSupplyTicks());
+
+				return $entity;
+			}
+		});
+
 		self::register("squid_spawn_egg", fn(IID $id) => new class($id, "Squid Spawn Egg") extends SpawnEgg {
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
 			{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		self::register("axolotl_spawn_egg", fn(IID $id) => new class($id, "Axolotl Spawn Egg") extends SpawnEgg {
-			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
-			{
-				return new Axolotl(Location::fromObject($pos, $world, $yaw, $pitch));
-			}
-		});
+	
 		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg {
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
 			{

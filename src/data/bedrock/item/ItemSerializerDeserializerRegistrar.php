@@ -494,7 +494,14 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::WOODEN_SWORD, Items::WOODEN_SWORD());
 		$this->map1to1Item(Ids::WRITABLE_BOOK, Items::WRITABLE_BOOK());
 		$this->map1to1Item(Ids::WRITTEN_BOOK, Items::WRITTEN_BOOK());
+
+
 		$this->map1to1Item(Ids::ZOMBIE_SPAWN_EGG, Items::ZOMBIE_SPAWN_EGG());
+		$this->map1to1Item(Ids::ZOMBIE_PIGMAN_SPAWN_EGG, Items::ZOMBIE_PIGMAN_SPAWN_EGG());
+		$this->map1to1Item(Ids::AXOLOTL_SPAWN_EGG, Items::AXOLOTL_SPAWN_EGG());
+
+
+
 		$this->map1to1Item(Ids::POWDER_SNOW_BUCKET, Items::POWDER_SNOW_BUCKET());
 	}
 

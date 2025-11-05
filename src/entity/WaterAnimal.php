@@ -34,6 +34,15 @@ abstract class WaterAnimal extends Living implements Ageable{
 		return $this->baby;
 	}
 
+	/**
+	 * Set whether this mob is a baby. Adjusts network state and size.
+	 */
+	public function setBaby(bool $value = true) : void{
+		$this->baby = $value;
+		$this->networkPropertiesDirty = true;
+		// Size will be recalculated by entity lifecycle when necessary
+	}
+
 	public function canBreathe() : bool{
 		return $this->isUnderwater();
 	}

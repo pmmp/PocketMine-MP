@@ -25,11 +25,15 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\FishHook;
+use pocketmine\event\entity\FishHookLootEvent;
+use pocketmine\event\player\PlayerFishCastEvent;
+use pocketmine\event\player\PlayerFishReelEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\player\Player;
 use pocketmine\math\Vector3;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\projectile\Throwable;
 use pocketmine\world\sound\PopSound;
 use pocketmine\world\sound\ItemFrameAddItemSound;
 use pocketmine\item\VanillaItems;
@@ -66,7 +70,7 @@ class FishingRod extends Durable
 		return 2.2;
 	}
 
-	protected function createEntity(Location $location, Player $thrower): \pocketmine\entity\projectile\Throwable
+	protected function createEntity(Location $location, Player $thrower): Throwable
 	{
 		return new FishHook(Location::fromObject($location->asVector3(), $location->getWorld(), $location->yaw, $location->pitch), $thrower);
 	}
@@ -91,7 +95,7 @@ class FishingRod extends Durable
 					$server = $player->getWorld()->getServer();
 					foreach ($server->getWorldManager()->getWorlds() as $w) {
 						foreach ($w->getEntities() as $entity) {
-							if ($entity instanceof \pocketmine\entity\projectile\FishHook && $entity->getOwningEntityId() === $player->getId() && !$entity->isFlaggedForDespawn()) {
+							if ($entity instanceof FishHook && $entity->getOwningEntityId() === $player->getId() && !$entity->isFlaggedForDespawn()) {
 								$entity->flagForDespawn();
 							}
 						}
@@ -129,8 +133,7 @@ class FishingRod extends Durable
 
 			// Fire PlayerFishReelEvent so plugins can cancel or modify the reeling behaviour (and loot)
 			try {
-				$reelEvent = new \pocketmine\event\player\PlayerFishReelEvent($player, $existing, $target, $loot);
-				// Debug: log that we're about to call the reel event so plugin listeners can be diagnosed
+				$reelEvent = new PlayerFishReelEvent($player, $existing, $target, $loot);
 				try {
 					$player->getServer()->getLogger()->debug("FishingRod: calling PlayerFishReelEvent for " . $player->getName());
 				} catch (\Throwable $_) {
@@ -198,7 +201,7 @@ class FishingRod extends Durable
 						// Allow plugins to modify or cancel the loot spawn
 						try {
 							foreach ($lootsToSpawn as $lootItem) {
-								$lootEvent = new \pocketmine\event\entity\FishHookLootEvent($existing, $lootItem);
+								$lootEvent = new FishHookLootEvent($existing, $lootItem);
 								try {
 									$player->getServer()->getLogger()->debug("FishingRod: calling FishHookLootEvent for " . $player->getName());
 								} catch (\Throwable $_) {
@@ -261,7 +264,7 @@ class FishingRod extends Durable
 
 		// Fire a PlayerFishCastEvent so plugins can cancel casting
 		try {
-			$event = new \pocketmine\event\player\PlayerFishCastEvent($player, $this);
+			$event = new PlayerFishCastEvent($player, $this);
 			try {
 				$player->getServer()->getLogger()->debug("FishingRod: calling PlayerFishCastEvent for " . $player->getName());
 			} catch (\Throwable $_) {

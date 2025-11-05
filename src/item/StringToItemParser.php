@@ -1719,6 +1719,8 @@ final class StringToItemParser extends StringToTParser
 		$result->register("writable_book", fn() => Items::WRITABLE_BOOK());
 		$result->register("written_book", fn() => Items::WRITTEN_BOOK());
 		$result->register("zombie_spawn_egg", fn() => Items::ZOMBIE_SPAWN_EGG());
+		$result->register("zombie_pigman_spawn_egg", fn() => Items::ZOMBIE_PIGMAN_SPAWN_EGG());
+		$result->register("axolotl_spawn_egg", fn() => Items::AXOLOTL_SPAWN_EGG());
 	}
 
 	/**

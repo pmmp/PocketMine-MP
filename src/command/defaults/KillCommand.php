@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandoCommand;
 use pocketmine\command\CommandSender;
 use pocketmine\command\args\TargetArgument;
+use pocketmine\entity\projectile\FishHook;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
@@ -80,7 +81,7 @@ class KillCommand extends CommandoCommand{
 			$count = 0;
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $w){
 				foreach($w->getEntities() as $entity){
-					if($entity instanceof \pocketmine\entity\projectile\FishHook){
+					if($entity instanceof FishHook){
 						$entity->flagForDespawn();
 						$count++;
 					}

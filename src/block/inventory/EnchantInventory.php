@@ -29,6 +29,7 @@ use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\enchantment\EnchantingHelper as Helper;
 use pocketmine\item\enchantment\EnchantingOption;
 use pocketmine\item\Item;
+use pocketmine\player\Player;
 use pocketmine\world\Position;
 use function array_values;
 use function count;
@@ -56,7 +57,7 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		parent::__construct(2);
 	}
 
-	public function onClose(\pocketmine\player\Player $who) : void{
+	public function onClose(Player $who) : void{
 		parent::onClose($who);
 		// Clean up any viewer-specific cached options to avoid unbounded growth
 		unset($this->optionsByViewer[spl_object_id($who)]);
@@ -91,12 +92,12 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 		return $this->getItem(self::SLOT_LAPIS);
 	}
 
-	public function getOutput(int $optionId, ?\pocketmine\player\Player $viewer = null) : ?Item{
+	public function getOutput(int $optionId, ?Player $viewer = null) : ?Item{
 		$option = $this->getOption($optionId, $viewer);
 		return $option === null ? null : Helper::enchantItem($this->getInput(), $option->getEnchantments());
 	}
 
-	public function getOption(int $optionId, ?\pocketmine\player\Player $viewer = null) : ?EnchantingOption{
+	public function getOption(int $optionId, ?Player $viewer = null) : ?EnchantingOption{
 		if($viewer !== null){
 			$opts = $this->optionsByViewer[spl_object_id($viewer)] ?? null;
 			return $opts[$optionId] ?? null;
