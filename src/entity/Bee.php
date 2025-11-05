@@ -28,7 +28,7 @@ class Bee extends Living
 
     protected function getInitialDragMultiplier(): float
     {
-        return 0.95;
+        return 0.02;
     }
 
     protected function getInitialGravity(): float

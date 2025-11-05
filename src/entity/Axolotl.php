@@ -36,7 +36,7 @@ class Axolotl extends WaterAnimal
 
     protected function getInitialDragMultiplier(): float
     {
-        return 0.86;
+        return 0.02;
     }
     protected function getInitialGravity(): float
     {

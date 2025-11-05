@@ -215,6 +215,27 @@ final class EntityFactory
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Squid', 'minecraft:squid']);
 		
+		// Passive/farm animals
+		$this->register(Chicken::class, function (World $world, CompoundTag $nbt): Chicken {
+			return new Chicken(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Chicken', 'minecraft:chicken']);
+
+		$this->register(Cow::class, function (World $world, CompoundTag $nbt): Cow {
+			return new Cow(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Cow', 'minecraft:cow']);
+
+		$this->register(Pig::class, function (World $world, CompoundTag $nbt): Pig {
+			return new Pig(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Pig', 'minecraft:pig']);
+
+		$this->register(Sheep::class, function (World $world, CompoundTag $nbt): Sheep {
+			return new Sheep(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Sheep', 'minecraft:sheep']);
+
+		$this->register(Bee::class, function (World $world, CompoundTag $nbt): Bee {
+			return new Bee(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Bee', 'minecraft:bee']);
+		
 		$this->register(Axolotl::class, function (World $world, CompoundTag $nbt): Axolotl {
 			return new Axolotl(Helper::parseLocation($nbt, $world), $nbt);
 		}, ['Axolotl', 'minecraft:axolotl']);

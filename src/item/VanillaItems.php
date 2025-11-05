@@ -29,6 +29,7 @@ use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
+use pocketmine\entity\Chicken;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\entity\Axolotl;
@@ -402,6 +403,10 @@ use function strtolower;
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
  * @method static SpawnEgg ZOMBIE_PIGMAN_SPAWN_EGG()
  * @method static SpawnEgg AXOLOTL_SPAWN_EGG()
+ * @method static SpawnEgg CHICKEN_SPAWN_EGG()
+ * @method static SpawnEgg COW_SPAWN_EGG()
+ * @method static SpawnEgg PIG_SPAWN_EGG()
+ * @method static SpawnEgg SHEEP_SPAWN_EGG()
  * @method static Item AXOLOTL_BUCKET()
  */
 final class VanillaItems
@@ -818,6 +823,33 @@ final class VanillaItems
 			}
 		});
 
+		self::register("chicken_spawn_egg", fn(IID $id) => new class($id, "Chicken Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new Chicken(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+
+		self::register("cow_spawn_egg", fn(IID $id) => new class($id, "Cow Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new \pocketmine\entity\Cow(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+
+		self::register("pig_spawn_egg", fn(IID $id) => new class($id, "Pig Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new \pocketmine\entity\Pig(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
+
+		self::register("sheep_spawn_egg", fn(IID $id) => new class($id, "Sheep Spawn Egg") extends SpawnEgg {
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
+			{
+				return new \pocketmine\entity\Sheep(Location::fromObject($pos, $world, $yaw, $pitch));
+			}
+		});
 		self::register("squid_spawn_egg", fn(IID $id) => new class($id, "Squid Spawn Egg") extends SpawnEgg {
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
 			{

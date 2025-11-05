@@ -747,6 +747,12 @@ abstract class Entity
 			$this->setFireTicks($ticks);
 		}
 		$this->networkPropertiesDirty = true;
+		// Immediately broadcast updated metadata so clients see the ONFIRE flag/animation without waiting for the next tick
+		try {
+			$this->sendData(null, $this->getDirtyNetworkData());
+		} catch (\Throwable $e) {
+			// swallow; best-effort update
+		}
 	}
 
 	public function getFireTicks(): int
@@ -782,6 +788,12 @@ abstract class Entity
 
 		$this->fireTicks = 0;
 		$this->networkPropertiesDirty = true;
+		// Immediately broadcast updated metadata so clients clear the ONFIRE flag/animation promptly
+		try {
+			$this->sendData(null, $this->getDirtyNetworkData());
+		} catch (\Throwable $e) {
+			// ignore
+		}
 	}
 
 	public function isFireProof(): bool

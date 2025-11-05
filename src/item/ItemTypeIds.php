@@ -267,6 +267,10 @@ final class ItemTypeIds{
 	public const ZOMBIE_SPAWN_EGG = 20228;
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = 20369;
 	public const AXOLOTL_SPAWN_EGG = 20370;
+	public const COW_SPAWN_EGG = 20371;
+	public const CHICKEN_SPAWN_EGG = 20372;
+	public const PIG_SPAWN_EGG = 20373;
+	public const SHEEP_SPAWN_EGG = 20374;
 	public const CRIMSON_SIGN = 20229;
 	public const MANGROVE_SIGN = 20230;
 	public const WARPED_SIGN = 20231;

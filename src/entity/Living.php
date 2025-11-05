@@ -28,6 +28,7 @@ use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\entity\ai\GoalSelector;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\animation\RespawnAnimation;
@@ -90,6 +91,7 @@ use pocketmine\item\VanillaArmorMaterials;
 abstract class Living extends Entity
 {
 	protected const DEFAULT_BREATH_TICKS = 300;
+	private const FORGET_LAST_ATTACKER_TICKS = 200;
 
 	/**
 	 * The default knockback multiplier when an entity is hit by another entity.
@@ -143,6 +145,13 @@ abstract class Living extends Entity
 
 	private ?int $frostWalkerLevel = null;
 
+	protected ?GoalSelector $goalSelector = null;
+	protected ?GoalSelector $targetSelector = null;
+	protected ?Entity $attackTarget = null;
+	protected ?Entity $lastAttacker = null;
+	protected int $lastAttackerTicks = 0;
+	private bool $goalsRegistered = false;
+
 	protected function getInitialDragMultiplier(): float
 	{
 		return 0.02;
@@ -181,11 +190,21 @@ abstract class Living extends Entity
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(fn() => NetworkBroadcastUtils::broadcastEntityEvent(
-			$this->getViewers(),
-			fn(EntityEventBroadcaster $broadcaster, array $recipients) => $broadcaster->onMobArmorChange($recipients, $this)
-		)));
-		$this->armorInventory->getListeners()->add(new CallbackInventoryListener(
+		$self = $this;
+		$listener = CallbackInventoryListener::onAnyChange(function (Inventory $unused) use ($self): void {
+			NetworkBroadcastUtils::broadcastEntityEvent(
+				$self->getViewers(),
+				function (EntityEventBroadcaster $broadcaster, array $recipients) use ($self): void {
+					$broadcaster->onMobArmorChange($recipients, $self);
+				}
+			);
+		});
+		/** @var \pocketmine\utils\ObjectSet $set */
+		$set = $this->armorInventory->getListeners();
+	/** @var \pocketmine\inventory\CallbackInventoryListener $listener */
+	$set->add(...[$listener]);
+
+		$listener2 = new CallbackInventoryListener(
 			onSlotChange: function (Inventory $inventory, int $slot): void {
 				if ($slot === ArmorInventory::SLOT_FEET) {
 					$this->frostWalkerLevel = null;
@@ -194,7 +213,11 @@ abstract class Living extends Entity
 			onContentChange: function (): void {
 				$this->frostWalkerLevel = null;
 			}
-		));
+		);
+	/** @var \pocketmine\utils\ObjectSet $set2 */
+	$set2 = $this->armorInventory->getListeners();
+	/** @var \pocketmine\inventory\CallbackInventoryListener $listener2 */
+	$set2->add(...[$listener2]);
 
 		$health = $this->getMaxHealth();
 
@@ -212,6 +235,7 @@ abstract class Living extends Entity
 
 		$activeEffectsTag = $nbt->getListTag(self::TAG_ACTIVE_EFFECTS, CompoundTag::class);
 		if ($activeEffectsTag !== null) {
+			/** @var CompoundTag $e */
 			foreach ($activeEffectsTag as $e) {
 				$effect = EffectIdMap::getInstance()->fromId($e->getByte(self::TAG_EFFECT_ID));
 				if ($effect === null) {
@@ -226,6 +250,13 @@ abstract class Living extends Entity
 					$e->getByte(self::TAG_EFFECT_AMBIENT, 0) !== 0
 				));
 			}
+		}
+
+		$this->goalSelector = new GoalSelector($this);
+		$this->targetSelector = new GoalSelector($this);
+		if (!$this->goalsRegistered) {
+			$this->goalsRegistered = true;
+			$this->registerGoals();
 		}
 	}
 
@@ -608,6 +639,13 @@ abstract class Living extends Entity
 
 	public function attack(EntityDamageEvent $source): void
 	{
+		if ($source instanceof EntityDamageByEntityEvent) {
+			$damager = $source->getDamager();
+			if ($damager !== null && $damager !== $this) {
+				$this->setLastAttacker($damager);
+			}
+		}
+
 		if ($this->noDamageTicks > 0 && $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE) {
 			$source->cancel();
 		}
@@ -773,6 +811,22 @@ abstract class Living extends Entity
 				$hasUpdate = true;
 			}
 			$this->isAccumulatingFreeze = false;
+
+			if ($this->lastAttacker !== null) {
+				$this->lastAttackerTicks += $tickDiff;
+				if (
+					$this->lastAttackerTicks >= self::FORGET_LAST_ATTACKER_TICKS ||
+					$this->lastAttacker->isClosed() ||
+					!$this->lastAttacker->isAlive()
+				) {
+					$this->lastAttacker = null;
+					$this->lastAttackerTicks = 0;
+				}
+			}
+
+			if ($this->tickAI($tickDiff)) {
+				$hasUpdate = true;
+			}
 		}
 
 		if ($this->attackTime > 0) {
@@ -782,6 +836,56 @@ abstract class Living extends Entity
 		Timings::$livingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
+	}
+
+	protected function tickAI(int $tickDiff): bool
+	{
+		$changed = false;
+		if ($this->targetSelector !== null) {
+			$changed = $this->targetSelector->tick($tickDiff) || $changed;
+		}
+		if ($this->goalSelector !== null) {
+			$changed = $this->goalSelector->tick($tickDiff) || $changed;
+		}
+		return $changed;
+	}
+
+	protected function registerGoals(): void
+	{
+	}
+
+	public function getGoalSelector(): GoalSelector
+	{
+		return $this->goalSelector ??= new GoalSelector($this);
+	}
+
+	public function getTargetSelector(): GoalSelector
+	{
+		return $this->targetSelector ??= new GoalSelector($this);
+	}
+
+	public function getAttackTarget(): ?Entity
+	{
+		return $this->attackTarget;
+	}
+
+	public function setAttackTarget(?Entity $target): void
+	{
+		if ($target !== null && ($target->isClosed() || !$target->isAlive())) {
+			$target = null;
+		}
+		$this->attackTarget = $target;
+	}
+
+	public function getLastAttacker(): ?Entity
+	{
+		return $this->lastAttacker;
+	}
+
+	public function setLastAttacker(?Entity $attacker): void
+	{
+		$this->lastAttacker = $attacker;
+		$this->lastAttackerTicks = 0;
 	}
 
 	protected function move(float $dx, float $dy, float $dz): void

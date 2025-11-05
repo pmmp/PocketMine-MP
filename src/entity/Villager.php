@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\entity\ai\goal\FloatGoal;
+use pocketmine\entity\ai\goal\HurtByTargetGoal;
+use pocketmine\entity\ai\goal\LookAtPlayerGoal;
+use pocketmine\entity\ai\goal\RandomStrollGoal;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
@@ -91,6 +95,16 @@ class Villager extends Living implements Ageable{
 
 	public function getPickedItem() : ?Item{
 		return VanillaItems::VILLAGER_SPAWN_EGG();
+	}
+
+	protected function registerGoals(): void
+	{
+		parent::registerGoals();
+		$goalSelector = $this->getGoalSelector();
+		$goalSelector->addGoal(0, new FloatGoal($this));
+		$goalSelector->addGoal(1, new RandomStrollGoal($this, 0.13));
+		$goalSelector->addGoal(2, new LookAtPlayerGoal($this, 8.0));
+		$this->getTargetSelector()->addGoal(0, new HurtByTargetGoal($this));
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
