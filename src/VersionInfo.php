@@ -31,7 +31,7 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "BeeltyMine";
-	public const BASE_VERSION = "5.37.2";
+	public const BASE_VERSION = "5.37.3";
 	public const IS_DEVELOPMENT_BUILD = false;
 	public const BUILD_CHANNEL = "stable";
 
