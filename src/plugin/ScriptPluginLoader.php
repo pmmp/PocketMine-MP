@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\utils\Utils;
-use function basename;
 use function count;
 use function file;
 use function implode;
 use function is_file;
+use function pathinfo;
 use function str_contains;
 use function str_ends_with;
 use const FILE_IGNORE_NEW_LINES;
