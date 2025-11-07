@@ -50,8 +50,18 @@ class DeopCommand extends VanillaCommand{
 		}
 
 		$name = array_shift($args);
+
 		if(!Player::isValidUserName($name)){
 			throw new InvalidCommandSyntaxException();
+		}
+
+		$opList = $sender->getServer()->getOps()->getAll(true);
+
+		foreach($opList as $op){
+			if(str_starts_with(strtolower($op), $name)){
+				$name = $op;
+				break;
+			}
 		}
 
 		$sender->getServer()->removeOp($name);
