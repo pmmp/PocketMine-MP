@@ -116,6 +116,13 @@ use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\SetHudPacket;
+use pocketmine\network\mcpe\protocol\types\hud\HudElement;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack as NetItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\hud\HudVisibility;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -279,6 +286,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	protected ?float $lastMovementProcess = null;
 
 	protected int $inAirTicks = 0;
+
+	/** @var int|null Server tick when we should resend spectator equipment hide or restore */
+	private ?int $spectatorEquipmentDeferredTick = null;
 
 	protected float $stepHeight = 0.6;
 
@@ -1315,6 +1325,28 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$this->removeCurrentWindow();
 			$this->getNetworkSession()->getInvManager()?->forceCloseAll();
 
+			// Hide hotbar and item text while spectating (client will remove these HUD elements)
+			$this->getNetworkSession()->sendDataPacket(SetHudPacket::create([
+				HudElement::HOTBAR,
+				HudElement::ITEM_TEXT,
+			], HudVisibility::HIDE));
+
+			// Also hide the held-item model by sending an empty equipment packet for this player
+			// (this hides the hand/item in the client's view without changing server inventory)
+			$this->getNetworkSession()->sendDataPacket(MobEquipmentPacket::create(
+				$this->getId(),
+				new ItemStackWrapper(0, NetItemStack::null()),
+				$this->inventory->getHeldItemIndex(),
+				$this->inventory->getHeldItemIndex(),
+				ContainerIds::INVENTORY
+			));
+
+			// Mark the client as having the same selected hotbar slot so InventoryManager won't auto-resend equipment
+			$this->getNetworkSession()->getInvManager()?->onClientSelectHotbarSlot($this->inventory->getHeldItemIndex());
+			// Ensure client applies hide reliably: defer a resend for the next tick
+			$this->spectatorEquipmentDeferredTick = $this->server->getTick() + 1;
+			//  hand invisible
+
 			//TODO: HACK! this syncs the onground flag with the client so that flying works properly
 			//this is a yucky hack but we don't have any other options :(
 			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_TELEPORT);
@@ -1325,6 +1357,29 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$this->setHasBlockCollision(true);
 			$this->setSilent(false);
 			$this->checkGroundState(0, 0, 0, 0, 0, 0);
+
+			// Restore HUD visibility when leaving spectator — reset all HUD elements to be safe
+			$this->getNetworkSession()->sendDataPacket(SetHudPacket::create([
+				HudElement::PAPER_DOLL,
+				HudElement::ARMOR,
+				HudElement::TOOLTIPS,
+				HudElement::TOUCH_CONTROLS,
+				HudElement::CROSSHAIR,
+				HudElement::HOTBAR,
+				HudElement::HEALTH,
+				HudElement::XP,
+				HudElement::FOOD,
+				HudElement::AIR_BUBBLES,
+				HudElement::HORSE_HEALTH,
+				HudElement::STATUS_EFFECTS,
+				HudElement::ITEM_TEXT,
+			], HudVisibility::RESET));
+
+			// Restore held-item visuals by syncing the selected hotbar slot (will re-send equipment)
+			$this->getNetworkSession()->getInvManager()?->syncSelectedHotbarSlot();
+
+			// Defer a second sync a tick later to ensure the client fully rebuilt the HUD
+			$this->spectatorEquipmentDeferredTick = $this->server->getTick() + 1;
 		}
 	}
 
@@ -1678,6 +1733,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 
 		$this->timings->stopTiming();
+		// Handle any deferred spectator equipment/hotbar syncs which need to run a tick later
+		if ($this->spectatorEquipmentDeferredTick !== null && $this->server->getTick() >= $this->spectatorEquipmentDeferredTick) {
+			// If we're currently spectator, ensure the held item is hidden by re-sending an empty equipment packet
+			if ($this->isSpectator()) {
+				$this->getNetworkSession()->sendDataPacket(MobEquipmentPacket::create(
+					$this->getId(),
+					new ItemStackWrapper(0, NetItemStack::null()),
+					$this->inventory->getHeldItemIndex(),
+					$this->inventory->getHeldItemIndex(),
+					ContainerIds::INVENTORY
+				));
+			} else {
+				// Leaving spectator: re-sync selected hotbar slot to restore the held item visuals
+				$this->getNetworkSession()->getInvManager()?->syncSelectedHotbarSlot();
+			}
+			$this->spectatorEquipmentDeferredTick = null;
+		}
 
 		return true;
 	}
@@ -1755,6 +1827,40 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	public function selectHotbarSlot(int $hotbarSlot): bool
 	{
+		// If the player is spectator, interpret hotbar-scroll as flight-speed adjustment instead
+		if ($this->isSpectator()) {
+			if (!$this->inventory->isHotbarSlot($hotbarSlot)) {
+				return false;
+			}
+
+			$current = $this->inventory->getHeldItemIndex();
+			if ($hotbarSlot === $current) {
+				return true; // no change
+			}
+
+			// Determine scroll direction by shortest wrap-around distance on 9-slot hotbar
+			$slots = 9; // standard hotbar size
+			$forward = ($hotbarSlot - $current + $slots) % $slots;
+			$backward = ($current - $hotbarSlot + $slots) % $slots;
+			$direction = $forward <= $backward ? 1 : -1; // 1 => increase speed, -1 => decrease
+
+			// Adjust flight speed multiplier
+			$step = 0.05; // change per scroll notch; reasonable default
+			$new = $this->getFlightSpeedMultiplier() + $direction * $step;
+			// clamp to reasonable bounds
+			$new = max(0.01, min(1.0, $new));
+			$this->setFlightSpeedMultiplier($new);
+
+			// Provide quick feedback to the client via action bar
+			try {
+				$this->getNetworkSession()->onActionBar("Flight speed: " . round($new, 2));
+			} catch (\Throwable $e) {
+				// ignore if session not available
+			}
+
+			return true;
+		}
+
 		if (!$this->inventory->isHotbarSlot($hotbarSlot)) { //TODO: exception here?
 			return false;
 		}
@@ -2061,8 +2167,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->inventory->getItemInHand();
 			$oldItem = clone $item;
 			$returnedItems = [];
-			// @phpstan-ignore-next-line: false positive until analyser picks up updated signature
-			if ($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)) {
+			// Use named args to help static analysis map parameters correctly
+			if ($this->getWorld()->useBreakOn($pos, item: $item, player: $this, createParticles: true, returnedItems: $returnedItems)) {
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
@@ -2088,7 +2194,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
 			$returnedItems = [];
-			if ($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true, $returnedItems, $interactDisplacedBlock)) {
+			if ($this->getWorld()->useItemOn($pos, item: $item, face: $face, clickVector: $clickOffset, player: $this, playSound: true, returnedItems: $returnedItems, interactDisplacedBlock: $interactDisplacedBlock)) {
 
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				return true;

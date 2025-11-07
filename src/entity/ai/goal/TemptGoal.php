@@ -8,8 +8,8 @@ use pocketmine\entity\ai\Goal;
 use pocketmine\entity\Living;
 use pocketmine\player\Player;
 use pocketmine\math\Vector3;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\item\VanillaItems;
-use pocketmine\entity\ai\path\AStarPathFinder;
 use pocketmine\math\VoxelRayTrace;
 use pocketmine\Server;
 use function mt_getrandmax;
@@ -26,14 +26,29 @@ class TemptGoal implements Goal
     private ?Player $targetPlayer = null;
     /** @var int[] */
     private array $temptItemTypeIds;
-    private ?array $path = null;
-    private int $pathIndex = 0;
-    private int $recalcCooldown = 0;
+    // steering parameters (tuned to feel like walking)
+    private float $acceleration = 0.08; // how fast the mob accelerates towards desired speed (blocks/tick^2)
+    private float $maxSpeed = 0.7; // absolute cap for horizontal speed (walk pace)
+    /** maximum yaw change per tick in degrees to avoid snapping/spinning */
+    private float $maxYawChange = 15.0;
+    /** maximum pitch change per tick in degrees */
+    private float $maxPitchChange = 8.0;
+    /** separation radius to avoid other mobs (blocks) */
+    private float $separationRadius = 0.8;
+    /** strength applied from separation vector (0..1) */
+    private float $separationStrength = 0.9;
     private int $stuckTicks = 0;
     private int $stuckTimeout = 8;
     private ?Vector3 $followPosCache = null;
+    /** last observed player position used to estimate player speed */
+    private ?Vector3 $lastPlayerPos = null;
     /** how far the mob will keep following before losing interest */
     private float $loseInterestDistance = 32.0;
+
+    /** action-bar cooldown per player in ticks (default 2s) */
+    private const ACTION_BAR_COOLDOWN_TICKS = 40;
+    /** @var int[] map playerId => lastTickSent */
+    private static array $lastActionBarTick = [];
 
     public function __construct(
         private Living $mob,
@@ -71,6 +86,20 @@ class TemptGoal implements Goal
                 if ($distSq <= $this->maxDistance ** 2) {
                     // require line of sight to start following
                     if ($this->hasLineOfSightTo($player)) {
+                        // show a small hint to nearby players holding the item (rate-limited per-player)
+                        if ($distSq <= 6.0 ** 2) {
+                            try {
+                                $tick = Server::getInstance()->getTick();
+                                $pid = $player->getId();
+                                $last = self::$lastActionBarTick[$pid] ?? -PHP_INT_MAX;
+                                if ($tick - $last >= self::ACTION_BAR_COOLDOWN_TICKS) {
+                                    $player->sendActionBarMessage("Feed");
+                                    self::$lastActionBarTick[$pid] = $tick;
+                                }
+                            } catch (\Throwable $e) {
+                                // ignore any errors sending action bar
+                            }
+                        }
                         $this->targetPlayer = $player;
                         return true;
                     }
@@ -83,9 +112,14 @@ class TemptGoal implements Goal
 
     public function start(): void
     {
-        $this->recalcCooldown = 0;
-        $this->path = null;
-        $this->pathIndex = 0;
+        // reset any transient state
+        $this->stuckTicks = 0;
+        try {
+            // Informative log so server operator can observe when a mob begins following
+            Server::getInstance()->getLogger()->info("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") started following player #" . ($this->targetPlayer?->getId() ?? -1));
+        } catch (\Throwable $e) {
+            // ignore logging issues
+        }
     }
 
     public function tick(int $tickDiff): void
@@ -102,165 +136,195 @@ class TemptGoal implements Goal
         $pos = $this->mob->getLocation();
         $playerPos = $this->targetPlayer->getLocation();
 
-        // followPos is computed when we recalc path to avoid rapid changes when player simply looks around
-        if ($this->path === null || $this->recalcCooldown <= 0 || $this->followPosCache === null) {
-            $playerYaw = $playerPos->yaw;
-            $yawRad = deg2rad($playerYaw);
-            $px = -sin($yawRad);
-            $pz = cos($yawRad);
-            $followX = $playerPos->x - $px * $this->followDistance;
-            $followZ = $playerPos->z - $pz * $this->followDistance;
-            $this->followPosCache = new Vector3($followX, $playerPos->y, $followZ);
+        // estimate player horizontal speed (blocks per tick) based on last observed position
+        $playerSpeedPerTick = 0.0;
+        if ($this->lastPlayerPos !== null) {
+            $pdx = $playerPos->x - $this->lastPlayerPos->x;
+            $pdz = $playerPos->z - $this->lastPlayerPos->z;
+            $playerSpeedPerTick = sqrt($pdx ** 2 + $pdz ** 2) / max(1, $tickDiff);
         }
+        $this->lastPlayerPos = new Vector3($playerPos->x, $playerPos->y, $playerPos->z);
 
-        $followPos = $this->followPosCache;
+    // compute follow position as the player's position (approach player directly)
+    // The stopDistance will keep the mob from walking into the player's face.
+    $followPos = new Vector3($playerPos->x, $playerPos->y, $playerPos->z);
 
         $dx = $followPos->x - $pos->x;
         $dz = $followPos->z - $pos->z;
-    $distSq = $dx ** 2 + $dz ** 2;
+        $dist = sqrt($dx ** 2 + $dz ** 2);
 
-        if ($distSq > $this->maxDistance ** 2) {
+        if ($dist > $this->maxDistance) {
             // too far
             $this->targetPlayer = null;
             return;
         }
 
-        $this->recalcCooldown -= $tickDiff;
-        if ($this->path === null || $this->recalcCooldown <= 0) {
-            // cache path for the same interval as our recalculation cooldown; target the follow position rather than player exact position
-            $this->path = AStarPathFinder::findPath($this->mob->getWorld(), $pos, $followPos, 1000, $this->recalcEveryTicks);
-            $this->pathIndex = 1;
-            $this->recalcCooldown = $this->recalcEveryTicks;
+        // determine desired horizontal velocity towards followPos
+        if ($dist <= $this->stopDistance) {
+            // close enough: slow to stop and look at player
+            $cur = $this->mob->getMotion();
+            $this->mob->setMotion(new Vector3(0.0, $cur->y, 0.0));
+            // rotate to face player eye
+            $targetEye = $this->targetPlayer->getEyePos();
+            $mobEye = $this->mob->getEyePos();
+            $dxEye = $targetEye->x - $mobEye->x;
+            $dyEye = $targetEye->y - $mobEye->y;
+            $dzEye = $targetEye->z - $mobEye->z;
+            $h = sqrt($dxEye ** 2 + $dzEye ** 2);
+            if ($h > 0) {
+                $yaw = rad2deg(atan2(-$dxEye, $dzEye));
+                $pitch = rad2deg(-atan2($dyEye, $h));
+                $this->mob->setRotation($yaw, $pitch);
+            }
+            $this->mob->setForceMovementUpdate();
+            return;
         }
 
-        if ($this->path !== null && isset($this->path[$this->pathIndex])) {
-            $target = $this->path[$this->pathIndex];
-            $dx = $target->x - $pos->x;
-            $dz = $target->z - $pos->z;
-            $distSq = $dx ** 2 + $dz ** 2;
-            if ($distSq <= 0.5 ** 2) {
-                $this->pathIndex++;
-                if (!isset($this->path[$this->pathIndex])) {
-                    // reached player
-                    return;
-                }
-                $target = $this->path[$this->pathIndex];
+        $nx = $dx / $dist;
+        $nz = $dz / $dist;
+
+        // scale desired speed if player is moving quickly (sprinting)
+        $walkThreshold = 0.02; // blocks/tick roughly standing/walking
+        $runRange = 0.12; // blocks/tick range from walk->sprint
+        $runBoost = 1.0; // additional multiplier at max sprint
+        $factor = 0.0;
+        if ($playerSpeedPerTick > $walkThreshold) {
+            $factor = min(1.0, ($playerSpeedPerTick - $walkThreshold) / $runRange);
+        }
+        $speedMultiplier = 1.0 + $factor * $runBoost;
+
+        $desiredX = $nx * min($this->speed * $speedMultiplier, $this->maxSpeed * $speedMultiplier);
+        $desiredZ = $nz * min($this->speed * $speedMultiplier, $this->maxSpeed * $speedMultiplier);
+
+        // separation: push away from nearby entities of same type to avoid stacking
+        try {
+            $aabb = AxisAlignedBB::one()->offset($pos->x, $pos->y, $pos->z)->expand($this->separationRadius, $this->separationRadius, $this->separationRadius);
+            $nearby = $this->mob->getWorld()->getNearbyEntities($aabb, $this->mob);
+            $sepX = 0.0;
+            $sepZ = 0.0;
+            foreach ($nearby as $ent) {
+                if ($ent === $this->mob) continue;
+                if (!($ent instanceof Living)) continue;
+                // only consider same mob class to avoid pushing away from players
+                if (get_class($ent) !== get_class($this->mob)) continue;
+                $dxEnt = $pos->x - $ent->getLocation()->x;
+                $dzEnt = $pos->z - $ent->getLocation()->z;
+                $distEnt = sqrt($dxEnt ** 2 + $dzEnt ** 2);
+                if ($distEnt <= 0.0001) continue;
+                $inv = max(0.0, ($this->separationRadius - $distEnt) / max(0.001, $this->separationRadius));
+                $sepX += ($dxEnt / $distEnt) * $inv;
+                $sepZ += ($dzEnt / $distEnt) * $inv;
             }
-
-            // determine current target: either next path waypoint or the follow position
-            $currentTarget = null;
-            if ($this->path !== null && isset($this->path[$this->pathIndex])) {
-                $candidate = $this->path[$this->pathIndex];
-                $dx = $candidate->x - $pos->x;
-                $dz = $candidate->z - $pos->z;
-                $distSq = $dx ** 2 + $dz ** 2;
-                if ($distSq <= 0.5 ** 2) {
-                    $this->pathIndex++;
-                    if (!isset($this->path[$this->pathIndex])) {
-                        // reached final waypoint -> invalidate path to force recompute/walk towards followPos
-                        $this->path = null;
-                        $this->pathIndex = 0;
-                        $this->recalcCooldown = 0;
-                        $currentTarget = $followPos;
-                    } else {
-                        $currentTarget = $this->path[$this->pathIndex];
-                    }
-                } else {
-                    $currentTarget = $candidate;
-                }
-            } else {
-                $currentTarget = $followPos;
+            $sepMag = sqrt($sepX ** 2 + $sepZ ** 2);
+            if ($sepMag > 0.0) {
+                $sepX = ($sepX / $sepMag) * $this->separationStrength * $this->maxSpeed;
+                $sepZ = ($sepZ / $sepMag) * $this->separationStrength * $this->maxSpeed;
+                // apply separation to desired velocity
+                $desiredX += $sepX;
+                $desiredZ += $sepZ;
             }
+        } catch (\Throwable $e) {
+            // ignore separation failures
+        }
 
-            if ($currentTarget !== null) {
-                $dx = $currentTarget->x - $pos->x;
-                $dz = $currentTarget->z - $pos->z;
-                $dist = sqrt($dx ** 2 + $dz ** 2);
-                if ($dist > 0) {
-                    $nx = $dx / $dist;
-                    $nz = $dz / $dist;
+        $current = $this->mob->getMotion();
+        $curX = $current->x;
+        $curZ = $current->z;
 
-                    // stop if within stopDistance
-                    if ($dist <= $this->stopDistance) {
-                        $cur = $this->mob->getMotion();
-                        $this->mob->setMotion(new Vector3(0.0, $cur->y, 0.0));
-                        $this->mob->setForceMovementUpdate();
-                        return;
-                    }
+        $deltaX = $desiredX - $curX;
+        $deltaZ = $desiredZ - $curZ;
+        $deltaMag = sqrt($deltaX ** 2 + $deltaZ ** 2);
+        $maxDelta = $this->acceleration * max(1, $tickDiff);
+        if ($deltaMag > $maxDelta && $deltaMag > 0) {
+            $scale = $maxDelta / $deltaMag;
+            $deltaX *= $scale;
+            $deltaZ *= $scale;
+        }
 
-                    $current = $this->mob->getMotion();
-                    $horizontal = sqrt($current->x ** 2 + $current->z ** 2);
-                    if ($horizontal < 0.02 || $this->mob->isCollidedHorizontally) {
-                        $this->stuckTicks += $tickDiff;
-                    } else {
-                        $this->stuckTicks = 0;
-                    }
+        $newX = $curX + $deltaX;
+        $newZ = $curZ + $deltaZ;
+        $hSpeed = sqrt($newX ** 2 + $newZ ** 2);
+        $effectiveMax = $this->maxSpeed * $speedMultiplier;
+        if ($hSpeed > $effectiveMax && $hSpeed > 0) {
+            $scale2 = $effectiveMax / $hSpeed;
+            $newX *= $scale2;
+            $newZ *= $scale2;
+        }
 
-                    // proactive obstacle check ahead (helps step onto single blocks while following)
-                    $posNow = $this->mob->getLocation();
-                    $feetY = (int) floor($posNow->y);
-                    $aheadX = $posNow->x + $nx * 0.6;
-                    $aheadZ = $posNow->z + $nz * 0.6;
-                    $world = $this->mob->getWorld();
-                    $bx = (int) floor($aheadX);
-                    $bz = (int) floor($aheadZ);
-                    $blockAtFeet = $world->getBlock(new Vector3($bx, $feetY, $bz));
-                    $blockAbove = $world->getBlock(new Vector3($bx, $feetY + 1, $bz));
-                    $blockStepUp = $world->getBlock(new Vector3($bx, $feetY + 1, $bz));
-                    $blockAboveStepUp = $world->getBlock(new Vector3($bx, $feetY + 2, $bz));
-                    $hasBlockAhead = count($blockAtFeet->getCollisionBoxes()) > 0 && !($blockAtFeet instanceof \pocketmine\block\Door && $blockAtFeet->isOpen());
-                    $spaceAboveFree = count($blockAbove->getCollisionBoxes()) === 0;
-                    $hasStepUp = count($blockStepUp->getCollisionBoxes()) > 0 && count($blockAboveStepUp->getCollisionBoxes()) === 0;
-                    $canStep = ($hasBlockAhead && $spaceAboveFree) || $hasStepUp || ($blockAtFeet instanceof \pocketmine\block\Stair && $spaceAboveFree);
-
-                    if ($this->stuckTicks >= $this->stuckTimeout) {
-                        if ($dist <= $this->stopDistance + 0.5) {
-                            $cur = $this->mob->getMotion();
-                            $this->mob->setMotion(new Vector3($nx * $this->speed * 0.6, $cur->y, $nz * $this->speed * 0.6));
-                            $this->mob->setForceMovementUpdate();
-                            $this->stuckTicks = 0;
-                            $this->recalcCooldown = 0;
-                            return;
-                        }
-
-                        if ($canStep) {
-                            Server::getInstance()->getLogger()->debug("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") canStep=true at {$bx},{$feetY},{$bz} stuckTicks={$this->stuckTicks}");
-                            if ($this->mob->isOnGround()) {
-                                $this->mob->jump();
-                                $this->mob->setMotion(new Vector3($nx * min($this->speed, 1.5), $this->mob->getJumpVelocity(), $nz * min($this->speed, 1.5)));
-                            } else {
-                                $cur = $this->mob->getMotion();
-                                $this->mob->setMotion(new Vector3($nx * min($this->speed, 1.5), $cur->y, $nz * min($this->speed, 1.5)));
-                            }
-                            $this->mob->setForceMovementUpdate();
-                            $this->stuckTicks = 0;
-                            $this->recalcCooldown = 0;
-                        } else {
-                            Server::getInstance()->getLogger()->debug("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") cannot step at {$bx},{$feetY},{$bz} (canStep=false) stuckTicks={$this->stuckTicks}");
-                            $cur = $this->mob->getMotion();
-                            $this->mob->setMotion(new Vector3($nx * $this->speed * 0.6, $cur->y, $nz * $this->speed * 0.6));
-                            $this->mob->setForceMovementUpdate();
-                            $this->stuckTicks = 0;
-                            $this->recalcCooldown = 0;
-                        }
-                    } else {
-                        // normal walking towards current target
-                        $this->mob->setMotion(new Vector3($nx * $this->speed, $current->y, $nz * $this->speed));
-                        $this->mob->setForceMovementUpdate();
-                    }
-                }
+        // proactive obstacle check ahead (helps step onto single blocks while following)
+        $posNow = $this->mob->getLocation();
+        $feetY = (int) floor($posNow->y - 0.001);
+        $aheadX = $posNow->x + $nx * 0.6;
+        $aheadZ = $posNow->z + $nz * 0.6;
+        $world = $this->mob->getWorld();
+        $bx = (int) floor($aheadX);
+        $bz = (int) floor($aheadZ);
+        $blockAtFeet = $world->getBlock(new Vector3($bx, $feetY, $bz));
+        $blockAbove = $world->getBlock(new Vector3($bx, $feetY + 1, $bz));
+        $blockStepUp = $world->getBlock(new Vector3($bx, $feetY + 1, $bz));
+        $blockAboveStepUp = $world->getBlock(new Vector3($bx, $feetY + 2, $bz));
+        $hasBlockAhead = count($blockAtFeet->getCollisionBoxes()) > 0 && !($blockAtFeet instanceof \pocketmine\block\Door && $blockAtFeet->isOpen());
+        $spaceAboveFree = count($blockAbove->getCollisionBoxes()) === 0;
+        $hasStepUp = count($blockStepUp->getCollisionBoxes()) > 0 && count($blockAboveStepUp->getCollisionBoxes()) === 0;
+        if (!$hasStepUp) {
+            $blockStepUpLower = $world->getBlock(new Vector3($bx, $feetY, $bz));
+            $blockAboveStepUpLower = $world->getBlock(new Vector3($bx, $feetY + 1, $bz));
+            if (count($blockStepUpLower->getCollisionBoxes()) > 0 && count($blockAboveStepUpLower->getCollisionBoxes()) === 0) {
+                $hasStepUp = true;
             }
+        }
+        $canStep = ($hasBlockAhead && $spaceAboveFree) || $hasStepUp || ($blockAtFeet instanceof \pocketmine\block\Stair && $spaceAboveFree);
+
+        // stuck detection: only attempt to jump/step when the mob is actually impeded
+        $horizontal = sqrt($current->x ** 2 + $current->z ** 2);
+        if ($horizontal < 0.02 || $this->mob->isCollidedHorizontally) {
+            $this->stuckTicks += max(1, $tickDiff);
         } else {
-            // fallback: walk directly
-            $dist = sqrt($distSq);
-            if ($dist > 0) {
-                $nx = $dx / $dist;
-                $nz = $dz / $dist;
-                $current = $this->mob->getMotion();
-                $this->mob->setMotion(new Vector3($nx * $this->speed, $current->y, $nz * $this->speed));
-                $this->mob->setForceMovementUpdate();
+            $this->stuckTicks = 0;
+        }
+
+        $motionY = $current->y;
+        if ($this->stuckTicks >= $this->stuckTimeout && $canStep && $this->mob->isOnGround()) {
+            // perform a single small jump to step up and reset stuck counter
+            $preferredJump = max($this->mob->getJumpVelocity(), 0.42);
+            $this->mob->jump();
+            $motionY = $preferredJump;
+            $this->stuckTicks = 0;
+        }
+
+        $this->mob->setMotion(new Vector3($newX, $motionY, $newZ));
+        // rotate to face player smoothly (clamp yaw/pitch delta to avoid spinning)
+        $targetEye = $this->targetPlayer->getEyePos();
+        $mobEye = $this->mob->getEyePos();
+        $dxEye = $targetEye->x - $mobEye->x;
+        $dyEye = $targetEye->y - $mobEye->y;
+        $dzEye = $targetEye->z - $mobEye->z;
+        $h = sqrt($dxEye ** 2 + $dzEye ** 2);
+        if ($h > 0) {
+            $desiredYaw = rad2deg(atan2(-$dxEye, $dzEye));
+            $desiredPitch = rad2deg(-atan2($dyEye, $h));
+
+            // normalize current yaw to [-180,180]
+            $currentYaw = $this->mob->getLocation()->yaw;
+            $deltaYaw = fmod($desiredYaw - $currentYaw + 540.0, 360.0) - 180.0; // shortest angle
+            $maxChange = $this->maxYawChange * max(1, $tickDiff);
+            if ($deltaYaw > $maxChange) $deltaYaw = $maxChange;
+            if ($deltaYaw < -$maxChange) $deltaYaw = -$maxChange;
+            $newYaw = $currentYaw + $deltaYaw;
+
+            $currentPitch = $this->mob->getLocation()->pitch;
+            $deltaPitch = $desiredPitch - $currentPitch;
+            $maxPitch = $this->maxPitchChange * max(1, $tickDiff);
+            if ($deltaPitch > $maxPitch) $deltaPitch = $maxPitch;
+            if ($deltaPitch < -$maxPitch) $deltaPitch = -$maxPitch;
+            $newPitch = $currentPitch + $deltaPitch;
+
+            // only update rotation if there is a meaningful change
+            if (abs($deltaYaw) > 0.01 || abs($deltaPitch) > 0.01) {
+                $this->mob->setRotation($newYaw, $newPitch);
             }
         }
+        $this->mob->setForceMovementUpdate();
     }
 
     public function shouldContinue(): bool
@@ -271,21 +335,41 @@ class TemptGoal implements Goal
             $held = $this->targetPlayer->getInventory()->getItemInHand();
         } catch (\Throwable $e) {
             // inventory not ready yet, stop this goal until the player is initialized
+            try {
+                Server::getInstance()->getLogger()->debug("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") shouldContinue=false (inventory not ready for player #" . $this->targetPlayer->getId() . ")");
+            } catch (\Throwable $e2) {
+            }
             return false;
         }
 
         // lose interest if player too far
         $distSq = $this->targetPlayer->getLocation()->distanceSquared($this->mob->getLocation());
         if ($distSq > $this->loseInterestDistance ** 2) {
+            try {
+                Server::getInstance()->getLogger()->info("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") lost interest: player #" . $this->targetPlayer->getId() . " too far (" . sqrt($distSq) . " blocks)");
+            } catch (\Throwable $e) {
+            }
             return false;
         }
 
         // require line of sight to continue following
         if (!$this->hasLineOfSightTo($this->targetPlayer)) {
+            try {
+                Server::getInstance()->getLogger()->info("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") stopping: LOS lost to player #" . $this->targetPlayer->getId());
+            } catch (\Throwable $e) {
+            }
             return false;
         }
 
-        return in_array($held->getTypeId(), $this->temptItemTypeIds, true) && $this->targetPlayer->isAlive() && !$this->targetPlayer->isClosed();
+        if (!in_array($held->getTypeId(), $this->temptItemTypeIds, true)) {
+            try {
+                Server::getInstance()->getLogger()->debug("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") stopping: player #" . $this->targetPlayer->getId() . " no longer holds tempt item (held=" . $held->getTypeId() . ")");
+            } catch (\Throwable $e) {
+            }
+            return false;
+        }
+
+        return $this->targetPlayer->isAlive() && !$this->targetPlayer->isClosed();
     }
 
     private function hasLineOfSightTo(Player $player): bool
@@ -307,7 +391,11 @@ class TemptGoal implements Goal
     public function stop(): void
     {
         $this->targetPlayer = null;
-        $this->path = null;
-        $this->pathIndex = 0;
+        // reset transient state
+        $this->stuckTicks = 0;
+        try {
+            Server::getInstance()->getLogger()->info("[TemptGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") stopped following");
+        } catch (\Throwable $e) {
+        }
     }
 }

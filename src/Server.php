@@ -930,7 +930,9 @@ class Server
 
 			$debugLogLevel = $this->configGroup->getPropertyInt(Yml::DEBUG_LEVEL, 1);
 			if ($this->logger instanceof MainLogger) {
-				$this->logger->setLogDebug($debugLogLevel > 1);
+				/** @var MainLogger $mainLogger */
+				$mainLogger = $this->logger;
+				$mainLogger->setLogDebug($debugLogLevel > 1);
 			}
 
 			$this->forceLanguage = $this->configGroup->getPropertyBool(Yml::SETTINGS_FORCE_LANGUAGE, false);
@@ -1123,6 +1125,9 @@ class Server
 				$this->logger->debug("Enabled folder plugin loader");
 				$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
 			}
+
+			
+
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
@@ -1151,9 +1156,16 @@ class Server
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if ($loadErrorCount > 0) {
-				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
-				$this->forceShutdownExit();
-				return;
+				// Some plugins failed to load. Behaviour depends on configuration.
+				// If configured to continue, leave failed plugins unloaded/disabled and start the server.
+				// Otherwise, force shutdown to preserve legacy behaviour and server integrity.
+				if ($this->configGroup->getPropertyBool(Yml::SETTINGS_CONTINUE_ON_PLUGIN_LOAD_ERROR, true)) {
+					$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				} else {
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+					$this->forceShutdownExit();
+					return;
+				}
 			}
 			if (!$this->enablePlugins(PluginEnableOrder::STARTUP)) {
 				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));

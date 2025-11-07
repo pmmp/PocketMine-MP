@@ -9,6 +9,7 @@ use pocketmine\entity\ai\goal\FloatGoal;
 use pocketmine\entity\ai\goal\HurtByTargetGoal;
 use pocketmine\entity\ai\goal\LookAtPlayerGoal;
 use pocketmine\entity\ai\goal\RandomStrollGoal;
+use pocketmine\entity\ai\goal\TemptGoal;
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -101,7 +102,8 @@ class Sheep extends Living
         $goalSelector->addGoal(0, new FloatGoal($this));
         $goalSelector->addGoal(1, new RandomStrollGoal($this, 0.11));
         $goalSelector->addGoal(2, new LookAtPlayerGoal($this, 6.0));
-    // Tempt goal removed: follow behavior disabled for sheep
+        // Tempt goal: follow players holding wheat
+        $goalSelector->addGoal(3, new TemptGoal($this, [VanillaItems::WHEAT()->getTypeId()], 1.0, 10.0, 20, 1.8, 1.0));
         $this->getTargetSelector()->addGoal(0, new HurtByTargetGoal($this));
     }
 }

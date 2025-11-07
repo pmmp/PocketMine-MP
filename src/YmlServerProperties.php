@@ -102,6 +102,7 @@ final class YmlServerProperties{
 	public const SETTINGS = 'settings';
 	public const SETTINGS_ASYNC_WORKERS = 'settings.async-workers';
 	public const SETTINGS_ENABLE_DEV_BUILDS = 'settings.enable-dev-builds';
+	public const SETTINGS_CONTINUE_ON_PLUGIN_LOAD_ERROR = 'settings.continue-on-plugin-load-error';
 	public const SETTINGS_ENABLE_PROFILING = 'settings.enable-profiling';
 	public const SETTINGS_FORCE_LANGUAGE = 'settings.force-language';
 	public const SETTINGS_PROFILE_REPORT_TRIGGER = 'settings.profile-report-trigger';

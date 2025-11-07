@@ -751,6 +751,13 @@ class InventoryManager
 
 	public function onClientSelectHotbarSlot(int $slot): void
 	{
+		// Ignore client hotbar selection attempts while the player is spectator to prevent
+		// the client-side UI from moving items into the hand without server approval.
+		if ($this->player->isSpectator()) {
+			$this->session->getLogger()->debug("Ignored client select-hotbar-slot $slot because player is spectator");
+			return;
+		}
+
 		$this->clientSelectedHotbarSlot = $slot;
 	}
 

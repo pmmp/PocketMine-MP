@@ -856,7 +856,9 @@ final class BlockTypeIds{
 	public const SUSPICIOUS_GRAVEL = 10829;
 	public const COMPOSTER = 10830;
 	public const SCAFFOLDING = 10831;
-	public const FIRST_UNUSED_BLOCK_ID = 10832;
+	public const CRIMSON_NYLIUM = 10832;
+	public const WARPED_NYLIUM = 10833;
+	public const FIRST_UNUSED_BLOCK_ID = 10834;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

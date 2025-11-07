@@ -149,6 +149,11 @@ abstract class Living extends Entity
 	protected ?GoalSelector $targetSelector = null;
 	protected ?Entity $attackTarget = null;
 	protected ?Entity $lastAttacker = null;
+	/**
+	 * Optional base target used by simple follow behaviours (e.g. TemptGoal or manual follow).
+	 * Can be a Player or any Entity.
+	 */
+	protected ?Entity $baseTarget = null;
 	protected int $lastAttackerTicks = 0;
 	private bool $goalsRegistered = false;
 
@@ -886,6 +891,33 @@ abstract class Living extends Entity
 	{
 		$this->lastAttacker = $attacker;
 		$this->lastAttackerTicks = 0;
+	}
+
+	/**
+	 * Returns the current base target used for simple follow behaviours.
+	 */
+	public function getBaseTarget(): ?Entity
+	{
+		return $this->baseTarget;
+	}
+
+	/**
+	 * Set or clear the base target used for simple follow behaviours.
+	 */
+	public function setBaseTarget(?Entity $target): void
+	{
+		if ($target !== null && ($target->isClosed() || !$target->isAlive())) {
+			$target = null;
+		}
+		$this->baseTarget = $target;
+	}
+
+	/**
+	 * Returns whether this entity is currently following the given player using baseTarget.
+	 */
+	public function isFollowingPlayer(Player $player): bool
+	{
+		return $this->baseTarget !== null && $this->baseTarget instanceof Player && $this->baseTarget->getId() === $player->getId();
 	}
 
 	protected function move(float $dx, float $dy, float $dz): void

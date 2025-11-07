@@ -23,6 +23,10 @@ settings:
   #Whether to allow running development builds. Dev builds might crash, break your plugins, corrupt your world and more.
   #It is recommended to avoid using development builds where possible.
   enable-dev-builds: false
+  # Whether to stop the server if some plugins fail to load during startup.
+  # If true, the server will continue startup while leaving failed plugins unloaded/disabled.
+  # If false, the server will force shutdown to protect integrity (legacy behaviour).
+  continue-on-plugin-load-error: true
 
 memory:
   #Global soft memory limit in megabytes. Set to 0 to disable

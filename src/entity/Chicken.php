@@ -8,6 +8,7 @@ use pocketmine\entity\ai\goal\FloatGoal;
 use pocketmine\entity\ai\goal\HurtByTargetGoal;
 use pocketmine\entity\ai\goal\LookAtPlayerGoal;
 use pocketmine\entity\ai\goal\RandomStrollGoal;
+use pocketmine\entity\ai\goal\TemptGoal;
 use pocketmine\entity\Human;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -43,7 +44,8 @@ class Chicken extends Living
     {
         $this->setMaxHealth(4);
         // allow chickens to step up single-block obstacles
-        $this->setStepHeight(0.6);
+    // allow stepping up a single block
+    $this->setStepHeight(1.0);
         parent::initEntity($nbt);
     }
 
@@ -104,7 +106,8 @@ class Chicken extends Living
         $goalSelector->addGoal(0, new FloatGoal($this));
         $goalSelector->addGoal(1, new RandomStrollGoal($this, 0.14));
         $goalSelector->addGoal(2, new LookAtPlayerGoal($this, 6.0));
-    // Tempt goal removed: follow behavior disabled for chickens
+        // Tempt goal: follow players holding seeds
+        $goalSelector->addGoal(3, new TemptGoal($this, [VanillaItems::WHEAT_SEEDS()->getTypeId()], 1.0, 10.0, 20, 1.8, 1.0));
 
         $targetSelector = $this->getTargetSelector();
         $targetSelector->addGoal(0, new HurtByTargetGoal($this));

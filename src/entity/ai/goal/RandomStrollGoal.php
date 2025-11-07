@@ -18,7 +18,6 @@ use function sqrt;
 use function floor;
 use function max;
 use pocketmine\entity\ai\path\AStarPathFinder;
-use pocketmine\Server;
 
 class RandomStrollGoal implements Goal
 {
@@ -164,7 +163,7 @@ class RandomStrollGoal implements Goal
 
                 if ($canStep) {
                     // debug log: stepping/jumping attempt
-                    Server::getInstance()->getLogger()->debug("[RandomStrollGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") canStep=true at {$bx},{$feetY},{$bz} stuckTicks={$this->stuckTicks}");
+                    \pocketmine\Server::getInstance()->getLogger()->debug("[RandomStrollGoal] " . get_class($this->mob) . "(#" . $this->mob->getId() . ") canStep=true at {$bx},{$feetY},{$bz} stuckTicks={$this->stuckTicks}");
                     // perform a jump (call jump to respect onGround) and force upward motion just in case
                     if ($this->mob->isOnGround()) {
                         $this->mob->jump();

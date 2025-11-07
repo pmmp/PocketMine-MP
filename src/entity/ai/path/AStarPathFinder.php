@@ -61,7 +61,7 @@ final class AStarPathFinder
         $gScore[$startKey] = 0;
         $fScore[$startKey] = self::heuristic($startX, $startZ, $goalX, $goalZ);
 
-    $dirs = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
+        $dirs = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
         $expanded = 0;
 
         while (!empty($open) && $expanded < $maxNodes) {
@@ -83,12 +83,12 @@ final class AStarPathFinder
                 $path = [];
                 $node = $currentKey;
                 while (isset($cameFrom[$node])) {
-                    [$x,$y,$z] = explode(':', $node);
+                    [$x, $y, $z] = explode(':', $node);
                     $path[] = new Vector3((int)$x + 0.5, (int)$y, (int)$z + 0.5);
                     $node = $cameFrom[$node];
                 }
                 // add start
-                [$x,$y,$z] = explode(':', $node);
+                [$x, $y, $z] = explode(':', $node);
                 $path[] = new Vector3((int)$x + 0.5, (int)$y, (int)$z + 0.5);
                 $path = array_reverse($path);
                 // try to smooth path to remove unnecessary waypoints
@@ -102,9 +102,9 @@ final class AStarPathFinder
             unset($open[$currentKey]);
             $expanded++;
 
-            [$cx,$cy,$cz] = array_map('intval', explode(':', $currentKey));
+            [$cx, $cy, $cz] = array_map('intval', explode(':', $currentKey));
 
-            foreach ($dirs as [$dx,$dz]) {
+            foreach ($dirs as [$dx, $dz]) {
                 $nx = $cx + $dx;
                 $nz = $cz + $dz;
                 $ny = $cy;

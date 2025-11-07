@@ -475,6 +475,10 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
+		// If the player is spectator, ignore use-item transactions (prevent using items via scroll/use)
+		if ($this->player->isSpectator()) {
+			return true;
+		}
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
 		switch($data->getActionType()){
@@ -669,6 +673,27 @@ class InGamePacketHandler extends PacketHandler{
 			return true; //this happens when we put an item into the offhand
 		}
 		if($packet->windowId === ContainerIds::INVENTORY){
+			// If spectator, do NOT let the client change hotbar/held item. Instead, interpret as scroll and
+			// adjust flight speed directionally based on slot delta. Do NOT call onClientSelectHotbarSlot.
+			if ($this->player->isSpectator()) {
+				try {
+					$slots = 9;
+					$current = $this->player->getInventory()->getHeldItemIndex();
+					$target = $packet->hotbarSlot ?? $current;
+					$forward = ($target - $current + $slots) % $slots;
+					$backward = ($current - $target + $slots) % $slots;
+					$direction = $forward <= $backward ? 1 : -1;
+					$step = 0.05;
+					$new = $this->player->getFlightSpeedMultiplier() + $direction * $step;
+					$new = max(0.01, min(1.0, $new));
+					$this->player->setFlightSpeedMultiplier($new);
+					$this->session->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+				} catch (\Throwable $e) {
+					$this->session->getLogger()->debug("Error adjusting spectator flight speed: " . $e->getMessage());
+				}
+				return true;
+			}
+			// Non-spectator: accept client's selection and sync if needed
 			$this->inventoryManager->onClientSelectHotbarSlot($packet->hotbarSlot);
 			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 				$this->inventoryManager->syncSelectedHotbarSlot();
@@ -795,13 +820,27 @@ class InGamePacketHandler extends PacketHandler{
 		// Use hotbar packet (sent by client when scrolling the hotbar) as a spectator-flight-speed toggle
 		try{
 			if($this->player->isSpectator()){
-				// toggle between default and fast (4x) flight speed
-				$default = Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
-				$current = $this->player->getFlightSpeedMultiplier();
-				$fast = $default * 4.0;
-				$new = ($current === $default) ? $fast : $default;
-				$this->player->setFlightSpeedMultiplier($new);
-				$this->session->getLogger()->debug("Spectator flight speed toggled to " . $new);
+				// If spectator, interpret scroll direction to increase/decrease flight speed
+				try {
+					$slots = 9;
+					$current = $this->player->getInventory()->getHeldItemIndex();
+					$target = $packet->hotbarSlot ?? $current;
+					$forward = ($target - $current + $slots) % $slots;
+					$backward = ($current - $target + $slots) % $slots;
+					$direction = $forward <= $backward ? 1 : -1;
+					$step = 0.05;
+					$new = $this->player->getFlightSpeedMultiplier() + $direction * $step;
+					$new = max(0.01, min(1.0, $new));
+					$this->player->setFlightSpeedMultiplier($new);
+					$this->session->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+				} catch (\Throwable $e) {
+					// fallback to simple toggle
+					$default = Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
+					$current = $this->player->getFlightSpeedMultiplier();
+					$fast = $default * 4.0;
+					$new = ($current === $default) ? $fast : $default;
+					$this->player->setFlightSpeedMultiplier($new);
+				}
 			}
 		}catch(\Throwable $e){
 			$this->session->getLogger()->debug("Error toggling spectator flight speed: " . $e->getMessage());
