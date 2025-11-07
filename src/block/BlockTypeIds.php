@@ -864,6 +864,8 @@ final class BlockTypeIds{
 	public const POWDER_SNOW = 10798;
 
 	public const COPPER_TORCH = 10799;
+	public const CRIMSON_NYLIUM = 10800;
+	public const WARPED_NYLIUM = 10801;
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
 	/**

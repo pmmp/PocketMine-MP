@@ -1121,8 +1121,8 @@ final class VanillaBlocks
 		self::register("nether_wart_block", fn(BID $id) => new Opaque($id, "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
 		self::register("nether_wart", fn(BID $id) => new NetherWartPlant($id, "Nether Wart", new Info(BreakInfo::instant())));
 		self::register("netherrack", fn(BID $id) => new Netherrack($id, "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
-	self::register("crimson_nylium", fn(BID $id) => new Nylium($id, "Crimson Nylium", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), ['CRIMSON_ROOTS', 'WEEPING_VINES']));
-	self::register("warped_nylium", fn(BID $id) => new Nylium($id, "Warped Nylium", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), ['WARPED_ROOTS', 'TWISTING_VINES']));
+		self::register("crimson_nylium", fn(BID $id) => new Nylium($id, "Crimson Nylium", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), ['CRIMSON_ROOTS', 'WEEPING_VINES']));
+		self::register("warped_nylium", fn(BID $id) => new Nylium($id, "Warped Nylium", new Info(BreakInfo::pickaxe(0.5, ToolTier::WOOD)), ['WARPED_ROOTS', 'TWISTING_VINES']));
 		self::register("note_block", fn(BID $id) => new Note($id, "Note Block", new Info(BreakInfo::axe(0.8))), TileNote::class);
 		self::register("obsidian", fn(BID $id) => new Opaque($id, "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
 		self::register("packed_ice", fn(BID $id) => new PackedIce($id, "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
