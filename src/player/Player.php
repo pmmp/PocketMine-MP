@@ -629,6 +629,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return $this->server;
 	}
 
+	/**
+	 * Convenience wrapper to check whether this player is an operator (op).
+	 */
+	public function isOp(): bool
+	{
+		return $this->server->isOp($this->getName());
+	}
+
 	public function getScreenLineHeight(): int
 	{
 		return $this->lineHeight ?? 7;
