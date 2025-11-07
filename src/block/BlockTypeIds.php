@@ -33,9 +33,11 @@ namespace pocketmine\block;
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
-final class BlockTypeIds{
+final class BlockTypeIds
+{
 
-	private function __construct(){
+	private function __construct()
+	{
 		//NOOP
 	}
 
@@ -866,14 +868,13 @@ final class BlockTypeIds{
 	public const POWDER_SNOW = 10798;
 
 	public const COPPER_TORCH = 10799;
-	public const CRIMSON_NYLIUM = 10800;
-	public const WARPED_NYLIUM = 10801;
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 
 	/**
 	 * Returns a new runtime block type ID, e.g. for use by a custom block.
 	 */
-	public static function newId() : int{
+	public static function newId(): int
+	{
 		return self::$nextDynamicId++;
 	}
 }

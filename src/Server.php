@@ -1200,7 +1200,9 @@ class Server
 
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslatableName())));
 			// $this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
-			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
+			$elapsed = round(microtime(true) - $this->startTime, 3);
+			$elapsedStr = TextFormat::YELLOW . TextFormat::BOLD . strval($elapsed) . "s" . TextFormat::RESET;
+			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_startFinished($elapsedStr)));
 
 			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $forwarder);
