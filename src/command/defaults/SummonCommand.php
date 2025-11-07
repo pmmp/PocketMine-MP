@@ -14,12 +14,16 @@ use pocketmine\command\args\TargetArgument;
 use pocketmine\command\args\TextArgument;
 use pocketmine\command\args\FloatArgument;
 use pocketmine\command\CommandoCommand;
+use pocketmine\block\Block;
+use pocketmine\block\RuntimeBlockStateRegistry;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Axolotl;
+use pocketmine\entity\LightningBolt;
+use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
-use pocketmine\entity\LightningBolt;
-use pocketmine\entity\Location;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\utils\Utils;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -169,7 +173,18 @@ class SummonCommand extends CommandoCommand{
             // Use the concrete class if available
             $yaw = $yRot ?? Utils::getRandomFloat() * 360;
             $pitch = $xRot ?? 0;
-            $entity = new $className(Location::fromObject($pos, $world, $yaw, $pitch));
+            $location = Location::fromObject($pos, $world, $yaw, $pitch);
+            if (is_a($className, FallingBlock::class, true)) {
+                $block = $this->resolveFallingBlockBlock($sender, $spawnEvent);
+                if ($block === null) {
+                    return;
+                }
+                /** @var class-string<FallingBlock> $className */
+                $entity = new $className($location, $block);
+                $spawnEvent = null;
+            } else {
+                $entity = new $className($location);
+            }
         } else {
             // Fallback to known switch mapping for some common entities
             switch ($saveName) {
@@ -320,5 +335,45 @@ class SummonCommand extends CommandoCommand{
         }
         // else try player by prefix
         return $server->getPlayerByPrefix($token);
+    }
+
+    private function resolveFallingBlockBlock(CommandSender $sender, ?string &$spawnEvent): ?Block {
+        $originalSpawnEvent = $spawnEvent;
+        $blockToken = null;
+        $remaining = null;
+
+        if ($spawnEvent !== null && $spawnEvent !== '') {
+            $parts = preg_split('/\s+/', trim($spawnEvent), 2);
+            $blockToken = $parts[0] ?? null;
+            $remaining = $parts[1] ?? null;
+        }
+
+        if ($blockToken === null || $blockToken === '' || strtolower($blockToken) === 'facing') {
+            return VanillaBlocks::SAND();
+        }
+
+        $normalized = strtolower($blockToken);
+        if (str_starts_with($normalized, 'minecraft:')) {
+            $normalized = substr($normalized, strlen('minecraft:'));
+        }
+
+        $registry = VanillaBlocks::getAll();
+        if (isset($registry[$normalized])) {
+            $spawnEvent = $remaining !== null && $remaining !== '' ? $remaining : null;
+            return clone $registry[$normalized];
+        }
+
+        if (is_numeric($normalized)) {
+            $stateId = (int)$normalized;
+            $runtimeRegistry = RuntimeBlockStateRegistry::getInstance();
+            if ($runtimeRegistry->hasStateId($stateId)) {
+                $spawnEvent = $remaining !== null && $remaining !== '' ? $remaining : null;
+                return $runtimeRegistry->fromStateId($stateId);
+            }
+        }
+
+        $sender->sendMessage(TextFormat::RED . 'Invalid block identifier for falling_block: ' . $blockToken);
+        $spawnEvent = $originalSpawnEvent;
+        return null;
     }
 }
