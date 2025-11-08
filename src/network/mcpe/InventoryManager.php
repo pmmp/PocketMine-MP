@@ -497,7 +497,7 @@ class InventoryManager
 	public function onClientRemoveWindow(int $id): void
 	{
 
-		
+
 		if (Binary::signByte($id) === ContainerIds::NONE) { //TODO: REMOVE signByte() once BedrockProtocol + ext-encoding are implemented
 			//TODO: HACK! Since 1.21.100 (and probably earlier), the client will send -1 to close windows that it can't
 			//view for some reason, e.g. if the chat window was already open. This is pretty awkward, since it means
@@ -507,7 +507,7 @@ class InventoryManager
 			$this->session->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
 			$id = $this->lastInventoryNetworkId;
 		}
-		if(($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory || $tradeInventory instanceof \pocketmine\inventory\VirtualTradeInventory){
+		if (($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory || $tradeInventory instanceof \pocketmine\inventory\VirtualTradeInventory) {
 			//TODO: The client always sends 255 as a container ID for trade window
 			//so we manually correct window ID here
 			$id = $this->getWindowId($tradeInventory) ?? throw new AssumptionFailedError("No opened trading inventory");
@@ -794,11 +794,18 @@ class InventoryManager
 		if ($selected !== $this->clientSelectedHotbarSlot) {
 			$inventoryEntry = $this->inventories[spl_object_id($playerInventory)] ?? null;
 			if ($inventoryEntry === null) {
-				throw new AssumptionFailedError("Player inventory should always be tracked");
+				// Defensive: inventory not tracked (race/ordering issue). Log and skip sync to avoid crash.
+				$this->session->getLogger()->debug("syncSelectedHotbarSlot: Player inventory not tracked, skipping hotbar sync");
+				// Update clientSelectedHotbarSlot to avoid repeated log spam until tracking is restored
+				$this->clientSelectedHotbarSlot = $selected;
+				return;
 			}
 			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
 			if ($itemStackInfo === null) {
-				throw new AssumptionFailedError("Untracked player inventory slot $selected");
+				// Defensive: slot not tracked yet. Log and skip sync.
+				$this->session->getLogger()->debug("syncSelectedHotbarSlot: Untracked player inventory slot $selected, skipping hotbar sync");
+				$this->clientSelectedHotbarSlot = $selected;
+				return;
 			}
 
 			$this->session->sendDataPacket(MobEquipmentPacket::create(

@@ -162,7 +162,7 @@ final class KnownTranslationKeys
 	public const DEATH_ATTACK_ANVIL = "death.attack.anvil";
 	public const POCKETMINE_COMMAND_WEATHER_DESCRIPTION = "pocketmine.command.weather.description";
 	public const POCKETMINE_COMMAND_WEATHER_USAGE = "pocketmine.command.weather.usage";
-		public const POCKETMINE_PERMISSION_COMMAND_WEATHER = "pocketmine.permission.command.weather";
+	public const POCKETMINE_PERMISSION_COMMAND_WEATHER = "pocketmine.permission.command.weather";
 
 	public const DEATH_ATTACK_ARROW = "death.attack.arrow";
 	public const DEATH_ATTACK_ARROW_ITEM = "death.attack.arrow.item";
@@ -729,4 +729,5 @@ final class KnownTranslationKeys
 	public const WHITELIST_WARNING = "whitelist_warning";
 	public const YOU_HAVE_FINISHED = "you_have_finished";
 	public const YOU_HAVE_TO_ACCEPT_THE_LICENSE = "you_have_to_accept_the_license";
+
 }

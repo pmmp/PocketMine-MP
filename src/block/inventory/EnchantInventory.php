@@ -66,17 +66,27 @@ class EnchantInventory extends SimpleInventory implements BlockInventory, Tempor
 	protected function onSlotChange(int $index, Item $before) : void{
 		if($index === self::SLOT_INPUT){
 			foreach($this->viewers as $viewer){
-				// Generate options per viewer (depends on their enchantment seed)
 				$item = $this->getInput();
 				$options = Helper::generateOptions($this->holder, $item, $viewer->getEnchantmentSeed());
 
 				$event = new PlayerEnchantingOptionsRequestEvent($viewer, $this, $options);
 				$event->call();
-				if(!$event->isCancelled() && count($event->getOptions()) > 0){
-					$this->optionsByViewer[spl_object_id($viewer)] = array_values($event->getOptions());
-					// Also keep a fallback default (last writer) for compatibility
-					$this->options = $this->optionsByViewer[spl_object_id($viewer)];
-					$viewer->getNetworkSession()->getInvManager()?->syncEnchantingTableOptions($this->optionsByViewer[spl_object_id($viewer)]);
+
+				// Normalize options array and update per-viewer cache. Always update the client
+				// (including sending an empty list) so the client doesn't keep stale options.
+				// Filter out options that don't contain any enchantments (these show up as empty
+				// slots on the client). Only send options that actually apply enchantments.
+				$optionsArr = array_values(array_filter($event->getOptions(), fn(EnchantingOption $o) => count($o->getEnchantments()) > 0));
+
+				if (!$event->isCancelled() && count($optionsArr) > 0) {
+					$this->optionsByViewer[spl_object_id($viewer)] = $optionsArr;
+					$this->options = $optionsArr;
+					$viewer->getNetworkSession()->getInvManager()?->syncEnchantingTableOptions($optionsArr);
+				} else {
+					// Clear cached options for this viewer and notify client to clear UI
+					$this->optionsByViewer[spl_object_id($viewer)] = [];
+					$this->options = [];
+					$viewer->getNetworkSession()->getInvManager()?->syncEnchantingTableOptions([]);
 				}
 			}
 		}

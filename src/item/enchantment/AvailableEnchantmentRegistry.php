@@ -37,7 +37,8 @@ use function spl_object_id;
 /**
  * Registry of enchantments that can be applied to items during in-game enchanting (enchanting table, anvil, fishing, etc.).
  */
-final class AvailableEnchantmentRegistry{
+final class AvailableEnchantmentRegistry
+{
 	use SingletonTrait;
 
 	/** @var Enchantment[] */
@@ -49,7 +50,8 @@ final class AvailableEnchantmentRegistry{
 	/** @var string[][] */
 	private array $secondaryItemTags = [];
 
-	private function __construct(){
+	private function __construct()
+	{
 		$this->register(Enchantments::PROTECTION(), [Tags::ARMOR], []);
 		$this->register(Enchantments::FIRE_PROTECTION(), [Tags::ARMOR], []);
 		$this->register(Enchantments::FEATHER_FALLING(), [Tags::BOOTS], []);
@@ -68,7 +70,7 @@ final class AvailableEnchantmentRegistry{
 		$this->register(
 			Enchantments::UNBREAKING(),
 			[Tags::ARMOR, Tags::WEAPONS, Tags::FISHING_ROD],
-			[Tags::SHEARS, Tags::FLINT_AND_STEEL, Tags::SHIELD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH]
+			[Tags::SHEARS, Tags::FLINT_AND_STEEL, Tags::SHIELD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH, Tags::TRIDENT, Tags::FISHING_ROD]
 		);
 		$this->register(Enchantments::POWER(), [Tags::BOW], []);
 		$this->register(Enchantments::PUNCH(), [Tags::BOW], []);
@@ -77,8 +79,17 @@ final class AvailableEnchantmentRegistry{
 		$this->register(
 			Enchantments::MENDING(),
 			[],
-			[Tags::ARMOR, Tags::WEAPONS, Tags::FISHING_ROD,
-				Tags::SHEARS, Tags::FLINT_AND_STEEL, Tags::SHIELD, Tags::CARROT_ON_STICK, Tags::ELYTRA, Tags::BRUSH]
+			[
+				Tags::ARMOR,
+				Tags::WEAPONS,
+				Tags::FISHING_ROD,
+				Tags::SHEARS,
+				Tags::FLINT_AND_STEEL,
+				Tags::SHIELD,
+				Tags::CARROT_ON_STICK,
+				Tags::ELYTRA,
+				Tags::BRUSH
+			]
 		);
 		$this->register(Enchantments::VANISHING(), [], [Tags::ALL]);
 		$this->register(Enchantments::SWIFT_SNEAK(), [], [Tags::LEGGINGS]);
@@ -95,25 +106,29 @@ final class AvailableEnchantmentRegistry{
 	 * @param string[] $primaryItemTags
 	 * @param string[] $secondaryItemTags
 	 */
-	public function register(Enchantment $enchantment, array $primaryItemTags, array $secondaryItemTags) : void{
+	public function register(Enchantment $enchantment, array $primaryItemTags, array $secondaryItemTags): void
+	{
 		$this->enchantments[spl_object_id($enchantment)] = $enchantment;
 		$this->setPrimaryItemTags($enchantment, $primaryItemTags);
 		$this->setSecondaryItemTags($enchantment, $secondaryItemTags);
 	}
 
-	public function unregister(Enchantment $enchantment) : void{
+	public function unregister(Enchantment $enchantment): void
+	{
 		unset($this->enchantments[spl_object_id($enchantment)]);
 		unset($this->primaryItemTags[spl_object_id($enchantment)]);
 		unset($this->secondaryItemTags[spl_object_id($enchantment)]);
 	}
 
-	public function unregisterAll() : void{
+	public function unregisterAll(): void
+	{
 		$this->enchantments = [];
 		$this->primaryItemTags = [];
 		$this->secondaryItemTags = [];
 	}
 
-	public function isRegistered(Enchantment $enchantment) : bool{
+	public function isRegistered(Enchantment $enchantment): bool
+	{
 		return isset($this->enchantments[spl_object_id($enchantment)]);
 	}
 
@@ -126,15 +141,17 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return string[]
 	 */
-	public function getPrimaryItemTags(Enchantment $enchantment) : array{
+	public function getPrimaryItemTags(Enchantment $enchantment): array
+	{
 		return $this->primaryItemTags[spl_object_id($enchantment)] ?? [];
 	}
 
 	/**
 	 * @param string[] $tags
 	 */
-	public function setPrimaryItemTags(Enchantment $enchantment, array $tags) : void{
-		if(!$this->isRegistered($enchantment)){
+	public function setPrimaryItemTags(Enchantment $enchantment, array $tags): void
+	{
+		if (!$this->isRegistered($enchantment)) {
 			throw new \LogicException("Cannot set primary item tags for non-registered enchantment");
 		}
 		Utils::validateArrayValueType($tags, fn(string $v) => 1);
@@ -150,15 +167,17 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return string[]
 	 */
-	public function getSecondaryItemTags(Enchantment $enchantment) : array{
+	public function getSecondaryItemTags(Enchantment $enchantment): array
+	{
 		return $this->secondaryItemTags[spl_object_id($enchantment)] ?? [];
 	}
 
 	/**
 	 * @param string[] $tags
 	 */
-	public function setSecondaryItemTags(Enchantment $enchantment, array $tags) : void{
-		if(!$this->isRegistered($enchantment)){
+	public function setSecondaryItemTags(Enchantment $enchantment, array $tags): void
+	{
+		if (!$this->isRegistered($enchantment)) {
 			throw new \LogicException("Cannot set secondary item tags for non-registered enchantment");
 		}
 		Utils::validateArrayValueType($tags, fn(string $v) => 1);
@@ -170,9 +189,10 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getPrimaryEnchantmentsForItem(Item $item) : array{
-		$itemTags = $this->getItemEnchantmentTags($item);
-		if(count($itemTags) === 0 || $item->hasEnchantments()){
+	public function getPrimaryEnchantmentsForItem(Item $item): array
+	{
+		$itemTags = $item->getEnchantmentTags();
+		if (count($itemTags) === 0 || $item->hasEnchantments()) {
 			return [];
 		}
 
@@ -190,8 +210,9 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * @return Enchantment[]
 	 */
-	public function getAllEnchantmentsForItem(Item $item) : array{
-		if(count($this->getItemEnchantmentTags($item)) === 0){
+	public function getAllEnchantmentsForItem(Item $item): array
+	{
+		if (count($item->getEnchantmentTags()) === 0) {
 			return [];
 		}
 
@@ -206,8 +227,9 @@ final class AvailableEnchantmentRegistry{
 	 *
 	 * Warning: not suitable for checking the availability of enchantment for an enchanting table.
 	 */
-	public function isAvailableForItem(Enchantment $enchantment, Item $item) : bool{
-		$itemTags = $this->getItemEnchantmentTags($item);
+	public function isAvailableForItem(Enchantment $enchantment, Item $item): bool
+	{
+		$itemTags = $item->getEnchantmentTags();
 		$tagRegistry = TagRegistry::getInstance();
 
 		return $tagRegistry->isTagArrayIntersection($this->getPrimaryItemTags($enchantment), $itemTags) ||
@@ -215,31 +237,10 @@ final class AvailableEnchantmentRegistry{
 	}
 
 	/**
-	 * Return enchantment tags for the item, with small fallbacks for items that may have lost tags during
-	 * deserialization or older data formats. This helps ensure enchantments like LURE / LUCK_OF_THE_SEA
-	 * are discoverable for fishing rods even if the item instance has empty tags.
-	 *
-	 * @return string[]
-	 */
-	private function getItemEnchantmentTags(Item $item) : array{
-		$tags = $item->getEnchantmentTags();
-		if(count($tags) === 0){
-			// Best-effort fallback: infer fishing rod tag for FishingRod instances
-			try{
-				if($item instanceof \pocketmine\item\FishingRod){
-					return [Tags::FISHING_ROD];
-				}
-			}catch(\Throwable $_){
-				// ignore and return original tags
-			}
-		}
-		return $tags;
-	}
-
-	/**
 	 * @return Enchantment[]
 	 */
-	public function getAll() : array{
+	public function getAll(): array
+	{
 		return $this->enchantments;
 	}
 }
