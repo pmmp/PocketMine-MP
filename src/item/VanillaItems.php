@@ -409,6 +409,7 @@ use function strtolower;
  * @method static SpawnEgg PIG_SPAWN_EGG()
  * @method static SpawnEgg SHEEP_SPAWN_EGG()
  * @method static Item AXOLOTL_BUCKET()
+ * @method static ItemBlock SCAFFOLDING()
  */
 final class VanillaItems
 {

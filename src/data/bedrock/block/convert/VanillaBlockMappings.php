@@ -28,6 +28,7 @@ use pocketmine\block\AmethystCluster;
 use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
 use pocketmine\block\BambooSapling;
+use pocketmine\block\Scaffolding;
 use pocketmine\block\Barrel;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
@@ -433,8 +434,12 @@ final class VanillaBlockMappings
 		// Suspicious sand falls back to regular sand (blockstate not in canonical_block_states.nbt yet)
 		$reg->mapSimple(Blocks::SUSPICIOUS_SAND(), Ids::SAND);
 		$reg->mapSimple(Blocks::SANDSTONE(), Ids::SANDSTONE);
-		// Scaffolding falls back to ladder (similar climbing functionality)
-		$reg->mapSimple(Blocks::SCAFFOLDING(), Ids::LADDER);
+		// Scaffolding: register model with stability properties so serializer returns
+		// a non-empty states compound (distance/stability + bottom/stability_check)
+		$reg->mapModel(Model::create(Blocks::SCAFFOLDING(), Ids::SCAFFOLDING)->properties([
+			new IntProperty(StateNames::STABILITY, 0, 7, fn(Scaffolding $b) => $b->getStability(), fn(Scaffolding $b, int $v) => $b->setStability($v)),
+			new BoolProperty(StateNames::STABILITY_CHECK, fn(Scaffolding $b) => $b->getStabilityCheck(), fn(Scaffolding $b, bool $v) => $b->setStabilityCheck($v)),
+		]));
 		$reg->mapSimple(Blocks::SCULK(), Ids::SCULK);
 		$reg->mapSimple(Blocks::SEA_LANTERN(), Ids::SEA_LANTERN);
 		$reg->mapSimple(Blocks::SHROOMLIGHT(), Ids::SHROOMLIGHT);

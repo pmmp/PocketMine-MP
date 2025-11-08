@@ -875,6 +875,7 @@ use function strtolower;
  * @method static PowderSnowCauldron POWDER_SNOW_CAULDRON()
  * @method static Nylium WARPED_NYLIUM()
  * @method static Nylium CRIMSON_NYLIUM()
+ * @method static Scaffolding SCAFFOLDING()
  */
 
 
