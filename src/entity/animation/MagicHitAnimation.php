@@ -21,22 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\effect;
+namespace pocketmine\entity\animation;
 
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
 use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
 
-class HungerEffect extends Effect{
+class MagicHitAnimation implements Animation{
+	public function __construct(private Living $entity, private int $particleCount = 15){}
 
-	public function getApplyInterval(EffectInstance $instance) : int{
-		return 1;
-	}
-
-	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
-		if($entity instanceof Human){
-			$entity->getHungerManager()->exhaust(0.1 * $instance->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
-		}
+	public function encode() : array{
+		return [
+			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_MAGICAL_CRITICAL_HIT, $this->particleCount)
+		];
 	}
 }

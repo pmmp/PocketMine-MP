@@ -35,6 +35,7 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
+use pocketmine\entity\animation\MagicHitAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
@@ -2012,6 +2013,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0 && $entity instanceof Living){
 			$entity->broadcastAnimation(new CriticalHitAnimation($entity));
+		}
+		if($ev->getModifier(EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS) > 0 && $entity instanceof Living){
+			$entity->broadcastAnimation(new MagicHitAnimation($entity));
 		}
 
 		foreach($meleeEnchantments as $enchantment){

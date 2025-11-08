@@ -21,22 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity\effect;
+namespace pmmp\TesterPlugin;
 
-use pocketmine\entity\Entity;
-use pocketmine\entity\Human;
-use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerExhaustEvent;
+final class ClosureTest extends Test{
 
-class HungerEffect extends Effect{
-
-	public function getApplyInterval(EffectInstance $instance) : int{
-		return 1;
+	/**
+	 * @phpstan-param \Closure() : void $closure
+	 */
+	public function __construct(
+		\Logger $logger,
+		string $name,
+		string $description,
+		private \Closure $closure
+	){
+		parent::__construct($logger, $name, $description);
 	}
 
-	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
-		if($entity instanceof Human){
-			$entity->getHungerManager()->exhaust(0.1 * $instance->getEffectLevel(), PlayerExhaustEvent::CAUSE_POTION);
-		}
+	public function run() : void{
+		($this->closure)();
+		$this->setResult(Test::RESULT_OK);
 	}
 }
