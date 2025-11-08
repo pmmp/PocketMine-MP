@@ -45,7 +45,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\FilterNoisyPacketException;
-use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -501,7 +500,7 @@ class InGamePacketHandler extends PacketHandler{
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if($vBlockPos->distanceSquared($this->player->getLocation()) < 10000){
 					$block = $this->player->getWorld()->getBlock($vBlockPos);
-					$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
+					$blockTranslator = $this->session->getTypeConverter()->getBlockTranslator();
 					$clientRuntimeId = $data->getBlockRuntimeId();
 					$interactDisplacedBlock = false;
 

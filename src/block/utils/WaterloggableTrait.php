@@ -25,12 +25,15 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockTypeTags;
+use pocketmine\block\RuntimeBlockStateRegistry;
 use pocketmine\block\Water;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\format\Chunk;
 
 trait WaterloggableTrait{
 
@@ -74,7 +77,21 @@ trait WaterloggableTrait{
 	}
 
 	public function readStateFromWorld() : Block{
-		$this->containedWater?->readStateFromWorld();
+		$world = $this->position->getWorld();
+		$chunk = $world->getOrLoadChunkAtPosition($this->position);
+		if($chunk === null){
+			throw new AssumptionFailedError("Chunk must be already loaded before calling this method");
+		}
+
+		$displacedBlockStateId = $chunk->getDisplacedBlockStateId($this->position->getFloorX() & Chunk::COORD_MASK, $this->position->getFloorY(), $this->position->getFloorZ() & Chunk::COORD_MASK);
+		if($displacedBlockStateId !== Block::EMPTY_STATE_ID && ($displacedBlock = RuntimeBlockStateRegistry::getInstance()->fromStateId($displacedBlockStateId)) instanceof Water){
+			$displacedBlock->position($world, $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ());
+			$displacedBlock->readStateFromWorld();
+
+			$this->containedWater = $displacedBlock;
+		}else{
+			$this->containedWater = null;
+		}
 		return $this;
 	}
 

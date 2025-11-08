@@ -36,7 +36,6 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\utils\Waterloggable;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\block\Water;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -2029,21 +2028,14 @@ class World implements ChunkManager{
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
 				$block = $this->blockStateRegistry->fromStateId($chunk->getBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
-				$displacedBlockStateId = $chunk->getDisplacedBlockStateId($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK);
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
-				$displacedBlockStateId = Block::EMPTY_STATE_ID;
 			}
 		}else{
 			$block = VanillaBlocks::AIR();
-			$displacedBlockStateId = Block::EMPTY_STATE_ID;
 		}
 
-		if($block instanceof Waterloggable && $displacedBlockStateId !== Block::EMPTY_STATE_ID){
-			$displacedBlockStateId = $this->blockStateRegistry->fromStateId($displacedBlockStateId);
-			$block->setContainedWater($displacedBlockStateId instanceof Water ? $displacedBlockStateId : null);
-		}
 		$block->position($this, $x, $y, $z);
 
 		if($this->inDynamicStateRecalculation){
@@ -2300,6 +2292,9 @@ class World implements ChunkManager{
 	 */
 	public function useItemOn(Vector3 $vector, Item &$item, int $face, ?Vector3 $clickVector = null, ?Player $player = null, bool $playSound = false, array &$returnedItems = [], bool $interactDisplacedBlock = false) : bool{
 		$blockClicked = $this->getBlock($vector);
+		if($interactDisplacedBlock){
+			$blockClicked = $blockClicked->getDisplacedBlock() ?? $blockClicked;
+		}
 		$blockReplace = $blockClicked->getSide($face);
 
 		if($clickVector === null){
@@ -2331,8 +2326,6 @@ class World implements ChunkManager{
 			if($player->isSneakPressed()){
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
-			}else{
-				$ev->setUseBlock(!$interactDisplacedBlock);
 			}
 			if($player->isSpectator()){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this

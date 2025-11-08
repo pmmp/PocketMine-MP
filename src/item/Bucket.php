@@ -41,6 +41,7 @@ class Bucket extends Item{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		//TODO: move this to generic placement logic
 
+		$blockClicked = $player->getWorld()->getBlock($blockClicked->getPosition()); //We might interact a displaced block
 		if($blockClicked instanceof Waterloggable && ($water = $blockClicked->getContainedWater()) !== null && $water->isSource()){
 			$resultBlock = (clone $blockClicked)->setContainedWater(null);
 			$liquid = $blockClicked->getContainedWater();
