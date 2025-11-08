@@ -30,7 +30,8 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Chicken;
-use pocketmine\entity\Villager;
+// use pocketmine\entity\Villager;
+use pocketmine\entity\VillagerV2;
 use pocketmine\entity\Zombie;
 use pocketmine\entity\Axolotl;
 use pocketmine\entity\ZombiePigman;
@@ -860,7 +861,7 @@ final class VanillaItems
 		self::register("villager_spawn_egg", fn(IID $id) => new class($id, "Villager Spawn Egg") extends SpawnEgg {
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch): Entity
 			{
-				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
+				return new VillagerV2(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 	}

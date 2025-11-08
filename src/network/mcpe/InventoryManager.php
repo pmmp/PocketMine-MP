@@ -64,6 +64,11 @@ use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\inventory\EntityInventory;
+use pocketmine\inventory\TradeInventory;
+
+
+
 use pocketmine\utils\Binary;
 use pocketmine\utils\ObjectSet;
 use function array_fill_keys;
@@ -348,6 +353,7 @@ class InventoryManager
 			$inventory instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 			$inventory instanceof CartographyTableInventory => UIInventorySlotOffset::CARTOGRAPHY_TABLE,
 			$inventory instanceof SmithingTableInventory => UIInventorySlotOffset::SMITHING_TABLE,
+			$inventory instanceof TradeInventory || $inventory instanceof \pocketmine\inventory\VirtualTradeInventory => UIInventorySlotOffset::TRADE2_INGREDIENT,
 			default => null,
 		};
 	}
@@ -395,6 +401,10 @@ class InventoryManager
 	 */
 	protected static function createContainerOpen(int $id, Inventory $inv): ?array
 	{
+		// Allow virtual (holder-less) trade inventories to provide their own open packets
+		if ($inv instanceof \pocketmine\inventory\VirtualTradeInventory) {
+			return $inv->createInventoryOpenPackets($id);
+		}
 		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
 		//if the class isn't final, not to mention being inflexible.
 		if ($inv instanceof BlockInventory) {
@@ -417,7 +427,16 @@ class InventoryManager
 				$inv instanceof SmithingTableInventory => WindowTypes::SMITHING_TABLE,
 				default => WindowTypes::CONTAINER
 			};
+			if ($inv instanceof EntityInventory) {
+				return $inv->createInventoryOpenPackets($id);
+			}
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
+		}
+		// Non-block entity-backed inventories (for example TradeInventory) should provide their own
+		// open packets via createInventoryOpenPackets(). This covers cases where the inventory is
+		// an EntityInventory but not a BlockInventory.
+		if ($inv instanceof EntityInventory) {
+			return $inv->createInventoryOpenPackets($id);
 		}
 		return null;
 	}
@@ -477,6 +496,8 @@ class InventoryManager
 
 	public function onClientRemoveWindow(int $id): void
 	{
+
+		
 		if (Binary::signByte($id) === ContainerIds::NONE) { //TODO: REMOVE signByte() once BedrockProtocol + ext-encoding are implemented
 			//TODO: HACK! Since 1.21.100 (and probably earlier), the client will send -1 to close windows that it can't
 			//view for some reason, e.g. if the chat window was already open. This is pretty awkward, since it means
@@ -485,6 +506,11 @@ class InventoryManager
 			//Fortunately, we already wait for close acks anyway, so the window ID is technically useless...?
 			$this->session->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
 			$id = $this->lastInventoryNetworkId;
+		}
+		if(($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory || $tradeInventory instanceof \pocketmine\inventory\VirtualTradeInventory){
+			//TODO: The client always sends 255 as a container ID for trade window
+			//so we manually correct window ID here
+			$id = $this->getWindowId($tradeInventory) ?? throw new AssumptionFailedError("No opened trading inventory");
 		}
 		if ($id === $this->lastInventoryNetworkId) {
 			if (isset($this->networkIdToInventoryMap[$id]) && $id !== $this->pendingCloseWindowId) {

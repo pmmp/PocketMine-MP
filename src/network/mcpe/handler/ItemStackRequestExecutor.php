@@ -39,6 +39,10 @@ use pocketmine\inventory\transaction\LoomTransaction;
 use pocketmine\item\Banner as BannerItem;
 use pocketmine\item\Dye;
 use pocketmine\network\mcpe\protocol\types\inventory\stackrequest\CraftRecipeOptionalStackRequestAction;
+use pocketmine\inventory\TradeInventory;
+use pocketmine\inventory\transaction\TradingTransaction;
+
+
 
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -403,12 +407,14 @@ class ItemStackRequestExecutor
 	 */
 	private function assertDoingCrafting(): void
 	{
+
 		if (
 			!$this->specialTransaction instanceof CraftingTransaction &&
 			!$this->specialTransaction instanceof EnchantingTransaction &&
 			!$this->specialTransaction instanceof AnvilTransaction &&
 			!$this->specialTransaction instanceof LoomTransaction &&
-			!$this->specialTransaction instanceof SmithingTransaction
+			!$this->specialTransaction instanceof SmithingTransaction &&
+			!$this->specialTransaction instanceof TradingTransaction
 		) {
 			if ($this->specialTransaction === null) {
 				throw new ItemStackRequestProcessException("Expected CraftRecipe or CraftRecipeAuto action to precede this action");
@@ -505,6 +511,13 @@ class ItemStackRequestExecutor
 				if ($optionId !== null && ($option = $window->getOption($optionId)) !== null) {
 					$this->specialTransaction = new EnchantingTransaction($this->player, $option, $optionId + 1);
 					$this->setNextCreatedItem($window->getOutput($optionId));
+				}
+			} elseif ($window instanceof TradeInventory || $window instanceof \pocketmine\inventory\VirtualTradeInventory) {
+				$recipeData = $window->getRecipeData();
+				$recipe = $recipeData->getRecipe($action->getRecipeId() - 1);
+				if ($recipe !== null) {
+					$this->specialTransaction = new TradingTransaction($this->player, $recipeData, $recipe);
+					$this->setNextCreatedItem($recipe->getSell());
 				}
 			} else {
 				$this->beginCrafting($action->getRecipeId(), $action->getRepetitions());

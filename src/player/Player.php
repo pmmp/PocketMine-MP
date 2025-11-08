@@ -2176,7 +2176,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$oldItem = clone $item;
 			$returnedItems = [];
 			// Use named args to help static analysis map parameters correctly
-			if ($this->getWorld()->useBreakOn($pos, item: $item, player: $this, createParticles: true, returnedItems: $returnedItems)) {
+			if ($this->getWorld()->useBreakOn($pos, $item, $this, true, $returnedItems)) {
 				$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
