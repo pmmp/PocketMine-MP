@@ -23,21 +23,36 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
-/**
- * @phpstan-extends BaseHandlerListManager<Event, RegisteredListener>
- */
-class HandlerListManager extends BaseHandlerListManager{
-	private static ?self $globalInstance = null;
+use pocketmine\plugin\Plugin;
+use pocketmine\timings\TimingsHandler;
+use function in_array;
 
-	public static function global() : self{
-		return self::$globalInstance ?? (self::$globalInstance = new self());
+abstract class BaseRegisteredListener{
+	public function __construct(
+		protected \Closure $handler,
+		private int $priority,
+		private Plugin $plugin,
+		private bool $handleCancelled,
+		protected TimingsHandler $timings
+	){
+		if(!in_array($priority, EventPriority::ALL, true)){
+			throw new \InvalidArgumentException("Invalid priority number $priority");
+		}
 	}
 
-	protected function getBaseEventClass() : string{
-		return Event::class;
+	public function getHandler() : \Closure{
+		return $this->handler;
 	}
 
-	protected function createHandlerList(string $event, ?HandlerList $parentList, RegisteredListenerCache $handlerCache) : HandlerList{
-		return new HandlerList($event, $parentList, $handlerCache);
+	public function getPlugin() : Plugin{
+		return $this->plugin;
+	}
+
+	public function getPriority() : int{
+		return $this->priority;
+	}
+
+	public function isHandlingCancelled() : bool{
+		return $this->handleCancelled;
 	}
 }

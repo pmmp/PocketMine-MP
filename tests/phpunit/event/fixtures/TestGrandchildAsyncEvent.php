@@ -21,23 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\event\fixtures;
 
-/**
- * @phpstan-extends BaseHandlerListManager<Event, RegisteredListener>
- */
-class HandlerListManager extends BaseHandlerListManager{
-	private static ?self $globalInstance = null;
+class TestGrandchildAsyncEvent extends TestChildAsyncEvent{
 
-	public static function global() : self{
-		return self::$globalInstance ?? (self::$globalInstance = new self());
-	}
-
-	protected function getBaseEventClass() : string{
-		return Event::class;
-	}
-
-	protected function createHandlerList(string $event, ?HandlerList $parentList, RegisteredListenerCache $handlerCache) : HandlerList{
-		return new HandlerList($event, $parentList, $handlerCache);
-	}
 }

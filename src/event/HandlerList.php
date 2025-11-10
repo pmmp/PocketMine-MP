@@ -29,23 +29,33 @@ use function krsort;
 use function spl_object_id;
 use const SORT_NUMERIC;
 
+/**
+ * @phpstan-template TListener of BaseRegisteredListener
+ */
 class HandlerList{
 	/**
-	 * @var RegisteredListener[][]
-	 * @phpstan-var array<int, array<int, RegisteredListener>>
+	 * @var BaseRegisteredListener[][]
+	 * @phpstan-var array<int, array<int, TListener>>
 	 */
 	private array $handlerSlots = [];
 
-	/** @var RegisteredListenerCache[] */
+	/**
+	 * @var RegisteredListenerCache[]
+	 * @phpstan-var array<int, RegisteredListenerCache<TListener>>
+	 */
 	private array $affectedHandlerCaches = [];
 
 	/**
-	 * @phpstan-param class-string<covariant Event> $class
+	 * @phpstan-param class-string $class
+	 * @phpstan-param ?static<TListener> $parentList
+	 * @phpstan-param RegisteredListenerCache<TListener> $handlerCache
+	 * @phpstan-param ?\Closure(array<int, TListener>) : array<int, TListener> $sortSamePriorityHandlers
 	 */
 	public function __construct(
 		private string $class,
 		private ?HandlerList $parentList,
-		private RegisteredListenerCache $handlerCache = new RegisteredListenerCache()
+		private RegisteredListenerCache $handlerCache = new RegisteredListenerCache(),
+		private ?\Closure $sortSamePriorityHandlers = null
 	){
 		for($list = $this; $list !== null; $list = $list->parentList){
 			$list->affectedHandlerCaches[spl_object_id($this->handlerCache)] = $this->handlerCache;
@@ -53,9 +63,9 @@ class HandlerList{
 	}
 
 	/**
-	 * @throws \Exception
+	 * @phpstan-param TListener $listener
 	 */
-	public function register(RegisteredListener $listener) : void{
+	public function register(BaseRegisteredListener $listener) : void{
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_id($listener)])){
 			throw new \InvalidArgumentException("This listener is already registered to priority {$listener->getPriority()} of event {$this->class}");
 		}
@@ -64,7 +74,8 @@ class HandlerList{
 	}
 
 	/**
-	 * @param RegisteredListener[] $listeners
+	 * @param BaseRegisteredListener[] $listeners
+	 * @phpstan-param array<TListener> $listeners
 	 */
 	public function registerAll(array $listeners) : void{
 		foreach($listeners as $listener){
@@ -73,7 +84,10 @@ class HandlerList{
 		$this->invalidateAffectedCaches();
 	}
 
-	public function unregister(RegisteredListener|Plugin|Listener $object) : void{
+	/**
+	 * @phpstan-param TListener|Plugin|Listener $object
+	 */
+	public function unregister(BaseRegisteredListener|Plugin|Listener $object) : void{
 		if($object instanceof Plugin || $object instanceof Listener){
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
@@ -96,12 +110,16 @@ class HandlerList{
 	}
 
 	/**
-	 * @return RegisteredListener[]
+	 * @return BaseRegisteredListener[]
+	 * @phpstan-return array<int, TListener>
 	 */
 	public function getListenersByPriority(int $priority) : array{
 		return $this->handlerSlots[$priority] ?? [];
 	}
 
+	/**
+	 * @phpstan-return static<TListener>
+	 */
 	public function getParent() : ?HandlerList{
 		return $this->parentList;
 	}
@@ -116,8 +134,8 @@ class HandlerList{
 	}
 
 	/**
-	 * @return RegisteredListener[]
-	 * @phpstan-return list<RegisteredListener>
+	 * @return BaseRegisteredListener[]
+	 * @phpstan-return list<TListener>
 	 */
 	public function getListenerList() : array{
 		if($this->handlerCache->list !== null){
@@ -132,7 +150,12 @@ class HandlerList{
 		$listenersByPriority = [];
 		foreach($handlerLists as $currentList){
 			foreach($currentList->handlerSlots as $priority => $listeners){
-				$listenersByPriority[$priority] = array_merge($listenersByPriority[$priority] ?? [], $listeners);
+				$listenersByPriority[$priority] = array_merge(
+					$listenersByPriority[$priority] ?? [],
+					$this->sortSamePriorityHandlers !== null ?
+						($this->sortSamePriorityHandlers)($listeners) :
+						$listeners
+				);
 			}
 		}
 

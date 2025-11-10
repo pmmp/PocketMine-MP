@@ -23,17 +23,38 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
-class RegisteredListener extends BaseRegisteredListener{
+use pocketmine\plugin\Plugin;
+use pocketmine\promise\Promise;
+use pocketmine\timings\TimingsHandler;
 
-	public function callEvent(Event $event) : void{
+class AsyncRegisteredListener extends BaseRegisteredListener{
+	public function __construct(
+		\Closure $handler,
+		int $priority,
+		Plugin $plugin,
+		bool $handleCancelled,
+		private bool $exclusiveCall,
+		TimingsHandler $timings
+	){
+		parent::__construct($handler, $priority, $plugin, $handleCancelled, $timings);
+	}
+
+	/**
+	 * @phpstan-return Promise<null>|null
+	 */
+	public function callAsync(AsyncEvent $event) : ?Promise{
 		if($event instanceof Cancellable && $event->isCancelled() && !$this->isHandlingCancelled()){
-			return;
+			return null;
 		}
 		$this->timings->startTiming();
 		try{
-			($this->handler)($event);
+			return ($this->handler)($event);
 		}finally{
 			$this->timings->stopTiming();
 		}
+	}
+
+	public function canBeCalledConcurrently() : bool{
+		return !$this->exclusiveCall;
 	}
 }

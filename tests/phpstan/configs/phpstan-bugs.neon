@@ -223,6 +223,12 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
+			message: '#^PHPDoc tag @var with type ReflectionClass\<pocketmine\\event\\AsyncEvent\>\|ReflectionClass\<pocketmine\\event\\Event\> is not subtype of native type \*NEVER\*\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
+
+		-
 			message: '#^Binary operation "\." between mixed and ''/''\|''\\\\'' results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1

@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use function uasort;
+
 /**
- * @phpstan-extends BaseHandlerListManager<Event, RegisteredListener>
+ * @phpstan-extends BaseHandlerListManager<AsyncEvent, AsyncRegisteredListener>
  */
-class HandlerListManager extends BaseHandlerListManager{
+final class AsyncHandlerListManager extends BaseHandlerListManager{
 	private static ?self $globalInstance = null;
 
 	public static function global() : self{
@@ -34,10 +36,23 @@ class HandlerListManager extends BaseHandlerListManager{
 	}
 
 	protected function getBaseEventClass() : string{
-		return Event::class;
+		return AsyncEvent::class;
+	}
+
+	/**
+	 * @phpstan-param array<int, AsyncRegisteredListener> $listeners
+	 * @phpstan-return array<int, AsyncRegisteredListener>
+	 */
+	private static function sortSamePriorityHandlers(array $listeners) : array{
+		uasort($listeners, function(AsyncRegisteredListener $left, AsyncRegisteredListener $right) : int{
+			//Promise::all() can be used more efficiently if concurrent handlers are grouped together.
+			//It's not important whether they are grouped before or after exclusive handlers.
+			return $left->canBeCalledConcurrently() <=> $right->canBeCalledConcurrently();
+		});
+		return $listeners;
 	}
 
 	protected function createHandlerList(string $event, ?HandlerList $parentList, RegisteredListenerCache $handlerCache) : HandlerList{
-		return new HandlerList($event, $parentList, $handlerCache);
+		return new HandlerList($event, $parentList, $handlerCache, self::sortSamePriorityHandlers(...));
 	}
 }
