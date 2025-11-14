@@ -725,6 +725,18 @@ class Item implements \JsonSerializable
 	}
 
 	/**
+	 * Called every server tick while a player is using this item (right-click and hold).
+	 * Useful for items that need to react to being held (e.g. charging a crossbow).
+	 *
+	 * Default implementation does nothing.
+	 */
+	public function onUsingTick(Player $player, int $ticksUsed): void
+	{
+		// NOOP by default
+	}
+
+
+	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)

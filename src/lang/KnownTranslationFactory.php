@@ -1041,6 +1041,13 @@ final class KnownTranslationFactory
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWDAMAGE, []);
 	}
 
+	// enchantment_quick_charge
+
+	public static function enchantment_quick_charge(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_QUICK_CHARGE, []);
+	}
+	
 	public static function enchantment_arrowFire(): Translatable
 	{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWFIRE, []);

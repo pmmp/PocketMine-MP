@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CopperMaterial;
+use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\CopperTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -17,7 +18,7 @@ class CopperChest extends Chest implements CopperMaterial{
         setWaxed as private setWaxedTrait;
     }
 
-    public function setOxidation(\pocketmine\block\utils\CopperOxidation $oxidation) : CopperMaterial{
+    public function setOxidation(CopperOxidation $oxidation) : CopperMaterial{
         $this->setOxidationTrait($oxidation);
         return $this;
     }

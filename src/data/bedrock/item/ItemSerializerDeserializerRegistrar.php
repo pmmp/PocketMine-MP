@@ -37,6 +37,7 @@ use pocketmine\data\bedrock\item\ItemTypeNames as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\MedicineTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\data\bedrock\SuspiciousStewTypeIdMap;
 use pocketmine\item\Banner;
 use pocketmine\item\Dye;
@@ -518,7 +519,45 @@ final class ItemSerializerDeserializerRegistrar
 	{
 		$this->map1ToNItem(Ids::ARROW, [
 			0 => Items::ARROW(),
-			//TODO: tipped arrows
+			1 => Items::SPECTRAL_ARROW(),
+			PotionTypeIds::NIGHT_VISION => Items::TIPPED_ARROW_NIGHT_VISION(),
+			PotionTypeIds::LONG_NIGHT_VISION => Items::TIPPED_ARROW_LONG_NIGHT_VISION(),
+			PotionTypeIds::INVISIBILITY => Items::TIPPED_ARROW_INVISIBILITY(),
+			PotionTypeIds::LONG_INVISIBILITY => Items::TIPPED_ARROW_LONG_INVISIBILITY(),
+			PotionTypeIds::LEAPING => Items::TIPPED_ARROW_LEAPING(),
+			PotionTypeIds::LONG_LEAPING => Items::TIPPED_ARROW_LONG_LEAPING(),
+			PotionTypeIds::STRONG_LEAPING => Items::TIPPED_ARROW_STRONG_LEAPING(),
+			PotionTypeIds::FIRE_RESISTANCE => Items::TIPPED_ARROW_FIRE_RESISTANCE(),
+			PotionTypeIds::LONG_FIRE_RESISTANCE => Items::TIPPED_ARROW_LONG_FIRE_RESISTANCE(),
+			PotionTypeIds::SWIFTNESS => Items::TIPPED_ARROW_SWIFTNESS(),
+			PotionTypeIds::LONG_SWIFTNESS => Items::TIPPED_ARROW_LONG_SWIFTNESS(),
+			PotionTypeIds::STRONG_SWIFTNESS => Items::TIPPED_ARROW_STRONG_SWIFTNESS(),
+			PotionTypeIds::SLOWNESS => Items::TIPPED_ARROW_SLOWNESS(),
+			PotionTypeIds::LONG_SLOWNESS => Items::TIPPED_ARROW_LONG_SLOWNESS(),
+			PotionTypeIds::WATER_BREATHING => Items::TIPPED_ARROW_WATER_BREATHING(),
+			PotionTypeIds::LONG_WATER_BREATHING => Items::TIPPED_ARROW_LONG_WATER_BREATHING(),
+			PotionTypeIds::HEALING => Items::TIPPED_ARROW_HEALING(),
+			PotionTypeIds::STRONG_HEALING => Items::TIPPED_ARROW_STRONG_HEALING(),
+			PotionTypeIds::HARMING => Items::TIPPED_ARROW_HARMING(),
+			PotionTypeIds::STRONG_HARMING => Items::TIPPED_ARROW_STRONG_HARMING(),
+			PotionTypeIds::POISON => Items::TIPPED_ARROW_POISON(),
+			PotionTypeIds::LONG_POISON => Items::TIPPED_ARROW_LONG_POISON(),
+			PotionTypeIds::STRONG_POISON => Items::TIPPED_ARROW_STRONG_POISON(),
+			PotionTypeIds::REGENERATION => Items::TIPPED_ARROW_REGENERATION(),
+			PotionTypeIds::LONG_REGENERATION => Items::TIPPED_ARROW_LONG_REGENERATION(),
+			PotionTypeIds::STRONG_REGENERATION => Items::TIPPED_ARROW_STRONG_REGENERATION(),
+			PotionTypeIds::STRENGTH => Items::TIPPED_ARROW_STRENGTH(),
+			PotionTypeIds::LONG_STRENGTH => Items::TIPPED_ARROW_LONG_STRENGTH(),
+			PotionTypeIds::STRONG_STRENGTH => Items::TIPPED_ARROW_STRONG_STRENGTH(),
+			PotionTypeIds::WEAKNESS => Items::TIPPED_ARROW_WEAKNESS(),
+			PotionTypeIds::LONG_WEAKNESS => Items::TIPPED_ARROW_LONG_WEAKNESS(),
+			PotionTypeIds::WITHER => Items::TIPPED_ARROW_WITHER(),
+			PotionTypeIds::TURTLE_MASTER => Items::TIPPED_ARROW_TURTLE_MASTER(),
+			PotionTypeIds::LONG_TURTLE_MASTER => Items::TIPPED_ARROW_LONG_TURTLE_MASTER(),
+			PotionTypeIds::STRONG_TURTLE_MASTER => Items::TIPPED_ARROW_STRONG_TURTLE_MASTER(),
+			PotionTypeIds::SLOW_FALLING => Items::TIPPED_ARROW_SLOW_FALLING(),
+			PotionTypeIds::LONG_SLOW_FALLING => Items::TIPPED_ARROW_LONG_SLOW_FALLING(),
+			PotionTypeIds::STRONG_SLOWNESS => Items::TIPPED_ARROW_STRONG_SLOWNESS(),
 		]);
 		$this->map1ToNItem(Ids::COMPOUND, [
 			CompoundTypeIds::SALT => Items::CHEMICAL_SALT(),

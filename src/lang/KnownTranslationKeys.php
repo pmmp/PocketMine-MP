@@ -43,6 +43,7 @@ final class KnownTranslationKeys
 	public const ACTION_INTERACT_RIDE_MINECART = "action.interact.ride.minecart";
 	public const CHAT_TYPE_ACHIEVEMENT = "chat.type.achievement";
 	public const CHAT_TYPE_ADMIN = "chat.type.admin";
+	
 	public const CHAT_TYPE_ANNOUNCEMENT = "chat.type.announcement";
 	public const CHAT_TYPE_EMOTE = "chat.type.emote";
 	public const CHAT_TYPE_TEXT = "chat.type.text";
@@ -205,6 +206,7 @@ final class KnownTranslationKeys
 	public const ENCHANTMENT_ARROWKNOCKBACK = "enchantment.arrowKnockback";
 	public const ENCHANTMENT_CROSSBOWMULTISHOT = "enchantment.crossbowMultishot";
 	public const ENCHANTMENT_CROSSBOWPIERCING = "enchantment.crossbowPiercing";
+	public const ENCHANTMENT_QUICK_CHARGE = "enchantment.quickCharge";
 	public const ENCHANTMENT_CROSSBOWQUICKCHARGE = "enchantment.crossbowQuickCharge";
 	public const ENCHANTMENT_CURSE_BINDING = "enchantment.curse.binding";
 	public const ENCHANTMENT_CURSE_VANISHING = "enchantment.curse.vanishing";

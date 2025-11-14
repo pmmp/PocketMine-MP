@@ -62,6 +62,7 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment TRIDENT_RIPTIDE()
  * @method static Enchantment LUCK_OF_THE_SEA()
  * @method static Enchantment LURE()
+ * @method static Enchantment QUICK_CHARGE()
  * 
  */
 final class VanillaEnchantments{
@@ -276,6 +277,36 @@ final class VanillaEnchantments{
 			30
 		));
 
+		self::register("QUICK_CHARGE", new Enchantment(
+			KnownTranslationFactory::enchantment_crossbowQuickCharge(),
+			Rarity::UNCOMMON,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 1,
+			15
+		));
+
+		self::register("MULTISHOT", new Enchantment(
+			KnownTranslationFactory::enchantment_crossbowMultishot(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 1,
+			20
+		));
+
+		self::register("PIERCING", new Enchantment(
+			KnownTranslationFactory::enchantment_crossbowPiercing(),
+			Rarity::RARE,
+			0,
+			0,
+			4,
+			fn(int $level) : int => 1,
+			15
+		));
+
 		self::register("MENDING", new Enchantment(
 			KnownTranslationFactory::enchantment_mending(),
 			Rarity::RARE,
@@ -366,6 +397,8 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 10 * ($level - 1) + 15,
 			25
 		));
+
+	
 
 	}
 

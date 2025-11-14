@@ -876,6 +876,8 @@ use function strtolower;
  * @method static Nylium WARPED_NYLIUM()
  * @method static Nylium CRIMSON_NYLIUM()
  * @method static Scaffolding SCAFFOLDING()
+ * @method static Planks BAMBOO_PLANKS()
+ * @method static Planks BAMBOO_MOSAIC()
  */
 
 
@@ -943,6 +945,10 @@ final class VanillaBlocks
 			}
 		}, [Tags::POTTABLE_PLANTS])));
 		self::register("bamboo_sapling", fn(BID $id) => new BambooSapling($id, "Bamboo Sapling", new Info(new BreakInfo(1.0))));
+
+		// Bamboo mosaic is exposed explicitly so Item/Bedrock mappings can reference it
+		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
+		self::register("bamboo_mosaic", fn(BID $id) => new Opaque($id, "Bamboo Mosaic", $planksBreakInfo));
 
 		$bannerBreakInfo = new Info(BreakInfo::axe(1.0));
 		self::register("banner", fn(BID $id) => new FloorBanner($id, "Banner", $bannerBreakInfo), TileBanner::class);
@@ -1487,6 +1493,7 @@ final class VanillaBlocks
 				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
 				WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
+				WoodType::BAMBOO => VanillaItems::BAMBOO_SIGN(...),
 			};
 			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
 			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
@@ -1503,6 +1510,7 @@ final class VanillaBlocks
 				WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
 				WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
+				WoodType::BAMBOO => VanillaItems::BAMBOO_HANGING_SIGN(...),
 			};
 			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
 			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
@@ -1522,6 +1530,7 @@ final class VanillaBlocks
 				WoodType::WARPED => VanillaItems::WARPED_SHELF(...),
 				WoodType::CHERRY => VanillaItems::CHERRY_SHELF(...),
 				WoodType::PALE_OAK => VanillaItems::PALE_OAK_SHELF(...),
+				WoodType::BAMBOO => VanillaItems::BAMBOO_SHELF(...),
 			};
 			self::register($idName("shelf"), fn(BID $id) => new Shelf($id, $name . " Shelf", new Info(BreakInfo::axe(1.0)), $woodType, $shelfAsItem), TileShelf::class);
 		}

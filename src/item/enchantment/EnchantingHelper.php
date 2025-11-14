@@ -28,6 +28,9 @@ use pocketmine\item\enchantment\AvailableEnchantmentRegistry as EnchantmentRegis
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\item\VanillaItems as Items;
+use pocketmine\Server;
+use pocketmine\item\enchantment\ItemEnchantmentTags as ItemTags;
+use pocketmine\item\enchantment\VanillaEnchantments as VanillaEnchantments;
 use pocketmine\utils\Limits;
 use pocketmine\utils\Random;
 use pocketmine\world\Position;
@@ -189,6 +192,30 @@ final class EnchantingHelper{
 					break;
 				}
 			}
+		}
+
+		// fallback: if empty and item is a crossbow, provide basic crossbow enchant candidates so table isn't blank
+		try {
+			$itemTags = $item->getEnchantmentTags();
+			if (count($list) === 0 && in_array(ItemTags::CROSSBOW, $itemTags, true)) {
+				$fallback = [];
+				$fallback[] = new EnchantmentInstance(VanillaEnchantments::QUICK_CHARGE(), 1);
+				$fallback[] = new EnchantmentInstance(VanillaEnchantments::MULTISHOT(), 1);
+				$fallback[] = new EnchantmentInstance(VanillaEnchantments::PIERCING(), 1);
+				$registered = [];
+				foreach ($fallback as $inst) {
+					if (EnchantmentRegistry::getInstance()->isRegistered($inst->getType())) {
+						$registered[] = $inst;
+					}
+				}
+				if (count($registered) > 0) {
+					$list = $registered;
+					$names = array_map(fn(EnchantmentInstance $i) => (string)$i->getType()->getName(), $list);
+					Server::getInstance()->getLogger()->info("[EnchantAvail] applied crossbow fallback candidates: [" . implode(",", $names) . "]");
+				}
+			}
+		} catch (\Throwable $e) {
+			// ignore
 		}
 
 		return $list;

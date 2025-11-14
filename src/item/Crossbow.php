@@ -4,388 +4,343 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\bedrock\EnchantmentIds;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\Arrow as ArrowEntity;
+use pocketmine\entity\object\FireworkRocket as FireworkEntity;
 use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
+use pocketmine\event\entity\EntityShootCrossbowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\math\Vector3;
-use pocketmine\world\sound\BowShootSound;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\item\Arrow as ArrowItem;
 use pocketmine\item\FireworkRocket as FireworkItem;
-use pocketmine\entity\object\FireworkRocket as FireworkEntity;
-use pocketmine\utils\Utils;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
+use pocketmine\world\sound\CrossbowQuickChargeStartSound;
+use pocketmine\world\sound\CrossbowQuickChargeEndSound;
+use pocketmine\world\sound\CrossbowShootSound;
+
 use function mt_rand;
 use function min;
 use function intdiv;
 
 class Crossbow extends Tool implements Releasable
 {
-    public const TAG_CHARGED_ITEM = "chargedItem"; // TAG_Compound
-
-    public function getChargedItem(): ?Item
-    {
-        $tag = $this->getNamedTag();
-        $compound = $tag->getCompoundTag(self::TAG_CHARGED_ITEM);
-        if ($compound === null) {
-            return null;
-        }
-
-
-        try {
-            $item = Item::nbtDeserialize($compound);
-            // Treat deserialized AIR/empty items as not charged
-            if ($item->isNull()) {
-                return null;
-            }
-            // Debug log
-            try {
-                Server::getInstance()->getLogger()->info("[CROSSBOW] getChargedItem -> " . $item->getVanillaName() . " x" . $item->getCount());
-            } catch (\Throwable $e) {
-                // ignore logging failures
-            }
-            return $item;
-        } catch (\Throwable $e) {
-            // Corrupted/unknown charged item; treat as not charged
-            return null;
-        }
-    }
+    private int $loadTick = 0;
+    /**
+     * Tracks players who started loading a crossbow. Use helper methods to access.
+     * @var array<string, bool>
+     */
+    private static array $loadingPlayers = [];
     public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems): ItemUseResult
     {
-        // When clicking while charged, fire the stored projectile. Delegate to helper.
-        return $this->fireChargedItem($player, $returnedItems);
-    }
-
-    private function fireChargedItem(Player $player, array &$returnedItems): ItemUseResult
-    {
-        $charged = $this->getChargedItem();
-        if ($charged === null) {
-            return ItemUseResult::NONE;
-        }
-
-        try {
-            Server::getInstance()->getLogger()->info("[CROSSBOW] fireChargedItem -> " . $charged->getVanillaName());
-        } catch (\Throwable $e) {
-        }
-
+        $arrow = VanillaItems::ARROW()->setCount(1);
+        $firework = VanillaItems::FIREWORK_ROCKET()->setCount(1);
+        $enchIdMap = EnchantmentIdMap::getInstance();
+        $quickChargeEnch = $enchIdMap->fromId(EnchantmentIds::QUICK_CHARGE);
+        $quickCharge = $quickChargeEnch !== null ? $this->getEnchantmentLevel($quickChargeEnch) : 0;
+        $multishotEnch = $enchIdMap->fromId(EnchantmentIds::MULTISHOT);
+        $multishot = $multishotEnch !== null ? $this->getEnchantmentLevel($multishotEnch) : 0;
         $location = $player->getLocation();
-
-        if ($charged instanceof FireworkItem) {
-            $randomDuration = (($charged->getFlightTimeMultiplier() + 1) * 10) + mt_rand(0, 12);
-            $entity = new FireworkEntity(Location::fromObject(
-                $player->getEyePos(),
-                $player->getWorld(),
-                ($location->yaw > 180 ? 360 : 0) - $location->yaw,
-                -$location->pitch
-            ), $randomDuration, $charged->getExplosions());
-            $entity->setOwningEntity($player);
-            $entity->setMotion($player->getDirectionVector()->multiply(3));
-            $entity->spawnToAll();
-            $location->getWorld()->addSound($location, new BowShootSound());
-        } else {
-            $entity = new ArrowEntity(Location::fromObject(
-                $player->getEyePos(),
-                $player->getWorld(),
-                ($location->yaw > 180 ? 360 : 0) - $location->yaw,
-                -$location->pitch
-            ), $player, true);
-            $entity->setMotion($player->getDirectionVector()->multiply(3));
-
-            $ev = new EntityShootBowEvent($player, $this, $entity, 3.0);
-            $ev->call();
-            if ($ev->isCancelled()) {
-                $entity->flagForDespawn();
-                return ItemUseResult::FAIL;
+        if (!$this->isCharged()) {
+            if ($player->isUsingItem()) {
+                return ItemUseResult::SUCCESS();
             }
+            if ($player->isSurvival() && !(
+                $player->getInventory()->contains($arrow) || $player->getInventory()->contains($firework)
+                || $player->getOffHandInventory()->contains($arrow) || $player->getOffHandInventory()->contains($firework)
+            )) {
+                return ItemUseResult::FAIL();
+            }
+            $player->getWorld()->addSound($location, new CrossbowQuickChargeStartSound());
+        } else {
+            $ct = $this->getNamedTag()->getCompoundTag("chargedItem");
+            if ($ct !== null && $ct->getByte("JustLoaded", 0) !== 0) {
+                $loadedAt = $ct->getInt("LoadedAt", 0);
+                $now = Server::getInstance()->getTick();
+                if ($loadedAt !== 0 && $now - $loadedAt <= 5) {
+                    $ct->setByte("JustLoaded", 0);
+                    $ct->setInt("LoadedAt", 0);
+                    $this->getNamedTag()->setTag("chargedItem", $ct);
+                    $player->getInventory()->setItemInHand($this);
+                    return ItemUseResult::SUCCESS();
+                }
+                // Too late to swallow: clear the flag and allow firing
+                $ct->setByte("JustLoaded", 0);
+                $ct->setInt("LoadedAt", 0);
+                $this->getNamedTag()->setTag("chargedItem", $ct);
+            }
+            $item = Item::nbtDeserialize($ct);
+            $this->setCharged(null);
+            if ($item instanceof ArrowItem) {
+                $entity = new ArrowEntity(Location::fromObject($player->getDirectionVector()->multiply(1.3)->addVector($player->getPosition()->add(0, $player->getEyeHeight(), 0)), $player->getWorld(), ($location->yaw > 180 ? 360 : 0) - $location->yaw, -$location->pitch), $player, false);
 
-            if ($entity instanceof Projectile) {
-                $projectileEv = new ProjectileLaunchEvent($entity);
-                $projectileEv->call();
-                if ($projectileEv->isCancelled()) {
+                if ($multishot > 0) {
+                    $location = Location::fromObject($player->getDirectionVector()->multiply(1.3)->addVector($player->getPosition()->add(0, $player->getEyeHeight(), 0)), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch());
+                    $location->yaw -= 10;
+
+                    for ($i = 0; $i < 3; $i++) {
+                        $arrow = new ArrowEntity($location, $player, false);
+
+                        $arrow->setOwningEntity($player);
+
+                        if ($i !== 1 || $player->isCreative(true)) {
+                            $arrow->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+                        }
+
+                        $y = -sin(deg2rad($location->pitch));
+                        $xz = cos(deg2rad($location->pitch));
+                        $x = -$xz * sin(deg2rad($location->yaw));
+                        $z = $xz * cos(deg2rad($location->yaw));
+
+                        $directionVector = (new Vector3($x, $y, $z))->normalize();
+
+                        $arrow->setMotion($directionVector->multiply(7));
+                        $arrow->spawnToAll();
+                        $location->yaw += 10;
+                    }
+                    if ($player->isSurvival()) {
+                        $this->applyDamage($multishot ? 3 : 1);
+                    }
+                    // Crossbow shoot sound (multishot)
+                    $location->getWorld()->addSound($location, new CrossbowShootSound());
+                    return ItemUseResult::SUCCESS();
+                }
+                $entity->setMotion($directionVector);
+                $ev = new EntityShootCrossbowEvent($player, $this, $entity, 7);
+                $ev->call();
+
+                $entity = $ev->getProjectile();
+
+                if ($ev->isCancelled()) {
                     $entity->flagForDespawn();
-                    return ItemUseResult::FAIL;
+                    return ItemUseResult::FAIL();
                 }
 
-                $entity->spawnToAll();
-                $location->getWorld()->addSound($location, new BowShootSound());
+                $entity->setMotion($entity->getMotion()->multiply($ev->getForce()));
+
+                if ($entity instanceof Projectile) {
+                    $projectileEv = new ProjectileLaunchEvent($entity);
+                    $projectileEv->call();
+                    if ($projectileEv->isCancelled()) {
+                        $ev->getProjectile()->flagForDespawn();
+                        return ItemUseResult::FAIL();
+                    }
+
+                    $ev->getProjectile()->spawnToAll();
+                    $location->getWorld()->addSound($location, new CrossbowShootSound());
+                } else {
+                    $entity->spawnToAll();
+                }
+
+                if ($player->isSurvival()) {
+                    $this->applyDamage($multishot ? 3 : 1);
+                }
+            } elseif ($item instanceof FireworkItem) {
+                // Spawn a firework entity instead of an arrow
+                $position = $player->getEyePos()->addVector($directionVector->multiply(0.5));
+
+                $randomDuration = (($item->getFlightTimeMultiplier() + 1) * 10) + mt_rand(0, 12);
+
+                $fromOffHand = $ct !== null ? ($ct->getByte("FromOffHand", 0) !== 0) : false;
+
+                if ($multishot > 0) {
+                    // Use same multishot spread as arrows but spawn fireworks so they fly forward like arrows
+                    $loc = Location::fromObject($player->getDirectionVector()->multiply(1.3)->addVector($player->getPosition()->add(0, $player->getEyeHeight(), 0)), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch());
+                    $loc->yaw -= 10;
+                    for ($i = 0; $i < 3; $i++) {
+                        $fw = new FireworkEntity(Location::fromObject($loc->add(0, 0, 0), $player->getWorld(), $loc->yaw, $loc->pitch), $randomDuration, $item->getExplosions());
+                        $fw->setOwningEntity($player);
+
+                        $y = -sin(deg2rad($loc->pitch));
+                        $xz = cos(deg2rad($loc->pitch));
+                        $x = -$xz * sin(deg2rad($loc->yaw));
+                        $z = $xz * cos(deg2rad($loc->yaw));
+
+                        $direction = (new Vector3($x, $y, $z))->normalize();
+                        $fw->setMotion($direction->multiply(7));
+
+                        $fw->spawnToAll();
+                        $loc->yaw += 10;
+                    }
+                    if ($player->isSurvival()) {
+                        $this->applyDamage($multishot ? 3 : 1);
+                    }
+                    $location->getWorld()->addSound($location, new CrossbowShootSound());
+                    return ItemUseResult::SUCCESS();
+                }
+
+                // Spawn single firework and make it fly forward like arrows
+                $spawn = Location::fromObject($player->getDirectionVector()->multiply(1.3)->addVector($player->getPosition()->add(0, $player->getEyeHeight(), 0)), $player->getWorld(), $player->getLocation()->getYaw(), $player->getLocation()->getPitch());
+                $fw = new FireworkEntity($spawn, $randomDuration, $item->getExplosions());
+                $fw->setOwningEntity($player);
+
+                $y = -sin(deg2rad($player->getLocation()->getPitch()));
+                $xz = cos(deg2rad($player->getLocation()->getPitch()));
+                $x = -$xz * sin(deg2rad($player->getLocation()->getYaw()));
+                $z = $xz * cos(deg2rad($player->getLocation()->getYaw()));
+                $direction = (new Vector3($x, $y, $z))->normalize();
+                $fw->setMotion($direction->multiply(7));
+                $fw->spawnToAll();
+                $location->getWorld()->addSound($location, new CrossbowShootSound());
+                if ($player->isSurvival()) {
+                    $this->applyDamage($multishot ? 3 : 1);
+                }
             } else {
-                $entity->spawnToAll();
+                return ItemUseResult::SUCCESS();
             }
         }
-
-        $this->setChargedItem(null);
-        if ($player->hasFiniteResources()) {
-            $this->applyDamage(1);
-        }
-
-        try {
-            $player->setUsingItem(false);
-            $player->resetItemCooldown($this, 8);
-        } catch (\Throwable $e) {
-        }
-
-        return ItemUseResult::SUCCESS;
-    }
-
-    /**
-     * Stores or clears the charged item on this crossbow.
-     */
-    public function setChargedItem(?Item $item): void
-    {
-        $nbt = $this->getNamedTag();
-        if ($item === null) {
-            $nbt->removeTag(self::TAG_CHARGED_ITEM);
-            try {
-                Server::getInstance()->getLogger()->info("[CROSSBOW] setChargedItem -> null (cleared)");
-            } catch (\Throwable $e) {
-            }
-        } else {
-            $compound = $item->nbtSerialize();
-            $compound->setByte("Count", $item->getCount());
-            if ($compound->getTag("Damage") === null) {
-                $compound->setShort("Damage", 0);
-            }
-            if ($compound->getTag("WasPickedUp") === null) {
-                $compound->setByte("WasPickedUp", 0);
-            }
-
-            $nbt->setTag(self::TAG_CHARGED_ITEM, $compound);
-            try {
-                Server::getInstance()->getLogger()->info("[CROSSBOW] setChargedItem -> " . $item->getVanillaName() . " x" . $item->getCount());
-            } catch (\Throwable $e) {
-            }
-        }
-        $this->setNamedTag($nbt);
-    }
-
-    public function getMaxDurability(): int
-    {
-        return 482;
+        return ItemUseResult::SUCCESS();
     }
 
     public function onReleaseUsing(Player $player, array &$returnedItems): ItemUseResult
     {
-        try {
-            Server::getInstance()->getLogger()->info("[CROSSBOW] onReleaseUsing called by " . $player->getName());
-        } catch (\Throwable $e) {
+        $time = $this->loadTick;
+        $arrow = VanillaItems::ARROW()->setCount(1);
+        $firework = VanillaItems::FIREWORK_ROCKET()->setCount(1);
+        $quickChargeEnch = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::QUICK_CHARGE);
+        $quickCharge = $quickChargeEnch !== null ? $this->getEnchantmentLevel($quickChargeEnch) : 0;
+        if ($time >= 24 - $quickCharge * 5) {
+            $taken = $this->takeOneMatchingItemFromPlayer($player, $firework) ?? $this->takeOneMatchingItemFromPlayer($player, $arrow);
+            if ($player->isSurvival() && $taken === null) {
+                return ItemUseResult::FAIL();
+            }
+            $this->setCharged($taken ?? $arrow);
+            // Crossbow load/complete sound
+            $player->getWorld()->addSound($player->getLocation(), new CrossbowQuickChargeEndSound());
+            return ItemUseResult::SUCCESS();
+        }
+        return ItemUseResult::FAIL();
+    }
+
+    public function onUsingTick(Player $player, int $ticksUsed): void
+    {
+        if ($this->isCharged()) {
+            return;
         }
 
-        $charged = $this->getChargedItem();
-        try {
-            Server::getInstance()->getLogger()->info("[CROSSBOW] onReleaseUsing - charged? " . ($charged !== null ? $charged->getVanillaName() : "<none>"));
-        } catch (\Throwable $e) {
-        }
+        $enchIdMap = EnchantmentIdMap::getInstance();
+        $quickChargeEnch = $enchIdMap->fromId(EnchantmentIds::QUICK_CHARGE);
+        $quickCharge = $quickChargeEnch !== null ? $this->getEnchantmentLevel($quickChargeEnch) : 0;
 
-        if ($charged === null) {
-            // Attempt to charge the crossbow instead of firing
-            $diff = $player->getItemUseDuration();
-            // default charge time (ticks)
-            $required = 25;
-            if ($diff < $required) {
-                return ItemUseResult::FAIL;
-            }
-
-            $arrow = VanillaItems::ARROW();
-            $firework = VanillaItems::FIREWORK_ROCKET();
-
-            $inventory = match (true) {
-                $player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
-                $player->getInventory()->contains($arrow) => $player->getInventory(),
-                default => null
-            };
-
-            $useItem = null;
-            if ($inventory !== null) {
-                $useItem = $arrow;
-            } else {
-                // try fireworks if no arrows
-                $inventory = match (true) {
-                    $player->getOffHandInventory()->contains($firework) => $player->getOffHandInventory(),
-                    $player->getInventory()->contains($firework) => $player->getInventory(),
-                    default => null
-                };
-                $useItem = $inventory !== null ? $firework : null;
-            }
-
-            if ($useItem === null) {
-                return ItemUseResult::FAIL;
-            }
-
-            if ($player->hasFiniteResources() && $inventory === null) {
-                return ItemUseResult::FAIL;
-            }
-
-            // Pop one item from found inventory slot
-            $slot = $inventory->first($useItem);
-            if ($slot === -1) {
-                return ItemUseResult::FAIL;
-            }
-            $slotItem = $inventory->getItem($slot);
-            $popped = $slotItem->pop(1);
-            $inventory->setItem($slot, $slotItem);
-
-            $this->setChargedItem($popped);
-            try {
-                Server::getInstance()->getLogger()->info("[CROSSBOW] charged with " . $popped->getVanillaName());
-            } catch (\Throwable $e) {
-            }
-
-            // play a load/ready sound
-            $location = $player->getLocation();
-            $location->getWorld()->addSound($location, new BowShootSound());
-
-            // Don't fire immediately: require a separate click to fire the charged crossbow.
-            // Clear using state and set a short cooldown so the client doesn't get stuck
-            // in the use animation and to prevent immediate re-charge.
-            try {
-                $player->setUsingItem(false);
-                $player->resetItemCooldown($this, 8);
-            } catch (\Throwable $e) {
-            }
-
-            return ItemUseResult::SUCCESS;
-        }
-        try {
-            Server::getInstance()->getLogger()->info("[CROSSBOW] firing charged item: " . $charged->getVanillaName());
-        } catch (\Throwable $e) {
-        }
-
-        $location = $player->getLocation();
-
-        // Firework
-        if ($charged instanceof FireworkItem) {
-            $randomDuration = (($charged->getFlightTimeMultiplier() + 1) * 10) + mt_rand(0, 12);
-            $entity = new FireworkEntity(Location::fromObject(
-                $player->getEyePos(),
-                $player->getWorld(),
-                ($location->yaw > 180 ? 360 : 0) - $location->yaw,
-                -$location->pitch
-            ), $randomDuration, $charged->getExplosions());
-            $entity->setOwningEntity($player);
-            // Make firework travel forward like an arrow instead of straight up
-            $entity->setMotion($player->getDirectionVector()->multiply(3));
-
-            try {
-                Server::getInstance()->getLogger()->info("[CROSSBOW] spawning firework entity");
-            } catch (\Throwable $e) {
-            }
-            $entity->spawnToAll();
-            $location->getWorld()->addSound($location, new BowShootSound());
-        } else {
-            // Default to arrow-like projectile
-            $entity = new ArrowEntity(Location::fromObject(
-                $player->getEyePos(),
-                $player->getWorld(),
-                ($location->yaw > 180 ? 360 : 0) - $location->yaw,
-                -$location->pitch
-            ), $player, true);
-            $entity->setMotion($player->getDirectionVector()->multiply(3));
-
-            $ev = new EntityShootBowEvent($player, $this, $entity, 3.0);
-            // Cancel check not strictly necessary here but keep parity with Bow
-            $ev->call();
-            if ($ev->isCancelled()) {
-                $entity->flagForDespawn();
-                return ItemUseResult::FAIL;
-            }
-
-            if ($entity instanceof Projectile) {
-                $projectileEv = new ProjectileLaunchEvent($entity);
-                $projectileEv->call();
-                if ($projectileEv->isCancelled()) {
-                    $entity->flagForDespawn();
-                    return ItemUseResult::FAIL;
+        $need = 24 - $quickCharge * 5;
+        if ($ticksUsed >= $need) {
+            $arrow = VanillaItems::ARROW()->setCount(1);
+            $firework = VanillaItems::FIREWORK_ROCKET()->setCount(1);
+            $taken = null;
+            if ($player->isSurvival()) {
+                $taken = $this->takeOneMatchingItemFromPlayer($player, $firework) ?? $this->takeOneMatchingItemFromPlayer($player, $arrow);
+                if ($taken === null) {
+                    return;
                 }
-
-                try {
-                    Server::getInstance()->getLogger()->info("[CROSSBOW] spawning arrow entity");
-                } catch (\Throwable $e) {
-                }
-                $entity->spawnToAll();
-                $location->getWorld()->addSound($location, new BowShootSound());
             } else {
-                $entity->spawnToAll();
+                $taken = $arrow;
             }
-        }
-
-        // After firing, clear charged item and apply durability
-        try {
-            Server::getInstance()->getLogger()->info("[CROSSBOW] clearing charged item");
-        } catch (\Throwable $e) {
-        }
-        $this->setChargedItem(null);
-        if ($player->hasFiniteResources()) {
-            $this->applyDamage(1);
-        }
-
-        // Prevent stuck-use/rapid re-charge: clear using state and set a short cooldown
-        try {
+            $this->setCharged($taken);
+            // Crossbow load/complete sound (auto-load)
+            $player->getWorld()->addSound($player->getLocation(), new CrossbowQuickChargeEndSound());
+            // Mark this charged item as just-loaded so a pending client click won't immediately fire it
+            $ct = $this->getNamedTag()->getCompoundTag("chargedItem");
+            if ($ct !== null) {
+                $ct->setByte("JustLoaded", 1);
+                $ct->setInt("LoadedAt", \pocketmine\Server::getInstance()->getTick());
+                $this->getNamedTag()->setTag("chargedItem", $ct);
+            }
+            // Stop the client-side using animation and update held item to include NBT
             $player->setUsingItem(false);
-            $player->resetItemCooldown($this, 8);
-        } catch (\Throwable $e) {
+            // Prevent immediate re-use/anim start from the client by applying a short item cooldown
+            $player->resetItemCooldown($this, 5);
+            $player->getInventory()->setItemInHand($this);
+        }
+    }
+
+    public function getMaxDurability(): int
+    {
+        return 464;
+    }
+
+    public function isCharged(): bool
+    {
+        return $this->getNamedTag()->getCompoundTag("chargedItem") !== null;
+    }
+
+    public function setCharged(?Item $item): void
+    {
+        if ($item === null) {
+            $this->getNamedTag()->removeTag("chargedItem");
+        } else {
+            $this->getNamedTag()->setTag("chargedItem", $item->nbtSerialize(-1));
+        }
+    }
+
+    /**
+     * Remove and return one matching item from the player's offhand first, then main inventory.
+     * Preserves NBT on the returned item (count set to 1).
+     */
+    private function takeOneMatchingItemFromPlayer(Player $player, Item $template): ?Item
+    {
+        $off = $player->getOffHandInventory();
+        $slot = $off->first($template);
+        if ($slot >= 0) {
+            $stack = $off->getItem($slot);
+            $result = clone $stack;
+            $result->setCount(1);
+            // mark that this item was taken from the off-hand so firing logic can behave differently
+            $result->getNamedTag()->setByte("FromOffHand", 1);
+            if ($stack->getCount() > 1) {
+                $stack->setCount($stack->getCount() - 1);
+                $off->setItem($slot, $stack);
+            } else {
+                $off->clear($slot);
+            }
+            return $result;
         }
 
-        return ItemUseResult::SUCCESS;
+        $inv = $player->getInventory();
+        $slot = $inv->first($template);
+        if ($slot >= 0) {
+            $stack = $inv->getItem($slot);
+            $result = clone $stack;
+            $result->setCount(1);
+            // from main inventory; no FromOffHand tag set (implicitly 0)
+            if ($stack->getCount() > 1) {
+                $stack->setCount($stack->getCount() - 1);
+                $inv->setItem($slot, $stack);
+            } else {
+                $inv->clear($slot);
+            }
+            return $result;
+        }
+
+        return null;
     }
 
     public function canStartUsingItem(Player $player): bool
     {
-        // If the crossbow is already charged, don't start a held-use animation
-        // (this prevents the client showing a stuck charged animation while holding right-click).
-        if ($this->getChargedItem() !== null) {
-            return false;
-        }
-
         $arrow = VanillaItems::ARROW();
         $firework = VanillaItems::FIREWORK_ROCKET();
         return !$player->hasFiniteResources()
             || $player->getOffHandInventory()->contains($arrow)
             || $player->getInventory()->contains($arrow)
-            || $player->getOffHandInventory()->contains($firework)
-            || $player->getInventory()->contains($firework);
+            || $player->getOffHandInventory()->contains($firework);
     }
 
-    // public function getChargedItem() : ?Item{
-    //     $tag = $this->getNamedTag();
-    //     $compound = $tag->getCompoundTag(self::TAG_CHARGED_ITEM);
-    //     if($compound === null){
-    //         return null;
-    //     }
+    public static function setLoading(Player $player, bool $loading): void
+    {
+        if ($loading) {
+            self::$loadingPlayers[$player->getName()] = true;
+        } else {
+            unset(self::$loadingPlayers[$player->getName()]);
+        }
+    }
 
-    //     try{
-    //         return Item::nbtDeserialize($compound);
-    //     }catch(\Throwable $e){
-    //         // Corrupted/unknown charged item; treat as not charged
-    //         return null;
-    //     }
-    // }
-
-    // /**
-    //  * Stores or clears the charged item on this crossbow.
-    //  */
-    // public function setChargedItem(?Item $item) : void{
-    //     $nbt = $this->getNamedTag();
-    //     if($item === null){
-    //         $nbt->removeTag(self::TAG_CHARGED_ITEM);
-    //     }else{
-    //         $compound = $item->nbtSerialize();
-    //         $compound->setByte("Count", $item->getCount());
-    //         if($compound->getTag("Damage") === null){
-    //             $compound->setShort("Damage", 0);
-    //         }
-    //         if($compound->getTag("WasPickedUp") === null){
-    //             $compound->setByte("WasPickedUp", 0);
-    //         }
-
-    //         $nbt->setTag(self::TAG_CHARGED_ITEM, $compound);
-    //     }
-    //     $this->setNamedTag($nbt);
-    // }
-
-    // İstediğim şey yukarıdaki nbt ile crossbow ateş etme ama animasyon ve charge olmalı, havayi fişek ve ok atabilir.
-
-
+    public static function isLoading(Player $player): bool
+    {
+        return isset(self::$loadingPlayers[$player->getName()]);
+    }
 }

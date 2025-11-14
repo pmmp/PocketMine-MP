@@ -26,13 +26,15 @@ namespace pocketmine\entity\animation;
 use pocketmine\entity\Living;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 
-final class CriticalHitAnimation implements Animation{
+final class CriticalHitAnimation implements Animation
+{
 
-	public function __construct(private Living $entity){}
+	public function __construct(private Living $entity) {}
 
-	public function encode() : array{
+	public function encode(): array
+	{
 		return [
-			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_CRITICAL_HIT)
+			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_CRITICAL_HIT, 55)
 		];
 	}
 }

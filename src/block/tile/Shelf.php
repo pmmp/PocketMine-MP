@@ -26,6 +26,7 @@ namespace pocketmine\block\tile;
 use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\block\inventory\ShelfInventory;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
@@ -42,7 +43,7 @@ class Shelf extends Spawnable implements Container{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new SimpleInventory(3); // 3 slots
+		$this->inventory = new ShelfInventory($this->getPosition()); // 3 slots
 	}
 
 	public function getInventory() : SimpleInventory{
@@ -70,8 +71,11 @@ class Shelf extends Spawnable implements Container{
 			$inventoryItems = [];
 
 			/** @var CompoundTag $itemNbt */
-			foreach($inventoryTag as $itemNbt){
+			foreach($inventoryTag as $index => $itemNbt){
 				$slot = $itemNbt->getByte(SavedItemStackData::TAG_SLOT);
+				try{
+					\GlobalLogger::get()->info("TileShelf:loadItems itemIndex=" . $index . " tagSlot=" . $slot . " rawName=" . $itemNbt->getString("id") );
+				}catch(\Throwable){ }
 				if($slot >= 0 && $slot < 3){
 					$inventoryItems[$slot] = Item::nbtDeserialize($itemNbt);
 				}
@@ -83,10 +87,66 @@ class Shelf extends Spawnable implements Container{
 
 	protected function saveItems(CompoundTag $nbt) : void{
 		$items = [];
-		foreach($this->inventory->getContents(true) as $slot => $item){
-			if(!$item->isNull()){
-				$items[] = $item->nbtSerialize($slot);
+		// Order items in the NBT list in visual left-to-right order so the client
+		// renders them in the expected slots. Some clients render shelf items by
+		// list order rather than by the stored slot tag, so we reverse the
+		// serialization order for certain block facings.
+		$contents = $this->inventory->getContents(true);
+		// Default order: 0,1,2 (left->right)
+		$reverse = false;
+		$block = $this->position->getWorld()->getBlock($this->position);
+		$front = null;
+		if($block instanceof \pocketmine\block\Shelf){
+			$front = \pocketmine\math\Facing::opposite($block->getFacing());
+			// For NORTH or WEST fronts, the visual left-to-right mapping may be reversed
+			if($front === \pocketmine\math\Facing::NORTH || $front === \pocketmine\math\Facing::WEST){
+				$reverse = true;
 			}
+		}
+		$orderList = [];
+		// We will collect the serialized CompoundTag objects first so we can inspect their Slot fields
+		$serialized = [];
+		// Build explicit visual order: left->right mapping of inventory slot indices
+		$visualOrder = $reverse ? [2, 1, 0] : [0, 1, 2];
+		foreach($visualOrder as $visualIndex => $slotIndex){
+			$item = $contents[$slotIndex] ?? null;
+			if($item !== null && !$item->isNull()){
+				// serialize using the actual inventory slot index (for backwards compatibility),
+				// then overwrite the saved Slot tag with the visual index so clients that
+				// interpret the compound Slot or the list order both see the item in the
+				// expected visual position.
+				$compound = $item->nbtSerialize($slotIndex);
+				try{
+					$compound->setByte(SavedItemStackData::TAG_SLOT, $visualIndex);
+				}catch(\Throwable){
+					// if setByte isn't available for some reason on the tag, ignore and continue
+				}
+				$serialized[] = $compound;
+				$orderList[] = $slotIndex;
+			}
+		}
+
+		// Log each compound's stored slot field to detect mismatches between the compound Slot tag and the list order
+		try{
+			$pos = $this->getPosition();
+			$slotInfo = [];
+			foreach($serialized as $idx => $compound){
+				$compSlot = $compound->getByte(SavedItemStackData::TAG_SLOT);
+				$slotInfo[] = "listIndex=" . $idx . "->compoundSlot=" . $compSlot . " id=" . $compound->getString("id");
+				$items[] = $compound;
+			}
+			\GlobalLogger::get()->info("TileShelf:saveItems pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " front=" . ($front ?? 'null') . " reverse=" . ($reverse ? '1' : '0') . " order=" . implode(',', $orderList) . " slotInfo=" . implode('|', $slotInfo));
+			@fwrite(STDOUT, "TileShelf:STDOUT saveItems pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " front=" . ($front ?? 'null') . " reverse=" . ($reverse ? '1' : '0') . " order=" . implode(',', $orderList) . " slotInfo=" . implode('|', $slotInfo) . "\n");
+		}catch(\Throwable){
+			// fall back to writing without detailed debug
+			foreach($serialized as $compound){
+				$items[] = $compound;
+			}
+			// also write fallback info to STDOUT so the server operator can see it immediately
+			try{
+				$pos = $this->getPosition();
+				@fwrite(STDOUT, "TileShelf:STDOUT saveItems fallback pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " serializedCount=" . count($serialized) . "\n");
+			}catch(\Throwable){ }
 		}
 
 		$nbt->setTag(self::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));

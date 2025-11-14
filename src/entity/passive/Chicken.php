@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\entity\passive;
 
 use pocketmine\entity\ai\goal\FloatGoal;
 use pocketmine\entity\ai\goal\HurtByTargetGoal;
 use pocketmine\entity\ai\goal\LookAtPlayerGoal;
 use pocketmine\entity\ai\goal\RandomStrollGoal;
 use pocketmine\entity\ai\goal\TemptGoal;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
@@ -44,8 +46,8 @@ class Chicken extends Living
     {
         $this->setMaxHealth(4);
         // allow chickens to step up single-block obstacles
-    // allow stepping up a single block
-    $this->setStepHeight(1.0);
+        // allow stepping up a single block
+        $this->setStepHeight(1.0);
         parent::initEntity($nbt);
     }
 
@@ -69,17 +71,17 @@ class Chicken extends Living
         $meatCount = 1;
         $last = $this->getLastDamageCause();
         $killedByFire = $this->isOnFire();
-        if(!$killedByFire && $last !== null){
+        if (!$killedByFire && $last !== null) {
             $cause = $last->getCause();
-            if(
+            if (
                 $cause === EntityDamageEvent::CAUSE_FIRE ||
                 $cause === EntityDamageEvent::CAUSE_FIRE_TICK ||
                 $cause === EntityDamageEvent::CAUSE_LAVA
-            ){
+            ) {
                 $killedByFire = true;
-            }elseif($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK && $last instanceof EntityDamageByEntityEvent){
+            } elseif ($cause === EntityDamageEvent::CAUSE_ENTITY_ATTACK && $last instanceof EntityDamageByEntityEvent) {
                 $damager = $last->getDamager();
-                if($damager instanceof Human && $damager->getInventory()->getItemInHand()->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
+                if ($damager instanceof Human && $damager->getInventory()->getItemInHand()->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())) {
                     $killedByFire = true;
                 }
             }

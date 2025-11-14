@@ -30,6 +30,7 @@ use pocketmine\utils\LegacyEnumShimTrait;
  *  These are retained for backwards compatibility only.
  *
  * @method static WoodType ACACIA()
+ * @method static WoodType BAMBOO()
  * @method static WoodType BIRCH()
  * @method static WoodType CHERRY()
  * @method static WoodType CRIMSON()
@@ -50,6 +51,7 @@ enum WoodType{
 	case ACACIA;
 	case DARK_OAK;
 	case MANGROVE;
+	case BAMBOO;
 	case CRIMSON;
 	case WARPED;
 	case CHERRY;
@@ -64,6 +66,7 @@ enum WoodType{
 			self::ACACIA => "Acacia",
 			self::DARK_OAK => "Dark Oak",
 			self::MANGROVE => "Mangrove",
+			self::BAMBOO => "Bamboo",
 			self::CRIMSON => "Crimson",
 			self::WARPED => "Warped",
 			self::CHERRY => "Cherry",

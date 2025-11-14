@@ -28,6 +28,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as Tags;
 use pocketmine\item\enchantment\VanillaEnchantments as Enchantments;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\Server;
 use pocketmine\utils\Utils;
 use function array_filter;
 use function array_values;
@@ -100,6 +101,10 @@ final class AvailableEnchantmentRegistry
 		$this->register(Enchantments::TRIDENT_IMPALING(), [Tags::TRIDENT], []);
 		$this->register(Enchantments::LUCK_OF_THE_SEA(), [Tags::FISHING_ROD], []);
 		$this->register(Enchantments::LURE(), [Tags::FISHING_ROD], []);
+		$this->register(Enchantments::QUICK_CHARGE(), [Tags::CROSSBOW], []);
+		// Crossbow-specific enchantments
+		$this->register(Enchantments::MULTISHOT(), [Tags::CROSSBOW], []);
+		$this->register(Enchantments::PIERCING(), [Tags::CROSSBOW], []);
 	}
 
 	/**
@@ -196,10 +201,25 @@ final class AvailableEnchantmentRegistry
 			return [];
 		}
 
-		return array_filter(
+		$candidates = array_filter(
 			$this->enchantments,
 			fn(Enchantment $e) => TagRegistry::getInstance()->isTagArrayIntersection($this->getPrimaryItemTags($e), $itemTags)
 		);
+
+		// Debug: log item tags and candidate enchantments when an item is checked for enchanting table
+		try {
+			$tagStr = implode(",", $itemTags);
+			$names = [];
+			foreach ($candidates as $c) {
+				$names[] = (string) $c->getName();
+			}
+			$nameStr = implode(",", $names);
+			Server::getInstance()->getLogger()->info("[EnchantDebug] Item: " . $item->getName() . " Tags: [" . $tagStr . "] Candidates: [" . $nameStr . "]");
+		} catch (\Throwable $e) {
+			// swallow any logging errors to avoid interfering with normal flow
+		}
+
+		return $candidates;
 	}
 
 	/**

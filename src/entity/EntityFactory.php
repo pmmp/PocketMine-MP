@@ -40,6 +40,7 @@ use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\entity\object\ArmorStand;
 use pocketmine\entity\object\PrimedTNT;
+use pocketmine\entity\passive\Chicken;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\projectile\Egg;
 use pocketmine\entity\projectile\EnderPearl;

@@ -853,6 +853,9 @@ final class BlockTypeIds
 	public const BAMBOO_SHELF = 10825;
 
 	public const BEEHIVE = 10826;
+	// Explicit bamboo wood variants
+	public const BAMBOO_PLANKS = 10834;
+	public const BAMBOO_MOSAIC = 10835;
 	public const HONEY_BLOCK = 10827;
 	public const SUSPICIOUS_SAND = 10828;
 	public const SUSPICIOUS_GRAVEL = 10829;
@@ -860,7 +863,7 @@ final class BlockTypeIds
 	public const SCAFFOLDING = 10831;
 	public const CRIMSON_NYLIUM = 10832;
 	public const WARPED_NYLIUM = 10833;
-	public const FIRST_UNUSED_BLOCK_ID = 10834;
+	public const FIRST_UNUSED_BLOCK_ID = 10836;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

@@ -68,6 +68,9 @@ final class StringToEnchantmentParser extends StringToTParser
 		// Fishing enchantments
 		$result->register("luck_of_the_sea", fn() => VanillaEnchantments::LUCK_OF_THE_SEA());
 		$result->register("lure", fn() => VanillaEnchantments::LURE());
+		$result->register("quick_charge", fn() => VanillaEnchantments::QUICK_CHARGE());
+		$result->register("multishot", fn() => VanillaEnchantments::MULTISHOT());
+		$result->register("piercing", fn() => VanillaEnchantments::PIERCING());
 
 		return $result;
 	}

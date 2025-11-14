@@ -30,12 +30,15 @@ use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodType;
 use pocketmine\block\utils\WoodTypeTrait;
+use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\math\Axis;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\world\BlockTransaction;
 
 /**
@@ -44,65 +47,32 @@ use pocketmine\world\BlockTransaction;
 class Shelf extends Opaque implements WoodMaterial, HorizontalFacing{
 	use WoodTypeTrait;
 	use HorizontalFacingTrait;
+	use PoweredByRedstoneTrait;
 
-	protected bool $powered = false;
-	protected int $shelfType = 0; // 0-3, represents slot fill states
+	// 0..3 value used for POWERED_SHELF_TYPE mapping
+	protected int $poweredShelfType = 0;
 
-	public function __construct(
-		BlockIdentifier $idInfo,
-		string $name,
-		BlockTypeInfo $typeInfo,
-		WoodType $woodType,
-		private \Closure $asItemCallback
-	){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, WoodType $woodType, private \Closure $asItemCallback){
 		$this->woodType = $woodType;
 		$this->facing = Facing::SOUTH;
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
-	protected function describeBlockOnlyState(\pocketmine\data\runtime\RuntimeDataDescriber $w) : void{
+	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
 		$w->bool($this->powered);
-		$w->boundedIntAuto(0, 3, $this->shelfType);
-	}
-
-	public function isPowered() : bool{
-		return $this->powered;
-	}
-
-	/** @return $this */
-	public function setPowered(bool $powered) : self{
-		$this->powered = $powered;
-		return $this;
+		$w->boundedIntAuto(0, 3, $this->poweredShelfType);
 	}
 
 	public function getShelfType() : int{
-		return $this->shelfType;
+		return $this->poweredShelfType;
 	}
 
 	/** @return $this */
 	public function setShelfType(int $type) : self{
-		if($type < 0 || $type > 3){
-			throw new \InvalidArgumentException("Shelf type must be between 0 and 3");
-		}
-		$this->shelfType = $type;
+		if($type < 0 || $type > 3) throw new \InvalidArgumentException("Shelf type must be between 0 and 3");
+		$this->poweredShelfType = $type;
 		return $this;
-	}
-
-	public function getFuelTime() : int{
-		return $this->woodType->isFlammable() ? 300 : 0;
-	}
-
-	public function getFlameEncouragement() : int{
-		return $this->woodType->isFlammable() ? 5 : 0;
-	}
-
-	public function getFlammability() : int{
-		return $this->woodType->isFlammable() ? 20 : 0;
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->asItem()];
 	}
 
 	public function asItem() : Item{
@@ -111,77 +81,270 @@ class Shelf extends Opaque implements WoodMaterial, HorizontalFacing{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
+			$this->setFacing(Facing::opposite($player->getHorizontalFacing()));
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	public function canBeActivated() : bool{
+		return true;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($player === null){
-			return false;
-		}
+		if($player === null) return false;
 
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$tile instanceof TileShelf){
-			return false;
-		}
+		if(!$tile instanceof TileShelf) return false;
+
+		// Only accept clicks on the front face and middle vertical band
+		if($face !== $this->facing || $clickVector->y <= 0.25 || $clickVector->y >= 0.75) return false;
+
+		// Determine clicked slot in the same visual orientation the Tile uses.
+		// TileShelf computes a "front" as the opposite of block facing and
+		// reverses visual order for NORTH/WEST fronts. Mirror that logic here
+		// so clicks map to the same left/center/right ordering the client sees.
+		$x = Facing::axis($face) === Axis::X ? $clickVector->z : $clickVector->x;
+		$front = Facing::opposite($this->facing);
+		$reverse = $front === Facing::NORTH || $front === Facing::WEST;
+		$proj = $reverse ? 1.0 - $x : $x;
+		$slot = $proj < (1.0 / 3.0) ? 0 : ($proj < (2.0 / 3.0) ? 1 : 2);
+
+		try{ Server::getInstance()->getLogger()->info("Shelf:onInteract pos=" . $this->position->getFloorX() . "/" . $this->position->getFloorY() . "/" . $this->position->getFloorZ() . " facing=" . $this->facing . " click=(" . round($clickVector->x,3) . "," . round($clickVector->y,3) . "," . round($clickVector->z,3) . ") slot=" . $slot); }catch(\Throwable){}
 
 		$inventory = $tile->getInventory();
 
-		// Calculate which slot was clicked (0-2 based on click position)
-		// For now, we'll use a simple left-to-right mapping
-		$slot = $this->getClickedSlot($clickVector);
+		// If not powered: single-shelf behaviour
+		if(!$this->isGettingPower()){
+			$handItem = $player->getInventory()->getItemInHand();
+			$slotItem = $inventory->getItem($slot);
 
-		$handItem = $player->getInventory()->getItemInHand();
-		$slotItem = $inventory->getItem($slot);
-
-		if($player->isSneaking()){
-			// Remove item from shelf
-			if(!$slotItem->isNull()){
+			if($player->isSneaking()){
+				if($slotItem->isNull()){
+					try{ Server::getInstance()->getLogger()->info("Shelf:remove attempted on empty slot={$slot}"); }catch(\Throwable){}
+					return false;
+				}
 				if($player->getInventory()->canAddItem($slotItem)){
+					try{ Server::getInstance()->getLogger()->info("Shelf:removing from slot={$slot} item=" . $slotItem->getName() . " count=" . $slotItem->getCount()); }catch(\Throwable){}
 					$player->getInventory()->addItem($slotItem);
 					$inventory->setItem($slot, VanillaItems::AIR());
-					$this->updateShelfType($inventory);
-					$tile->clearSpawnCompoundCache(); // Force network update
-					$this->position->getWorld()->setBlock($this->position, $this);
+					// $this->updateShelfType($inventory); // Removed
+					$tile->clearSpawnCompoundCache();
+					$tile->setDirty();
 					return true;
 				}
+				return false;
 			}
-		}else{
-			// Place item on shelf
-			if(!$handItem->isNull() && $slotItem->isNull()){
+
+			if($handItem->isNull()) return false;
+
+			if($slotItem->isNull()){
 				$toPlace = $handItem->pop();
 				$inventory->setItem($slot, $toPlace);
 				$player->getInventory()->setItemInHand($handItem);
-				$this->updateShelfType($inventory);
-				$tile->clearSpawnCompoundCache(); // Force network update
-				$this->position->getWorld()->setBlock($this->position, $this);
+				// $this->updateShelfType($inventory); // Removed
+				$tile->clearSpawnCompoundCache();
+				$tile->setDirty();
 				return true;
 			}
+
+			if($slotItem->canStackWith($handItem) && $slotItem->getCount() < $slotItem->getMaxStackSize()){
+				$popped = $handItem->pop();
+				$slotItem->setCount($slotItem->getCount() + $popped->getCount());
+				$inventory->setItem($slot, $slotItem);
+				$player->getInventory()->setItemInHand($handItem);
+				// $this->updateShelfType($inventory); // Removed
+				$tile->clearSpawnCompoundCache();
+				$tile->setDirty();
+				return true;
+			}
+
+			try{ Server::getInstance()->getLogger()->info("Shelf:place blocked - slot={$slot} occupied and not stackable"); }catch(\Throwable){}
+			return false;
 		}
 
+		// If powered: swap contents with the player's inventory across connected shelves
+		$shelves = $this->getConnectedBlocks();
+		for($i = 0; $i < count($shelves); $i++){
+			$s = $shelves[$i];
+			$tileEntity = $s->position->getWorld()->getTile($s->position);
+			if(!$tileEntity instanceof TileShelf) continue;
+			$inv = $tileEntity->getInventory();
+			for($j = 0; $j < $inv->getSize(); $j++){
+				$shelfItem = $inv->getItem($j);
+				$playerSlot = ($i * $inv->getSize()) + $j;
+				$playerItem = $player->getInventory()->getItem($playerSlot);
+				$inv->setItem($j, $playerItem);
+				$player->getInventory()->setItem($playerSlot, $shelfItem);
+			}
+			$tileEntity->setDirty();
+		}
+		return true;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$this->updateConnection($this);
+		$this->setPowered($this->isGettingPower());
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileShelf){
+			$tile->clearSpawnCompoundCache();
+			$tile->setDirty();
+		}
+	}
+
+	private function isGettingPower() : bool{
+		// Basic heuristic: any adjacent PoweredByRedstone block that is powered
+		foreach(Facing::HORIZONTAL as $f){
+			$b = $this->getSide($f);
+			if($b !== null){
+					if(method_exists($b, 'isPowered')){
+						$fn = [$b, 'isPowered'];
+						if(is_callable($fn) && call_user_func($fn)) return true;
+					}
+					if(method_exists($b, 'getOutputSignalStrength')){
+						$fn2 = [$b, 'getOutputSignalStrength'];
+						if(is_callable($fn2) && call_user_func($fn2) > 0) return true;
+					}
+			}
+		}
+		// also check direct input from above/below
+		$up = $this->getSide(Facing::UP);
+		$down = $this->getSide(Facing::DOWN);
+		if($up !== null && method_exists($up, 'isPowered')){
+			$fn = [$up, 'isPowered'];
+			if(is_callable($fn) && call_user_func($fn)) return true;
+		}
+		if($down !== null && method_exists($down, 'isPowered')){
+			$fn = [$down, 'isPowered'];
+			if(is_callable($fn) && call_user_func($fn)) return true;
+		}
 		return false;
 	}
 
-	private function getClickedSlot(Vector3 $clickVector) : int{
-		// Simple left-to-right slot determination based on click X position
-		// 0.0-0.33 = slot 0, 0.33-0.66 = slot 1, 0.66-1.0 = slot 2
-		$relativeX = $clickVector->x - (int) $clickVector->x;
-		if($relativeX < 0.33){
-			return 0;
-		}elseif($relativeX < 0.66){
-			return 1;
-		}
-		return 2;
+	public function hasComparatorInputOverride() : bool{ return true; }
+
+	public function getComparatorInputOverride() : int{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if(!$tile instanceof TileShelf) return 0;
+		$items = $tile->getInventory()->getContents();
+		$overwrite = 0;
+		foreach($items as $idx => $it) if(!$it->isNull()) $overwrite |= (1 << $idx);
+		return $overwrite;
 	}
 
-	private function updateShelfType(\pocketmine\inventory\SimpleInventory $inventory) : void{
-		$filledSlots = 0;
-		for($i = 0; $i < 3; $i++){
-			if(!$inventory->getItem($i)->isNull()){
-				$filledSlots++;
-			}
+	public function canConnect(Shelf $shelf) : bool{
+		if(!$this->isGettingPower()) return false;
+		switch($this->getType()){
+			case PoweredShelfType::LEFT:
+				return $this->canConnectToSide($shelf, Facing::rotateY($this->facing, true), PoweredShelfType::RIGHT);
+			case PoweredShelfType::RIGHT:
+				return $this->canConnectToSide($shelf, Facing::rotateY($this->facing, false), PoweredShelfType::LEFT);
+			default:
+				return true;
 		}
-		$this->shelfType = $filledSlots;
 	}
+
+	private function canConnectToSide(Shelf $shelf, int $sideFace, int $expectedType) : bool{
+		$sideBlock = $this->getSide($sideFace);
+		if($shelf->position->equals($sideBlock->position)) return true;
+		if($sideBlock instanceof Shelf){
+			return $sideBlock->getType() === $expectedType;
+		}
+		return false;
+	}
+
+	public function updateConnection(Block $origin) : void{
+		$newType = PoweredShelfType::UNCONNECTED;
+
+		$rightFace = Facing::rotateY($this->facing, false);
+		$leftFace = Facing::rotateY($this->facing, true);
+		$right = $this->getSide($rightFace);
+		$left = $this->getSide($leftFace);
+
+		if($this->isGettingPower()){
+			$connectRight = $right instanceof Shelf && $right->canConnect($this);
+			$connectLeft = $left instanceof Shelf && $left->canConnect($this);
+
+			if($connectLeft && !$connectRight) $newType = PoweredShelfType::LEFT;
+			elseif(!$connectLeft && $connectRight) $newType = PoweredShelfType::RIGHT;
+			elseif($connectLeft) $newType = $this->determineCenterType($left, $right);
+		}
+
+		if($newType !== $this->getType()){
+			$this->setShelfType($newType);
+			$tile = $this->position->getWorld()->getTile($this->position);
+			if($tile instanceof TileShelf){
+				$tile->clearSpawnCompoundCache();
+				$tile->setDirty();
+			}
+
+			// Do not call world->setBlock here to avoid recursive neighbor updates causing server freeze.
+			// Neighbor connections will be updated via their own nearby block change events.
+		}
+	}
+
+	private function determineCenterType(Block $left, Block $right) : int{
+		if($right instanceof Shelf && $right->getType() === PoweredShelfType::UNCONNECTED && $right->canConnect($this)) return PoweredShelfType::LEFT;
+		if($left instanceof Shelf && $left->getType() === PoweredShelfType::UNCONNECTED && $left->canConnect($this)) return PoweredShelfType::RIGHT;
+
+		$rightIsRight = $right instanceof Shelf && $right->getType() === PoweredShelfType::RIGHT;
+		$leftIsLeft = $left instanceof Shelf && $left->getType() === PoweredShelfType::LEFT;
+		if($rightIsRight && $leftIsLeft) return PoweredShelfType::RIGHT;
+
+		$rightIsCenter = $right instanceof Shelf && $right->getType() === PoweredShelfType::CENTER;
+		$leftIsCenter = $left instanceof Shelf && $left->getType() === PoweredShelfType::CENTER;
+		if($rightIsCenter) return PoweredShelfType::RIGHT;
+		if($leftIsCenter) return PoweredShelfType::LEFT;
+
+		return PoweredShelfType::CENTER;
+	}
+
+	protected function getConnectedBlocks() : array{
+		if($this->getType() === PoweredShelfType::UNCONNECTED || !$this->isGettingPower()){
+			return [$this];
+		}
+		$shelves = [];
+		$rightFace = Facing::rotateY($this->facing, false);
+		$leftFace = Facing::rotateY($this->facing, true);
+		$right = $this->getSide($rightFace);
+		$left = $this->getSide($leftFace);
+		switch($this->getType()){
+			case PoweredShelfType::CENTER:
+				if($right instanceof Shelf) $shelves[] = $right;
+				$shelves[] = $this;
+				if($left instanceof Shelf) $shelves[] = $left;
+				break;
+			case PoweredShelfType::RIGHT:
+				$shelves[] = $this;
+				if($right instanceof Shelf){
+					$shelves[] = $right;
+					if($right->getType() === PoweredShelfType::CENTER){
+						$right1 = $this->getSide($rightFace, 2);
+						if($right1 instanceof Shelf) $shelves[] = $right1;
+					}
+				}
+				$shelves = array_reverse($shelves);
+				break;
+			case PoweredShelfType::LEFT:
+				$shelves[] = $this;
+				if($left instanceof Shelf){
+					$shelves[] = $left;
+					if($left->getType() === PoweredShelfType::CENTER){
+						$left1 = $this->getSide($leftFace, 2);
+						if($left1 instanceof Shelf) $shelves[] = $left1;
+					}
+				}
+				break;
+		}
+		return $shelves;
+	}
+
+	public function getType() : int{ return $this->poweredShelfType; }
+
+}
+
+final class PoweredShelfType{
+	public const UNCONNECTED = 0;
+	public const RIGHT = 1;
+	public const CENTER = 2;
+	public const LEFT = 3;
 }

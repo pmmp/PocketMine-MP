@@ -1181,6 +1181,7 @@ final class VanillaBlockMappings
 		foreach (
 			[
 				[Blocks::ACACIA_PLANKS(), Ids::ACACIA_PLANKS],
+				[Blocks::BAMBOO_PLANKS(), Ids::BAMBOO_PLANKS],
 				[Blocks::BIRCH_PLANKS(), Ids::BIRCH_PLANKS],
 				[Blocks::CHERRY_PLANKS(), Ids::CHERRY_PLANKS],
 				[Blocks::DARK_OAK_PLANKS(), Ids::DARK_OAK_PLANKS],
@@ -1195,6 +1196,9 @@ final class VanillaBlockMappings
 		) {
 			$reg->mapSimple($block, $id);
 		}
+
+		// Bamboo mosaic: simple mapping
+		$reg->mapSimple(Blocks::BAMBOO_MOSAIC(), Ids::BAMBOO_MOSAIC);
 
 		// Shelves (Bedrock 1.21.100)
 		foreach (
