@@ -450,7 +450,7 @@ final class KnownTranslationFactory{
 	}
 
 	public static function commands_spawnpoint_success(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3) : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SPAWNPOINT_SUCCESS, [
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_SPAWNPOINT_SUCCESS, [
 			0 => $param0,
 			1 => $param1,
 			2 => $param2,
