@@ -42,6 +42,8 @@ use pocketmine\item\WritableBookPage;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\block\Trapdoor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -127,7 +129,8 @@ use const JSON_THROW_ON_ERROR;
 /**
  * This handler handles packets related to general gameplay.
  */
-class InGamePacketHandler extends PacketHandler{
+class InGamePacketHandler extends PacketHandler
+{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
 	protected float $lastRightClickTime = 0.0;
@@ -137,6 +140,8 @@ class InGamePacketHandler extends PacketHandler{
 	protected ?float $lastPlayerAuthInputYaw = null;
 	protected ?float $lastPlayerAuthInputPitch = null;
 	protected ?BitSet $lastPlayerAuthInputFlags = null;
+
+	protected bool $isCrawling = false;
 
 	protected ?BlockPosition $lastBlockAttacked = null;
 
@@ -148,50 +153,54 @@ class InGamePacketHandler extends PacketHandler{
 		private Player $player,
 		private NetworkSession $session,
 		private InventoryManager $inventoryManager
-	){}
+	) {}
 
-	public function handleText(TextPacket $packet) : bool{
-		if($packet->type === TextPacket::TYPE_CHAT){
+	public function handleText(TextPacket $packet): bool
+	{
+		if ($packet->type === TextPacket::TYPE_CHAT) {
 			return $this->player->chat($packet->message);
 		}
 
 		return false;
 	}
 
-	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+	public function handleMovePlayer(MovePlayerPacket $packet): bool
+	{
 		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
 		//Silence the debug spam that this causes.
 		return true;
 	}
 
-	private function resolveOnOffInputFlags(BitSet $inputFlags, int $startFlag, int $stopFlag) : ?bool{
+	private function resolveOnOffInputFlags(BitSet $inputFlags, int $startFlag, int $stopFlag): ?bool
+	{
 		$enabled = $inputFlags->get($startFlag);
 		$disabled = $inputFlags->get($stopFlag);
-		if($enabled !== $disabled){
+		if ($enabled !== $disabled) {
 			return $enabled;
 		}
 		//neither flag was set, or both were set
 		return null;
 	}
 
-	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet): bool
+	{
 		$rawPos = $packet->getPosition();
 		$rawYaw = $packet->getYaw();
 		$rawPitch = $packet->getPitch();
-		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->getHeadYaw(), $rawPitch] as $float){
-			if(is_infinite($float) || is_nan($float)){
+		foreach ([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->getHeadYaw(), $rawPitch] as $float) {
+			if (is_infinite($float) || is_nan($float)) {
 				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
 				return false;
 			}
 		}
 
-		if($rawYaw !== $this->lastPlayerAuthInputYaw || $rawPitch !== $this->lastPlayerAuthInputPitch){
+		if ($rawYaw !== $this->lastPlayerAuthInputYaw || $rawPitch !== $this->lastPlayerAuthInputPitch) {
 			$this->lastPlayerAuthInputYaw = $rawYaw;
 			$this->lastPlayerAuthInputPitch = $rawPitch;
 
 			$yaw = fmod($rawYaw, 360);
 			$pitch = fmod($rawPitch, 360);
-			if($yaw < 0){
+			if ($yaw < 0) {
 				$yaw += 360;
 			}
 
@@ -201,10 +210,10 @@ class InGamePacketHandler extends PacketHandler{
 		$hasMoved = $this->lastPlayerAuthInputPosition === null || !$this->lastPlayerAuthInputPosition->equals($rawPos);
 		$newPos = $rawPos->subtract(0, 1.62, 0)->round(4);
 
-		if($this->forceMoveSync && $hasMoved){
+		if ($this->forceMoveSync && $hasMoved) {
 			$curPos = $this->player->getLocation();
 
-			if($newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+			if ($newPos->distanceSquared($curPos) > 1) {  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
 				//Still getting movements from before teleport, ignore them
 				return true;
@@ -215,11 +224,97 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$inputFlags = $packet->getInputFlags();
-		if($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)){
+		if ($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)) {
 			$this->lastPlayerAuthInputFlags = $inputFlags;
 
-			$sneaking = $inputFlags->get(PlayerAuthInputFlags::SNEAKING);
-			if($this->player->isSneaking() === $sneaking){
+			// Crawling support: map crawling start/stop to swimming start/stop so client remains in correct pose
+			$crawlingWanted = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_CRAWLING, PlayerAuthInputFlags::STOP_CRAWLING);
+			if ($crawlingWanted !== null && $crawlingWanted !== $this->isCrawling) {
+				// Only allow entering crawling state if a trapdoor is present in the player's standing area.
+				// Clients must not be able to enter crawling merely by placing arbitrary blocks.
+				$allowCrawl = true;
+				if ($crawlingWanted) {
+					$allowCrawl = false;
+					$loc = $this->player->getLocation();
+					$scale = $this->player->getScale();
+					$standingHeight = 1.8 * $scale;
+					$standingWidth = 0.6 * $scale;
+					$halfWidth = $standingWidth / 2.0;
+					$minX = (int) floor($loc->x - $halfWidth);
+					$maxX = (int) floor($loc->x + $halfWidth);
+					$minY = (int) floor($loc->y);
+					$maxY = (int) floor($loc->y + $standingHeight);
+					$minZ = (int) floor($loc->z - $halfWidth);
+					$maxZ = (int) floor($loc->z + $halfWidth);
+
+					$world = $this->player->getWorld();
+					for ($x = $minX; $x <= $maxX && !$allowCrawl; $x++) {
+						for ($y = $minY; $y <= $maxY && !$allowCrawl; $y++) {
+							for ($z = $minZ; $z <= $maxZ && !$allowCrawl; $z++) {
+								$block = $world->getBlockAt($x, $y, $z);
+								if ($block instanceof Trapdoor) {
+									$allowCrawl = true;
+								}
+							}
+						}
+					}
+				}
+
+				if ($allowCrawl) {
+					$this->isCrawling = $crawlingWanted;
+					if ($crawlingWanted) {
+						$inputFlags->set(PlayerAuthInputFlags::START_SWIMMING, true);
+					} else {
+						$inputFlags->set(PlayerAuthInputFlags::STOP_SWIMMING, true);
+					}
+				} else {
+					// Reject client's attempt to start crawling when no trapdoor is present.
+					// Keep server state unchanged and do not map to swimming flag.
+					$this->session->getLogger()->debug("Rejected START_CRAWLING from " . $this->player->getName() . " because no trapdoor found nearby");
+				}
+			}
+
+			// If player is currently flagged as crawling but client didn't set START_SWIMMING, ensure it remains set
+			if ($this->isCrawling && !$inputFlags->get(PlayerAuthInputFlags::START_SWIMMING)) {
+				// If the player is spectator, or there is enough vertical clearance for the player's normal standing
+				// bounding box, they should stop crawling. Otherwise keep forcing the swimming flag so the client
+				// remains in the lowered pose even if the user released the sneak key.
+				if ($this->player->isSpectator()) {
+					$this->isCrawling = false;
+				} else {
+					$loc = $this->player->getLocation();
+					// Cannot call protected getInitialSizeInfo() from here; use the standard human standing
+					// dimensions (height 1.8, width 0.6) scaled by player's scale instead.
+					$scale = $this->player->getScale();
+					$standingHeight = 1.8 * $scale;
+					$standingWidth = 0.6 * $scale;
+					$halfWidth = $standingWidth / 2.0;
+					$minX = $loc->x - $halfWidth;
+					$maxX = $loc->x + $halfWidth;
+					$minY = $loc->y;
+					$maxY = $loc->y + $standingHeight;
+					$minZ = $loc->z - $halfWidth;
+					$maxZ = $loc->z + $halfWidth;
+
+					$standBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+					$colliding = count($this->player->getWorld()->getCollisionBlocks($standBB, true)) > 0;
+
+					if (!$colliding) {
+						// Enough room to stand: clear crawling state
+						$this->isCrawling = false;
+					} else {
+						// Still blocked: reassert swimming flag so client stays lowered
+						$inputFlags->set(PlayerAuthInputFlags::START_SWIMMING, true);
+					}
+				}
+			}
+
+			// Respect crawling state: if we're currently forcing crawling, make sure the server keeps the
+			// player in sneaking state even if the client released the sneak key so they can still move
+			// while lowered and not get stuck.
+			// Determine sneaking intent from start/stop flags
+			$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+			if ($sneaking !== null && $this->player->isSneaking() === $sneaking) {
 				$sneaking = null;
 			}
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
@@ -232,19 +327,19 @@ class InGamePacketHandler extends PacketHandler{
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
 				($gliding !== null && !$this->player->toggleGlide($gliding)) |
 				($flying !== null && !$this->player->toggleFlight($flying));
-			if((bool) $mismatch){
+			if ((bool) $mismatch) {
 				$this->player->sendData([$this->player]);
 			}
 
-			if($inputFlags->get(PlayerAuthInputFlags::START_JUMPING)){
+			if ($inputFlags->get(PlayerAuthInputFlags::START_JUMPING)) {
 				$this->player->jump();
 			}
-			if($inputFlags->get(PlayerAuthInputFlags::MISSED_SWING)){
+			if ($inputFlags->get(PlayerAuthInputFlags::MISSED_SWING)) {
 				$this->player->missSwing();
 			}
 		}
 
-		if(!$this->forceMoveSync && $hasMoved){
+		if (!$this->forceMoveSync && $hasMoved) {
 			$this->lastPlayerAuthInputPosition = $rawPos;
 			//TODO: this packet has WAYYYYY more useful information that we're not using
 			$this->player->handleMovement($newPos);
@@ -253,17 +348,17 @@ class InGamePacketHandler extends PacketHandler{
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null){
-			if(count($useItemTransaction->getTransactionData()->getActions()) > 100){
+		if ($useItemTransaction !== null) {
+			if (count($useItemTransaction->getTransactionData()->getActions()) > 100) {
 				throw new PacketHandlingException("Too many actions in item use transaction");
 			}
 
 			$this->inventoryManager->setCurrentItemStackRequestId($useItemTransaction->getRequestId());
 			$this->inventoryManager->addRawPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
-			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+			if (!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())) {
 				$packetHandled = false;
 				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
-			}else{
+			} else {
 				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
 			$this->inventoryManager->setCurrentItemStackRequestId(null);
@@ -275,26 +370,26 @@ class InGamePacketHandler extends PacketHandler{
 		//itemstack request or transaction may set predictions for the outcome of these actions, so these need to be
 		//processed last
 		$blockActions = $packet->getBlockActions();
-		if($blockActions !== null){
-			if(count($blockActions) > 100){
+		if ($blockActions !== null) {
+			if (count($blockActions) > 100) {
 				throw new PacketHandlingException("Too many block actions in PlayerAuthInputPacket");
 			}
-			foreach(Utils::promoteKeys($blockActions) as $k => $blockAction){
+			foreach (Utils::promoteKeys($blockActions) as $k => $blockAction) {
 				$actionHandled = false;
-				if($blockAction instanceof PlayerBlockActionStopBreak){
+				if ($blockAction instanceof PlayerBlockActionStopBreak) {
 					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
-				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
+				} elseif ($blockAction instanceof PlayerBlockActionWithBlockInfo) {
 					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
 				}
 
-				if(!$actionHandled){
+				if (!$actionHandled) {
 					$packetHandled = false;
 					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
 				}
 			}
 		}
 
-		if($itemStackRequest !== null){
+		if ($itemStackRequest !== null) {
 			$itemStackResponse = $itemStackResponseBuilder?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $itemStackRequest->getRequestId());
 			$this->session->sendDataPacket(ItemStackResponsePacket::create([$itemStackResponse]));
 		}
@@ -302,16 +397,17 @@ class InGamePacketHandler extends PacketHandler{
 		return $packetHandled;
 	}
 
-	public function handleActorEvent(ActorEventPacket $packet) : bool{
-		if($packet->actorRuntimeId !== $this->player->getId()){
+	public function handleActorEvent(ActorEventPacket $packet): bool
+	{
+		if ($packet->actorRuntimeId !== $this->player->getId()) {
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
 			return $packet->actorRuntimeId === ActorEvent::EATING_ITEM;
 		}
 
-		switch($packet->eventId){
+		switch ($packet->eventId) {
 			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
 				$item = $this->player->getInventory()->getItemInHand();
-				if($item->isNull()){
+				if ($item->isNull()) {
 					return false;
 				}
 				$this->player->broadcastAnimation(new ConsumingItemAnimation($this->player, $this->player->getInventory()->getItemInHand()));
@@ -323,30 +419,31 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
+	public function handleInventoryTransaction(InventoryTransactionPacket $packet): bool
+	{
 		$result = true;
 
-		if(count($packet->trData->getActions()) > 50){
+		if (count($packet->trData->getActions()) > 50) {
 			throw new PacketHandlingException("Too many actions in inventory transaction");
 		}
-		if(count($packet->requestChangedSlots) > 10){
+		if (count($packet->requestChangedSlots) > 10) {
 			throw new PacketHandlingException("Too many slot sync requests in inventory transaction");
 		}
 
 		$this->inventoryManager->setCurrentItemStackRequestId($packet->requestId);
 		$this->inventoryManager->addRawPredictedSlotChanges($packet->trData->getActions());
 
-		if($packet->trData instanceof NormalTransactionData){
+		if ($packet->trData instanceof NormalTransactionData) {
 			$result = $this->handleNormalTransaction($packet->trData, $packet->requestId);
-		}elseif($packet->trData instanceof MismatchTransactionData){
+		} elseif ($packet->trData instanceof MismatchTransactionData) {
 			$this->session->getLogger()->debug("Mismatch transaction received");
 			$this->inventoryManager->requestSyncAll();
 			$result = true;
-		}elseif($packet->trData instanceof UseItemTransactionData){
+		} elseif ($packet->trData instanceof UseItemTransactionData) {
 			$result = $this->handleUseItemTransaction($packet->trData);
-		}elseif($packet->trData instanceof UseItemOnEntityTransactionData){
+		} elseif ($packet->trData instanceof UseItemOnEntityTransactionData) {
 			$result = $this->handleUseItemOnEntityTransaction($packet->trData);
-		}elseif($packet->trData instanceof ReleaseItemTransactionData){
+		} elseif ($packet->trData instanceof ReleaseItemTransactionData) {
 			$result = $this->handleReleaseItemTransaction($packet->trData);
 		}
 
@@ -356,11 +453,11 @@ class InGamePacketHandler extends PacketHandler{
 		//haven't changed. Handling these is necessary to ensure the client inventory stays in sync if the server
 		//rejects the transaction. The most common example of this is equipping armor by right-click, which doesn't send
 		//a legacy prediction action for the destination armor slot.
-		foreach($packet->requestChangedSlots as $containerInfo){
-			foreach($containerInfo->getChangedSlotIndexes() as $netSlot){
+		foreach ($packet->requestChangedSlots as $containerInfo) {
+			foreach ($containerInfo->getChangedSlotIndexes() as $netSlot) {
 				[$windowId, $slot] = ItemStackContainerIdTranslator::translate($containerInfo->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $netSlot);
 				$inventoryAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slot);
-				if($inventoryAndSlot !== null){ //trigger the normal slot sync logic
+				if ($inventoryAndSlot !== null) { //trigger the normal slot sync logic
 					$this->inventoryManager->onSlotChange($inventoryAndSlot[0], $inventoryAndSlot[1]);
 				}
 			}
@@ -370,24 +467,25 @@ class InGamePacketHandler extends PacketHandler{
 		return $result;
 	}
 
-	private function executeInventoryTransaction(InventoryTransaction $transaction, int $requestId) : bool{
+	private function executeInventoryTransaction(InventoryTransaction $transaction, int $requestId): bool
+	{
 		$this->player->setUsingItem(false);
 
 		$this->inventoryManager->setCurrentItemStackRequestId($requestId);
 		$this->inventoryManager->addTransactionPredictedSlotChanges($transaction);
-		try{
+		try {
 			$transaction->execute();
-		}catch(TransactionValidationException $e){
+		} catch (TransactionValidationException $e) {
 			$this->inventoryManager->requestSyncAll();
 			$logger = $this->session->getLogger();
 			$logger->debug("Invalid inventory transaction $requestId: " . $e->getMessage());
 
 			return false;
-		}catch(TransactionCancelledException){
+		} catch (TransactionCancelledException) {
 			$this->session->getLogger()->debug("Inventory transaction $requestId cancelled by a plugin");
 
 			return false;
-		}finally{
+		} finally {
 			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			$this->inventoryManager->setCurrentItemStackRequestId(null);
 		}
@@ -395,15 +493,16 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId) : bool{
+	private function handleNormalTransaction(NormalTransactionData $data, int $itemStackRequestId): bool
+	{
 		//When the ItemStackRequest system is used, this transaction type is used for dropping items by pressing Q.
 		//I don't know why they don't just use ItemStackRequest for that too, which already supports dropping items by
 		//clicking them outside an open inventory menu, but for now it is what it is.
 		//Fortunately, this means we can be much stricter about the validation criteria.
 
 		$actionCount = count($data->getActions());
-		if($actionCount > 2){
-			if($actionCount > 5){
+		if ($actionCount > 2) {
+			if ($actionCount > 5) {
 				throw new PacketHandlingException("Too many actions ($actionCount) in normal inventory transaction");
 			}
 
@@ -417,40 +516,40 @@ class InGamePacketHandler extends PacketHandler{
 		$clientItemStack = null;
 		$droppedCount = null;
 
-		foreach($data->getActions() as $networkInventoryAction){
-			if($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot === NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
+		foreach ($data->getActions() as $networkInventoryAction) {
+			if ($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_WORLD && $networkInventoryAction->inventorySlot === NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM) {
 				$droppedCount = $networkInventoryAction->newItem->getItemStack()->getCount();
-				if($droppedCount <= 0){
+				if ($droppedCount <= 0) {
 					throw new PacketHandlingException("Expected positive count for dropped item");
 				}
-			}elseif($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && $networkInventoryAction->windowId === ContainerIds::INVENTORY){
+			} elseif ($networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && $networkInventoryAction->windowId === ContainerIds::INVENTORY) {
 				//mobile players can drop an item from a non-selected hotbar slot
 				$sourceSlot = $networkInventoryAction->inventorySlot;
 				$clientItemStack = $networkInventoryAction->oldItem->getItemStack();
-			}else{
+			} else {
 				$this->session->getLogger()->debug("Unexpected inventory action type $networkInventoryAction->sourceType in drop item transaction");
 				return false;
 			}
 		}
-		if($sourceSlot === null || $clientItemStack === null || $droppedCount === null){
+		if ($sourceSlot === null || $clientItemStack === null || $droppedCount === null) {
 			$this->session->getLogger()->debug("Missing information in drop item transaction, need source slot, client item stack and dropped count");
 			return false;
 		}
 
 		$inventory = $this->player->getInventory();
 
-		if(!$inventory->slotExists($sourceSlot)){
+		if (!$inventory->slotExists($sourceSlot)) {
 			return false; //TODO: size desync??
 		}
 
 		$sourceSlotItem = $inventory->getItem($sourceSlot);
-		if($sourceSlotItem->getCount() < $droppedCount){
+		if ($sourceSlotItem->getCount() < $droppedCount) {
 			return false;
 		}
 		$serverItemStack = $this->session->getTypeConverter()->coreItemStackToNet($sourceSlotItem);
 		//Sadly we don't have itemstack IDs here, so we have to compare the basic item properties to ensure that we're
 		//dropping the item the client expects (inventory might be out of sync with the client).
-		if(
+		if (
 			$serverItemStack->getId() !== $clientItemStack->getId() ||
 			$serverItemStack->getMeta() !== $clientItemStack->getMeta() ||
 			$serverItemStack->getCount() !== $clientItemStack->getCount() ||
@@ -459,7 +558,7 @@ class InGamePacketHandler extends PacketHandler{
 			//is costly. Assume that we're in sync if id+meta+count+runtimeId match.
 			//NB: Make sure $clientItemStack isn't used to create the dropped item, as that would allow the client
 			//to change the item NBT since we're not validating it.
-		){
+		) {
 			return false;
 		}
 
@@ -474,14 +573,15 @@ class InGamePacketHandler extends PacketHandler{
 		return $this->executeInventoryTransaction($transaction, $itemStackRequestId);
 	}
 
-	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
+	private function handleUseItemTransaction(UseItemTransactionData $data): bool
+	{
 		// If the player is spectator, ignore use-item transactions (prevent using items via scroll/use)
 		if ($this->player->isSpectator()) {
 			return true;
 		}
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
-		switch($data->getActionType()){
+		switch ($data->getActionType()) {
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
 				$clickPos = $data->getClickPosition();
@@ -494,7 +594,7 @@ class InGamePacketHandler extends PacketHandler{
 				//get rid of continued spam if the player clicks and holds right-click
 				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
-				if($spamBug){
+				if ($spamBug) {
 					return true;
 				}
 				//TODO: end hack for client spam bug
@@ -510,21 +610,21 @@ class InGamePacketHandler extends PacketHandler{
 				// 	//more information up the stack. For now I think this is good enough.
 				// 	//if only the client would tell us what blocks it thinks changed...
 				// 	$this->syncBlocksNearby($vBlockPos, $data->getFace());
-					if($vBlockPos->distanceSquared($this->player->getLocation()) < 10000){
+				if ($vBlockPos->distanceSquared($this->player->getLocation()) < 10000) {
 					$block = $this->player->getWorld()->getBlock($vBlockPos);
 					$blockTranslator = TypeConverter::getInstance()->getBlockTranslator();
 					$clientRuntimeId = $data->getBlockRuntimeId();
 					$interactDisplacedBlock = false;
 
-					if(($displaced = $block->getDisplacedBlock()) !== null && $blockTranslator->internalIdToNetworkId($displaced->getStateId()) === $clientRuntimeId){
+					if (($displaced = $block->getDisplacedBlock()) !== null && $blockTranslator->internalIdToNetworkId($displaced->getStateId()) === $clientRuntimeId) {
 						$interactDisplacedBlock = true;
-					}elseif($blockTranslator->internalIdToNetworkId($block->getStateId()) !== $clientRuntimeId){
+					} elseif ($blockTranslator->internalIdToNetworkId($block->getStateId()) !== $clientRuntimeId) {
 						$this->syncBlocksNearby($vBlockPos, $data->getFace());
 						return true;
 					}
 
 					$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos, $interactDisplacedBlock);
-					if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+					if ($data->getClientInteractPrediction() === PredictedResult::SUCCESS) {
 						//always sync this in case plugins caused a different result than the client expected
 						//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
 						//more information up the stack. For now I think this is good enough.
@@ -538,7 +638,7 @@ class InGamePacketHandler extends PacketHandler{
 				// (for example: a charged crossbow), immediately clear the using state so the client
 				// doesn't remain stuck in the hold animation.
 				$itemInHand = $this->player->getInventory()->getItemInHand();
-				if($itemInHand instanceof \pocketmine\item\Releasable && !$itemInHand->canStartUsingItem($this->player)){
+				if ($itemInHand instanceof \pocketmine\item\Releasable && !$itemInHand->canStartUsingItem($this->player)) {
 					// If the server deems the item not startable (for example a charged crossbow),
 					// clear the using state so the client doesn't get stuck in the hold animation,
 					// but continue to handle the click so onClickAir/onReleaseUsing can run (and fire the
@@ -547,8 +647,8 @@ class InGamePacketHandler extends PacketHandler{
 					$this->player->setUsingItem(false);
 					// fall through to call useHeldItem() below so the item action runs
 				}
-				if($this->player->isUsingItem()){
-					if(!$this->player->consumeHeldItem()){
+				if ($this->player->isUsingItem()) {
+					if (!$this->player->consumeHeldItem()) {
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);
 					}
@@ -564,8 +664,9 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	private static function validateFacing(int $facing) : void{
-		if(!in_array($facing, Facing::ALL, true)){
+	private static function validateFacing(int $facing): void
+	{
+		if (!in_array($facing, Facing::ALL, true)) {
 			throw new PacketHandlingException("Invalid facing value $facing");
 		}
 	}
@@ -573,32 +674,34 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * Syncs blocks nearby to ensure that the client and server agree on the world's blocks after a block interaction.
 	 */
-	private function syncBlocksNearby(Vector3 $blockPos, ?int $face) : void{
-		if($blockPos->distanceSquared($this->player->getLocation()) < 10000){
+	private function syncBlocksNearby(Vector3 $blockPos, ?int $face): void
+	{
+		if ($blockPos->distanceSquared($this->player->getLocation()) < 10000) {
 			$blocks = $blockPos->sidesArray();
-			if($face !== null){
+			if ($face !== null) {
 				$sidePos = $blockPos->getSide($face);
 
 				/** @var Vector3[] $blocks */
 				array_push($blocks, ...$sidePos->sidesArray()); //getAllSides() on each of these will include $blockPos and $sidePos because they are next to each other
-			}else{
+			} else {
 				$blocks[] = $blockPos;
 			}
-			foreach($this->player->getWorld()->createBlockUpdatePackets($blocks) as $packet){
+			foreach ($this->player->getWorld()->createBlockUpdatePackets($blocks) as $packet) {
 				$this->session->sendDataPacket($packet);
 			}
 		}
 	}
 
-	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data) : bool{
+	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data): bool
+	{
 		$target = $this->player->getWorld()->getEntity($data->getActorRuntimeId());
-		if($target === null){
+		if ($target === null) {
 			return false;
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
-		switch($data->getActionType()){
+		switch ($data->getActionType()) {
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				$this->player->interactEntity($target, $data->getClickPosition());
 				return true;
@@ -610,10 +713,11 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
+	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data): bool
+	{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
 
-		if($data->getActionType() === ReleaseItemTransactionData::ACTION_RELEASE){
+		if ($data->getActionType() === ReleaseItemTransactionData::ACTION_RELEASE) {
 			$this->player->releaseHeldItem();
 			return true;
 		}
@@ -621,8 +725,9 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	private function handleSingleItemStackRequest(ItemStackRequest $request) : ?ItemStackResponseBuilder{
-		if(count($request->getActions()) > 60){
+	private function handleSingleItemStackRequest(ItemStackRequest $request): ?ItemStackResponseBuilder
+	{
+		if (count($request->getActions()) > 60) {
 			//recipe book auto crafting can affect all slots of the inventory when consuming inputs or producing outputs
 			//this means there could be as many as 50 CraftingConsumeInput actions or Place (taking the result) actions
 			//in a single request (there are certain ways items can be arranged which will result in the same stack
@@ -636,14 +741,14 @@ class InGamePacketHandler extends PacketHandler{
 			throw new PacketHandlingException("Too many actions in ItemStackRequest");
 		}
 		$executor = new ItemStackRequestExecutor($this->player, $this->inventoryManager, $request);
-		try{
+		try {
 			$transaction = $executor->generateInventoryTransaction();
-			if($transaction !== null){
+			if ($transaction !== null) {
 				$result = $this->executeInventoryTransaction($transaction, $request->getRequestId());
-			}else{
+			} else {
 				$result = true; //predictions only, just send responses
 			}
-		}catch(ItemStackRequestProcessException $e){
+		} catch (ItemStackRequestProcessException $e) {
 			$result = false;
 			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
 			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
@@ -653,13 +758,14 @@ class InGamePacketHandler extends PacketHandler{
 		return $result ? $executor->getItemStackResponseBuilder() : null;
 	}
 
-	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
+	public function handleItemStackRequest(ItemStackRequestPacket $packet): bool
+	{
 		$responses = [];
-		if(count($packet->getRequests()) > 80){
+		if (count($packet->getRequests()) > 80) {
 			//TODO: we can probably lower this limit, but this will do for now
 			throw new PacketHandlingException("Too many requests in ItemStackRequestPacket");
 		}
-		foreach($packet->getRequests() as $request){
+		foreach ($packet->getRequests() as $request) {
 			$responses[] = $this->handleSingleItemStackRequest($request)?->build() ?? new ItemStackResponse(ItemStackResponse::RESULT_ERROR, $request->getRequestId());
 		}
 
@@ -668,11 +774,12 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		if($packet->windowId === ContainerIds::OFFHAND){
+	public function handleMobEquipment(MobEquipmentPacket $packet): bool
+	{
+		if ($packet->windowId === ContainerIds::OFFHAND) {
 			return true; //this happens when we put an item into the offhand
 		}
-		if($packet->windowId === ContainerIds::INVENTORY){
+		if ($packet->windowId === ContainerIds::INVENTORY) {
 			// If spectator, do NOT let the client change hotbar/held item. Instead, interpret as scroll and
 			// adjust flight speed directionally based on slot delta. Do NOT call onClientSelectHotbarSlot.
 			if ($this->player->isSpectator()) {
@@ -695,7 +802,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 			// Non-spectator: accept client's selection and sync if needed
 			$this->inventoryManager->onClientSelectHotbarSlot($packet->hotbarSlot);
-			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
+			if (!$this->player->selectHotbarSlot($packet->hotbarSlot)) {
 				$this->inventoryManager->syncSelectedHotbarSlot();
 			}
 			return true;
@@ -703,12 +810,14 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
+	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet): bool
+	{
 		return true; //Not used
 	}
 
-	public function handleInteract(InteractPacket $packet) : bool{
-		if($packet->action === InteractPacket::ACTION_MOUSEOVER){
+	public function handleInteract(InteractPacket $packet): bool
+	{
+		if ($packet->action === InteractPacket::ACTION_MOUSEOVER) {
 			//TODO HACK: silence useless spam (MCPE 1.8)
 			//due to some messy Mojang hacks, it sends this when changing the held item now, which causes us to think
 			//the inventory was closed when it wasn't.
@@ -717,36 +826,40 @@ class InGamePacketHandler extends PacketHandler{
 			return true;
 		}
 		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);
-		if($target === null){
+		if ($target === null) {
 			return false;
 		}
-		if($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player){
+		if ($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player) {
 			$this->inventoryManager->onClientOpenMainInventory();
 			return true;
 		}
 		return false; //TODO
 	}
 
-	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
+	public function handleBlockPickRequest(BlockPickRequestPacket $packet): bool
+	{
 		return $this->player->pickBlock(new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ()), $packet->addUserData);
 	}
 
-	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
+	public function handleActorPickRequest(ActorPickRequestPacket $packet): bool
+	{
 		return $this->player->pickEntity($packet->actorUniqueId);
 	}
 
-	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
+	public function handlePlayerAction(PlayerActionPacket $packet): bool
+	{
 		return $this->handlePlayerActionFromData($packet->action, $packet->blockPosition, $packet->face);
 	}
 
-	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
+	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face): bool
+	{
 		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 
-		switch($action){
+		switch ($action) {
 			case PlayerAction::START_BREAK:
 			case PlayerAction::CONTINUE_DESTROY_BLOCK: //destroy the next block while holding down left click
 				self::validateFacing($face);
-				if($this->lastBlockAttacked !== null && $blockPosition->equals($this->lastBlockAttacked)){
+				if ($this->lastBlockAttacked !== null && $blockPosition->equals($this->lastBlockAttacked)) {
 					//the client will send CONTINUE_DESTROY_BLOCK for the currently targeted block directly before it
 					//sends PREDICT_DESTROY_BLOCK, but also when it starts to break the block
 					//this seems like a bug in the client and would cause spurious left-click events if we allowed it to
@@ -754,7 +867,7 @@ class InGamePacketHandler extends PacketHandler{
 					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
 					break;
 				}
-				if(!$this->player->attackBlock($pos, $face)){
+				if (!$this->player->attackBlock($pos, $face)) {
 					$this->syncBlocksNearby($pos, $face);
 				}
 				$this->lastBlockAttacked = $blockPosition;
@@ -784,7 +897,7 @@ class InGamePacketHandler extends PacketHandler{
 				break;
 			case PlayerAction::PREDICT_DESTROY_BLOCK:
 				self::validateFacing($face);
-				if(!$this->player->breakBlock($pos)){
+				if (!$this->player->breakBlock($pos)) {
 					$this->syncBlocksNearby($pos, $face);
 				}
 				$this->lastBlockAttacked = null;
@@ -803,23 +916,27 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
+	public function handleSetActorMotion(SetActorMotionPacket $packet): bool
+	{
 		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
-	public function handleAnimate(AnimatePacket $packet) : bool{
+	public function handleAnimate(AnimatePacket $packet): bool
+	{
 		return true; //Not used
 	}
 
-	public function handleContainerClose(ContainerClosePacket $packet) : bool{
+	public function handleContainerClose(ContainerClosePacket $packet): bool
+	{
 		$this->inventoryManager->onClientRemoveWindow($packet->windowId);
 		return true;
 	}
 
-	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
+	public function handlePlayerHotbar(PlayerHotbarPacket $packet): bool
+	{
 		// Use hotbar packet (sent by client when scrolling the hotbar) as a spectator-flight-speed toggle
-		try{
-			if($this->player->isSpectator()){
+		try {
+			if ($this->player->isSpectator()) {
 				// If spectator, interpret scroll direction to increase/decrease flight speed
 				try {
 					$slots = 9;
@@ -842,7 +959,7 @@ class InGamePacketHandler extends PacketHandler{
 					$this->player->setFlightSpeedMultiplier($new);
 				}
 			}
-		}catch(\Throwable $e){
+		} catch (\Throwable $e) {
 			$this->session->getLogger()->debug("Error toggling spectator flight speed: " . $e->getMessage());
 		}
 		return true;
@@ -851,52 +968,54 @@ class InGamePacketHandler extends PacketHandler{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	private function updateSignText(CompoundTag $nbt, string $tagName, bool $frontFace, BaseSign $block, Vector3 $pos) : bool{
+	private function updateSignText(CompoundTag $nbt, string $tagName, bool $frontFace, BaseSign $block, Vector3 $pos): bool
+	{
 		$textTag = $nbt->getTag($tagName);
-		if(!$textTag instanceof CompoundTag){
+		if (!$textTag instanceof CompoundTag) {
 			throw new PacketHandlingException("Invalid tag type " . get_debug_type($textTag) . " for tag \"$tagName\" in sign update data");
 		}
 		$textBlobTag = $textTag->getTag(Sign::TAG_TEXT_BLOB);
-		if(!$textBlobTag instanceof StringTag){
+		if (!$textBlobTag instanceof StringTag) {
 			throw new PacketHandlingException("Invalid tag type " . get_debug_type($textBlobTag) . " for tag \"" . Sign::TAG_TEXT_BLOB . "\" in sign update data");
 		}
 
-		try{
+		try {
 			$text = SignText::fromBlob($textBlobTag->getValue());
-		}catch(\InvalidArgumentException $e){
+		} catch (\InvalidArgumentException $e) {
 			throw PacketHandlingException::wrap($e, "Invalid sign text update");
 		}
 
 		$oldText = $block->getFaceText($frontFace);
-		if($text->getLines() === $oldText->getLines()){
+		if ($text->getLines() === $oldText->getLines()) {
 			return false;
 		}
 
-		try{
-			if(!$block->updateFaceText($this->player, $frontFace, $text)){
-				foreach($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket){
+		try {
+			if (!$block->updateFaceText($this->player, $frontFace, $text)) {
+				foreach ($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket) {
 					$this->session->sendDataPacket($updatePacket);
 				}
 				return false;
 			}
 			return true;
-		}catch(\UnexpectedValueException $e){
+		} catch (\UnexpectedValueException $e) {
 			throw PacketHandlingException::wrap($e);
 		}
 	}
 
-	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
+	public function handleBlockActorData(BlockActorDataPacket $packet): bool
+	{
 		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
-		if($pos->distanceSquared($this->player->getLocation()) > 10000){
+		if ($pos->distanceSquared($this->player->getLocation()) > 10000) {
 			return false;
 		}
 
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		$nbt = $packet->nbt->getRoot();
-		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
+		if (!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
-		if($block instanceof BaseSign){
-			if(!$this->updateSignText($nbt, Sign::TAG_FRONT_TEXT, true, $block, $pos)){
+		if ($block instanceof BaseSign) {
+			if (!$this->updateSignText($nbt, Sign::TAG_FRONT_TEXT, true, $block, $pos)) {
 				//only one side can be updated at a time
 				$this->updateSignText($nbt, Sign::TAG_BACK_TEXT, false, $block, $pos);
 			}
@@ -907,53 +1026,62 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
+	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet): bool
+	{
 		$gameMode = $this->session->getTypeConverter()->protocolGameModeToCore($packet->gamemode);
-		if($gameMode !== $this->player->getGamemode()){
+		if ($gameMode !== $this->player->getGamemode()) {
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
 		return true;
 	}
 
-	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
+	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet): bool
+	{
 		return false; //TODO
 	}
 
-	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
+	public function handleMapInfoRequest(MapInfoRequestPacket $packet): bool
+	{
 		return false; //TODO
 	}
 
-	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
+	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet): bool
+	{
 		$this->player->setViewDistance($packet->radius);
 
 		return true;
 	}
 
-	public function handleBossEvent(BossEventPacket $packet) : bool{
+	public function handleBossEvent(BossEventPacket $packet): bool
+	{
 		return false; //TODO
 	}
 
-	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
+	public function handleShowCredits(ShowCreditsPacket $packet): bool
+	{
 		return false; //TODO: handle resume
 	}
 
-	public function handleCommandRequest(CommandRequestPacket $packet) : bool{
-		if(str_starts_with($packet->command, '/')){
+	public function handleCommandRequest(CommandRequestPacket $packet): bool
+	{
+		if (str_starts_with($packet->command, '/')) {
 			$this->player->chat($packet->command);
 			return true;
 		}
 		return false;
 	}
 
-	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
+	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet): bool
+	{
 		return false; //TODO
 	}
 
-	public function handlePlayerSkin(PlayerSkinPacket $packet) : bool{
+	public function handlePlayerSkin(PlayerSkinPacket $packet): bool
+	{
 		// Debug: log incoming PlayerSkinPacket flags for troubleshooting
-	
-		if($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId){
+
+		if ($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId) {
 			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
 			//it's using. We need to prevent this from causing a feedback loop.
 			$this->session->getLogger()->debug("Refused duplicate skin change request");
@@ -962,28 +1090,28 @@ class InGamePacketHandler extends PacketHandler{
 		$this->lastRequestedFullSkinId = $packet->skin->getFullSkinId();
 
 		$this->session->getLogger()->debug("Processing skin change request");
-		try{
+		try {
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData($packet->skin);
-		}catch(InvalidSkinException $e){
+		} catch (InvalidSkinException $e) {
 			throw PacketHandlingException::wrap($e, "Invalid skin in PlayerSkinPacket");
 		}
 
 		// Preserve the raw protocol SkinData so we can forward persona/raw skins unchanged when sending to other clients
-		try{
+		try {
 			$this->player->getPlayerInfo()->setRawSkinData($packet->skin);
-		}catch(\Throwable $e){
+		} catch (\Throwable $e) {
 			// ignore - best effort
 		}
 
 		// If the converted Skin has an image that's all 0x00 bytes, treat this as a geometry-only packet
 		// coming from some clients/resource-packs. Merge the new geometry into the player's existing skin
 		// instead of applying a blank texture which would break appearance.
-		try{
+		try {
 			$skinData = $skin->getSkinData();
-			if(strlen($skinData) > 0 && strspn($skinData, "\x00") === strlen($skinData)){
+			if (strlen($skinData) > 0 && strspn($skinData, "\x00") === strlen($skinData)) {
 				$oldSkin = $this->player->getSkin();
 				// Build a new Skin keeping old texture/cape but using new geometry
-				try{
+				try {
 					$skin = new \pocketmine\entity\Skin(
 						$oldSkin->getSkinId(),
 						$oldSkin->getSkinData(),
@@ -991,33 +1119,35 @@ class InGamePacketHandler extends PacketHandler{
 						$skin->getGeometryName(),
 						$skin->getGeometryData()
 					);
-				}catch(\Throwable $e){
+				} catch (\Throwable $e) {
 					// fallback: if merge fails, refuse to apply malformed skin
 					$this->session->getLogger()->warning("Failed to merge geometry into existing skin for " . $this->player->getName() . ": " . $e->getMessage());
 					return true;
 				}
 			}
-		}catch(\Throwable $e){
+		} catch (\Throwable $e) {
 			// swallow any unexpected errors in sanity checks to avoid disconnecting the player
 		}
 		return $this->player->changeSkin($skin, $packet->newSkinName, $packet->oldSkinName);
 	}
 
-	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
+	public function handleSubClientLogin(SubClientLoginPacket $packet): bool
+	{
 		return false; //TODO
 	}
 
 	/**
 	 * @throws PacketHandlingException
 	 */
-	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel) : string{
-		if(strlen($string) > $hardLimit){
+	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel): string
+	{
+		if (strlen($string) > $hardLimit) {
 			throw new PacketHandlingException(sprintf("Book %s must be at most %d bytes, but have %d bytes", $fieldName, $hardLimit, strlen($string)));
 		}
 
 		$result = TextFormat::clean($string, false);
 		//strlen() is O(1), mb_strlen() is O(n)
-		if(strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit){
+		if (strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit) {
 			$cancel = true;
 			$this->session->getLogger()->debug("Cancelled book edit due to $fieldName exceeded soft limit of $softLimit chars");
 		}
@@ -1025,28 +1155,29 @@ class InGamePacketHandler extends PacketHandler{
 		return $result;
 	}
 
-	public function handleBookEdit(BookEditPacket $packet) : bool{
+	public function handleBookEdit(BookEditPacket $packet): bool
+	{
 		$inventory = $this->player->getInventory();
-		if(!$inventory->slotExists($packet->inventorySlot)){
+		if (!$inventory->slotExists($packet->inventorySlot)) {
 			return false;
 		}
 		//TODO: break this up into book API things
 		$oldBook = $inventory->getItem($packet->inventorySlot);
-		if(!($oldBook instanceof WritableBook)){
+		if (!($oldBook instanceof WritableBook)) {
 			return false;
 		}
 
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
 		$cancel = false;
-		switch($packet->type){
+		switch ($packet->type) {
 			case BookEditPacket::TYPE_REPLACE_PAGE:
 				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
 				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
-				if(!$newBook->pageExists($packet->pageNumber)){
+				if (!$newBook->pageExists($packet->pageNumber)) {
 					//this may only come before a page which already exists
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
@@ -1056,14 +1187,14 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
-				if(!$newBook->pageExists($packet->pageNumber)){
+				if (!$newBook->pageExists($packet->pageNumber)) {
 					return false;
 				}
 				$newBook->deletePage($packet->pageNumber);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				if(!$newBook->pageExists($packet->pageNumber) || !$newBook->pageExists($packet->secondaryPageNumber)){
+				if (!$newBook->pageExists($packet->pageNumber) || !$newBook->pageExists($packet->secondaryPageNumber)) {
 					//the client will create pages on its own without telling us until it tries to switch them
 					$newBook->addPage(max($packet->pageNumber, $packet->secondaryPageNumber));
 				}
@@ -1086,7 +1217,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		//for redundancy, in case of protocol changes, we don't want to pass these directly
-		$action = match($packet->type){
+		$action = match ($packet->type) {
 			BookEditPacket::TYPE_REPLACE_PAGE => PlayerEditBookEvent::ACTION_REPLACE_PAGE,
 			BookEditPacket::TYPE_ADD_PAGE => PlayerEditBookEvent::ACTION_ADD_PAGE,
 			BookEditPacket::TYPE_DELETE_PAGE => PlayerEditBookEvent::ACTION_DELETE_PAGE,
@@ -1101,18 +1232,18 @@ class InGamePacketHandler extends PacketHandler{
 		 */
 		$oldPageCount = count($oldBook->getPages());
 		$newPageCount = count($newBook->getPages());
-		if(($newPageCount > $oldPageCount && $newPageCount > 50)){
+		if (($newPageCount > $oldPageCount && $newPageCount > 50)) {
 			$this->session->getLogger()->debug("Cancelled book edit due to adding too many pages (new page count would be $newPageCount)");
 			$cancel = true;
 		}
 
 		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $action, $modifiedPages);
-		if($cancel){
+		if ($cancel) {
 			$event->cancel();
 		}
 
 		$event->call();
-		if($event->isCancelled()){
+		if ($event->isCancelled()) {
 			return true;
 		}
 
@@ -1121,42 +1252,46 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleModalFormResponse(ModalFormResponsePacket $packet) : bool{
-		if($packet->cancelReason !== null){
+	public function handleModalFormResponse(ModalFormResponsePacket $packet): bool
+	{
+		if ($packet->cancelReason !== null) {
 			//TODO: make APIs for this to allow plugins to use this information
 			return $this->player->onFormSubmit($packet->formId, null);
-		}elseif($packet->formData !== null){
-			try{
+		} elseif ($packet->formData !== null) {
+			try {
 				$responseData = json_decode($packet->formData, true, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
-			}catch(\JsonException $e){
+			} catch (\JsonException $e) {
 				throw PacketHandlingException::wrap($e, "Failed to decode form response data");
 			}
 			return $this->player->onFormSubmit($packet->formId, $responseData);
-		}else{
+		} else {
 			throw new PacketHandlingException("Expected either formData or cancelReason to be set in ModalFormResponsePacket");
 		}
 	}
 
-	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
+	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet): bool
+	{
 		return false; //TODO: GUI stuff
 	}
 
-	public function handleLabTable(LabTablePacket $packet) : bool{
+	public function handleLabTable(LabTablePacket $packet): bool
+	{
 		return false; //TODO
 	}
 
-	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+	public function handleLecternUpdate(LecternUpdatePacket $packet): bool
+	{
 		$pos = $packet->blockPosition;
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
 		$world = $this->player->getWorld();
-		if(!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+		if (!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)) {
 			return false;
 		}
 
 		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
-		if($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)){
-			if(!$lectern->onPageTurn($packet->page)){
+		if ($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)) {
+			if (!$lectern->onPageTurn($packet->page)) {
 				$this->syncBlocksNearby($lectern->getPosition(), null);
 			}
 			return true;
@@ -1165,11 +1300,13 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
+	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet): bool
+	{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
-	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet): bool
+	{
 		/*
 		 * We don't handle this - all sounds are handled by the server now.
 		 * However, some plugins find this useful to detect events like left-click-air, which doesn't have any other
@@ -1179,7 +1316,8 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleEmote(EmotePacket $packet) : bool{
+	public function handleEmote(EmotePacket $packet): bool
+	{
 		$this->player->emote($packet->getEmoteId());
 		return true;
 	}

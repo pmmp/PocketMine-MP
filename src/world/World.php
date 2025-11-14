@@ -36,6 +36,7 @@ use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\block\Trapdoor;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateDeserializeException;
@@ -2734,6 +2735,51 @@ class World implements ChunkManager
 				if (count($this->getCollidingEntities($collisionBox, $player)) > 0) {
 					return false;  //Entity in block
 				}
+			}
+		}
+
+		// Prevent players from placing blocks that would force them into a lowered/crawling
+		// pose unless the placement involves a trapdoor. This stops exploits where players
+		// place blocks to reduce their standing clearance and thereby enable crawling.
+		if ($player !== null) {
+			$loc = $player->getLocation();
+			$scale = $player->getScale();
+			$standingHeight = 1.8 * $scale;
+			$standingWidth = 0.6 * $scale;
+			$halfWidth = $standingWidth / 2.0;
+			$minX = $loc->x - $halfWidth;
+			$maxX = $loc->x + $halfWidth;
+			$minY = $loc->y;
+			$maxY = $loc->y + $standingHeight;
+			$minZ = $loc->z - $halfWidth;
+			$maxZ = $loc->z + $halfWidth;
+
+			$standBB = new AxisAlignedBB($minX, $minY, $minZ, $maxX, $maxY, $maxZ);
+
+			// Was the player able to stand here before placement?
+			$wasStandingClear = count($this->getCollisionBlocks($standBB, true)) === 0;
+
+			$wouldCollide = false;
+			$hasTrapdoor = false;
+			foreach ($tx->getBlocks() as [$x, $y, $z, $block]) {
+				if ($block instanceof Trapdoor) {
+					$hasTrapdoor = true;
+					continue;
+				}
+				// position the prospective block and check its collision boxes against the standing BB
+				$block->position($this, $x, $y, $z);
+				foreach ($block->getCollisionBoxes() as $cbox) {
+					if ($cbox->intersectsWith($standBB)) {
+						$wouldCollide = true;
+						break 2;
+					}
+				}
+			}
+
+			// If placement would cause standing collision, and the player could stand here before,
+			// and the placement does not include a trapdoor, reject the placement.
+			if ($wouldCollide && $wasStandingClear && !$hasTrapdoor) {
+				return false;
 			}
 		}
 
