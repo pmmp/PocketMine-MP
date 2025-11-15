@@ -863,7 +863,24 @@ final class BlockTypeIds
 	public const SCAFFOLDING = 10831;
 	public const CRIMSON_NYLIUM = 10832;
 	public const WARPED_NYLIUM = 10833;
-	public const FIRST_UNUSED_BLOCK_ID = 10836;
+	// Explicit bamboo wood variants and other bamboo-related block IDs
+	public const BAMBOO_LOG = 10836;
+	public const BAMBOO_WOOD = 10837;
+	public const BAMBOO_FENCE = 10838;
+	public const BAMBOO_SLAB = 10839;
+	public const BAMBOO_FENCE_GATE = 10840;
+	public const BAMBOO_STAIRS = 10841;
+	public const BAMBOO_DOOR = 10842;
+	public const BAMBOO_BUTTON = 10843;
+	public const BAMBOO_PRESSURE_PLATE = 10844;
+	public const BAMBOO_TRAPDOOR = 10845;
+	public const BAMBOO_SIGN = 10846;
+	public const BAMBOO_WALL_SIGN = 10847;
+	public const BAMBOO_CEILING_CENTER_HANGING_SIGN = 10848;
+	public const BAMBOO_CEILING_EDGES_HANGING_SIGN = 10849;
+	public const BAMBOO_WALL_HANGING_SIGN = 10850;
+
+	public const FIRST_UNUSED_BLOCK_ID = 10851;
 
 	public const SEAGRASS = 10795;
 	public const KELP = 10796;

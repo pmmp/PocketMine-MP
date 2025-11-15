@@ -1983,7 +1983,27 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 
 		$returnedItems = [];
-		$result = $item->onClickAir($this, $directionVector, $returnedItems);
+		try{
+			// Visible log to help debug bundle open flow
+			Server::getInstance()->getLogger()->info("Player::useHeldItem called: player=" . $this->getName() . ", item=" . $item->getName() . ", class=" . get_class($item) . ", typeId=" . $item->getTypeId() . ", stateId=" . $item->getStateId());
+			$this->getNetworkSession()->getLogger()->debug("Player::useHeldItem: attempting onClickAir for item " . $item->getName() . " in hand for player " . $this->getName());
+		} catch (\Throwable $e) {
+			// ignore
+		}
+		$result = ItemUseResult::NONE;
+		try{
+			$result = $item->onClickAir($this, $directionVector, $returnedItems);
+			try{
+				$this->getNetworkSession()->getLogger()->debug("Player::useHeldItem: onClickAir returned " . (is_object($result) ? get_class($result) : (string)$result));
+			} catch (\Throwable $e) {
+				// ignore
+			}
+		} catch (\Throwable $e) {
+			try{
+				$this->getNetworkSession()->getLogger()->debug("Player::useHeldItem: onClickAir threw: " . $e->getMessage());
+			} catch (\Throwable $_) {
+			}
+		}
 		if ($result === ItemUseResult::FAIL) {
 			return false;
 		}

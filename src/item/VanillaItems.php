@@ -410,6 +410,9 @@ use function strtolower;
  * @method static SpawnEgg SHEEP_SPAWN_EGG()
  * @method static Item AXOLOTL_BUCKET()
  * @method static ItemBlock SCAFFOLDING()
+ * 
+ * @method static Bundle BLUE_BUNDLE()
+ * @method static Bundle BUNDLE()
  */
 final class VanillaItems
 {
@@ -523,6 +526,18 @@ final class VanillaItems
 		self::register("bamboo_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::BAMBOO_SIGN(), Blocks::BAMBOO_WALL_SIGN()));
 		self::register("bamboo_hanging_sign", fn(IID $id) => new HangingSign($id, "Bamboo Hanging Sign", Blocks::BAMBOO_CEILING_CENTER_HANGING_SIGN(), Blocks::BAMBOO_CEILING_EDGES_HANGING_SIGN(), Blocks::BAMBOO_WALL_HANGING_SIGN()));
 		self::register("bamboo_shelf", fn() => new ItemBlock(Blocks::BAMBOO_SHELF()));
+
+		// Additional bamboo block-items so all bamboo variants appear in inventories and /give
+		self::register("bamboo_log", fn() => new ItemBlock(Blocks::BAMBOO_LOG()));
+		self::register("bamboo_wood", fn() => new ItemBlock(Blocks::BAMBOO_WOOD()));
+		self::register("bamboo_fence", fn() => new ItemBlock(Blocks::BAMBOO_FENCE()));
+		self::register("bamboo_slab", fn() => new ItemBlock(Blocks::BAMBOO_SLAB()));
+		self::register("bamboo_fence_gate", fn() => new ItemBlock(Blocks::BAMBOO_FENCE_GATE()));
+		self::register("bamboo_stairs", fn() => new ItemBlock(Blocks::BAMBOO_STAIRS()));
+		self::register("bamboo_door", fn() => new ItemBlock(Blocks::BAMBOO_DOOR()));
+		self::register("bamboo_button", fn() => new ItemBlock(Blocks::BAMBOO_BUTTON()));
+		self::register("bamboo_pressure_plate", fn() => new ItemBlock(Blocks::BAMBOO_PRESSURE_PLATE()));
+		self::register("bamboo_trapdoor", fn() => new ItemBlock(Blocks::BAMBOO_TRAPDOOR()));
 		self::register("banner", fn(IID $id) => new Banner($id, Blocks::BANNER(), Blocks::WALL_BANNER()));
 		self::register("bordure_indented_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Bordure Indented Banner Pattern", BannerPatternType::CURLY_BORDER));
 		self::register("creeper_banner_pattern", fn(IID $id) => new BannerPatternItem($id, "Creeper Charge Banner Pattern", BannerPatternType::CREEPER));
@@ -547,6 +562,9 @@ final class VanillaItems
 		self::register("bone", fn(IID $id) => new Item($id, "Bone"));
 		self::register("bone_meal", fn(IID $id) => new Fertilizer($id, "Bone Meal"));
 		self::register("book", fn(IID $id) => new Book($id, "Book", [EnchantmentTags::ALL]));
+		// Bundle item (custom): register so VanillaItems::BUNDLE() becomes available
+		self::register("bundle", fn(IID $id) => new Bundle($id, "Bundle"));
+		self::register("blue_bundle", fn(IID $id) => new Bundle($id, "Blue Bundle"));
 		self::register("bow", fn(IID $id) => new Bow($id, "Bow", [EnchantmentTags::BOW]));
 		self::register("crossbow", fn(IID $id) => new Crossbow($id, "Crossbow", [EnchantmentTags::CROSSBOW]));
 		self::register("bowl", fn(IID $id) => new Bowl($id, "Bowl"));

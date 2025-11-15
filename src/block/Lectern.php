@@ -30,9 +30,17 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
+use pocketmine\item\WritableBook;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\PredictedResult;
+use pocketmine\network\mcpe\protocol\types\inventory\TriggerType;
+use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\player\Player;
 use pocketmine\world\sound\LecternPlaceBookSound;
 use function count;
@@ -44,6 +52,65 @@ class Lectern extends Transparent implements HorizontalFacing{
 	protected ?WritableBookBase $book = null;
 
 	protected bool $producingSignal = false;
+
+	private function getTileLectern() : ?TileLectern{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		return $tile instanceof TileLectern ? $tile : null;
+	}
+
+	private function sendStateUpdate(?Player $target = null) : void{
+		$world = $this->position->getWorld();
+		$packets = $world->createBlockUpdatePackets([$this->position]);
+		if($target !== null){
+			$session = $target->getNetworkSession();
+			foreach($packets as $packet){
+				$session->sendDataPacket($packet);
+			}
+			return;
+		}
+
+		foreach($packets as $packet){
+			$world->broadcastPacketToViewers($this->position, $packet);
+		}
+	}
+
+	private function previewBookToPlayer(Player $player, WritableBookBase $book) : void{
+		$networkSession = $player->getNetworkSession();
+		$inventoryManager = $networkSession->getInvManager();
+		if($inventoryManager === null){
+			return;
+		}
+
+		$inventory = $player->getInventory();
+		$slot = $inventory->getHeldItemIndex();
+		$original = clone $inventory->getItem($slot);
+		$preview = (clone $book)->setCount(1);
+
+		// Do not modify server inventory. Instead, send a temporary slot sync to the client
+		// so the client believes it's holding the book. This avoids prediction/restore races.
+		$inventoryManager->syncSlot($inventory, $slot, $networkSession->getTypeConverter()->coreItemStackToNet($preview));
+
+		$networkSession->sendDataPacket(InventoryTransactionPacket::create(
+			0,
+			[],
+			UseItemTransactionData::new(
+				[],
+				UseItemTransactionData::ACTION_CLICK_AIR,
+				TriggerType::PLAYER_INPUT,
+				new BlockPosition(0, 0, 0),
+				0,
+				$slot,
+				ItemStackWrapper::legacy(ItemStack::null()),
+				Vector3::zero(),
+				Vector3::zero(),
+				0,
+				PredictedResult::FAILURE
+			)
+		), true);
+
+		// Restore the original slot view for the client
+		$inventoryManager->syncSlot($inventory, $slot, $networkSession->getTypeConverter()->coreItemStackToNet($original));
+	}
 
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->horizontalFacing($this->facing);
@@ -121,33 +188,90 @@ class Lectern extends Transparent implements HorizontalFacing{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if($this->book === null && $item instanceof WritableBookBase){
-			$world = $this->position->getWorld();
-			$world->setBlock($this->position, $this->setBook($item));
-			$world->addSound($this->position, new LecternPlaceBookSound());
-			$item->pop();
+		$this->readStateFromWorld();
+		$tile = $this->getTileLectern();
+		if($tile === null){
+			return false;
 		}
-		return true;
-	}
 
-	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($this->book !== null){
-			$world = $this->position->getWorld();
-			$world->dropItem($this->position->up(), $this->book);
-			$world->setBlock($this->position, $this->setBook(null));
+		$world = $this->position->getWorld();
+		$currentBook = $tile->getBook();
+
+		if($currentBook === null && $item instanceof WritableBookBase && !$item->isNull()){
+			$newBook = (clone $item)->setCount(1);
+			$tile->setBook($newBook);
+			$tile->setViewedPage(0);
+			$tile->setDirty();
+			$this->book = $tile->getBook();
+			$this->viewedPage = 0;
+
+			$world->addSound($this->position, new LecternPlaceBookSound());
+			if($player === null || $player->hasFiniteResources()){
+				$item->pop();
+			}
+
+			$this->sendStateUpdate();
+			if($player !== null){
+				$this->sendStateUpdate($player);
+			}
+			return true;
 		}
+
+		if($currentBook !== null && $player !== null){
+			// If the lectern holds a writable (unsigned) book, present it as a read-only written book
+			// so players can read pages but not edit the lectern's copy.
+			if ($currentBook instanceof WritableBook && !($currentBook instanceof \pocketmine\item\WrittenBook)) {
+				$readOnly = \pocketmine\item\VanillaItems::WRITTEN_BOOK();
+				$readOnly->setPages($currentBook->getPages());
+				// leave title/author empty for unsigned books
+				$this->previewBookToPlayer($player, $readOnly);
+			} else {
+				$this->previewBookToPlayer($player, $currentBook);
+			}
+			return true;
+		}
+
 		return false;
 	}
 
+	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+		$this->readStateFromWorld();
+		$tile = $this->getTileLectern();
+		if($tile === null){
+			return false;
+		}
+		$book = $tile->getBook();
+		if($book === null){
+			return false;
+		}
+
+		$world = $this->position->getWorld();
+		$world->dropItem($this->position->up(), $book);
+		$tile->setBook(null);
+		$tile->setDirty();
+		$this->book = null;
+		$this->viewedPage = 0;
+		$this->sendStateUpdate();
+		return true;
+	}
+
 	public function onPageTurn(int $newPage) : bool{
+		$this->readStateFromWorld();
+		$tile = $this->getTileLectern();
+		if($tile === null){
+			return false;
+		}
+		$book = $tile->getBook();
 		if($newPage === $this->viewedPage){
 			return true;
 		}
-		if($this->book === null || $newPage >= count($this->book->getPages()) || $newPage < 0){
+		if($book === null || $newPage >= count($book->getPages()) || $newPage < 0){
 			return false;
 		}
 
 		$this->viewedPage = $newPage;
+		$tile->setViewedPage($newPage);
+		$tile->setDirty();
 		$world = $this->position->getWorld();
 		if(!$this->producingSignal){
 			$this->producingSignal = true;

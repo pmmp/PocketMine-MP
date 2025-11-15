@@ -1059,6 +1059,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_BUTTON(), Ids::JUNGLE_BUTTON],
 				[Blocks::MANGROVE_BUTTON(), Ids::MANGROVE_BUTTON],
 				[Blocks::OAK_BUTTON(), Ids::WOODEN_BUTTON],
+				[Blocks::BAMBOO_BUTTON(), Ids::BAMBOO_BUTTON],
 				[Blocks::PALE_OAK_BUTTON(), Ids::PALE_OAK_BUTTON],
 				[Blocks::SPRUCE_BUTTON(), Ids::SPRUCE_BUTTON],
 				[Blocks::WARPED_BUTTON(), Ids::WARPED_BUTTON]
@@ -1078,6 +1079,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_DOOR(), Ids::JUNGLE_DOOR],
 				[Blocks::MANGROVE_DOOR(), Ids::MANGROVE_DOOR],
 				[Blocks::OAK_DOOR(), Ids::WOODEN_DOOR],
+				[Blocks::BAMBOO_DOOR(), Ids::BAMBOO_DOOR],
 				[Blocks::PALE_OAK_DOOR(), Ids::PALE_OAK_DOOR],
 				[Blocks::SPRUCE_DOOR(), Ids::SPRUCE_DOOR],
 				[Blocks::WARPED_DOOR(), Ids::WARPED_DOOR]
@@ -1096,6 +1098,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_FENCE(), Ids::JUNGLE_FENCE],
 				[Blocks::MANGROVE_FENCE(), Ids::MANGROVE_FENCE],
 				[Blocks::OAK_FENCE(), Ids::OAK_FENCE],
+				[Blocks::BAMBOO_FENCE(), Ids::BAMBOO_FENCE],
 				[Blocks::PALE_OAK_FENCE(), Ids::PALE_OAK_FENCE],
 				[Blocks::SPRUCE_FENCE(), Ids::SPRUCE_FENCE],
 				[Blocks::CRIMSON_FENCE(), Ids::CRIMSON_FENCE],
@@ -1114,6 +1117,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_FENCE_GATE(), Ids::JUNGLE_FENCE_GATE],
 				[Blocks::MANGROVE_FENCE_GATE(), Ids::MANGROVE_FENCE_GATE],
 				[Blocks::OAK_FENCE_GATE(), Ids::FENCE_GATE],
+				[Blocks::BAMBOO_FENCE_GATE(), Ids::BAMBOO_FENCE_GATE],
 				[Blocks::PALE_OAK_FENCE_GATE(), Ids::PALE_OAK_FENCE_GATE],
 				[Blocks::SPRUCE_FENCE_GATE(), Ids::SPRUCE_FENCE_GATE],
 				[Blocks::CRIMSON_FENCE_GATE(), Ids::CRIMSON_FENCE_GATE],
@@ -1151,6 +1155,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_LOG(), "jungle_log"],
 				[Blocks::MANGROVE_LOG(), "mangrove_log"],
 				[Blocks::OAK_LOG(), "oak_log"],
+				[Blocks::BAMBOO_LOG(), "bamboo_log"],
 				[Blocks::PALE_OAK_LOG(), "pale_oak_log"],
 				[Blocks::SPRUCE_LOG(), "spruce_log"],
 				[Blocks::CRIMSON_STEM(), "crimson_stem"],
@@ -1253,6 +1258,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_SLAB(), "jungle"],
 				[Blocks::MANGROVE_SLAB(), "mangrove"],
 				[Blocks::OAK_SLAB(), "oak"],
+				[Blocks::BAMBOO_SLAB(), "bamboo"],
 				[Blocks::PALE_OAK_SLAB(), "pale_oak"],
 				[Blocks::SPRUCE_SLAB(), "spruce"],
 				[Blocks::CRIMSON_SLAB(), "crimson"],
@@ -1272,6 +1278,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_STAIRS(), Ids::JUNGLE_STAIRS],
 				[Blocks::MANGROVE_STAIRS(), Ids::MANGROVE_STAIRS],
 				[Blocks::OAK_STAIRS(), Ids::OAK_STAIRS],
+				[Blocks::BAMBOO_STAIRS(), Ids::BAMBOO_STAIRS],
 				[Blocks::PALE_OAK_STAIRS(), Ids::PALE_OAK_STAIRS],
 				[Blocks::SPRUCE_STAIRS(), Ids::SPRUCE_STAIRS],
 				[Blocks::CRIMSON_STAIRS(), Ids::CRIMSON_STAIRS],
@@ -1291,6 +1298,7 @@ final class VanillaBlockMappings
 				[Blocks::JUNGLE_TRAPDOOR(), Ids::JUNGLE_TRAPDOOR],
 				[Blocks::MANGROVE_TRAPDOOR(), Ids::MANGROVE_TRAPDOOR],
 				[Blocks::OAK_TRAPDOOR(), Ids::TRAPDOOR],
+				[Blocks::BAMBOO_TRAPDOOR(), Ids::BAMBOO_TRAPDOOR],
 				[Blocks::PALE_OAK_TRAPDOOR(), Ids::PALE_OAK_TRAPDOOR],
 				[Blocks::SPRUCE_TRAPDOOR(), Ids::SPRUCE_TRAPDOOR],
 				[Blocks::CRIMSON_TRAPDOOR(), Ids::CRIMSON_TRAPDOOR],
@@ -1754,6 +1762,11 @@ final class VanillaBlockMappings
 			$fillLevelProperty,
 			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_LAVA)
 		]);
+		// powder snow cauldrons are not supported yet in Bedrock, so we don't register them here
+		$powderSnowCauldronModel = Model::create(Blocks::POWDER_SNOW_CAULDRON(), Ids::CAULDRON)->properties([
+			$fillLevelProperty,
+			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_POWDER_SNOW)
+		]);
 		$waterCauldronModel = Model::create(Blocks::WATER_CAULDRON(), Ids::CAULDRON)->properties([
 			$fillLevelProperty,
 			new DummyProperty(StateNames::CAULDRON_LIQUID, StringValues::CAULDRON_LIQUID_WATER)
@@ -1764,6 +1777,7 @@ final class VanillaBlockMappings
 		]);
 		self::mapAsymmetricSerializer($reg, $lavaCauldronModel);
 		self::mapAsymmetricSerializer($reg, $waterCauldronModel);
+		self::mapAsymmetricSerializer($reg, $powderSnowCauldronModel);
 		self::mapAsymmetricSerializer($reg, $emptyCauldronModel);
 		$reg->deserializer->map(
 			Ids::CAULDRON,
@@ -1772,7 +1786,7 @@ final class VanillaBlockMappings
 				match ($liquid = $in->readString(StateNames::CAULDRON_LIQUID)) {
 					StringValues::CAULDRON_LIQUID_WATER => self::deserializeAsymmetric($waterCauldronModel, $in),
 					StringValues::CAULDRON_LIQUID_LAVA => self::deserializeAsymmetric($lavaCauldronModel, $in),
-					StringValues::CAULDRON_LIQUID_POWDER_SNOW => throw new UnsupportedBlockStateException("Powder snow is not supported yet"),
+					StringValues::CAULDRON_LIQUID_POWDER_SNOW => self::deserializeAsymmetric($powderSnowCauldronModel, $in),
 					default => throw $in->badValueException(StateNames::CAULDRON_LIQUID, $liquid)
 				}
 		);

@@ -19,6 +19,7 @@ use pocketmine\player\Player;
 use pocketmine\math\Vector3;
 use pocketmine\item\Arrow as ArrowItem;
 use pocketmine\item\FireworkRocket as FireworkItem;
+use pocketmine\item\Item;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
 use pocketmine\world\sound\CrossbowQuickChargeStartSound;
@@ -85,12 +86,12 @@ class Crossbow extends Tool implements Releasable
                     $location->yaw -= 10;
 
                     for ($i = 0; $i < 3; $i++) {
-                        $arrow = new ArrowEntity($location, $player, false);
+                        $aEntity = new ArrowEntity($location, $player, false);
 
-                        $arrow->setOwningEntity($player);
+                        $aEntity->setOwningEntity($player);
 
                         if ($i !== 1 || $player->isCreative(true)) {
-                            $arrow->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+                            $aEntity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
                         }
 
                         $y = -sin(deg2rad($location->pitch));
@@ -100,8 +101,10 @@ class Crossbow extends Tool implements Releasable
 
                         $directionVector = (new Vector3($x, $y, $z))->normalize();
 
-                        $arrow->setMotion($directionVector->multiply(7));
-                        $arrow->spawnToAll();
+                        $aEntity->setMotion($directionVector->multiply(7));
+                        // Attach charged item so custom arrow metadata is preserved
+                        $aEntity->setProjectileItem($item);
+                        $aEntity->spawnToAll();
                         $location->yaw += 10;
                     }
                     if ($player->isSurvival()) {
@@ -112,6 +115,8 @@ class Crossbow extends Tool implements Releasable
                     return ItemUseResult::SUCCESS();
                 }
                 $entity->setMotion($directionVector);
+                // Attach charged item so custom arrow metadata is preserved
+                $entity->setProjectileItem($item);
                 $ev = new EntityShootCrossbowEvent($player, $this, $entity, 7);
                 $ev->call();
 
@@ -206,7 +211,7 @@ class Crossbow extends Tool implements Releasable
         $quickChargeEnch = EnchantmentIdMap::getInstance()->fromId(EnchantmentIds::QUICK_CHARGE);
         $quickCharge = $quickChargeEnch !== null ? $this->getEnchantmentLevel($quickChargeEnch) : 0;
         if ($time >= 24 - $quickCharge * 5) {
-            $taken = $this->takeOneMatchingItemFromPlayer($player, $firework) ?? $this->takeOneMatchingItemFromPlayer($player, $arrow);
+            $taken = $this->takeOneProjectileFromPlayer($player);
             if ($player->isSurvival() && $taken === null) {
                 return ItemUseResult::FAIL();
             }
@@ -234,7 +239,7 @@ class Crossbow extends Tool implements Releasable
             $firework = VanillaItems::FIREWORK_ROCKET()->setCount(1);
             $taken = null;
             if ($player->isSurvival()) {
-                $taken = $this->takeOneMatchingItemFromPlayer($player, $firework) ?? $this->takeOneMatchingItemFromPlayer($player, $arrow);
+                $taken = $this->takeOneProjectileFromPlayer($player);
                 if ($taken === null) {
                     return;
                 }
@@ -320,6 +325,47 @@ class Crossbow extends Tool implements Releasable
         return null;
     }
 
+    /**
+     * Take one arrow-like (ArrowItem) or firework from player (offhand first, then main inventory), preserving NBT.
+     */
+    private function takeOneProjectileFromPlayer(Player $player): ?Item
+    {
+        $off = $player->getOffHandInventory();
+        for ($i = 0; $i < $off->getSize(); $i++) {
+            $stack = $off->getItem($i);
+            if (($stack instanceof ArrowItem || $stack instanceof FireworkItem) && !$stack->isNull()) {
+                $result = clone $stack;
+                $result->setCount(1);
+                $result->getNamedTag()->setByte("FromOffHand", 1);
+                if ($stack->getCount() > 1) {
+                    $stack->setCount($stack->getCount() - 1);
+                    $off->setItem($i, $stack);
+                } else {
+                    $off->clear($i);
+                }
+                return $result;
+            }
+        }
+
+        $inv = $player->getInventory();
+        for ($i = 0; $i < $inv->getSize(); $i++) {
+            $stack = $inv->getItem($i);
+            if (($stack instanceof ArrowItem || $stack instanceof FireworkItem) && !$stack->isNull()) {
+                $result = clone $stack;
+                $result->setCount(1);
+                if ($stack->getCount() > 1) {
+                    $stack->setCount($stack->getCount() - 1);
+                    $inv->setItem($i, $stack);
+                } else {
+                    $inv->clear($i);
+                }
+                return $result;
+            }
+        }
+
+        return null;
+    }
+
     public function canStartUsingItem(Player $player): bool
     {
         $arrow = VanillaItems::ARROW();
@@ -327,7 +373,8 @@ class Crossbow extends Tool implements Releasable
         return !$player->hasFiniteResources()
             || $player->getOffHandInventory()->contains($arrow)
             || $player->getInventory()->contains($arrow)
-            || $player->getOffHandInventory()->contains($firework);
+            || $player->getOffHandInventory()->contains($firework)
+            || $player->getInventory()->contains($firework);
     }
 
     public static function setLoading(Player $player, bool $loading): void

@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerUIIds;
+use pocketmine\Server;
 use pocketmine\network\PacketHandlingException;
 
 final class ItemStackContainerIdTranslator{
@@ -39,7 +40,10 @@ final class ItemStackContainerIdTranslator{
 	 * @throws PacketHandlingException
 	 */
 	public static function translate(int $containerInterfaceId, int $currentWindowId, int $slotId) : array{
-		return match($containerInterfaceId){
+		try{
+			Server::getInstance()->getLogger()->debug("ItemStackContainerIdTranslator: translate called: containerInterfaceId={$containerInterfaceId}, currentWindowId={$currentWindowId}, slotId={$slotId}");
+		}catch(\Throwable $e){ }
+		$return = match($containerInterfaceId){
 			ContainerUIIds::ARMOR => [ContainerIds::ARMOR, $slotId],
 
 			ContainerUIIds::HOTBAR,
@@ -88,11 +92,16 @@ final class ItemStackContainerIdTranslator{
 			ContainerUIIds::HORSE_EQUIP,
 			ContainerUIIds::LEVEL_ENTITY, //chest
 			ContainerUIIds::SHULKER_BOX,
-			ContainerUIIds::SMOKER_INGREDIENT => [$currentWindowId, $slotId],
+			ContainerUIIds::SMOKER_INGREDIENT,
+			ContainerUIIds::DYNAMIC => [$currentWindowId, $slotId],
 
 			//all preview slots are ignored, since the client shouldn't be modifying those directly
 
 			default => throw new PacketHandlingException("Unexpected container UI ID $containerInterfaceId")
 		};
+		try{
+			Server::getInstance()->getLogger()->debug("ItemStackContainerIdTranslator: translate result => windowId=" . $return[0] . ", slotId=" . $return[1]);
+		}catch(\Throwable $e){ }
+		return $return;
 	}
 }

@@ -298,6 +298,12 @@ class Shelf extends Opaque implements WoodMaterial, HorizontalFacing{
 		return PoweredShelfType::CENTER;
 	}
 
+	protected function recalculateCollisionBoxes() : array{
+		// Shelves are decorative and thin; return no collision boxes to avoid players
+		// getting stuck or taking damage when multiple shelves are placed near each other.
+		return [];
+	}
+
 	protected function getConnectedBlocks() : array{
 		if($this->getType() === PoweredShelfType::UNCONNECTED || !$this->isGettingPower()){
 			return [$this];
@@ -340,11 +346,11 @@ class Shelf extends Opaque implements WoodMaterial, HorizontalFacing{
 
 	public function getType() : int{ return $this->poweredShelfType; }
 
-}
+	}
 
-final class PoweredShelfType{
-	public const UNCONNECTED = 0;
-	public const RIGHT = 1;
-	public const CENTER = 2;
-	public const LEFT = 3;
-}
+	final class PoweredShelfType{
+		public const UNCONNECTED = 0;
+		public const RIGHT = 1;
+		public const CENTER = 2;
+		public const LEFT = 3;
+	}

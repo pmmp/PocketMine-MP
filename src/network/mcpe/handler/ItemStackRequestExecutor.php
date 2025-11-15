@@ -52,6 +52,7 @@ use pocketmine\inventory\transaction\EnchantingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\item\Bundle;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\cache\CraftingDataCache;
@@ -80,6 +81,8 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
+use pocketmine\Server;
+use pocketmine\inventory\VirtualBundleInventory;
 use function array_key_first;
 use function count;
 use function spl_object_id;
@@ -161,8 +164,18 @@ class ItemStackRequestExecutor
 	protected function getBuilderInventoryAndSlot(ItemStackRequestSlotInfo $info): array
 	{
 		[$windowId, $slotId] = ItemStackContainerIdTranslator::translate($info->getContainerName()->getContainerId(), $this->inventoryManager->getCurrentWindowId(), $info->getSlotId());
+		try{
+			Server::getInstance()->getLogger()->warning("ItemStackRequestExecutor: translate(containerId=" . $info->getContainerName()->getContainerId() . ", slot=" . $info->getSlotId() . ") => windowId=" . $windowId . ", slotId=" . $slotId . ", currentWindowId=" . $this->inventoryManager->getCurrentWindowId());
+		} catch (\Throwable $e) {
+			// ignore
+		}
 		$windowAndSlot = $this->inventoryManager->locateWindowAndSlot($windowId, $slotId);
 		if ($windowAndSlot === null) {
+			try{
+				Server::getInstance()->getLogger()->warning("ItemStackRequestExecutor: locateWindowAndSlot FAILED for translatedWindowId=" . $windowId . ", translatedSlot=" . $slotId . ", originalContainerId=" . $info->getContainerName()->getContainerId() . ", originalSlot=" . $info->getSlotId());
+			} catch (\Throwable $e) {
+				// ignore
+			}
 			throw new ItemStackRequestProcessException("No open inventory matches container UI ID: " . $info->getContainerName()->getContainerId() . ", slot ID: " . $info->getSlotId());
 		}
 		[$inventory, $slot] = $windowAndSlot;
@@ -256,12 +269,46 @@ class ItemStackRequestExecutor
 	{
 		$this->requestSlotInfos[] = $slotInfo;
 		[$inventory, $slot] = $this->getBuilderInventoryAndSlot($slotInfo);
+		$actualInventory = $inventory instanceof TransactionBuilderInventory ? $inventory->getActualInventory() : $inventory;
+		$actualSlotItem = $actualInventory->getItem($slot);
+
+		try{
+			$inventoryLabel = $this->prettyInventoryAndSlot($inventory, $slot);
+			$actualName = $actualSlotItem->isNull() ? 'AIR' : $actualSlotItem->getName();
+			if($inventory instanceof VirtualBundleInventory){
+				Server::getInstance()->getLogger()->warning("ItemStackRequestExecutor: Adding item to VirtualBundleInventory $inventoryLabel, item=" . $item->getName() . ", class=" . get_class($item) . ", typeId=" . $item->getTypeId() . ", stateId=" . $item->getStateId());
+			} else {
+				Server::getInstance()->getLogger()->warning("ItemStackRequestExecutor: addItemToSlot target is " . (new \ReflectionClass($inventory))->getShortName() . " => $inventoryLabel (actual slot item=$actualName)");
+			}
+		} catch(\Throwable $e){
+			// ignore
+		}
 		if ($count < 1) {
 			//this should be impossible at the protocol level, but in case of buggy core code this will prevent exploits
 			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Cannot take less than 1 items from a stack");
 		}
 
 		$existingItem = $inventory->getItem($slot);
+		$bundleTarget = $actualSlotItem instanceof Bundle ? $actualSlotItem : ($existingItem instanceof Bundle ? $existingItem : null);
+		if($bundleTarget instanceof Bundle){
+			$incoming = clone $item;
+			$incoming->setCount($count);
+			try{
+				Server::getInstance()->getLogger()->info("ItemStackRequestExecutor: attempting to insert {$count}x " . $incoming->getName() . " into bundle in " . $this->prettyInventoryAndSlot($inventory, $slot));
+			}catch(\Throwable $e){
+				// ignore
+			}
+			if(!$bundleTarget->addItem($incoming)){
+				throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Bundle has no capacity for " . $incoming->getName());
+			}
+			try{
+				Server::getInstance()->getLogger()->info("ItemStackRequestExecutor: bundle insert succeeded; slot now holds " . $bundleTarget->getName());
+			}catch(\Throwable $e){
+				// ignore
+			}
+			$inventory->setItem($slot, $bundleTarget);
+			return;
+		}
 		if (!$existingItem->isNull() && !$existingItem->canStackWith($item)) {
 			throw new ItemStackRequestProcessException($this->prettyInventoryAndSlot($inventory, $slot) . ": Can only add items to an empty slot, or a slot containing the same item");
 		}
@@ -474,12 +521,30 @@ class ItemStackRequestExecutor
 	 */
 	protected function processItemStackRequestAction(ItemStackRequestAction $action): void
 	{
+		// High-visibility log so we can verify that client actions reach the executor even when debug/info are disabled
+		try{
+			Server::getInstance()->getLogger()->warning("ItemStackRequestExecutor: processing action " . (new \ReflectionClass($action))->getShortName() . " for player=" . $this->player->getName());
+		}catch(\Throwable $e){
+			// ignore
+		}
 		if (
 			$action instanceof TakeStackRequestAction ||
 			$action instanceof PlaceStackRequestAction
 		) {
+			try{
+				$src = method_exists($action, 'getSource') ? $action->getSource() : null;
+				$dst = method_exists($action, 'getDestination') ? $action->getDestination() : null;
+				Server::getInstance()->getLogger()->debug("ItemStackRequestExecutor: Transfer action details: sourceContainer=" . ($src?->getContainerName()?->getContainerId() ?? 'null') . ", sourceSlot=" . ($src?->getSlotId() ?? 'null') . ", destContainer=" . ($dst?->getContainerName()?->getContainerId() ?? 'null') . ", destSlot=" . ($dst?->getSlotId() ?? 'null'));
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->transferItems($action->getSource(), $action->getDestination(), $action->getCount());
 		} elseif ($action instanceof SwapStackRequestAction) {
+			try{
+				Server::getInstance()->getLogger()->debug("ItemStackRequestExecutor: Swap action slots: slot1.container=" . $action->getSlot1()->getContainerName()->getContainerId() . ", slot1.slot=" . $action->getSlot1()->getSlotId() . ", slot2.container=" . $action->getSlot2()->getContainerName()->getContainerId() . ", slot2.slot=" . $action->getSlot2()->getSlotId());
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->requestSlotInfos[] = $action->getSlot1();
 			$this->requestSlotInfos[] = $action->getSlot2();
 
@@ -491,6 +556,11 @@ class ItemStackRequestExecutor
 			$inventory1->setItem($slot1, $item2);
 			$inventory2->setItem($slot2, $item1);
 		} elseif ($action instanceof DropStackRequestAction) {
+			try{
+				Server::getInstance()->getLogger()->debug("ItemStackRequestExecutor: Drop action from container=" . $action->getSource()->getContainerName()->getContainerId() . ", slot=" . $action->getSource()->getSlotId() . ", count=" . $action->getCount());
+			}catch(\Throwable $e){
+				// ignore
+			}
 			//TODO: this action has a "randomly" field, I have no idea what it's used for
 			$dropped = $this->removeItemFromSlot($action->getSource(), $action->getCount());
 			$this->builder->addAction(new DropItemAction($dropped));

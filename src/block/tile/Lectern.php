@@ -25,7 +25,11 @@ namespace pocketmine\block\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
+use pocketmine\item\WritableBookPage;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use function count;
 
@@ -42,11 +46,32 @@ class Lectern extends Spawnable{
 	private int $viewedPage = 0;
 	private ?WritableBookBase $book = null;
 
-	public function readSaveData(CompoundTag $nbt) : void{
+ 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->viewedPage = $nbt->getInt(self::TAG_PAGE, 0);
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_BOOK)) !== null){
 			$book = Item::nbtDeserialize($itemTag);
 			if($book instanceof WritableBookBase && !$book->isNull()){
+				$this->book = $book;
+			}
+		}elseif(($pages = $nbt->getListTag(self::TAG_BOOK)) !== null){
+			// Some saves may store only the page list under the lectern's book tag.
+			// Accept both CompoundTag pages (PE/old) and StringTag pages (PC-format) like WritableBookBase does.
+			$book = VanillaItems::WRITTEN_BOOK();
+			if(($compoundPages = $pages->cast(CompoundTag::class)) !== null){
+				$pagesArr = [];
+				/** @var CompoundTag $page */
+				foreach($compoundPages as $page){
+					$pagesArr[] = new WritableBookPage(mb_scrub($page->getString(WritableBookBase::TAG_PAGE_TEXT, ""), 'UTF-8'), $page->getString(WritableBookBase::TAG_PAGE_PHOTONAME, ""));
+				}
+				$book->setPages($pagesArr);
+				$this->book = $book;
+			}elseif(($stringPages = $pages->cast(StringTag::class)) !== null){
+				$pagesArr = [];
+				/** @var StringTag $page */
+				foreach($stringPages as $page){
+					$pagesArr[] = new WritableBookPage(mb_scrub($page->getValue(), 'UTF-8'));
+				}
+				$book->setPages($pagesArr);
 				$this->book = $book;
 			}
 		}

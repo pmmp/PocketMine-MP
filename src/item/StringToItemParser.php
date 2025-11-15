@@ -1370,6 +1370,24 @@ final class StringToItemParser extends StringToTParser
 		$result->register("tipped_arrow_strong_slowness", fn() => Items::TIPPED_ARROW_STRONG_SLOWNESS());
 		$result->register("axolotl_bucket", fn() => Items::AXOLOTL_BUCKET());
 		$result->register("baked_potato", fn() => Items::BAKED_POTATO());
+		// Bamboo item aliases (ensure /give and parsers recognize all bamboo variants)
+		$result->register("bamboo", fn() => Items::BAMBOO());
+		$result->register("bamboo_planks", fn() => Items::BAMBOO_PLANKS());
+		$result->register("bamboo_mosaic", fn() => Items::BAMBOO_MOSAIC());
+		$result->register("bamboo_sign", fn() => Items::BAMBOO_SIGN());
+		$result->register("bamboo_hanging_sign", fn() => Items::BAMBOO_HANGING_SIGN());
+		$result->register("bamboo_shelf", fn() => Items::BAMBOO_SHELF());
+		// Additional bamboo block-item aliases
+		$result->register("bamboo_log", fn() => Items::BAMBOO_LOG());
+		$result->register("bamboo_wood", fn() => Items::BAMBOO_WOOD());
+		$result->register("bamboo_fence", fn() => Items::BAMBOO_FENCE());
+		$result->register("bamboo_slab", fn() => Items::BAMBOO_SLAB());
+		$result->register("bamboo_fence_gate", fn() => Items::BAMBOO_FENCE_GATE());
+		$result->register("bamboo_stairs", fn() => Items::BAMBOO_STAIRS());
+		$result->register("bamboo_door", fn() => Items::BAMBOO_DOOR());
+		$result->register("bamboo_button", fn() => Items::BAMBOO_BUTTON());
+		$result->register("bamboo_pressure_plate", fn() => Items::BAMBOO_PRESSURE_PLATE());
+		$result->register("bamboo_trapdoor", fn() => Items::BAMBOO_TRAPDOOR());
 		$result->register("baked_potatoes", fn() => Items::BAKED_POTATO());
 		$result->register("beef", fn() => Items::RAW_BEEF());
 		$result->register("beetroot", fn() => Items::BEETROOT());
@@ -1396,6 +1414,25 @@ final class StringToItemParser extends StringToTParser
 		$result->register("bone", fn() => Items::BONE());
 		$result->register("bone_meal", fn() => Items::BONE_MEAL());
 		$result->register("book", fn() => Items::BOOK());
+		// alias for custom bundle item
+		$result->register("bundle", fn() => Items::BUNDLE());
+		// Colored bundle aliases
+		$result->register("black_bundle", fn() => Items::BUNDLE());
+		$result->register("blue_bundle", fn() => Items::BLUE_BUNDLE());
+		$result->register("brown_bundle", fn() => Items::BUNDLE());
+		$result->register("cyan_bundle", fn() => Items::BUNDLE());
+		$result->register("gray_bundle", fn() => Items::BUNDLE());
+		$result->register("green_bundle", fn() => Items::BUNDLE());
+		$result->register("light_blue_bundle", fn() => Items::BUNDLE());
+		$result->register("light_gray_bundle", fn() => Items::BUNDLE());
+		$result->register("lime_bundle", fn() => Items::BUNDLE());
+		$result->register("magenta_bundle", fn() => Items::BUNDLE());
+		$result->register("orange_bundle", fn() => Items::BUNDLE());
+		$result->register("pink_bundle", fn() => Items::BUNDLE());
+		$result->register("purple_bundle", fn() => Items::BUNDLE());
+		$result->register("red_bundle", fn() => Items::BUNDLE());
+		$result->register("white_bundle", fn() => Items::BUNDLE());
+		$result->register("yellow_bundle", fn() => Items::BUNDLE());
 		$result->register("bottle_o_enchanting", fn() => Items::EXPERIENCE_BOTTLE());
 		$result->register("bow", fn() => Items::BOW());
 		$result->register("crossbow", fn() => Items::CROSSBOW());
@@ -1573,7 +1610,6 @@ final class StringToItemParser extends StringToTParser
 		$result->register("heavy_core", fn() => Items::HEAVY_CORE());
 		$result->register("honey_bottle", fn() => Items::HONEY_BOTTLE());
 		$result->register("honey_block", fn() => Items::HONEY_BLOCK());
-		$result->register("bee_bucket", fn() => Items::BEE_BUCKET());
 		$result->register("honeycomb", fn() => Items::HONEYCOMB());
 		$result->register("scaffolding", fn() => Items::SCAFFOLDING());
 		$result->register("host_armor_trim_smithing_template", fn() => Items::HOST_ARMOR_TRIM_SMITHING_TEMPLATE());
@@ -1595,6 +1631,7 @@ final class StringToItemParser extends StringToTParser
 		$result->register("jungle_hanging_sign", fn() => Items::JUNGLE_HANGING_SIGN());
 		$result->register("lapis_lazuli", fn() => Items::LAPIS_LAZULI());
 		$result->register("lava_bucket", fn() => Items::LAVA_BUCKET());
+		$result->register("powder_snow_bucket", fn() => Items::POWDER_SNOW_BUCKET());
 		$result->register("leather", fn() => Items::LEATHER());
 		$result->register("leather_boots", fn() => Items::LEATHER_BOOTS());
 		$result->register("leather_cap", fn() => Items::LEATHER_CAP());

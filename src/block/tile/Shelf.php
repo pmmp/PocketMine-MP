@@ -28,6 +28,7 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\block\inventory\ShelfInventory;
 use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
@@ -73,9 +74,7 @@ class Shelf extends Spawnable implements Container{
 			/** @var CompoundTag $itemNbt */
 			foreach($inventoryTag as $index => $itemNbt){
 				$slot = $itemNbt->getByte(SavedItemStackData::TAG_SLOT);
-				try{
-					\GlobalLogger::get()->info("TileShelf:loadItems itemIndex=" . $index . " tagSlot=" . $slot . " rawName=" . $itemNbt->getString("id") );
-				}catch(\Throwable){ }
+		
 				if($slot >= 0 && $slot < 3){
 					$inventoryItems[$slot] = Item::nbtDeserialize($itemNbt);
 				}
@@ -97,9 +96,9 @@ class Shelf extends Spawnable implements Container{
 		$block = $this->position->getWorld()->getBlock($this->position);
 		$front = null;
 		if($block instanceof \pocketmine\block\Shelf){
-			$front = \pocketmine\math\Facing::opposite($block->getFacing());
+			$front = Facing::opposite($block->getFacing());
 			// For NORTH or WEST fronts, the visual left-to-right mapping may be reversed
-			if($front === \pocketmine\math\Facing::NORTH || $front === \pocketmine\math\Facing::WEST){
+			if($front === Facing::NORTH || $front === Facing::WEST){
 				$reverse = true;
 			}
 		}
@@ -135,18 +134,11 @@ class Shelf extends Spawnable implements Container{
 				$slotInfo[] = "listIndex=" . $idx . "->compoundSlot=" . $compSlot . " id=" . $compound->getString("id");
 				$items[] = $compound;
 			}
-			\GlobalLogger::get()->info("TileShelf:saveItems pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " front=" . ($front ?? 'null') . " reverse=" . ($reverse ? '1' : '0') . " order=" . implode(',', $orderList) . " slotInfo=" . implode('|', $slotInfo));
-			@fwrite(STDOUT, "TileShelf:STDOUT saveItems pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " front=" . ($front ?? 'null') . " reverse=" . ($reverse ? '1' : '0') . " order=" . implode(',', $orderList) . " slotInfo=" . implode('|', $slotInfo) . "\n");
 		}catch(\Throwable){
 			// fall back to writing without detailed debug
 			foreach($serialized as $compound){
 				$items[] = $compound;
 			}
-			// also write fallback info to STDOUT so the server operator can see it immediately
-			try{
-				$pos = $this->getPosition();
-				@fwrite(STDOUT, "TileShelf:STDOUT saveItems fallback pos=" . $pos->getFloorX() . "/" . $pos->getFloorY() . "/" . $pos->getFloorZ() . " serializedCount=" . count($serialized) . "\n");
-			}catch(\Throwable){ }
 		}
 
 		$nbt->setTag(self::TAG_ITEMS, new ListTag($items, NBT::TAG_Compound));

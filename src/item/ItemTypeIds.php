@@ -264,6 +264,7 @@ final class ItemTypeIds{
 	public const WOODEN_SWORD = 20225;
 	public const WRITABLE_BOOK = 20226;
 	public const WRITTEN_BOOK = 20227;
+	public const BUNDLE = 21053;
 	public const ZOMBIE_SPAWN_EGG = 20228;
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = 20369;
 	public const AXOLOTL_SPAWN_EGG = 20370;
@@ -470,6 +471,20 @@ final class ItemTypeIds{
 	// item wrappers for bamboo block-items
 	public const BAMBOO_PLANKS = 21039;
 	public const BAMBOO_MOSAIC = 21040;
+	public const BAMBOO_SIGN = 21041;
+	public const BAMBOO_HANGING_SIGN = 21042;
+
+	// Additional bamboo item wrappers (avoid dynamic id generation warnings)
+	public const BAMBOO_LOG = 21043;
+	public const BAMBOO_WOOD = 21044;
+	public const BAMBOO_FENCE = 21045;
+	public const BAMBOO_SLAB = 21046;
+	public const BAMBOO_FENCE_GATE = 21047;
+	public const BAMBOO_STAIRS = 21048;
+	public const BAMBOO_DOOR = 21049;
+	public const BAMBOO_BUTTON = 21050;
+	public const BAMBOO_PRESSURE_PLATE = 21051;
+	public const BAMBOO_TRAPDOOR = 21052;
 
 	public const FIRST_UNUSED_ITEM_ID = 99999;
 

@@ -201,6 +201,30 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::BONE, Items::BONE());
 		$this->map1to1Item(Ids::BONE_MEAL, Items::BONE_MEAL());
 		$this->map1to1Item(Ids::BOOK, Items::BOOK());
+		// Bundle (vanilla) mapping
+		$this->map1to1Item(Ids::BUNDLE, Items::BUNDLE());
+
+		// Colored Bedrock bundle IDs should deserialize to the same PocketMine Bundle.
+		// The blue bundle is registered as a separate runtime item type (VanillaItems::BLUE_BUNDLE()),
+		// so we must also register a serializer for it to avoid serialization errors when saving player data.
+		$this->deserializer?->map(Ids::BLACK_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::BLUE_BUNDLE, fn() => clone Items::BLUE_BUNDLE());
+		// Register serializer for the runtime blue-bundle item type so serializing blue bundles does not crash.
+		$this->serializer?->map(Items::BLUE_BUNDLE(), fn() => new Data(Ids::BLUE_BUNDLE));
+		$this->deserializer?->map(Ids::BROWN_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::CYAN_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::GRAY_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::GREEN_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::LIGHT_BLUE_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::LIGHT_GRAY_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::LIME_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::MAGENTA_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::ORANGE_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::PINK_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::PURPLE_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::RED_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::WHITE_BUNDLE, fn() => clone Items::BUNDLE());
+		$this->deserializer?->map(Ids::YELLOW_BUNDLE, fn() => clone Items::BUNDLE());
 		$this->map1to1Item(Ids::BOW, Items::BOW());
 		$this->map1to1Item(Ids::CROSSBOW, Items::CROSSBOW());
 		$this->map1to1Item(Ids::BOWL, Items::BOWL());

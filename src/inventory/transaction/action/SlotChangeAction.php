@@ -28,6 +28,8 @@ use pocketmine\inventory\SlotValidatedInventory;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\inventory\VirtualBundleInventory;
+use pocketmine\Server;
 
 /**
  * Represents an action causing a change in an inventory slot.
@@ -88,6 +90,19 @@ class SlotChangeAction extends InventoryAction{
 	 * Sets the item into the target inventory.
 	 */
 	public function execute(Player $source) : void{
+		// Special-case VirtualBundleInventory to allow bundle-specific handling via InventoryTransactions
+		if ($this->inventory instanceof VirtualBundleInventory) {
+			try{
+				// Warning-level log to ensure visibility even if debug/info are filtered out
+				Server::getInstance()->getLogger()->info("SlotChangeAction: bundle slot change requested player=" . $source->getName() . ", slot=" . $this->inventorySlot . ", item=" . $this->targetItem->getName());
+			} catch (\Throwable $e) {
+				// ignore
+			}
+			/** @var VirtualBundleInventory $inv */
+			$inv = $this->inventory;
+			$inv->applySlotChange($this->inventorySlot, $this->sourceItem, $this->targetItem, $source);
+			return;
+		}
 		$this->inventory->setItem($this->inventorySlot, $this->targetItem);
 	}
 }

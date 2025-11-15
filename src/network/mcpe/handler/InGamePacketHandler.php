@@ -108,6 +108,7 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\Server;
 use pocketmine\world\format\Chunk;
 use function array_push;
 use function count;
@@ -189,7 +190,11 @@ class InGamePacketHandler extends PacketHandler
 		$rawPitch = $packet->getPitch();
 		foreach ([$rawPos->x, $rawPos->y, $rawPos->z, $rawYaw, $packet->getHeadYaw(), $rawPitch] as $float) {
 			if (is_infinite($float) || is_nan($float)) {
-				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
+				try{
+					Server::getInstance()->getLogger()->debug("Invalid movement received, contains NAN/INF components");
+				}catch(\Throwable $e){
+					// ignore
+				}
 				return false;
 			}
 		}
@@ -214,7 +219,11 @@ class InGamePacketHandler extends PacketHandler
 			$curPos = $this->player->getLocation();
 
 			if ($newPos->distanceSquared($curPos) > 1) {  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-				$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				try{
+					Server::getInstance()->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+				}catch(\Throwable $e){
+					// ignore
+				}
 				//Still getting movements from before teleport, ignore them
 				return true;
 			}
@@ -270,7 +279,11 @@ class InGamePacketHandler extends PacketHandler
 				} else {
 					// Reject client's attempt to start crawling when no trapdoor is present.
 					// Keep server state unchanged and do not map to swimming flag.
-					$this->session->getLogger()->debug("Rejected START_CRAWLING from " . $this->player->getName() . " because no trapdoor found nearby");
+						try{
+							Server::getInstance()->getLogger()->debug("Rejected START_CRAWLING from " . $this->player->getName() . " because no trapdoor found nearby");
+						}catch(\Throwable $e){
+							// ignore
+						}
 				}
 			}
 
@@ -357,7 +370,11 @@ class InGamePacketHandler extends PacketHandler
 			$this->inventoryManager->addRawPredictedSlotChanges($useItemTransaction->getTransactionData()->getActions());
 			if (!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())) {
 				$packetHandled = false;
-				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+				try{
+					Server::getInstance()->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+				}catch(\Throwable $e){
+					// ignore
+				}
 			} else {
 				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 			}
@@ -384,7 +401,11 @@ class InGamePacketHandler extends PacketHandler
 
 				if (!$actionHandled) {
 					$packetHandled = false;
-					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+					try{
+						Server::getInstance()->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+					}catch(\Throwable $e){
+						// ignore
+					}
 				}
 			}
 		}
@@ -436,7 +457,11 @@ class InGamePacketHandler extends PacketHandler
 		if ($packet->trData instanceof NormalTransactionData) {
 			$result = $this->handleNormalTransaction($packet->trData, $packet->requestId);
 		} elseif ($packet->trData instanceof MismatchTransactionData) {
-			$this->session->getLogger()->debug("Mismatch transaction received");
+			try{
+				Server::getInstance()->getLogger()->debug("Mismatch transaction received");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->inventoryManager->requestSyncAll();
 			$result = true;
 		} elseif ($packet->trData instanceof UseItemTransactionData) {
@@ -482,7 +507,11 @@ class InGamePacketHandler extends PacketHandler
 
 			return false;
 		} catch (TransactionCancelledException) {
-			$this->session->getLogger()->debug("Inventory transaction $requestId cancelled by a plugin");
+			try{
+				Server::getInstance()->getLogger()->debug("Inventory transaction $requestId cancelled by a plugin");
+			}catch(\Throwable $e){
+				// ignore
+			}
 
 			return false;
 		} finally {
@@ -508,7 +537,11 @@ class InGamePacketHandler extends PacketHandler
 
 			//Due to a bug in the game, this transaction type is still sent when a player edits a book. We don't need
 			//these transactions for editing books, since we have BookEditPacket, so we can just ignore them.
-			$this->session->getLogger()->debug("Ignoring normal inventory transaction with $actionCount actions (drop-item should have exactly 2 actions)");
+			try{
+				Server::getInstance()->getLogger()->debug("Ignoring normal inventory transaction with $actionCount actions (drop-item should have exactly 2 actions)");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return false;
 		}
 
@@ -527,12 +560,20 @@ class InGamePacketHandler extends PacketHandler
 				$sourceSlot = $networkInventoryAction->inventorySlot;
 				$clientItemStack = $networkInventoryAction->oldItem->getItemStack();
 			} else {
-				$this->session->getLogger()->debug("Unexpected inventory action type $networkInventoryAction->sourceType in drop item transaction");
+				try{
+					Server::getInstance()->getLogger()->debug("Unexpected inventory action type $networkInventoryAction->sourceType in drop item transaction");
+				}catch(\Throwable $e){
+					// ignore
+				}
 				return false;
 			}
 		}
 		if ($sourceSlot === null || $clientItemStack === null || $droppedCount === null) {
-			$this->session->getLogger()->debug("Missing information in drop item transaction, need source slot, client item stack and dropped count");
+			try{
+				Server::getInstance()->getLogger()->debug("Missing information in drop item transaction, need source slot, client item stack and dropped count");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return false;
 		}
 
@@ -634,6 +675,11 @@ class InGamePacketHandler extends PacketHandler
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
+				try{
+					Server::getInstance()->getLogger()->info("InGamePacketHandler: ACTION_CLICK_AIR received for player=" . $this->player->getName());
+				}catch(\Throwable $e){
+					// ignore
+				}
 				// If the client is trying to start using an item, but the server deems it not startable
 				// (for example: a charged crossbow), immediately clear the using state so the client
 				// doesn't remain stuck in the hold animation.
@@ -750,8 +796,16 @@ class InGamePacketHandler extends PacketHandler
 			}
 		} catch (ItemStackRequestProcessException $e) {
 			$result = false;
-			$this->session->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
-			$this->session->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
+			try{
+				Server::getInstance()->getLogger()->debug("ItemStackRequest #" . $request->getRequestId() . " failed: " . $e->getMessage());
+			}catch(\Throwable $e){
+				// ignore
+			}
+			try{
+				Server::getInstance()->getLogger()->debug(implode("\n", Utils::printableExceptionInfo($e)));
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->inventoryManager->requestSyncAll();
 		}
 
@@ -794,9 +848,17 @@ class InGamePacketHandler extends PacketHandler
 					$new = $this->player->getFlightSpeedMultiplier() + $direction * $step;
 					$new = max(0.01, min(1.0, $new));
 					$this->player->setFlightSpeedMultiplier($new);
-					$this->session->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+					try{
+						Server::getInstance()->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+					}catch(\Throwable $e){
+						// ignore
+					}
 				} catch (\Throwable $e) {
-					$this->session->getLogger()->debug("Error adjusting spectator flight speed: " . $e->getMessage());
+					try{
+						Server::getInstance()->getLogger()->debug("Error adjusting spectator flight speed: " . $e->getMessage());
+					}catch(\Throwable $e){
+						// ignore
+					}
 				}
 				return true;
 			}
@@ -817,6 +879,15 @@ class InGamePacketHandler extends PacketHandler
 
 	public function handleInteract(InteractPacket $packet): bool
 	{
+		try{
+			try{
+				Server::getInstance()->getLogger()->debug("InGamePacketHandler::handleInteract action=" . $packet->action . ", target=" . $packet->targetActorRuntimeId);
+			}catch(\Throwable $e){
+				// ignore
+			}
+		} catch (\Throwable $e) {
+			// ignore
+		}
 		if ($packet->action === InteractPacket::ACTION_MOUSEOVER) {
 			//TODO HACK: silence useless spam (MCPE 1.8)
 			//due to some messy Mojang hacks, it sends this when changing the held item now, which causes us to think
@@ -830,6 +901,15 @@ class InGamePacketHandler extends PacketHandler
 			return false;
 		}
 		if ($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player) {
+			try{
+				try{
+					Server::getInstance()->getLogger()->debug("InGamePacketHandler: client requested open main inventory (E) from actorRuntimeId=" . $packet->targetActorRuntimeId);
+				}catch(\Throwable $e){
+					// ignore
+				}
+			} catch (\Throwable $e) {
+				// ignore
+			}
 			$this->inventoryManager->onClientOpenMainInventory();
 			return true;
 		}
@@ -864,7 +944,11 @@ class InGamePacketHandler extends PacketHandler
 					//sends PREDICT_DESTROY_BLOCK, but also when it starts to break the block
 					//this seems like a bug in the client and would cause spurious left-click events if we allowed it to
 					//be delivered to the player
-					$this->session->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
+					try{
+						Server::getInstance()->getLogger()->debug("Ignoring PlayerAction $action on $pos because we were already destroying this block");
+					}catch(\Throwable $e){
+						// ignore
+					}
 					break;
 				}
 				if (!$this->player->attackBlock($pos, $face)) {
@@ -907,7 +991,11 @@ class InGamePacketHandler extends PacketHandler
 				//TODO: this has no obvious use and seems only used for analytics in vanilla - ignore it
 				break;
 			default:
-				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
+				try{
+					Server::getInstance()->getLogger()->debug("Unhandled/unknown player action type " . $action);
+				}catch(\Throwable $e){
+					// ignore
+				}
 				return false;
 		}
 
@@ -949,7 +1037,11 @@ class InGamePacketHandler extends PacketHandler
 					$new = $this->player->getFlightSpeedMultiplier() + $direction * $step;
 					$new = max(0.01, min(1.0, $new));
 					$this->player->setFlightSpeedMultiplier($new);
-					$this->session->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+					try{
+						Server::getInstance()->getLogger()->debug("Spectator flight speed adjusted to " . $new);
+					}catch(\Throwable $e){
+						// ignore
+					}
 				} catch (\Throwable $e) {
 					// fallback to simple toggle
 					$default = Player::DEFAULT_FLIGHT_SPEED_MULTIPLIER;
@@ -960,7 +1052,11 @@ class InGamePacketHandler extends PacketHandler
 				}
 			}
 		} catch (\Throwable $e) {
-			$this->session->getLogger()->debug("Error toggling spectator flight speed: " . $e->getMessage());
+			try{
+				Server::getInstance()->getLogger()->debug("Error toggling spectator flight speed: " . $e->getMessage());
+			}catch(\Throwable $e){
+				// ignore
+			}
 		}
 		return true;
 	}
@@ -1084,12 +1180,20 @@ class InGamePacketHandler extends PacketHandler
 		if ($packet->skin->getFullSkinId() === $this->lastRequestedFullSkinId) {
 			//TODO: HACK! In 1.19.60, the client sends its skin back to us if we sent it a skin different from the one
 			//it's using. We need to prevent this from causing a feedback loop.
-			$this->session->getLogger()->debug("Refused duplicate skin change request");
+			try{
+				Server::getInstance()->getLogger()->debug("Refused duplicate skin change request");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return true;
 		}
 		$this->lastRequestedFullSkinId = $packet->skin->getFullSkinId();
 
-		$this->session->getLogger()->debug("Processing skin change request");
+		try{
+			Server::getInstance()->getLogger()->debug("Processing skin change request");
+		}catch(\Throwable $e){
+			// ignore
+		}
 		try {
 			$skin = $this->session->getTypeConverter()->getSkinAdapter()->fromSkinData($packet->skin);
 		} catch (InvalidSkinException $e) {
@@ -1149,7 +1253,11 @@ class InGamePacketHandler extends PacketHandler
 		//strlen() is O(1), mb_strlen() is O(n)
 		if (strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit) {
 			$cancel = true;
-			$this->session->getLogger()->debug("Cancelled book edit due to $fieldName exceeded soft limit of $softLimit chars");
+			try{
+				Server::getInstance()->getLogger()->debug("Cancelled book edit due to $fieldName exceeded soft limit of $softLimit chars");
+			}catch(\Throwable $e){
+				// ignore
+			}
 		}
 
 		return $result;
@@ -1233,7 +1341,11 @@ class InGamePacketHandler extends PacketHandler
 		$oldPageCount = count($oldBook->getPages());
 		$newPageCount = count($newBook->getPages());
 		if (($newPageCount > $oldPageCount && $newPageCount > 50)) {
-			$this->session->getLogger()->debug("Cancelled book edit due to adding too many pages (new page count would be $newPageCount)");
+			try{
+				Server::getInstance()->getLogger()->debug("Cancelled book edit due to adding too many pages (new page count would be $newPageCount)");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$cancel = true;
 		}
 

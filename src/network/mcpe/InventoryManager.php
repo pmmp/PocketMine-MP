@@ -66,6 +66,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\inventory\EntityInventory;
 use pocketmine\inventory\TradeInventory;
+use pocketmine\Server;
 
 
 
@@ -150,6 +151,11 @@ class InventoryManager
 	private function associateIdWithInventory(int $id, Inventory $inventory): void
 	{
 		$this->networkIdToInventoryMap[$id] = $inventory;
+		try{
+			Server::getInstance()->getLogger()->warning("InventoryManager: associated networkId=$id with inventory=" . get_class($inventory) . "#" . spl_object_id($inventory));
+		}catch(\Throwable $e){
+			// ignore
+		}
 	}
 
 	private function getNewWindowId(): int
@@ -165,12 +171,22 @@ class InventoryManager
 		}
 		$this->inventories[spl_object_id($inventory)] = new InventoryManagerEntry($inventory);
 		$this->associateIdWithInventory($id, $inventory);
+		try{
+			Server::getInstance()->getLogger()->debug("InventoryManager: add() tracked inventory=" . get_class($inventory) . "#" . spl_object_id($inventory) . " as networkId=$id");
+		}catch(\Throwable $e){
+			// ignore
+		}
 	}
 
 	private function addDynamic(Inventory $inventory): int
 	{
 		$id = $this->getNewWindowId();
 		$this->add($id, $inventory);
+		try{
+			Server::getInstance()->getLogger()->debug("InventoryManager: addDynamic assigned networkId=$id for inventory=" . get_class($inventory) . "#" . spl_object_id($inventory));
+		}catch(\Throwable $e){
+			// ignore
+		}
 		return $id;
 	}
 
@@ -245,6 +261,11 @@ class InventoryManager
 		}
 		$inventory = $this->networkIdToInventoryMap[$windowId] ?? null;
 		if ($inventory !== null && $inventory->slotExists($netSlotId)) {
+			try{
+				Server::getInstance()->getLogger()->warning("InventoryManager: locateWindowAndSlot matched windowId=$windowId to inventory=" . get_class($inventory) . "#" . spl_object_id($inventory) . ", netSlot=$netSlotId");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return [$inventory, $netSlotId];
 		}
 		return null;
@@ -327,7 +348,11 @@ class InventoryManager
 	private function openWindowDeferred(\Closure $func): void
 	{
 		if ($this->pendingCloseWindowId !== null) {
-			$this->session->getLogger()->debug("Deferring opening of new window, waiting for close ack of window $this->pendingCloseWindowId");
+			try{
+				Server::getInstance()->getLogger()->debug("Deferring opening of new window, waiting for close ack of window $this->pendingCloseWindowId");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->pendingOpenWindowCallback = $func;
 		} else {
 			$func();
@@ -405,6 +430,15 @@ class InventoryManager
 		if ($inv instanceof \pocketmine\inventory\VirtualTradeInventory) {
 			return $inv->createInventoryOpenPackets($id);
 		}
+		// Allow virtual bundle inventories to provide their own open packets
+		if ($inv instanceof \pocketmine\inventory\VirtualBundleInventory) {
+			try{
+				Server::getInstance()->getLogger()->debug("InventoryManager: VirtualBundleInventory open requested for networkWindowId=$id, inventory=" . get_class($inv) . "#" . spl_object_id($inv));
+			}catch(\Throwable $e){
+				// ignore
+			}
+			return $inv->createInventoryOpenPackets($id);
+		}
 		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
 		//if the class isn't final, not to mention being inflexible.
 		if ($inv instanceof BlockInventory) {
@@ -445,7 +479,11 @@ class InventoryManager
 	{
 		// If the player is currently a spectator, ignore client requests to open the main inventory
 		if ($this->player->isSpectator()) {
-			$this->session->getLogger()->debug("Ignored client main-inventory open because player is spectator");
+			try{
+				Server::getInstance()->getLogger()->debug("Ignored client main-inventory open because player is spectator");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return;
 		}
 		$this->onCurrentWindowRemove();
@@ -454,6 +492,11 @@ class InventoryManager
 			$windowId = $this->getNewWindowId();
 			$this->associateIdWithInventory($windowId, $this->player->getInventory());
 			$this->currentWindowType = WindowTypes::INVENTORY;
+			try{
+				Server::getInstance()->getLogger()->debug("InventoryManager::onClientOpenMainInventory sending open packet for windowId=$windowId to player=" . $this->player->getName());
+			} catch (\Throwable $e) {
+				// ignore
+			}
 
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				$windowId,
@@ -504,7 +547,11 @@ class InventoryManager
 			//that we can only assume it refers to the most recently sent window, and if we don't handle it,
 			//InventoryManager will never get the green light to send subsequent windows, which breaks inventory UIs.
 			//Fortunately, we already wait for close acks anyway, so the window ID is technically useless...?
-			$this->session->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
+			try{
+				Server::getInstance()->getLogger()->debug("Client rejected opening of a window, assuming it was $this->lastInventoryNetworkId");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$id = $this->lastInventoryNetworkId;
 		}
 		if (($tradeInventory = $this->player->getCurrentWindow()) instanceof TradeInventory || $tradeInventory instanceof \pocketmine\inventory\VirtualTradeInventory) {
@@ -518,7 +565,11 @@ class InventoryManager
 				$this->player->removeCurrentWindow();
 			}
 		} else {
-			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
+			try{
+				Server::getInstance()->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
+			}catch(\Throwable $e){
+				// ignore
+			}
 		}
 
 		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
@@ -528,7 +579,11 @@ class InventoryManager
 		if ($this->pendingCloseWindowId === $id) {
 			$this->pendingCloseWindowId = null;
 			if ($this->pendingOpenWindowCallback !== null) {
-				$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+				try{
+					Server::getInstance()->getLogger()->debug("Opening deferred window after close ack of window $id");
+				}catch(\Throwable $e){
+					// ignore
+				}
 				($this->pendingOpenWindowCallback)();
 				$this->pendingOpenWindowCallback = null;
 			}
@@ -738,7 +793,11 @@ class InventoryManager
 				}
 
 				//any prediction that still exists at this point is a slot that was predicted to change but didn't
-				$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+				try{
+					Server::getInstance()->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+				}catch(\Throwable $e){
+					// ignore
+				}
 				$entry->pendingSyncs[$slot] = $typeConverter->coreItemStackToNet($inventory->getItem($slot));
 			}
 
@@ -750,7 +809,11 @@ class InventoryManager
 	{
 		if ($this->fullSyncRequested) {
 			$this->fullSyncRequested = false;
-			$this->session->getLogger()->debug("Full inventory sync requested, sending contents of " . count($this->inventories) . " inventories");
+			try{
+				Server::getInstance()->getLogger()->debug("Full inventory sync requested, sending contents of " . count($this->inventories) . " inventories");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			$this->syncAll();
 		} else {
 			foreach ($this->inventories as $entry) {
@@ -758,7 +821,11 @@ class InventoryManager
 					continue;
 				}
 				$inventory = $entry->inventory;
-				$this->session->getLogger()->debug("Syncing slots " . implode(", ", array_keys($entry->pendingSyncs)) . " in inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
+				try{
+					Server::getInstance()->getLogger()->debug("Syncing slots " . implode(", ", array_keys($entry->pendingSyncs)) . " in inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
+				}catch(\Throwable $e){
+					// ignore
+				}
 				foreach ($entry->pendingSyncs as $slot => $itemStack) {
 					$this->syncSlot($inventory, $slot, $itemStack);
 				}
@@ -780,7 +847,11 @@ class InventoryManager
 		// Ignore client hotbar selection attempts while the player is spectator to prevent
 		// the client-side UI from moving items into the hand without server approval.
 		if ($this->player->isSpectator()) {
-			$this->session->getLogger()->debug("Ignored client select-hotbar-slot $slot because player is spectator");
+			try{
+				Server::getInstance()->getLogger()->debug("Ignored client select-hotbar-slot $slot because player is spectator");
+			}catch(\Throwable $e){
+				// ignore
+			}
 			return;
 		}
 
@@ -795,7 +866,11 @@ class InventoryManager
 			$inventoryEntry = $this->inventories[spl_object_id($playerInventory)] ?? null;
 			if ($inventoryEntry === null) {
 				// Defensive: inventory not tracked (race/ordering issue). Log and skip sync to avoid crash.
-				$this->session->getLogger()->debug("syncSelectedHotbarSlot: Player inventory not tracked, skipping hotbar sync");
+					try{
+						Server::getInstance()->getLogger()->debug("syncSelectedHotbarSlot: Player inventory not tracked, skipping hotbar sync");
+					}catch(\Throwable $e){
+						// ignore
+					}
 				// Update clientSelectedHotbarSlot to avoid repeated log spam until tracking is restored
 				$this->clientSelectedHotbarSlot = $selected;
 				return;
@@ -803,7 +878,11 @@ class InventoryManager
 			$itemStackInfo = $inventoryEntry->itemStackInfos[$selected] ?? null;
 			if ($itemStackInfo === null) {
 				// Defensive: slot not tracked yet. Log and skip sync.
-				$this->session->getLogger()->debug("syncSelectedHotbarSlot: Untracked player inventory slot $selected, skipping hotbar sync");
+						try{
+							Server::getInstance()->getLogger()->debug("syncSelectedHotbarSlot: Untracked player inventory slot $selected, skipping hotbar sync");
+						}catch(\Throwable $e){
+							// ignore
+						}
 				$this->clientSelectedHotbarSlot = $selected;
 				return;
 			}
