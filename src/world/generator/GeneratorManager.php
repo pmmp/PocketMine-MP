@@ -39,7 +39,7 @@ final class GeneratorManager{
 	 */
 	private array $list = [];
 
-	public function __construct(){
+  public function __construct(){
 		$this->addGenerator(Flat::class, "flat", function(string $preset) : ?InvalidGeneratorOptionsException{
 			if($preset === ""){
 				return null;
@@ -54,7 +54,8 @@ final class GeneratorManager{
 		$this->addGenerator(Normal::class, "normal", fn() => null);
 		$this->addAlias("normal", "default");
 		$this->addGenerator(Nether::class, "nether", fn() => null);
-		$this->addAlias("nether", "hell");
+	$this->addAlias("nether", "hell");
+	$this->addGenerator(VoidGenerator::class, "void", fn() => null);
 	}
 
 	/**
