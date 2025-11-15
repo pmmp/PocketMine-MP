@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -66,6 +67,7 @@ use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
+use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
@@ -1111,7 +1113,18 @@ abstract class Entity{
 	 * Called when a falling entity hits the ground.
 	 */
 	protected function onHitGround() : ?float{
-		return null;
+    $fallBlockPos = $this->location->floor();
+    $fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+    if(count($fallBlock->getCollisionBoxes()) === 0){
+        $fallBlockPos = $fallBlockPos->down();
+        $fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+    }
+    $newVerticalVelocity = $fallBlock->onEntityLand($this);
+
+    if($fallBlock->getTypeId() !== BlockTypeIds::AIR){
+        $this->broadcastSound(new EntityLandSound($this, $fallBlock));
+    }
+    return $newVerticalVelocity;
 	}
 
 	public function getEyeHeight() : float{

@@ -64,7 +64,6 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
 use pocketmine\world\sound\BurpSound;
-use pocketmine\world\sound\EntityLandSound;
 use pocketmine\world\sound\EntityLongFallSound;
 use pocketmine\world\sound\EntityShortFallSound;
 use pocketmine\world\sound\ItemBreakSound;
@@ -381,25 +380,16 @@ abstract class Living extends Entity{
 	}
 
 	protected function onHitGround() : ?float{
-		$fallBlockPos = $this->location->floor();
-		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-		if(count($fallBlock->getCollisionBoxes()) === 0){
-			$fallBlockPos = $fallBlockPos->down();
-			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-		}
-		$newVerticalVelocity = $fallBlock->onEntityLand($this);
-
-		$damage = $this->calculateFallDamage($this->fallDistance);
+    $newVerticalVelocity = parent::onHitGround();
+    $damage = $this->calculateFallDamage($this->fallDistance);
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
 
 			$this->broadcastSound($damage > 4 ?
 				new EntityLongFallSound($this) :
-				new EntityShortFallSound($this)
+        new EntityShortFallSound($this)
 			);
-		}elseif($fallBlock->getTypeId() !== BlockTypeIds::AIR){
-			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
 		return $newVerticalVelocity;
 	}
