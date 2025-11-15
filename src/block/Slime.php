@@ -33,8 +33,8 @@ final class Slime extends Transparent{
 	}
 
 	public function onEntityLand(Entity $entity) : ?float{
-    		$entity->resetFallDistance();
-    		if($entity instanceof Living && $entity->isSneaking()){
+			$entity->resetFallDistance();
+			if($entity instanceof Living && $entity->isSneaking()){
 			return null;
 		}
 		return -$entity->getMotion()->y;
