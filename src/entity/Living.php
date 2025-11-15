@@ -380,8 +380,8 @@ abstract class Living extends Entity{
 	}
 
 	protected function onHitGround() : ?float{
-    $newVerticalVelocity = parent::onHitGround();
-    $damage = $this->calculateFallDamage($this->fallDistance);
+    		$newVerticalVelocity = parent::onHitGround();
+    		$damage = $this->calculateFallDamage($this->fallDistance);
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
