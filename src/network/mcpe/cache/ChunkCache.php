@@ -23,11 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
+use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\LevelChunkPacket;
+use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\types\ChunkPosition;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
@@ -107,18 +113,8 @@ class ChunkCache implements ChunkListener{
 
 		$this->world->timings->syncChunkSendPrepare->startTiming();
 		try{
-			$promise = new CompressBatchPromise();
+			$promise = $this->encodeChunk($chunk, $chunkX, $chunkZ, $this->dimensionId, TypeConverter::getInstance());
 
-			$this->world->getServer()->getAsyncPool()->submitTask(
-				new ChunkRequestTask(
-					$chunkX,
-					$chunkZ,
-					$this->dimensionId,
-					$chunk,
-					$promise,
-					$this->compressor
-				)
-			);
 			$this->caches[$chunkHash] = $promise;
 			$promise->onResolve(function(CompressBatchPromise $promise) use ($chunkHash) : void{
 				//the promise may have been discarded or replaced if the chunk was unloaded or modified in the meantime
@@ -131,6 +127,26 @@ class ChunkCache implements ChunkListener{
 		}finally{
 			$this->world->timings->syncChunkSendPrepare->stopTiming();
 		}
+	}
+
+	private function encodeChunk(Chunk $chunk, int $chunkX, int $chunkZ, int $dimensionId, TypeConverter $converter) : CompressBatchPromise  {
+		$subCount = ChunkSerializer::getSubChunkCount($chunk, $dimensionId);
+		$payload = ChunkSerializer::serializeFullChunk($chunk, $dimensionId, $converter->getBlockTranslator(), ChunkSerializer::serializeTiles($chunk));
+
+		$stream = new ByteBufferWriter();
+		PacketBatch::encodePackets($stream, [LevelChunkPacket::create(new ChunkPosition($chunkX, $chunkZ), $dimensionId, $subCount, false, null, $payload)]);
+
+		$promise = new CompressBatchPromise();
+
+		$this->world->getServer()->getAsyncPool()->submitTask(
+				new CompressBatchTask(
+					$stream->getData(),
+					$promise,
+					$this->compressor
+				)
+		);
+
+		return $promise;
 	}
 
 	/**
