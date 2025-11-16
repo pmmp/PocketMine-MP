@@ -68,7 +68,7 @@ use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
-use pocketmine\block\PaleMossCarpet;
+use pocketmine\block\PaleMossVine;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\PoweredRail;
@@ -102,7 +102,7 @@ use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\block\utils\PaleMossCarpetVineGrowth;
+use pocketmine\block\utils\PaleMossVineGrowth;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
@@ -1598,29 +1598,29 @@ final class VanillaBlockMappings{
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
 
-		$paleMossCarpetSideProperty = fn(string $stateName, int $facing) => new ValueFromStringProperty(
+		$paleMossVineSideProperty = fn(string $stateName, int $facing) => new ValueFromStringProperty(
 			$stateName,
-			EnumFromRawStateMap::string(PaleMossCarpetVineGrowth::class, fn(PaleMossCarpetVineGrowth $case) => match($case){
-				PaleMossCarpetVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
-				PaleMossCarpetVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
-				PaleMossCarpetVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL
+			EnumFromRawStateMap::string(PaleMossVineGrowth::class, fn(PaleMossVineGrowth $case) => match($case){
+				PaleMossVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
+				PaleMossVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
+				PaleMossVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL
 			}),
-			fn(PaleMossCarpet $b) => $b->getVineGrowth($facing),
-			fn(PaleMossCarpet $b, PaleMossCarpetVineGrowth $v) => $b->setVineGrowth($facing, $v)
+			fn(PaleMossVine $b) => $b->getVineGrowth($facing),
+			fn(PaleMossVine $b, PaleMossVineGrowth $v) => $b->setVineGrowth($facing, $v)
 		);
 		$paleMossCarpetModel = Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([
 			new DummyProperty(StateNames::UPPER_BLOCK_BIT, false),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
 		]);
-		$paleMossCarpetVineModel = Model::create(Blocks::PALE_MOSS_CARPET_VINE(), Ids::PALE_MOSS_CARPET)->properties([
+		$paleMossCarpetVineModel = Model::create(Blocks::PALE_MOSS_VINE(), Ids::PALE_MOSS_CARPET)->properties([
 			new DummyProperty(StateNames::UPPER_BLOCK_BIT, true),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
-			$paleMossCarpetSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
+			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
 		]);
 		self::mapAsymmetricSerializer($reg, $paleMossCarpetModel);
 		self::mapAsymmetricSerializer($reg, $paleMossCarpetVineModel);

@@ -21,25 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\Item;
-
-class PaleMossCarpetVine extends PaleMossCarpet{
-
-	public function isCarpetPart() : bool{
-		return false;
-	}
-
-	protected function recalculateCollisionBoxes() : array{
-		return [];
-	}
-
-	public function getDrops(Item $item) : array{
-		return [];
-	}
-
-	public function asItem() : Item{
-		return VanillaBlocks::PALE_MOSS_CARPET()->asItem();
-	}
+enum PaleMossVineGrowth{
+	case NONE;
+	case HALF;
+	case FULL;
 }

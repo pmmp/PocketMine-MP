@@ -838,7 +838,7 @@ final class BlockTypeIds{
 	public const MOSS_CARPET = 10808;
 	public const PALE_MOSS_BLOCK = 10809;
 	public const PALE_MOSS_CARPET = 10810;
-	public const PALE_MOSS_CARPET_VINE = 10811;
+	public const PALE_MOSS_VINE = 10811;
 
 	public const FIRST_UNUSED_BLOCK_ID = 10812;
 

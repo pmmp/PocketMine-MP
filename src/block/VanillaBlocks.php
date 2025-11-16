@@ -632,7 +632,7 @@ use function strtolower;
  * @method static Opaque PACKED_MUD()
  * @method static PaleMossBlock PALE_MOSS_BLOCK()
  * @method static PaleMossCarpet PALE_MOSS_CARPET()
- * @method static PaleMossCarpetVine PALE_MOSS_CARPET_VINE()
+ * @method static PaleMossVine PALE_MOSS_VINE()
  * @method static WoodenButton PALE_OAK_BUTTON()
  * @method static CeilingCenterHangingSign PALE_OAK_CEILING_CENTER_HANGING_SIGN()
  * @method static CeilingEdgesHangingSign PALE_OAK_CEILING_EDGES_HANGING_SIGN()
@@ -1084,7 +1084,7 @@ final class VanillaBlocks{
 		self::register("pale_moss_block", fn(BID $id) => new PaleMossBlock($id, "Pale Moss Block", $mossBreakInfo));
 		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
-		self::register("pale_moss_carpet_vine", fn(BID $id) => new PaleMossCarpetVine($id, "Pale Moss Carpet Vine", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("pale_moss_vine", fn(BID $id) => new PaleMossVine($id, "Pale Moss Carpet Vine", new Info(new BreakInfo(0.1, ToolType::HOE))));
 
 		self::register("mycelium", fn(BID $id) => new Mycelium($id, "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 
