@@ -21,19 +21,21 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\block;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\math\Facing;
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
+class NetherSprouts extends Flowable{
+	use StaticSupportTrait;
+
+	private function canBeSupportedAt(Block $block) : bool{
+		//TODO: moss
+		$supportBlock = $block->getSide(Facing::DOWN);
+		return
+			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
+			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
+			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+	}
 }

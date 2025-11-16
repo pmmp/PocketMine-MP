@@ -21,19 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\block;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+use pocketmine\block\utils\PillarRotation;
+use pocketmine\block\utils\PillarRotationTrait;
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
+class InfestedPillar extends InfestedStone implements PillarRotation{
+	use PillarRotationTrait;
 }

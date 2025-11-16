@@ -30,8 +30,8 @@ use pocketmine\event\player\PlayerExhaustEvent;
 
 class HungerEffect extends Effect{
 
-	public function canTick(EffectInstance $instance) : bool{
-		return true;
+	public function getApplyInterval(EffectInstance $instance) : int{
+		return 1;
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{

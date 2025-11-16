@@ -21,19 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pmmp\ScriptTest;
+
+use pocketmine\plugin\PluginBase;
 
 /**
- * @internal
- * @phpstan-template TEvent of Event
+ * @main pmmp\ScriptTest\Main
+ * @api 5.37.0
  */
-final class RegisteredListenerCache{
+class Main extends PluginBase{
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
 }
