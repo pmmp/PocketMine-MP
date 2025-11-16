@@ -21,19 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\entity\animation;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+use pocketmine\entity\Living;
+use pocketmine\network\mcpe\protocol\AnimatePacket;
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
+class MagicHitAnimation implements Animation{
+	public function __construct(private Living $entity, private int $particleCount = 15){}
+
+	public function encode() : array{
+		return [
+			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_MAGICAL_CRITICAL_HIT, $this->particleCount)
+		];
+	}
 }
