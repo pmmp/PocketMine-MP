@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\Utils;
 use function mb_strtoupper;
 
 /**
@@ -66,7 +67,7 @@ final class VanillaArmorMaterials{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaArmorMaterialsInputs::getAll();
-		foreach($values as $name => $value){
+		foreach(Utils::stringifyKeys($values) as $name => $value){
 			self::$members[mb_strtoupper($name)] = $value;
 		}
 

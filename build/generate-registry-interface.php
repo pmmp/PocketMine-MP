@@ -84,6 +84,7 @@ if(count($argv) !== 3){
 function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, string $interfaceShortClassName, array $members, string $preprocessorFunc) : string{
 	$selfName = basename(__FILE__);
 	$importClasses = [
+		Utils::class => true,
 		$namespaceName . "\\" . $sourceShortClassName => true
 	];
 	$importFunctions = ["mb_strtoupper" => true];
@@ -244,7 +245,7 @@ TEMPLATE;
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		\$values = {$sourceShortClassName}::getAll();
-		foreach(\$values as \$name => \$value){
+		foreach(Utils::stringifyKeys(\$values) as \$name => \$value){
 			self::\$members[mb_strtoupper(\$name)] = \$value;
 		}
 
