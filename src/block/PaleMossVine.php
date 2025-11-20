@@ -27,7 +27,7 @@ use pocketmine\item\Item;
 
 class PaleMossVine extends BaseCarpetWithVine{
 
-	public function isCarpetPart() : bool{ return false; }
+	protected function isCarpetPart() : bool{ return false; }
 
 	protected function recalculateCollisionBoxes() : array{
 		return [];

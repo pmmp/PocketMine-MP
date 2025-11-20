@@ -35,7 +35,7 @@ use pocketmine\world\BlockTransaction;
 
 class PaleMossCarpet extends BaseCarpetWithVine{
 
-	public function isCarpetPart() : bool{ return true; }
+	protected function isCarpetPart() : bool{ return true; }
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
