@@ -41,8 +41,8 @@ use function fwrite;
 use function implode;
 use function is_array;
 use function is_dir;
+use function is_file;
 use function is_iterable;
-use function iterator_to_array;
 use function ksort;
 use function mb_strtoupper;
 use function mkdir;
@@ -331,10 +331,20 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		$oldContents = "";
 	}
 	$kvMap = $func->invoke(null);
-	if(!is_iterable($kvMap)){
+	if(is_array($kvMap)){
+		$table = $kvMap;
+	}elseif(is_iterable($kvMap)){
+		$table = [];
+		foreach($kvMap as $name => $value){
+			if(isset($table[$name])){
+				throw new \RuntimeException("Repeated member name $name in class $className");
+			}
+			$table[$name] = $value;
+		}
+	}else{
 		throw new \RuntimeException("Method $allGetter in class $className must return an iterable");
 	}
-	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, is_array($kvMap) ? $kvMap : iterator_to_array($kvMap), $preprocessor);
+	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, $table, $preprocessor);
 	if($newContents !== $oldContents){
 		echo "Writing changed file $generatedFile\n";
 		file_put_contents($generatedFile, $newContents);
@@ -346,7 +356,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 if(is_dir($argv[1])){
-	if(!is_dir($argv[2])){
+	if(file_exists($argv[2]) && !is_dir($argv[2])){
 		fwrite(STDERR, "Destination for generated files isn't a folder: " . $argv[2] . "\n");
 		exit(1);
 	}
@@ -359,5 +369,9 @@ if(is_dir($argv[1])){
 		processFile($file, $argv[1], $argv[2]);
 	}
 }else{
+	if(file_exists($argv[2]) && !is_file($argv[2])){
+		fwrite(STDERR, "Destination for generated file already exists and is not a file: " . $argv[2] . "\n");
+		exit(1);
+	}
 	processFile($argv[1], $argv[1], $argv[2]);
 }
