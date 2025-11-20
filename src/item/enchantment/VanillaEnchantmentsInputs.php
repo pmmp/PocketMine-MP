@@ -25,40 +25,17 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\utils\RegistryTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static Enchantment AQUA_AFFINITY()
- * @method static ProtectionEnchantment BLAST_PROTECTION()
- * @method static Enchantment EFFICIENCY()
- * @method static ProtectionEnchantment FEATHER_FALLING()
- * @method static FireAspectEnchantment FIRE_ASPECT()
- * @method static ProtectionEnchantment FIRE_PROTECTION()
- * @method static Enchantment FLAME()
- * @method static Enchantment FORTUNE()
- * @method static Enchantment FROST_WALKER()
- * @method static Enchantment INFINITY()
- * @method static KnockbackEnchantment KNOCKBACK()
- * @method static Enchantment MENDING()
- * @method static Enchantment POWER()
- * @method static ProtectionEnchantment PROJECTILE_PROTECTION()
- * @method static ProtectionEnchantment PROTECTION()
- * @method static Enchantment PUNCH()
- * @method static Enchantment RESPIRATION()
- * @method static SharpnessEnchantment SHARPNESS()
- * @method static Enchantment SILK_TOUCH()
- * @method static Enchantment SWIFT_SNEAK()
- * @method static Enchantment THORNS()
- * @method static Enchantment UNBREAKING()
- * @method static Enchantment VANISHING()
+ * @internal
+ * @generate-registry-interface VanillaEnchantments getAll
  */
-final class VanillaEnchantments{
-	use RegistryTrait;
+final class VanillaEnchantmentsInputs{
+	/**
+	 * @var Enchantment[]
+	 * @phpstan-var array<string, Enchantment>
+	 */
+	private static array $registered = [];
 
 	protected static function setup() : void{
 		self::register("PROTECTION", new ProtectionEnchantment(
@@ -301,7 +278,7 @@ final class VanillaEnchantments{
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{
-		self::_registryRegister($name, $member);
+		self::$registered[$name] = $member;
 	}
 
 	/**
@@ -309,11 +286,7 @@ final class VanillaEnchantments{
 	 * @phpstan-return array<string, Enchantment>
 	 */
 	public static function getAll() : array{
-		/**
-		 * @var Enchantment[] $result
-		 * @phpstan-var array<string, Enchantment> $result
-		 */
-		$result = self::_registryGetAll();
-		return $result;
+		self::setup();
+		return self::$registered;
 	}
 }

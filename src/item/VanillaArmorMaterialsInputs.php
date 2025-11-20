@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\RegistryTrait;
 use pocketmine\world\sound\ArmorEquipChainSound;
 use pocketmine\world\sound\ArmorEquipCopperSound;
 use pocketmine\world\sound\ArmorEquipDiamondSound;
@@ -34,29 +33,22 @@ use pocketmine\world\sound\ArmorEquipLeatherSound;
 use pocketmine\world\sound\ArmorEquipNetheriteSound;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ArmorMaterial CHAINMAIL()
- * @method static ArmorMaterial COPPER()
- * @method static ArmorMaterial DIAMOND()
- * @method static ArmorMaterial GOLD()
- * @method static ArmorMaterial IRON()
- * @method static ArmorMaterial LEATHER()
- * @method static ArmorMaterial NETHERITE()
- * @method static ArmorMaterial TURTLE()
+ * @internal
+ * @generate-registry-interface VanillaArmorMaterials getAll
  */
-final class VanillaArmorMaterials{
-	use RegistryTrait;
+final class VanillaArmorMaterialsInputs{
+	/**
+	 * @var ArmorMaterial[]
+	 * @phpstan-var array<string, ArmorMaterial>
+	 */
+	private static array $registered = [];
 
 	private function __construct(){
 		// NOOP
 	}
 
 	protected static function register(string $name, ArmorMaterial $armorMaterial) : void{
-		self::_registryRegister($name, $armorMaterial);
+		self::$registered[$name] = $armorMaterial;
 	}
 
 	/**
@@ -64,10 +56,8 @@ final class VanillaArmorMaterials{
 	 * @phpstan-return array<string, ArmorMaterial>
 	 */
 	public static function getAll() : array{
-		// phpstan doesn't support generic traits yet :(
-		/** @var ArmorMaterial[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+		self::setup();
+		return self::$registered;
 	}
 
 	protected static function setup() : void{

@@ -25,44 +25,16 @@ namespace pocketmine\entity\effect;
 
 use pocketmine\color\Color;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\utils\RegistryTrait;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static AbsorptionEffect ABSORPTION()
- * @method static Effect BLINDNESS()
- * @method static Effect CONDUIT_POWER()
- * @method static Effect DARKNESS()
- * @method static PoisonEffect FATAL_POISON()
- * @method static Effect FIRE_RESISTANCE()
- * @method static Effect HASTE()
- * @method static HealthBoostEffect HEALTH_BOOST()
- * @method static HungerEffect HUNGER()
- * @method static InstantDamageEffect INSTANT_DAMAGE()
- * @method static InstantHealthEffect INSTANT_HEALTH()
- * @method static InvisibilityEffect INVISIBILITY()
- * @method static Effect JUMP_BOOST()
- * @method static LevitationEffect LEVITATION()
- * @method static Effect MINING_FATIGUE()
- * @method static Effect NAUSEA()
- * @method static Effect NIGHT_VISION()
- * @method static PoisonEffect POISON()
- * @method static RegenerationEffect REGENERATION()
- * @method static Effect RESISTANCE()
- * @method static SaturationEffect SATURATION()
- * @method static SlownessEffect SLOWNESS()
- * @method static SpeedEffect SPEED()
- * @method static Effect STRENGTH()
- * @method static Effect WATER_BREATHING()
- * @method static Effect WEAKNESS()
- * @method static WitherEffect WITHER()
+ * @generate-registry-interface VanillaEffects getAll
  */
-final class VanillaEffects{
-	use RegistryTrait;
+final class VanillaEffectsInputs{
+	/**
+	 * @var Effect[]
+	 * @phpstan-var array<string, Effect>
+	 */
+	private static array $registered = [];
 
 	protected static function setup() : void{
 		self::register("absorption", new AbsorptionEffect(KnownTranslationFactory::potion_absorption(), new Color(0x25, 0x52, 0xa5)));
@@ -97,8 +69,8 @@ final class VanillaEffects{
 		self::register("wither", new WitherEffect(KnownTranslationFactory::potion_wither(), new Color(0x35, 0x2a, 0x27), true));
 	}
 
-	protected static function register(string $name, Effect $member) : void{
-		self::_registryRegister($name, $member);
+	private static function register(string $name, Effect $effect) : void{
+		self::$registered[$name] = $effect;
 	}
 
 	/**
@@ -106,9 +78,7 @@ final class VanillaEffects{
 	 * @phpstan-return array<string, Effect>
 	 */
 	public static function getAll() : array{
-		//phpstan doesn't support generic traits yet :(
-		/** @var Effect[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+		self::setup();
+		return self::$registered;
 	}
 }

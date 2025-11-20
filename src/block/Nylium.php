@@ -35,9 +35,9 @@ use function count;
 class Nylium extends Opaque{
 
 	/**
-	 * @param Block[] $vegetation An array of Block instances that can be grown on this Nylium block using Bone Meal.
+	 * @phpstan-param \Closure() : list<Block> $vegetation An array of Block instances that can be grown on this Nylium block using Bone Meal.
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, private readonly array $vegetation){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockTypeInfo $typeInfo, private readonly \Closure $vegetation){
 		parent::__construct($idInfo, $name, $typeInfo);
 	}
 
@@ -85,12 +85,14 @@ class Nylium extends Opaque{
 	private function growVegetation(Random $random) : void{
 		$world = $this->position->getWorld();
 
+		$vegetation = ($this->vegetation)();
+
 		for($x = -2; $x <= 2; ++$x){
 			for($z = -2; $z <= 2; ++$z){
 				if($random->nextBoundedInt(3) === 0){
 					$pos = $this->position->add($x, 1, $z);
 					$replace = $world->getBlock($pos);
-					$place = $this->vegetation[$random->nextBoundedInt(count($this->vegetation))];
+					$place = $vegetation[$random->nextBoundedInt(count($vegetation))];
 					if($world->isInWorld($pos->x, $pos->y, $pos->z) && $replace->getTypeId() === BlockTypeIds::AIR && $place->canBePlacedAt($replace, Vector3::zero(), Facing::DOWN, true)){
 						$world->setBlock($pos, $place);
 					}

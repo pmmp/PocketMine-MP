@@ -29,6 +29,10 @@ use function mb_strtoupper;
 use function preg_match;
 
 /**
+ * @deprecated Separate generated registry accessor classes are now preferred for significantly better performance,
+ * reliability, and not modifying manually-written source code. See build/generate-registry-interface.php for more
+ * information on the new approach.
+ *
  * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
  * These faux constants are exposed in static class methods, which are handled using __callStatic().
  *
