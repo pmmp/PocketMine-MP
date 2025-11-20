@@ -25,10 +25,12 @@ namespace pocketmine\entity\effect;
 
 use pocketmine\color\Color;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\utils\RegistrySource;
 
 /**
- * @generate-registry-interface VanillaEffects getAll
+ * @internal
  */
+#[RegistrySource(targetClassName: 'VanillaEffects', getAllFunc: 'getAll')]
 final class VanillaEffectsInputs{
 	/**
 	 * @var Effect[]

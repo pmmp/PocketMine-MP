@@ -25,11 +25,12 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\utils\RegistrySource;
 
 /**
  * @internal
- * @generate-registry-interface VanillaEnchantments getAll
  */
+#[RegistrySource(targetClassName: 'VanillaEnchantments', getAllFunc: 'getAll')]
 final class VanillaEnchantmentsInputs{
 	/**
 	 * @var Enchantment[]

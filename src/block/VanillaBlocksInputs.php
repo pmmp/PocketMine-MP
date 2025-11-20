@@ -68,6 +68,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\generator\object\TreeType;
 use function is_int;
 use function mb_strtolower;
@@ -78,9 +79,9 @@ use function strtolower;
  * Input class for generating {@link VanillaBlocks}
  * All vanilla blocks are registered here for binding in the generated class.
  *
- * @generate-registry-interface VanillaBlocks getAll cloneMember
  * @internal
  */
+#[RegistrySource(targetClassName: 'VanillaBlocks', getAllFunc: 'getAll', preprocessFunc: 'cloneMember')]
 final class VanillaBlocksInputs{
 	/**
 	 * @var Block[]

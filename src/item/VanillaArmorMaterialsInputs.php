@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\sound\ArmorEquipChainSound;
 use pocketmine\world\sound\ArmorEquipCopperSound;
 use pocketmine\world\sound\ArmorEquipDiamondSound;
@@ -34,8 +35,8 @@ use pocketmine\world\sound\ArmorEquipNetheriteSound;
 
 /**
  * @internal
- * @generate-registry-interface VanillaArmorMaterials getAll
  */
+#[RegistrySource(targetClassName: 'VanillaArmorMaterials', getAllFunc: 'getAll')]
 final class VanillaArmorMaterialsInputs{
 	/**
 	 * @var ArmorMaterial[]

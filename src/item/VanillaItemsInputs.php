@@ -35,6 +35,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\World;
 use function is_int;
 use function mb_strtoupper;
@@ -42,8 +43,8 @@ use function strtolower;
 
 /**
  * @internal
- * @generate-registry-interface VanillaItems getAll cloneMember
  */
+#[RegistrySource(targetClassName: 'VanillaItems', getAllFunc: 'getAll', preprocessFunc: 'cloneMember')]
 final class VanillaItemsInputs{
 	/**
 	 * @var Item[]

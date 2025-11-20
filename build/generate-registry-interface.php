@@ -25,6 +25,7 @@ namespace pocketmine\build\update_registry_interface;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
+use pocketmine\utils\RegistrySource;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_diff;
@@ -291,12 +292,16 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		return;
 	}
 	$reflect = new \ReflectionClass($className);
-	$docComment = $reflect->getDocComment();
-	if($docComment === false || preg_match("/(*ANYCRLF)^\s*\*\s*@generate-registry-interface ([A-Za-z\d_]+) ([A-Za-z\d_]+)(?:\s+([A-Za-z\d_]+))?$/m", $docComment, $sourceMatches) !== 1){
+	$attributes = $reflect->getAttributes(RegistrySource::class);
+	if(count($attributes) === 0){
 		return;
 	}
+	$info = $attributes[0]->newInstance();
 
-	$interfaceClassName = $sourceMatches[1];
+	$interfaceClassName = $info->targetClassName;
+	if(preg_match('/^[A-Za-z\d_]+$/', $interfaceClassName) !== 1){
+		throw new \RuntimeException("Generated class name $interfaceClassName must contain only letters, numbers and underscores");
+	}
 	$relativeDir = Path::makeRelative(dirname($file), $sourceDir);
 	$conflictCheckFile = Path::join(dirname($file), $interfaceClassName . ".php");
 	if(file_exists($conflictCheckFile)){
@@ -313,8 +318,8 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		throw new \RuntimeException("Generated class name $interfaceClassName cannot be the same as the interface class name (file $file)");
 	}
 
-	$preprocessor = $sourceMatches[3] ?? "";
-	$allGetter = $sourceMatches[2];
+	$preprocessor = $info->preprocessFunc ?? "";
+	$allGetter = $info->getAllFunc;
 	try{
 		$func = $reflect->getMethod($allGetter);
 	}catch(\ReflectionException $e){
