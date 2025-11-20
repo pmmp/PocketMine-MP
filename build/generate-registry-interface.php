@@ -255,7 +255,6 @@ INIT;
 	$output .= implode("", $assignLines);
 
 	$output .= <<<INIT2
-
 	}
 
 	/**

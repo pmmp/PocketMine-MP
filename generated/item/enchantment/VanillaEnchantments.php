@@ -109,7 +109,6 @@ final class VanillaEnchantments{
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mTHORNS = $v, $values["THORNS"]);
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mUNBREAKING = $v, $values["UNBREAKING"]);
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mVANISHING = $v, $values["VANISHING"]);
-
 	}
 
 	/**

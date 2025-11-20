@@ -117,7 +117,6 @@ final class VanillaEffects{
 		self::unsafeAssign(fn(Effect $v) => self::$_mWATER_BREATHING = $v, $values["water_breathing"]);
 		self::unsafeAssign(fn(Effect $v) => self::$_mWEAKNESS = $v, $values["weakness"]);
 		self::unsafeAssign(fn(WitherEffect $v) => self::$_mWITHER = $v, $values["wither"]);
-
 	}
 
 	/**

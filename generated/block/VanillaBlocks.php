@@ -1622,7 +1622,6 @@ final class VanillaBlocks{
 		self::unsafeAssign(fn(Flower $v) => self::$_mWHITE_TULIP = $v, $values["white_tulip"]);
 		self::unsafeAssign(fn(WitherRose $v) => self::$_mWITHER_ROSE = $v, $values["wither_rose"]);
 		self::unsafeAssign(fn(Wool $v) => self::$_mWOOL = $v, $values["wool"]);
-
 	}
 
 	/**

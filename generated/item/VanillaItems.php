@@ -696,7 +696,6 @@ final class VanillaItems{
 		self::unsafeAssign(fn(WritableBook $v) => self::$_mWRITABLE_BOOK = $v, $values["writable_book"]);
 		self::unsafeAssign(fn(WrittenBook $v) => self::$_mWRITTEN_BOOK = $v, $values["written_book"]);
 		self::unsafeAssign(fn(SpawnEgg $v) => self::$_mZOMBIE_SPAWN_EGG = $v, $values["zombie_spawn_egg"]);
-
 	}
 
 	/**

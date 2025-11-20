@@ -79,7 +79,6 @@ final class VanillaArmorMaterials{
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mLEATHER = $v, $values["leather"]);
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mNETHERITE = $v, $values["netherite"]);
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mTURTLE = $v, $values["turtle"]);
-
 	}
 
 	/**
