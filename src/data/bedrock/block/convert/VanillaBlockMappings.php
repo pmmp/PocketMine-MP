@@ -29,6 +29,7 @@ use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
 use pocketmine\block\BambooSapling;
 use pocketmine\block\Barrel;
+use pocketmine\block\BaseCarpetWithVine;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Bell;
@@ -68,7 +69,6 @@ use pocketmine\block\MobHead;
 use pocketmine\block\NetherPortal;
 use pocketmine\block\NetherVines;
 use pocketmine\block\NetherWartPlant;
-use pocketmine\block\PaleMossVine;
 use pocketmine\block\PinkPetals;
 use pocketmine\block\PitcherCrop;
 use pocketmine\block\PoweredRail;
@@ -92,6 +92,7 @@ use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\CarpetVineGrowth;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DirtType;
@@ -102,7 +103,6 @@ use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
-use pocketmine\block\utils\PaleMossVineGrowth;
 use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
@@ -1598,34 +1598,33 @@ final class VanillaBlockMappings{
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
 
-		$paleMossVineSideProperty = fn(string $stateName, int $facing) => new ValueFromStringProperty(
-			$stateName,
-			EnumFromRawStateMap::string(PaleMossVineGrowth::class, fn(PaleMossVineGrowth $case) => match($case){
-				PaleMossVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
-				PaleMossVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
-				PaleMossVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL
+		$paleMossCarpetSides = array_map(fn(int $facing) => new ValueFromStringProperty(
+			match($facing){
+				Facing::NORTH => StateNames::PALE_MOSS_CARPET_SIDE_NORTH,
+				Facing::EAST => StateNames::PALE_MOSS_CARPET_SIDE_EAST,
+				Facing::SOUTH => StateNames::PALE_MOSS_CARPET_SIDE_SOUTH,
+				Facing::WEST => StateNames::PALE_MOSS_CARPET_SIDE_WEST,
+			},
+			EnumFromRawStateMap::string(CarpetVineGrowth::class, fn(CarpetVineGrowth $case) => match($case){
+				CarpetVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
+				CarpetVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
+				CarpetVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL
 			}),
-			fn(PaleMossVine $b) => $b->getVineGrowth($facing),
-			fn(PaleMossVine $b, PaleMossVineGrowth $v) => $b->setVineGrowth($facing, $v)
-		);
+			fn(BaseCarpetWithVine $b) => $b->getVineGrowth($facing),
+			fn(BaseCarpetWithVine $b, CarpetVineGrowth $v) => $b->setVineGrowth($facing, $v)
+		), [Facing::NORTH, Facing::EAST, Facing::SOUTH, Facing::WEST]);
 		$paleMossCarpetModel = Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([
-			new DummyProperty(StateNames::UPPER_BLOCK_BIT, false),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
+			...$paleMossCarpetSides,
+			new DummyProperty(StateNames::UPPER_BLOCK_BIT, false)
 		]);
-		$paleMossCarpetVineModel = Model::create(Blocks::PALE_MOSS_VINE(), Ids::PALE_MOSS_CARPET)->properties([
-			new DummyProperty(StateNames::UPPER_BLOCK_BIT, true),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_NORTH, Facing::NORTH),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_EAST, Facing::EAST),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_SOUTH, Facing::SOUTH),
-			$paleMossVineSideProperty(StateNames::PALE_MOSS_CARPET_SIDE_WEST, Facing::WEST)
+		$paleMossVineModel = Model::create(Blocks::PALE_MOSS_VINE(), Ids::PALE_MOSS_CARPET)->properties([
+			...$paleMossCarpetSides,
+			new DummyProperty(StateNames::UPPER_BLOCK_BIT, true)
 		]);
 		self::mapAsymmetricSerializer($reg, $paleMossCarpetModel);
-		self::mapAsymmetricSerializer($reg, $paleMossCarpetVineModel);
+		self::mapAsymmetricSerializer($reg, $paleMossVineModel);
 		$reg->deserializer->map(Ids::PALE_MOSS_CARPET, fn(Reader $in) => $in->readBool(StateNames::UPPER_BLOCK_BIT) ?
-			self::deserializeAsymmetric($paleMossCarpetVineModel, $in) :
+			self::deserializeAsymmetric($paleMossVineModel, $in) :
 			self::deserializeAsymmetric($paleMossCarpetModel, $in)
 		);
 

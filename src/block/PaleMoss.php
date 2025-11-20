@@ -26,7 +26,7 @@ namespace pocketmine\block;
 use pocketmine\world\Position;
 use function mt_rand;
 
-class PaleMossBlock extends MossBlock{
+class PaleMoss extends Moss{
 
 	public function getFlameEncouragement() : int{
 		return 15;

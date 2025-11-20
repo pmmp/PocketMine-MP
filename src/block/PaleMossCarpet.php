@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockEventHelper;
-use pocketmine\block\utils\PaleMossVineGrowth;
-use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\block\utils\CarpetVineGrowth;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -34,8 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class PaleMossCarpet extends PaleMossVine{
-	use StaticSupportTrait;
+class PaleMossCarpet extends BaseCarpetWithVine{
 
 	public function isCarpetPart() : bool{ return true; }
 
@@ -59,13 +57,8 @@ class PaleMossCarpet extends PaleMossVine{
 		return true;
 	}
 
-	protected function canBeSupportedAt(Block $block) : bool{
-		$below = $block->getSide(Facing::DOWN);
-		return $below->getTypeId() !== BlockTypeIds::AIR;
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(!$item instanceof Fertilizer || !$this->isCarpetPart()){
+		if(!$item instanceof Fertilizer){
 			return false;
 		}
 
@@ -86,17 +79,13 @@ class PaleMossCarpet extends PaleMossVine{
 		$new = VanillaBlocks::PALE_MOSS_VINE();
 
 		foreach(Facing::HORIZONTAL as $f){
-			$side = PaleMossVineGrowth::NONE;
-			if($above->getAdjacentSupportType($f)->hasEdgeSupport() && $base->getVineGrowth($f) !== PaleMossVineGrowth::NONE){
-				$side = PaleMossVineGrowth::HALF;
+			$side = CarpetVineGrowth::NONE;
+			if($above->getAdjacentSupportType($f)->hasEdgeSupport() && $base->getVineGrowth($f) !== CarpetVineGrowth::NONE){
+				$side = CarpetVineGrowth::HALF;
 			}
 			$new->setVineGrowth($f, $side);
 		}
 
 		return $new->hasFaces() ? $new : null;
-	}
-
-	public function asItem() : Item{
-		return Block::asItem();
 	}
 }

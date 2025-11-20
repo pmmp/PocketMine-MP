@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
-use pocketmine\block\utils\PaleMossVineGrowth;
+use pocketmine\block\utils\CarpetVineGrowth;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
@@ -194,10 +194,10 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 	}
 
 	/**
-	 * @param PaleMossVineGrowth[] $sides
-	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, PaleMossVineGrowth> $sides
+	 * @param CarpetVineGrowth[] $sides
+	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, CarpetVineGrowth> $sides
 	 */
-	public function paleMossVineSides(array &$sides) : void{
+	public function carpetVineSides(array &$sides) : void{
 		$result = [];
 		$offset = 0;
 		$packed = $this->readBoundedIntAuto(0, (3 ** 4) - 1);
@@ -205,8 +205,8 @@ final class RuntimeDataReader implements RuntimeDataDescriber{
 			$type = intdiv($packed, (3 ** $offset)) % 3;
 			if($type !== 0){
 				$result[$facing] = match($type){
-					1 => PaleMossVineGrowth::HALF,
-					2 => PaleMossVineGrowth::FULL,
+					1 => CarpetVineGrowth::HALF,
+					2 => CarpetVineGrowth::FULL,
 					default => throw new AssumptionFailedError("Unreachable")
 				};
 			}

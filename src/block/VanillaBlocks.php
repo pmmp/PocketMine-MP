@@ -580,7 +580,7 @@ use function strtolower;
  * @method static Slab MOSSY_STONE_BRICK_SLAB()
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
- * @method static MossBlock MOSS_BLOCK()
+ * @method static Moss MOSS_BLOCK()
  * @method static MossCarpet MOSS_CARPET()
  * @method static Opaque MUD()
  * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
@@ -630,7 +630,7 @@ use function strtolower;
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static Opaque PACKED_MUD()
- * @method static PaleMossBlock PALE_MOSS_BLOCK()
+ * @method static PaleMoss PALE_MOSS_BLOCK()
  * @method static PaleMossCarpet PALE_MOSS_CARPET()
  * @method static PaleMossVine PALE_MOSS_VINE()
  * @method static WoodenButton PALE_OAK_BUTTON()
@@ -1080,8 +1080,8 @@ final class VanillaBlocks{
 		self::register("monster_spawner", fn(BID $id) => new MonsterSpawner($id, "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))), TileMonsterSpawner::class);
 
 		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
-		self::register("moss_block", fn(BID $id) => new MossBlock($id, "Moss Block", $mossBreakInfo));
-		self::register("pale_moss_block", fn(BID $id) => new PaleMossBlock($id, "Pale Moss Block", $mossBreakInfo));
+		self::register("moss_block", fn(BID $id) => new Moss($id, "Moss Block", $mossBreakInfo));
+		self::register("pale_moss_block", fn(BID $id) => new PaleMoss($id, "Pale Moss Block", $mossBreakInfo));
 		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
 		self::register("pale_moss_vine", fn(BID $id) => new PaleMossVine($id, "Pale Moss Carpet Vine", new Info(new BreakInfo(0.1, ToolType::HOE))));

@@ -97,7 +97,7 @@ final class RuntimeDataSizeCalculator implements RuntimeDataDescriber{
 		$this->addBits(7);
 	}
 
-	public function paleMossVineSides(array &$sides) : void{
+	public function carpetVineSides(array &$sides) : void{
 		$this->addBits(7);
 	}
 

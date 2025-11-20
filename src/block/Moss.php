@@ -33,7 +33,7 @@ use pocketmine\world\Position;
 use function abs;
 use function mt_rand;
 
-class MossBlock extends Opaque{
+class Moss extends Opaque{
 	protected const VERTICAL_RANGE = 5;
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -103,14 +103,14 @@ class MossBlock extends Opaque{
 		$rand = mt_rand(1, 10000);
 		if($rand <= 5208){
 			$world->setBlock($pos, VanillaBlocks::TALL_GRASS());
-		}elseif($rand <= 5208 + 2604){
+		}elseif($rand <= 7812){
 			$world->setBlock($pos, VanillaBlocks::MOSS_CARPET());
-		}elseif($rand <= 5208 + 2604 + 1042){
+		}elseif($rand <= 8854){
 			if($world->isInWorld($pos->x, $pos->y + 1, $pos->z)){
 				$world->setBlock($pos, VanillaBlocks::DOUBLE_TALLGRASS());
 				$world->setBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
 			}
-		}elseif($rand <= 5208 + 2604 + 1042 + 729){
+		}elseif($rand <= 9583){
 			//TODO: Azalea 7.29%
 		}else{
 			//TODO: Flowering Azalea 4.17%
