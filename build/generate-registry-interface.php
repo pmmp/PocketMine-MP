@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\build\update_registry_annotations;
+namespace pocketmine\build\update_registry_interface;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
