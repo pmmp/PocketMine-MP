@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
+use function mb_strtoupper;
+
 /**
  * This class is generated automatically from source class {@link VanillaEffectsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
@@ -83,6 +85,10 @@ final class VanillaEffects{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaEffectsInputs::getAll();
+		foreach($values as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+		}
+
 		self::unsafeAssign(fn(AbsorptionEffect $v) => self::$_mABSORPTION = $v, $values["absorption"]);
 		self::unsafeAssign(fn(Effect $v) => self::$_mBLINDNESS = $v, $values["blindness"]);
 		self::unsafeAssign(fn(Effect $v) => self::$_mCONDUIT_POWER = $v, $values["conduit_power"]);
@@ -111,7 +117,6 @@ final class VanillaEffects{
 		self::unsafeAssign(fn(Effect $v) => self::$_mWEAKNESS = $v, $values["weakness"]);
 		self::unsafeAssign(fn(WitherEffect $v) => self::$_mWITHER = $v, $values["wither"]);
 
-		self::$members = $values;
 	}
 
 	/**

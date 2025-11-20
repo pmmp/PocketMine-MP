@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use function array_map;
+use function mb_strtoupper;
 
 /**
  * This class is generated automatically from source class {@link VanillaBlocksInputs}. Do not modify it manually.
@@ -837,6 +838,10 @@ final class VanillaBlocks{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaBlocksInputs::getAll();
+		foreach($values as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+		}
+
 		self::unsafeAssign(fn(WoodenButton $v) => self::$_mACACIA_BUTTON = $v, $values["acacia_button"]);
 		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mACACIA_CEILING_CENTER_HANGING_SIGN = $v, $values["acacia_ceiling_center_hanging_sign"]);
 		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mACACIA_CEILING_EDGES_HANGING_SIGN = $v, $values["acacia_ceiling_edges_hanging_sign"]);
@@ -1617,7 +1622,6 @@ final class VanillaBlocks{
 		self::unsafeAssign(fn(WitherRose $v) => self::$_mWITHER_ROSE = $v, $values["wither_rose"]);
 		self::unsafeAssign(fn(Wool $v) => self::$_mWOOL = $v, $values["wool"]);
 
-		self::$members = $values;
 	}
 
 	/**

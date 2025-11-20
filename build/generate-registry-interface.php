@@ -28,7 +28,6 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_diff;
-use function array_keys;
 use function array_map;
 use function array_unshift;
 use function basename;
@@ -87,7 +86,7 @@ function generateRegistryInterface(string $namespaceName, string $sourceShortCla
 	$importClasses = [
 		$namespaceName . "\\" . $sourceShortClassName => true
 	];
-	$importFunctions = [];
+	$importFunctions = ["mb_strtoupper" => true];
 
 	$output = <<<HEADER
 <?php
@@ -203,9 +202,9 @@ TEMPLATE;
 		$output .= "\nuse $import;";
 		$imports++;
 	}
-	if(count($importFunctions) > 0){
-		ksort($importFunctions, SORT_STRING);
-		$output .= "\nuse function " . implode(", ", array_keys($importFunctions)) . ";";
+	ksort($importFunctions, SORT_STRING);
+	foreach(Utils::stringifyKeys($importFunctions) as $import => $_){
+		$output .= "\nuse function $import;";
 		$imports++;
 	}
 	if($imports > 0){
@@ -245,6 +244,10 @@ TEMPLATE;
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		\$values = {$sourceShortClassName}::getAll();
+		foreach(\$values as \$name => \$value){
+			self::\$members[mb_strtoupper(\$name)] = \$value;
+		}
+
 
 INIT;
 	ksort($assignLines, SORT_STRING);
@@ -252,7 +255,6 @@ INIT;
 
 	$output .= <<<INIT2
 
-		self::\$members = \$values;
 	}
 
 	/**

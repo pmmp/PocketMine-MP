@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use function mb_strtoupper;
+
 /**
  * This class is generated automatically from source class {@link VanillaArmorMaterialsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
@@ -64,6 +66,10 @@ final class VanillaArmorMaterials{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaArmorMaterialsInputs::getAll();
+		foreach($values as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+		}
+
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCHAINMAIL = $v, $values["chainmail"]);
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCOPPER = $v, $values["copper"]);
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mDIAMOND = $v, $values["diamond"]);
@@ -73,7 +79,6 @@ final class VanillaArmorMaterials{
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mNETHERITE = $v, $values["netherite"]);
 		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mTURTLE = $v, $values["turtle"]);
 
-		self::$members = $values;
 	}
 
 	/**

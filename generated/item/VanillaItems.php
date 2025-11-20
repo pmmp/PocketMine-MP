@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use function array_map;
+use function mb_strtoupper;
 
 /**
  * This class is generated automatically from source class {@link VanillaItemsInputs}. Do not modify it manually.
@@ -374,6 +375,10 @@ final class VanillaItems{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaItemsInputs::getAll();
+		foreach($values as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+		}
+
 		self::unsafeAssign(fn(Boat $v) => self::$_mACACIA_BOAT = $v, $values["acacia_boat"]);
 		self::unsafeAssign(fn(HangingSign $v) => self::$_mACACIA_HANGING_SIGN = $v, $values["acacia_hanging_sign"]);
 		self::unsafeAssign(fn(ItemBlockWallOrFloor $v) => self::$_mACACIA_SIGN = $v, $values["acacia_sign"]);
@@ -691,7 +696,6 @@ final class VanillaItems{
 		self::unsafeAssign(fn(WrittenBook $v) => self::$_mWRITTEN_BOOK = $v, $values["written_book"]);
 		self::unsafeAssign(fn(SpawnEgg $v) => self::$_mZOMBIE_SPAWN_EGG = $v, $values["zombie_spawn_egg"]);
 
-		self::$members = $values;
 	}
 
 	/**

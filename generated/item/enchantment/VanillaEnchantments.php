@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use function mb_strtoupper;
+
 /**
  * This class is generated automatically from source class {@link VanillaEnchantmentsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
@@ -79,6 +81,10 @@ final class VanillaEnchantments{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		$values = VanillaEnchantmentsInputs::getAll();
+		foreach($values as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+		}
+
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mAQUA_AFFINITY = $v, $values["AQUA_AFFINITY"]);
 		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mBLAST_PROTECTION = $v, $values["BLAST_PROTECTION"]);
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mEFFICIENCY = $v, $values["EFFICIENCY"]);
@@ -103,7 +109,6 @@ final class VanillaEnchantments{
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mUNBREAKING = $v, $values["UNBREAKING"]);
 		self::unsafeAssign(fn(Enchantment $v) => self::$_mVANISHING = $v, $values["VANISHING"]);
 
-		self::$members = $values;
 	}
 
 	/**
