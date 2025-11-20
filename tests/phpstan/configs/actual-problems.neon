@@ -529,6 +529,12 @@ parameters:
 			path: ../../../src/command/defaults/TimeCommand.php
 
 		-
+			message: '#^Possibly invalid array key type float\|int\<0, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: ../../../src/crash/CrashDump.php
+
+		-
 			message: '#^Binary operation "\." between ''Error\: '' and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1

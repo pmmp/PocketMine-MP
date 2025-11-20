@@ -30,6 +30,8 @@ use pocketmine\network\mcpe\protocol\types\login\openid\api\MinecraftServicesDis
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\thread\NonThreadSafeValue;
 use pocketmine\utils\Internet;
+use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
 use function gettype;
 use function is_array;
 use function is_object;
@@ -92,12 +94,23 @@ class FetchAuthKeysTask extends AsyncTask{
 		$this->errors = $errors === [] ? null : new NonThreadSafeValue($errors);
 	}
 
-	private function getAuthServiceURI() : string{
-		$result = Internet::getURL(self::MINECRAFT_SERVICES_DISCOVERY_URL);
-		if($result === null || $result->getCode() !== 200){
-			throw new \RuntimeException("Failed to fetch Minecraft services discovery document");
+	/**
+	 * @throws \RuntimeException
+	 */
+	private static function fetchURL(string $url, int $expectedCode) : InternetRequestResult{
+		try{
+			$result = Internet::simpleCurl($url);
+			if($result->getCode() !== $expectedCode){
+				throw new \RuntimeException("Unexpected HTTP response code accessing \"$url\": " . $result->getCode());
+			}
+			return $result;
+		}catch(InternetException $e){
+			throw new \RuntimeException("Failed accessing \"$url\": " . $e->getMessage(), 0, $e);
 		}
+	}
 
+	private function getAuthServiceURI() : string{
+		$result = self::fetchURL(self::MINECRAFT_SERVICES_DISCOVERY_URL, 200);
 		try{
 			$json = json_decode($result->getBody(), false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
@@ -124,10 +137,7 @@ class FetchAuthKeysTask extends AsyncTask{
 	}
 
 	private function getOpenIdConfiguration(string $authServiceUri) : AuthServiceOpenIdConfiguration{
-		$result = Internet::getURL($authServiceUri . self::AUTHORIZATION_SERVICE_OPENID_CONFIGURATION_PATH);
-		if($result === null || $result->getCode() !== 200){
-			throw new \RuntimeException("Failed to fetch OpenID configuration from authorization service");
-		}
+		$result = self::fetchURL($authServiceUri . self::AUTHORIZATION_SERVICE_OPENID_CONFIGURATION_PATH, 200);
 
 		try{
 			$json = json_decode($result->getBody(), false, flags: JSON_THROW_ON_ERROR);
@@ -158,10 +168,7 @@ class FetchAuthKeysTask extends AsyncTask{
 	 * @return array<string, AuthServiceKey> keys indexed by key ID
 	 */
 	private function getKeys(string $jwksUri) : array{
-		$result = Internet::getURL($jwksUri);
-		if($result === null || $result->getCode() !== 200){
-			return throw new \RuntimeException("Failed to fetch keys from authorization service");
-		}
+		$result = self::fetchURL($jwksUri, 200);
 
 		try{
 			$json = json_decode($result->getBody(), true, flags: JSON_THROW_ON_ERROR);

@@ -166,7 +166,7 @@ class AreaEffectCloud extends Entity{
 				$effects[] = CompoundTag::create()
 					->setByte("Id", EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
-					->setInt("Duration", $effect->getDuration())
+					->setInt("Duration", $effect->isInfinite() ? -1 : $effect->getDuration())
 					->setByte("Ambient", $effect->isAmbient() ? 1 : 0)
 					->setByte("ShowParticles", $effect->isVisible() ? 1 : 0);
 			}

@@ -21,19 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\world\sound;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
+class ArmorEquipCopperSound implements Sound{
+
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ARMOR_EQUIP_COPPER, $pos, false)];
+	}
 }

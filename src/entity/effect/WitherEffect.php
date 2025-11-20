@@ -26,14 +26,12 @@ namespace pocketmine\entity\effect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageEvent;
+use function max;
 
 class WitherEffect extends Effect{
 
-	public function canTick(EffectInstance $instance) : bool{
-		if(($interval = (40 >> $instance->getAmplifier())) > 0){
-			return ($instance->getDuration() % $interval) === 0;
-		}
-		return true;
+	public function getApplyInterval(EffectInstance $instance) : int{
+		return max(1, 40 >> $instance->getAmplifier());
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{

@@ -26,8 +26,13 @@ namespace pocketmine\command;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\Translatable;
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginOwned;
 
+/**
+ * @internal Only used to route plugin.yml commands to {@link PluginBase::onCommand()}.
+ * Use {@link Command} instead of this class.
+ */
 final class PluginCommand extends Command implements PluginOwned{
 	public function __construct(
 		string $namespace,

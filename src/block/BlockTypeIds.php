@@ -458,6 +458,7 @@ final class BlockTypeIds{
 	public const INFESTED_CHISELED_STONE_BRICK = self::PREFIX . "infested_chiseled_stone_brick";
 	public const INFESTED_COBBLESTONE = self::PREFIX . "infested_cobblestone";
 	public const INFESTED_CRACKED_STONE_BRICK = self::PREFIX . "infested_cracked_stone_brick";
+	public const INFESTED_DEEPSLATE = self::PREFIX . "infested_deepslate";
 	public const INFESTED_MOSSY_STONE_BRICK = self::PREFIX . "infested_mossy_stone_brick";
 	public const INFESTED_STONE = self::PREFIX . "infested_stone";
 	public const INFESTED_STONE_BRICK = self::PREFIX . "infested_stone_brick";
@@ -764,6 +765,7 @@ final class BlockTypeIds{
 	public const STONE_PRESSURE_PLATE = self::PREFIX . "stone_pressure_plate";
 	public const STONE_SLAB = self::PREFIX . "stone_slab";
 	public const STONE_STAIRS = self::PREFIX . "stone_stairs";
+	public const STRUCTURE_VOID = self::PREFIX . "structure_void";
 	public const SUGARCANE = self::PREFIX . "sugarcane";
 	public const SUNFLOWER = self::PREFIX . "sunflower";
 	public const SWEET_BERRY_BUSH = self::PREFIX . "sweet_berry_bush";

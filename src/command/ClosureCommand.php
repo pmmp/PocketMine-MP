@@ -27,6 +27,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\utils\Utils;
 
 /**
+ * @deprecated
  * @phpstan-type Execute \Closure(CommandSender $sender, Command $command, string $commandLabel, list<string> $args) : mixed
  */
 final class ClosureCommand extends Command{

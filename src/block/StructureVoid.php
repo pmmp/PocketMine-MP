@@ -21,19 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pocketmine\block;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+final class StructureVoid extends Transparent{
 
-	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
-	 */
-	public ?array $list = null;
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
+
+	public function isSolid() : bool{
+		return false;
+	}
 }

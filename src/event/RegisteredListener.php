@@ -27,7 +27,13 @@ use pocketmine\plugin\Plugin;
 use pocketmine\timings\TimingsHandler;
 use function in_array;
 
+/**
+ * @phpstan-template TEvent of Event
+ */
 class RegisteredListener{
+	/**
+	 * @phpstan-param \Closure(TEvent) : void $handler
+	 */
 	public function __construct(
 		private \Closure $handler,
 		private int $priority,
@@ -40,6 +46,9 @@ class RegisteredListener{
 		}
 	}
 
+	/**
+	 * @phpstan-return \Closure(TEvent) : void
+	 */
 	public function getHandler() : \Closure{
 		return $this->handler;
 	}
@@ -52,6 +61,9 @@ class RegisteredListener{
 		return $this->priority;
 	}
 
+	/**
+	 * @phpstan-param TEvent $event
+	 */
 	public function callEvent(Event $event) : void{
 		if($event instanceof Cancellable && $event->isCancelled() && !$this->isHandlingCancelled()){
 			return;

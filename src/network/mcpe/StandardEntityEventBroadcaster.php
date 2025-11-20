@@ -88,7 +88,7 @@ final class StandardEntityEventBroadcaster implements EntityEventBroadcaster{
 			EffectIdMap::getInstance()->toId($effect->getType()),
 			$effect->getAmplifier(),
 			$effect->isVisible(),
-			$effect->getDuration(),
+			$effect->isInfinite() ? -1 : $effect->getDuration(),
 			tick: 0
 		));
 	}

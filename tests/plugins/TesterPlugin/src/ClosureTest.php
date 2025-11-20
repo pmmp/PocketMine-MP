@@ -21,19 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event;
+namespace pmmp\TesterPlugin;
 
-/**
- * @internal
- * @phpstan-template TEvent of Event
- */
-final class RegisteredListenerCache{
+final class ClosureTest extends Test{
 
 	/**
-	 * List of all handlers that will be called for a particular event, ordered by execution order.
-	 *
-	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener<TEvent>>
+	 * @phpstan-param \Closure() : void $closure
 	 */
-	public ?array $list = null;
+	public function __construct(
+		\Logger $logger,
+		string $name,
+		string $description,
+		private \Closure $closure
+	){
+		parent::__construct($logger, $name, $description);
+	}
+
+	public function run() : void{
+		($this->closure)();
+		$this->setResult(Test::RESULT_OK);
+	}
 }
