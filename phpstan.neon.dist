@@ -48,6 +48,7 @@ parameters:
 		- pocketmine\VersionInfo::BUILD_CHANNEL
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
+		- pocketmine\network\mcpe\protocol\ProtocolInfo::CURRENT_PROTOCOL
 	stubFiles:
 		- tests/phpstan/stubs/chunkutils2.stub
 		- tests/phpstan/stubs/JsonMapper.stub
