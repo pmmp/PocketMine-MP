@@ -302,7 +302,6 @@ use function strtolower;
  * @method static Record RECORD_MELLOHI()
  * @method static Record RECORD_OTHERSIDE()
  * @method static Record RECORD_PIGSTEP()
- * @method static Record RECORD_LAVA_CHICKEN()
  * @method static Record RECORD_PRECIPICE()
  * @method static Record RECORD_RELIC()
  * @method static Record RECORD_STAL()
