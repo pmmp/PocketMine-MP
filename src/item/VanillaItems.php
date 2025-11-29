@@ -292,6 +292,7 @@ use function strtolower;
  * @method static Record RECORD_CREATOR()
  * @method static Record RECORD_CREATOR_MUSIC_BOX()
  * @method static Record RECORD_FAR()
+ * @method static Record RECORD_LAVA_CHICKEN()
  * @method static Record RECORD_MALL()
  * @method static Record RECORD_MELLOHI()
  * @method static Record RECORD_OTHERSIDE()
