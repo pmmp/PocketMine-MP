@@ -238,7 +238,6 @@ final class KnownTranslationKeys{
 	public const ITEM_RECORD_OTHERSIDE_DESC = "item.record_otherside.desc";
 	public const ITEM_RECORD_PIGSTEP_DESC = "item.record_pigstep.desc";
 	public const ITEM_RECORD_PRECIPICE_DESC = "item.record_precipice.desc";
-	public const ITEM_RECORD_LAVA_CHICKEN_DESC = "item.record_lava_chicken.desc";
 	public const ITEM_RECORD_RELIC_DESC = "item.record_relic.desc";
 	public const ITEM_RECORD_STAL_DESC = "item.record_stal.desc";
 	public const ITEM_RECORD_STRAD_DESC = "item.record_strad.desc";
