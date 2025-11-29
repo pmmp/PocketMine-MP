@@ -1056,6 +1056,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_FAR_DESC, []);
 	}
 
+	public static function item_record_lava_chicken_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_LAVA_CHICKEN_DESC, []);
+	}
+
 	public static function item_record_mall_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_MALL_DESC, []);
 	}
@@ -1074,10 +1078,6 @@ final class KnownTranslationFactory{
 
 	public static function item_record_precipice_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_PRECIPICE_DESC, []);
-	}
-
-	public static function item_record_lava_chicken_desc() : Translatable{
-		return new Translatable(KnownTranslationKeys::ITEM_RECORD_LAVA_CHICKEN_DESC, []);
 	}
 
 	public static function item_record_relic_desc() : Translatable{
