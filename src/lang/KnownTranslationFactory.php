@@ -1079,10 +1079,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_PRECIPICE_DESC, []);
 	}
 
-	public static function item_record_lava_chicken_desc() : Translatable{
-		return new Translatable(KnownTranslationKeys::ITEM_RECORD_LAVA_CHICKEN_DESC, []);
-	}
-
 	public static function item_record_relic_desc() : Translatable{
 		return new Translatable(KnownTranslationKeys::ITEM_RECORD_RELIC_DESC, []);
 	}
