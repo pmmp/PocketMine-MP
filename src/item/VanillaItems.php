@@ -301,6 +301,7 @@ use function strtolower;
  * @method static Record RECORD_MELLOHI()
  * @method static Record RECORD_OTHERSIDE()
  * @method static Record RECORD_PIGSTEP()
+ * @method static Record RECORD_LAVA_CHICKEN()
  * @method static Record RECORD_PRECIPICE()
  * @method static Record RECORD_RELIC()
  * @method static Record RECORD_STAL()
@@ -617,6 +618,7 @@ final class VanillaItems{
 		self::register("record_pigstep", fn(IID $id) => new Record($id, RecordType::DISK_PIGSTEP, "Record Pigstep"));
 		self::register("record_precipice", fn(IID $id) => new Record($id, RecordType::DISK_PRECIPICE, "Record Precipice"));
 		self::register("record_relic", fn(IID $id) => new Record($id, RecordType::DISK_RELIC, "Record Relic"));
+		self::register("record_lava_chicken", fn(IID $id) => new Record($id, RecordType::DISK_LAVA_CHICKEN, "Record Lava Chicken"));
 		self::register("record_stal", fn(IID $id) => new Record($id, RecordType::DISK_STAL, "Record Stal"));
 		self::register("record_strad", fn(IID $id) => new Record($id, RecordType::DISK_STRAD, "Record Strad"));
 		self::register("record_wait", fn(IID $id) => new Record($id, RecordType::DISK_WAIT, "Record Wait"));

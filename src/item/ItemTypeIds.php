@@ -354,8 +354,9 @@ final class ItemTypeIds{
 	public const COPPER_HELMET = 20315;
 	public const COPPER_LEGGINGS = 20316;
 	public const COPPER_NUGGET = 20317;
+	public const RECORD_LAVA_CHICKEN = 20318;
 
-	public const FIRST_UNUSED_ITEM_ID = 20318;
+	public const FIRST_UNUSED_ITEM_ID = 20319;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
