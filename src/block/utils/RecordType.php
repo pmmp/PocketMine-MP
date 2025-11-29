@@ -44,6 +44,7 @@ use function spl_object_id;
  * @method static RecordType DISK_MELLOHI()
  * @method static RecordType DISK_OTHERSIDE()
  * @method static RecordType DISK_PIGSTEP()
+ * @method static RecordType DISK_LAVA_CHICKEN()
  * @method static RecordType DISK_STAL()
  * @method static RecordType DISK_STRAD()
  * @method static RecordType DISK_WAIT()
