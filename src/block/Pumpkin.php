@@ -43,4 +43,6 @@ class Pumpkin extends Opaque{
 		}
 		return false;
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

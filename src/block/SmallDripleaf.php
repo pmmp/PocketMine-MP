@@ -161,6 +161,10 @@ class SmallDripleaf extends Transparent implements HorizontalFacing{
 		return 100;
 	}
 
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
+
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
 	}

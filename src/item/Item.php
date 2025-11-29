@@ -594,6 +594,20 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns the chance that this item will fill one layer of a composter.
+	 */
+	public function getCompostabilityChance() : int{
+		return 0;
+	}
+	
+	/**
+	 * Returns whether this item can be used in a composter.
+	 */
+	public function isCompostable() : bool{
+		return $this->getCompostabilityChance() > 0;
+	}
+
+	/**
 	 * Called when a player uses this item on a block.
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)

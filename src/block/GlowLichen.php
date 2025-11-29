@@ -190,4 +190,8 @@ class GlowLichen extends Transparent implements MultiAnyFacing{
 	public function getFlammability() : int{
 		return 100;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 50;
+	}
 }

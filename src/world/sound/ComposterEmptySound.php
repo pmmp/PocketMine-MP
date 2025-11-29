@@ -21,26 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\Block;
-use pocketmine\block\VanillaBlocks;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class Carrot extends Food{
+final class ComposterEmptySound implements Sound{
 
-	public function getBlock(?int $clickedFace = null) : Block{
-		return VanillaBlocks::CARROTS();
-	}
-
-	public function getFoodRestore() : int{
-		return 3;
-	}
-
-	public function getSaturationRestore() : float{
-		return 4.8;
-	}
-	
-	public function getCompostabilityChance() : int{
-		return 65;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_COMPOSTER_EMPTY, $pos, false)];
 	}
 }

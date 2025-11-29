@@ -188,6 +188,13 @@ class Leaves extends Transparent{
 		return 60;
 	}
 
+	public function getCompostabilityChance() : int{
+		return match($this->leavesType){
+			LeavesType::AZALEA => 50,
+			default => 30
+		};
+	}
+
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
 	}

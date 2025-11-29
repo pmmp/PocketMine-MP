@@ -222,6 +222,7 @@ use function strtolower;
  * @method static Wall COBBLESTONE_WALL()
  * @method static Cobweb COBWEB()
  * @method static CocoaBlock COCOA_POD()
+ * @method static Composter COMPOSTER()
  * @method static ChemistryTable COMPOUND_CREATOR()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
@@ -458,7 +459,7 @@ use function strtolower;
  * @method static Wall END_STONE_BRICK_WALL()
  * @method static Slab FAKE_WOODEN_SLAB()
  * @method static Farmland FARMLAND()
- * @method static TallGrass FERN()
+ * @method static Fern FERN()
  * @method static Fire FIRE()
  * @method static FletchingTable FLETCHING_TABLE()
  * @method static Leaves FLOWERING_AZALEA_LEAVES()
@@ -531,7 +532,7 @@ use function strtolower;
  * @method static Lantern LANTERN()
  * @method static Opaque LAPIS_LAZULI()
  * @method static LapisOre LAPIS_LAZULI_ORE()
- * @method static DoubleTallGrass LARGE_FERN()
+ * @method static LargeFern LARGE_FERN()
  * @method static Lava LAVA()
  * @method static LavaCauldron LAVA_CAULDRON()
  * @method static Lectern LECTERN()
@@ -596,7 +597,7 @@ use function strtolower;
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
  * @method static NetherWartPlant NETHER_WART()
- * @method static Opaque NETHER_WART_BLOCK()
+ * @method static NetherWart NETHER_WART_BLOCK()
  * @method static Note NOTE_BLOCK()
  * @method static WoodenButton OAK_BUTTON()
  * @method static CeilingCenterHangingSign OAK_CEILING_CENTER_HANGING_SIGN()
@@ -644,7 +645,7 @@ use function strtolower;
  * @method static PinkPetals PINK_PETALS()
  * @method static Flower PINK_TULIP()
  * @method static PitcherCrop PITCHER_CROP()
- * @method static DoublePlant PITCHER_PLANT()
+ * @method static PitcherPlant PITCHER_PLANT()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
  * @method static Slab POLISHED_ANDESITE_SLAB()
@@ -739,7 +740,7 @@ use function strtolower;
  * @method static Sculk SCULK()
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
- * @method static Opaque SHROOMLIGHT()
+ * @method static ShroomLight SHROOMLIGHT()
  * @method static ShulkerBox SHULKER_BOX()
  * @method static Slime SLIME()
  * @method static SmallDripleaf SMALL_DRIPLEAF()
@@ -807,7 +808,7 @@ use function strtolower;
  * @method static TintedGlass TINTED_GLASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
- * @method static Flower TORCHFLOWER()
+ * @method static TorchFlower TORCHFLOWER()
  * @method static TorchflowerCrop TORCHFLOWER_CROP()
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
@@ -842,7 +843,7 @@ use function strtolower;
  * @method static WoodenTrapdoor WARPED_TRAPDOOR()
  * @method static WallHangingSign WARPED_WALL_HANGING_SIGN()
  * @method static WallSign WARPED_WALL_SIGN()
- * @method static Opaque WARPED_WART_BLOCK()
+ * @method static WarpedWart WARPED_WART_BLOCK()
  * @method static Water WATER()
  * @method static WaterCauldron WATER_CAULDRON()
  * @method static NetherVines WEEPING_VINES()
@@ -957,6 +958,7 @@ final class VanillaBlocks{
 
 		self::register("cobweb", fn(BID $id) => new Cobweb($id, "Cobweb", new Info(new BreakInfo(4.0, ToolType::SWORD | ToolType::SHEARS, 1))));
 		self::register("cocoa_pod", fn(BID $id) => new CocoaBlock($id, "Cocoa Block", new Info(BreakInfo::axe(0.2, null, 15.0))));
+		self::register("composter", fn(BID $id) => new Composter($id, "Composter", new Info(new BreakInfo(0.6, ToolType::AXE, 0, 0.6))));
 		self::register("coral_block", fn(BID $id) => new CoralBlock($id, "Coral Block", new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0))));
 		self::register("daylight_sensor", fn(BID $id) => new DaylightSensor($id, "Daylight Sensor", new Info(BreakInfo::axe(0.2))), TileDaylightSensor::class);
 		self::register("dead_bush", fn(BID $id) => new DeadBush($id, "Dead Bush", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS])));
@@ -970,8 +972,8 @@ final class VanillaBlocks{
 		self::register("peony", fn(BID $id) => new DoublePlant($id, "Peony", new Info(BreakInfo::instant())));
 		self::register("pink_petals", fn(BID $id) => new PinkPetals($id, "Pink Petals", new Info(BreakInfo::instant())));
 		self::register("double_tallgrass", fn(BID $id) => new DoubleTallGrass($id, "Double Tallgrass", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
-		self::register("large_fern", fn(BID $id) => new DoubleTallGrass($id, "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
-		self::register("pitcher_plant", fn(BID $id) => new DoublePlant($id, "Pitcher Plant", new Info(BreakInfo::instant())));
+		self::register("large_fern", fn(BID $id) => new LargeFern($id, "Large Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+		self::register("pitcher_plant", fn(BID $id) => new PitcherPlant($id, "Pitcher Plant", new Info(BreakInfo::instant())));
 		self::register("pitcher_crop", fn(BID $id) => new PitcherCrop($id, "Pitcher Crop", new Info(BreakInfo::instant())));
 		self::register("double_pitcher_crop", fn(BID $id) => new DoublePitcherCrop($id, "Double Pitcher Crop", new Info(BreakInfo::instant())));
 		self::register("dragon_egg", fn(BID $id) => new DragonEgg($id, "Dragon Egg", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD, blastResistance: 45.0))));
@@ -1003,7 +1005,7 @@ final class VanillaBlocks{
 		self::register("pink_tulip", fn(BID $id) => new Flower($id, "Pink Tulip", $flowerTypeInfo));
 		self::register("red_tulip", fn(BID $id) => new Flower($id, "Red Tulip", $flowerTypeInfo));
 		self::register("white_tulip", fn(BID $id) => new Flower($id, "White Tulip", $flowerTypeInfo));
-		self::register("torchflower", fn(BID $id) => new Flower($id, "Torchflower", $flowerTypeInfo));
+		self::register("torchflower", fn(BID $id) => new TorchFlower($id, "Torchflower", $flowerTypeInfo));
 		self::register("torchflower_crop", fn(BID $id) => new TorchflowerCrop($id, "Torchflower Crop", new Info(BreakInfo::instant())));
 		self::register("flower_pot", fn(BID $id) => new FlowerPot($id, "Flower Pot", new Info(BreakInfo::instant())), TileFlowerPot::class);
 		self::register("frosted_ice", fn(BID $id) => new FrostedIce($id, "Frosted Ice", new Info(BreakInfo::pickaxe(0.5))));
@@ -1078,7 +1080,7 @@ final class VanillaBlocks{
 
 		self::register("nether_portal", fn(BID $id) => new NetherPortal($id, "Nether Portal", new Info(BreakInfo::indestructible(0.0))));
 		self::register("nether_reactor_core", fn(BID $id) => new NetherReactor($id, "Nether Reactor Core", new Info(BreakInfo::pickaxe(3.0, ToolTier::WOOD))));
-		self::register("nether_wart_block", fn(BID $id) => new Opaque($id, "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
+		self::register("nether_wart_block", fn(BID $id) => new NetherWart($id, "Nether Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
 		self::register("nether_wart", fn(BID $id) => new NetherWartPlant($id, "Nether Wart", new Info(BreakInfo::instant())));
 		self::register("netherrack", fn(BID $id) => new Netherrack($id, "Netherrack", new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD))));
 		self::register("note_block", fn(BID $id) => new Note($id, "Note Block", new Info(BreakInfo::axe(0.8))), TileNote::class);
@@ -1230,7 +1232,7 @@ final class VanillaBlocks{
 		self::register("sugarcane", fn(BID $id) => new Sugarcane($id, "Sugarcane", new Info(BreakInfo::instant())));
 		self::register("sweet_berry_bush", fn(BID $id) => new SweetBerryBush($id, "Sweet Berry Bush", new Info(BreakInfo::instant())));
 		self::register("tnt", fn(BID $id) => new TNT($id, "TNT", new Info(BreakInfo::instant())));
-		self::register("fern", fn(BID $id) => new TallGrass($id, "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS]), fn() => VanillaBlocks::LARGE_FERN()));
+		self::register("fern", fn(BID $id) => new Fern($id, "Fern", new Info(BreakInfo::instant(ToolType::SHEARS, 1), [Tags::POTTABLE_PLANTS]), fn() => VanillaBlocks::LARGE_FERN()));
 		self::register("tall_grass", fn(BID $id) => new TallGrass($id, "Tall Grass", new Info(BreakInfo::instant(ToolType::SHEARS, 1)), fn() => VanillaBlocks::DOUBLE_TALLGRASS()));
 
 		self::register("blue_torch", fn(BID $id) => new Torch($id, "Blue Torch", new Info(BreakInfo::instant())));
@@ -1696,11 +1698,9 @@ final class VanillaBlocks{
 
 		self::register("soul_soil", fn(BID $id) => new Opaque($id, "Soul Soil", new Info(BreakInfo::shovel(0.5))));
 
-		self::register("shroomlight", fn(BID $id) => new class($id, "Shroomlight", new Info(new BreakInfo(1.0, ToolType::HOE))) extends Opaque{
-			public function getLightLevel() : int{ return 15; }
-		});
+		self::register("shroomlight", fn(BID $id) => new ShroomLight($id, "Shroomlight", new Info(new BreakInfo(1.0, ToolType::HOE))));
 
-		self::register("warped_wart_block", fn(BID $id) => new Opaque($id, "Warped Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
+		self::register("warped_wart_block", fn(BID $id) => new WarpedWart($id, "Warped Wart Block", new Info(new BreakInfo(1.0, ToolType::HOE))));
 		self::register("crying_obsidian", fn(BID $id) => new class($id, "Crying Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in Java */, ToolTier::DIAMOND, 6000.0))) extends Opaque{
 			public function getLightLevel() : int{ return 10;}
 		});

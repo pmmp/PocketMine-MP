@@ -162,4 +162,8 @@ class NetherVines extends Flowable implements Ageable{
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 50;
+	}
 }

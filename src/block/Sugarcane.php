@@ -151,4 +151,8 @@ class Sugarcane extends Flowable implements Ageable{
 			$this->onSupportBlockChange();
 		}
 	}
+
+	public function getCompostabilityChance() : int{
+		return 50;
+	}
 }

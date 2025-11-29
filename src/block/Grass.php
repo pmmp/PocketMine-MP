@@ -112,4 +112,8 @@ class Grass extends Opaque{
 
 		return false;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
 }

@@ -30,4 +30,6 @@ final class MushroomStem extends Opaque{
 	public function getDropsForCompatibleTool(Item $item) : array{ return []; }
 
 	public function isAffectedBySilkTouch() : bool{ return true; }
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

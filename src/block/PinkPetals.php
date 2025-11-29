@@ -109,6 +109,10 @@ class PinkPetals extends Flowable implements HorizontalFacing{
 		return 100;
 	}
 
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [$this->asItem()->setCount($this->count)];
 	}

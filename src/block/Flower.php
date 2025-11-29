@@ -41,4 +41,8 @@ class Flower extends Flowable{
 	public function getFlammability() : int{
 		return 100;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 65;
+	}
 }

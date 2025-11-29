@@ -74,4 +74,8 @@ class TallGrass extends Flowable{
 	private function getDoublePlantVariant() : ?DoublePlant{
 		return $this->doublePlantVariant !== null ? ($this->doublePlantVariant)() : null;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
 }

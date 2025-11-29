@@ -1330,6 +1330,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("cocoa_beans", fn() => Items::COCOA_BEANS());
 		$result->register("cod", fn() => Items::RAW_FISH());
 		$result->register("compass", fn() => Items::COMPASS());
+		$result->register("composter", fn() => Blocks::COMPOSTER()->asItem());
 		$result->register("compound", fn() => Items::CHEMICAL_SALT());
 		$result->register("cooked_beef", fn() => Items::STEAK());
 		$result->register("cooked_chicken", fn() => Items::COOKED_CHICKEN());

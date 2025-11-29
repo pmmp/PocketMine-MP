@@ -53,4 +53,6 @@ class RedMushroom extends Flowable{
 
 		return false;
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

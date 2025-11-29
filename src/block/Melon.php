@@ -39,4 +39,8 @@ class Melon extends Opaque{
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 65;
+	}
 }

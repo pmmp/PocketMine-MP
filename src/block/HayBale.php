@@ -37,6 +37,10 @@ class HayBale extends Opaque implements PillarRotation{
 	public function getFlammability() : int{
 		return 20;
 	}
+	
+	public function getCompostabilityChance() : int{
+		return 85;
+	}
 
 	public function onEntityLand(Entity $entity) : ?float{
 		$entity->fallDistance *= 0.2;

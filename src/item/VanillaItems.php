@@ -347,7 +347,7 @@ use function strtolower;
  * @method static ItemBlockWallOrFloor WARPED_SIGN()
  * @method static LiquidBucket WATER_BUCKET()
  * @method static Item WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE()
- * @method static Item WHEAT()
+ * @method static Wheat WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
  * @method static Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE()
  * @method static Axe WOODEN_AXE()
@@ -641,7 +641,7 @@ final class VanillaItems{
 		self::register("warped_sign", fn(IID $id) => new ItemBlockWallOrFloor($id, Blocks::WARPED_SIGN(), Blocks::WARPED_WALL_SIGN()));
 		self::register("warped_hanging_sign", fn(IID $id) => new HangingSign($id, "Warped Hanging Sign", Blocks::WARPED_CEILING_CENTER_HANGING_SIGN(), Blocks::WARPED_CEILING_EDGES_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()));
 		self::register("water_bucket", fn(IID $id) => new LiquidBucket($id, "Water Bucket", Blocks::WATER()));
-		self::register("wheat", fn(IID $id) => new Item($id, "Wheat"));
+		self::register("wheat", fn(IID $id) => new Wheat($id, "Wheat"));
 		self::register("wheat_seeds", fn(IID $id) => new WheatSeeds($id, "Wheat Seeds"));
 		self::register("writable_book", fn(IID $id) => new WritableBook($id, "Book & Quill"));
 		self::register("written_book", fn(IID $id) => new WrittenBook($id, "Written Book"));

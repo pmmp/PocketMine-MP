@@ -27,6 +27,10 @@ use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 
 class CocoaBeans extends Item{
+	
+	public function getCompostabilityChance() : int{
+		return 65;
+	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::COCOA_POD();

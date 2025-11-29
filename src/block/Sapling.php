@@ -110,4 +110,8 @@ class Sapling extends Flowable{
 	public function getFuelTime() : int{
 		return 100;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
 }
