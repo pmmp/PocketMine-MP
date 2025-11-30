@@ -24,20 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\event\block\ComposterEmptyEvent;
+use pocketmine\event\block\ComposterFillEvent;
+use pocketmine\event\block\ComposterReadyEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemBlock;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\particle\HappyVillagerParticle;
+use pocketmine\world\particle\CropGrowthEmitterParticle;
 use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
 use pocketmine\world\sound\ComposterFillSuccessSound;
 use pocketmine\world\sound\ComposterReadySound;
 
 class Composter extends Transparent{
+	public const MIN_COMPOST_LAYERS = 0;
 	public const MAX_COMPOST_LAYERS = 8;
 
 	protected int $layers = 0;
@@ -66,33 +69,42 @@ class Composter extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
 		if($this->layers >= self::MAX_COMPOST_LAYERS){
-			$this->layers = 0;
+			$event = new ComposterEmptyEvent($this, self::MIN_COMPOST_LAYERS, [VanillaItems::BONE_MEAL()]);
+			$event->call();
+
+			if($event->isCancelled()){
+				return true;
+			}
+
+			$this->setCompostLayers($event->getCompostLayer());
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
-			$this->position->getWorld()->dropItem($this->position->add(0.5, 1.0, 0.5), VanillaItems::BONE_MEAL());
+
+			foreach($event->getDrops() as $drop){
+				$this->position->getWorld()->dropItem($this->position->add(0.5, 1.0, 0.5), $drop);
+			}
 			return true;
 		}
 
 		if(!$item->isNull() && $item->isCompostable()){
-			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
-			
-			if(mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1){
-				++$this->layers;
-				$this->position->getWorld()->setBlock($this->position, $this);
-				$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
-				$item->pop();
+			$event = new ComposterFillEvent(
+				$this, 
+				$item, 
+				$this->layers,
+				$this->layers + 1, 
+				mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1
+			);
+			$event->call();
 
-				for($i = 0; $i < 15; $i++){
-					$pos = $this->position->add(0.5, 0.5, 0.5);
+			if(!$event->isCancelled()){
+				$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 
-					$this->position->getWorld()->addParticle(
-						$pos->add(
-							mt_rand(-45, 45) / 100,
-							mt_rand(-45, 45) / 100,
-							mt_rand(-45, 45) / 100
-						),
-						new HappyVillagerParticle()
-					);
+				if($event->getResult()){
+					$this->setCompostLayers($event->getNewFillLayer());
+					$this->position->getWorld()->setBlock($this->position, $this);
+					$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
+					$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
+					$item->pop();
 				}
 
 				if($this->layers === self::MAX_COMPOST_LAYERS - 1){
@@ -105,6 +117,13 @@ class Composter extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
+		$event = new ComposterReadyEvent($this);
+		$event->call();
+
+		if($event->isCancelled()){
+			return;
+		}
+
 		$this->layers = min(self::MAX_COMPOST_LAYERS, ++$this->layers);
 		$this->position->getWorld()->setBlock($this->position, $this);
 		$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
