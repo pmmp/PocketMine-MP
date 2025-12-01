@@ -33,7 +33,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\particle\CropGrowthEmitterParticle;
+use pocketmine\world\particle\BoneMealUseParticle;
 use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
 use pocketmine\world\sound\ComposterFillSuccessSound;
@@ -50,16 +50,20 @@ class Composter extends Transparent{
 	}
 	
 	protected function recalculateCollisionBoxes() : array{
+		$result = [
+			AxisAlignedBB::one()->trim(Facing::UP, (max(1, 15 - (2 * $this->layers)) - (int)($this->layers === 0)) / 16)
+		];
+
 		foreach(Facing::HORIZONTAL as $f){
 			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
 		}
 		return $result;
 	}
 
-	public function getCompostLayers() : int{ return $this->layers; }
+	public function getLayers() : int{ return $this->layers; }
 
 	/** @return $this */
-	public function setCompostLayers(int $layers) : self{
+	public function setLayers(int $layers) : self{
 		if($layers < 0 || $layers > self::MAX_COMPOST_LAYERS){
 			throw new \InvalidArgumentException("Compost layers must be in range 0 ... " . self::MAX_COMPOST_LAYERS);
 		}
@@ -76,7 +80,7 @@ class Composter extends Transparent{
 				return true;
 			}
 
-			$this->setCompostLayers($event->getCompostLayer());
+			$this->setLayers($event->getLayer());
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$this->position->getWorld()->addSound($this->position, new ComposterEmptySound());
 
@@ -97,14 +101,14 @@ class Composter extends Transparent{
 			$event->call();
 
 			if(!$event->isCancelled()){
-				$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
-
 				if($event->getResult()){
-					$this->setCompostLayers($event->getNewFillLayer());
+					$this->setLayers($event->getNewFillLayer());
 					$this->position->getWorld()->setBlock($this->position, $this);
 					$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
-					$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
+					$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new BoneMealUseParticle());
 					$item->pop();
+				}else{
+					$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 				}
 
 				if($this->layers === self::MAX_COMPOST_LAYERS - 1){
@@ -127,10 +131,6 @@ class Composter extends Transparent{
 		$this->layers = min(self::MAX_COMPOST_LAYERS, ++$this->layers);
 		$this->position->getWorld()->setBlock($this->position, $this);
 		$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
-	}
-
-	public function getDropsForIncompatibleTool(Item $item) : array{
-		return [$this->asItem()];
 	}
 
 	public function getFlammability() : int{ return 5; }

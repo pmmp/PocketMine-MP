@@ -43,9 +43,9 @@ class ComposterEmptyEvent extends BlockEvent implements Cancellable{
 		return parent::__construct($block);
 	}
 
-	public function getCompostLayer() : int{ return $this->compostLayer; }
+	public function getLayer() : int{ return $this->compostLayer; }
 
-	public function setCompostLayer(int $layer) : void{
+	public function setLayer(int $layer) : void{
 		$this->compostLayer = $layer;
 	}
 

@@ -1316,7 +1316,7 @@ final class VanillaBlockMappings{
 			$commonProperties->horizontalFacingSWNEInverted
 		]));
 		$reg->mapModel(Model::create(Blocks::COMPOSTER(), Ids::COMPOSTER)->properties([
-			new IntProperty(StateNames::COMPOSTER_FILL_LEVEL, 0, 8, fn(Composter $b) => $b->getCompostLayers(), fn(Composter $b, int $v) => $b->setCompostLayers($v))
+			new IntProperty(StateNames::COMPOSTER_FILL_LEVEL, 0, 8, fn(Composter $b) => $b->getLayers(), fn(Composter $b, int $v) => $b->setLayers($v))
 		]));
 
 		//D
