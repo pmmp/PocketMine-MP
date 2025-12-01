@@ -66,10 +66,7 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		if($this->layers === self::MIN_LAYERS){
-			return [];
-		}
-		return [AxisAlignedBB::one()->trim(Facing::UP, 1 - ($this->layers * 0.125))];
+		return [AxisAlignedBB::one()->trim(Facing::UP, (self::MAX_LAYERS - $this->layers + 1) / 8)];
 	}
 
 	public function getSupportType(int $facing) : SupportType{
