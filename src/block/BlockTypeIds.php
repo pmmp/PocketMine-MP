@@ -834,8 +834,10 @@ final class BlockTypeIds{
 	public const WARPED_NYLIUM = 10804;
 	public const INFESTED_DEEPSLATE = 10805;
 	public const STRUCTURE_VOID = 10806;
+	public const AZALEA = 10807;
+	public const FLOWERING_AZALEA = 10808;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10807;
+	public const FIRST_UNUSED_BLOCK_ID = 10809;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

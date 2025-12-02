@@ -111,6 +111,7 @@ use function strtolower;
  * @method static Stair ANDESITE_STAIRS()
  * @method static Wall ANDESITE_WALL()
  * @method static Anvil ANVIL()
+ * @method static Azalea AZALEA()
  * @method static Leaves AZALEA_LEAVES()
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
@@ -464,6 +465,7 @@ use function strtolower;
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
  * @method static FletchingTable FLETCHING_TABLE()
+ * @method static Azalea FLOWERING_AZALEA()
  * @method static Leaves FLOWERING_AZALEA_LEAVES()
  * @method static FlowerPot FLOWER_POT()
  * @method static Froglight FROGLIGHT()
@@ -909,6 +911,8 @@ final class VanillaBlocks{
 		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", fn(BID $id) => new ActivatorRail($id, "Activator Rail", $railBreakInfo));
 		self::register("anvil", fn(BID $id) => new Anvil($id, "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
+		self::register("azalea", fn(BID $id) => new Azalea($id, "Azalea", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("flowering_azalea", fn(BID $id) => new Azalea($id, "Flowering Azalea", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 		self::register("bamboo", fn(BID $id) => new Bamboo($id, "Bamboo", new Info(new class(1.0, ToolType::AXE) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
 				if($item->getBlockToolType() === ToolType::SWORD){

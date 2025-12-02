@@ -162,6 +162,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::AMETHYST(), Ids::AMETHYST_BLOCK);
 		$reg->mapSimple(Blocks::ANCIENT_DEBRIS(), Ids::ANCIENT_DEBRIS);
 		$reg->mapSimple(Blocks::ANDESITE(), Ids::ANDESITE);
+		$reg->mapSimple(Blocks::AZALEA(), Ids::AZALEA);
 		$reg->mapSimple(Blocks::BARRIER(), Ids::BARRIER);
 		$reg->mapSimple(Blocks::BEACON(), Ids::BEACON);
 		$reg->mapSimple(Blocks::BLACKSTONE(), Ids::BLACKSTONE);
@@ -343,6 +344,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::END_STONE_BRICKS(), Ids::END_BRICKS);
 		$reg->mapSimple(Blocks::FERN(), Ids::FERN);
 		$reg->mapSimple(Blocks::FLETCHING_TABLE(), Ids::FLETCHING_TABLE);
+		$reg->mapSimple(Blocks::FLOWERING_AZALEA(), Ids::FLOWERING_AZALEA);
 		$reg->mapSimple(Blocks::GILDED_BLACKSTONE(), Ids::GILDED_BLACKSTONE);
 		$reg->mapSimple(Blocks::GLASS(), Ids::GLASS);
 		$reg->mapSimple(Blocks::GLASS_PANE(), Ids::GLASS_PANE);
