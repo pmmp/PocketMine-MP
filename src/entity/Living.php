@@ -627,7 +627,6 @@ abstract class Living extends Entity{
 
 			$netheritePieces = 0;
 			foreach($pieces as $armorPiece){
-				if($armorPiece === null) continue;
 				if($armorPiece->getTypeId() === ItemTypeIds::NETHERITE_HELMET ||
 					$armorPiece->getTypeId() === ItemTypeIds::NETHERITE_CHESTPLATE ||
 					$armorPiece->getTypeId() === ItemTypeIds::NETHERITE_LEGGINGS ||
