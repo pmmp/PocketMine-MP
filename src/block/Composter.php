@@ -95,26 +95,29 @@ class Composter extends Transparent{
 				$this, 
 				$item, 
 				$this->layers,
-				$this->layers + 1, 
-				mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1
+				$this->layers
 			);
 			$event->call();
 
-			if(!$event->isCancelled()){
-				if($event->getResult()){
-					$this->setLayers($event->getNewFillLayer());
-					$this->position->getWorld()->setBlock($this->position, $this);
-					$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
-					$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new BoneMealUseParticle());
-					$item->pop();
-				}else{
-					$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
-				}
+			if($event->isCancelled()){
+				return true;
+			}
+
+			if(mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1){
+				$this->setLayers($event->getOldFillLayer() + 1);
+				$this->position->getWorld()->setBlock($this->position, $this);
+				$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
+				$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new BoneMealUseParticle());
+				$item->pop();
 
 				if($this->layers === self::MAX_COMPOST_LAYERS - 1){
 					$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 				}
+
+				return true;
 			}
+
+			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 		}
 
 		return true;

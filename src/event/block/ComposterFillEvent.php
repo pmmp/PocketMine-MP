@@ -35,8 +35,7 @@ class ComposterFillEvent extends BlockEvent implements Cancellable{
 		Block $block,
 		protected Item $item,
 		protected int $oldFillLayer,
-		protected int $newFillLayer,
-		protected bool $result
+		protected int $newFillLayer
 	){
 		parent::__construct($block);
 	}
@@ -49,11 +48,5 @@ class ComposterFillEvent extends BlockEvent implements Cancellable{
 
 	public function setNewFillLayer(int $layer) : void{
 		$this->newFillLayer = $layer;
-	}
-
-	public function getResult() : bool{ return $this->result; }
-
-	public function setResult(bool $result) : void{
-		$this->result = $result;
 	}
 }
