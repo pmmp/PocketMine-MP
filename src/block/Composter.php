@@ -95,7 +95,7 @@ class Composter extends Transparent{
 				$this, 
 				$item, 
 				$this->layers,
-				$this->layers
+				mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1 ? $this->layers + 1 : $this->layers
 			);
 			$event->call();
 
@@ -103,21 +103,21 @@ class Composter extends Transparent{
 				return true;
 			}
 
-			if(mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1){
-				$this->setLayers($event->getOldFillLayer() + 1);
+			if($event->getOldFillLayer() < $event->getNewFillLayer()){
+				$this->setLayers($event->getNewFillLayer());
 				$this->position->getWorld()->setBlock($this->position, $this);
 				$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 				$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new BoneMealUseParticle());
 				$item->pop();
 
-				if($this->layers === self::MAX_COMPOST_LAYERS - 1){
+				if($this->layers >= self::MAX_COMPOST_LAYERS - 1){
 					$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 				}
 
 				return true;
+			}else{
+				$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 			}
-
-			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 		}
 
 		return true;
