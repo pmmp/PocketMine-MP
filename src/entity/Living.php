@@ -619,8 +619,6 @@ abstract class Living extends Entity{
 
 		//TODO: perhaps this also applies to regular entities?
 		if($this instanceof Player){
-			Server::getInstance()->getLogger()->info("DEBUG: Checking netherite armor for {$this->getName()}");
-
 			$armor = $this->getArmorInventory();
 			$pieces = [
 				$armor->getHelmet(),
@@ -630,7 +628,6 @@ abstract class Living extends Entity{
 			];
 
 			$netheritePieces = 0;
-
 			foreach($pieces as $piece){
 				if($piece === null) continue;
 				if($piece->getTypeId() === ItemTypeIds::NETHERITE_HELMET ||
@@ -640,14 +637,8 @@ abstract class Living extends Entity{
 					$netheritePieces++;
 				}
 			}
-
-			Server::getInstance()->getLogger()->info("DEBUG: {$this->getName()} has $netheritePieces netherite armor pieces");
-
 			if($netheritePieces > 0){
-				$oldForce = $force;
 				$force *= 1 - 0.1 * $netheritePieces;
-
-				Server::getInstance()->getLogger()->info("DEBUG: Force reduced from $oldForce to $force");
 			}
 		}
 
