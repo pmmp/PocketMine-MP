@@ -47,6 +47,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\item\ItemTypeIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -60,6 +61,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Utils;
@@ -614,6 +616,41 @@ abstract class Living extends Entity{
 		if($f <= 0){
 			return;
 		}
+
+		//TODO: perhaps this also applies to regular entities?
+		if($this instanceof Player){
+			Server::getInstance()->getLogger()->info("DEBUG: Checking netherite armor for {$this->getName()}");
+
+			$armor = $this->getArmorInventory();
+			$pieces = [
+				$armor->getHelmet(),
+				$armor->getChestplate(),
+				$armor->getLeggings(),
+				$armor->getBoots()
+			];
+
+			$netheritePieces = 0;
+
+			foreach($pieces as $piece){
+				if($piece === null) continue;
+				if($piece->getTypeId() === ItemTypeIds::NETHERITE_HELMET ||
+					$piece->getTypeId() === ItemTypeIds::NETHERITE_CHESTPLATE ||
+					$piece->getTypeId() === ItemTypeIds::NETHERITE_LEGGINGS ||
+					$piece->getTypeId() === ItemTypeIds::NETHERITE_BOOTS){
+					$netheritePieces++;
+				}
+			}
+
+			Server::getInstance()->getLogger()->info("DEBUG: {$this->getName()} has $netheritePieces netherite armor pieces");
+
+			if($netheritePieces > 0){
+				$oldForce = $force;
+				$force *= 1 - 0.1 * $netheritePieces;
+
+				Server::getInstance()->getLogger()->info("DEBUG: Force reduced from $oldForce to $force");
+			}
+		}
+
 		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
 
