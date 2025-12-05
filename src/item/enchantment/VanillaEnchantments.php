@@ -45,10 +45,12 @@ use pocketmine\utils\RegistryTrait;
  * @method static Enchantment INFINITY()
  * @method static KnockbackEnchantment KNOCKBACK()
  * @method static Enchantment MENDING()
+ * @method static Enchantment MULTISHOT()
  * @method static Enchantment POWER()
  * @method static ProtectionEnchantment PROJECTILE_PROTECTION()
  * @method static ProtectionEnchantment PROTECTION()
  * @method static Enchantment PUNCH()
+ * @method static Enchantment QUICK_CHARGE()
  * @method static Enchantment RESPIRATION()
  * @method static SharpnessEnchantment SHARPNESS()
  * @method static Enchantment SILK_TOUCH()
@@ -297,6 +299,26 @@ final class VanillaEnchantments{
 			3,
 			fn(int $level) : int => 10 * $level,
 			5
+		));
+
+		self::register("QUICK_CHARGE", new Enchantment(
+			KnownTranslationFactory::enchantment_crossbowQuickCharge(),
+			Rarity::COMMON,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 20 * ($level - 1) + 12,
+			50
+		));
+
+		self::register("MULTISHOT", new Enchantment(
+			KnownTranslationFactory::enchantment_crossbowMultishot(),
+			Rarity::RARE,
+			0,
+			0,
+			1,
+			fn(int $level) : int => 20,
+			30
 		));
 	}
 

@@ -349,8 +349,9 @@ final class ItemTypeIds{
 	public const TRIDENT = 20310;
 	public const FIREWORK_ROCKET = 20311;
 	public const FIREWORK_STAR = 20312;
+	public const CROSSBOW = 20313;
 
-	public const FIRST_UNUSED_ITEM_ID = 20313;
+	public const FIRST_UNUSED_ITEM_ID = 20314;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
