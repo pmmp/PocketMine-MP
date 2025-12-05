@@ -46,7 +46,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
-use pocketmine\item\ItemTypeIds;
+use pocketmine\item\VanillaArmorMaterials;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -617,20 +617,12 @@ abstract class Living extends Entity{
 
 		//TODO: perhaps this also applies to regular entities?
 		if($this instanceof Player){
-			$armor = $this->getArmorInventory();
-			$pieces = [
-				$armor->getHelmet(),
-				$armor->getChestplate(),
-				$armor->getLeggings(),
-				$armor->getBoots()
-			];
+			$armorInv = $this->getArmorInventory();
 
 			$netheritePieces = 0;
-			foreach($pieces as $armorPiece){
-				if($armorPiece->getTypeId() === ItemTypeIds::NETHERITE_HELMET ||
-					$armorPiece->getTypeId() === ItemTypeIds::NETHERITE_CHESTPLATE ||
-					$armorPiece->getTypeId() === ItemTypeIds::NETHERITE_LEGGINGS ||
-					$armorPiece->getTypeId() === ItemTypeIds::NETHERITE_BOOTS){
+			foreach($armorInv->getContents() as $armor){
+				/* @var Armor $armor */
+				if($armor->getMaterial() === VanillaArmorMaterials::NETHERITE()){
 					$netheritePieces++;
 				}
 			}
