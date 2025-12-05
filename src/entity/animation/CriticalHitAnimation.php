@@ -28,11 +28,11 @@ use pocketmine\network\mcpe\protocol\AnimatePacket;
 
 final class CriticalHitAnimation implements Animation{
 
-	public function __construct(private Living $entity){}
+	public function __construct(private Living $entity, private int $particleCount = 55){}
 
 	public function encode() : array{
 		return [
-			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_CRITICAL_HIT, 55)
+			AnimatePacket::create($this->entity->getId(), AnimatePacket::ACTION_CRITICAL_HIT, $this->particleCount),
 		];
 	}
 }
