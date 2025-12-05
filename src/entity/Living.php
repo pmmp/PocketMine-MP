@@ -621,9 +621,10 @@ abstract class Living extends Entity{
 
 			$netheritePieces = 0;
 			foreach($armorInv->getContents() as $armor){
-				/* @var Armor $armor */
-				if($armor->getMaterial() === VanillaArmorMaterials::NETHERITE()){
-					$netheritePieces++;
+				if($armor instanceof Armor){
+					if($armor->getMaterial() === VanillaArmorMaterials::NETHERITE()){
+						$netheritePieces++;
+					}
 				}
 			}
 			if($netheritePieces > 0){
