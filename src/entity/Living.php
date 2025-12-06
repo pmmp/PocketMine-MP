@@ -630,9 +630,7 @@ abstract class Living extends Entity{
 					}
 				}
 			}
-			if($netheritePieces > 0){
-				$force *= 1 - 0.1 * $netheritePieces;
-			}
+			$force *= 1 - 0.1 * $netheritePieces;
 		}
 
 		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
