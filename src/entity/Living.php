@@ -618,20 +618,15 @@ abstract class Living extends Entity{
 			return;
 		}
 
-		//TODO: perhaps this also applies to regular entities?
-		if($this instanceof Player){
-			$armorInv = $this->getArmorInventory();
+		$armorInv = $this->getArmorInventory();
 
-			$netheritePieces = 0;
-			foreach($armorInv->getContents() as $armor){
-				if($armor instanceof Armor){
-					if($armor->getMaterial() === VanillaArmorMaterials::NETHERITE()){
-						$netheritePieces++;
-					}
-				}
+		$netheritePieces = 0;
+		foreach($armorInv->getContents() as $armor){
+			if($armor instanceof Armor && $armor->getMaterial() === VanillaArmorMaterials::NETHERITE()){
+				$netheritePieces++;
 			}
-			$force *= 1 - 0.1 * $netheritePieces;
 		}
+		$force *= 1 - 0.1 * $netheritePieces;
 
 		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
