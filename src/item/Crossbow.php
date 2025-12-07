@@ -101,7 +101,7 @@ class Crossbow extends Tool implements Chargeable{
 					), $player, true);
 					$entity->setOwningEntity($player);
 
-					if($i !== 1 || $player->isCreative(true)){
+					if($i !== 1 || !$player->hasFiniteResources()){
 						$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
 					}
 
@@ -182,7 +182,7 @@ class Crossbow extends Tool implements Chargeable{
 
 	public function getChargeDuration() : int{
 		$quickChargeLevel = $this->getEnchantmentLevel(VanillaEnchantments::QUICK_CHARGE());
-		return 25 - (5 * $quickChargeLevel);
+		return max(1, 25 - (5 * $quickChargeLevel));
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
