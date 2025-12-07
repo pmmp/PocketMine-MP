@@ -38,6 +38,7 @@ use pocketmine\world\sound\CrossbowShootSound;
 use function cos;
 use function count;
 use function deg2rad;
+use function max;
 use function sin;
 
 class Crossbow extends Tool implements Chargeable{
