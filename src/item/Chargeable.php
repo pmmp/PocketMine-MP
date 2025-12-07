@@ -28,7 +28,7 @@ use pocketmine\player\Player;
 /**
  * Interface implemented by objects that can be charged.
  */
-interface Chargeable{
+interface Chargeable extends Releasable{
 	/**
 	 * Returns an amount of ticks that this item should be in charge.
 	 */
@@ -44,6 +44,4 @@ interface Chargeable{
 	 * @return bool true if the item is fully charged and ready to be released, false if still charging.
 	 */
 	public function continueCharge(Player $player, int $useDuration) : bool;
-
-	public function canStartChargingItem(Player $player) : bool;
 }

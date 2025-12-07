@@ -1719,8 +1719,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->resetItemCooldown($oldItem);
 		$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 
-		$shouldStartUsing = ($item instanceof Releasable && $item->canStartUsingItem($this)) ||
-			($item instanceof Chargeable && $result !== ItemUseResult::SUCCESS && $item->canStartChargingItem($this));
+		$shouldStartUsing = $item instanceof Chargeable
+			? ($result !== ItemUseResult::SUCCESS && $item->canStartUsingItem($this))
+			: ($item instanceof Releasable && $item->canStartUsingItem($this));
 		$this->setUsingItem($shouldStartUsing);
 
 		return true;

@@ -66,7 +66,7 @@ class Crossbow extends Tool implements Chargeable{
 		return false;
 	}
 
-	public function canStartChargingItem(Player $player) : bool{
+	public function canStartUsingItem(Player $player) : bool{
 		// TODO: fireworks
 		return !$player->hasFiniteResources() || $player->getOffHandInventory()->contains($arrow = VanillaItems::ARROW()) || $player->getInventory()->contains($arrow);
 	}
