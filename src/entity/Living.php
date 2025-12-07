@@ -430,6 +430,22 @@ abstract class Living extends Entity{
 		return $result;
 	}
 
+	/**
+	 * Returns how much knockback resistance this mob has. Knockback resistance reduces
+	 * the distance a mob is pushed when hit.
+	 *
+	 * For mobs that can equip items providing knockback resistance, this should return
+	 * the total combined value from all equipped sources.
+	 */
+	public function getKnockbackReduction() : float{
+		$total = 0.0;
+		foreach($this->armorInventory->getContents() as $item){
+			$total += $item->getKnockbackResistance();
+		}
+
+		return $total;
+	}
+
 	public function getArmorInventory() : ArmorInventory{
 		return $this->armorInventory;
 	}
@@ -614,6 +630,7 @@ abstract class Living extends Entity{
 		if($f <= 0){
 			return;
 		}
+		$force *= 1 - 0.1 * $this->getKnockbackReduction();
 		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
 

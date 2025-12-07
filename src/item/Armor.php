@@ -79,6 +79,10 @@ class Armor extends Durable{
 		return $this->armorInfo->getMaterial();
 	}
 
+	public function getKnockbackResistance() : float{
+		return $this->armorInfo->getKnockbackResistance();
+	}
+
 	public function getEnchantability() : int{
 		return $this->armorInfo->getMaterial()->getEnchantability();
 	}
