@@ -164,6 +164,7 @@ class Crossbow extends Tool implements Chargeable{
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
 		$useDuration = $player->getItemUseDuration();
 		if($useDuration < $this->getChargeDuration()){
+			$player->setUsingItem(false);
 			return ItemUseResult::FAIL;
 		}
 		$arrow = VanillaItems::ARROW();
