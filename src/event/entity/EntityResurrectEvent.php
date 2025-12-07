@@ -36,14 +36,7 @@ use pocketmine\event\CancellableTrait;
 class EntityResurrectEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	public function __construct(Entity $entity, private int $cause){
+	public function __construct(Entity $entity){
 		$this->entity = $entity;
-	}
-
-	/**
-	 * Returns the cause of damage that triggered the entity to use a Totem of Undying.
-	 */
-	public function getCause() : int{
-		return $this->cause;
 	}
 }
