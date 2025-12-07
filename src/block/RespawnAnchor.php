@@ -29,6 +29,7 @@ use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -110,14 +111,28 @@ final class RespawnAnchor extends Opaque{
 			return;
 		}
 
+		$block = $this->position->getWorld()->getBlock($this->position);
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
 		$explosion = new Explosion(Position::fromObject($this->position->add(0.5, 0.5, 0.5), $this->position->getWorld()), $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
 
-		if($ev->isBlockBreaking()){
+		if($ev->isBlockBreaking() && !$this->isSurroundedByWater($block)){
 			$explosion->explodeA();
 		}
 		$explosion->explodeB();
+	}
+
+	private function isSurroundedByWater(Block $block) : bool{
+		if($block->getSide(Facing::UP)->getTypeId() === BlockTypeIds::WATER){
+			return true;
+		}
+
+		foreach($block->getHorizontalSides() as $sideBlock){
+			if($sideBlock->getTypeId() === BlockTypeIds::WATER){
+				return true;
+			}
+		}
+		return false;
 	}
 }
