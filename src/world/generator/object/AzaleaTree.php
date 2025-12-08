@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\utils\DirtType;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
@@ -82,12 +81,12 @@ final class AzaleaTree extends Tree{
 		}
 
 		for($i = 0; $i < $total; ++$i){
-			$l12 = $i < $leadUpCount;
-			$l34 = $i < $leadUpCount + $sideUpCount - 1;
+			$isLeadUp = $i < $leadUpCount;
+			$isSideUp = $i < $leadUpCount + $sideUpCount - 1;
 
-			if(!$l12){
-				$cz += Facing::axis($direction) === Axis::Z ? (Facing::isPositive($direction) ? 1 : -1) : 0;
-				$cx += Facing::axis($direction) === Axis::X ? (Facing::isPositive($direction) ? 1 : -1) : 0;
+			if(!$isLeadUp){
+				$cz += Facing::OFFSET[$direction][2];
+				$cx += Facing::OFFSET[$direction][0];
 			}
 
 			if($this->canOverride($transaction->fetchBlockAt($cx, $cy, $cz))){
@@ -98,7 +97,7 @@ final class AzaleaTree extends Tree{
 				$this->foliageAttachments[] = new Vector3($cx, $cy, $cz);
 			}
 
-			if($l12 || $l34){
+			if($isLeadUp || $isSideUp){
 				$cy++;
 			}
 		}
