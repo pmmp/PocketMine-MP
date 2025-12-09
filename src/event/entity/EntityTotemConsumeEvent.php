@@ -33,7 +33,7 @@ use pocketmine\event\CancellableTrait;
  *
  * @phpstan-extends EntityEvent<Entity>
  */
-class EntityResurrectEvent extends EntityEvent implements Cancellable{
+class EntityTotemConsumeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(Entity $entity){

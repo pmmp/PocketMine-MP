@@ -30,7 +30,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\entity\EntityResurrectEvent;
+use pocketmine\event\entity\EntityTotemConsumeEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -395,7 +395,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::applyPostDamageEffects($source);
 		$totemModifier = $source->getModifier(EntityDamageEvent::MODIFIER_TOTEM);
 		if($totemModifier < 0){ //Totem prevented death
-			$ev = new EntityResurrectEvent($this);
+			$ev = new EntityTotemConsumeEvent($this);
 			$ev->call();
 			if($ev->isCancelled()){
 				return;
