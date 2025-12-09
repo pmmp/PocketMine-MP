@@ -630,7 +630,7 @@ abstract class Living extends Entity{
 		if($f <= 0){
 			return;
 		}
-		$force *= 1 - 0.1 * $this->getKnockbackReduction();
+		$force *= 1 - $this->getKnockbackReduction();
 		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
 
