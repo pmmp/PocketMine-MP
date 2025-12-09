@@ -124,7 +124,8 @@ final class RespawnAnchor extends Opaque{
 	}
 
 	private function isSurroundedByWater(Block $block) : bool{
-		if($block->getSide(Facing::UP) instanceof Liquid && $block->getSide(Facing::UP)->isSource()){
+		$blockUp = $block->getSide(Facing::UP);
+		if($blockUp instanceof Liquid && $blockUp->isSource()){
 			return true;
 		}
 
@@ -133,7 +134,12 @@ final class RespawnAnchor extends Opaque{
 				if($sideBlock->isSource()){
 					return true;
 				}elseif($sideBlock->getDecay() >= 2){
-					if(!($sideBlock->getSide(Facing::DOWN) instanceof Liquid) || !$sideBlock->getSide(Facing::DOWN)->isSource()){
+					$blockDown = $sideBlock->getSide(Facing::DOWN);
+					if($blockDown instanceof Liquid){
+						if(!$blockDown->isSource()){
+							return true;
+						}
+					}else{
 						return true;
 					}
 				}
