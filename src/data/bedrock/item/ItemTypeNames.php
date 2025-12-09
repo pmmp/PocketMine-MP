@@ -103,6 +103,7 @@ final class ItemTypeNames{
 	public const BUNDLE = "minecraft:bundle";
 	public const BURN_POTTERY_SHERD = "minecraft:burn_pottery_sherd";
 	public const CAKE = "minecraft:cake";
+	public const CAMEL_HUSK_SPAWN_EGG = "minecraft:camel_husk_spawn_egg";
 	public const CAMEL_SPAWN_EGG = "minecraft:camel_spawn_egg";
 	public const CAMERA = "minecraft:camera";
 	public const CAMPFIRE = "minecraft:campfire";
@@ -162,9 +163,11 @@ final class ItemTypeNames{
 	public const COPPER_HORSE_ARMOR = "minecraft:copper_horse_armor";
 	public const COPPER_INGOT = "minecraft:copper_ingot";
 	public const COPPER_LEGGINGS = "minecraft:copper_leggings";
+	public const COPPER_NAUTILUS_ARMOR = "minecraft:copper_nautilus_armor";
 	public const COPPER_NUGGET = "minecraft:copper_nugget";
 	public const COPPER_PICKAXE = "minecraft:copper_pickaxe";
 	public const COPPER_SHOVEL = "minecraft:copper_shovel";
+	public const COPPER_SPEAR = "minecraft:copper_spear";
 	public const COPPER_SWORD = "minecraft:copper_sword";
 	public const CORAL = "minecraft:coral";
 	public const CORAL_BLOCK = "minecraft:coral_block";
@@ -196,8 +199,10 @@ final class ItemTypeNames{
 	public const DIAMOND_HOE = "minecraft:diamond_hoe";
 	public const DIAMOND_HORSE_ARMOR = "minecraft:diamond_horse_armor";
 	public const DIAMOND_LEGGINGS = "minecraft:diamond_leggings";
+	public const DIAMOND_NAUTILUS_ARMOR = "minecraft:diamond_nautilus_armor";
 	public const DIAMOND_PICKAXE = "minecraft:diamond_pickaxe";
 	public const DIAMOND_SHOVEL = "minecraft:diamond_shovel";
+	public const DIAMOND_SPEAR = "minecraft:diamond_spear";
 	public const DIAMOND_SWORD = "minecraft:diamond_sword";
 	public const DISC_FRAGMENT_5 = "minecraft:disc_fragment_5";
 	public const DOLPHIN_SPAWN_EGG = "minecraft:dolphin_spawn_egg";
@@ -275,8 +280,10 @@ final class ItemTypeNames{
 	public const GOLDEN_HOE = "minecraft:golden_hoe";
 	public const GOLDEN_HORSE_ARMOR = "minecraft:golden_horse_armor";
 	public const GOLDEN_LEGGINGS = "minecraft:golden_leggings";
+	public const GOLDEN_NAUTILUS_ARMOR = "minecraft:golden_nautilus_armor";
 	public const GOLDEN_PICKAXE = "minecraft:golden_pickaxe";
 	public const GOLDEN_SHOVEL = "minecraft:golden_shovel";
+	public const GOLDEN_SPEAR = "minecraft:golden_spear";
 	public const GOLDEN_SWORD = "minecraft:golden_sword";
 	public const GRAY_BUNDLE = "minecraft:gray_bundle";
 	public const GRAY_DYE = "minecraft:gray_dye";
@@ -315,9 +322,11 @@ final class ItemTypeNames{
 	public const IRON_HORSE_ARMOR = "minecraft:iron_horse_armor";
 	public const IRON_INGOT = "minecraft:iron_ingot";
 	public const IRON_LEGGINGS = "minecraft:iron_leggings";
+	public const IRON_NAUTILUS_ARMOR = "minecraft:iron_nautilus_armor";
 	public const IRON_NUGGET = "minecraft:iron_nugget";
 	public const IRON_PICKAXE = "minecraft:iron_pickaxe";
 	public const IRON_SHOVEL = "minecraft:iron_shovel";
+	public const IRON_SPEAR = "minecraft:iron_spear";
 	public const IRON_SWORD = "minecraft:iron_sword";
 	public const JUNGLE_BOAT = "minecraft:jungle_boat";
 	public const JUNGLE_CHEST_BOAT = "minecraft:jungle_chest_boat";
@@ -398,6 +407,7 @@ final class ItemTypeNames{
 	public const MUTTON = "minecraft:mutton";
 	public const NAME_TAG = "minecraft:name_tag";
 	public const NAUTILUS_SHELL = "minecraft:nautilus_shell";
+	public const NAUTILUS_SPAWN_EGG = "minecraft:nautilus_spawn_egg";
 	public const NETHER_SPROUTS = "minecraft:nether_sprouts";
 	public const NETHER_STAR = "minecraft:nether_star";
 	public const NETHER_WART = "minecraft:nether_wart";
@@ -407,11 +417,14 @@ final class ItemTypeNames{
 	public const NETHERITE_CHESTPLATE = "minecraft:netherite_chestplate";
 	public const NETHERITE_HELMET = "minecraft:netherite_helmet";
 	public const NETHERITE_HOE = "minecraft:netherite_hoe";
+	public const NETHERITE_HORSE_ARMOR = "minecraft:netherite_horse_armor";
 	public const NETHERITE_INGOT = "minecraft:netherite_ingot";
 	public const NETHERITE_LEGGINGS = "minecraft:netherite_leggings";
+	public const NETHERITE_NAUTILUS_ARMOR = "minecraft:netherite_nautilus_armor";
 	public const NETHERITE_PICKAXE = "minecraft:netherite_pickaxe";
 	public const NETHERITE_SCRAP = "minecraft:netherite_scrap";
 	public const NETHERITE_SHOVEL = "minecraft:netherite_shovel";
+	public const NETHERITE_SPEAR = "minecraft:netherite_spear";
 	public const NETHERITE_SWORD = "minecraft:netherite_sword";
 	public const NETHERITE_UPGRADE_SMITHING_TEMPLATE = "minecraft:netherite_upgrade_smithing_template";
 	public const NPC_SPAWN_EGG = "minecraft:npc_spawn_egg";
@@ -434,6 +447,7 @@ final class ItemTypeNames{
 	public const PALE_OAK_SIGN = "minecraft:pale_oak_sign";
 	public const PANDA_SPAWN_EGG = "minecraft:panda_spawn_egg";
 	public const PAPER = "minecraft:paper";
+	public const PARCHED_SPAWN_EGG = "minecraft:parched_spawn_egg";
 	public const PARROT_SPAWN_EGG = "minecraft:parrot_spawn_egg";
 	public const PHANTOM_MEMBRANE = "minecraft:phantom_membrane";
 	public const PHANTOM_SPAWN_EGG = "minecraft:phantom_spawn_egg";
@@ -544,6 +558,7 @@ final class ItemTypeNames{
 	public const STONE_HOE = "minecraft:stone_hoe";
 	public const STONE_PICKAXE = "minecraft:stone_pickaxe";
 	public const STONE_SHOVEL = "minecraft:stone_shovel";
+	public const STONE_SPEAR = "minecraft:stone_spear";
 	public const STONE_SWORD = "minecraft:stone_sword";
 	public const STONEBRICK = "minecraft:stonebrick";
 	public const STRAY_SPAWN_EGG = "minecraft:stray_spawn_egg";
@@ -606,6 +621,7 @@ final class ItemTypeNames{
 	public const WOODEN_PICKAXE = "minecraft:wooden_pickaxe";
 	public const WOODEN_SHOVEL = "minecraft:wooden_shovel";
 	public const WOODEN_SLAB = "minecraft:wooden_slab";
+	public const WOODEN_SPEAR = "minecraft:wooden_spear";
 	public const WOODEN_SWORD = "minecraft:wooden_sword";
 	public const WOOL = "minecraft:wool";
 	public const WRITABLE_BOOK = "minecraft:writable_book";
@@ -615,6 +631,7 @@ final class ItemTypeNames{
 	public const YELLOW_HARNESS = "minecraft:yellow_harness";
 	public const ZOGLIN_SPAWN_EGG = "minecraft:zoglin_spawn_egg";
 	public const ZOMBIE_HORSE_SPAWN_EGG = "minecraft:zombie_horse_spawn_egg";
+	public const ZOMBIE_NAUTILUS_SPAWN_EGG = "minecraft:zombie_nautilus_spawn_egg";
 	public const ZOMBIE_PIGMAN_SPAWN_EGG = "minecraft:zombie_pigman_spawn_egg";
 	public const ZOMBIE_SPAWN_EGG = "minecraft:zombie_spawn_egg";
 	public const ZOMBIE_VILLAGER_SPAWN_EGG = "minecraft:zombie_villager_spawn_egg";
