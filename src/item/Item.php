@@ -623,6 +623,15 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Called every tick while the player is using this item (holding right-click/pressing screen).
+	 *
+	 * @return bool true if the item is fully charged and ready to be released, false if still charging.
+	 */
+	public function continueUsing(Player $player, int $useDuration) : bool{
+		return false;
+	}
+
+	/**
 	 * Called when this item is used to destroy a block. Usually used to update durability.
 	 *
 	 * @param Item[] &$returnedItems Items to be added to the target's inventory (or dropped, if the inventory is full)

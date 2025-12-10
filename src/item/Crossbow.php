@@ -47,7 +47,7 @@ class Crossbow extends Tool implements Chargeable{
 
 	private ?Item $chargedItem = null;
 
-	public function continueCharge(Player $player, int $useDuration) : bool{
+	public function continueUsing(Player $player, int $useDuration) : bool{
 		$quickCharge = $this->getEnchantmentLevel(VanillaEnchantments::QUICK_CHARGE());
 		if($useDuration <= 1){
 			$player->getWorld()->addSound($player->getPosition(), new CrossbowLoadSound(CrossbowLoadSound::LOADING_START, $quickCharge > 0));

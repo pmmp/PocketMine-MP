@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\player\Player;
-
 /**
  * Interface implemented by objects that can be charged.
  */
@@ -37,11 +35,4 @@ interface Chargeable extends Releasable{
 	public function setCharged(?Item $item) : void;
 
 	public function isCharged() : bool;
-
-	/**
-	 * Called every tick while the player is charging this item (holding right-click/pressing screen).
-	 *
-	 * @return bool true if the item is fully charged and ready to be released, false if still charging.
-	 */
-	public function continueCharge(Player $player, int $useDuration) : bool;
 }
