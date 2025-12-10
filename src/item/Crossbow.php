@@ -85,81 +85,81 @@ class Crossbow extends Tool implements Chargeable{
 	}
 
 	public function onClickAir(Player $player, Vector3 $directionVector, array &$returnedItems) : ItemUseResult{
-		if($this->chargedItem !== null){
-			$location = $player->getLocation();
-			$entities = [];
-			if($this->hasEnchantment(VanillaEnchantments::MULTISHOT())){
-				$yawOffsets = [-10, 0, 10]; //Left, center, right arrows
-				foreach($yawOffsets as $i => $yawOffset){
-					$arrowYaw = $location->yaw + $yawOffset;
-					$arrowPitch = $location->pitch;
+		if($this->chargedItem === null){
+			return ItemUseResult::NONE;
+		}
+		$location = $player->getLocation();
+		$entities = [];
+		if($this->hasEnchantment(VanillaEnchantments::MULTISHOT())){
+			$yawOffsets = [-10, 0, 10]; //Left, center, right arrows
+			foreach($yawOffsets as $i => $yawOffset){
+				$arrowYaw = $location->yaw + $yawOffset;
+				$arrowPitch = $location->pitch;
 
-					$entity = new ArrowEntity(Location::fromObject(
-						$player->getEyePos(),
-						$player->getWorld(),
-						($arrowYaw > 180 ? 360 : 0) - $arrowYaw,
-						-$arrowPitch
-					), $player, true);
-					$entity->setOwningEntity($player);
-
-					if($i !== 1 || !$player->hasFiniteResources()){
-						$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
-					}
-
-					$yawRad = deg2rad($arrowYaw);
-					$pitchRad = deg2rad($arrowPitch);
-					$y = -sin($pitchRad);
-					$xz = cos($pitchRad);
-					$x = -$xz * sin($yawRad);
-					$z = $xz * cos($yawRad);
-
-					$directionVector = (new Vector3($x, $y, $z))->normalize();
-					$entity->setMotion($directionVector->multiply(3.15));
-
-					$entities[] = $entity;
-				}
-			}else{
 				$entity = new ArrowEntity(Location::fromObject(
 					$player->getEyePos(),
 					$player->getWorld(),
-					($location->yaw > 180 ? 360 : 0) - $location->yaw,
-					-$location->pitch
+					($arrowYaw > 180 ? 360 : 0) - $arrowYaw,
+					-$arrowPitch
 				), $player, true);
-				$entity->setMotion($player->getDirectionVector()->multiply(3.15));
 				$entity->setOwningEntity($player);
-				$entity->setPickupMode($player->hasFiniteResources() ? ArrowEntity::PICKUP_ANY : ArrowEntity::PICKUP_CREATIVE);
+
+				if($i !== 1 || !$player->hasFiniteResources()){
+					$entity->setPickupMode(ArrowEntity::PICKUP_CREATIVE);
+				}
+
+				$yawRad = deg2rad($arrowYaw);
+				$pitchRad = deg2rad($arrowPitch);
+				$y = -sin($pitchRad);
+				$xz = cos($pitchRad);
+				$x = -$xz * sin($yawRad);
+				$z = $xz * cos($yawRad);
+
+				$directionVector = (new Vector3($x, $y, $z))->normalize();
+				$entity->setMotion($directionVector->multiply(3.15));
+
 				$entities[] = $entity;
 			}
-			if(count($entities) === 0){
-				throw new AssumptionFailedError("This should never happen");
-			}
-			$ev = new EntityShootCrossbowEvent($player, $this, $entities);
-			$ev->call();
-			if($ev->isCancelled()){
-				foreach($ev->getProjectiles() as $projectile){
-					$projectile->flagForDespawn();
-				}
-				return ItemUseResult::FAIL;
-			}
-			foreach($ev->getProjectiles() as $projectile){
-				if($projectile instanceof Projectile){ //This might have changed by plugins
-					$launchEv = new ProjectileLaunchEvent($projectile);
-					$launchEv->call();
-					if($launchEv->isCancelled()){
-						$projectile->flagForDespawn();
-						return ItemUseResult::FAIL;
-					}
-					$projectile->spawnToAll();
-				}
-			}
-			$player->getWorld()->addSound($player->getPosition(), new CrossbowShootSound());
-			if($player->hasFiniteResources()){
-				$this->applyDamage($this->hasEnchantment(VanillaEnchantments::MULTISHOT()) ? 3 : 1);
-			}
-			$this->chargedItem = null;
-			return ItemUseResult::SUCCESS;
+		}else{
+			$entity = new ArrowEntity(Location::fromObject(
+				$player->getEyePos(),
+				$player->getWorld(),
+				($location->yaw > 180 ? 360 : 0) - $location->yaw,
+				-$location->pitch
+			), $player, true);
+			$entity->setMotion($player->getDirectionVector()->multiply(3.15));
+			$entity->setOwningEntity($player);
+			$entity->setPickupMode($player->hasFiniteResources() ? ArrowEntity::PICKUP_ANY : ArrowEntity::PICKUP_CREATIVE);
+			$entities[] = $entity;
 		}
-		return ItemUseResult::NONE;
+		if(count($entities) === 0){
+			throw new AssumptionFailedError("This should never happen");
+		}
+		$ev = new EntityShootCrossbowEvent($player, $this, $entities);
+		$ev->call();
+		if($ev->isCancelled()){
+			foreach($ev->getProjectiles() as $projectile){
+				$projectile->flagForDespawn();
+			}
+			return ItemUseResult::FAIL;
+		}
+		foreach($ev->getProjectiles() as $projectile){
+			if($projectile instanceof Projectile){ //This might have changed by plugins
+				$launchEv = new ProjectileLaunchEvent($projectile);
+				$launchEv->call();
+				if($launchEv->isCancelled()){
+					$projectile->flagForDespawn();
+					return ItemUseResult::FAIL;
+				}
+				$projectile->spawnToAll();
+			}
+		}
+		$player->getWorld()->addSound($player->getPosition(), new CrossbowShootSound());
+		if($player->hasFiniteResources()){
+			$this->applyDamage($this->hasEnchantment(VanillaEnchantments::MULTISHOT()) ? 3 : 1);
+		}
+		$this->chargedItem = null;
+		return ItemUseResult::SUCCESS;
 	}
 
 	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
