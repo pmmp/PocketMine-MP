@@ -29,7 +29,7 @@ use pocketmine\event\CancellableTrait;
 
 /**
  * Called when an entity is resurrected by a Totem of Undying.
- * This event can be cancelled to prevent the resurrection.
+ * This event can be cancelled to prevent the totem from being consumed.
  *
  * @phpstan-extends EntityEvent<Entity>
  */
