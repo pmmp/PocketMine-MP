@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\CompletedUsingItemPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -1352,12 +1353,16 @@ class NetworkSession{
 		));
 	}
 
-	public function onChargeItemComplete() : void{
+	public function onChargeItemComplete(Item $item) : void{
 		if($this->player !== null){
 			$this->sendDataPacket(ActorEventPacket::create(
 				$this->player->getId(),
 				ActorEvent::CHARGED_ITEM,
 				0
+			));
+			$this->sendDataPacket(CompletedUsingItemPacket::create(
+				$this->typeConverter->coreItemStackToNet($item)->getId(),
+				CompletedUsingItemPacket::ACTION_UNKNOWN // BDS sends this as UNKNOWN, why?
 			));
 		}
 	}

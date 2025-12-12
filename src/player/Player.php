@@ -1534,7 +1534,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$item = $this->getInventory()->getItemInHand();
 			if($item instanceof Releasable && $this->isUsingItem()){
 				if($item->continueUsing($this, $this->getItemUseDuration())){
-					$this->getNetworkSession()->onChargeItemComplete();
+					$this->getNetworkSession()->onChargeItemComplete($item);
 				}
 			}
 
