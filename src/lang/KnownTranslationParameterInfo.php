@@ -235,6 +235,7 @@ final class KnownTranslationParameterInfo{
 		Keys::ITEM_RECORD_CREATOR_DESC => [],
 		Keys::ITEM_RECORD_CREATOR_MUSIC_BOX_DESC => [],
 		Keys::ITEM_RECORD_FAR_DESC => [],
+		Keys::ITEM_RECORD_LAVA_CHICKEN_DESC => [],
 		Keys::ITEM_RECORD_MALL_DESC => [],
 		Keys::ITEM_RECORD_MELLOHI_DESC => [],
 		Keys::ITEM_RECORD_OTHERSIDE_DESC => [],
