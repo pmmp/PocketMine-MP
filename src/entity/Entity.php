@@ -737,11 +737,9 @@ abstract class Entity{
 			return false;
 		}
 
-		if($this->isOnFire()){
-			$world = $this->getWorld();
-			if($world->isRaining($this->getPosition())){
-				$this->extinguish(EntityExtinguishEvent::CAUSE_RAIN);
-			}
+		$world = $this->getWorld();
+		if($world->isRaining($this->getPosition())){
+			$this->extinguish(EntityExtinguishEvent::CAUSE_RAIN);
 		}
 
 		$this->fireTicks -= $tickDiff;
