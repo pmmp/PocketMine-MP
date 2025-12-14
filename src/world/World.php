@@ -640,8 +640,8 @@ class World implements ChunkManager{
 				$z = (int) $spawn->z + mt_rand(-30, 30);
 				$y = $this->getHighestBlockAt($x, $z) ?? max(64, (int) $spawn->y);
 
-				$loc = Location::fromObject(new Vector3($x, $y, $z), $this);
-				(new LightningBolt($loc))->spawnToAll();
+				$location = Location::fromObject(new Vector3($x, $y, $z), $this);
+				(new LightningBolt($location))->spawnToAll();
 			}
 		}
 	}
