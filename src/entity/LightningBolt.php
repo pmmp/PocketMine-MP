@@ -58,7 +58,7 @@ final class LightningBolt extends Entity{
 	public function onFirstUpdate(int $currentTick) : void{
 		parent::onFirstUpdate($currentTick);
 		$this->getWorld()->addSound($this->location, new ThunderSound());
-		foreach($this->getWorld()->getNearbyEntities($this->getBoundingBox()->expandedCopy(3, 3, 3), $this) as $entity){
+		foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(3, 3, 3), $this) as $entity){
 			if($entity instanceof Living){
 				$entity->attack(new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_LIGHTNING, 5.0));
 			}
