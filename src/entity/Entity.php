@@ -738,7 +738,7 @@ abstract class Entity{
 		}
 
 		$world = $this->getWorld();
-		if($world->isRaining($this->position)){
+		if($world->isRaining($this->location)){
 			$this->extinguish(EntityExtinguishEvent::CAUSE_RAIN);
 		}
 
