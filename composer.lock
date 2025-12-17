@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "700a9c39566cd320d92e758abb739d0a",
+    "content-hash": "0f582711c75ecfc7ba9d7512b3c03837",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -204,16 +204,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "6.2.0+bedrock-1.21.120",
+            "version": "6.3.0+bedrock-1.21.130",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "f186e363ac8abbc3242481cad59ae620549dc709"
+                "reference": "e9097a1f87cea40354ad59fad43e28fc097d800f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/f186e363ac8abbc3242481cad59ae620549dc709",
-                "reference": "f186e363ac8abbc3242481cad59ae620549dc709",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/e9097a1f87cea40354ad59fad43e28fc097d800f",
+                "reference": "e9097a1f87cea40354ad59fad43e28fc097d800f",
                 "shasum": ""
             },
             "type": "library",
@@ -224,9 +224,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.120"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.21.130"
             },
-            "time": "2025-10-28T22:15:22+00:00"
+            "time": "2025-12-16T21:38:31+00:00"
         },
         {
             "name": "pocketmine/bedrock-item-upgrade-schema",
@@ -256,16 +256,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "53.2.0+bedrock-1.21.124",
+            "version": "54.0.0+bedrock-1.21.130",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "87b9f47f142f57824107ed22c17e422f70b1fc7a"
+                "reference": "62fcc5997300bbeb5974d8c58328d9e94e9da8b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/87b9f47f142f57824107ed22c17e422f70b1fc7a",
-                "reference": "87b9f47f142f57824107ed22c17e422f70b1fc7a",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/62fcc5997300bbeb5974d8c58328d9e94e9da8b4",
+                "reference": "62fcc5997300bbeb5974d8c58328d9e94e9da8b4",
                 "shasum": ""
             },
             "require": {
@@ -297,9 +297,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/53.2.0+bedrock-1.21.124"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/54.0.0+bedrock-1.21.130"
             },
-            "time": "2025-11-21T18:24:52+00:00"
+            "time": "2025-12-16T21:42:07+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -797,20 +797,20 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.9.1",
+            "version": "4.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440"
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/81f941f6f729b1e3ceea61d9d014f8b6c6800440",
-                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/8429c78ca35a09f27565311b98101e2826affde0",
+                "reference": "8429c78ca35a09f27565311b98101e2826affde0",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
+                "brick/math": "^0.8.16 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
                 "php": "^8.0",
                 "ramsey/collection": "^1.2 || ^2.0"
             },
@@ -869,22 +869,22 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "source": "https://github.com/ramsey/uuid/tree/4.9.1"
+                "source": "https://github.com/ramsey/uuid/tree/4.9.2"
             },
-            "time": "2025-09-04T20:59:21+00:00"
+            "time": "2025-12-14T04:43:48+00:00"
         },
         {
             "name": "symfony/filesystem",
-            "version": "v6.4.24",
+            "version": "v6.4.30",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
-                "reference": "75ae2edb7cdcc0c53766c30b0a2512b8df574bd8"
+                "reference": "441c6b69f7222aadae7cbf5df588496d5ee37789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/filesystem/zipball/75ae2edb7cdcc0c53766c30b0a2512b8df574bd8",
-                "reference": "75ae2edb7cdcc0c53766c30b0a2512b8df574bd8",
+                "url": "https://api.github.com/repos/symfony/filesystem/zipball/441c6b69f7222aadae7cbf5df588496d5ee37789",
+                "reference": "441c6b69f7222aadae7cbf5df588496d5ee37789",
                 "shasum": ""
             },
             "require": {
@@ -921,7 +921,7 @@
             "description": "Provides basic utilities for the filesystem",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/filesystem/tree/v6.4.24"
+                "source": "https://github.com/symfony/filesystem/tree/v6.4.30"
             },
             "funding": [
                 {
@@ -941,7 +941,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:14:14+00:00"
+            "time": "2025-11-26T14:43:45+00:00"
         }
     ],
     "packages-dev": [
@@ -1007,16 +1007,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.6.2",
+            "version": "v5.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "3a454ca033b9e06b63282ce19562e892747449bb"
+                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/3a454ca033b9e06b63282ce19562e892747449bb",
-                "reference": "3a454ca033b9e06b63282ce19562e892747449bb",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/dca41cd15c2ac9d055ad70dbfd011130757d1f82",
+                "reference": "dca41cd15c2ac9d055ad70dbfd011130757d1f82",
                 "shasum": ""
             },
             "require": {
@@ -1059,9 +1059,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.2"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.7.0"
             },
-            "time": "2025-10-21T19:32:17+00:00"
+            "time": "2025-12-06T11:56:16+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1183,11 +1183,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.32",
+            "version": "2.1.33",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e126cad1e30a99b137b8ed75a85a676450ebb227",
-                "reference": "e126cad1e30a99b137b8ed75a85a676450ebb227",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9e800e6bee7d5bd02784d4c6069b48032d16224f",
+                "reference": "9e800e6bee7d5bd02784d4c6069b48032d16224f",
                 "shasum": ""
             },
             "require": {
@@ -1232,20 +1232,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-11T15:18:17+00:00"
+            "time": "2025-12-05T10:24:31+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "2.0.8",
+            "version": "2.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe"
+                "reference": "8d61a5854e7497d95bc85188e13537e99bd7aae7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe",
-                "reference": "2fe9fbeceaf76dd1ebaa7bbbb25e2fb5e59db2fe",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/8d61a5854e7497d95bc85188e13537e99bd7aae7",
+                "reference": "8d61a5854e7497d95bc85188e13537e99bd7aae7",
                 "shasum": ""
             },
             "require": {
@@ -1283,9 +1283,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.8"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/2.0.10"
             },
-            "time": "2025-11-11T07:55:22+00:00"
+            "time": "2025-12-06T11:15:39+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -1658,16 +1658,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.58",
+            "version": "10.5.60",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "e24fb46da450d8e6a5788670513c1af1424f16ca"
+                "reference": "f2e26f52f80ef77832e359205f216eeac00e320c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e24fb46da450d8e6a5788670513c1af1424f16ca",
-                "reference": "e24fb46da450d8e6a5788670513c1af1424f16ca",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/f2e26f52f80ef77832e359205f216eeac00e320c",
+                "reference": "f2e26f52f80ef77832e359205f216eeac00e320c",
                 "shasum": ""
             },
             "require": {
@@ -1739,7 +1739,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.58"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.60"
             },
             "funding": [
                 {
@@ -1763,7 +1763,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-28T12:04:46+00:00"
+            "time": "2025-12-06T07:50:42+00:00"
         },
         {
             "name": "sebastian/cli-parser",

@@ -135,12 +135,17 @@ use function strtolower;
  * @method static CookedRabbit COOKED_RABBIT()
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
+ * @method static Axe COPPER_AXE()
  * @method static Armor COPPER_BOOTS()
  * @method static Armor COPPER_CHESTPLATE()
  * @method static Armor COPPER_HELMET()
+ * @method static Hoe COPPER_HOE()
  * @method static Item COPPER_INGOT()
  * @method static Armor COPPER_LEGGINGS()
  * @method static Item COPPER_NUGGET()
+ * @method static Pickaxe COPPER_PICKAXE()
+ * @method static Shovel COPPER_SHOVEL()
+ * @method static Sword COPPER_SWORD()
  * @method static CoralFan CORAL_FAN()
  * @method static HangingSign CRIMSON_HANGING_SIGN()
  * @method static ItemBlockWallOrFloor CRIMSON_SIGN()
@@ -677,36 +682,21 @@ final class VanillaItems{
 	}
 
 	private static function registerTierToolItems() : void{
-		self::register("diamond_axe", fn(IID $id) => new Axe($id, "Diamond Axe", ToolTier::DIAMOND, [EnchantmentTags::AXE]));
-		self::register("golden_axe", fn(IID $id) => new Axe($id, "Golden Axe", ToolTier::GOLD, [EnchantmentTags::AXE]));
-		self::register("iron_axe", fn(IID $id) => new Axe($id, "Iron Axe", ToolTier::IRON, [EnchantmentTags::AXE]));
-		self::register("netherite_axe", fn(IID $id) => new Axe($id, "Netherite Axe", ToolTier::NETHERITE, [EnchantmentTags::AXE]));
-		self::register("stone_axe", fn(IID $id) => new Axe($id, "Stone Axe", ToolTier::STONE, [EnchantmentTags::AXE]));
-		self::register("wooden_axe", fn(IID $id) => new Axe($id, "Wooden Axe", ToolTier::WOOD, [EnchantmentTags::AXE]));
-		self::register("diamond_hoe", fn(IID $id) => new Hoe($id, "Diamond Hoe", ToolTier::DIAMOND, [EnchantmentTags::HOE]));
-		self::register("golden_hoe", fn(IID $id) => new Hoe($id, "Golden Hoe", ToolTier::GOLD, [EnchantmentTags::HOE]));
-		self::register("iron_hoe", fn(IID $id) => new Hoe($id, "Iron Hoe", ToolTier::IRON, [EnchantmentTags::HOE]));
-		self::register("netherite_hoe", fn(IID $id) => new Hoe($id, "Netherite Hoe", ToolTier::NETHERITE, [EnchantmentTags::HOE]));
-		self::register("stone_hoe", fn(IID $id) => new Hoe($id, "Stone Hoe", ToolTier::STONE, [EnchantmentTags::HOE]));
-		self::register("wooden_hoe", fn(IID $id) => new Hoe($id, "Wooden Hoe", ToolTier::WOOD, [EnchantmentTags::HOE]));
-		self::register("diamond_pickaxe", fn(IID $id) => new Pickaxe($id, "Diamond Pickaxe", ToolTier::DIAMOND, [EnchantmentTags::PICKAXE]));
-		self::register("golden_pickaxe", fn(IID $id) => new Pickaxe($id, "Golden Pickaxe", ToolTier::GOLD, [EnchantmentTags::PICKAXE]));
-		self::register("iron_pickaxe", fn(IID $id) => new Pickaxe($id, "Iron Pickaxe", ToolTier::IRON, [EnchantmentTags::PICKAXE]));
-		self::register("netherite_pickaxe", fn(IID $id) => new Pickaxe($id, "Netherite Pickaxe", ToolTier::NETHERITE, [EnchantmentTags::PICKAXE]));
-		self::register("stone_pickaxe", fn(IID $id) => new Pickaxe($id, "Stone Pickaxe", ToolTier::STONE, [EnchantmentTags::PICKAXE]));
-		self::register("wooden_pickaxe", fn(IID $id) => new Pickaxe($id, "Wooden Pickaxe", ToolTier::WOOD, [EnchantmentTags::PICKAXE]));
-		self::register("diamond_shovel", fn(IID $id) => new Shovel($id, "Diamond Shovel", ToolTier::DIAMOND, [EnchantmentTags::SHOVEL]));
-		self::register("golden_shovel", fn(IID $id) => new Shovel($id, "Golden Shovel", ToolTier::GOLD, [EnchantmentTags::SHOVEL]));
-		self::register("iron_shovel", fn(IID $id) => new Shovel($id, "Iron Shovel", ToolTier::IRON, [EnchantmentTags::SHOVEL]));
-		self::register("netherite_shovel", fn(IID $id) => new Shovel($id, "Netherite Shovel", ToolTier::NETHERITE, [EnchantmentTags::SHOVEL]));
-		self::register("stone_shovel", fn(IID $id) => new Shovel($id, "Stone Shovel", ToolTier::STONE, [EnchantmentTags::SHOVEL]));
-		self::register("wooden_shovel", fn(IID $id) => new Shovel($id, "Wooden Shovel", ToolTier::WOOD, [EnchantmentTags::SHOVEL]));
-		self::register("diamond_sword", fn(IID $id) => new Sword($id, "Diamond Sword", ToolTier::DIAMOND, [EnchantmentTags::SWORD]));
-		self::register("golden_sword", fn(IID $id) => new Sword($id, "Golden Sword", ToolTier::GOLD, [EnchantmentTags::SWORD]));
-		self::register("iron_sword", fn(IID $id) => new Sword($id, "Iron Sword", ToolTier::IRON, [EnchantmentTags::SWORD]));
-		self::register("netherite_sword", fn(IID $id) => new Sword($id, "Netherite Sword", ToolTier::NETHERITE, [EnchantmentTags::SWORD]));
-		self::register("stone_sword", fn(IID $id) => new Sword($id, "Stone Sword", ToolTier::STONE, [EnchantmentTags::SWORD]));
-		self::register("wooden_sword", fn(IID $id) => new Sword($id, "Wooden Sword", ToolTier::WOOD, [EnchantmentTags::SWORD]));
+		foreach([
+			[ToolTier::COPPER, "copper", "Copper"],
+			[ToolTier::DIAMOND, "diamond", "Diamond"],
+			[ToolTier::GOLD, "golden", "Golden"],
+			[ToolTier::IRON, "iron", "Iron"],
+			[ToolTier::NETHERITE, "netherite", "Netherite"],
+			[ToolTier::STONE, "stone", "Stone"],
+			[ToolTier::WOOD, "wooden", "Wooden"]
+		] as [$tier, $idPrefix, $namePrefix]){
+			self::register($idPrefix . "_axe", fn(IID $id) => new Axe($id, $namePrefix . " Axe", $tier, [EnchantmentTags::AXE]));
+			self::register($idPrefix . "_hoe", fn(IID $id) => new Hoe($id, $namePrefix . " Hoe", $tier, [EnchantmentTags::HOE]));
+			self::register($idPrefix . "_pickaxe", fn(IID $id) => new Pickaxe($id, $namePrefix . " Pickaxe", $tier, [EnchantmentTags::PICKAXE]));
+			self::register($idPrefix . "_shovel", fn(IID $id) => new Shovel($id, $namePrefix . " Shovel", $tier, [EnchantmentTags::SHOVEL]));
+			self::register($idPrefix . "_sword", fn(IID $id) => new Sword($id, $namePrefix . " Sword", $tier, [EnchantmentTags::SWORD]));
+		}
 	}
 
 	private static function registerArmorItems() : void{
