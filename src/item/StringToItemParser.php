@@ -1347,12 +1347,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("cooked_rabbit", fn() => Items::COOKED_RABBIT());
 		$result->register("cooked_salmon", fn() => Items::COOKED_SALMON());
 		$result->register("cookie", fn() => Items::COOKIE());
+		$result->register("copper_axe", fn() => Items::COPPER_AXE());
 		$result->register("copper_boots", fn() => Items::COPPER_BOOTS());
 		$result->register("copper_chestplate", fn() => Items::COPPER_CHESTPLATE());
 		$result->register("copper_helmet", fn() => Items::COPPER_HELMET());
+		$result->register("copper_hoe", fn() => Items::COPPER_HOE());
 		$result->register("copper_ingot", fn() => Items::COPPER_INGOT());
 		$result->register("copper_leggings", fn() => Items::COPPER_LEGGINGS());
 		$result->register("copper_nugget", fn() => Items::COPPER_NUGGET());
+		$result->register("copper_pickaxe", fn() => Items::COPPER_PICKAXE());
+		$result->register("copper_shovel", fn() => Items::COPPER_SHOVEL());
+		$result->register("copper_sword", fn() => Items::COPPER_SWORD());
 		$result->register("crimson_hanging_sign", fn() => Items::CRIMSON_HANGING_SIGN());
 		$result->register("dark_oak_boat", fn() => Items::DARK_OAK_BOAT());
 		$result->register("dark_oak_hanging_sign", fn() => Items::DARK_OAK_HANGING_SIGN());

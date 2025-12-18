@@ -52,7 +52,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				$world = $location->getWorld();
 				$pos = $location->asVector3()->floor();
 			}else{
-				$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
 
 				return true;
 			}

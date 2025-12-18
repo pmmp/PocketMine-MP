@@ -6,4 +6,4 @@
 	url = https://github.com/pmmp/php-build-scripts.git
 [submodule "examples/plugins/ExamplePlugin"]
 	path = examples/plugins/ExamplePlugin
-	url = git@github.com:pmmp/ExamplePlugin.git
+	url = https://github.com/pmmp/ExamplePlugin.git
