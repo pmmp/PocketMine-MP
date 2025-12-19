@@ -23,6 +23,7 @@ RUN mv composer.phar /usr/bin/composer
 COPY ./build/server-phar.php ./build/server-phar-stub.php /pocketmine/repo/build/
 COPY ./resources /pocketmine/repo/resources
 COPY ./src /pocketmine/repo/src
+COPY ./generated /pocketmine/repo/generated
 COPY ./composer.json ./composer.lock /pocketmine/repo/
 
 WORKDIR /pocketmine/repo
