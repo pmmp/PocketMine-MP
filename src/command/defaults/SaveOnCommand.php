@@ -25,25 +25,27 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 
-class SaveOnCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_saveon_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_ENABLE);
+final class SaveOnCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_SAVE_ENABLE, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_saveon_description()
+		);
+	}
+
+	private static function execute(CommandSender $sender) : void{
 		$sender->getServer()->getWorldManager()->setAutoSave(true);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_enabled());
-
-		return true;
 	}
 }

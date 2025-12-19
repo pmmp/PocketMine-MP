@@ -26,33 +26,34 @@ declare(strict_types=1);
  */
 namespace pocketmine\command;
 
-use pocketmine\command\utils\CommandException;
+use pocketmine\command\overload\CommandContext;
+use pocketmine\command\overload\ExecutorOverload;
+use pocketmine\command\overload\Overload;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\permission\PermissionManager;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\BroadcastLoggerForwarder;
 use pocketmine\utils\TextFormat;
-use function explode;
+use function array_unique;
+use function count;
 use function implode;
 use function str_replace;
 use function strtolower;
 use function trim;
-use const PHP_INT_MAX;
 
-abstract class Command{
+class Command{
 	private readonly string $namespace;
 	private readonly string $name;
 
-	/** @var string[] */
-	private array $permission = [];
 	private Translatable|string|null $permissionMessage = null;
 
 	public function __construct(
 		string $namespace,
 		string $name,
+		private Overload $overload,
 		private Translatable|string $description = "",
-		private Translatable|string|null $usageMessage = null
 	){
 		if($namespace === ""){
 			throw new \InvalidArgumentException("Command namespace cannot be empty (set it to, for example, your plugin's name)");
@@ -65,14 +66,51 @@ abstract class Command{
 		$this->name = trim($name);
 	}
 
+	final public function executeOverloaded(CommandSender $sender, string $aliasUsed, string $rawArgs) : bool{
+		$context = new CommandContext($sender, $aliasUsed, $rawArgs);
+
+		if($this->overload->invoke($context, 0, [], 0)){
+			return true;
+		}
+
+		$mostSuccessful = $context->getMostSuccessfulFailedOverloads();
+		if(count($mostSuccessful) === 0){ //all overloads denied permissions
+			$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($aliasUsed);
+			if($message instanceof Translatable){
+				$sender->sendMessage($message->prefix(TextFormat::RED));
+			}elseif($message !== ""){
+				$permissions = [];
+				foreach($context->getPermissionDeniedOverloads() as $overload){
+					foreach($overload->getPermissions() as $permission){
+						$permissions[] = $permission;
+					}
+				}
+				$permissions = array_unique($permissions);
+				$sender->sendMessage(str_replace("<permission>", implode(";", $permissions), $message));
+			}
+			return false;
+		}
+
+		foreach($mostSuccessful as $overload){
+			$usageMessage = $overload->getUsage($aliasUsed);
+			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($usageMessage)));
+		}
+		return false;
+	}
+
 	/**
-	 * @param string[] $args
-	 * @phpstan-param list<string> $args
-	 *
-	 * @return mixed
-	 * @throws CommandException
+	 * @return ExecutorOverload[]
+	 * @phpstan-return list<ExecutorOverload>
 	 */
-	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
+	public function getPermittedOverloads(CommandSender $sender) : array{
+		$overloads = [];
+		foreach($this->overload->collectExecutors() as $overload){
+			if($overload->senderHasAnyPermissions($sender)){
+				$overloads[] = $overload;
+			}
+		}
+		return $overloads;
+	}
 
 	final public function getNamespace() : string{
 		return $this->namespace;
@@ -94,58 +132,16 @@ abstract class Command{
 	}
 
 	/**
-	 * @return string[]
-	 */
-	public function getPermissions() : array{
-		return $this->permission;
-	}
-
-	/**
 	 * @param string[] $permissions
+	 * @phpstan-param list<string> $permissions
 	 */
-	public function setPermissions(array $permissions) : void{
-		$permissionManager = PermissionManager::getInstance();
-		foreach($permissions as $perm){
-			if($permissionManager->getPermission($perm) === null){
-				throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
-			}
-		}
-		$this->permission = $permissions;
-	}
-
-	public function setPermission(?string $permission) : void{
-		$this->setPermissions($permission === null ? [] : explode(";", $permission, limit: PHP_INT_MAX));
-	}
-
-	/**
-	 * @param string        $context    usually the command name, but may include extra args if useful (e.g. for subcommands)
-	 * @param CommandSender $target     the target to check the permission for
-	 * @param string|null   $permission the permission to check, if null, will check if the target has any of the command's permissions
-	 */
-	public function testPermission(string $context, CommandSender $target, ?string $permission = null) : bool{
-		if($this->testPermissionSilent($target, $permission)){
-			return true;
-		}
-
+	protected function sendBadPermissionMessage(string $context, CommandSender $sender, array $permissions) : void{
 		$message = $this->permissionMessage ?? KnownTranslationFactory::pocketmine_command_error_permission($context);
 		if($message instanceof Translatable){
-			$target->sendMessage($message->prefix(TextFormat::RED));
+			$sender->sendMessage($message->prefix(TextFormat::RED));
 		}elseif($message !== ""){
-			$target->sendMessage(str_replace("<permission>", $permission ?? implode(";", $this->permission), $message));
+			$sender->sendMessage(str_replace("<permission>", implode(";", $permissions), $message));
 		}
-
-		return false;
-	}
-
-	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
-		$list = $permission !== null ? [$permission] : $this->permission;
-		foreach($list as $p){
-			if($target->hasPermission($p)){
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	public function getPermissionMessage() : Translatable|string|null{
@@ -156,20 +152,12 @@ abstract class Command{
 		return $this->description;
 	}
 
-	public function getUsage() : Translatable|string|null{
-		return $this->usageMessage;
-	}
-
 	public function setDescription(Translatable|string $description) : void{
 		$this->description = $description;
 	}
 
 	public function setPermissionMessage(Translatable|string $permissionMessage) : void{
 		$this->permissionMessage = $permissionMessage;
-	}
-
-	public function setUsage(Translatable|string|null $usage) : void{
-		$this->usageMessage = $usage;
 	}
 
 	public static function broadcastCommandMessage(CommandSender $source, Translatable|string $message, bool $sendToSource = true) : void{
@@ -188,5 +176,35 @@ abstract class Command{
 				$user->sendMessage($colored);
 			}
 		}
+	}
+
+	public static function fetchPermittedPlayerTarget(
+		CommandSender $sender,
+		?string $target,
+		string $selfPermission,
+		string $otherPermission
+	) : ?Player{
+		//TODO: we need proper command selector support, but this one is useful and easy to hack in for now
+		if($target !== null && $target !== "@s"){
+			$player = $sender->getServer()->getPlayerByPrefix($target);
+			if($player === null){
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerNotFound($target)->prefix(TextFormat::RED));
+				return null;
+			}
+		}elseif($sender instanceof Player){
+			$player = $sender;
+		}else{
+			throw new InvalidCommandSyntaxException();
+		}
+
+		$permission = $player === $sender ? $selfPermission : $otherPermission;
+		if(!$sender->hasPermission($permission)){
+			$message = $player === $sender ?
+				KnownTranslationFactory::pocketmine_command_error_permission_targetSelf() :
+				KnownTranslationFactory::pocketmine_command_error_permission_targetOther();
+			$sender->sendMessage($message->prefix(TextFormat::RED));
+			return null;
+		}
+		return $player;
 	}
 }

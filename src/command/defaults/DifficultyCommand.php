@@ -25,49 +25,55 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\MappedParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\ParameterParseException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\ServerProperties;
 use pocketmine\world\World;
-use function count;
 
-class DifficultyCommand extends VanillaCommand{
+final class DifficultyCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_difficulty_description(),
-			KnownTranslationFactory::commands_difficulty_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) !== 1){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single(
+				[new MappedParameter(
+					"difficulty",
+					"difficulty",
+					static function(string $v) : int{
+						$difficulty = World::getDifficultyFromString($v);
+						if($difficulty === -1){
+							throw new ParameterParseException("Invalid difficulty value");
+						}
+						return $difficulty;
+					}
+				)],
+				DefaultPermissionNames::COMMAND_DIFFICULTY,
+				self::execute(...)
+			),
+			KnownTranslationFactory::pocketmine_command_difficulty_description(),
+		);
+	}
 
-		$difficulty = World::getDifficultyFromString($args[0]);
-
+	private static function execute(CommandSender $sender, int $difficulty) : void{
 		if($sender->getServer()->isHardcore()){
 			$difficulty = World::DIFFICULTY_HARD;
 		}
 
-		if($difficulty !== -1){
-			$sender->getServer()->getConfigGroup()->setConfigInt(ServerProperties::DIFFICULTY, $difficulty);
+		$sender->getServer()->getConfigGroup()->setConfigInt(ServerProperties::DIFFICULTY, $difficulty);
 
-			//TODO: add per-world support
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->setDifficulty($difficulty);
-			}
-
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_difficulty_success((string) $difficulty));
-		}else{
-			throw new InvalidCommandSyntaxException();
+		//TODO: add per-world support
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->setDifficulty($difficulty);
 		}
 
-		return true;
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_difficulty_success((string) $difficulty));
 	}
 }

@@ -25,7 +25,11 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\MappedParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\ParameterParseException;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
@@ -37,42 +41,40 @@ use pocketmine\utils\TextFormat;
 use function count;
 use function min;
 
-class ClearCommand extends VanillaCommand{
+final class ClearCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_clear_description(),
-			KnownTranslationFactory::pocketmine_command_clear_usage()
-		);
-		$this->setPermissions([DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]);
+	private const SELF_PERM = DefaultPermissionNames::COMMAND_CLEAR_SELF;
+	private const OTHER_PERM = DefaultPermissionNames::COMMAND_CLEAR_OTHER;
+
+	private const OVERLOAD_PERMS = [self::SELF_PERM, self::OTHER_PERM];
+
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) > 3){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("playerName", "player name"),
+				new MappedParameter("targetItem", "item name", static function(string $v) : Item{
+					try{
+						return StringToItemParser::getInstance()->parse($v) ?? LegacyStringToItemParser::getInstance()->parse($v);
+					}catch(LegacyStringToItemParserException $e){
+						throw new ParameterParseException("Invalid item name: $v");
+					}
+				}),
+				new IntRangeParameter("maxCount", "max count", -1, 32767)
+			], self::OVERLOAD_PERMS, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_clear_description()
+		);
+	}
 
-		$target = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER);
+	private static function execute(CommandSender $sender, ?string $playerName = null, ?Item $targetItem = null, int $maxCount = -1) : void{
+		$target = Command::fetchPermittedPlayerTarget($sender, $playerName, self::SELF_PERM, self::OTHER_PERM);
 		if($target === null){
-			return true;
-		}
-
-		$targetItem = null;
-		$maxCount = -1;
-		if(isset($args[1])){
-			try{
-				$targetItem = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
-
-				if(isset($args[2])){
-					$targetItem->setCount($maxCount = $this->getInteger($sender, $args[2], -1));
-				}
-			}catch(LegacyStringToItemParserException $e){
-				//vanilla checks this at argument parsing layer, can't come up with a better alternative
-				$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
-				return true;
-			}
+			return;
 		}
 
 		/**
@@ -87,27 +89,27 @@ class ClearCommand extends VanillaCommand{
 
 		// Checking player's inventory for all the items matching the criteria
 		if($targetItem !== null && $maxCount === 0){
-			$count = $this->countItems($inventories, $targetItem);
+			$count = self::countItems($inventories, $targetItem);
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
 			}else{
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_failure_no_items($target->getName())->prefix(TextFormat::RED));
 			}
 
-			return true;
+			return;
 		}
 
 		$clearedCount = 0;
 		if($targetItem === null){
 			// Clear all items from the inventories
-			$clearedCount += $this->countItems($inventories, null);
+			$clearedCount += self::countItems($inventories, null);
 			foreach($inventories as $inventory){
 				$inventory->clearAll();
 			}
 		}else{
 			// Clear the item from target's inventory irrelevant of the count
 			if($maxCount === -1){
-				$clearedCount += $this->countItems($inventories, $targetItem);
+				$clearedCount += self::countItems($inventories, $targetItem);
 				foreach($inventories as $inventory){
 					$inventory->remove($targetItem);
 				}
@@ -135,14 +137,12 @@ class ClearCommand extends VanillaCommand{
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::commands_clear_failure_no_items($target->getName())->prefix(TextFormat::RED));
 		}
-
-		return true;
 	}
 
 	/**
 	 * @param Inventory[] $inventories
 	 */
-	protected function countItems(array $inventories, ?Item $target) : int{
+	protected static function countItems(array $inventories, ?Item $target) : int{
 		$count = 0;
 		foreach($inventories as $inventory){
 			$contents = $target !== null ? $inventory->all($target) : $inventory->getContents();

@@ -23,16 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RawParameter;
 use pocketmine\command\utils\CommandStringHelper;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\timings\Timings;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
-use function array_shift;
+use function addcslashes;
 use function count;
 use function implode;
 use function preg_match;
+use function str_contains;
 use function strlen;
 use function strpos;
 use function substr;
@@ -42,7 +41,7 @@ use function substr;
  * Used to register commands defined in the `aliases` section of pocketmine.yml.
  * See the comments in resources/pocketmine.yml in the `aliases` section for configuration instructions and examples.
  */
-class FormattedCommandAlias extends Command{
+final class FormattedCommandAlias{
 	/**
 	 * - matches a $
 	 * - captures an optional second $ to indicate required/optional
@@ -51,28 +50,47 @@ class FormattedCommandAlias extends Command{
 	 */
 	private const FORMAT_STRING_REGEX = '/\G\$(\$)?((?!0)+\d+)(-)?/';
 
-	/**
-	 * @param string[] $formatStrings
-	 */
-	public function __construct(
-		string $namespace,
-		string $name,
-		private array $formatStrings
-	){
-		parent::__construct($namespace, $name, KnownTranslationFactory::pocketmine_command_userDefined_description());
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		$commands = [];
-		$result = true;
+	/**
+	 * @param string[] $formatStrings
+	 * @phpstan-param list<string> $formatStrings
+	 */
+	public static function create(
+		string $namespace,
+		string $name,
+		string $permission,
+		array $formatStrings
+	) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single(
+				[new RawParameter("args", "args")],
+				$permission,
+				fn(CommandSender $sender, string $args) => self::execute($sender, CommandStringHelper::parseQuoteAware($args), $formatStrings)
+			)
+		);
+	}
 
-		foreach($this->formatStrings as $formatString){
+	/**
+	 * @param string[] $args
+	 * @param string[] $formatStrings
+	 * @phpstan-param list<string> $args
+	 * @phpstan-param list<string> $formatStrings
+	 */
+	private static function execute(CommandSender $sender, array $args, array $formatStrings) : void{
+		$commands = [];
+
+		foreach($formatStrings as $formatString){
 			try{
 				$formatArgs = CommandStringHelper::parseQuoteAware($formatString);
 				$unresolved = [];
 				$processedArgs = [];
 				foreach($formatArgs as $formatArg){
-					$processedArg = $this->buildCommand($formatArg, $args);
+					$processedArg = self::buildCommand($formatArg, $args);
 					if($processedArg === null){
 						$unresolved[] = $formatArg;
 					}elseif(count($unresolved) !== 0){
@@ -82,58 +100,26 @@ class FormattedCommandAlias extends Command{
 						$processedArgs[] = $processedArg;
 					}
 				}
-				$commands[] = $processedArgs;
+				$commands[] = implode(" ", $processedArgs);
 			}catch(\InvalidArgumentException $e){
 				$sender->sendMessage(TextFormat::RED . $e->getMessage());
-				return false;
+				return;
 			}
 		}
 
 		$commandMap = $sender->getServer()->getCommandMap();
-		foreach($commands as $commandArgs){
-			//this approximately duplicates the logic found in SimpleCommandMap::dispatch()
-			//this is to allow directly invoking the commands without having to rebuild a command string and parse it
-			//again for no reason
-			//TODO: a method on CommandMap to invoke a command with pre-parsed arguments would probably be a good idea
-			//for a future major version
-			$commandLabel = array_shift($commandArgs);
-			if($commandLabel === null){
-				throw new AssumptionFailedError("This should have been checked before construction");
-			}
-
-			//formatted command aliases don't use user-specific aliases since they are globally defined in pocketmine.yml
-			//using user-specific aliases might break the behaviour
-			if(($target = $commandMap->getCommand($commandLabel)) instanceof Command){
-
-				$timings = Timings::getCommandDispatchTimings($target->getId());
-				$timings->startTiming();
-
-				try{
-					$target->execute($sender, $commandLabel, $commandArgs);
-				}catch(InvalidCommandSyntaxException $e){
-					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage() ?? "/$commandLabel")));
-				}finally{
-					$timings->stopTiming();
-				}
-			}else{
-				//TODO: this seems suspicious - why do we continue alias execution if one of the commands is borked?
-				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));
-
-				//to match the behaviour of SimpleCommandMap::dispatch()
-				//this shouldn't normally happen, but might happen if the command was unregistered or modified after
-				//the alias was installed
-				$result = false;
-			}
+		foreach($commands as $commandLine){
+			$sender->getServer()->getLogger()->debug("Dispatching formatted command: $commandLine");
+			$commandMap->dispatch($sender, $commandLine);
+			//TODO: maybe we should abort command processing if there was an error???
 		}
-
-		return $result;
 	}
 
 	/**
 	 * @param string[] $args
 	 * @phpstan-param list<string> $args
 	 */
-	private function buildCommand(string $formatString, array $args) : ?string{
+	private static function buildCommand(string $formatString, array $args) : ?string{
 		$index = 0;
 		while(($index = strpos($formatString, '$', $index)) !== false){
 			$start = $index;
@@ -163,6 +149,11 @@ class FormattedCommandAlias extends Command{
 			$formatString = substr($formatString, 0, $start) . $replacement . substr($formatString, $end);
 
 			$index = $start + strlen($replacement);
+		}
+
+		//we need to assemble a command string to call the target commands, so this needs to be properly quoted
+		if(str_contains($formatString, " ")){
+			return '"' . addcslashes($formatString, '"') . '"';
 		}
 
 		return $formatString;

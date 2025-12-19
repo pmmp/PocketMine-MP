@@ -25,37 +25,33 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RawParameter;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function array_shift;
-use function count;
-use function implode;
-use function trim;
 
-class KickCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_kick_description(),
-			KnownTranslationFactory::commands_kick_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_KICK);
+final class KickCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) === 0){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("playerName", "player name"),
+				new RawParameter("reason", "reason")
+			], DefaultPermissionNames::COMMAND_KICK, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_kick_description(),
+		);
+	}
 
-		$name = array_shift($args);
-		$reason = trim(implode(" ", $args));
-
-		if(($player = $sender->getServer()->getPlayerByPrefix($name)) instanceof Player){
+	private static function execute(CommandSender $sender, string $playerName, string $reason = "") : void{
+		if(($player = $sender->getServer()->getPlayerByPrefix($playerName)) instanceof Player){
 			$player->kick($reason !== "" ? KnownTranslationFactory::pocketmine_disconnect_kick($reason) : KnownTranslationFactory::pocketmine_disconnect_kick_noReason());
 			if($reason !== ""){
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kick_success_reason($player->getName(), $reason));
@@ -65,7 +61,5 @@ class KickCommand extends VanillaCommand{
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 		}
-
-		return true;
 	}
 }

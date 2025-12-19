@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\entity\Attribute;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
@@ -32,59 +35,70 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function abs;
-use function count;
-use function str_ends_with;
-use function substr;
+use function max;
+use function min;
 
-class XpCommand extends VanillaCommand{
+final class XpCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_xp_description(),
-			KnownTranslationFactory::pocketmine_command_xp_usage()
-		);
-		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_XP_SELF,
-			DefaultPermissionNames::COMMAND_XP_OTHER
-		]);
+	private const SELF_PERM = DefaultPermissionNames::COMMAND_XP_SELF;
+	private const OTHER_PERM = DefaultPermissionNames::COMMAND_XP_OTHER;
+
+	private const OVERLOAD_PERMS = [self::SELF_PERM, self::OTHER_PERM];
+
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 1){
-			throw new InvalidCommandSyntaxException();
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				->executor([
+					new IntRangeParameter("xp", "xp", 0, Limits::INT32_MAX),
+					new StringParameter("playerName", "player name"),
+				], self::OVERLOAD_PERMS, self::addXp(...))
+				->executor([
+					new IntRangeParameter("xpLevels", "xp levels", Limits::INT32_MIN, Limits::INT32_MAX, "L"),
+					new StringParameter("playerName", "player name"),
+				], self::OVERLOAD_PERMS, self::addXpLevels(...))
+				->build(),
+			KnownTranslationFactory::pocketmine_command_xp_description()
+		);
+	}
+
+	private static function addXp(CommandSender $sender, int $xp, ?string $playerName = null) : void{
+		$player = Command::fetchPermittedPlayerTarget($sender, $playerName, self::SELF_PERM, self::OTHER_PERM);
+		if($player === null){
+			return;
 		}
 
-		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[1] ?? null, DefaultPermissionNames::COMMAND_XP_SELF, DefaultPermissionNames::COMMAND_XP_OTHER);
+		if($xp < 0){
+			$sender->sendMessage(KnownTranslationFactory::commands_xp_failure_widthdrawXp()->prefix(TextFormat::RED));
+		}else{
+			$player->getXpManager()->addXp($xp, false);
+			$sender->sendMessage(KnownTranslationFactory::commands_xp_success((string) $xp, $player->getName()));
+		}
+	}
+
+	private static function addXpLevels(CommandSender $sender, int $xpLevels, ?string $playerName = null) : void{
+		$player = Command::fetchPermittedPlayerTarget($sender, $playerName, self::SELF_PERM, self::OTHER_PERM);
 		if($player === null){
-			return true;
+			return;
 		}
 
 		$xpManager = $player->getXpManager();
-		if(str_ends_with($args[0], "L")){
-			$xpLevelAttr = $player->getAttributeMap()->get(Attribute::EXPERIENCE_LEVEL) ?? throw new AssumptionFailedError();
-			$maxXpLevel = (int) $xpLevelAttr->getMaxValue();
-			$currentXpLevel = $xpManager->getXpLevel();
-			$xpLevels = $this->getInteger($sender, substr($args[0], 0, -1), -$currentXpLevel, $maxXpLevel - $currentXpLevel);
-			if($xpLevels >= 0){
-				$xpManager->addXpLevels($xpLevels, false);
-				$sender->sendMessage(KnownTranslationFactory::commands_xp_success_levels((string) $xpLevels, $player->getName()));
-			}else{
-				$xpLevels = abs($xpLevels);
-				$xpManager->subtractXpLevels($xpLevels);
-				$sender->sendMessage(KnownTranslationFactory::commands_xp_success_negative_levels((string) $xpLevels, $player->getName()));
-			}
+		$xpLevelAttr = $player->getAttributeMap()->get(Attribute::EXPERIENCE_LEVEL) ?? throw new AssumptionFailedError();
+		$maxXpLevel = (int) $xpLevelAttr->getMaxValue();
+		$currentXpLevel = $xpManager->getXpLevel();
+		$xpLevels = max(-$currentXpLevel, min($maxXpLevel - $currentXpLevel, $xpLevels));
+		if($xpLevels >= 0){
+			$xpManager->addXpLevels($xpLevels, false);
+			$sender->sendMessage(KnownTranslationFactory::commands_xp_success_levels((string) $xpLevels, $player->getName()));
 		}else{
-			$xp = $this->getInteger($sender, $args[0], max: Limits::INT32_MAX);
-			if($xp < 0){
-				$sender->sendMessage(KnownTranslationFactory::commands_xp_failure_widthdrawXp()->prefix(TextFormat::RED));
-			}else{
-				$xpManager->addXp($xp, false);
-				$sender->sendMessage(KnownTranslationFactory::commands_xp_success((string) $xp, $player->getName()));
-			}
+			$xpLevels = abs($xpLevels);
+			$xpManager->subtractXpLevels($xpLevels);
+			$sender->sendMessage(KnownTranslationFactory::commands_xp_success_negative_levels((string) $xpLevels, $player->getName()));
 		}
-
-		return true;
 	}
 }

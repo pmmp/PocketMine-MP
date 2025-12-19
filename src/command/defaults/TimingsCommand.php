@@ -25,7 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -37,93 +37,95 @@ use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
 use pocketmine\YmlServerProperties;
 use Symfony\Component\Filesystem\Path;
-use function count;
 use function http_build_query;
 use function implode;
 use function is_array;
 use function is_int;
 use function is_string;
 use function json_decode;
-use function strtolower;
 use const CURLOPT_AUTOREFERER;
 use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
 
-class TimingsCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_timings_description(),
-			KnownTranslationFactory::pocketmine_command_timings_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TIMINGS);
+final class TimingsCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) !== 1){
-			throw new InvalidCommandSyntaxException();
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				->executor(["on"], DefaultPermissionNames::COMMAND_TIMINGS, self::enableTimings(...))
+				->executor(["off"], DefaultPermissionNames::COMMAND_TIMINGS, self::disableTimings(...))
+				->executor(["reset"], DefaultPermissionNames::COMMAND_TIMINGS, self::resetTimings(...))
+				->executor(["paste"], DefaultPermissionNames::COMMAND_TIMINGS, self::requestTimingsUpload(...))
+				->executor(["report"], DefaultPermissionNames::COMMAND_TIMINGS, self::requestTimingsFile(...))
+				->build(),
+			KnownTranslationFactory::pocketmine_command_timings_description(),
+		);
+	}
+
+	private static function enableTimings(CommandSender $sender) : void{
+		if(TimingsHandler::isEnabled()){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
+			return;
 		}
+		TimingsHandler::setEnabled();
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
+	}
 
-		$mode = strtolower($args[0]);
+	private static function disableTimings(CommandSender $sender) : void{
+		TimingsHandler::setEnabled(false);
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
+	}
 
-		if($mode === "on"){
-			if(TimingsHandler::isEnabled()){
-				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
-				return true;
-			}
-			TimingsHandler::setEnabled();
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
-
-			return true;
-		}elseif($mode === "off"){
-			TimingsHandler::setEnabled(false);
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
-			return true;
-		}
-
+	private static function resetTimings(CommandSender $sender) : void{
 		if(!TimingsHandler::isEnabled()){
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_timingsDisabled());
-
-			return true;
+			return;
 		}
 
-		$paste = $mode === "paste";
+		TimingsHandler::reload();
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
+	}
 
-		if($mode === "reset"){
-			TimingsHandler::reload();
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
-		}elseif($mode === "merged" || $mode === "report" || $paste){
-			if($paste){
-				$timingsPromise = TimingsHandler::requestPrintTimings();
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
-				$timingsPromise->onCompletion(
-					fn(array $lines) => $this->uploadReport($lines, $sender),
-					fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
-				);
-			}else{
-				TimingsHandler::createReportFile(Path::join($sender->getServer()->getDataPath(), "timings"))->onCompletion(
-					function(string $timingsFile) use ($sender) : void{
-						Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
-					},
-					fn() => $sender->getServer()->getLogger()->error("Failed to create timings report file")
-				);
-			}
-		}else{
-			throw new InvalidCommandSyntaxException();
+	private static function requestTimingsUpload(CommandSender $sender) : void{
+		if(!TimingsHandler::isEnabled()){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_timingsDisabled());
+			return;
 		}
 
-		return true;
+		$timingsPromise = TimingsHandler::requestPrintTimings();
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_collect());
+		$timingsPromise->onCompletion(
+			fn(array $lines) => self::uploadReport($lines, $sender),
+			fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
+		);
+	}
+
+	private static function requestTimingsFile(CommandSender $sender) : void{
+		if(!TimingsHandler::isEnabled()){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_timingsDisabled());
+			return;
+		}
+
+		TimingsHandler::createReportFile(Path::join($sender->getServer()->getDataPath(), "timings"))->onCompletion(
+			function(string $timingsFile) use ($sender) : void{
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile));
+			},
+			fn() => $sender->getServer()->getLogger()->error("Failed to create timings report file")
+		);
 	}
 
 	/**
 	 * @param string[] $lines
 	 * @phpstan-param list<string> $lines
 	 */
-	private function uploadReport(array $lines, CommandSender $sender) : void{
+	private static function uploadReport(array $lines, CommandSender $sender) : void{
 		$data = [
 			"browser" => $agent = $sender->getServer()->getName() . " " . $sender->getServer()->getPocketMineVersion(),
 			"data" => implode("\n", $lines),

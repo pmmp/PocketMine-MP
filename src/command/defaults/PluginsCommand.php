@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
@@ -34,25 +36,26 @@ use function implode;
 use function sort;
 use const SORT_STRING;
 
-class PluginsCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_plugins_description(),
-			null
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_PLUGINS);
+final class PluginsCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_PLUGINS, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_plugins_description(),
+		);
+	}
+
+	private static function execute(CommandSender $sender) : void{
 		$list = array_map(function(Plugin $plugin) : string{
 			return ($plugin->isEnabled() ? TextFormat::GREEN : TextFormat::RED) . $plugin->getDescription()->getFullName();
 		}, $sender->getServer()->getPluginManager()->getPlugins());
 		sort($list, SORT_STRING);
 
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_plugins_success((string) count($list), implode(TextFormat::RESET . ", ", $list)));
-		return true;
 	}
 }

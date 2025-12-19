@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
@@ -32,18 +34,21 @@ use function memory_get_usage;
 use function number_format;
 use function round;
 
-class GarbageCollectorCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_gc_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_GC);
+final class GarbageCollectorCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_GC, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_gc_description()
+		);
+	}
+
+	private static function execute(CommandSender $sender) : void{
 		$chunksCollected = 0;
 		$entitiesCollected = 0;
 
@@ -66,6 +71,5 @@ class GarbageCollectorCommand extends VanillaCommand{
 
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_cycles(TextFormat::RED . number_format($cyclesCollected))->prefix(TextFormat::GOLD));
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gc_memoryFreed(TextFormat::RED . number_format(round((($memory - memory_get_usage()) / 1024) / 1024, 2), 2))->prefix(TextFormat::GOLD));
-		return true;
 	}
 }

@@ -85,15 +85,6 @@ class Effect{
 	}
 
 	/**
-	 * Returns whether the effect will do something on the current tick.
-	 * @deprecated Implement {@link getApplyInterval()} instead
-	 */
-	public function canTick(EffectInstance $instance) : bool{
-		$interval = $this->getApplyInterval($instance);
-		return $interval > 0 && $instance->getDuration() % $interval === 0;
-	}
-
-	/**
 	 * Returns after how many ticks {@link applyEffect()} will be called.
 	 * If this returns 0, the effect will not be ticked.
 	 * If it returns 1, it will be ticked every tick.

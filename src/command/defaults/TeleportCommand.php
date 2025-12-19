@@ -25,100 +25,142 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\FloatRangeParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RelativeXYZ;
+use pocketmine\command\overload\RelativeXYZParameter;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
-use pocketmine\world\World;
-use function array_shift;
-use function count;
 use function round;
 
-class TeleportCommand extends VanillaCommand{
+final class TeleportCommand{
+	private function __construct(){
+		//NOOP
+	}
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
 			$namespace,
 			$name,
-			KnownTranslationFactory::pocketmine_command_tp_description(),
-			KnownTranslationFactory::commands_tp_usage()
+			OverloadBuilder::make()
+				->branch(
+					[new StringParameter("teleportedPlayerName", "player to teleport")],
+					fn(OverloadBuilder $childBuilder) => self::buildOverloads(
+						$childBuilder,
+						DefaultPermissionNames::COMMAND_TELEPORT_OTHER,
+						self::tpOtherToPlayer(...),
+						self::tpOtherCoords(...)
+					)
+				)
+				->branch(
+					[],
+					fn(OverloadBuilder $childBuilder) => self::buildOverloads(
+						$childBuilder,
+						DefaultPermissionNames::COMMAND_TELEPORT_SELF,
+						self::tpSelfToPlayer(...),
+						self::tpSelfCoords(...)
+					)
+				)
+				->build(),
+			KnownTranslationFactory::pocketmine_command_tp_description()
 		);
-		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_TELEPORT_SELF,
-			DefaultPermissionNames::COMMAND_TELEPORT_OTHER
-		]);
 	}
 
-	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
-		$subject = $sender->getServer()->getPlayerByPrefix($playerName);
-		if($subject === null){
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerNotFound($playerName)->prefix(TextFormat::RED));
-			return null;
-		}
-		return $subject;
+	/**
+	 * @phpstan-param anyClosure $tpToPlayer
+	 * @phpstan-param anyClosure $tpToCoords
+	 */
+	private static function buildOverloads(OverloadBuilder $childBuilder, string $permission, \Closure $tpToPlayer, \Closure $tpToCoords) : void{
+		$childBuilder
+			->executor([
+				new StringParameter("destinationPlayerName", "destination player")
+			], $permission, $tpToPlayer)
+			->executor([
+				new RelativeXYZParameter("coordinates", "coordinates"),
+				new FloatRangeParameter("yaw", "yaw", 0, 360),
+				new FloatRangeParameter("pitch", "pitch", -90, 90)
+			], $permission, $tpToCoords);
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		switch(count($args)){
-			case 1: // /tp targetPlayer
-			case 3: // /tp x y z
-			case 5: // /tp x y z yaw pitch - TODO: 5 args could be target x y z yaw :(
-				$subjectName = null; //self
-				break;
-			case 2: // /tp player1 player2
-			case 4: // /tp player1 x y z - TODO: 4 args could be x y z yaw :(
-			case 6: // /tp player1 x y z yaw pitch
-				$subjectName = array_shift($args);
-				break;
-			default:
-				throw new InvalidCommandSyntaxException();
+	private static function tpCoords(
+		CommandSender $sender,
+		Player $subject,
+		RelativeXYZ $coordinates,
+		float $yaw,
+		float $pitch
+	) : void{
+		$base = $subject->getLocation();
+
+		$pos = $coordinates->resolve($base);
+		$targetLocation = new Location($pos->x, $pos->y, $pos->z, $base->getWorld(), $yaw, $pitch);
+
+		$subject->teleport($targetLocation);
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(
+			$subject->getName(),
+			(string) round($targetLocation->x, 2),
+			(string) round($targetLocation->y, 2),
+			(string) round($targetLocation->z, 2)
+		));
+	}
+
+	private static function tpSelfCoords(
+		CommandSender $sender,
+		RelativeXYZ $coordinates,
+		float $yaw = 0.0,
+		float $pitch = 0.0
+	) : void{
+		if(!$sender instanceof Player){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
 		}
 
-		$subject = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $subjectName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
+		self::tpCoords($sender, $sender, $coordinates, $yaw, $pitch);
+	}
+
+	private static function tpOtherCoords(
+		CommandSender $sender,
+		string $teleportedPlayerName,
+		RelativeXYZ $coordinates,
+		float $yaw = 0.0,
+		float $pitch = 0.0
+	) : void{
+		$subject = Command::fetchPermittedPlayerTarget($sender, $teleportedPlayerName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
 		if($subject === null){
-			return true;
+			return;
 		}
 
-		switch(count($args)){
-			case 1:
-				$targetPlayer = $this->findPlayer($sender, $args[0]);
-				if($targetPlayer === null){
-					return true;
-				}
+		self::tpCoords($sender, $subject, $coordinates, $yaw, $pitch);
+	}
 
-				$subject->teleport($targetPlayer->getLocation());
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success($subject->getName(), $targetPlayer->getName()));
-
-				return true;
-			case 3:
-			case 5:
-				$base = $subject->getLocation();
-				if(count($args) === 5){
-					$yaw = (float) $args[3];
-					$pitch = (float) $args[4];
-				}else{
-					$yaw = $base->yaw;
-					$pitch = $base->pitch;
-				}
-
-				$x = $this->getRelativeDouble($base->x, $sender, $args[0]);
-				$y = $this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX);
-				$z = $this->getRelativeDouble($base->z, $sender, $args[2]);
-				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
-
-				$subject->teleport($targetLocation);
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(
-					$subject->getName(),
-					(string) round($targetLocation->x, 2),
-					(string) round($targetLocation->y, 2),
-					(string) round($targetLocation->z, 2)
-				));
-				return true;
-			default:
-				throw new AssumptionFailedError("This branch should be unreachable (for now)");
+	private static function tpToPlayer(CommandSender $sender, Player $teleportedPlayer, string $destinationPlayerName) : void{
+		$destination = $sender->getServer()->getPlayerByPrefix($destinationPlayerName);
+		if($destination === null){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerNotFound($destinationPlayerName)->prefix(TextFormat::RED));
+			return;
 		}
+
+		$teleportedPlayer->teleport($destination->getLocation());
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success($teleportedPlayer->getName(), $destination->getName()));
+	}
+
+	private static function tpSelfToPlayer(CommandSender $sender, string $destinationPlayer) : void{
+		if(!$sender instanceof Player){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
+			return;
+		}
+
+		self::tpToPlayer($sender, $sender, $destinationPlayer);
+	}
+
+	private static function tpOtherToPlayer(CommandSender $sender, string $teleportedPlayerName, string $destinationPlayerName) : void{
+		$subject = Command::fetchPermittedPlayerTarget($sender, $teleportedPlayerName, DefaultPermissionNames::COMMAND_TELEPORT_SELF, DefaultPermissionNames::COMMAND_TELEPORT_OTHER);
+		if($subject === null){
+			return;
+		}
+
+		self::tpToPlayer($sender, $subject, $destinationPlayerName);
 	}
 }

@@ -23,59 +23,54 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\BanEntry;
+use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissionNames;
 use function array_map;
 use function count;
 use function implode;
 use function sort;
-use function strtolower;
 use const SORT_STRING;
 
-class BanListCommand extends VanillaCommand{
+final class BanListCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_banlist_description(),
-			KnownTranslationFactory::commands_banlist_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_LIST);
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(isset($args[0])){
-			$args[0] = strtolower($args[0]);
-			if($args[0] === "ips"){
-				$list = $sender->getServer()->getIPBans();
-			}elseif($args[0] === "players"){
-				$list = $sender->getServer()->getNameBans();
-			}else{
-				throw new InvalidCommandSyntaxException();
-			}
-		}else{
-			$list = $sender->getServer()->getNameBans();
-			$args[0] = "players";
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				->executor(["ips"], DefaultPermissionNames::COMMAND_BAN_LIST, self::listIPBans(...))
+				->executor(["players"], DefaultPermissionNames::COMMAND_BAN_LIST, self::listNameBans(...))
+				->build(),
+			KnownTranslationFactory::pocketmine_command_banlist_description(),
+		);
+	}
 
+	private static function printList(BanList $list) : string{
 		$list = array_map(function(BanEntry $entry) : string{
 			return $entry->getName();
 		}, $list->getEntries());
 		sort($list, SORT_STRING);
-		$message = implode(", ", $list);
+		return implode(", ", $list);
+	}
 
-		if($args[0] === "ips"){
-			$sender->sendMessage(KnownTranslationFactory::commands_banlist_ips((string) count($list)));
-		}else{
-			$sender->sendMessage(KnownTranslationFactory::commands_banlist_players((string) count($list)));
-		}
+	private static function listIPBans(CommandSender $sender) : void{
+		$list = $sender->getServer()->getIPBans();
+		$sender->sendMessage(KnownTranslationFactory::commands_banlist_ips((string) count($list->getEntries())));
+		$sender->sendMessage(self::printList($list));
+	}
 
-		$sender->sendMessage($message);
-
-		return true;
+	private static function listNameBans(CommandSender $sender) : void{
+		$list = $sender->getServer()->getNameBans();
+		$sender->sendMessage(KnownTranslationFactory::commands_banlist_players((string) count($list->getEntries())));
+		$sender->sendMessage(self::printList($list));
 	}
 }

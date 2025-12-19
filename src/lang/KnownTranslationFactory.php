@@ -104,10 +104,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_ban_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_BAN_USAGE, []);
-	}
-
 	public static function commands_banip_invalid() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_BANIP_INVALID, []);
 	}
@@ -125,10 +121,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_banip_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_BANIP_USAGE, []);
-	}
-
 	public static function commands_banlist_ips(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_BANLIST_IPS, [
 			0 => $param0,
@@ -139,10 +131,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_BANLIST_PLAYERS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_banlist_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_BANLIST_USAGE, []);
 	}
 
 	public static function commands_clear_failure_no_items(Translatable|string $param0) : Translatable{
@@ -171,10 +159,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_defaultgamemode_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE, []);
-	}
-
 	public static function commands_deop_message() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_MESSAGE, []);
 	}
@@ -185,18 +169,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_deop_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_USAGE, []);
-	}
-
 	public static function commands_difficulty_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DIFFICULTY_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_difficulty_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_DIFFICULTY_USAGE, []);
 	}
 
 	public static function commands_effect_failure_notActive(Translatable|string $param0, Translatable|string $param1) : Translatable{
@@ -248,10 +224,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_effect_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_EFFECT_USAGE, []);
-	}
-
 	public static function commands_enchant_noItem() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_NOITEM, []);
 	}
@@ -268,10 +240,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_enchant_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_USAGE, []);
-	}
-
 	public static function commands_gamemode_success_other(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_OTHER, [
 			0 => $param0,
@@ -283,10 +251,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_SELF, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_gamemode_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_USAGE, []);
 	}
 
 	public static function commands_generic_num_tooBig(Translatable|string $param0, Translatable|string $param1) : Translatable{
@@ -340,10 +304,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_help_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_HELP_USAGE, []);
-	}
-
 	public static function commands_kick_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_KICK_SUCCESS, [
 			0 => $param0,
@@ -357,18 +317,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_kick_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_KICK_USAGE, []);
-	}
-
 	public static function commands_kill_successful(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_KILL_SUCCESSFUL, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_me_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_ME_USAGE, []);
 	}
 
 	public static function commands_message_display_incoming(Translatable|string $param0, Translatable|string $param1) : Translatable{
@@ -389,10 +341,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_MESSAGE_SAMETARGET, []);
 	}
 
-	public static function commands_message_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_MESSAGE_USAGE, []);
-	}
-
 	public static function commands_op_message() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_OP_MESSAGE, []);
 	}
@@ -401,10 +349,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_OP_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_op_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_OP_USAGE, []);
 	}
 
 	public static function commands_particle_notFound(Translatable|string $param0) : Translatable{
@@ -435,10 +379,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_ENABLED, []);
 	}
 
-	public static function commands_say_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAY_USAGE, []);
-	}
-
 	public static function commands_seed_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SEED_SUCCESS, [
 			0 => $param0,
@@ -451,14 +391,6 @@ final class KnownTranslationFactory{
 			1 => $param1,
 			2 => $param2,
 		]);
-	}
-
-	public static function commands_setworldspawn_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE, []);
-	}
-
-	public static function commands_spawnpoint_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SPAWNPOINT_USAGE, []);
 	}
 
 	public static function commands_stop_start() : Translatable{
@@ -487,10 +419,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_TITLE_SUCCESS, []);
 	}
 
-	public static function commands_title_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_TITLE_USAGE, []);
-	}
-
 	public static function commands_tp_success(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_TP_SUCCESS, [
 			0 => $param0,
@@ -507,18 +435,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_tp_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_TP_USAGE, []);
-	}
-
 	public static function commands_unban_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_UNBAN_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_unban_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_UNBAN_USAGE, []);
 	}
 
 	public static function commands_unbanip_invalid() : Translatable{
@@ -531,18 +451,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_unbanip_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_UNBANIP_USAGE, []);
-	}
-
 	public static function commands_whitelist_add_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_ADD_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_whitelist_add_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_ADD_USAGE, []);
 	}
 
 	public static function commands_whitelist_disabled() : Translatable{
@@ -568,14 +480,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_REMOVE_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_whitelist_remove_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_REMOVE_USAGE, []);
-	}
-
-	public static function commands_whitelist_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_USAGE, []);
 	}
 
 	public static function commands_xp_failure_widthdrawXp() : Translatable{
@@ -1494,10 +1398,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_clear_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE, []);
-	}
-
 	public static function pocketmine_command_cmdalias_create_success(Translatable|string $alias, Translatable|string $target) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_CMDALIAS_CREATE_SUCCESS, [
 			"alias" => $alias,
@@ -1597,6 +1497,14 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_command_error_permission_targetOther() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PERMISSION_TARGETOTHER, []);
+	}
+
+	public static function pocketmine_command_error_permission_targetSelf() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PERMISSION_TARGETSELF, []);
+	}
+
 	public static function pocketmine_command_error_playerNotFound(Translatable|string $playerName) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PLAYERNOTFOUND, [
 			"playerName" => $playerName,
@@ -1659,10 +1567,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_give_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE, []);
-	}
-
 	public static function pocketmine_command_help_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION, []);
 	}
@@ -1699,10 +1603,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_KILL_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_kill_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_KILL_USAGE, []);
-	}
-
 	public static function pocketmine_command_list_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_LIST_DESCRIPTION, []);
 	}
@@ -1724,10 +1624,6 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_particle_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_DESCRIPTION, []);
-	}
-
-	public static function pocketmine_command_particle_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_USAGE, []);
 	}
 
 	public static function pocketmine_command_plugins_description() : Translatable{
@@ -1923,10 +1819,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIME_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_time_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIME_USAGE, []);
-	}
-
 	public static function pocketmine_command_timings_alreadyEnabled() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_ALREADYENABLED, []);
 	}
@@ -1971,10 +1863,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_command_timings_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_USAGE, []);
-	}
-
 	public static function pocketmine_command_title_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION, []);
 	}
@@ -1985,10 +1873,6 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_transferserver_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TRANSFERSERVER_DESCRIPTION, []);
-	}
-
-	public static function pocketmine_command_transferserver_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TRANSFERSERVER_USAGE, []);
 	}
 
 	public static function pocketmine_command_unban_ip_description() : Translatable{
@@ -2088,20 +1972,12 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_command_version_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE, []);
-	}
-
 	public static function pocketmine_command_whitelist_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION, []);
 	}
 
 	public static function pocketmine_command_xp_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_XP_DESCRIPTION, []);
-	}
-
-	public static function pocketmine_command_xp_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_XP_USAGE, []);
 	}
 
 	public static function pocketmine_crash_archive(Translatable|string $param0, Translatable|string $param1) : Translatable{

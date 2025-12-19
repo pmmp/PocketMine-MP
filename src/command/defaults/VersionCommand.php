@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissionNames;
@@ -38,74 +41,79 @@ use function stripos;
 use function strtolower;
 use const PHP_VERSION;
 
-class VersionCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_version_description(),
-			KnownTranslationFactory::pocketmine_command_version_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);
+final class VersionCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) === 0){
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
-				TextFormat::GREEN . VersionInfo::NAME . TextFormat::RESET
-			));
-			$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				$versionColor . VersionInfo::VERSION()->getFullVersion() . TextFormat::RESET,
-				TextFormat::GREEN . VersionInfo::GIT_HASH() . TextFormat::RESET
-			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
-				TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::RESET,
-				TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL . TextFormat::RESET
-			));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN . PHP_VERSION . TextFormat::RESET));
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				//technically this could be one overload, but two lets us do two separate handlers
+				->executor([], DefaultPermissionNames::COMMAND_VERSION, self::showServerVersion(...))
+				->executor([
+					new StringParameter("pluginName", "plugin name")
+				], DefaultPermissionNames::COMMAND_VERSION, self::showPluginVersion(...))
+				->build(),
+			KnownTranslationFactory::pocketmine_command_version_description()
+		);
+	}
 
-			$jitMode = Utils::getOpcacheJitMode();
-			if($jitMode !== null){
-				if($jitMode !== 0){
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(sprintf("CRTO: %d", $jitMode));
-				}else{
-					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
-				}
+	private static function showServerVersion(CommandSender $sender) : void{
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
+			TextFormat::GREEN . VersionInfo::NAME . TextFormat::RESET
+		));
+		$versionColor = VersionInfo::IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : TextFormat::GREEN;
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
+			$versionColor . VersionInfo::VERSION()->getFullVersion() . TextFormat::RESET,
+			TextFormat::GREEN . VersionInfo::GIT_HASH() . TextFormat::RESET
+		));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
+			TextFormat::GREEN . ProtocolInfo::MINECRAFT_VERSION_NETWORK . TextFormat::RESET,
+			TextFormat::GREEN . ProtocolInfo::CURRENT_PROTOCOL . TextFormat::RESET
+		));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN . PHP_VERSION . TextFormat::RESET));
+
+		$jitMode = Utils::getOpcacheJitMode();
+		if($jitMode !== null){
+			if($jitMode !== 0){
+				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(sprintf("CRTO: %d", $jitMode));
 			}else{
-				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
+				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
 		}else{
-			$pluginName = implode(" ", $args);
-			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
+			$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
+		}
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus->format(TextFormat::GREEN, TextFormat::RESET)));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN . Utils::getOS() . TextFormat::RESET));
+	}
 
-			if($exactPlugin instanceof Plugin){
-				$this->describeToSender($exactPlugin, $sender);
+	private static function showPluginVersion(CommandSender $sender, string $pluginName) : void{
+		$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
 
-				return true;
-			}
+		if($exactPlugin instanceof Plugin){
+			self::describeToSender($exactPlugin, $sender);
 
-			$found = false;
-			$pluginName = strtolower($pluginName);
-			foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
-				if(stripos($plugin->getName(), $pluginName) !== false){
-					$this->describeToSender($plugin, $sender);
-					$found = true;
-				}
-			}
+			return;
+		}
 
-			if(!$found){
-				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_noSuchPlugin());
+		$found = false;
+		$pluginName = strtolower($pluginName);
+		foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
+			if(stripos($plugin->getName(), $pluginName) !== false){
+				self::describeToSender($plugin, $sender);
+				$found = true;
 			}
 		}
 
-		return true;
+		if(!$found){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_noSuchPlugin());
+		}
 	}
 
-	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
+	private static function describeToSender(Plugin $plugin, CommandSender $sender) : void{
 		$desc = $plugin->getDescription();
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_plugin_header(
 			TextFormat::DARK_GREEN . $desc->getName() . TextFormat::RESET,

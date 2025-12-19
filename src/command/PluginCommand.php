@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RawParameter;
+use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\Translatable;
 use pocketmine\plugin\Plugin;
@@ -39,14 +42,29 @@ final class PluginCommand extends Command implements PluginOwned{
 		string $name,
 		private Plugin $owner,
 		private CommandExecutor $executor,
+		string $permission,
 		Translatable|string $description = "",
 		Translatable|string|null $usageMessage = null
 	){
-		parent::__construct($namespace, $name, $description, $usageMessage);
+		parent::__construct(
+			$namespace,
+			$name,
+			OverloadBuilder::single(
+				[new RawParameter("args", "args")],
+				$permission,
+				fn(CommandSender $sender, string $aliasUsed, string $args) => $this->execute($sender, $aliasUsed, CommandStringHelper::parseQuoteAware($args)),
+				acceptsAliasUsed: true,
+				customUsageMessage: $usageMessage
+			),
+			$description,
+		);
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-
+	/**
+	 * @param string[] $args
+	 * @phpstan-param list<string> $args
+	 */
+	public function execute(CommandSender $sender, string $commandLabel, array $args) : bool{
 		if(!$this->owner->isEnabled()){
 			return false;
 		}

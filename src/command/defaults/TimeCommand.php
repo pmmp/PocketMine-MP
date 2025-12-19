@@ -25,119 +25,91 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\MappedParameter;
+use pocketmine\command\overload\Overload;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\ParameterParseException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\utils\Limits;
 use pocketmine\world\World;
-use function count;
 
-class TimeCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_time_description(),
-			KnownTranslationFactory::pocketmine_command_time_usage()
-		);
-		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_TIME_ADD,
-			DefaultPermissionNames::COMMAND_TIME_SET,
-			DefaultPermissionNames::COMMAND_TIME_START,
-			DefaultPermissionNames::COMMAND_TIME_STOP,
-			DefaultPermissionNames::COMMAND_TIME_QUERY
-		]);
+final class TimeCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 1){
-			throw new InvalidCommandSyntaxException();
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				->executor(["start"], DefaultPermissionNames::COMMAND_TIME_START, self::startTime(...))
+				->executor(["stop"], DefaultPermissionNames::COMMAND_TIME_STOP, self::stopTime(...))
+				->executor(["query"], DefaultPermissionNames::COMMAND_TIME_QUERY, self::queryTime(...))
+				->executor([
+					"add",
+					new IntRangeParameter("ticks", "ticks", 0, Limits::INT32_MAX),
+				], DefaultPermissionNames::COMMAND_TIME_ADD, self::addTime(...))
+				->branch(["set"], fn(OverloadBuilder $builder) => $builder
+					->executor([
+						new MappedParameter("time", "time name", static fn(string $v) : int => match ($v) {
+							"day" => World::TIME_DAY,
+							"noon" => World::TIME_NOON,
+							"sunset" => World::TIME_SUNSET,
+							"night" => World::TIME_NIGHT,
+							"midnight" => World::TIME_MIDNIGHT,
+							"sunrise" => World::TIME_SUNRISE,
+							//numeric times are handled in a separate overload, for clarity's sake
+							default => throw new ParameterParseException("Invalid time name: $v")
+						})
+					], DefaultPermissionNames::COMMAND_TIME_SET, self::setTime(...))
+					->executor([
+						new IntRangeParameter("time", "timestamp", 0, Limits::INT32_MAX)
+					], DefaultPermissionNames::COMMAND_TIME_SET, self::setTime(...))
+				)
+				->build(),
+			KnownTranslationFactory::pocketmine_command_time_description()
+		);
+	}
+
+	private static function startTime(CommandSender $sender) : void{
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->startTime();
 		}
-		$testPermissionCtx = $commandLabel . " " . $args[0];
+		//TODO: l10n
+		Command::broadcastCommandMessage($sender, "Restarted the time");
+	}
 
-		if($args[0] === "start"){
-			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_START)){
-				return true;
-			}
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->startTime();
-			}
-			Command::broadcastCommandMessage($sender, "Restarted the time");
-			return true;
-		}elseif($args[0] === "stop"){
-			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_STOP)){
-				return true;
-			}
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->stopTime();
-			}
-			Command::broadcastCommandMessage($sender, "Stopped the time");
-			return true;
-		}elseif($args[0] === "query"){
-			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_QUERY)){
-				return true;
-			}
-			if($sender instanceof Player){
-				$world = $sender->getWorld();
-			}else{
-				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
-			}
-			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_time_query((string) $world->getTime())));
-			return true;
+	private static function stopTime(CommandSender $sender) : void{
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->stopTime();
 		}
+		Command::broadcastCommandMessage($sender, "Stopped the time");
+	}
 
-		if(count($args) < 2){
-			throw new InvalidCommandSyntaxException();
-		}
-
-		if($args[0] === "set"){
-			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_SET)){
-				return true;
-			}
-
-			switch($args[1]){
-				case "day":
-					$value = World::TIME_DAY;
-					break;
-				case "noon":
-					$value = World::TIME_NOON;
-					break;
-				case "sunset":
-					$value = World::TIME_SUNSET;
-					break;
-				case "night":
-					$value = World::TIME_NIGHT;
-					break;
-				case "midnight":
-					$value = World::TIME_MIDNIGHT;
-					break;
-				case "sunrise":
-					$value = World::TIME_SUNRISE;
-					break;
-				default:
-					$value = $this->getInteger($sender, $args[1], 0);
-					break;
-			}
-
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->setTime($value);
-			}
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $value));
-		}elseif($args[0] === "add"){
-			if(!$this->testPermission($testPermissionCtx, $sender, DefaultPermissionNames::COMMAND_TIME_ADD)){
-				return true;
-			}
-
-			$value = $this->getInteger($sender, $args[1], 0);
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->setTime($world->getTime() + $value);
-			}
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_added((string) $value));
+	private static function queryTime(CommandSender $sender) : void{
+		if($sender instanceof Player){
+			$world = $sender->getWorld();
 		}else{
-			throw new InvalidCommandSyntaxException();
+			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 		}
+		$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_time_query((string) $world->getTime())));
+	}
 
-		return true;
+	private static function setTime(CommandSender $sender, int $time) : void{
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->setTime($time);
+		}
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $time));
+	}
+
+	private static function addTime(CommandSender $sender, int $ticks) : void{
+		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
+			$world->setTime($world->getTime() + $ticks);
+		}
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_added((string) $ticks));
 	}
 }

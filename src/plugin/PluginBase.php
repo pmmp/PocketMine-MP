@@ -163,11 +163,10 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				$key,
 				$this,
 				$this,
+				$data->getPermission(),
 				$data->getDescription() ?? "",
 				$data->getUsageMessage()
 			);
-
-			$newCmd->setPermission($data->getPermission());
 
 			if(($permissionDeniedMessage = $data->getPermissionDeniedMessage()) !== null){
 				$newCmd->setPermissionMessage($permissionDeniedMessage);

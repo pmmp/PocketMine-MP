@@ -25,32 +25,38 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
-use function count;
 
-class KillCommand extends VanillaCommand{
+final class KillCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_kill_description(),
-			KnownTranslationFactory::pocketmine_command_kill_usage()
-		);
-		$this->setPermissions([DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]);
+	private const string SELF_PERM = DefaultPermissionNames::COMMAND_KILL_SELF;
+	private const string OTHER_PERM = DefaultPermissionNames::COMMAND_KILL_OTHER;
+
+	private const OVERLOAD_PERMS = [self::SELF_PERM, self::OTHER_PERM];
+
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) >= 2){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("target", "target")
+			], self::OVERLOAD_PERMS, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_kill_description()
+		);
+	}
 
-		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0] ?? null, DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER);
+	private static function execute(CommandSender $sender, ?string $target = null) : void{
+		$player = Command::fetchPermittedPlayerTarget($sender, $target, self::SELF_PERM, self::OTHER_PERM);
 		if($player === null){
-			return true;
+			return;
 		}
 
 		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, $player->getHealth()));
@@ -59,7 +65,5 @@ class KillCommand extends VanillaCommand{
 		}else{
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_kill_successful($player->getName()));
 		}
-
-		return true;
 	}
 }

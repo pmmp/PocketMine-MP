@@ -25,25 +25,27 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 
-class StopCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_stop_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);
+final class StopCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_STOP, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_stop_description()
+		);
+	}
+
+	private static function execute(CommandSender $sender) : void{
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_stop_start());
 
 		$sender->getServer()->shutdown();
-
-		return true;
 	}
 }

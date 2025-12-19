@@ -25,137 +25,148 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use function array_map;
-use function array_shift;
 use function count;
 use function implode;
 use function is_array;
 use function ksort;
 
-final class CommandAliasCommand extends Command{
+final class CommandAliasCommand{
 	private const SELF_PERM = DefaultPermissionNames::COMMAND_CMDALIAS_EDIT_SELF;
 	private const GLOBAL_PERM = DefaultPermissionNames::COMMAND_CMDALIAS_EDIT_GLOBAL;
 	private const LIST_PERM = DefaultPermissionNames::COMMAND_CMDALIAS_LIST;
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_cmdalias_description(),
-			"/cmdalias [global] create <alias> <target> OR /cmdalias [global] delete <alias>"
-		);
-		$this->setPermissions([self::GLOBAL_PERM, self::SELF_PERM, self::LIST_PERM]);
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) === 0){
-			throw new InvalidCommandSyntaxException();
+	public static function create(string $namespace, string $name) : Command{
+		$builder = OverloadBuilder::make();
+		foreach([false, true] as $global){
+			$prefix = $global ? ["global"] : [];
+			$editPerm = $global ? self::GLOBAL_PERM : self::SELF_PERM;
+			$builder->branch($prefix, fn(OverloadBuilder $childBuilder) => $childBuilder
+				->executor(
+					[
+						"create",
+						new StringParameter("alias", "alias"),
+						new StringParameter("target", "target")
+					],
+					$editPerm,
+					fn(CommandSender $sender, string $alias, string $target) => self::createAlias($sender, $alias, $target, $global)
+				)
+				->executor(
+					[
+						"delete",
+						new StringParameter("alias", "alias")
+					],
+					$editPerm,
+					fn(CommandSender $sender, string $alias) => self::deleteAlias($sender, $alias, $global)
+				)
+				->executor(
+					["list"],
+					self::LIST_PERM,
+					fn(CommandSender $sender) => self::listAliases($sender, $global)
+				)
+			);
 		}
-		$parsedArgs = $args;
+		return new Command(
+			$namespace,
+			$name,
+			$builder->build(),
+			KnownTranslationFactory::pocketmine_command_cmdalias_description(),
+		);
+	}
+
+	private static function createAlias(CommandSender $sender, string $alias, string $target, bool $global) : void{
 		$commandMap = $sender->getServer()->getCommandMap();
-		if($parsedArgs[0] === "global"){
-			$editPermission = self::GLOBAL_PERM;
-			$permissionCtx = $commandLabel . " global";
-			array_shift($parsedArgs);
+		if($global){
 			$aliasMap = $commandMap->getAliasMap();
 			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_global());
 			$auditLog = true;
 		}else{
-			$editPermission = self::SELF_PERM;
-			$permissionCtx = $commandLabel;
 			$aliasMap = $sender->getCommandAliasMap();
 			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_userSpecific());
 			$auditLog = false;
 		}
-		$operation = array_shift($parsedArgs);
 
-		if($operation === "create"){
-			if(count($parsedArgs) !== 2){
-				throw new InvalidCommandSyntaxException();
-			}
-			if(!$this->testPermission($permissionCtx, $sender, $editPermission)){
-				return true;
-			}
+		$command = $commandMap->getCommand($target, $sender->getCommandAliasMap());
+		if($command === null){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound(
+				"/$target",
+				"/" . $sender->getCommandAliasMap()->getPreferredAlias("pocketmine:help", $sender->getServer()->getCommandMap()->getAliasMap())
+			)->prefix(TextFormat::RED));
+			return;
+		}
+		if(is_array($command)){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflict("/$target", implode(", ", array_map(fn(Command $c) => "/" . $c->getId(), $command)))->prefix(TextFormat::RED));
+			return;
+		}
+		$aliasMap->bindAlias($command->getId(), $alias, override: true);
+		$message = $messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_create_success("/$alias", "/" . $command->getId()));
+		if($auditLog){
+			Command::broadcastCommandMessage($sender, $message);
+		}else{
+			$sender->sendMessage($message);
+		}
+	}
 
-			[$alias, $target] = $parsedArgs;
-			$command = $commandMap->getCommand($target, $sender->getCommandAliasMap());
-			if($command === null){
-				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound(
-					"/$target",
-					"/" . $sender->getCommandAliasMap()->getPreferredAlias("pocketmine:help", $sender->getServer()->getCommandMap()->getAliasMap())
-				)->prefix(TextFormat::RED));
-				return true;
-			}
-			if(is_array($command)){
-				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_aliasConflict("/$target", implode(", ", array_map(fn(Command $c) => "/" . $c->getId(), $command)))->prefix(TextFormat::RED));
-				return true;
-			}
-			$aliasMap->bindAlias($command->getId(), $alias, override: true);
-			$message = $messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_create_success("/$alias", "/" . $command->getId()));
+	private static function deleteAlias(CommandSender $sender, string $alias, bool $global) : void{
+		$commandMap = $sender->getServer()->getCommandMap();
+		if($global){
+			$aliasMap = $commandMap->getAliasMap();
+			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_global());
+			$auditLog = true;
+		}else{
+			$aliasMap = $sender->getCommandAliasMap();
+			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_userSpecific());
+			$auditLog = false;
+		}
+		if($aliasMap->unbindAlias($alias)){
+			$message = $messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_delete_success("/$alias"));
 			if($auditLog){
 				Command::broadcastCommandMessage($sender, $message);
 			}else{
 				$sender->sendMessage($message);
 			}
-			return true;
+		}else{
+			$sender->sendMessage($messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_delete_notFound("/$alias"))->prefix(TextFormat::RED));
 		}
-		if($operation === "delete"){
-			if(count($parsedArgs) !== 1){
-				throw new InvalidCommandSyntaxException();
-			}
-			if(!$this->testPermission($permissionCtx, $sender, $editPermission)){
-				return true;
-			}
+	}
 
-			$alias = $parsedArgs[0];
-
-			if($aliasMap->unbindAlias($alias)){
-				$message = $messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_delete_success("/$alias"));
-				if($auditLog){
-					Command::broadcastCommandMessage($sender, $message);
-				}else{
-					$sender->sendMessage($message);
-				}
+	private static function listAliases(CommandSender $sender, bool $global) : void{
+		if($global){
+			$aliasMap = $sender->getServer()->getCommandMap()->getAliasMap();
+			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_global());
+		}else{
+			$aliasMap = $sender->getCommandAliasMap();
+			$messageScope = fn(Translatable $t) => KnownTranslationFactory::pocketmine_command_cmdalias_template($t, KnownTranslationFactory::pocketmine_command_cmdalias_scope_userSpecific());
+		}
+		$allAliases = $aliasMap->getAllAliases();
+		if(count($allAliases) === 0){
+			$sender->sendMessage($messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_list_noneSet())->prefix(TextFormat::RED));
+			return;
+		}
+		ksort($allAliases);
+		foreach(Utils::promoteKeys($allAliases) as $alias => $commandIds){
+			if(is_array($commandIds)){
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_cmdalias_list_conflicted(
+					TextFormat::RED . "/$alias" . TextFormat::RESET,
+					implode(", ", array_map(fn(string $c) => TextFormat::RED . "/$c" . TextFormat::RESET, $commandIds))
+				));
 			}else{
-				$sender->sendMessage($messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_delete_notFound("/$alias"))->prefix(TextFormat::RED));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_cmdalias_list_normal(
+					TextFormat::DARK_GREEN . "/$alias" . TextFormat::RESET,
+					TextFormat::DARK_GREEN . "/$commandIds" . TextFormat::RESET
+				));
 			}
-			return true;
 		}
-		if($operation === "list"){
-			if(count($parsedArgs) !== 0){
-				throw new InvalidCommandSyntaxException();
-			}
-			if(!$this->testPermission($permissionCtx, $sender, self::LIST_PERM)){
-				return true;
-			}
-			$allAliases = $aliasMap->getAllAliases();
-			if(count($allAliases) === 0){
-				$sender->sendMessage($messageScope(KnownTranslationFactory::pocketmine_command_cmdalias_list_noneSet())->prefix(TextFormat::RED));
-				return true;
-			}
-			ksort($allAliases);
-			foreach(Utils::promoteKeys($allAliases) as $alias => $commandIds){
-				if(is_array($commandIds)){
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_cmdalias_list_conflicted(
-						TextFormat::RED . "/$alias" . TextFormat::RESET,
-						implode(", ", array_map(fn(string $c) => TextFormat::RED . "/$c" . TextFormat::RESET, $commandIds))
-					));
-				}else{
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_cmdalias_list_normal(
-						TextFormat::DARK_GREEN . "/$alias" . TextFormat::RESET,
-						TextFormat::DARK_GREEN . "/$commandIds" . TextFormat::RESET
-					));
-				}
-			}
-			return true;
-		}
-
-		throw new InvalidCommandSyntaxException();
 	}
 }

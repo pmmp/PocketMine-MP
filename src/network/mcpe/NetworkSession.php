@@ -26,6 +26,11 @@ namespace pocketmine\network\mcpe;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
 use pmmp\encoding\DataDecodeException;
+use pocketmine\command\overload\FloatRangeParameter;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\RawParameter;
+use pocketmine\command\overload\RelativeFloatParameter;
+use pocketmine\command\overload\RelativeXYZParameter;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerResourcePackOfferEvent;
@@ -57,7 +62,6 @@ use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
-use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -92,6 +96,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandHardEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameterTypes;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
@@ -1134,8 +1139,12 @@ class NetworkSession{
 		$commandData = [];
 		$globalAliasMap = $this->server->getCommandMap()->getAliasMap();
 		$userAliasMap = $this->player->getCommandAliasMap();
+		$language = $this->player->getLanguage();
+
+		$literals = [];
 		foreach($this->server->getCommandMap()->getUniqueCommands() as $command){
-			if(!$command->testPermissionSilent($this->player)){
+			$overloads = $command->getPermittedOverloads($this->player);
+			if(count($overloads) === 0){
 				continue;
 			}
 
@@ -1149,18 +1158,57 @@ class NetworkSession{
 			//use filtered aliases for command name discovery - this allows /help to still be shown as /pocketmine:help
 			//on the client without conflicting with the client's built-in /help command
 			$lname = strtolower($firstNetworkAlias);
-			$aliasObj = new CommandHardEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases);
+			$aliasObj = count($aliases) > 1 ? new CommandHardEnum(ucfirst($firstNetworkAlias) . "Aliases", $aliases) : null;
+
+			$overloadData = [];
+			foreach($overloads as $overload){
+				$parameters = [];
+				$required = $overload->getRequiredParameterCount();
+				foreach($overload->getParameters() as $k => $parameter){
+					if(is_string($parameter)){
+						$literalEnum = $literals[$parameter] ??= new CommandHardEnum("Literal_$parameter", [$parameter]);
+						$parameters[] = CommandParameter::enum(
+							$parameter,
+							$literalEnum,
+							flags: CommandParameter::FLAG_FORCE_COLLAPSE_ENUM,
+							optional: $k >= $required
+						);
+					}else{
+						$simpleArgType = match(true){
+							$parameter instanceof FloatRangeParameter => CommandParameterTypes::VAL,
+							$parameter instanceof IntRangeParameter => CommandParameterTypes::INT,
+							$parameter instanceof RawParameter => CommandParameterTypes::RAWTEXT,
+							$parameter instanceof RelativeFloatParameter => CommandParameterTypes::RVAL,
+							$parameter instanceof RelativeXYZParameter => CommandParameterTypes::POSITION_FLOAT,
+							default => CommandParameterTypes::ID //string
+						};
+						$suffix = $parameter->getSuffix();
+						$name = $parameter->getPrintableName();
+						$translated = $name instanceof Translatable ? $language->translate($name) : $name;
+						if($suffix !== ""){
+							//umm... client only allows suffixes on integer params???
+							//TODO: as of 1.21.111, the client crashes if we try to provide actual suffixes for /xp.
+							//The cause for this seems to be undefined behaviour on the client linked to the order and
+							//number of certain hardcoded enums like GameMode, IntParam etc which we don't provide. I
+							//wasn't able to make a reliable workaround, so this gets disabled for now. SAD!
+							//$parameters[] = CommandParameter::postfixed($translated, strtolower($suffix), optional: $k >= $required);
+							$parameters[] = CommandParameter::standard($translated, CommandParameterTypes::ID, optional: $k >= $required);
+						}else{
+							$parameters[] = CommandParameter::standard($translated, $simpleArgType, optional: $k >= $required);
+						}
+					}
+				}
+				$overloadData[] = new CommandOverload(chaining: false, parameters: $parameters);
+			}
 
 			$description = $command->getDescription();
 			$data = new CommandData(
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
-				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
+				$description instanceof Translatable ? $language->translate($description) : $description,
 				0,
 				CommandPermissions::NORMAL,
 				$aliasObj,
-				[
-					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
-				],
+				$overloadData,
 				chainedSubCommandData: []
 			);
 

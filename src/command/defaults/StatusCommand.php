@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationFactory as l10n;
 use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
@@ -36,15 +39,18 @@ use function number_format;
 use function round;
 use function strval;
 
-class StatusCommand extends VanillaCommand{
+final class StatusCommand{
+	private function __construct(){
+		//NOOP
+	}
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
 			$namespace,
 			$name,
-			l10n::pocketmine_command_status_description()
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_STATUS, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_status_description()
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
 	}
 
 	private static function send(CommandSender $sender, Translatable $message) : void{
@@ -64,7 +70,7 @@ class StatusCommand extends VanillaCommand{
 		return l10n::pocketmine_command_status_memory_stat(number_format(round(($bytes / 1024) / 1024, 2), 2))->prefix(TextFormat::RED);
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	private static function execute(CommandSender $sender) : void{
 		$mUsage = Process::getAdvancedMemoryUsage();
 
 		$server = $sender->getServer();
@@ -129,7 +135,5 @@ class StatusCommand extends VanillaCommand{
 				l10n::pocketmine_command_status_world_timeStat(strval(round($world->getTickRateTime(), 2)))->prefix($timeColor)
 			));
 		}
-
-		return true;
 	}
 }

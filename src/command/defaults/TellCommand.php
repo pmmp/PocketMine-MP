@@ -25,41 +25,40 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RawParameter;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function array_shift;
-use function count;
-use function implode;
 
-class TellCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_tell_description(),
-			KnownTranslationFactory::commands_message_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TELL);
+final class TellCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 2){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("recipientName", "recipient player"),
+				new RawParameter("message", "message")
+			], DefaultPermissionNames::COMMAND_TELL, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_tell_description(),
+		);
+	}
 
-		$player = $sender->getServer()->getPlayerByPrefix(array_shift($args));
+	private static function execute(CommandSender $sender, string $recipientName, string $message) : void{
+		$player = $sender->getServer()->getPlayerByPrefix($recipientName);
 
 		if($player === $sender){
 			$sender->sendMessage(KnownTranslationFactory::commands_message_sameTarget()->prefix(TextFormat::RED));
-			return true;
+			return;
 		}
 
 		if($player instanceof Player){
-			$message = implode(" ", $args);
 			$sender->sendMessage(KnownTranslationFactory::commands_message_display_outgoing($player->getDisplayName(), $message)->prefix(TextFormat::GRAY . TextFormat::ITALIC));
 			$name = $sender instanceof Player ? $sender->getDisplayName() : $sender->getName();
 			$player->sendMessage(KnownTranslationFactory::commands_message_display_incoming($name, $message)->prefix(TextFormat::GRAY . TextFormat::ITALIC));
@@ -67,7 +66,5 @@ class TellCommand extends VanillaCommand{
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
 		}
-
-		return true;
 	}
 }

@@ -23,37 +23,36 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RawParameter;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function count;
-use function implode;
 
-class SayCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_say_description(),
-			KnownTranslationFactory::commands_say_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SAY);
+final class SayCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) === 0){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new RawParameter("message", "message")
+			], DefaultPermissionNames::COMMAND_SAY, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_say_description(),
+		);
+	}
 
+	private static function execute(CommandSender $sender, string $message) : void{
 		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_announcement(
 			$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
-			implode(" ", $args)
+			$message
 		)->prefix(TextFormat::LIGHT_PURPLE));
-		return true;
 	}
 }

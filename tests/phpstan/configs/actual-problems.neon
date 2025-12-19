@@ -787,7 +787,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: '#^Parameter \#1 \$target of method pocketmine\\command\\Command\:\:testPermissionSilent\(\) expects pocketmine\\command\\CommandSender, pocketmine\\player\\Player\|null given\.$#'
+			message: '#^Parameter \#1 \$sender of method pocketmine\\command\\Command\:\:getPermittedOverloads\(\) expects pocketmine\\command\\CommandSender, pocketmine\\player\\Player\|null given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php

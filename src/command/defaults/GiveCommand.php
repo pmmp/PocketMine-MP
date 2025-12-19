@@ -25,7 +25,11 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\ParameterParseException;
+use pocketmine\command\overload\RawParameter;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
@@ -34,67 +38,58 @@ use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
 use pocketmine\permission\DefaultPermissionNames;
-use pocketmine\utils\TextFormat;
-use function array_slice;
-use function count;
-use function implode;
 
-class GiveCommand extends VanillaCommand{
+final class GiveCommand{
 
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_give_description(),
-			KnownTranslationFactory::pocketmine_command_give_usage()
-		);
-		$this->setPermissions([
-			DefaultPermissionNames::COMMAND_GIVE_SELF,
-			DefaultPermissionNames::COMMAND_GIVE_OTHER
-		]);
+	private const string SELF_PERM = DefaultPermissionNames::COMMAND_GIVE_SELF;
+	private const string OTHER_PERM = DefaultPermissionNames::COMMAND_GIVE_OTHER;
+
+	private const OVERLOAD_PERMS = [self::SELF_PERM, self::OTHER_PERM];
+
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 2){
-			throw new InvalidCommandSyntaxException();
-		}
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("target", "target"),
+				new StringParameter("itemName", "item"),
+				new IntRangeParameter("count", "count", 1, 32767),
+				new RawParameter("nbt", "nbt")
+			], self::OVERLOAD_PERMS, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_give_description(),
+		);
+	}
 
-		$player = $this->fetchPermittedPlayerTarget($commandLabel, $sender, $args[0], DefaultPermissionNames::COMMAND_GIVE_SELF, DefaultPermissionNames::COMMAND_GIVE_OTHER);
+	private static function execute(CommandSender $sender, string $target, string $itemName, ?int $count = null, ?string $nbt = null) : void{
+		$player = Command::fetchPermittedPlayerTarget($sender, $target, self::SELF_PERM, self::OTHER_PERM);
 		if($player === null){
-			return true;
+			return;
 		}
 
 		try{
-			$item = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
-		}catch(LegacyStringToItemParserException $e){
-			$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
-			return true;
+			$item = StringToItemParser::getInstance()->parse($itemName) ?? LegacyStringToItemParser::getInstance()->parse($itemName);
+		}catch(LegacyStringToItemParserException){
+			throw new ParameterParseException("Invalid item name $itemName");
 		}
+		$item->setCount($count ?? $item->getMaxStackSize());
 
-		if(!isset($args[2])){
-			$item->setCount($item->getMaxStackSize());
-		}else{
-			$count = $this->getBoundedInt($sender, $args[2], 1, 32767);
-			if($count === null){
-				return true;
-			}
-			$item->setCount($count);
-		}
-
-		if(isset($args[3])){
-			$data = implode(" ", array_slice($args, 3));
+		if($nbt !== null){
 			try{
-				$tags = JsonNbtParser::parseJson($data);
+				$tags = JsonNbtParser::parseJson($nbt);
 			}catch(NbtDataException $e){
 				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
-				return true;
+				return;
 			}
 
 			try{
 				$item->setNamedTag($tags);
 			}catch(NbtException $e){
 				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
-				return true;
+				return;
 			}
 		}
 
@@ -102,10 +97,9 @@ class GiveCommand extends VanillaCommand{
 		$player->getInventory()->addItem($item);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_give_success(
-			$item->getName() . " (" . $args[1] . ")",
+			$item->getName() . " ($itemName)",
 			(string) $item->getCount(),
 			$player->getName()
 		));
-		return true;
 	}
 }

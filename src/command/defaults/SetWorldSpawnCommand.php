@@ -25,59 +25,60 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\RelativeXYZ;
+use pocketmine\command\overload\RelativeXYZParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use pocketmine\world\World;
-use function count;
 
-class SetWorldSpawnCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_setworldspawn_description(),
-			KnownTranslationFactory::commands_setworldspawn_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN);
+final class SetWorldSpawnCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) === 0){
-			if($sender instanceof Player){
-				$location = $sender->getPosition();
-				$world = $location->getWorld();
-				$pos = $location->asVector3()->floor();
-			}else{
-				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::make()
+				->executor([], DefaultPermissionNames::COMMAND_SETWORLDSPAWN, self::setSpawnHere(...))
+				->executor([
+					new RelativeXYZParameter("coordinates", "coordinates"),
+				], DefaultPermissionNames::COMMAND_SETWORLDSPAWN, self::setSpawnCoordinates(...))
+				->build(),
+			KnownTranslationFactory::pocketmine_command_setworldspawn_description()
+		);
+	}
 
-				return true;
-			}
-		}elseif(count($args) === 3){
-			if($sender instanceof Player){
-				$base = $sender->getPosition();
-				$world = $base->getWorld();
-			}else{
-				$base = new Vector3(0.0, 0.0, 0.0);
-				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
-			}
-			$pos = (new Vector3(
-				$this->getRelativeDouble($base->x, $sender, $args[0]),
-				$this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX),
-				$this->getRelativeDouble($base->z, $sender, $args[2]),
-			))->floor();
-		}else{
-			throw new InvalidCommandSyntaxException();
+	private static function setSpawnHere(CommandSender $sender) : void{
+		if(!$sender instanceof Player){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
+			return;
 		}
+		$location = $sender->getPosition();
+		$world = $location->getWorld();
+		$pos = $location->asVector3()->floor();
 
 		$world->setSpawnLocation($pos);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) $pos->x, (string) $pos->y, (string) $pos->z));
+	}
 
-		return true;
+	private static function setSpawnCoordinates(CommandSender $sender, RelativeXYZ $coordinates) : void{
+		if($sender instanceof Player){
+			$base = $sender->getPosition();
+			$world = $base->getWorld();
+		}else{
+			$base = new Vector3(0.0, 0.0, 0.0);
+			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
+		}
+		$pos = $coordinates->resolve($base)->floor();
+
+		$world->setSpawnLocation($pos);
+
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) $pos->x, (string) $pos->y, (string) $pos->z));
 	}
 }

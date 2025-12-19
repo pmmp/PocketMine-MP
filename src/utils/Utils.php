@@ -559,9 +559,9 @@ final class Utils{
 	 * @phpstan-param anyClosure $signature
 	 * @phpstan-param anyClosure $subject
 	 */
-	public static function validateCallableSignature(Prototype|\Closure $signature, \Closure $subject) : void{
+	public static function validateCallableSignature(Prototype|\Closure $signature, Prototype|\Closure $subject) : void{
 		$signaturePrototype = $signature instanceof Prototype ? $signature : Prototype::fromClosure($signature);
-		$subjectPrototype = Prototype::fromClosure($subject);
+		$subjectPrototype = $subject instanceof Prototype ? $subject : Prototype::fromClosure($subject);
 		if(!$signaturePrototype->isSatisfiedBy($subjectPrototype)){
 			throw new \TypeError("Declaration of callable `$subjectPrototype` must be compatible with `$signaturePrototype`");
 		}

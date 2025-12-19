@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\command\overload\OverloadBuilder;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -34,18 +36,21 @@ use function implode;
 use function sort;
 use const SORT_STRING;
 
-class ListCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_list_description()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);
+final class ListCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([], DefaultPermissionNames::COMMAND_LIST, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_list_description()
+		);
+	}
+
+	private static function execute(CommandSender $sender) : void{
 		$playerNames = array_map(function(Player $player) : string{
 			return $player->getName();
 		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender) : bool{
@@ -55,7 +60,5 @@ class ListCommand extends VanillaCommand{
 
 		$sender->sendMessage(KnownTranslationFactory::commands_players_list((string) count($playerNames), (string) $sender->getServer()->getMaxPlayers()));
 		$sender->sendMessage(implode(", ", $playerNames));
-
-		return true;
 	}
 }

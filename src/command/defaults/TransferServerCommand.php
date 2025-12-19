@@ -23,37 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\command\overload\IntRangeParameter;
+use pocketmine\command\overload\OverloadBuilder;
+use pocketmine\command\overload\StringParameter;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function count;
 
-class TransferServerCommand extends VanillaCommand{
-
-	public function __construct(string $namespace, string $name){
-		parent::__construct(
-			$namespace,
-			$name,
-			KnownTranslationFactory::pocketmine_command_transferserver_description(),
-			KnownTranslationFactory::pocketmine_command_transferserver_usage()
-		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TRANSFERSERVER);
+final class TransferServerCommand{
+	private function __construct(){
+		//NOOP
 	}
 
-	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(count($args) < 1){
-			throw new InvalidCommandSyntaxException();
-		}elseif(!($sender instanceof Player)){
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
+	public static function create(string $namespace, string $name) : Command{
+		return new Command(
+			$namespace,
+			$name,
+			OverloadBuilder::single([
+				new StringParameter("serverAddress", "server address"),
+				new IntRangeParameter("serverPort", "server port", 1, 65535)
+			], DefaultPermissionNames::COMMAND_TRANSFERSERVER, self::execute(...)),
+			KnownTranslationFactory::pocketmine_command_transferserver_description()
+		);
+	}
 
-			return false;
+	private static function execute(CommandSender $sender, string $serverAddress, int $serverPort = 19132) : void{
+		if(!($sender instanceof Player)){
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
+			return;
 		}
 
-		$sender->transfer($args[0], (int) ($args[1] ?? 19132));
-
-		return true;
+		$sender->transfer($serverAddress, $serverPort);
 	}
 }

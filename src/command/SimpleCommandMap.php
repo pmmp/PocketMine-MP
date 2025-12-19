@@ -66,8 +66,8 @@ use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\defaults\XpCommand;
 use pocketmine\command\utils\CommandStringHelper;
-use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
@@ -76,9 +76,11 @@ use function array_filter;
 use function array_map;
 use function array_shift;
 use function count;
+use function explode;
 use function implode;
 use function is_array;
 use function is_string;
+use function ltrim;
 use function str_contains;
 use function strcasecmp;
 use function strtolower;
@@ -101,52 +103,52 @@ class SimpleCommandMap implements CommandMap{
 
 	private function setDefaultCommands() : void{
 		$pmPrefix = "pocketmine";
-		$this->register(new BanCommand($pmPrefix, "ban"));
-		$this->register(new BanIpCommand($pmPrefix, "ban-ip"));
-		$this->register(new BanListCommand($pmPrefix, "banlist"));
-		$this->register(new ClearCommand($pmPrefix, "clear"));
-		$this->register(new CommandAliasCommand($pmPrefix, "cmdalias"));
-		$this->register(new DefaultGamemodeCommand($pmPrefix, "defaultgamemode"));
-		$this->register(new DeopCommand($pmPrefix, "deop"));
-		$this->register(new DifficultyCommand($pmPrefix, "difficulty"));
-		$this->register(new DumpMemoryCommand($pmPrefix, "dumpmemory"));
-		$this->register(new EffectCommand($pmPrefix, "effect"));
-		$this->register(new EnchantCommand($pmPrefix, "enchant"));
-		$this->register(new GamemodeCommand($pmPrefix, "gamemode"));
-		$this->register(new GarbageCollectorCommand($pmPrefix, "gc"));
-		$this->register(new GiveCommand($pmPrefix, "give"));
-		$this->register(new HelpCommand($pmPrefix, "help"), ["?"]);
-		$this->register(new KickCommand($pmPrefix, "kick"));
-		$this->register(new KillCommand($pmPrefix, "kill"), ["suicide"]);
-		$this->register(new ListCommand($pmPrefix, "list"));
-		$this->register(new MeCommand($pmPrefix, "me"));
-		$this->register(new OpCommand($pmPrefix, "op"));
-		$this->register(new PardonCommand($pmPrefix, "pardon"), ["unban"]);
-		$this->register(new PardonIpCommand($pmPrefix, "pardon-ip"), ["unban-ip"]);
-		$this->register(new ParticleCommand($pmPrefix, "particle"));
-		$this->register(new PluginsCommand($pmPrefix, "plugins"), ["pl"]);
-		$this->register(new SaveCommand($pmPrefix, "save-all"));
-		$this->register(new SaveOffCommand($pmPrefix, "save-off"));
-		$this->register(new SaveOnCommand($pmPrefix, "save-on"));
-		$this->register(new SayCommand($pmPrefix, "say"));
-		$this->register(new SeedCommand($pmPrefix, "seed"));
-		$this->register(new SetWorldSpawnCommand($pmPrefix, "setworldspawn"));
-		$this->register(new SpawnpointCommand($pmPrefix, "spawnpoint"));
-		$this->register(new StatusCommand($pmPrefix, "status"));
-		$this->register(new StopCommand($pmPrefix, "stop"));
-		$this->register(new TeleportCommand($pmPrefix, "tp"), ["teleport"]);
-		$this->register(new TellCommand($pmPrefix, "tell"), ["w", "msg"]);
-		$this->register(new TimeCommand($pmPrefix, "time"));
-		$this->register(new TimingsCommand($pmPrefix, "timings"));
-		$this->register(new TitleCommand($pmPrefix, "title"));
-		$this->register(new TransferServerCommand($pmPrefix, "transferserver"));
-		$this->register(new VersionCommand($pmPrefix, "version"), ["ver", "about"]);
-		$this->register(new WhitelistCommand($pmPrefix, "whitelist"));
-		$this->register(new XpCommand($pmPrefix, "xp"));
+		$this->register(BanCommand::create($pmPrefix, "ban"));
+		$this->register(BanIpCommand::create($pmPrefix, "ban-ip"));
+		$this->register(BanListCommand::create($pmPrefix, "banlist"));
+		$this->register(ClearCommand::create($pmPrefix, "clear"));
+		$this->register(CommandAliasCommand::create($pmPrefix, "cmdalias"));
+		$this->register(DefaultGamemodeCommand::create($pmPrefix, "defaultgamemode"));
+		$this->register(DeopCommand::create($pmPrefix, "deop"));
+		$this->register(DifficultyCommand::create($pmPrefix, "difficulty"));
+		$this->register(DumpMemoryCommand::create($pmPrefix, "dumpmemory"));
+		$this->register(EffectCommand::create($pmPrefix, "effect"));
+		$this->register(EnchantCommand::create($pmPrefix, "enchant"));
+		$this->register(GamemodeCommand::create($pmPrefix, "gamemode"));
+		$this->register(GarbageCollectorCommand::create($pmPrefix, "gc"));
+		$this->register(GiveCommand::create($pmPrefix, "give"));
+		$this->register(HelpCommand::create($pmPrefix, "help"), ["?"]);
+		$this->register(KickCommand::create($pmPrefix, "kick"));
+		$this->register(KillCommand::create($pmPrefix, "kill"), ["suicide"]);
+		$this->register(ListCommand::create($pmPrefix, "list"));
+		$this->register(MeCommand::create($pmPrefix, "me"));
+		$this->register(OpCommand::create($pmPrefix, "op"));
+		$this->register(PardonCommand::create($pmPrefix, "pardon"), ["unban"]);
+		$this->register(PardonIpCommand::create($pmPrefix, "pardon-ip"), ["unban-ip"]);
+		$this->register(ParticleCommand::create($pmPrefix, "particle"));
+		$this->register(PluginsCommand::create($pmPrefix, "plugins"), ["pl"]);
+		$this->register(SaveCommand::create($pmPrefix, "save-all"));
+		$this->register(SaveOffCommand::create($pmPrefix, "save-off"));
+		$this->register(SaveOnCommand::create($pmPrefix, "save-on"));
+		$this->register(SayCommand::create($pmPrefix, "say"));
+		$this->register(SeedCommand::create($pmPrefix, "seed"));
+		$this->register(SetWorldSpawnCommand::create($pmPrefix, "setworldspawn"));
+		$this->register(SpawnpointCommand::create($pmPrefix, "spawnpoint"));
+		$this->register(StatusCommand::create($pmPrefix, "status"));
+		$this->register(StopCommand::create($pmPrefix, "stop"));
+		$this->register(TeleportCommand::create($pmPrefix, "tp"), ["teleport"]);
+		$this->register(TellCommand::create($pmPrefix, "tell"), ["w", "msg"]);
+		$this->register(TimeCommand::create($pmPrefix, "time"));
+		$this->register(TimingsCommand::create($pmPrefix, "timings"));
+		$this->register(TitleCommand::create($pmPrefix, "title"));
+		$this->register(TransferServerCommand::create($pmPrefix, "transferserver"));
+		$this->register(VersionCommand::create($pmPrefix, "version"), ["ver", "about"]);
+		$this->register(WhitelistCommand::create($pmPrefix, "whitelist"));
+		$this->register(XpCommand::create($pmPrefix, "xp"));
 	}
 
 	public function register(Command $command, array $otherAliases = []) : void{
-		if(count($command->getPermissions()) === 0){
+		if($command instanceof LegacyCommand && count($command->getPermissions()) === 0){
 			throw new \InvalidArgumentException("Commands must have a permission set");
 		}
 
@@ -172,10 +174,10 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
-		$args = CommandStringHelper::parseQuoteAware($commandLine);
+		$parts = explode(" ", ltrim($commandLine), limit: 2);
+		[$sentCommandLabel, $rawArgs] = count($parts) === 2 ? $parts : [$parts[0], ""];
 
-		$sentCommandLabel = array_shift($args);
-		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
+		if(($target = $this->getCommand($sentCommandLabel, $sender->getCommandAliasMap())) !== null){
 			if(is_array($target)){
 				self::handleConflicted($sender, $sentCommandLabel, $target, $this->aliasMap);
 				return true;
@@ -184,12 +186,7 @@ class SimpleCommandMap implements CommandMap{
 			$timings->startTiming();
 
 			try{
-				if($target->testPermission($sentCommandLabel, $sender)){
-					$target->execute($sender, $sentCommandLabel, $args);
-				}
-			}catch(InvalidCommandSyntaxException $e){
-				//TODO: localised command message should use user-provided alias, it shouldn't be hard-baked into the language strings
-				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage() ?? "/$sentCommandLabel")));
+				$target->executeOverloaded($sender, $sentCommandLabel, $rawArgs);
 			}finally{
 				$timings->stopTiming();
 			}
@@ -198,7 +195,7 @@ class SimpleCommandMap implements CommandMap{
 
 		//Don't love hardcoding the command ID here, but it seems like the only way for now
 		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound(
-			$sentCommandLabel ?? "",
+			$sentCommandLabel,
 			"/" . $sender->getCommandAliasMap()->getPreferredAlias("pocketmine:help", $this->aliasMap)
 		)->prefix(TextFormat::RED));
 		return false;
@@ -214,7 +211,7 @@ class SimpleCommandMap implements CommandMap{
 		$candidates = [];
 		$userAliasMap = $sender->getCommandAliasMap();
 		foreach($conflictedEntries as $c){
-			if($c->testPermissionSilent($sender)){
+			if(count($c->getPermittedOverloads($sender)) > 0){
 				$candidates[] = "/" . $c->getId();
 			}
 		}
@@ -309,9 +306,12 @@ class SimpleCommandMap implements CommandMap{
 			//These registered commands have absolute priority
 			$lowerAlias = strtolower($alias);
 			if(count($targets) > 0){
-				$aliasInstance = new FormattedCommandAlias("pocketmine-config-defined", $lowerAlias, $targets);
+				//TODO: HACK HACK HACK - We really should declare permissions for each custom command declared
+				//Previously we just weren't declaring a permission at all, but that's no longer possible with the new overload system
+				$aliasInstance = FormattedCommandAlias::create("pocketmine-config-defined", $lowerAlias, DefaultPermissionNames::GROUP_USER, $targets);
+
+				$this->register($aliasInstance);
 				$this->aliasMap->bindAlias($aliasInstance->getId(), $lowerAlias, override: true);
-				$this->uniqueCommands[$aliasInstance->getId()] = $aliasInstance;
 			}else{
 				//no targets blackholes the alias - this allows config to delete unwanted aliases
 				$this->aliasMap->unbindAlias($lowerAlias);
