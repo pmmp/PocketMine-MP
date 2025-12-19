@@ -84,7 +84,7 @@ final class VanillaEnchantments{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
 		if(self::$initialized){
-			throw new \LogicException(self::class . " is already being initialized - circular non-delayed registry member dependency?");
+			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
 		self::$initialized = true;
 		$source = new VanillaEnchantmentsInputs();
