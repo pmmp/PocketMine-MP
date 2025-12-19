@@ -44,11 +44,25 @@ abstract class RegistrySource{
 	 */
 	private array $delayedMembers = [];
 
+	private static ?string $inSetupClass = null;
+
 	final public function __construct(){
 		//NOOP
 	}
 
 	abstract public function getTargetClassName() : string;
+
+	private function setupWrapper() : void{
+		if(self::$inSetupClass !== null){
+			throw new \LogicException("Registry source class " . self::$inSetupClass . " tried to reference a member of registry " . $this->getTargetClassName() . " without using registerDelayed()");
+		}
+		self::$inSetupClass = static::class;
+		try{
+			$this->setup();
+		}finally{
+			self::$inSetupClass = null;
+		}
+	}
 
 	abstract protected function setup() : void;
 
@@ -105,7 +119,7 @@ abstract class RegistrySource{
 	 * @phpstan-return \Generator<string, TMember, void, void>
 	 */
 	final public function getAllValues() : \Generator{
-		$this->setup();
+		$this->setupWrapper();
 		yield from $this->simpleMembers;
 		foreach(Utils::stringifyKeys($this->delayedMembers) as $name => $callback){
 			yield $name => $callback($name);
@@ -117,7 +131,7 @@ abstract class RegistrySource{
 	 * @phpstan-return array<string, list<string>>
 	 */
 	final public function getAllDeclarations() : array{
-		$this->setup();
+		$this->setupWrapper();
 		$memberTypes = [];
 		foreach(Utils::stringifyKeys($this->simpleMembers) as $name => $value){
 			$reflect = new \ReflectionClass($value);
