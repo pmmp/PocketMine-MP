@@ -16,20 +16,16 @@ v4まで可能だった `Block` クラスの継承による動作変更が、以
 ## 解決アプローチ
 プラグインレベルでの制限を回避するため、PocketMine-MPのソースコード自体を直接修正し、必要な機能を組み込んだカスタムビルドを作成しています。
 
-## ブランチ戦略
-
-### ブランチ構成
+## ブランチ構成と役割
 ```
 stable (アップストリーム同期専用)
 └── upstream pmmp/PocketMine-MP tracking
 ```
-
-### ブランチの役割
 - **customize**: 統合・リリース用メインブランチ。全ての機能がマージされ、自動ビルドが実行される
 - **stable**: 公式 `pmmp/PocketMine-MP` の最新版を追跡する同期専用ブランチ
 - **customize/feature/***: 個別機能の開発ブランチ
 
-### 開発者向け
+## 開発者向け
 ```bash
 # リポジトリクローン
 git clone https://github.com/YOUR_USERNAME/PocketMine-MP.git
