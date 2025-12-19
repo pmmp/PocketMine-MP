@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\utils\AssumptionFailedError;
+use function array_keys;
 use function array_map;
+use function count;
+use function implode;
 use function mb_strtoupper;
 
 /**
@@ -1650,7 +1652,7 @@ final class VanillaBlocks{
 			self::unsafeAssign($assigner, $value);
 		}
 		if(count($assigners) > 0){
-			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", \array_keys($assigners)));
+			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", array_keys($assigners)));
 		}
 	}
 
