@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\utils\Utils;
+use pocketmine\utils\AssumptionFailedError;
 use function array_map;
 use function mb_strtoupper;
 
@@ -819,6 +819,8 @@ final class VanillaBlocks{
 	 */
 	private static array $members;
 
+	private static bool $initialized = false;
+
 	private function __construct(){
 		//NOOP
 	}
@@ -838,790 +840,796 @@ final class VanillaBlocks{
 	private static function init() : void{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
-		$values = VanillaBlocksInputs::getAll();
-		foreach(Utils::stringifyKeys($values) as $name => $value){
-			self::$members[mb_strtoupper($name)] = $value;
+		if(self::$initialized){
+			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
-
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mACACIA_BUTTON = $v, $values["acacia_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mACACIA_CEILING_CENTER_HANGING_SIGN = $v, $values["acacia_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mACACIA_CEILING_EDGES_HANGING_SIGN = $v, $values["acacia_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mACACIA_DOOR = $v, $values["acacia_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mACACIA_FENCE = $v, $values["acacia_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mACACIA_FENCE_GATE = $v, $values["acacia_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mACACIA_LEAVES = $v, $values["acacia_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mACACIA_LOG = $v, $values["acacia_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mACACIA_PLANKS = $v, $values["acacia_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mACACIA_PRESSURE_PLATE = $v, $values["acacia_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mACACIA_SAPLING = $v, $values["acacia_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mACACIA_SIGN = $v, $values["acacia_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mACACIA_SLAB = $v, $values["acacia_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mACACIA_STAIRS = $v, $values["acacia_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mACACIA_TRAPDOOR = $v, $values["acacia_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mACACIA_WALL_HANGING_SIGN = $v, $values["acacia_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mACACIA_WALL_SIGN = $v, $values["acacia_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mACACIA_WOOD = $v, $values["acacia_wood"]);
-		self::unsafeAssign(fn(ActivatorRail $v) => self::$_mACTIVATOR_RAIL = $v, $values["activator_rail"]);
-		self::unsafeAssign(fn(Air $v) => self::$_mAIR = $v, $values["air"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mALLIUM = $v, $values["allium"]);
-		self::unsafeAssign(fn(MushroomStem $v) => self::$_mALL_SIDED_MUSHROOM_STEM = $v, $values["all_sided_mushroom_stem"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mAMETHYST = $v, $values["amethyst"]);
-		self::unsafeAssign(fn(AmethystCluster $v) => self::$_mAMETHYST_CLUSTER = $v, $values["amethyst_cluster"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mANCIENT_DEBRIS = $v, $values["ancient_debris"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mANDESITE = $v, $values["andesite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mANDESITE_SLAB = $v, $values["andesite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mANDESITE_STAIRS = $v, $values["andesite_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mANDESITE_WALL = $v, $values["andesite_wall"]);
-		self::unsafeAssign(fn(Anvil $v) => self::$_mANVIL = $v, $values["anvil"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mAZALEA_LEAVES = $v, $values["azalea_leaves"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mAZURE_BLUET = $v, $values["azure_bluet"]);
-		self::unsafeAssign(fn(Bamboo $v) => self::$_mBAMBOO = $v, $values["bamboo"]);
-		self::unsafeAssign(fn(BambooSapling $v) => self::$_mBAMBOO_SAPLING = $v, $values["bamboo_sapling"]);
-		self::unsafeAssign(fn(FloorBanner $v) => self::$_mBANNER = $v, $values["banner"]);
-		self::unsafeAssign(fn(Barrel $v) => self::$_mBARREL = $v, $values["barrel"]);
-		self::unsafeAssign(fn(Transparent $v) => self::$_mBARRIER = $v, $values["barrier"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mBASALT = $v, $values["basalt"]);
-		self::unsafeAssign(fn(Beacon $v) => self::$_mBEACON = $v, $values["beacon"]);
-		self::unsafeAssign(fn(Bed $v) => self::$_mBED = $v, $values["bed"]);
-		self::unsafeAssign(fn(Bedrock $v) => self::$_mBEDROCK = $v, $values["bedrock"]);
-		self::unsafeAssign(fn(Beetroot $v) => self::$_mBEETROOTS = $v, $values["beetroots"]);
-		self::unsafeAssign(fn(Bell $v) => self::$_mBELL = $v, $values["bell"]);
-		self::unsafeAssign(fn(BigDripleafHead $v) => self::$_mBIG_DRIPLEAF_HEAD = $v, $values["big_dripleaf_head"]);
-		self::unsafeAssign(fn(BigDripleafStem $v) => self::$_mBIG_DRIPLEAF_STEM = $v, $values["big_dripleaf_stem"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mBIRCH_BUTTON = $v, $values["birch_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN = $v, $values["birch_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN = $v, $values["birch_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mBIRCH_DOOR = $v, $values["birch_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mBIRCH_FENCE = $v, $values["birch_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mBIRCH_FENCE_GATE = $v, $values["birch_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mBIRCH_LEAVES = $v, $values["birch_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mBIRCH_LOG = $v, $values["birch_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mBIRCH_PLANKS = $v, $values["birch_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mBIRCH_PRESSURE_PLATE = $v, $values["birch_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mBIRCH_SAPLING = $v, $values["birch_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mBIRCH_SIGN = $v, $values["birch_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mBIRCH_SLAB = $v, $values["birch_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mBIRCH_STAIRS = $v, $values["birch_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mBIRCH_TRAPDOOR = $v, $values["birch_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mBIRCH_WALL_HANGING_SIGN = $v, $values["birch_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mBIRCH_WALL_SIGN = $v, $values["birch_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mBIRCH_WOOD = $v, $values["birch_wood"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mBLACKSTONE = $v, $values["blackstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mBLACKSTONE_SLAB = $v, $values["blackstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mBLACKSTONE_STAIRS = $v, $values["blackstone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mBLACKSTONE_WALL = $v, $values["blackstone_wall"]);
-		self::unsafeAssign(fn(Furnace $v) => self::$_mBLAST_FURNACE = $v, $values["blast_furnace"]);
-		self::unsafeAssign(fn(BlueIce $v) => self::$_mBLUE_ICE = $v, $values["blue_ice"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mBLUE_ORCHID = $v, $values["blue_orchid"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mBLUE_TORCH = $v, $values["blue_torch"]);
-		self::unsafeAssign(fn(BoneBlock $v) => self::$_mBONE_BLOCK = $v, $values["bone_block"]);
-		self::unsafeAssign(fn(Bookshelf $v) => self::$_mBOOKSHELF = $v, $values["bookshelf"]);
-		self::unsafeAssign(fn(BrewingStand $v) => self::$_mBREWING_STAND = $v, $values["brewing_stand"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mBRICKS = $v, $values["bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mBRICK_SLAB = $v, $values["brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mBRICK_STAIRS = $v, $values["brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mBRICK_WALL = $v, $values["brick_wall"]);
-		self::unsafeAssign(fn(BrownMushroom $v) => self::$_mBROWN_MUSHROOM = $v, $values["brown_mushroom"]);
-		self::unsafeAssign(fn(BrownMushroomBlock $v) => self::$_mBROWN_MUSHROOM_BLOCK = $v, $values["brown_mushroom_block"]);
-		self::unsafeAssign(fn(BuddingAmethyst $v) => self::$_mBUDDING_AMETHYST = $v, $values["budding_amethyst"]);
-		self::unsafeAssign(fn(Cactus $v) => self::$_mCACTUS = $v, $values["cactus"]);
-		self::unsafeAssign(fn(CactusFlower $v) => self::$_mCACTUS_FLOWER = $v, $values["cactus_flower"]);
-		self::unsafeAssign(fn(Cake $v) => self::$_mCAKE = $v, $values["cake"]);
-		self::unsafeAssign(fn(CakeWithCandle $v) => self::$_mCAKE_WITH_CANDLE = $v, $values["cake_with_candle"]);
-		self::unsafeAssign(fn(CakeWithDyedCandle $v) => self::$_mCAKE_WITH_DYED_CANDLE = $v, $values["cake_with_dyed_candle"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCALCITE = $v, $values["calcite"]);
-		self::unsafeAssign(fn(Campfire $v) => self::$_mCAMPFIRE = $v, $values["campfire"]);
-		self::unsafeAssign(fn(Candle $v) => self::$_mCANDLE = $v, $values["candle"]);
-		self::unsafeAssign(fn(Carpet $v) => self::$_mCARPET = $v, $values["carpet"]);
-		self::unsafeAssign(fn(Carrot $v) => self::$_mCARROTS = $v, $values["carrots"]);
-		self::unsafeAssign(fn(CartographyTable $v) => self::$_mCARTOGRAPHY_TABLE = $v, $values["cartography_table"]);
-		self::unsafeAssign(fn(CarvedPumpkin $v) => self::$_mCARVED_PUMPKIN = $v, $values["carved_pumpkin"]);
-		self::unsafeAssign(fn(Cauldron $v) => self::$_mCAULDRON = $v, $values["cauldron"]);
-		self::unsafeAssign(fn(CaveVines $v) => self::$_mCAVE_VINES = $v, $values["cave_vines"]);
-		self::unsafeAssign(fn(Chain $v) => self::$_mCHAIN = $v, $values["chain"]);
-		self::unsafeAssign(fn(ChemicalHeat $v) => self::$_mCHEMICAL_HEAT = $v, $values["chemical_heat"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mCHERRY_BUTTON = $v, $values["cherry_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN = $v, $values["cherry_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN = $v, $values["cherry_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mCHERRY_DOOR = $v, $values["cherry_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mCHERRY_FENCE = $v, $values["cherry_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mCHERRY_FENCE_GATE = $v, $values["cherry_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mCHERRY_LEAVES = $v, $values["cherry_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mCHERRY_LOG = $v, $values["cherry_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mCHERRY_PLANKS = $v, $values["cherry_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mCHERRY_PRESSURE_PLATE = $v, $values["cherry_pressure_plate"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mCHERRY_SIGN = $v, $values["cherry_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mCHERRY_SLAB = $v, $values["cherry_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mCHERRY_STAIRS = $v, $values["cherry_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mCHERRY_TRAPDOOR = $v, $values["cherry_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mCHERRY_WALL_HANGING_SIGN = $v, $values["cherry_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mCHERRY_WALL_SIGN = $v, $values["cherry_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mCHERRY_WOOD = $v, $values["cherry_wood"]);
-		self::unsafeAssign(fn(Chest $v) => self::$_mCHEST = $v, $values["chest"]);
-		self::unsafeAssign(fn(ChiseledBookshelf $v) => self::$_mCHISELED_BOOKSHELF = $v, $values["chiseled_bookshelf"]);
-		self::unsafeAssign(fn(Copper $v) => self::$_mCHISELED_COPPER = $v, $values["chiseled_copper"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_DEEPSLATE = $v, $values["chiseled_deepslate"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_NETHER_BRICKS = $v, $values["chiseled_nether_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_POLISHED_BLACKSTONE = $v, $values["chiseled_polished_blackstone"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mCHISELED_QUARTZ = $v, $values["chiseled_quartz"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_RED_SANDSTONE = $v, $values["chiseled_red_sandstone"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_RESIN_BRICKS = $v, $values["chiseled_resin_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_SANDSTONE = $v, $values["chiseled_sandstone"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_STONE_BRICKS = $v, $values["chiseled_stone_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_TUFF = $v, $values["chiseled_tuff"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_TUFF_BRICKS = $v, $values["chiseled_tuff_bricks"]);
-		self::unsafeAssign(fn(ChorusFlower $v) => self::$_mCHORUS_FLOWER = $v, $values["chorus_flower"]);
-		self::unsafeAssign(fn(ChorusPlant $v) => self::$_mCHORUS_PLANT = $v, $values["chorus_plant"]);
-		self::unsafeAssign(fn(Clay $v) => self::$_mCLAY = $v, $values["clay"]);
-		self::unsafeAssign(fn(Coal $v) => self::$_mCOAL = $v, $values["coal"]);
-		self::unsafeAssign(fn(CoalOre $v) => self::$_mCOAL_ORE = $v, $values["coal_ore"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCOBBLED_DEEPSLATE = $v, $values["cobbled_deepslate"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mCOBBLED_DEEPSLATE_SLAB = $v, $values["cobbled_deepslate_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mCOBBLED_DEEPSLATE_STAIRS = $v, $values["cobbled_deepslate_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mCOBBLED_DEEPSLATE_WALL = $v, $values["cobbled_deepslate_wall"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCOBBLESTONE = $v, $values["cobblestone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mCOBBLESTONE_SLAB = $v, $values["cobblestone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mCOBBLESTONE_STAIRS = $v, $values["cobblestone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mCOBBLESTONE_WALL = $v, $values["cobblestone_wall"]);
-		self::unsafeAssign(fn(Cobweb $v) => self::$_mCOBWEB = $v, $values["cobweb"]);
-		self::unsafeAssign(fn(CocoaBlock $v) => self::$_mCOCOA_POD = $v, $values["cocoa_pod"]);
-		self::unsafeAssign(fn(ChemistryTable $v) => self::$_mCOMPOUND_CREATOR = $v, $values["compound_creator"]);
-		self::unsafeAssign(fn(Concrete $v) => self::$_mCONCRETE = $v, $values["concrete"]);
-		self::unsafeAssign(fn(ConcretePowder $v) => self::$_mCONCRETE_POWDER = $v, $values["concrete_powder"]);
-		self::unsafeAssign(fn(Copper $v) => self::$_mCOPPER = $v, $values["copper"]);
-		self::unsafeAssign(fn(CopperBars $v) => self::$_mCOPPER_BARS = $v, $values["copper_bars"]);
-		self::unsafeAssign(fn(CopperBulb $v) => self::$_mCOPPER_BULB = $v, $values["copper_bulb"]);
-		self::unsafeAssign(fn(CopperChain $v) => self::$_mCOPPER_CHAIN = $v, $values["copper_chain"]);
-		self::unsafeAssign(fn(CopperDoor $v) => self::$_mCOPPER_DOOR = $v, $values["copper_door"]);
-		self::unsafeAssign(fn(CopperGrate $v) => self::$_mCOPPER_GRATE = $v, $values["copper_grate"]);
-		self::unsafeAssign(fn(CopperLantern $v) => self::$_mCOPPER_LANTERN = $v, $values["copper_lantern"]);
-		self::unsafeAssign(fn(CopperOre $v) => self::$_mCOPPER_ORE = $v, $values["copper_ore"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mCOPPER_TORCH = $v, $values["copper_torch"]);
-		self::unsafeAssign(fn(CopperTrapdoor $v) => self::$_mCOPPER_TRAPDOOR = $v, $values["copper_trapdoor"]);
-		self::unsafeAssign(fn(Coral $v) => self::$_mCORAL = $v, $values["coral"]);
-		self::unsafeAssign(fn(CoralBlock $v) => self::$_mCORAL_BLOCK = $v, $values["coral_block"]);
-		self::unsafeAssign(fn(FloorCoralFan $v) => self::$_mCORAL_FAN = $v, $values["coral_fan"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mCORNFLOWER = $v, $values["cornflower"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_DEEPSLATE_BRICKS = $v, $values["cracked_deepslate_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_DEEPSLATE_TILES = $v, $values["cracked_deepslate_tiles"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_NETHER_BRICKS = $v, $values["cracked_nether_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS = $v, $values["cracked_polished_blackstone_bricks"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_STONE_BRICKS = $v, $values["cracked_stone_bricks"]);
-		self::unsafeAssign(fn(CraftingTable $v) => self::$_mCRAFTING_TABLE = $v, $values["crafting_table"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mCRIMSON_BUTTON = $v, $values["crimson_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN = $v, $values["crimson_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN = $v, $values["crimson_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mCRIMSON_DOOR = $v, $values["crimson_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mCRIMSON_FENCE = $v, $values["crimson_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mCRIMSON_FENCE_GATE = $v, $values["crimson_fence_gate"]);
-		self::unsafeAssign(fn(NetherFungus $v) => self::$_mCRIMSON_FUNGUS = $v, $values["crimson_fungus"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mCRIMSON_HYPHAE = $v, $values["crimson_hyphae"]);
-		self::unsafeAssign(fn(Nylium $v) => self::$_mCRIMSON_NYLIUM = $v, $values["crimson_nylium"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mCRIMSON_PLANKS = $v, $values["crimson_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mCRIMSON_PRESSURE_PLATE = $v, $values["crimson_pressure_plate"]);
-		self::unsafeAssign(fn(NetherRoots $v) => self::$_mCRIMSON_ROOTS = $v, $values["crimson_roots"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mCRIMSON_SIGN = $v, $values["crimson_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mCRIMSON_SLAB = $v, $values["crimson_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mCRIMSON_STAIRS = $v, $values["crimson_stairs"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mCRIMSON_STEM = $v, $values["crimson_stem"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mCRIMSON_TRAPDOOR = $v, $values["crimson_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mCRIMSON_WALL_HANGING_SIGN = $v, $values["crimson_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mCRIMSON_WALL_SIGN = $v, $values["crimson_wall_sign"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCRYING_OBSIDIAN = $v, $values["crying_obsidian"]);
-		self::unsafeAssign(fn(Copper $v) => self::$_mCUT_COPPER = $v, $values["cut_copper"]);
-		self::unsafeAssign(fn(CopperSlab $v) => self::$_mCUT_COPPER_SLAB = $v, $values["cut_copper_slab"]);
-		self::unsafeAssign(fn(CopperStairs $v) => self::$_mCUT_COPPER_STAIRS = $v, $values["cut_copper_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCUT_RED_SANDSTONE = $v, $values["cut_red_sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mCUT_RED_SANDSTONE_SLAB = $v, $values["cut_red_sandstone_slab"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mCUT_SANDSTONE = $v, $values["cut_sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mCUT_SANDSTONE_SLAB = $v, $values["cut_sandstone_slab"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mDANDELION = $v, $values["dandelion"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mDARK_OAK_BUTTON = $v, $values["dark_oak_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN = $v, $values["dark_oak_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN = $v, $values["dark_oak_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mDARK_OAK_DOOR = $v, $values["dark_oak_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mDARK_OAK_FENCE = $v, $values["dark_oak_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mDARK_OAK_FENCE_GATE = $v, $values["dark_oak_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mDARK_OAK_LEAVES = $v, $values["dark_oak_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mDARK_OAK_LOG = $v, $values["dark_oak_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mDARK_OAK_PLANKS = $v, $values["dark_oak_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mDARK_OAK_PRESSURE_PLATE = $v, $values["dark_oak_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mDARK_OAK_SAPLING = $v, $values["dark_oak_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mDARK_OAK_SIGN = $v, $values["dark_oak_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mDARK_OAK_SLAB = $v, $values["dark_oak_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mDARK_OAK_STAIRS = $v, $values["dark_oak_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mDARK_OAK_TRAPDOOR = $v, $values["dark_oak_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mDARK_OAK_WALL_HANGING_SIGN = $v, $values["dark_oak_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mDARK_OAK_WALL_SIGN = $v, $values["dark_oak_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mDARK_OAK_WOOD = $v, $values["dark_oak_wood"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mDARK_PRISMARINE = $v, $values["dark_prismarine"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mDARK_PRISMARINE_SLAB = $v, $values["dark_prismarine_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mDARK_PRISMARINE_STAIRS = $v, $values["dark_prismarine_stairs"]);
-		self::unsafeAssign(fn(DaylightSensor $v) => self::$_mDAYLIGHT_SENSOR = $v, $values["daylight_sensor"]);
-		self::unsafeAssign(fn(DeadBush $v) => self::$_mDEAD_BUSH = $v, $values["dead_bush"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mDEEPSLATE = $v, $values["deepslate"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mDEEPSLATE_BRICKS = $v, $values["deepslate_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mDEEPSLATE_BRICK_SLAB = $v, $values["deepslate_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mDEEPSLATE_BRICK_STAIRS = $v, $values["deepslate_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mDEEPSLATE_BRICK_WALL = $v, $values["deepslate_brick_wall"]);
-		self::unsafeAssign(fn(CoalOre $v) => self::$_mDEEPSLATE_COAL_ORE = $v, $values["deepslate_coal_ore"]);
-		self::unsafeAssign(fn(CopperOre $v) => self::$_mDEEPSLATE_COPPER_ORE = $v, $values["deepslate_copper_ore"]);
-		self::unsafeAssign(fn(DiamondOre $v) => self::$_mDEEPSLATE_DIAMOND_ORE = $v, $values["deepslate_diamond_ore"]);
-		self::unsafeAssign(fn(EmeraldOre $v) => self::$_mDEEPSLATE_EMERALD_ORE = $v, $values["deepslate_emerald_ore"]);
-		self::unsafeAssign(fn(GoldOre $v) => self::$_mDEEPSLATE_GOLD_ORE = $v, $values["deepslate_gold_ore"]);
-		self::unsafeAssign(fn(IronOre $v) => self::$_mDEEPSLATE_IRON_ORE = $v, $values["deepslate_iron_ore"]);
-		self::unsafeAssign(fn(LapisOre $v) => self::$_mDEEPSLATE_LAPIS_LAZULI_ORE = $v, $values["deepslate_lapis_lazuli_ore"]);
-		self::unsafeAssign(fn(RedstoneOre $v) => self::$_mDEEPSLATE_REDSTONE_ORE = $v, $values["deepslate_redstone_ore"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mDEEPSLATE_TILES = $v, $values["deepslate_tiles"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mDEEPSLATE_TILE_SLAB = $v, $values["deepslate_tile_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mDEEPSLATE_TILE_STAIRS = $v, $values["deepslate_tile_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mDEEPSLATE_TILE_WALL = $v, $values["deepslate_tile_wall"]);
-		self::unsafeAssign(fn(DetectorRail $v) => self::$_mDETECTOR_RAIL = $v, $values["detector_rail"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mDIAMOND = $v, $values["diamond"]);
-		self::unsafeAssign(fn(DiamondOre $v) => self::$_mDIAMOND_ORE = $v, $values["diamond_ore"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mDIORITE = $v, $values["diorite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mDIORITE_SLAB = $v, $values["diorite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mDIORITE_STAIRS = $v, $values["diorite_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mDIORITE_WALL = $v, $values["diorite_wall"]);
-		self::unsafeAssign(fn(Dirt $v) => self::$_mDIRT = $v, $values["dirt"]);
-		self::unsafeAssign(fn(DoublePitcherCrop $v) => self::$_mDOUBLE_PITCHER_CROP = $v, $values["double_pitcher_crop"]);
-		self::unsafeAssign(fn(DoubleTallGrass $v) => self::$_mDOUBLE_TALLGRASS = $v, $values["double_tallgrass"]);
-		self::unsafeAssign(fn(DragonEgg $v) => self::$_mDRAGON_EGG = $v, $values["dragon_egg"]);
-		self::unsafeAssign(fn(DriedKelp $v) => self::$_mDRIED_KELP = $v, $values["dried_kelp"]);
-		self::unsafeAssign(fn(DyedCandle $v) => self::$_mDYED_CANDLE = $v, $values["dyed_candle"]);
-		self::unsafeAssign(fn(DyedShulkerBox $v) => self::$_mDYED_SHULKER_BOX = $v, $values["dyed_shulker_box"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ACTINIUM = $v, $values["element_actinium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ALUMINUM = $v, $values["element_aluminum"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_AMERICIUM = $v, $values["element_americium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ANTIMONY = $v, $values["element_antimony"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ARGON = $v, $values["element_argon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ARSENIC = $v, $values["element_arsenic"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ASTATINE = $v, $values["element_astatine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BARIUM = $v, $values["element_barium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BERKELIUM = $v, $values["element_berkelium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BERYLLIUM = $v, $values["element_beryllium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BISMUTH = $v, $values["element_bismuth"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BOHRIUM = $v, $values["element_bohrium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BORON = $v, $values["element_boron"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BROMINE = $v, $values["element_bromine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CADMIUM = $v, $values["element_cadmium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CALCIUM = $v, $values["element_calcium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CALIFORNIUM = $v, $values["element_californium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CARBON = $v, $values["element_carbon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CERIUM = $v, $values["element_cerium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CESIUM = $v, $values["element_cesium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CHLORINE = $v, $values["element_chlorine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CHROMIUM = $v, $values["element_chromium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COBALT = $v, $values["element_cobalt"]);
-		self::unsafeAssign(fn(ChemistryTable $v) => self::$_mELEMENT_CONSTRUCTOR = $v, $values["element_constructor"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COPERNICIUM = $v, $values["element_copernicium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COPPER = $v, $values["element_copper"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CURIUM = $v, $values["element_curium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DARMSTADTIUM = $v, $values["element_darmstadtium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DUBNIUM = $v, $values["element_dubnium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DYSPROSIUM = $v, $values["element_dysprosium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_EINSTEINIUM = $v, $values["element_einsteinium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ERBIUM = $v, $values["element_erbium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_EUROPIUM = $v, $values["element_europium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FERMIUM = $v, $values["element_fermium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FLEROVIUM = $v, $values["element_flerovium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FLUORINE = $v, $values["element_fluorine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FRANCIUM = $v, $values["element_francium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GADOLINIUM = $v, $values["element_gadolinium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GALLIUM = $v, $values["element_gallium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GERMANIUM = $v, $values["element_germanium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GOLD = $v, $values["element_gold"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HAFNIUM = $v, $values["element_hafnium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HASSIUM = $v, $values["element_hassium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HELIUM = $v, $values["element_helium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HOLMIUM = $v, $values["element_holmium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HYDROGEN = $v, $values["element_hydrogen"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_INDIUM = $v, $values["element_indium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IODINE = $v, $values["element_iodine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IRIDIUM = $v, $values["element_iridium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IRON = $v, $values["element_iron"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_KRYPTON = $v, $values["element_krypton"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LANTHANUM = $v, $values["element_lanthanum"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LAWRENCIUM = $v, $values["element_lawrencium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LEAD = $v, $values["element_lead"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LITHIUM = $v, $values["element_lithium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LIVERMORIUM = $v, $values["element_livermorium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LUTETIUM = $v, $values["element_lutetium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MAGNESIUM = $v, $values["element_magnesium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MANGANESE = $v, $values["element_manganese"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MEITNERIUM = $v, $values["element_meitnerium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MENDELEVIUM = $v, $values["element_mendelevium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MERCURY = $v, $values["element_mercury"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MOLYBDENUM = $v, $values["element_molybdenum"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MOSCOVIUM = $v, $values["element_moscovium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEODYMIUM = $v, $values["element_neodymium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEON = $v, $values["element_neon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEPTUNIUM = $v, $values["element_neptunium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NICKEL = $v, $values["element_nickel"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NIHONIUM = $v, $values["element_nihonium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NIOBIUM = $v, $values["element_niobium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NITROGEN = $v, $values["element_nitrogen"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NOBELIUM = $v, $values["element_nobelium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OGANESSON = $v, $values["element_oganesson"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OSMIUM = $v, $values["element_osmium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OXYGEN = $v, $values["element_oxygen"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PALLADIUM = $v, $values["element_palladium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PHOSPHORUS = $v, $values["element_phosphorus"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PLATINUM = $v, $values["element_platinum"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PLUTONIUM = $v, $values["element_plutonium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_POLONIUM = $v, $values["element_polonium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_POTASSIUM = $v, $values["element_potassium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PRASEODYMIUM = $v, $values["element_praseodymium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PROMETHIUM = $v, $values["element_promethium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PROTACTINIUM = $v, $values["element_protactinium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RADIUM = $v, $values["element_radium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RADON = $v, $values["element_radon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RHENIUM = $v, $values["element_rhenium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RHODIUM = $v, $values["element_rhodium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ROENTGENIUM = $v, $values["element_roentgenium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUBIDIUM = $v, $values["element_rubidium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUTHENIUM = $v, $values["element_ruthenium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUTHERFORDIUM = $v, $values["element_rutherfordium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SAMARIUM = $v, $values["element_samarium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SCANDIUM = $v, $values["element_scandium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SEABORGIUM = $v, $values["element_seaborgium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SELENIUM = $v, $values["element_selenium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SILICON = $v, $values["element_silicon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SILVER = $v, $values["element_silver"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SODIUM = $v, $values["element_sodium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_STRONTIUM = $v, $values["element_strontium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SULFUR = $v, $values["element_sulfur"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TANTALUM = $v, $values["element_tantalum"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TECHNETIUM = $v, $values["element_technetium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TELLURIUM = $v, $values["element_tellurium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TENNESSINE = $v, $values["element_tennessine"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TERBIUM = $v, $values["element_terbium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THALLIUM = $v, $values["element_thallium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THORIUM = $v, $values["element_thorium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THULIUM = $v, $values["element_thulium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TIN = $v, $values["element_tin"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TITANIUM = $v, $values["element_titanium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TUNGSTEN = $v, $values["element_tungsten"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_URANIUM = $v, $values["element_uranium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_VANADIUM = $v, $values["element_vanadium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_XENON = $v, $values["element_xenon"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_YTTERBIUM = $v, $values["element_ytterbium"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_YTTRIUM = $v, $values["element_yttrium"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mELEMENT_ZERO = $v, $values["element_zero"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ZINC = $v, $values["element_zinc"]);
-		self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ZIRCONIUM = $v, $values["element_zirconium"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mEMERALD = $v, $values["emerald"]);
-		self::unsafeAssign(fn(EmeraldOre $v) => self::$_mEMERALD_ORE = $v, $values["emerald_ore"]);
-		self::unsafeAssign(fn(EnchantingTable $v) => self::$_mENCHANTING_TABLE = $v, $values["enchanting_table"]);
-		self::unsafeAssign(fn(EnderChest $v) => self::$_mENDER_CHEST = $v, $values["ender_chest"]);
-		self::unsafeAssign(fn(EndPortalFrame $v) => self::$_mEND_PORTAL_FRAME = $v, $values["end_portal_frame"]);
-		self::unsafeAssign(fn(EndRod $v) => self::$_mEND_ROD = $v, $values["end_rod"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mEND_STONE = $v, $values["end_stone"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mEND_STONE_BRICKS = $v, $values["end_stone_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mEND_STONE_BRICK_SLAB = $v, $values["end_stone_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mEND_STONE_BRICK_STAIRS = $v, $values["end_stone_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mEND_STONE_BRICK_WALL = $v, $values["end_stone_brick_wall"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mFAKE_WOODEN_SLAB = $v, $values["fake_wooden_slab"]);
-		self::unsafeAssign(fn(Farmland $v) => self::$_mFARMLAND = $v, $values["farmland"]);
-		self::unsafeAssign(fn(TallGrass $v) => self::$_mFERN = $v, $values["fern"]);
-		self::unsafeAssign(fn(Fire $v) => self::$_mFIRE = $v, $values["fire"]);
-		self::unsafeAssign(fn(FletchingTable $v) => self::$_mFLETCHING_TABLE = $v, $values["fletching_table"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mFLOWERING_AZALEA_LEAVES = $v, $values["flowering_azalea_leaves"]);
-		self::unsafeAssign(fn(FlowerPot $v) => self::$_mFLOWER_POT = $v, $values["flower_pot"]);
-		self::unsafeAssign(fn(Froglight $v) => self::$_mFROGLIGHT = $v, $values["froglight"]);
-		self::unsafeAssign(fn(FrostedIce $v) => self::$_mFROSTED_ICE = $v, $values["frosted_ice"]);
-		self::unsafeAssign(fn(Furnace $v) => self::$_mFURNACE = $v, $values["furnace"]);
-		self::unsafeAssign(fn(GildedBlackstone $v) => self::$_mGILDED_BLACKSTONE = $v, $values["gilded_blackstone"]);
-		self::unsafeAssign(fn(Glass $v) => self::$_mGLASS = $v, $values["glass"]);
-		self::unsafeAssign(fn(GlassPane $v) => self::$_mGLASS_PANE = $v, $values["glass_pane"]);
-		self::unsafeAssign(fn(GlazedTerracotta $v) => self::$_mGLAZED_TERRACOTTA = $v, $values["glazed_terracotta"]);
-		self::unsafeAssign(fn(ItemFrame $v) => self::$_mGLOWING_ITEM_FRAME = $v, $values["glowing_item_frame"]);
-		self::unsafeAssign(fn(GlowingObsidian $v) => self::$_mGLOWING_OBSIDIAN = $v, $values["glowing_obsidian"]);
-		self::unsafeAssign(fn(Glowstone $v) => self::$_mGLOWSTONE = $v, $values["glowstone"]);
-		self::unsafeAssign(fn(GlowLichen $v) => self::$_mGLOW_LICHEN = $v, $values["glow_lichen"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mGOLD = $v, $values["gold"]);
-		self::unsafeAssign(fn(GoldOre $v) => self::$_mGOLD_ORE = $v, $values["gold_ore"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mGRANITE = $v, $values["granite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mGRANITE_SLAB = $v, $values["granite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mGRANITE_STAIRS = $v, $values["granite_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mGRANITE_WALL = $v, $values["granite_wall"]);
-		self::unsafeAssign(fn(Grass $v) => self::$_mGRASS = $v, $values["grass"]);
-		self::unsafeAssign(fn(GrassPath $v) => self::$_mGRASS_PATH = $v, $values["grass_path"]);
-		self::unsafeAssign(fn(Gravel $v) => self::$_mGRAVEL = $v, $values["gravel"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mGREEN_TORCH = $v, $values["green_torch"]);
-		self::unsafeAssign(fn(HangingRoots $v) => self::$_mHANGING_ROOTS = $v, $values["hanging_roots"]);
-		self::unsafeAssign(fn(HardenedClay $v) => self::$_mHARDENED_CLAY = $v, $values["hardened_clay"]);
-		self::unsafeAssign(fn(HardenedGlass $v) => self::$_mHARDENED_GLASS = $v, $values["hardened_glass"]);
-		self::unsafeAssign(fn(HardenedGlassPane $v) => self::$_mHARDENED_GLASS_PANE = $v, $values["hardened_glass_pane"]);
-		self::unsafeAssign(fn(HayBale $v) => self::$_mHAY_BALE = $v, $values["hay_bale"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mHONEYCOMB = $v, $values["honeycomb"]);
-		self::unsafeAssign(fn(Hopper $v) => self::$_mHOPPER = $v, $values["hopper"]);
-		self::unsafeAssign(fn(Ice $v) => self::$_mICE = $v, $values["ice"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_CHISELED_STONE_BRICK = $v, $values["infested_chiseled_stone_brick"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_COBBLESTONE = $v, $values["infested_cobblestone"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_CRACKED_STONE_BRICK = $v, $values["infested_cracked_stone_brick"]);
-		self::unsafeAssign(fn(InfestedPillar $v) => self::$_mINFESTED_DEEPSLATE = $v, $values["infested_deepslate"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_MOSSY_STONE_BRICK = $v, $values["infested_mossy_stone_brick"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_STONE = $v, $values["infested_stone"]);
-		self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_STONE_BRICK = $v, $values["infested_stone_brick"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mINFO_UPDATE = $v, $values["info_update"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mINFO_UPDATE2 = $v, $values["info_update2"]);
-		self::unsafeAssign(fn(Transparent $v) => self::$_mINVISIBLE_BEDROCK = $v, $values["invisible_bedrock"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mIRON = $v, $values["iron"]);
-		self::unsafeAssign(fn(Thin $v) => self::$_mIRON_BARS = $v, $values["iron_bars"]);
-		self::unsafeAssign(fn(Door $v) => self::$_mIRON_DOOR = $v, $values["iron_door"]);
-		self::unsafeAssign(fn(IronOre $v) => self::$_mIRON_ORE = $v, $values["iron_ore"]);
-		self::unsafeAssign(fn(Trapdoor $v) => self::$_mIRON_TRAPDOOR = $v, $values["iron_trapdoor"]);
-		self::unsafeAssign(fn(ItemFrame $v) => self::$_mITEM_FRAME = $v, $values["item_frame"]);
-		self::unsafeAssign(fn(Jukebox $v) => self::$_mJUKEBOX = $v, $values["jukebox"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mJUNGLE_BUTTON = $v, $values["jungle_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN = $v, $values["jungle_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN = $v, $values["jungle_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mJUNGLE_DOOR = $v, $values["jungle_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mJUNGLE_FENCE = $v, $values["jungle_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mJUNGLE_FENCE_GATE = $v, $values["jungle_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mJUNGLE_LEAVES = $v, $values["jungle_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mJUNGLE_LOG = $v, $values["jungle_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mJUNGLE_PLANKS = $v, $values["jungle_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mJUNGLE_PRESSURE_PLATE = $v, $values["jungle_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mJUNGLE_SAPLING = $v, $values["jungle_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mJUNGLE_SIGN = $v, $values["jungle_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mJUNGLE_SLAB = $v, $values["jungle_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mJUNGLE_STAIRS = $v, $values["jungle_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mJUNGLE_TRAPDOOR = $v, $values["jungle_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mJUNGLE_WALL_HANGING_SIGN = $v, $values["jungle_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mJUNGLE_WALL_SIGN = $v, $values["jungle_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mJUNGLE_WOOD = $v, $values["jungle_wood"]);
-		self::unsafeAssign(fn(ChemistryTable $v) => self::$_mLAB_TABLE = $v, $values["lab_table"]);
-		self::unsafeAssign(fn(Ladder $v) => self::$_mLADDER = $v, $values["ladder"]);
-		self::unsafeAssign(fn(Lantern $v) => self::$_mLANTERN = $v, $values["lantern"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mLAPIS_LAZULI = $v, $values["lapis_lazuli"]);
-		self::unsafeAssign(fn(LapisOre $v) => self::$_mLAPIS_LAZULI_ORE = $v, $values["lapis_lazuli_ore"]);
-		self::unsafeAssign(fn(DoubleTallGrass $v) => self::$_mLARGE_FERN = $v, $values["large_fern"]);
-		self::unsafeAssign(fn(Lava $v) => self::$_mLAVA = $v, $values["lava"]);
-		self::unsafeAssign(fn(LavaCauldron $v) => self::$_mLAVA_CAULDRON = $v, $values["lava_cauldron"]);
-		self::unsafeAssign(fn(Lectern $v) => self::$_mLECTERN = $v, $values["lectern"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mLEGACY_STONECUTTER = $v, $values["legacy_stonecutter"]);
-		self::unsafeAssign(fn(Lever $v) => self::$_mLEVER = $v, $values["lever"]);
-		self::unsafeAssign(fn(Light $v) => self::$_mLIGHT = $v, $values["light"]);
-		self::unsafeAssign(fn(LightningRod $v) => self::$_mLIGHTNING_ROD = $v, $values["lightning_rod"]);
-		self::unsafeAssign(fn(DoublePlant $v) => self::$_mLILAC = $v, $values["lilac"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mLILY_OF_THE_VALLEY = $v, $values["lily_of_the_valley"]);
-		self::unsafeAssign(fn(WaterLily $v) => self::$_mLILY_PAD = $v, $values["lily_pad"]);
-		self::unsafeAssign(fn(LitPumpkin $v) => self::$_mLIT_PUMPKIN = $v, $values["lit_pumpkin"]);
-		self::unsafeAssign(fn(Loom $v) => self::$_mLOOM = $v, $values["loom"]);
-		self::unsafeAssign(fn(Magma $v) => self::$_mMAGMA = $v, $values["magma"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mMANGROVE_BUTTON = $v, $values["mangrove_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN = $v, $values["mangrove_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN = $v, $values["mangrove_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mMANGROVE_DOOR = $v, $values["mangrove_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mMANGROVE_FENCE = $v, $values["mangrove_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mMANGROVE_FENCE_GATE = $v, $values["mangrove_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mMANGROVE_LEAVES = $v, $values["mangrove_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mMANGROVE_LOG = $v, $values["mangrove_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mMANGROVE_PLANKS = $v, $values["mangrove_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mMANGROVE_PRESSURE_PLATE = $v, $values["mangrove_pressure_plate"]);
-		self::unsafeAssign(fn(MangroveRoots $v) => self::$_mMANGROVE_ROOTS = $v, $values["mangrove_roots"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mMANGROVE_SIGN = $v, $values["mangrove_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mMANGROVE_SLAB = $v, $values["mangrove_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mMANGROVE_STAIRS = $v, $values["mangrove_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mMANGROVE_TRAPDOOR = $v, $values["mangrove_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mMANGROVE_WALL_HANGING_SIGN = $v, $values["mangrove_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mMANGROVE_WALL_SIGN = $v, $values["mangrove_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mMANGROVE_WOOD = $v, $values["mangrove_wood"]);
-		self::unsafeAssign(fn(ChemistryTable $v) => self::$_mMATERIAL_REDUCER = $v, $values["material_reducer"]);
-		self::unsafeAssign(fn(Melon $v) => self::$_mMELON = $v, $values["melon"]);
-		self::unsafeAssign(fn(MelonStem $v) => self::$_mMELON_STEM = $v, $values["melon_stem"]);
-		self::unsafeAssign(fn(MobHead $v) => self::$_mMOB_HEAD = $v, $values["mob_head"]);
-		self::unsafeAssign(fn(MonsterSpawner $v) => self::$_mMONSTER_SPAWNER = $v, $values["monster_spawner"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mMOSSY_COBBLESTONE = $v, $values["mossy_cobblestone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mMOSSY_COBBLESTONE_SLAB = $v, $values["mossy_cobblestone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mMOSSY_COBBLESTONE_STAIRS = $v, $values["mossy_cobblestone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mMOSSY_COBBLESTONE_WALL = $v, $values["mossy_cobblestone_wall"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mMOSSY_STONE_BRICKS = $v, $values["mossy_stone_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mMOSSY_STONE_BRICK_SLAB = $v, $values["mossy_stone_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mMOSSY_STONE_BRICK_STAIRS = $v, $values["mossy_stone_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mMOSSY_STONE_BRICK_WALL = $v, $values["mossy_stone_brick_wall"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mMUD = $v, $values["mud"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mMUDDY_MANGROVE_ROOTS = $v, $values["muddy_mangrove_roots"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mMUD_BRICKS = $v, $values["mud_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mMUD_BRICK_SLAB = $v, $values["mud_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mMUD_BRICK_STAIRS = $v, $values["mud_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mMUD_BRICK_WALL = $v, $values["mud_brick_wall"]);
-		self::unsafeAssign(fn(MushroomStem $v) => self::$_mMUSHROOM_STEM = $v, $values["mushroom_stem"]);
-		self::unsafeAssign(fn(Mycelium $v) => self::$_mMYCELIUM = $v, $values["mycelium"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mNETHERITE = $v, $values["netherite"]);
-		self::unsafeAssign(fn(Netherrack $v) => self::$_mNETHERRACK = $v, $values["netherrack"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mNETHER_BRICKS = $v, $values["nether_bricks"]);
-		self::unsafeAssign(fn(Fence $v) => self::$_mNETHER_BRICK_FENCE = $v, $values["nether_brick_fence"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mNETHER_BRICK_SLAB = $v, $values["nether_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mNETHER_BRICK_STAIRS = $v, $values["nether_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mNETHER_BRICK_WALL = $v, $values["nether_brick_wall"]);
-		self::unsafeAssign(fn(NetherGoldOre $v) => self::$_mNETHER_GOLD_ORE = $v, $values["nether_gold_ore"]);
-		self::unsafeAssign(fn(NetherPortal $v) => self::$_mNETHER_PORTAL = $v, $values["nether_portal"]);
-		self::unsafeAssign(fn(NetherQuartzOre $v) => self::$_mNETHER_QUARTZ_ORE = $v, $values["nether_quartz_ore"]);
-		self::unsafeAssign(fn(NetherReactor $v) => self::$_mNETHER_REACTOR_CORE = $v, $values["nether_reactor_core"]);
-		self::unsafeAssign(fn(NetherSprouts $v) => self::$_mNETHER_SPROUTS = $v, $values["nether_sprouts"]);
-		self::unsafeAssign(fn(NetherWartPlant $v) => self::$_mNETHER_WART = $v, $values["nether_wart"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mNETHER_WART_BLOCK = $v, $values["nether_wart_block"]);
-		self::unsafeAssign(fn(Note $v) => self::$_mNOTE_BLOCK = $v, $values["note_block"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mOAK_BUTTON = $v, $values["oak_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mOAK_CEILING_CENTER_HANGING_SIGN = $v, $values["oak_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mOAK_CEILING_EDGES_HANGING_SIGN = $v, $values["oak_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mOAK_DOOR = $v, $values["oak_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mOAK_FENCE = $v, $values["oak_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mOAK_FENCE_GATE = $v, $values["oak_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mOAK_LEAVES = $v, $values["oak_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mOAK_LOG = $v, $values["oak_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mOAK_PLANKS = $v, $values["oak_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mOAK_PRESSURE_PLATE = $v, $values["oak_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mOAK_SAPLING = $v, $values["oak_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mOAK_SIGN = $v, $values["oak_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mOAK_SLAB = $v, $values["oak_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mOAK_STAIRS = $v, $values["oak_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mOAK_TRAPDOOR = $v, $values["oak_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mOAK_WALL_HANGING_SIGN = $v, $values["oak_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mOAK_WALL_SIGN = $v, $values["oak_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mOAK_WOOD = $v, $values["oak_wood"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mOBSIDIAN = $v, $values["obsidian"]);
-		self::unsafeAssign(fn(OminousFloorBanner $v) => self::$_mOMINOUS_BANNER = $v, $values["ominous_banner"]);
-		self::unsafeAssign(fn(OminousWallBanner $v) => self::$_mOMINOUS_WALL_BANNER = $v, $values["ominous_wall_banner"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mORANGE_TULIP = $v, $values["orange_tulip"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mOXEYE_DAISY = $v, $values["oxeye_daisy"]);
-		self::unsafeAssign(fn(PackedIce $v) => self::$_mPACKED_ICE = $v, $values["packed_ice"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPACKED_MUD = $v, $values["packed_mud"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mPALE_OAK_BUTTON = $v, $values["pale_oak_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN = $v, $values["pale_oak_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN = $v, $values["pale_oak_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mPALE_OAK_DOOR = $v, $values["pale_oak_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mPALE_OAK_FENCE = $v, $values["pale_oak_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mPALE_OAK_FENCE_GATE = $v, $values["pale_oak_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mPALE_OAK_LEAVES = $v, $values["pale_oak_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mPALE_OAK_LOG = $v, $values["pale_oak_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mPALE_OAK_PLANKS = $v, $values["pale_oak_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mPALE_OAK_PRESSURE_PLATE = $v, $values["pale_oak_pressure_plate"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mPALE_OAK_SIGN = $v, $values["pale_oak_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mPALE_OAK_SLAB = $v, $values["pale_oak_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mPALE_OAK_STAIRS = $v, $values["pale_oak_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mPALE_OAK_TRAPDOOR = $v, $values["pale_oak_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mPALE_OAK_WALL_HANGING_SIGN = $v, $values["pale_oak_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mPALE_OAK_WALL_SIGN = $v, $values["pale_oak_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mPALE_OAK_WOOD = $v, $values["pale_oak_wood"]);
-		self::unsafeAssign(fn(DoublePlant $v) => self::$_mPEONY = $v, $values["peony"]);
-		self::unsafeAssign(fn(PinkPetals $v) => self::$_mPINK_PETALS = $v, $values["pink_petals"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mPINK_TULIP = $v, $values["pink_tulip"]);
-		self::unsafeAssign(fn(PitcherCrop $v) => self::$_mPITCHER_CROP = $v, $values["pitcher_crop"]);
-		self::unsafeAssign(fn(DoublePlant $v) => self::$_mPITCHER_PLANT = $v, $values["pitcher_plant"]);
-		self::unsafeAssign(fn(Podzol $v) => self::$_mPODZOL = $v, $values["podzol"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_ANDESITE = $v, $values["polished_andesite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_ANDESITE_SLAB = $v, $values["polished_andesite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_ANDESITE_STAIRS = $v, $values["polished_andesite_stairs"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mPOLISHED_BASALT = $v, $values["polished_basalt"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_BLACKSTONE = $v, $values["polished_blackstone"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_BLACKSTONE_BRICKS = $v, $values["polished_blackstone_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB = $v, $values["polished_blackstone_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS = $v, $values["polished_blackstone_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_WALL = $v, $values["polished_blackstone_brick_wall"]);
-		self::unsafeAssign(fn(StoneButton $v) => self::$_mPOLISHED_BLACKSTONE_BUTTON = $v, $values["polished_blackstone_button"]);
-		self::unsafeAssign(fn(StonePressurePlate $v) => self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE = $v, $values["polished_blackstone_pressure_plate"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_BLACKSTONE_SLAB = $v, $values["polished_blackstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_BLACKSTONE_STAIRS = $v, $values["polished_blackstone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_BLACKSTONE_WALL = $v, $values["polished_blackstone_wall"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_DEEPSLATE = $v, $values["polished_deepslate"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_DEEPSLATE_SLAB = $v, $values["polished_deepslate_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_DEEPSLATE_STAIRS = $v, $values["polished_deepslate_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_DEEPSLATE_WALL = $v, $values["polished_deepslate_wall"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_DIORITE = $v, $values["polished_diorite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_DIORITE_SLAB = $v, $values["polished_diorite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_DIORITE_STAIRS = $v, $values["polished_diorite_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_GRANITE = $v, $values["polished_granite"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_GRANITE_SLAB = $v, $values["polished_granite_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_GRANITE_STAIRS = $v, $values["polished_granite_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_TUFF = $v, $values["polished_tuff"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_TUFF_SLAB = $v, $values["polished_tuff_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_TUFF_STAIRS = $v, $values["polished_tuff_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_TUFF_WALL = $v, $values["polished_tuff_wall"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mPOPPY = $v, $values["poppy"]);
-		self::unsafeAssign(fn(Potato $v) => self::$_mPOTATOES = $v, $values["potatoes"]);
-		self::unsafeAssign(fn(PotionCauldron $v) => self::$_mPOTION_CAULDRON = $v, $values["potion_cauldron"]);
-		self::unsafeAssign(fn(PoweredRail $v) => self::$_mPOWERED_RAIL = $v, $values["powered_rail"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPRISMARINE = $v, $values["prismarine"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPRISMARINE_BRICKS = $v, $values["prismarine_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPRISMARINE_BRICKS_SLAB = $v, $values["prismarine_bricks_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPRISMARINE_BRICKS_STAIRS = $v, $values["prismarine_bricks_stairs"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPRISMARINE_SLAB = $v, $values["prismarine_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPRISMARINE_STAIRS = $v, $values["prismarine_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mPRISMARINE_WALL = $v, $values["prismarine_wall"]);
-		self::unsafeAssign(fn(Pumpkin $v) => self::$_mPUMPKIN = $v, $values["pumpkin"]);
-		self::unsafeAssign(fn(PumpkinStem $v) => self::$_mPUMPKIN_STEM = $v, $values["pumpkin_stem"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mPURPLE_TORCH = $v, $values["purple_torch"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mPURPUR = $v, $values["purpur"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mPURPUR_PILLAR = $v, $values["purpur_pillar"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mPURPUR_SLAB = $v, $values["purpur_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mPURPUR_STAIRS = $v, $values["purpur_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mQUARTZ = $v, $values["quartz"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mQUARTZ_BRICKS = $v, $values["quartz_bricks"]);
-		self::unsafeAssign(fn(SimplePillar $v) => self::$_mQUARTZ_PILLAR = $v, $values["quartz_pillar"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mQUARTZ_SLAB = $v, $values["quartz_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mQUARTZ_STAIRS = $v, $values["quartz_stairs"]);
-		self::unsafeAssign(fn(Rail $v) => self::$_mRAIL = $v, $values["rail"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_COPPER = $v, $values["raw_copper"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_GOLD = $v, $values["raw_gold"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_IRON = $v, $values["raw_iron"]);
-		self::unsafeAssign(fn(Redstone $v) => self::$_mREDSTONE = $v, $values["redstone"]);
-		self::unsafeAssign(fn(RedstoneComparator $v) => self::$_mREDSTONE_COMPARATOR = $v, $values["redstone_comparator"]);
-		self::unsafeAssign(fn(RedstoneLamp $v) => self::$_mREDSTONE_LAMP = $v, $values["redstone_lamp"]);
-		self::unsafeAssign(fn(RedstoneOre $v) => self::$_mREDSTONE_ORE = $v, $values["redstone_ore"]);
-		self::unsafeAssign(fn(RedstoneRepeater $v) => self::$_mREDSTONE_REPEATER = $v, $values["redstone_repeater"]);
-		self::unsafeAssign(fn(RedstoneTorch $v) => self::$_mREDSTONE_TORCH = $v, $values["redstone_torch"]);
-		self::unsafeAssign(fn(RedstoneWire $v) => self::$_mREDSTONE_WIRE = $v, $values["redstone_wire"]);
-		self::unsafeAssign(fn(RedMushroom $v) => self::$_mRED_MUSHROOM = $v, $values["red_mushroom"]);
-		self::unsafeAssign(fn(RedMushroomBlock $v) => self::$_mRED_MUSHROOM_BLOCK = $v, $values["red_mushroom_block"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRED_NETHER_BRICKS = $v, $values["red_nether_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mRED_NETHER_BRICK_SLAB = $v, $values["red_nether_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mRED_NETHER_BRICK_STAIRS = $v, $values["red_nether_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mRED_NETHER_BRICK_WALL = $v, $values["red_nether_brick_wall"]);
-		self::unsafeAssign(fn(Sand $v) => self::$_mRED_SAND = $v, $values["red_sand"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRED_SANDSTONE = $v, $values["red_sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mRED_SANDSTONE_SLAB = $v, $values["red_sandstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mRED_SANDSTONE_STAIRS = $v, $values["red_sandstone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mRED_SANDSTONE_WALL = $v, $values["red_sandstone_wall"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mRED_TORCH = $v, $values["red_torch"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mRED_TULIP = $v, $values["red_tulip"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mREINFORCED_DEEPSLATE = $v, $values["reinforced_deepslate"]);
-		self::unsafeAssign(fn(Reserved6 $v) => self::$_mRESERVED6 = $v, $values["reserved6"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRESIN = $v, $values["resin"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mRESIN_BRICKS = $v, $values["resin_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mRESIN_BRICK_SLAB = $v, $values["resin_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mRESIN_BRICK_STAIRS = $v, $values["resin_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mRESIN_BRICK_WALL = $v, $values["resin_brick_wall"]);
-		self::unsafeAssign(fn(ResinClump $v) => self::$_mRESIN_CLUMP = $v, $values["resin_clump"]);
-		self::unsafeAssign(fn(RespawnAnchor $v) => self::$_mRESPAWN_ANCHOR = $v, $values["respawn_anchor"]);
-		self::unsafeAssign(fn(DoublePlant $v) => self::$_mROSE_BUSH = $v, $values["rose_bush"]);
-		self::unsafeAssign(fn(Sand $v) => self::$_mSAND = $v, $values["sand"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSANDSTONE = $v, $values["sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSANDSTONE_SLAB = $v, $values["sandstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSANDSTONE_STAIRS = $v, $values["sandstone_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mSANDSTONE_WALL = $v, $values["sandstone_wall"]);
-		self::unsafeAssign(fn(Sculk $v) => self::$_mSCULK = $v, $values["sculk"]);
-		self::unsafeAssign(fn(SeaLantern $v) => self::$_mSEA_LANTERN = $v, $values["sea_lantern"]);
-		self::unsafeAssign(fn(SeaPickle $v) => self::$_mSEA_PICKLE = $v, $values["sea_pickle"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSHROOMLIGHT = $v, $values["shroomlight"]);
-		self::unsafeAssign(fn(ShulkerBox $v) => self::$_mSHULKER_BOX = $v, $values["shulker_box"]);
-		self::unsafeAssign(fn(Slime $v) => self::$_mSLIME = $v, $values["slime"]);
-		self::unsafeAssign(fn(SmallDripleaf $v) => self::$_mSMALL_DRIPLEAF = $v, $values["small_dripleaf"]);
-		self::unsafeAssign(fn(SmithingTable $v) => self::$_mSMITHING_TABLE = $v, $values["smithing_table"]);
-		self::unsafeAssign(fn(Furnace $v) => self::$_mSMOKER = $v, $values["smoker"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_BASALT = $v, $values["smooth_basalt"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_QUARTZ = $v, $values["smooth_quartz"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_QUARTZ_SLAB = $v, $values["smooth_quartz_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_QUARTZ_STAIRS = $v, $values["smooth_quartz_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_RED_SANDSTONE = $v, $values["smooth_red_sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_RED_SANDSTONE_SLAB = $v, $values["smooth_red_sandstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_RED_SANDSTONE_STAIRS = $v, $values["smooth_red_sandstone_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_SANDSTONE = $v, $values["smooth_sandstone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_SANDSTONE_SLAB = $v, $values["smooth_sandstone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_SANDSTONE_STAIRS = $v, $values["smooth_sandstone_stairs"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_STONE = $v, $values["smooth_stone"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_STONE_SLAB = $v, $values["smooth_stone_slab"]);
-		self::unsafeAssign(fn(Snow $v) => self::$_mSNOW = $v, $values["snow"]);
-		self::unsafeAssign(fn(SnowLayer $v) => self::$_mSNOW_LAYER = $v, $values["snow_layer"]);
-		self::unsafeAssign(fn(SoulCampfire $v) => self::$_mSOUL_CAMPFIRE = $v, $values["soul_campfire"]);
-		self::unsafeAssign(fn(SoulFire $v) => self::$_mSOUL_FIRE = $v, $values["soul_fire"]);
-		self::unsafeAssign(fn(Lantern $v) => self::$_mSOUL_LANTERN = $v, $values["soul_lantern"]);
-		self::unsafeAssign(fn(SoulSand $v) => self::$_mSOUL_SAND = $v, $values["soul_sand"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSOUL_SOIL = $v, $values["soul_soil"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mSOUL_TORCH = $v, $values["soul_torch"]);
-		self::unsafeAssign(fn(Sponge $v) => self::$_mSPONGE = $v, $values["sponge"]);
-		self::unsafeAssign(fn(SporeBlossom $v) => self::$_mSPORE_BLOSSOM = $v, $values["spore_blossom"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mSPRUCE_BUTTON = $v, $values["spruce_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN = $v, $values["spruce_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN = $v, $values["spruce_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mSPRUCE_DOOR = $v, $values["spruce_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mSPRUCE_FENCE = $v, $values["spruce_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mSPRUCE_FENCE_GATE = $v, $values["spruce_fence_gate"]);
-		self::unsafeAssign(fn(Leaves $v) => self::$_mSPRUCE_LEAVES = $v, $values["spruce_leaves"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mSPRUCE_LOG = $v, $values["spruce_log"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mSPRUCE_PLANKS = $v, $values["spruce_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mSPRUCE_PRESSURE_PLATE = $v, $values["spruce_pressure_plate"]);
-		self::unsafeAssign(fn(Sapling $v) => self::$_mSPRUCE_SAPLING = $v, $values["spruce_sapling"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mSPRUCE_SIGN = $v, $values["spruce_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mSPRUCE_SLAB = $v, $values["spruce_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mSPRUCE_STAIRS = $v, $values["spruce_stairs"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mSPRUCE_TRAPDOOR = $v, $values["spruce_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mSPRUCE_WALL_HANGING_SIGN = $v, $values["spruce_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mSPRUCE_WALL_SIGN = $v, $values["spruce_wall_sign"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mSPRUCE_WOOD = $v, $values["spruce_wood"]);
-		self::unsafeAssign(fn(StainedHardenedClay $v) => self::$_mSTAINED_CLAY = $v, $values["stained_clay"]);
-		self::unsafeAssign(fn(StainedGlass $v) => self::$_mSTAINED_GLASS = $v, $values["stained_glass"]);
-		self::unsafeAssign(fn(StainedGlassPane $v) => self::$_mSTAINED_GLASS_PANE = $v, $values["stained_glass_pane"]);
-		self::unsafeAssign(fn(StainedHardenedGlass $v) => self::$_mSTAINED_HARDENED_GLASS = $v, $values["stained_hardened_glass"]);
-		self::unsafeAssign(fn(StainedHardenedGlassPane $v) => self::$_mSTAINED_HARDENED_GLASS_PANE = $v, $values["stained_hardened_glass_pane"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSTONE = $v, $values["stone"]);
-		self::unsafeAssign(fn(Stonecutter $v) => self::$_mSTONECUTTER = $v, $values["stonecutter"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mSTONE_BRICKS = $v, $values["stone_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSTONE_BRICK_SLAB = $v, $values["stone_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSTONE_BRICK_STAIRS = $v, $values["stone_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mSTONE_BRICK_WALL = $v, $values["stone_brick_wall"]);
-		self::unsafeAssign(fn(StoneButton $v) => self::$_mSTONE_BUTTON = $v, $values["stone_button"]);
-		self::unsafeAssign(fn(StonePressurePlate $v) => self::$_mSTONE_PRESSURE_PLATE = $v, $values["stone_pressure_plate"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mSTONE_SLAB = $v, $values["stone_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mSTONE_STAIRS = $v, $values["stone_stairs"]);
-		self::unsafeAssign(fn(StructureVoid $v) => self::$_mSTRUCTURE_VOID = $v, $values["structure_void"]);
-		self::unsafeAssign(fn(Sugarcane $v) => self::$_mSUGARCANE = $v, $values["sugarcane"]);
-		self::unsafeAssign(fn(DoublePlant $v) => self::$_mSUNFLOWER = $v, $values["sunflower"]);
-		self::unsafeAssign(fn(SweetBerryBush $v) => self::$_mSWEET_BERRY_BUSH = $v, $values["sweet_berry_bush"]);
-		self::unsafeAssign(fn(TallGrass $v) => self::$_mTALL_GRASS = $v, $values["tall_grass"]);
-		self::unsafeAssign(fn(TintedGlass $v) => self::$_mTINTED_GLASS = $v, $values["tinted_glass"]);
-		self::unsafeAssign(fn(TNT $v) => self::$_mTNT = $v, $values["tnt"]);
-		self::unsafeAssign(fn(Torch $v) => self::$_mTORCH = $v, $values["torch"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mTORCHFLOWER = $v, $values["torchflower"]);
-		self::unsafeAssign(fn(TorchflowerCrop $v) => self::$_mTORCHFLOWER_CROP = $v, $values["torchflower_crop"]);
-		self::unsafeAssign(fn(TrappedChest $v) => self::$_mTRAPPED_CHEST = $v, $values["trapped_chest"]);
-		self::unsafeAssign(fn(Tripwire $v) => self::$_mTRIPWIRE = $v, $values["tripwire"]);
-		self::unsafeAssign(fn(TripwireHook $v) => self::$_mTRIPWIRE_HOOK = $v, $values["tripwire_hook"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mTUFF = $v, $values["tuff"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mTUFF_BRICKS = $v, $values["tuff_bricks"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mTUFF_BRICK_SLAB = $v, $values["tuff_brick_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mTUFF_BRICK_STAIRS = $v, $values["tuff_brick_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mTUFF_BRICK_WALL = $v, $values["tuff_brick_wall"]);
-		self::unsafeAssign(fn(Slab $v) => self::$_mTUFF_SLAB = $v, $values["tuff_slab"]);
-		self::unsafeAssign(fn(Stair $v) => self::$_mTUFF_STAIRS = $v, $values["tuff_stairs"]);
-		self::unsafeAssign(fn(Wall $v) => self::$_mTUFF_WALL = $v, $values["tuff_wall"]);
-		self::unsafeAssign(fn(NetherVines $v) => self::$_mTWISTING_VINES = $v, $values["twisting_vines"]);
-		self::unsafeAssign(fn(UnderwaterTorch $v) => self::$_mUNDERWATER_TORCH = $v, $values["underwater_torch"]);
-		self::unsafeAssign(fn(Vine $v) => self::$_mVINES = $v, $values["vines"]);
-		self::unsafeAssign(fn(WallBanner $v) => self::$_mWALL_BANNER = $v, $values["wall_banner"]);
-		self::unsafeAssign(fn(WallCoralFan $v) => self::$_mWALL_CORAL_FAN = $v, $values["wall_coral_fan"]);
-		self::unsafeAssign(fn(WoodenButton $v) => self::$_mWARPED_BUTTON = $v, $values["warped_button"]);
-		self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mWARPED_CEILING_CENTER_HANGING_SIGN = $v, $values["warped_ceiling_center_hanging_sign"]);
-		self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mWARPED_CEILING_EDGES_HANGING_SIGN = $v, $values["warped_ceiling_edges_hanging_sign"]);
-		self::unsafeAssign(fn(WoodenDoor $v) => self::$_mWARPED_DOOR = $v, $values["warped_door"]);
-		self::unsafeAssign(fn(WoodenFence $v) => self::$_mWARPED_FENCE = $v, $values["warped_fence"]);
-		self::unsafeAssign(fn(FenceGate $v) => self::$_mWARPED_FENCE_GATE = $v, $values["warped_fence_gate"]);
-		self::unsafeAssign(fn(NetherFungus $v) => self::$_mWARPED_FUNGUS = $v, $values["warped_fungus"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mWARPED_HYPHAE = $v, $values["warped_hyphae"]);
-		self::unsafeAssign(fn(Nylium $v) => self::$_mWARPED_NYLIUM = $v, $values["warped_nylium"]);
-		self::unsafeAssign(fn(Planks $v) => self::$_mWARPED_PLANKS = $v, $values["warped_planks"]);
-		self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mWARPED_PRESSURE_PLATE = $v, $values["warped_pressure_plate"]);
-		self::unsafeAssign(fn(NetherRoots $v) => self::$_mWARPED_ROOTS = $v, $values["warped_roots"]);
-		self::unsafeAssign(fn(FloorSign $v) => self::$_mWARPED_SIGN = $v, $values["warped_sign"]);
-		self::unsafeAssign(fn(WoodenSlab $v) => self::$_mWARPED_SLAB = $v, $values["warped_slab"]);
-		self::unsafeAssign(fn(WoodenStairs $v) => self::$_mWARPED_STAIRS = $v, $values["warped_stairs"]);
-		self::unsafeAssign(fn(Wood $v) => self::$_mWARPED_STEM = $v, $values["warped_stem"]);
-		self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mWARPED_TRAPDOOR = $v, $values["warped_trapdoor"]);
-		self::unsafeAssign(fn(WallHangingSign $v) => self::$_mWARPED_WALL_HANGING_SIGN = $v, $values["warped_wall_hanging_sign"]);
-		self::unsafeAssign(fn(WallSign $v) => self::$_mWARPED_WALL_SIGN = $v, $values["warped_wall_sign"]);
-		self::unsafeAssign(fn(Opaque $v) => self::$_mWARPED_WART_BLOCK = $v, $values["warped_wart_block"]);
-		self::unsafeAssign(fn(Water $v) => self::$_mWATER = $v, $values["water"]);
-		self::unsafeAssign(fn(WaterCauldron $v) => self::$_mWATER_CAULDRON = $v, $values["water_cauldron"]);
-		self::unsafeAssign(fn(NetherVines $v) => self::$_mWEEPING_VINES = $v, $values["weeping_vines"]);
-		self::unsafeAssign(fn(WeightedPressurePlateHeavy $v) => self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY = $v, $values["weighted_pressure_plate_heavy"]);
-		self::unsafeAssign(fn(WeightedPressurePlateLight $v) => self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT = $v, $values["weighted_pressure_plate_light"]);
-		self::unsafeAssign(fn(Wheat $v) => self::$_mWHEAT = $v, $values["wheat"]);
-		self::unsafeAssign(fn(Flower $v) => self::$_mWHITE_TULIP = $v, $values["white_tulip"]);
-		self::unsafeAssign(fn(WitherRose $v) => self::$_mWITHER_ROSE = $v, $values["wither_rose"]);
-		self::unsafeAssign(fn(Wool $v) => self::$_mWOOL = $v, $values["wool"]);
+		self::$initialized = true;
+		$source = new VanillaBlocksInputs();
+		foreach($source->getAllValues() as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+			match($name){
+				"acacia_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mACACIA_BUTTON = $v, $value),
+				"acacia_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mACACIA_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"acacia_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mACACIA_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"acacia_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mACACIA_DOOR = $v, $value),
+				"acacia_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mACACIA_FENCE = $v, $value),
+				"acacia_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mACACIA_FENCE_GATE = $v, $value),
+				"acacia_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mACACIA_LEAVES = $v, $value),
+				"acacia_log" => self::unsafeAssign(fn(Wood $v) => self::$_mACACIA_LOG = $v, $value),
+				"acacia_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mACACIA_PLANKS = $v, $value),
+				"acacia_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mACACIA_PRESSURE_PLATE = $v, $value),
+				"acacia_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mACACIA_SAPLING = $v, $value),
+				"acacia_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mACACIA_SIGN = $v, $value),
+				"acacia_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mACACIA_SLAB = $v, $value),
+				"acacia_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mACACIA_STAIRS = $v, $value),
+				"acacia_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mACACIA_TRAPDOOR = $v, $value),
+				"acacia_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mACACIA_WALL_HANGING_SIGN = $v, $value),
+				"acacia_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mACACIA_WALL_SIGN = $v, $value),
+				"acacia_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mACACIA_WOOD = $v, $value),
+				"activator_rail" => self::unsafeAssign(fn(ActivatorRail $v) => self::$_mACTIVATOR_RAIL = $v, $value),
+				"air" => self::unsafeAssign(fn(Air $v) => self::$_mAIR = $v, $value),
+				"allium" => self::unsafeAssign(fn(Flower $v) => self::$_mALLIUM = $v, $value),
+				"all_sided_mushroom_stem" => self::unsafeAssign(fn(MushroomStem $v) => self::$_mALL_SIDED_MUSHROOM_STEM = $v, $value),
+				"amethyst" => self::unsafeAssign(fn(Opaque $v) => self::$_mAMETHYST = $v, $value),
+				"amethyst_cluster" => self::unsafeAssign(fn(AmethystCluster $v) => self::$_mAMETHYST_CLUSTER = $v, $value),
+				"ancient_debris" => self::unsafeAssign(fn(Opaque $v) => self::$_mANCIENT_DEBRIS = $v, $value),
+				"andesite" => self::unsafeAssign(fn(Opaque $v) => self::$_mANDESITE = $v, $value),
+				"andesite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mANDESITE_SLAB = $v, $value),
+				"andesite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mANDESITE_STAIRS = $v, $value),
+				"andesite_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mANDESITE_WALL = $v, $value),
+				"anvil" => self::unsafeAssign(fn(Anvil $v) => self::$_mANVIL = $v, $value),
+				"azalea_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mAZALEA_LEAVES = $v, $value),
+				"azure_bluet" => self::unsafeAssign(fn(Flower $v) => self::$_mAZURE_BLUET = $v, $value),
+				"bamboo" => self::unsafeAssign(fn(Bamboo $v) => self::$_mBAMBOO = $v, $value),
+				"bamboo_sapling" => self::unsafeAssign(fn(BambooSapling $v) => self::$_mBAMBOO_SAPLING = $v, $value),
+				"banner" => self::unsafeAssign(fn(FloorBanner $v) => self::$_mBANNER = $v, $value),
+				"barrel" => self::unsafeAssign(fn(Barrel $v) => self::$_mBARREL = $v, $value),
+				"barrier" => self::unsafeAssign(fn(Transparent $v) => self::$_mBARRIER = $v, $value),
+				"basalt" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mBASALT = $v, $value),
+				"beacon" => self::unsafeAssign(fn(Beacon $v) => self::$_mBEACON = $v, $value),
+				"bed" => self::unsafeAssign(fn(Bed $v) => self::$_mBED = $v, $value),
+				"bedrock" => self::unsafeAssign(fn(Bedrock $v) => self::$_mBEDROCK = $v, $value),
+				"beetroots" => self::unsafeAssign(fn(Beetroot $v) => self::$_mBEETROOTS = $v, $value),
+				"bell" => self::unsafeAssign(fn(Bell $v) => self::$_mBELL = $v, $value),
+				"big_dripleaf_head" => self::unsafeAssign(fn(BigDripleafHead $v) => self::$_mBIG_DRIPLEAF_HEAD = $v, $value),
+				"big_dripleaf_stem" => self::unsafeAssign(fn(BigDripleafStem $v) => self::$_mBIG_DRIPLEAF_STEM = $v, $value),
+				"birch_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mBIRCH_BUTTON = $v, $value),
+				"birch_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"birch_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"birch_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mBIRCH_DOOR = $v, $value),
+				"birch_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mBIRCH_FENCE = $v, $value),
+				"birch_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mBIRCH_FENCE_GATE = $v, $value),
+				"birch_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mBIRCH_LEAVES = $v, $value),
+				"birch_log" => self::unsafeAssign(fn(Wood $v) => self::$_mBIRCH_LOG = $v, $value),
+				"birch_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mBIRCH_PLANKS = $v, $value),
+				"birch_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mBIRCH_PRESSURE_PLATE = $v, $value),
+				"birch_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mBIRCH_SAPLING = $v, $value),
+				"birch_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mBIRCH_SIGN = $v, $value),
+				"birch_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mBIRCH_SLAB = $v, $value),
+				"birch_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mBIRCH_STAIRS = $v, $value),
+				"birch_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mBIRCH_TRAPDOOR = $v, $value),
+				"birch_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mBIRCH_WALL_HANGING_SIGN = $v, $value),
+				"birch_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mBIRCH_WALL_SIGN = $v, $value),
+				"birch_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mBIRCH_WOOD = $v, $value),
+				"blackstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mBLACKSTONE = $v, $value),
+				"blackstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mBLACKSTONE_SLAB = $v, $value),
+				"blackstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mBLACKSTONE_STAIRS = $v, $value),
+				"blackstone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mBLACKSTONE_WALL = $v, $value),
+				"blast_furnace" => self::unsafeAssign(fn(Furnace $v) => self::$_mBLAST_FURNACE = $v, $value),
+				"blue_ice" => self::unsafeAssign(fn(BlueIce $v) => self::$_mBLUE_ICE = $v, $value),
+				"blue_orchid" => self::unsafeAssign(fn(Flower $v) => self::$_mBLUE_ORCHID = $v, $value),
+				"blue_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mBLUE_TORCH = $v, $value),
+				"bone_block" => self::unsafeAssign(fn(BoneBlock $v) => self::$_mBONE_BLOCK = $v, $value),
+				"bookshelf" => self::unsafeAssign(fn(Bookshelf $v) => self::$_mBOOKSHELF = $v, $value),
+				"brewing_stand" => self::unsafeAssign(fn(BrewingStand $v) => self::$_mBREWING_STAND = $v, $value),
+				"bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mBRICKS = $v, $value),
+				"brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mBRICK_SLAB = $v, $value),
+				"brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mBRICK_STAIRS = $v, $value),
+				"brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mBRICK_WALL = $v, $value),
+				"brown_mushroom" => self::unsafeAssign(fn(BrownMushroom $v) => self::$_mBROWN_MUSHROOM = $v, $value),
+				"brown_mushroom_block" => self::unsafeAssign(fn(BrownMushroomBlock $v) => self::$_mBROWN_MUSHROOM_BLOCK = $v, $value),
+				"budding_amethyst" => self::unsafeAssign(fn(BuddingAmethyst $v) => self::$_mBUDDING_AMETHYST = $v, $value),
+				"cactus" => self::unsafeAssign(fn(Cactus $v) => self::$_mCACTUS = $v, $value),
+				"cactus_flower" => self::unsafeAssign(fn(CactusFlower $v) => self::$_mCACTUS_FLOWER = $v, $value),
+				"cake" => self::unsafeAssign(fn(Cake $v) => self::$_mCAKE = $v, $value),
+				"cake_with_candle" => self::unsafeAssign(fn(CakeWithCandle $v) => self::$_mCAKE_WITH_CANDLE = $v, $value),
+				"cake_with_dyed_candle" => self::unsafeAssign(fn(CakeWithDyedCandle $v) => self::$_mCAKE_WITH_DYED_CANDLE = $v, $value),
+				"calcite" => self::unsafeAssign(fn(Opaque $v) => self::$_mCALCITE = $v, $value),
+				"campfire" => self::unsafeAssign(fn(Campfire $v) => self::$_mCAMPFIRE = $v, $value),
+				"candle" => self::unsafeAssign(fn(Candle $v) => self::$_mCANDLE = $v, $value),
+				"carpet" => self::unsafeAssign(fn(Carpet $v) => self::$_mCARPET = $v, $value),
+				"carrots" => self::unsafeAssign(fn(Carrot $v) => self::$_mCARROTS = $v, $value),
+				"cartography_table" => self::unsafeAssign(fn(CartographyTable $v) => self::$_mCARTOGRAPHY_TABLE = $v, $value),
+				"carved_pumpkin" => self::unsafeAssign(fn(CarvedPumpkin $v) => self::$_mCARVED_PUMPKIN = $v, $value),
+				"cauldron" => self::unsafeAssign(fn(Cauldron $v) => self::$_mCAULDRON = $v, $value),
+				"cave_vines" => self::unsafeAssign(fn(CaveVines $v) => self::$_mCAVE_VINES = $v, $value),
+				"chain" => self::unsafeAssign(fn(Chain $v) => self::$_mCHAIN = $v, $value),
+				"chemical_heat" => self::unsafeAssign(fn(ChemicalHeat $v) => self::$_mCHEMICAL_HEAT = $v, $value),
+				"cherry_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mCHERRY_BUTTON = $v, $value),
+				"cherry_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"cherry_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"cherry_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mCHERRY_DOOR = $v, $value),
+				"cherry_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mCHERRY_FENCE = $v, $value),
+				"cherry_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mCHERRY_FENCE_GATE = $v, $value),
+				"cherry_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mCHERRY_LEAVES = $v, $value),
+				"cherry_log" => self::unsafeAssign(fn(Wood $v) => self::$_mCHERRY_LOG = $v, $value),
+				"cherry_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mCHERRY_PLANKS = $v, $value),
+				"cherry_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mCHERRY_PRESSURE_PLATE = $v, $value),
+				"cherry_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mCHERRY_SIGN = $v, $value),
+				"cherry_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mCHERRY_SLAB = $v, $value),
+				"cherry_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mCHERRY_STAIRS = $v, $value),
+				"cherry_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mCHERRY_TRAPDOOR = $v, $value),
+				"cherry_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mCHERRY_WALL_HANGING_SIGN = $v, $value),
+				"cherry_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mCHERRY_WALL_SIGN = $v, $value),
+				"cherry_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mCHERRY_WOOD = $v, $value),
+				"chest" => self::unsafeAssign(fn(Chest $v) => self::$_mCHEST = $v, $value),
+				"chiseled_bookshelf" => self::unsafeAssign(fn(ChiseledBookshelf $v) => self::$_mCHISELED_BOOKSHELF = $v, $value),
+				"chiseled_copper" => self::unsafeAssign(fn(Copper $v) => self::$_mCHISELED_COPPER = $v, $value),
+				"chiseled_deepslate" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_DEEPSLATE = $v, $value),
+				"chiseled_nether_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_NETHER_BRICKS = $v, $value),
+				"chiseled_polished_blackstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_POLISHED_BLACKSTONE = $v, $value),
+				"chiseled_quartz" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mCHISELED_QUARTZ = $v, $value),
+				"chiseled_red_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_RED_SANDSTONE = $v, $value),
+				"chiseled_resin_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_RESIN_BRICKS = $v, $value),
+				"chiseled_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_SANDSTONE = $v, $value),
+				"chiseled_stone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_STONE_BRICKS = $v, $value),
+				"chiseled_tuff" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_TUFF = $v, $value),
+				"chiseled_tuff_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCHISELED_TUFF_BRICKS = $v, $value),
+				"chorus_flower" => self::unsafeAssign(fn(ChorusFlower $v) => self::$_mCHORUS_FLOWER = $v, $value),
+				"chorus_plant" => self::unsafeAssign(fn(ChorusPlant $v) => self::$_mCHORUS_PLANT = $v, $value),
+				"clay" => self::unsafeAssign(fn(Clay $v) => self::$_mCLAY = $v, $value),
+				"coal" => self::unsafeAssign(fn(Coal $v) => self::$_mCOAL = $v, $value),
+				"coal_ore" => self::unsafeAssign(fn(CoalOre $v) => self::$_mCOAL_ORE = $v, $value),
+				"cobbled_deepslate" => self::unsafeAssign(fn(Opaque $v) => self::$_mCOBBLED_DEEPSLATE = $v, $value),
+				"cobbled_deepslate_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mCOBBLED_DEEPSLATE_SLAB = $v, $value),
+				"cobbled_deepslate_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mCOBBLED_DEEPSLATE_STAIRS = $v, $value),
+				"cobbled_deepslate_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mCOBBLED_DEEPSLATE_WALL = $v, $value),
+				"cobblestone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCOBBLESTONE = $v, $value),
+				"cobblestone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mCOBBLESTONE_SLAB = $v, $value),
+				"cobblestone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mCOBBLESTONE_STAIRS = $v, $value),
+				"cobblestone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mCOBBLESTONE_WALL = $v, $value),
+				"cobweb" => self::unsafeAssign(fn(Cobweb $v) => self::$_mCOBWEB = $v, $value),
+				"cocoa_pod" => self::unsafeAssign(fn(CocoaBlock $v) => self::$_mCOCOA_POD = $v, $value),
+				"compound_creator" => self::unsafeAssign(fn(ChemistryTable $v) => self::$_mCOMPOUND_CREATOR = $v, $value),
+				"concrete" => self::unsafeAssign(fn(Concrete $v) => self::$_mCONCRETE = $v, $value),
+				"concrete_powder" => self::unsafeAssign(fn(ConcretePowder $v) => self::$_mCONCRETE_POWDER = $v, $value),
+				"copper" => self::unsafeAssign(fn(Copper $v) => self::$_mCOPPER = $v, $value),
+				"copper_bars" => self::unsafeAssign(fn(CopperBars $v) => self::$_mCOPPER_BARS = $v, $value),
+				"copper_bulb" => self::unsafeAssign(fn(CopperBulb $v) => self::$_mCOPPER_BULB = $v, $value),
+				"copper_chain" => self::unsafeAssign(fn(CopperChain $v) => self::$_mCOPPER_CHAIN = $v, $value),
+				"copper_door" => self::unsafeAssign(fn(CopperDoor $v) => self::$_mCOPPER_DOOR = $v, $value),
+				"copper_grate" => self::unsafeAssign(fn(CopperGrate $v) => self::$_mCOPPER_GRATE = $v, $value),
+				"copper_lantern" => self::unsafeAssign(fn(CopperLantern $v) => self::$_mCOPPER_LANTERN = $v, $value),
+				"copper_ore" => self::unsafeAssign(fn(CopperOre $v) => self::$_mCOPPER_ORE = $v, $value),
+				"copper_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mCOPPER_TORCH = $v, $value),
+				"copper_trapdoor" => self::unsafeAssign(fn(CopperTrapdoor $v) => self::$_mCOPPER_TRAPDOOR = $v, $value),
+				"coral" => self::unsafeAssign(fn(Coral $v) => self::$_mCORAL = $v, $value),
+				"coral_block" => self::unsafeAssign(fn(CoralBlock $v) => self::$_mCORAL_BLOCK = $v, $value),
+				"coral_fan" => self::unsafeAssign(fn(FloorCoralFan $v) => self::$_mCORAL_FAN = $v, $value),
+				"cornflower" => self::unsafeAssign(fn(Flower $v) => self::$_mCORNFLOWER = $v, $value),
+				"cracked_deepslate_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_DEEPSLATE_BRICKS = $v, $value),
+				"cracked_deepslate_tiles" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_DEEPSLATE_TILES = $v, $value),
+				"cracked_nether_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_NETHER_BRICKS = $v, $value),
+				"cracked_polished_blackstone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS = $v, $value),
+				"cracked_stone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRACKED_STONE_BRICKS = $v, $value),
+				"crafting_table" => self::unsafeAssign(fn(CraftingTable $v) => self::$_mCRAFTING_TABLE = $v, $value),
+				"crimson_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mCRIMSON_BUTTON = $v, $value),
+				"crimson_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"crimson_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"crimson_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mCRIMSON_DOOR = $v, $value),
+				"crimson_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mCRIMSON_FENCE = $v, $value),
+				"crimson_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mCRIMSON_FENCE_GATE = $v, $value),
+				"crimson_fungus" => self::unsafeAssign(fn(NetherFungus $v) => self::$_mCRIMSON_FUNGUS = $v, $value),
+				"crimson_hyphae" => self::unsafeAssign(fn(Wood $v) => self::$_mCRIMSON_HYPHAE = $v, $value),
+				"crimson_nylium" => self::unsafeAssign(fn(Nylium $v) => self::$_mCRIMSON_NYLIUM = $v, $value),
+				"crimson_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mCRIMSON_PLANKS = $v, $value),
+				"crimson_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mCRIMSON_PRESSURE_PLATE = $v, $value),
+				"crimson_roots" => self::unsafeAssign(fn(NetherRoots $v) => self::$_mCRIMSON_ROOTS = $v, $value),
+				"crimson_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mCRIMSON_SIGN = $v, $value),
+				"crimson_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mCRIMSON_SLAB = $v, $value),
+				"crimson_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mCRIMSON_STAIRS = $v, $value),
+				"crimson_stem" => self::unsafeAssign(fn(Wood $v) => self::$_mCRIMSON_STEM = $v, $value),
+				"crimson_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mCRIMSON_TRAPDOOR = $v, $value),
+				"crimson_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mCRIMSON_WALL_HANGING_SIGN = $v, $value),
+				"crimson_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mCRIMSON_WALL_SIGN = $v, $value),
+				"crying_obsidian" => self::unsafeAssign(fn(Opaque $v) => self::$_mCRYING_OBSIDIAN = $v, $value),
+				"cut_copper" => self::unsafeAssign(fn(Copper $v) => self::$_mCUT_COPPER = $v, $value),
+				"cut_copper_slab" => self::unsafeAssign(fn(CopperSlab $v) => self::$_mCUT_COPPER_SLAB = $v, $value),
+				"cut_copper_stairs" => self::unsafeAssign(fn(CopperStairs $v) => self::$_mCUT_COPPER_STAIRS = $v, $value),
+				"cut_red_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCUT_RED_SANDSTONE = $v, $value),
+				"cut_red_sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mCUT_RED_SANDSTONE_SLAB = $v, $value),
+				"cut_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mCUT_SANDSTONE = $v, $value),
+				"cut_sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mCUT_SANDSTONE_SLAB = $v, $value),
+				"dandelion" => self::unsafeAssign(fn(Flower $v) => self::$_mDANDELION = $v, $value),
+				"dark_oak_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mDARK_OAK_BUTTON = $v, $value),
+				"dark_oak_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"dark_oak_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"dark_oak_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mDARK_OAK_DOOR = $v, $value),
+				"dark_oak_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mDARK_OAK_FENCE = $v, $value),
+				"dark_oak_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mDARK_OAK_FENCE_GATE = $v, $value),
+				"dark_oak_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mDARK_OAK_LEAVES = $v, $value),
+				"dark_oak_log" => self::unsafeAssign(fn(Wood $v) => self::$_mDARK_OAK_LOG = $v, $value),
+				"dark_oak_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mDARK_OAK_PLANKS = $v, $value),
+				"dark_oak_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mDARK_OAK_PRESSURE_PLATE = $v, $value),
+				"dark_oak_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mDARK_OAK_SAPLING = $v, $value),
+				"dark_oak_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mDARK_OAK_SIGN = $v, $value),
+				"dark_oak_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mDARK_OAK_SLAB = $v, $value),
+				"dark_oak_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mDARK_OAK_STAIRS = $v, $value),
+				"dark_oak_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mDARK_OAK_TRAPDOOR = $v, $value),
+				"dark_oak_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mDARK_OAK_WALL_HANGING_SIGN = $v, $value),
+				"dark_oak_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mDARK_OAK_WALL_SIGN = $v, $value),
+				"dark_oak_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mDARK_OAK_WOOD = $v, $value),
+				"dark_prismarine" => self::unsafeAssign(fn(Opaque $v) => self::$_mDARK_PRISMARINE = $v, $value),
+				"dark_prismarine_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mDARK_PRISMARINE_SLAB = $v, $value),
+				"dark_prismarine_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mDARK_PRISMARINE_STAIRS = $v, $value),
+				"daylight_sensor" => self::unsafeAssign(fn(DaylightSensor $v) => self::$_mDAYLIGHT_SENSOR = $v, $value),
+				"dead_bush" => self::unsafeAssign(fn(DeadBush $v) => self::$_mDEAD_BUSH = $v, $value),
+				"deepslate" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mDEEPSLATE = $v, $value),
+				"deepslate_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mDEEPSLATE_BRICKS = $v, $value),
+				"deepslate_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mDEEPSLATE_BRICK_SLAB = $v, $value),
+				"deepslate_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mDEEPSLATE_BRICK_STAIRS = $v, $value),
+				"deepslate_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mDEEPSLATE_BRICK_WALL = $v, $value),
+				"deepslate_coal_ore" => self::unsafeAssign(fn(CoalOre $v) => self::$_mDEEPSLATE_COAL_ORE = $v, $value),
+				"deepslate_copper_ore" => self::unsafeAssign(fn(CopperOre $v) => self::$_mDEEPSLATE_COPPER_ORE = $v, $value),
+				"deepslate_diamond_ore" => self::unsafeAssign(fn(DiamondOre $v) => self::$_mDEEPSLATE_DIAMOND_ORE = $v, $value),
+				"deepslate_emerald_ore" => self::unsafeAssign(fn(EmeraldOre $v) => self::$_mDEEPSLATE_EMERALD_ORE = $v, $value),
+				"deepslate_gold_ore" => self::unsafeAssign(fn(GoldOre $v) => self::$_mDEEPSLATE_GOLD_ORE = $v, $value),
+				"deepslate_iron_ore" => self::unsafeAssign(fn(IronOre $v) => self::$_mDEEPSLATE_IRON_ORE = $v, $value),
+				"deepslate_lapis_lazuli_ore" => self::unsafeAssign(fn(LapisOre $v) => self::$_mDEEPSLATE_LAPIS_LAZULI_ORE = $v, $value),
+				"deepslate_redstone_ore" => self::unsafeAssign(fn(RedstoneOre $v) => self::$_mDEEPSLATE_REDSTONE_ORE = $v, $value),
+				"deepslate_tiles" => self::unsafeAssign(fn(Opaque $v) => self::$_mDEEPSLATE_TILES = $v, $value),
+				"deepslate_tile_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mDEEPSLATE_TILE_SLAB = $v, $value),
+				"deepslate_tile_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mDEEPSLATE_TILE_STAIRS = $v, $value),
+				"deepslate_tile_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mDEEPSLATE_TILE_WALL = $v, $value),
+				"detector_rail" => self::unsafeAssign(fn(DetectorRail $v) => self::$_mDETECTOR_RAIL = $v, $value),
+				"diamond" => self::unsafeAssign(fn(Opaque $v) => self::$_mDIAMOND = $v, $value),
+				"diamond_ore" => self::unsafeAssign(fn(DiamondOre $v) => self::$_mDIAMOND_ORE = $v, $value),
+				"diorite" => self::unsafeAssign(fn(Opaque $v) => self::$_mDIORITE = $v, $value),
+				"diorite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mDIORITE_SLAB = $v, $value),
+				"diorite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mDIORITE_STAIRS = $v, $value),
+				"diorite_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mDIORITE_WALL = $v, $value),
+				"dirt" => self::unsafeAssign(fn(Dirt $v) => self::$_mDIRT = $v, $value),
+				"double_pitcher_crop" => self::unsafeAssign(fn(DoublePitcherCrop $v) => self::$_mDOUBLE_PITCHER_CROP = $v, $value),
+				"double_tallgrass" => self::unsafeAssign(fn(DoubleTallGrass $v) => self::$_mDOUBLE_TALLGRASS = $v, $value),
+				"dragon_egg" => self::unsafeAssign(fn(DragonEgg $v) => self::$_mDRAGON_EGG = $v, $value),
+				"dried_kelp" => self::unsafeAssign(fn(DriedKelp $v) => self::$_mDRIED_KELP = $v, $value),
+				"dyed_candle" => self::unsafeAssign(fn(DyedCandle $v) => self::$_mDYED_CANDLE = $v, $value),
+				"dyed_shulker_box" => self::unsafeAssign(fn(DyedShulkerBox $v) => self::$_mDYED_SHULKER_BOX = $v, $value),
+				"element_actinium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ACTINIUM = $v, $value),
+				"element_aluminum" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ALUMINUM = $v, $value),
+				"element_americium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_AMERICIUM = $v, $value),
+				"element_antimony" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ANTIMONY = $v, $value),
+				"element_argon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ARGON = $v, $value),
+				"element_arsenic" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ARSENIC = $v, $value),
+				"element_astatine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ASTATINE = $v, $value),
+				"element_barium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BARIUM = $v, $value),
+				"element_berkelium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BERKELIUM = $v, $value),
+				"element_beryllium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BERYLLIUM = $v, $value),
+				"element_bismuth" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BISMUTH = $v, $value),
+				"element_bohrium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BOHRIUM = $v, $value),
+				"element_boron" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BORON = $v, $value),
+				"element_bromine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_BROMINE = $v, $value),
+				"element_cadmium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CADMIUM = $v, $value),
+				"element_calcium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CALCIUM = $v, $value),
+				"element_californium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CALIFORNIUM = $v, $value),
+				"element_carbon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CARBON = $v, $value),
+				"element_cerium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CERIUM = $v, $value),
+				"element_cesium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CESIUM = $v, $value),
+				"element_chlorine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CHLORINE = $v, $value),
+				"element_chromium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CHROMIUM = $v, $value),
+				"element_cobalt" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COBALT = $v, $value),
+				"element_constructor" => self::unsafeAssign(fn(ChemistryTable $v) => self::$_mELEMENT_CONSTRUCTOR = $v, $value),
+				"element_copernicium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COPERNICIUM = $v, $value),
+				"element_copper" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_COPPER = $v, $value),
+				"element_curium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_CURIUM = $v, $value),
+				"element_darmstadtium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DARMSTADTIUM = $v, $value),
+				"element_dubnium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DUBNIUM = $v, $value),
+				"element_dysprosium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_DYSPROSIUM = $v, $value),
+				"element_einsteinium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_EINSTEINIUM = $v, $value),
+				"element_erbium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ERBIUM = $v, $value),
+				"element_europium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_EUROPIUM = $v, $value),
+				"element_fermium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FERMIUM = $v, $value),
+				"element_flerovium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FLEROVIUM = $v, $value),
+				"element_fluorine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FLUORINE = $v, $value),
+				"element_francium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_FRANCIUM = $v, $value),
+				"element_gadolinium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GADOLINIUM = $v, $value),
+				"element_gallium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GALLIUM = $v, $value),
+				"element_germanium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GERMANIUM = $v, $value),
+				"element_gold" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_GOLD = $v, $value),
+				"element_hafnium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HAFNIUM = $v, $value),
+				"element_hassium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HASSIUM = $v, $value),
+				"element_helium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HELIUM = $v, $value),
+				"element_holmium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HOLMIUM = $v, $value),
+				"element_hydrogen" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_HYDROGEN = $v, $value),
+				"element_indium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_INDIUM = $v, $value),
+				"element_iodine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IODINE = $v, $value),
+				"element_iridium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IRIDIUM = $v, $value),
+				"element_iron" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_IRON = $v, $value),
+				"element_krypton" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_KRYPTON = $v, $value),
+				"element_lanthanum" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LANTHANUM = $v, $value),
+				"element_lawrencium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LAWRENCIUM = $v, $value),
+				"element_lead" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LEAD = $v, $value),
+				"element_lithium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LITHIUM = $v, $value),
+				"element_livermorium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LIVERMORIUM = $v, $value),
+				"element_lutetium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_LUTETIUM = $v, $value),
+				"element_magnesium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MAGNESIUM = $v, $value),
+				"element_manganese" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MANGANESE = $v, $value),
+				"element_meitnerium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MEITNERIUM = $v, $value),
+				"element_mendelevium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MENDELEVIUM = $v, $value),
+				"element_mercury" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MERCURY = $v, $value),
+				"element_molybdenum" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MOLYBDENUM = $v, $value),
+				"element_moscovium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_MOSCOVIUM = $v, $value),
+				"element_neodymium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEODYMIUM = $v, $value),
+				"element_neon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEON = $v, $value),
+				"element_neptunium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NEPTUNIUM = $v, $value),
+				"element_nickel" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NICKEL = $v, $value),
+				"element_nihonium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NIHONIUM = $v, $value),
+				"element_niobium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NIOBIUM = $v, $value),
+				"element_nitrogen" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NITROGEN = $v, $value),
+				"element_nobelium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_NOBELIUM = $v, $value),
+				"element_oganesson" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OGANESSON = $v, $value),
+				"element_osmium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OSMIUM = $v, $value),
+				"element_oxygen" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_OXYGEN = $v, $value),
+				"element_palladium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PALLADIUM = $v, $value),
+				"element_phosphorus" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PHOSPHORUS = $v, $value),
+				"element_platinum" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PLATINUM = $v, $value),
+				"element_plutonium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PLUTONIUM = $v, $value),
+				"element_polonium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_POLONIUM = $v, $value),
+				"element_potassium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_POTASSIUM = $v, $value),
+				"element_praseodymium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PRASEODYMIUM = $v, $value),
+				"element_promethium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PROMETHIUM = $v, $value),
+				"element_protactinium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_PROTACTINIUM = $v, $value),
+				"element_radium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RADIUM = $v, $value),
+				"element_radon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RADON = $v, $value),
+				"element_rhenium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RHENIUM = $v, $value),
+				"element_rhodium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RHODIUM = $v, $value),
+				"element_roentgenium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ROENTGENIUM = $v, $value),
+				"element_rubidium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUBIDIUM = $v, $value),
+				"element_ruthenium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUTHENIUM = $v, $value),
+				"element_rutherfordium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_RUTHERFORDIUM = $v, $value),
+				"element_samarium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SAMARIUM = $v, $value),
+				"element_scandium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SCANDIUM = $v, $value),
+				"element_seaborgium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SEABORGIUM = $v, $value),
+				"element_selenium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SELENIUM = $v, $value),
+				"element_silicon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SILICON = $v, $value),
+				"element_silver" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SILVER = $v, $value),
+				"element_sodium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SODIUM = $v, $value),
+				"element_strontium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_STRONTIUM = $v, $value),
+				"element_sulfur" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_SULFUR = $v, $value),
+				"element_tantalum" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TANTALUM = $v, $value),
+				"element_technetium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TECHNETIUM = $v, $value),
+				"element_tellurium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TELLURIUM = $v, $value),
+				"element_tennessine" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TENNESSINE = $v, $value),
+				"element_terbium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TERBIUM = $v, $value),
+				"element_thallium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THALLIUM = $v, $value),
+				"element_thorium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THORIUM = $v, $value),
+				"element_thulium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_THULIUM = $v, $value),
+				"element_tin" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TIN = $v, $value),
+				"element_titanium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TITANIUM = $v, $value),
+				"element_tungsten" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_TUNGSTEN = $v, $value),
+				"element_uranium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_URANIUM = $v, $value),
+				"element_vanadium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_VANADIUM = $v, $value),
+				"element_xenon" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_XENON = $v, $value),
+				"element_ytterbium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_YTTERBIUM = $v, $value),
+				"element_yttrium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_YTTRIUM = $v, $value),
+				"element_zero" => self::unsafeAssign(fn(Opaque $v) => self::$_mELEMENT_ZERO = $v, $value),
+				"element_zinc" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ZINC = $v, $value),
+				"element_zirconium" => self::unsafeAssign(fn(Element $v) => self::$_mELEMENT_ZIRCONIUM = $v, $value),
+				"emerald" => self::unsafeAssign(fn(Opaque $v) => self::$_mEMERALD = $v, $value),
+				"emerald_ore" => self::unsafeAssign(fn(EmeraldOre $v) => self::$_mEMERALD_ORE = $v, $value),
+				"enchanting_table" => self::unsafeAssign(fn(EnchantingTable $v) => self::$_mENCHANTING_TABLE = $v, $value),
+				"ender_chest" => self::unsafeAssign(fn(EnderChest $v) => self::$_mENDER_CHEST = $v, $value),
+				"end_portal_frame" => self::unsafeAssign(fn(EndPortalFrame $v) => self::$_mEND_PORTAL_FRAME = $v, $value),
+				"end_rod" => self::unsafeAssign(fn(EndRod $v) => self::$_mEND_ROD = $v, $value),
+				"end_stone" => self::unsafeAssign(fn(Opaque $v) => self::$_mEND_STONE = $v, $value),
+				"end_stone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mEND_STONE_BRICKS = $v, $value),
+				"end_stone_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mEND_STONE_BRICK_SLAB = $v, $value),
+				"end_stone_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mEND_STONE_BRICK_STAIRS = $v, $value),
+				"end_stone_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mEND_STONE_BRICK_WALL = $v, $value),
+				"fake_wooden_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mFAKE_WOODEN_SLAB = $v, $value),
+				"farmland" => self::unsafeAssign(fn(Farmland $v) => self::$_mFARMLAND = $v, $value),
+				"fern" => self::unsafeAssign(fn(TallGrass $v) => self::$_mFERN = $v, $value),
+				"fire" => self::unsafeAssign(fn(Fire $v) => self::$_mFIRE = $v, $value),
+				"fletching_table" => self::unsafeAssign(fn(FletchingTable $v) => self::$_mFLETCHING_TABLE = $v, $value),
+				"flowering_azalea_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mFLOWERING_AZALEA_LEAVES = $v, $value),
+				"flower_pot" => self::unsafeAssign(fn(FlowerPot $v) => self::$_mFLOWER_POT = $v, $value),
+				"froglight" => self::unsafeAssign(fn(Froglight $v) => self::$_mFROGLIGHT = $v, $value),
+				"frosted_ice" => self::unsafeAssign(fn(FrostedIce $v) => self::$_mFROSTED_ICE = $v, $value),
+				"furnace" => self::unsafeAssign(fn(Furnace $v) => self::$_mFURNACE = $v, $value),
+				"gilded_blackstone" => self::unsafeAssign(fn(GildedBlackstone $v) => self::$_mGILDED_BLACKSTONE = $v, $value),
+				"glass" => self::unsafeAssign(fn(Glass $v) => self::$_mGLASS = $v, $value),
+				"glass_pane" => self::unsafeAssign(fn(GlassPane $v) => self::$_mGLASS_PANE = $v, $value),
+				"glazed_terracotta" => self::unsafeAssign(fn(GlazedTerracotta $v) => self::$_mGLAZED_TERRACOTTA = $v, $value),
+				"glowing_item_frame" => self::unsafeAssign(fn(ItemFrame $v) => self::$_mGLOWING_ITEM_FRAME = $v, $value),
+				"glowing_obsidian" => self::unsafeAssign(fn(GlowingObsidian $v) => self::$_mGLOWING_OBSIDIAN = $v, $value),
+				"glowstone" => self::unsafeAssign(fn(Glowstone $v) => self::$_mGLOWSTONE = $v, $value),
+				"glow_lichen" => self::unsafeAssign(fn(GlowLichen $v) => self::$_mGLOW_LICHEN = $v, $value),
+				"gold" => self::unsafeAssign(fn(Opaque $v) => self::$_mGOLD = $v, $value),
+				"gold_ore" => self::unsafeAssign(fn(GoldOre $v) => self::$_mGOLD_ORE = $v, $value),
+				"granite" => self::unsafeAssign(fn(Opaque $v) => self::$_mGRANITE = $v, $value),
+				"granite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mGRANITE_SLAB = $v, $value),
+				"granite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mGRANITE_STAIRS = $v, $value),
+				"granite_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mGRANITE_WALL = $v, $value),
+				"grass" => self::unsafeAssign(fn(Grass $v) => self::$_mGRASS = $v, $value),
+				"grass_path" => self::unsafeAssign(fn(GrassPath $v) => self::$_mGRASS_PATH = $v, $value),
+				"gravel" => self::unsafeAssign(fn(Gravel $v) => self::$_mGRAVEL = $v, $value),
+				"green_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mGREEN_TORCH = $v, $value),
+				"hanging_roots" => self::unsafeAssign(fn(HangingRoots $v) => self::$_mHANGING_ROOTS = $v, $value),
+				"hardened_clay" => self::unsafeAssign(fn(HardenedClay $v) => self::$_mHARDENED_CLAY = $v, $value),
+				"hardened_glass" => self::unsafeAssign(fn(HardenedGlass $v) => self::$_mHARDENED_GLASS = $v, $value),
+				"hardened_glass_pane" => self::unsafeAssign(fn(HardenedGlassPane $v) => self::$_mHARDENED_GLASS_PANE = $v, $value),
+				"hay_bale" => self::unsafeAssign(fn(HayBale $v) => self::$_mHAY_BALE = $v, $value),
+				"honeycomb" => self::unsafeAssign(fn(Opaque $v) => self::$_mHONEYCOMB = $v, $value),
+				"hopper" => self::unsafeAssign(fn(Hopper $v) => self::$_mHOPPER = $v, $value),
+				"ice" => self::unsafeAssign(fn(Ice $v) => self::$_mICE = $v, $value),
+				"infested_chiseled_stone_brick" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_CHISELED_STONE_BRICK = $v, $value),
+				"infested_cobblestone" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_COBBLESTONE = $v, $value),
+				"infested_cracked_stone_brick" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_CRACKED_STONE_BRICK = $v, $value),
+				"infested_deepslate" => self::unsafeAssign(fn(InfestedPillar $v) => self::$_mINFESTED_DEEPSLATE = $v, $value),
+				"infested_mossy_stone_brick" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_MOSSY_STONE_BRICK = $v, $value),
+				"infested_stone" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_STONE = $v, $value),
+				"infested_stone_brick" => self::unsafeAssign(fn(InfestedStone $v) => self::$_mINFESTED_STONE_BRICK = $v, $value),
+				"info_update" => self::unsafeAssign(fn(Opaque $v) => self::$_mINFO_UPDATE = $v, $value),
+				"info_update2" => self::unsafeAssign(fn(Opaque $v) => self::$_mINFO_UPDATE2 = $v, $value),
+				"invisible_bedrock" => self::unsafeAssign(fn(Transparent $v) => self::$_mINVISIBLE_BEDROCK = $v, $value),
+				"iron" => self::unsafeAssign(fn(Opaque $v) => self::$_mIRON = $v, $value),
+				"iron_bars" => self::unsafeAssign(fn(Thin $v) => self::$_mIRON_BARS = $v, $value),
+				"iron_door" => self::unsafeAssign(fn(Door $v) => self::$_mIRON_DOOR = $v, $value),
+				"iron_ore" => self::unsafeAssign(fn(IronOre $v) => self::$_mIRON_ORE = $v, $value),
+				"iron_trapdoor" => self::unsafeAssign(fn(Trapdoor $v) => self::$_mIRON_TRAPDOOR = $v, $value),
+				"item_frame" => self::unsafeAssign(fn(ItemFrame $v) => self::$_mITEM_FRAME = $v, $value),
+				"jukebox" => self::unsafeAssign(fn(Jukebox $v) => self::$_mJUKEBOX = $v, $value),
+				"jungle_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mJUNGLE_BUTTON = $v, $value),
+				"jungle_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"jungle_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"jungle_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mJUNGLE_DOOR = $v, $value),
+				"jungle_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mJUNGLE_FENCE = $v, $value),
+				"jungle_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mJUNGLE_FENCE_GATE = $v, $value),
+				"jungle_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mJUNGLE_LEAVES = $v, $value),
+				"jungle_log" => self::unsafeAssign(fn(Wood $v) => self::$_mJUNGLE_LOG = $v, $value),
+				"jungle_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mJUNGLE_PLANKS = $v, $value),
+				"jungle_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mJUNGLE_PRESSURE_PLATE = $v, $value),
+				"jungle_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mJUNGLE_SAPLING = $v, $value),
+				"jungle_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mJUNGLE_SIGN = $v, $value),
+				"jungle_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mJUNGLE_SLAB = $v, $value),
+				"jungle_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mJUNGLE_STAIRS = $v, $value),
+				"jungle_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mJUNGLE_TRAPDOOR = $v, $value),
+				"jungle_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mJUNGLE_WALL_HANGING_SIGN = $v, $value),
+				"jungle_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mJUNGLE_WALL_SIGN = $v, $value),
+				"jungle_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mJUNGLE_WOOD = $v, $value),
+				"lab_table" => self::unsafeAssign(fn(ChemistryTable $v) => self::$_mLAB_TABLE = $v, $value),
+				"ladder" => self::unsafeAssign(fn(Ladder $v) => self::$_mLADDER = $v, $value),
+				"lantern" => self::unsafeAssign(fn(Lantern $v) => self::$_mLANTERN = $v, $value),
+				"lapis_lazuli" => self::unsafeAssign(fn(Opaque $v) => self::$_mLAPIS_LAZULI = $v, $value),
+				"lapis_lazuli_ore" => self::unsafeAssign(fn(LapisOre $v) => self::$_mLAPIS_LAZULI_ORE = $v, $value),
+				"large_fern" => self::unsafeAssign(fn(DoubleTallGrass $v) => self::$_mLARGE_FERN = $v, $value),
+				"lava" => self::unsafeAssign(fn(Lava $v) => self::$_mLAVA = $v, $value),
+				"lava_cauldron" => self::unsafeAssign(fn(LavaCauldron $v) => self::$_mLAVA_CAULDRON = $v, $value),
+				"lectern" => self::unsafeAssign(fn(Lectern $v) => self::$_mLECTERN = $v, $value),
+				"legacy_stonecutter" => self::unsafeAssign(fn(Opaque $v) => self::$_mLEGACY_STONECUTTER = $v, $value),
+				"lever" => self::unsafeAssign(fn(Lever $v) => self::$_mLEVER = $v, $value),
+				"light" => self::unsafeAssign(fn(Light $v) => self::$_mLIGHT = $v, $value),
+				"lightning_rod" => self::unsafeAssign(fn(LightningRod $v) => self::$_mLIGHTNING_ROD = $v, $value),
+				"lilac" => self::unsafeAssign(fn(DoublePlant $v) => self::$_mLILAC = $v, $value),
+				"lily_of_the_valley" => self::unsafeAssign(fn(Flower $v) => self::$_mLILY_OF_THE_VALLEY = $v, $value),
+				"lily_pad" => self::unsafeAssign(fn(WaterLily $v) => self::$_mLILY_PAD = $v, $value),
+				"lit_pumpkin" => self::unsafeAssign(fn(LitPumpkin $v) => self::$_mLIT_PUMPKIN = $v, $value),
+				"loom" => self::unsafeAssign(fn(Loom $v) => self::$_mLOOM = $v, $value),
+				"magma" => self::unsafeAssign(fn(Magma $v) => self::$_mMAGMA = $v, $value),
+				"mangrove_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mMANGROVE_BUTTON = $v, $value),
+				"mangrove_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"mangrove_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"mangrove_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mMANGROVE_DOOR = $v, $value),
+				"mangrove_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mMANGROVE_FENCE = $v, $value),
+				"mangrove_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mMANGROVE_FENCE_GATE = $v, $value),
+				"mangrove_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mMANGROVE_LEAVES = $v, $value),
+				"mangrove_log" => self::unsafeAssign(fn(Wood $v) => self::$_mMANGROVE_LOG = $v, $value),
+				"mangrove_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mMANGROVE_PLANKS = $v, $value),
+				"mangrove_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mMANGROVE_PRESSURE_PLATE = $v, $value),
+				"mangrove_roots" => self::unsafeAssign(fn(MangroveRoots $v) => self::$_mMANGROVE_ROOTS = $v, $value),
+				"mangrove_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mMANGROVE_SIGN = $v, $value),
+				"mangrove_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mMANGROVE_SLAB = $v, $value),
+				"mangrove_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mMANGROVE_STAIRS = $v, $value),
+				"mangrove_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mMANGROVE_TRAPDOOR = $v, $value),
+				"mangrove_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mMANGROVE_WALL_HANGING_SIGN = $v, $value),
+				"mangrove_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mMANGROVE_WALL_SIGN = $v, $value),
+				"mangrove_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mMANGROVE_WOOD = $v, $value),
+				"material_reducer" => self::unsafeAssign(fn(ChemistryTable $v) => self::$_mMATERIAL_REDUCER = $v, $value),
+				"melon" => self::unsafeAssign(fn(Melon $v) => self::$_mMELON = $v, $value),
+				"melon_stem" => self::unsafeAssign(fn(MelonStem $v) => self::$_mMELON_STEM = $v, $value),
+				"mob_head" => self::unsafeAssign(fn(MobHead $v) => self::$_mMOB_HEAD = $v, $value),
+				"monster_spawner" => self::unsafeAssign(fn(MonsterSpawner $v) => self::$_mMONSTER_SPAWNER = $v, $value),
+				"mossy_cobblestone" => self::unsafeAssign(fn(Opaque $v) => self::$_mMOSSY_COBBLESTONE = $v, $value),
+				"mossy_cobblestone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mMOSSY_COBBLESTONE_SLAB = $v, $value),
+				"mossy_cobblestone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mMOSSY_COBBLESTONE_STAIRS = $v, $value),
+				"mossy_cobblestone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mMOSSY_COBBLESTONE_WALL = $v, $value),
+				"mossy_stone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mMOSSY_STONE_BRICKS = $v, $value),
+				"mossy_stone_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mMOSSY_STONE_BRICK_SLAB = $v, $value),
+				"mossy_stone_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mMOSSY_STONE_BRICK_STAIRS = $v, $value),
+				"mossy_stone_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mMOSSY_STONE_BRICK_WALL = $v, $value),
+				"mud" => self::unsafeAssign(fn(Opaque $v) => self::$_mMUD = $v, $value),
+				"muddy_mangrove_roots" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mMUDDY_MANGROVE_ROOTS = $v, $value),
+				"mud_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mMUD_BRICKS = $v, $value),
+				"mud_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mMUD_BRICK_SLAB = $v, $value),
+				"mud_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mMUD_BRICK_STAIRS = $v, $value),
+				"mud_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mMUD_BRICK_WALL = $v, $value),
+				"mushroom_stem" => self::unsafeAssign(fn(MushroomStem $v) => self::$_mMUSHROOM_STEM = $v, $value),
+				"mycelium" => self::unsafeAssign(fn(Mycelium $v) => self::$_mMYCELIUM = $v, $value),
+				"netherite" => self::unsafeAssign(fn(Opaque $v) => self::$_mNETHERITE = $v, $value),
+				"netherrack" => self::unsafeAssign(fn(Netherrack $v) => self::$_mNETHERRACK = $v, $value),
+				"nether_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mNETHER_BRICKS = $v, $value),
+				"nether_brick_fence" => self::unsafeAssign(fn(Fence $v) => self::$_mNETHER_BRICK_FENCE = $v, $value),
+				"nether_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mNETHER_BRICK_SLAB = $v, $value),
+				"nether_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mNETHER_BRICK_STAIRS = $v, $value),
+				"nether_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mNETHER_BRICK_WALL = $v, $value),
+				"nether_gold_ore" => self::unsafeAssign(fn(NetherGoldOre $v) => self::$_mNETHER_GOLD_ORE = $v, $value),
+				"nether_portal" => self::unsafeAssign(fn(NetherPortal $v) => self::$_mNETHER_PORTAL = $v, $value),
+				"nether_quartz_ore" => self::unsafeAssign(fn(NetherQuartzOre $v) => self::$_mNETHER_QUARTZ_ORE = $v, $value),
+				"nether_reactor_core" => self::unsafeAssign(fn(NetherReactor $v) => self::$_mNETHER_REACTOR_CORE = $v, $value),
+				"nether_sprouts" => self::unsafeAssign(fn(NetherSprouts $v) => self::$_mNETHER_SPROUTS = $v, $value),
+				"nether_wart" => self::unsafeAssign(fn(NetherWartPlant $v) => self::$_mNETHER_WART = $v, $value),
+				"nether_wart_block" => self::unsafeAssign(fn(Opaque $v) => self::$_mNETHER_WART_BLOCK = $v, $value),
+				"note_block" => self::unsafeAssign(fn(Note $v) => self::$_mNOTE_BLOCK = $v, $value),
+				"oak_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mOAK_BUTTON = $v, $value),
+				"oak_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mOAK_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"oak_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mOAK_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"oak_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mOAK_DOOR = $v, $value),
+				"oak_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mOAK_FENCE = $v, $value),
+				"oak_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mOAK_FENCE_GATE = $v, $value),
+				"oak_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mOAK_LEAVES = $v, $value),
+				"oak_log" => self::unsafeAssign(fn(Wood $v) => self::$_mOAK_LOG = $v, $value),
+				"oak_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mOAK_PLANKS = $v, $value),
+				"oak_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mOAK_PRESSURE_PLATE = $v, $value),
+				"oak_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mOAK_SAPLING = $v, $value),
+				"oak_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mOAK_SIGN = $v, $value),
+				"oak_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mOAK_SLAB = $v, $value),
+				"oak_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mOAK_STAIRS = $v, $value),
+				"oak_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mOAK_TRAPDOOR = $v, $value),
+				"oak_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mOAK_WALL_HANGING_SIGN = $v, $value),
+				"oak_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mOAK_WALL_SIGN = $v, $value),
+				"oak_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mOAK_WOOD = $v, $value),
+				"obsidian" => self::unsafeAssign(fn(Opaque $v) => self::$_mOBSIDIAN = $v, $value),
+				"ominous_banner" => self::unsafeAssign(fn(OminousFloorBanner $v) => self::$_mOMINOUS_BANNER = $v, $value),
+				"ominous_wall_banner" => self::unsafeAssign(fn(OminousWallBanner $v) => self::$_mOMINOUS_WALL_BANNER = $v, $value),
+				"orange_tulip" => self::unsafeAssign(fn(Flower $v) => self::$_mORANGE_TULIP = $v, $value),
+				"oxeye_daisy" => self::unsafeAssign(fn(Flower $v) => self::$_mOXEYE_DAISY = $v, $value),
+				"packed_ice" => self::unsafeAssign(fn(PackedIce $v) => self::$_mPACKED_ICE = $v, $value),
+				"packed_mud" => self::unsafeAssign(fn(Opaque $v) => self::$_mPACKED_MUD = $v, $value),
+				"pale_oak_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mPALE_OAK_BUTTON = $v, $value),
+				"pale_oak_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"pale_oak_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"pale_oak_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mPALE_OAK_DOOR = $v, $value),
+				"pale_oak_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mPALE_OAK_FENCE = $v, $value),
+				"pale_oak_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mPALE_OAK_FENCE_GATE = $v, $value),
+				"pale_oak_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mPALE_OAK_LEAVES = $v, $value),
+				"pale_oak_log" => self::unsafeAssign(fn(Wood $v) => self::$_mPALE_OAK_LOG = $v, $value),
+				"pale_oak_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mPALE_OAK_PLANKS = $v, $value),
+				"pale_oak_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mPALE_OAK_PRESSURE_PLATE = $v, $value),
+				"pale_oak_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mPALE_OAK_SIGN = $v, $value),
+				"pale_oak_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mPALE_OAK_SLAB = $v, $value),
+				"pale_oak_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mPALE_OAK_STAIRS = $v, $value),
+				"pale_oak_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mPALE_OAK_TRAPDOOR = $v, $value),
+				"pale_oak_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mPALE_OAK_WALL_HANGING_SIGN = $v, $value),
+				"pale_oak_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mPALE_OAK_WALL_SIGN = $v, $value),
+				"pale_oak_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mPALE_OAK_WOOD = $v, $value),
+				"peony" => self::unsafeAssign(fn(DoublePlant $v) => self::$_mPEONY = $v, $value),
+				"pink_petals" => self::unsafeAssign(fn(PinkPetals $v) => self::$_mPINK_PETALS = $v, $value),
+				"pink_tulip" => self::unsafeAssign(fn(Flower $v) => self::$_mPINK_TULIP = $v, $value),
+				"pitcher_crop" => self::unsafeAssign(fn(PitcherCrop $v) => self::$_mPITCHER_CROP = $v, $value),
+				"pitcher_plant" => self::unsafeAssign(fn(DoublePlant $v) => self::$_mPITCHER_PLANT = $v, $value),
+				"podzol" => self::unsafeAssign(fn(Podzol $v) => self::$_mPODZOL = $v, $value),
+				"polished_andesite" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_ANDESITE = $v, $value),
+				"polished_andesite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_ANDESITE_SLAB = $v, $value),
+				"polished_andesite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_ANDESITE_STAIRS = $v, $value),
+				"polished_basalt" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mPOLISHED_BASALT = $v, $value),
+				"polished_blackstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_BLACKSTONE = $v, $value),
+				"polished_blackstone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_BLACKSTONE_BRICKS = $v, $value),
+				"polished_blackstone_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB = $v, $value),
+				"polished_blackstone_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS = $v, $value),
+				"polished_blackstone_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_BLACKSTONE_BRICK_WALL = $v, $value),
+				"polished_blackstone_button" => self::unsafeAssign(fn(StoneButton $v) => self::$_mPOLISHED_BLACKSTONE_BUTTON = $v, $value),
+				"polished_blackstone_pressure_plate" => self::unsafeAssign(fn(StonePressurePlate $v) => self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE = $v, $value),
+				"polished_blackstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_BLACKSTONE_SLAB = $v, $value),
+				"polished_blackstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_BLACKSTONE_STAIRS = $v, $value),
+				"polished_blackstone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_BLACKSTONE_WALL = $v, $value),
+				"polished_deepslate" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_DEEPSLATE = $v, $value),
+				"polished_deepslate_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_DEEPSLATE_SLAB = $v, $value),
+				"polished_deepslate_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_DEEPSLATE_STAIRS = $v, $value),
+				"polished_deepslate_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_DEEPSLATE_WALL = $v, $value),
+				"polished_diorite" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_DIORITE = $v, $value),
+				"polished_diorite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_DIORITE_SLAB = $v, $value),
+				"polished_diorite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_DIORITE_STAIRS = $v, $value),
+				"polished_granite" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_GRANITE = $v, $value),
+				"polished_granite_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_GRANITE_SLAB = $v, $value),
+				"polished_granite_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_GRANITE_STAIRS = $v, $value),
+				"polished_tuff" => self::unsafeAssign(fn(Opaque $v) => self::$_mPOLISHED_TUFF = $v, $value),
+				"polished_tuff_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPOLISHED_TUFF_SLAB = $v, $value),
+				"polished_tuff_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPOLISHED_TUFF_STAIRS = $v, $value),
+				"polished_tuff_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mPOLISHED_TUFF_WALL = $v, $value),
+				"poppy" => self::unsafeAssign(fn(Flower $v) => self::$_mPOPPY = $v, $value),
+				"potatoes" => self::unsafeAssign(fn(Potato $v) => self::$_mPOTATOES = $v, $value),
+				"potion_cauldron" => self::unsafeAssign(fn(PotionCauldron $v) => self::$_mPOTION_CAULDRON = $v, $value),
+				"powered_rail" => self::unsafeAssign(fn(PoweredRail $v) => self::$_mPOWERED_RAIL = $v, $value),
+				"prismarine" => self::unsafeAssign(fn(Opaque $v) => self::$_mPRISMARINE = $v, $value),
+				"prismarine_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mPRISMARINE_BRICKS = $v, $value),
+				"prismarine_bricks_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPRISMARINE_BRICKS_SLAB = $v, $value),
+				"prismarine_bricks_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPRISMARINE_BRICKS_STAIRS = $v, $value),
+				"prismarine_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPRISMARINE_SLAB = $v, $value),
+				"prismarine_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPRISMARINE_STAIRS = $v, $value),
+				"prismarine_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mPRISMARINE_WALL = $v, $value),
+				"pumpkin" => self::unsafeAssign(fn(Pumpkin $v) => self::$_mPUMPKIN = $v, $value),
+				"pumpkin_stem" => self::unsafeAssign(fn(PumpkinStem $v) => self::$_mPUMPKIN_STEM = $v, $value),
+				"purple_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mPURPLE_TORCH = $v, $value),
+				"purpur" => self::unsafeAssign(fn(Opaque $v) => self::$_mPURPUR = $v, $value),
+				"purpur_pillar" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mPURPUR_PILLAR = $v, $value),
+				"purpur_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mPURPUR_SLAB = $v, $value),
+				"purpur_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mPURPUR_STAIRS = $v, $value),
+				"quartz" => self::unsafeAssign(fn(Opaque $v) => self::$_mQUARTZ = $v, $value),
+				"quartz_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mQUARTZ_BRICKS = $v, $value),
+				"quartz_pillar" => self::unsafeAssign(fn(SimplePillar $v) => self::$_mQUARTZ_PILLAR = $v, $value),
+				"quartz_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mQUARTZ_SLAB = $v, $value),
+				"quartz_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mQUARTZ_STAIRS = $v, $value),
+				"rail" => self::unsafeAssign(fn(Rail $v) => self::$_mRAIL = $v, $value),
+				"raw_copper" => self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_COPPER = $v, $value),
+				"raw_gold" => self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_GOLD = $v, $value),
+				"raw_iron" => self::unsafeAssign(fn(Opaque $v) => self::$_mRAW_IRON = $v, $value),
+				"redstone" => self::unsafeAssign(fn(Redstone $v) => self::$_mREDSTONE = $v, $value),
+				"redstone_comparator" => self::unsafeAssign(fn(RedstoneComparator $v) => self::$_mREDSTONE_COMPARATOR = $v, $value),
+				"redstone_lamp" => self::unsafeAssign(fn(RedstoneLamp $v) => self::$_mREDSTONE_LAMP = $v, $value),
+				"redstone_ore" => self::unsafeAssign(fn(RedstoneOre $v) => self::$_mREDSTONE_ORE = $v, $value),
+				"redstone_repeater" => self::unsafeAssign(fn(RedstoneRepeater $v) => self::$_mREDSTONE_REPEATER = $v, $value),
+				"redstone_torch" => self::unsafeAssign(fn(RedstoneTorch $v) => self::$_mREDSTONE_TORCH = $v, $value),
+				"redstone_wire" => self::unsafeAssign(fn(RedstoneWire $v) => self::$_mREDSTONE_WIRE = $v, $value),
+				"red_mushroom" => self::unsafeAssign(fn(RedMushroom $v) => self::$_mRED_MUSHROOM = $v, $value),
+				"red_mushroom_block" => self::unsafeAssign(fn(RedMushroomBlock $v) => self::$_mRED_MUSHROOM_BLOCK = $v, $value),
+				"red_nether_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mRED_NETHER_BRICKS = $v, $value),
+				"red_nether_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mRED_NETHER_BRICK_SLAB = $v, $value),
+				"red_nether_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mRED_NETHER_BRICK_STAIRS = $v, $value),
+				"red_nether_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mRED_NETHER_BRICK_WALL = $v, $value),
+				"red_sand" => self::unsafeAssign(fn(Sand $v) => self::$_mRED_SAND = $v, $value),
+				"red_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mRED_SANDSTONE = $v, $value),
+				"red_sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mRED_SANDSTONE_SLAB = $v, $value),
+				"red_sandstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mRED_SANDSTONE_STAIRS = $v, $value),
+				"red_sandstone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mRED_SANDSTONE_WALL = $v, $value),
+				"red_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mRED_TORCH = $v, $value),
+				"red_tulip" => self::unsafeAssign(fn(Flower $v) => self::$_mRED_TULIP = $v, $value),
+				"reinforced_deepslate" => self::unsafeAssign(fn(Opaque $v) => self::$_mREINFORCED_DEEPSLATE = $v, $value),
+				"reserved6" => self::unsafeAssign(fn(Reserved6 $v) => self::$_mRESERVED6 = $v, $value),
+				"resin" => self::unsafeAssign(fn(Opaque $v) => self::$_mRESIN = $v, $value),
+				"resin_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mRESIN_BRICKS = $v, $value),
+				"resin_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mRESIN_BRICK_SLAB = $v, $value),
+				"resin_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mRESIN_BRICK_STAIRS = $v, $value),
+				"resin_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mRESIN_BRICK_WALL = $v, $value),
+				"resin_clump" => self::unsafeAssign(fn(ResinClump $v) => self::$_mRESIN_CLUMP = $v, $value),
+				"respawn_anchor" => self::unsafeAssign(fn(RespawnAnchor $v) => self::$_mRESPAWN_ANCHOR = $v, $value),
+				"rose_bush" => self::unsafeAssign(fn(DoublePlant $v) => self::$_mROSE_BUSH = $v, $value),
+				"sand" => self::unsafeAssign(fn(Sand $v) => self::$_mSAND = $v, $value),
+				"sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mSANDSTONE = $v, $value),
+				"sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSANDSTONE_SLAB = $v, $value),
+				"sandstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSANDSTONE_STAIRS = $v, $value),
+				"sandstone_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mSANDSTONE_WALL = $v, $value),
+				"sculk" => self::unsafeAssign(fn(Sculk $v) => self::$_mSCULK = $v, $value),
+				"sea_lantern" => self::unsafeAssign(fn(SeaLantern $v) => self::$_mSEA_LANTERN = $v, $value),
+				"sea_pickle" => self::unsafeAssign(fn(SeaPickle $v) => self::$_mSEA_PICKLE = $v, $value),
+				"shroomlight" => self::unsafeAssign(fn(Opaque $v) => self::$_mSHROOMLIGHT = $v, $value),
+				"shulker_box" => self::unsafeAssign(fn(ShulkerBox $v) => self::$_mSHULKER_BOX = $v, $value),
+				"slime" => self::unsafeAssign(fn(Slime $v) => self::$_mSLIME = $v, $value),
+				"small_dripleaf" => self::unsafeAssign(fn(SmallDripleaf $v) => self::$_mSMALL_DRIPLEAF = $v, $value),
+				"smithing_table" => self::unsafeAssign(fn(SmithingTable $v) => self::$_mSMITHING_TABLE = $v, $value),
+				"smoker" => self::unsafeAssign(fn(Furnace $v) => self::$_mSMOKER = $v, $value),
+				"smooth_basalt" => self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_BASALT = $v, $value),
+				"smooth_quartz" => self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_QUARTZ = $v, $value),
+				"smooth_quartz_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_QUARTZ_SLAB = $v, $value),
+				"smooth_quartz_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_QUARTZ_STAIRS = $v, $value),
+				"smooth_red_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_RED_SANDSTONE = $v, $value),
+				"smooth_red_sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_RED_SANDSTONE_SLAB = $v, $value),
+				"smooth_red_sandstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_RED_SANDSTONE_STAIRS = $v, $value),
+				"smooth_sandstone" => self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_SANDSTONE = $v, $value),
+				"smooth_sandstone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_SANDSTONE_SLAB = $v, $value),
+				"smooth_sandstone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSMOOTH_SANDSTONE_STAIRS = $v, $value),
+				"smooth_stone" => self::unsafeAssign(fn(Opaque $v) => self::$_mSMOOTH_STONE = $v, $value),
+				"smooth_stone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSMOOTH_STONE_SLAB = $v, $value),
+				"snow" => self::unsafeAssign(fn(Snow $v) => self::$_mSNOW = $v, $value),
+				"snow_layer" => self::unsafeAssign(fn(SnowLayer $v) => self::$_mSNOW_LAYER = $v, $value),
+				"soul_campfire" => self::unsafeAssign(fn(SoulCampfire $v) => self::$_mSOUL_CAMPFIRE = $v, $value),
+				"soul_fire" => self::unsafeAssign(fn(SoulFire $v) => self::$_mSOUL_FIRE = $v, $value),
+				"soul_lantern" => self::unsafeAssign(fn(Lantern $v) => self::$_mSOUL_LANTERN = $v, $value),
+				"soul_sand" => self::unsafeAssign(fn(SoulSand $v) => self::$_mSOUL_SAND = $v, $value),
+				"soul_soil" => self::unsafeAssign(fn(Opaque $v) => self::$_mSOUL_SOIL = $v, $value),
+				"soul_torch" => self::unsafeAssign(fn(Torch $v) => self::$_mSOUL_TORCH = $v, $value),
+				"sponge" => self::unsafeAssign(fn(Sponge $v) => self::$_mSPONGE = $v, $value),
+				"spore_blossom" => self::unsafeAssign(fn(SporeBlossom $v) => self::$_mSPORE_BLOSSOM = $v, $value),
+				"spruce_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mSPRUCE_BUTTON = $v, $value),
+				"spruce_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"spruce_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"spruce_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mSPRUCE_DOOR = $v, $value),
+				"spruce_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mSPRUCE_FENCE = $v, $value),
+				"spruce_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mSPRUCE_FENCE_GATE = $v, $value),
+				"spruce_leaves" => self::unsafeAssign(fn(Leaves $v) => self::$_mSPRUCE_LEAVES = $v, $value),
+				"spruce_log" => self::unsafeAssign(fn(Wood $v) => self::$_mSPRUCE_LOG = $v, $value),
+				"spruce_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mSPRUCE_PLANKS = $v, $value),
+				"spruce_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mSPRUCE_PRESSURE_PLATE = $v, $value),
+				"spruce_sapling" => self::unsafeAssign(fn(Sapling $v) => self::$_mSPRUCE_SAPLING = $v, $value),
+				"spruce_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mSPRUCE_SIGN = $v, $value),
+				"spruce_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mSPRUCE_SLAB = $v, $value),
+				"spruce_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mSPRUCE_STAIRS = $v, $value),
+				"spruce_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mSPRUCE_TRAPDOOR = $v, $value),
+				"spruce_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mSPRUCE_WALL_HANGING_SIGN = $v, $value),
+				"spruce_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mSPRUCE_WALL_SIGN = $v, $value),
+				"spruce_wood" => self::unsafeAssign(fn(Wood $v) => self::$_mSPRUCE_WOOD = $v, $value),
+				"stained_clay" => self::unsafeAssign(fn(StainedHardenedClay $v) => self::$_mSTAINED_CLAY = $v, $value),
+				"stained_glass" => self::unsafeAssign(fn(StainedGlass $v) => self::$_mSTAINED_GLASS = $v, $value),
+				"stained_glass_pane" => self::unsafeAssign(fn(StainedGlassPane $v) => self::$_mSTAINED_GLASS_PANE = $v, $value),
+				"stained_hardened_glass" => self::unsafeAssign(fn(StainedHardenedGlass $v) => self::$_mSTAINED_HARDENED_GLASS = $v, $value),
+				"stained_hardened_glass_pane" => self::unsafeAssign(fn(StainedHardenedGlassPane $v) => self::$_mSTAINED_HARDENED_GLASS_PANE = $v, $value),
+				"stone" => self::unsafeAssign(fn(Opaque $v) => self::$_mSTONE = $v, $value),
+				"stonecutter" => self::unsafeAssign(fn(Stonecutter $v) => self::$_mSTONECUTTER = $v, $value),
+				"stone_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mSTONE_BRICKS = $v, $value),
+				"stone_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSTONE_BRICK_SLAB = $v, $value),
+				"stone_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSTONE_BRICK_STAIRS = $v, $value),
+				"stone_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mSTONE_BRICK_WALL = $v, $value),
+				"stone_button" => self::unsafeAssign(fn(StoneButton $v) => self::$_mSTONE_BUTTON = $v, $value),
+				"stone_pressure_plate" => self::unsafeAssign(fn(StonePressurePlate $v) => self::$_mSTONE_PRESSURE_PLATE = $v, $value),
+				"stone_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mSTONE_SLAB = $v, $value),
+				"stone_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mSTONE_STAIRS = $v, $value),
+				"structure_void" => self::unsafeAssign(fn(StructureVoid $v) => self::$_mSTRUCTURE_VOID = $v, $value),
+				"sugarcane" => self::unsafeAssign(fn(Sugarcane $v) => self::$_mSUGARCANE = $v, $value),
+				"sunflower" => self::unsafeAssign(fn(DoublePlant $v) => self::$_mSUNFLOWER = $v, $value),
+				"sweet_berry_bush" => self::unsafeAssign(fn(SweetBerryBush $v) => self::$_mSWEET_BERRY_BUSH = $v, $value),
+				"tall_grass" => self::unsafeAssign(fn(TallGrass $v) => self::$_mTALL_GRASS = $v, $value),
+				"tinted_glass" => self::unsafeAssign(fn(TintedGlass $v) => self::$_mTINTED_GLASS = $v, $value),
+				"tnt" => self::unsafeAssign(fn(TNT $v) => self::$_mTNT = $v, $value),
+				"torch" => self::unsafeAssign(fn(Torch $v) => self::$_mTORCH = $v, $value),
+				"torchflower" => self::unsafeAssign(fn(Flower $v) => self::$_mTORCHFLOWER = $v, $value),
+				"torchflower_crop" => self::unsafeAssign(fn(TorchflowerCrop $v) => self::$_mTORCHFLOWER_CROP = $v, $value),
+				"trapped_chest" => self::unsafeAssign(fn(TrappedChest $v) => self::$_mTRAPPED_CHEST = $v, $value),
+				"tripwire" => self::unsafeAssign(fn(Tripwire $v) => self::$_mTRIPWIRE = $v, $value),
+				"tripwire_hook" => self::unsafeAssign(fn(TripwireHook $v) => self::$_mTRIPWIRE_HOOK = $v, $value),
+				"tuff" => self::unsafeAssign(fn(Opaque $v) => self::$_mTUFF = $v, $value),
+				"tuff_bricks" => self::unsafeAssign(fn(Opaque $v) => self::$_mTUFF_BRICKS = $v, $value),
+				"tuff_brick_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mTUFF_BRICK_SLAB = $v, $value),
+				"tuff_brick_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mTUFF_BRICK_STAIRS = $v, $value),
+				"tuff_brick_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mTUFF_BRICK_WALL = $v, $value),
+				"tuff_slab" => self::unsafeAssign(fn(Slab $v) => self::$_mTUFF_SLAB = $v, $value),
+				"tuff_stairs" => self::unsafeAssign(fn(Stair $v) => self::$_mTUFF_STAIRS = $v, $value),
+				"tuff_wall" => self::unsafeAssign(fn(Wall $v) => self::$_mTUFF_WALL = $v, $value),
+				"twisting_vines" => self::unsafeAssign(fn(NetherVines $v) => self::$_mTWISTING_VINES = $v, $value),
+				"underwater_torch" => self::unsafeAssign(fn(UnderwaterTorch $v) => self::$_mUNDERWATER_TORCH = $v, $value),
+				"vines" => self::unsafeAssign(fn(Vine $v) => self::$_mVINES = $v, $value),
+				"wall_banner" => self::unsafeAssign(fn(WallBanner $v) => self::$_mWALL_BANNER = $v, $value),
+				"wall_coral_fan" => self::unsafeAssign(fn(WallCoralFan $v) => self::$_mWALL_CORAL_FAN = $v, $value),
+				"warped_button" => self::unsafeAssign(fn(WoodenButton $v) => self::$_mWARPED_BUTTON = $v, $value),
+				"warped_ceiling_center_hanging_sign" => self::unsafeAssign(fn(CeilingCenterHangingSign $v) => self::$_mWARPED_CEILING_CENTER_HANGING_SIGN = $v, $value),
+				"warped_ceiling_edges_hanging_sign" => self::unsafeAssign(fn(CeilingEdgesHangingSign $v) => self::$_mWARPED_CEILING_EDGES_HANGING_SIGN = $v, $value),
+				"warped_door" => self::unsafeAssign(fn(WoodenDoor $v) => self::$_mWARPED_DOOR = $v, $value),
+				"warped_fence" => self::unsafeAssign(fn(WoodenFence $v) => self::$_mWARPED_FENCE = $v, $value),
+				"warped_fence_gate" => self::unsafeAssign(fn(FenceGate $v) => self::$_mWARPED_FENCE_GATE = $v, $value),
+				"warped_fungus" => self::unsafeAssign(fn(NetherFungus $v) => self::$_mWARPED_FUNGUS = $v, $value),
+				"warped_hyphae" => self::unsafeAssign(fn(Wood $v) => self::$_mWARPED_HYPHAE = $v, $value),
+				"warped_nylium" => self::unsafeAssign(fn(Nylium $v) => self::$_mWARPED_NYLIUM = $v, $value),
+				"warped_planks" => self::unsafeAssign(fn(Planks $v) => self::$_mWARPED_PLANKS = $v, $value),
+				"warped_pressure_plate" => self::unsafeAssign(fn(WoodenPressurePlate $v) => self::$_mWARPED_PRESSURE_PLATE = $v, $value),
+				"warped_roots" => self::unsafeAssign(fn(NetherRoots $v) => self::$_mWARPED_ROOTS = $v, $value),
+				"warped_sign" => self::unsafeAssign(fn(FloorSign $v) => self::$_mWARPED_SIGN = $v, $value),
+				"warped_slab" => self::unsafeAssign(fn(WoodenSlab $v) => self::$_mWARPED_SLAB = $v, $value),
+				"warped_stairs" => self::unsafeAssign(fn(WoodenStairs $v) => self::$_mWARPED_STAIRS = $v, $value),
+				"warped_stem" => self::unsafeAssign(fn(Wood $v) => self::$_mWARPED_STEM = $v, $value),
+				"warped_trapdoor" => self::unsafeAssign(fn(WoodenTrapdoor $v) => self::$_mWARPED_TRAPDOOR = $v, $value),
+				"warped_wall_hanging_sign" => self::unsafeAssign(fn(WallHangingSign $v) => self::$_mWARPED_WALL_HANGING_SIGN = $v, $value),
+				"warped_wall_sign" => self::unsafeAssign(fn(WallSign $v) => self::$_mWARPED_WALL_SIGN = $v, $value),
+				"warped_wart_block" => self::unsafeAssign(fn(Opaque $v) => self::$_mWARPED_WART_BLOCK = $v, $value),
+				"water" => self::unsafeAssign(fn(Water $v) => self::$_mWATER = $v, $value),
+				"water_cauldron" => self::unsafeAssign(fn(WaterCauldron $v) => self::$_mWATER_CAULDRON = $v, $value),
+				"weeping_vines" => self::unsafeAssign(fn(NetherVines $v) => self::$_mWEEPING_VINES = $v, $value),
+				"weighted_pressure_plate_heavy" => self::unsafeAssign(fn(WeightedPressurePlateHeavy $v) => self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY = $v, $value),
+				"weighted_pressure_plate_light" => self::unsafeAssign(fn(WeightedPressurePlateLight $v) => self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT = $v, $value),
+				"wheat" => self::unsafeAssign(fn(Wheat $v) => self::$_mWHEAT = $v, $value),
+				"white_tulip" => self::unsafeAssign(fn(Flower $v) => self::$_mWHITE_TULIP = $v, $value),
+				"wither_rose" => self::unsafeAssign(fn(WitherRose $v) => self::$_mWITHER_ROSE = $v, $value),
+				"wool" => self::unsafeAssign(fn(Wool $v) => self::$_mWOOL = $v, $value),
+				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
+			};
+		}
 	}
 
 	/**
@@ -1630,3901 +1638,3901 @@ final class VanillaBlocks{
 	 */
 	public static function getAll() : array{
 		if(!isset(self::$members)){ self::init(); }
-		return array_map(VanillaBlocksInputs::cloneMember(...), self::$members);
+		return array_map(VanillaBlocksInputs::preprocessMember(...), self::$members);
 	}
 
 	public static function ACACIA_BUTTON() : WoodenButton{
 		if(!isset(self::$_mACACIA_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_BUTTON);
 	}
 
 	public static function ACACIA_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mACACIA_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function ACACIA_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mACACIA_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function ACACIA_DOOR() : WoodenDoor{
 		if(!isset(self::$_mACACIA_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_DOOR);
 	}
 
 	public static function ACACIA_FENCE() : WoodenFence{
 		if(!isset(self::$_mACACIA_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_FENCE);
 	}
 
 	public static function ACACIA_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mACACIA_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_FENCE_GATE);
 	}
 
 	public static function ACACIA_LEAVES() : Leaves{
 		if(!isset(self::$_mACACIA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_LEAVES);
 	}
 
 	public static function ACACIA_LOG() : Wood{
 		if(!isset(self::$_mACACIA_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_LOG);
 	}
 
 	public static function ACACIA_PLANKS() : Planks{
 		if(!isset(self::$_mACACIA_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_PLANKS);
 	}
 
 	public static function ACACIA_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mACACIA_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_PRESSURE_PLATE);
 	}
 
 	public static function ACACIA_SAPLING() : Sapling{
 		if(!isset(self::$_mACACIA_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SAPLING);
 	}
 
 	public static function ACACIA_SIGN() : FloorSign{
 		if(!isset(self::$_mACACIA_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SIGN);
 	}
 
 	public static function ACACIA_SLAB() : WoodenSlab{
 		if(!isset(self::$_mACACIA_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SLAB);
 	}
 
 	public static function ACACIA_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mACACIA_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_STAIRS);
 	}
 
 	public static function ACACIA_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mACACIA_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_TRAPDOOR);
 	}
 
 	public static function ACACIA_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mACACIA_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WALL_HANGING_SIGN);
 	}
 
 	public static function ACACIA_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mACACIA_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WALL_SIGN);
 	}
 
 	public static function ACACIA_WOOD() : Wood{
 		if(!isset(self::$_mACACIA_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACACIA_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WOOD);
 	}
 
 	public static function ACTIVATOR_RAIL() : ActivatorRail{
 		if(!isset(self::$_mACTIVATOR_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mACTIVATOR_RAIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mACTIVATOR_RAIL);
 	}
 
 	public static function AIR() : Air{
 		if(!isset(self::$_mAIR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mAIR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mAIR);
 	}
 
 	public static function ALLIUM() : Flower{
 		if(!isset(self::$_mALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mALLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mALLIUM);
 	}
 
 	public static function ALL_SIDED_MUSHROOM_STEM() : MushroomStem{
 		if(!isset(self::$_mALL_SIDED_MUSHROOM_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mALL_SIDED_MUSHROOM_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mALL_SIDED_MUSHROOM_STEM);
 	}
 
 	public static function AMETHYST() : Opaque{
 		if(!isset(self::$_mAMETHYST)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mAMETHYST);
+		return VanillaBlocksInputs::preprocessMember(self::$_mAMETHYST);
 	}
 
 	public static function AMETHYST_CLUSTER() : AmethystCluster{
 		if(!isset(self::$_mAMETHYST_CLUSTER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mAMETHYST_CLUSTER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mAMETHYST_CLUSTER);
 	}
 
 	public static function ANCIENT_DEBRIS() : Opaque{
 		if(!isset(self::$_mANCIENT_DEBRIS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANCIENT_DEBRIS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANCIENT_DEBRIS);
 	}
 
 	public static function ANDESITE() : Opaque{
 		if(!isset(self::$_mANDESITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANDESITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE);
 	}
 
 	public static function ANDESITE_SLAB() : Slab{
 		if(!isset(self::$_mANDESITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANDESITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_SLAB);
 	}
 
 	public static function ANDESITE_STAIRS() : Stair{
 		if(!isset(self::$_mANDESITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANDESITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_STAIRS);
 	}
 
 	public static function ANDESITE_WALL() : Wall{
 		if(!isset(self::$_mANDESITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANDESITE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_WALL);
 	}
 
 	public static function ANVIL() : Anvil{
 		if(!isset(self::$_mANVIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mANVIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mANVIL);
 	}
 
 	public static function AZALEA_LEAVES() : Leaves{
 		if(!isset(self::$_mAZALEA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mAZALEA_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mAZALEA_LEAVES);
 	}
 
 	public static function AZURE_BLUET() : Flower{
 		if(!isset(self::$_mAZURE_BLUET)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mAZURE_BLUET);
+		return VanillaBlocksInputs::preprocessMember(self::$_mAZURE_BLUET);
 	}
 
 	public static function BAMBOO() : Bamboo{
 		if(!isset(self::$_mBAMBOO)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBAMBOO);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBAMBOO);
 	}
 
 	public static function BAMBOO_SAPLING() : BambooSapling{
 		if(!isset(self::$_mBAMBOO_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBAMBOO_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBAMBOO_SAPLING);
 	}
 
 	public static function BANNER() : FloorBanner{
 		if(!isset(self::$_mBANNER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBANNER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBANNER);
 	}
 
 	public static function BARREL() : Barrel{
 		if(!isset(self::$_mBARREL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBARREL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBARREL);
 	}
 
 	public static function BARRIER() : Transparent{
 		if(!isset(self::$_mBARRIER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBARRIER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBARRIER);
 	}
 
 	public static function BASALT() : SimplePillar{
 		if(!isset(self::$_mBASALT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBASALT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBASALT);
 	}
 
 	public static function BEACON() : Beacon{
 		if(!isset(self::$_mBEACON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBEACON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBEACON);
 	}
 
 	public static function BED() : Bed{
 		if(!isset(self::$_mBED)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBED);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBED);
 	}
 
 	public static function BEDROCK() : Bedrock{
 		if(!isset(self::$_mBEDROCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBEDROCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBEDROCK);
 	}
 
 	public static function BEETROOTS() : Beetroot{
 		if(!isset(self::$_mBEETROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBEETROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBEETROOTS);
 	}
 
 	public static function BELL() : Bell{
 		if(!isset(self::$_mBELL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBELL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBELL);
 	}
 
 	public static function BIG_DRIPLEAF_HEAD() : BigDripleafHead{
 		if(!isset(self::$_mBIG_DRIPLEAF_HEAD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIG_DRIPLEAF_HEAD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIG_DRIPLEAF_HEAD);
 	}
 
 	public static function BIG_DRIPLEAF_STEM() : BigDripleafStem{
 		if(!isset(self::$_mBIG_DRIPLEAF_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIG_DRIPLEAF_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIG_DRIPLEAF_STEM);
 	}
 
 	public static function BIRCH_BUTTON() : WoodenButton{
 		if(!isset(self::$_mBIRCH_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_BUTTON);
 	}
 
 	public static function BIRCH_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function BIRCH_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function BIRCH_DOOR() : WoodenDoor{
 		if(!isset(self::$_mBIRCH_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_DOOR);
 	}
 
 	public static function BIRCH_FENCE() : WoodenFence{
 		if(!isset(self::$_mBIRCH_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_FENCE);
 	}
 
 	public static function BIRCH_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mBIRCH_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_FENCE_GATE);
 	}
 
 	public static function BIRCH_LEAVES() : Leaves{
 		if(!isset(self::$_mBIRCH_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_LEAVES);
 	}
 
 	public static function BIRCH_LOG() : Wood{
 		if(!isset(self::$_mBIRCH_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_LOG);
 	}
 
 	public static function BIRCH_PLANKS() : Planks{
 		if(!isset(self::$_mBIRCH_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_PLANKS);
 	}
 
 	public static function BIRCH_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mBIRCH_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_PRESSURE_PLATE);
 	}
 
 	public static function BIRCH_SAPLING() : Sapling{
 		if(!isset(self::$_mBIRCH_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SAPLING);
 	}
 
 	public static function BIRCH_SIGN() : FloorSign{
 		if(!isset(self::$_mBIRCH_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SIGN);
 	}
 
 	public static function BIRCH_SLAB() : WoodenSlab{
 		if(!isset(self::$_mBIRCH_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SLAB);
 	}
 
 	public static function BIRCH_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mBIRCH_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_STAIRS);
 	}
 
 	public static function BIRCH_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mBIRCH_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_TRAPDOOR);
 	}
 
 	public static function BIRCH_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mBIRCH_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WALL_HANGING_SIGN);
 	}
 
 	public static function BIRCH_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mBIRCH_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WALL_SIGN);
 	}
 
 	public static function BIRCH_WOOD() : Wood{
 		if(!isset(self::$_mBIRCH_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBIRCH_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WOOD);
 	}
 
 	public static function BLACKSTONE() : Opaque{
 		if(!isset(self::$_mBLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLACKSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE);
 	}
 
 	public static function BLACKSTONE_SLAB() : Slab{
 		if(!isset(self::$_mBLACKSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLACKSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_SLAB);
 	}
 
 	public static function BLACKSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mBLACKSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLACKSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_STAIRS);
 	}
 
 	public static function BLACKSTONE_WALL() : Wall{
 		if(!isset(self::$_mBLACKSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLACKSTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_WALL);
 	}
 
 	public static function BLAST_FURNACE() : Furnace{
 		if(!isset(self::$_mBLAST_FURNACE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLAST_FURNACE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLAST_FURNACE);
 	}
 
 	public static function BLUE_ICE() : BlueIce{
 		if(!isset(self::$_mBLUE_ICE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLUE_ICE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_ICE);
 	}
 
 	public static function BLUE_ORCHID() : Flower{
 		if(!isset(self::$_mBLUE_ORCHID)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLUE_ORCHID);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_ORCHID);
 	}
 
 	public static function BLUE_TORCH() : Torch{
 		if(!isset(self::$_mBLUE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBLUE_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_TORCH);
 	}
 
 	public static function BONE_BLOCK() : BoneBlock{
 		if(!isset(self::$_mBONE_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBONE_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBONE_BLOCK);
 	}
 
 	public static function BOOKSHELF() : Bookshelf{
 		if(!isset(self::$_mBOOKSHELF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBOOKSHELF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBOOKSHELF);
 	}
 
 	public static function BREWING_STAND() : BrewingStand{
 		if(!isset(self::$_mBREWING_STAND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBREWING_STAND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBREWING_STAND);
 	}
 
 	public static function BRICKS() : Opaque{
 		if(!isset(self::$_mBRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBRICKS);
 	}
 
 	public static function BRICK_SLAB() : Slab{
 		if(!isset(self::$_mBRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_SLAB);
 	}
 
 	public static function BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mBRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_STAIRS);
 	}
 
 	public static function BRICK_WALL() : Wall{
 		if(!isset(self::$_mBRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_WALL);
 	}
 
 	public static function BROWN_MUSHROOM() : BrownMushroom{
 		if(!isset(self::$_mBROWN_MUSHROOM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBROWN_MUSHROOM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBROWN_MUSHROOM);
 	}
 
 	public static function BROWN_MUSHROOM_BLOCK() : BrownMushroomBlock{
 		if(!isset(self::$_mBROWN_MUSHROOM_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBROWN_MUSHROOM_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBROWN_MUSHROOM_BLOCK);
 	}
 
 	public static function BUDDING_AMETHYST() : BuddingAmethyst{
 		if(!isset(self::$_mBUDDING_AMETHYST)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mBUDDING_AMETHYST);
+		return VanillaBlocksInputs::preprocessMember(self::$_mBUDDING_AMETHYST);
 	}
 
 	public static function CACTUS() : Cactus{
 		if(!isset(self::$_mCACTUS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCACTUS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCACTUS);
 	}
 
 	public static function CACTUS_FLOWER() : CactusFlower{
 		if(!isset(self::$_mCACTUS_FLOWER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCACTUS_FLOWER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCACTUS_FLOWER);
 	}
 
 	public static function CAKE() : Cake{
 		if(!isset(self::$_mCAKE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAKE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE);
 	}
 
 	public static function CAKE_WITH_CANDLE() : CakeWithCandle{
 		if(!isset(self::$_mCAKE_WITH_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAKE_WITH_CANDLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE_WITH_CANDLE);
 	}
 
 	public static function CAKE_WITH_DYED_CANDLE() : CakeWithDyedCandle{
 		if(!isset(self::$_mCAKE_WITH_DYED_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAKE_WITH_DYED_CANDLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE_WITH_DYED_CANDLE);
 	}
 
 	public static function CALCITE() : Opaque{
 		if(!isset(self::$_mCALCITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCALCITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCALCITE);
 	}
 
 	public static function CAMPFIRE() : Campfire{
 		if(!isset(self::$_mCAMPFIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAMPFIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAMPFIRE);
 	}
 
 	public static function CANDLE() : Candle{
 		if(!isset(self::$_mCANDLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCANDLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCANDLE);
 	}
 
 	public static function CARPET() : Carpet{
 		if(!isset(self::$_mCARPET)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCARPET);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCARPET);
 	}
 
 	public static function CARROTS() : Carrot{
 		if(!isset(self::$_mCARROTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCARROTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCARROTS);
 	}
 
 	public static function CARTOGRAPHY_TABLE() : CartographyTable{
 		if(!isset(self::$_mCARTOGRAPHY_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCARTOGRAPHY_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCARTOGRAPHY_TABLE);
 	}
 
 	public static function CARVED_PUMPKIN() : CarvedPumpkin{
 		if(!isset(self::$_mCARVED_PUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCARVED_PUMPKIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCARVED_PUMPKIN);
 	}
 
 	public static function CAULDRON() : Cauldron{
 		if(!isset(self::$_mCAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAULDRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAULDRON);
 	}
 
 	public static function CAVE_VINES() : CaveVines{
 		if(!isset(self::$_mCAVE_VINES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCAVE_VINES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCAVE_VINES);
 	}
 
 	public static function CHAIN() : Chain{
 		if(!isset(self::$_mCHAIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHAIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHAIN);
 	}
 
 	public static function CHEMICAL_HEAT() : ChemicalHeat{
 		if(!isset(self::$_mCHEMICAL_HEAT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHEMICAL_HEAT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHEMICAL_HEAT);
 	}
 
 	public static function CHERRY_BUTTON() : WoodenButton{
 		if(!isset(self::$_mCHERRY_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_BUTTON);
 	}
 
 	public static function CHERRY_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function CHERRY_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function CHERRY_DOOR() : WoodenDoor{
 		if(!isset(self::$_mCHERRY_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_DOOR);
 	}
 
 	public static function CHERRY_FENCE() : WoodenFence{
 		if(!isset(self::$_mCHERRY_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_FENCE);
 	}
 
 	public static function CHERRY_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mCHERRY_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_FENCE_GATE);
 	}
 
 	public static function CHERRY_LEAVES() : Leaves{
 		if(!isset(self::$_mCHERRY_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_LEAVES);
 	}
 
 	public static function CHERRY_LOG() : Wood{
 		if(!isset(self::$_mCHERRY_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_LOG);
 	}
 
 	public static function CHERRY_PLANKS() : Planks{
 		if(!isset(self::$_mCHERRY_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_PLANKS);
 	}
 
 	public static function CHERRY_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mCHERRY_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_PRESSURE_PLATE);
 	}
 
 	public static function CHERRY_SIGN() : FloorSign{
 		if(!isset(self::$_mCHERRY_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_SIGN);
 	}
 
 	public static function CHERRY_SLAB() : WoodenSlab{
 		if(!isset(self::$_mCHERRY_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_SLAB);
 	}
 
 	public static function CHERRY_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mCHERRY_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_STAIRS);
 	}
 
 	public static function CHERRY_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mCHERRY_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_TRAPDOOR);
 	}
 
 	public static function CHERRY_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mCHERRY_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WALL_HANGING_SIGN);
 	}
 
 	public static function CHERRY_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mCHERRY_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WALL_SIGN);
 	}
 
 	public static function CHERRY_WOOD() : Wood{
 		if(!isset(self::$_mCHERRY_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHERRY_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WOOD);
 	}
 
 	public static function CHEST() : Chest{
 		if(!isset(self::$_mCHEST)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHEST);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHEST);
 	}
 
 	public static function CHISELED_BOOKSHELF() : ChiseledBookshelf{
 		if(!isset(self::$_mCHISELED_BOOKSHELF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_BOOKSHELF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_BOOKSHELF);
 	}
 
 	public static function CHISELED_COPPER() : Copper{
 		if(!isset(self::$_mCHISELED_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_COPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_COPPER);
 	}
 
 	public static function CHISELED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mCHISELED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_DEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_DEEPSLATE);
 	}
 
 	public static function CHISELED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_NETHER_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_NETHER_BRICKS);
 	}
 
 	public static function CHISELED_POLISHED_BLACKSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_POLISHED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_POLISHED_BLACKSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_POLISHED_BLACKSTONE);
 	}
 
 	public static function CHISELED_QUARTZ() : SimplePillar{
 		if(!isset(self::$_mCHISELED_QUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_QUARTZ);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_QUARTZ);
 	}
 
 	public static function CHISELED_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_RED_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_RED_SANDSTONE);
 	}
 
 	public static function CHISELED_RESIN_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_RESIN_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_RESIN_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_RESIN_BRICKS);
 	}
 
 	public static function CHISELED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_SANDSTONE);
 	}
 
 	public static function CHISELED_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_STONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_STONE_BRICKS);
 	}
 
 	public static function CHISELED_TUFF() : Opaque{
 		if(!isset(self::$_mCHISELED_TUFF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_TUFF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_TUFF);
 	}
 
 	public static function CHISELED_TUFF_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_TUFF_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHISELED_TUFF_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_TUFF_BRICKS);
 	}
 
 	public static function CHORUS_FLOWER() : ChorusFlower{
 		if(!isset(self::$_mCHORUS_FLOWER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHORUS_FLOWER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHORUS_FLOWER);
 	}
 
 	public static function CHORUS_PLANT() : ChorusPlant{
 		if(!isset(self::$_mCHORUS_PLANT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCHORUS_PLANT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCHORUS_PLANT);
 	}
 
 	public static function CLAY() : Clay{
 		if(!isset(self::$_mCLAY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCLAY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCLAY);
 	}
 
 	public static function COAL() : Coal{
 		if(!isset(self::$_mCOAL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOAL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOAL);
 	}
 
 	public static function COAL_ORE() : CoalOre{
 		if(!isset(self::$_mCOAL_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOAL_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOAL_ORE);
 	}
 
 	public static function COBBLED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLED_DEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE);
 	}
 
 	public static function COBBLED_DEEPSLATE_SLAB() : Slab{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLED_DEEPSLATE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_SLAB);
 	}
 
 	public static function COBBLED_DEEPSLATE_STAIRS() : Stair{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLED_DEEPSLATE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_STAIRS);
 	}
 
 	public static function COBBLED_DEEPSLATE_WALL() : Wall{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLED_DEEPSLATE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_WALL);
 	}
 
 	public static function COBBLESTONE() : Opaque{
 		if(!isset(self::$_mCOBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLESTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE);
 	}
 
 	public static function COBBLESTONE_SLAB() : Slab{
 		if(!isset(self::$_mCOBBLESTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLESTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_SLAB);
 	}
 
 	public static function COBBLESTONE_STAIRS() : Stair{
 		if(!isset(self::$_mCOBBLESTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLESTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_STAIRS);
 	}
 
 	public static function COBBLESTONE_WALL() : Wall{
 		if(!isset(self::$_mCOBBLESTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBBLESTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_WALL);
 	}
 
 	public static function COBWEB() : Cobweb{
 		if(!isset(self::$_mCOBWEB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOBWEB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOBWEB);
 	}
 
 	public static function COCOA_POD() : CocoaBlock{
 		if(!isset(self::$_mCOCOA_POD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOCOA_POD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOCOA_POD);
 	}
 
 	public static function COMPOUND_CREATOR() : ChemistryTable{
 		if(!isset(self::$_mCOMPOUND_CREATOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOMPOUND_CREATOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOMPOUND_CREATOR);
 	}
 
 	public static function CONCRETE() : Concrete{
 		if(!isset(self::$_mCONCRETE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCONCRETE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCONCRETE);
 	}
 
 	public static function CONCRETE_POWDER() : ConcretePowder{
 		if(!isset(self::$_mCONCRETE_POWDER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCONCRETE_POWDER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCONCRETE_POWDER);
 	}
 
 	public static function COPPER() : Copper{
 		if(!isset(self::$_mCOPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER);
 	}
 
 	public static function COPPER_BARS() : CopperBars{
 		if(!isset(self::$_mCOPPER_BARS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_BARS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_BARS);
 	}
 
 	public static function COPPER_BULB() : CopperBulb{
 		if(!isset(self::$_mCOPPER_BULB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_BULB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_BULB);
 	}
 
 	public static function COPPER_CHAIN() : CopperChain{
 		if(!isset(self::$_mCOPPER_CHAIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_CHAIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_CHAIN);
 	}
 
 	public static function COPPER_DOOR() : CopperDoor{
 		if(!isset(self::$_mCOPPER_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_DOOR);
 	}
 
 	public static function COPPER_GRATE() : CopperGrate{
 		if(!isset(self::$_mCOPPER_GRATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_GRATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_GRATE);
 	}
 
 	public static function COPPER_LANTERN() : CopperLantern{
 		if(!isset(self::$_mCOPPER_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_LANTERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_LANTERN);
 	}
 
 	public static function COPPER_ORE() : CopperOre{
 		if(!isset(self::$_mCOPPER_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_ORE);
 	}
 
 	public static function COPPER_TORCH() : Torch{
 		if(!isset(self::$_mCOPPER_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_TORCH);
 	}
 
 	public static function COPPER_TRAPDOOR() : CopperTrapdoor{
 		if(!isset(self::$_mCOPPER_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCOPPER_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_TRAPDOOR);
 	}
 
 	public static function CORAL() : Coral{
 		if(!isset(self::$_mCORAL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCORAL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL);
 	}
 
 	public static function CORAL_BLOCK() : CoralBlock{
 		if(!isset(self::$_mCORAL_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCORAL_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL_BLOCK);
 	}
 
 	public static function CORAL_FAN() : FloorCoralFan{
 		if(!isset(self::$_mCORAL_FAN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCORAL_FAN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL_FAN);
 	}
 
 	public static function CORNFLOWER() : Flower{
 		if(!isset(self::$_mCORNFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCORNFLOWER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCORNFLOWER);
 	}
 
 	public static function CRACKED_DEEPSLATE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_DEEPSLATE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRACKED_DEEPSLATE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_DEEPSLATE_BRICKS);
 	}
 
 	public static function CRACKED_DEEPSLATE_TILES() : Opaque{
 		if(!isset(self::$_mCRACKED_DEEPSLATE_TILES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRACKED_DEEPSLATE_TILES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_DEEPSLATE_TILES);
 	}
 
 	public static function CRACKED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRACKED_NETHER_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_NETHER_BRICKS);
 	}
 
 	public static function CRACKED_POLISHED_BLACKSTONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS);
 	}
 
 	public static function CRACKED_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRACKED_STONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_STONE_BRICKS);
 	}
 
 	public static function CRAFTING_TABLE() : CraftingTable{
 		if(!isset(self::$_mCRAFTING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRAFTING_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRAFTING_TABLE);
 	}
 
 	public static function CRIMSON_BUTTON() : WoodenButton{
 		if(!isset(self::$_mCRIMSON_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_BUTTON);
 	}
 
 	public static function CRIMSON_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function CRIMSON_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function CRIMSON_DOOR() : WoodenDoor{
 		if(!isset(self::$_mCRIMSON_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_DOOR);
 	}
 
 	public static function CRIMSON_FENCE() : WoodenFence{
 		if(!isset(self::$_mCRIMSON_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FENCE);
 	}
 
 	public static function CRIMSON_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mCRIMSON_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FENCE_GATE);
 	}
 
 	public static function CRIMSON_FUNGUS() : NetherFungus{
 		if(!isset(self::$_mCRIMSON_FUNGUS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_FUNGUS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FUNGUS);
 	}
 
 	public static function CRIMSON_HYPHAE() : Wood{
 		if(!isset(self::$_mCRIMSON_HYPHAE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_HYPHAE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_HYPHAE);
 	}
 
 	public static function CRIMSON_NYLIUM() : Nylium{
 		if(!isset(self::$_mCRIMSON_NYLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_NYLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_NYLIUM);
 	}
 
 	public static function CRIMSON_PLANKS() : Planks{
 		if(!isset(self::$_mCRIMSON_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_PLANKS);
 	}
 
 	public static function CRIMSON_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mCRIMSON_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_PRESSURE_PLATE);
 	}
 
 	public static function CRIMSON_ROOTS() : NetherRoots{
 		if(!isset(self::$_mCRIMSON_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_ROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_ROOTS);
 	}
 
 	public static function CRIMSON_SIGN() : FloorSign{
 		if(!isset(self::$_mCRIMSON_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_SIGN);
 	}
 
 	public static function CRIMSON_SLAB() : WoodenSlab{
 		if(!isset(self::$_mCRIMSON_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_SLAB);
 	}
 
 	public static function CRIMSON_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mCRIMSON_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_STAIRS);
 	}
 
 	public static function CRIMSON_STEM() : Wood{
 		if(!isset(self::$_mCRIMSON_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_STEM);
 	}
 
 	public static function CRIMSON_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mCRIMSON_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_TRAPDOOR);
 	}
 
 	public static function CRIMSON_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mCRIMSON_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_WALL_HANGING_SIGN);
 	}
 
 	public static function CRIMSON_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mCRIMSON_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRIMSON_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_WALL_SIGN);
 	}
 
 	public static function CRYING_OBSIDIAN() : Opaque{
 		if(!isset(self::$_mCRYING_OBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCRYING_OBSIDIAN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCRYING_OBSIDIAN);
 	}
 
 	public static function CUT_COPPER() : Copper{
 		if(!isset(self::$_mCUT_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_COPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER);
 	}
 
 	public static function CUT_COPPER_SLAB() : CopperSlab{
 		if(!isset(self::$_mCUT_COPPER_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_COPPER_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER_SLAB);
 	}
 
 	public static function CUT_COPPER_STAIRS() : CopperStairs{
 		if(!isset(self::$_mCUT_COPPER_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_COPPER_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER_STAIRS);
 	}
 
 	public static function CUT_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCUT_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_RED_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_RED_SANDSTONE);
 	}
 
 	public static function CUT_RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mCUT_RED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_RED_SANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_RED_SANDSTONE_SLAB);
 	}
 
 	public static function CUT_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCUT_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_SANDSTONE);
 	}
 
 	public static function CUT_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mCUT_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mCUT_SANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_SANDSTONE_SLAB);
 	}
 
 	public static function DANDELION() : Flower{
 		if(!isset(self::$_mDANDELION)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDANDELION);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDANDELION);
 	}
 
 	public static function DARK_OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mDARK_OAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_BUTTON);
 	}
 
 	public static function DARK_OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function DARK_OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function DARK_OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mDARK_OAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_DOOR);
 	}
 
 	public static function DARK_OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mDARK_OAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_FENCE);
 	}
 
 	public static function DARK_OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mDARK_OAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_FENCE_GATE);
 	}
 
 	public static function DARK_OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mDARK_OAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_LEAVES);
 	}
 
 	public static function DARK_OAK_LOG() : Wood{
 		if(!isset(self::$_mDARK_OAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_LOG);
 	}
 
 	public static function DARK_OAK_PLANKS() : Planks{
 		if(!isset(self::$_mDARK_OAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_PLANKS);
 	}
 
 	public static function DARK_OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mDARK_OAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_PRESSURE_PLATE);
 	}
 
 	public static function DARK_OAK_SAPLING() : Sapling{
 		if(!isset(self::$_mDARK_OAK_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SAPLING);
 	}
 
 	public static function DARK_OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mDARK_OAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SIGN);
 	}
 
 	public static function DARK_OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mDARK_OAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SLAB);
 	}
 
 	public static function DARK_OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mDARK_OAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_STAIRS);
 	}
 
 	public static function DARK_OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mDARK_OAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_TRAPDOOR);
 	}
 
 	public static function DARK_OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mDARK_OAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WALL_HANGING_SIGN);
 	}
 
 	public static function DARK_OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mDARK_OAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WALL_SIGN);
 	}
 
 	public static function DARK_OAK_WOOD() : Wood{
 		if(!isset(self::$_mDARK_OAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_OAK_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WOOD);
 	}
 
 	public static function DARK_PRISMARINE() : Opaque{
 		if(!isset(self::$_mDARK_PRISMARINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_PRISMARINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE);
 	}
 
 	public static function DARK_PRISMARINE_SLAB() : Slab{
 		if(!isset(self::$_mDARK_PRISMARINE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_PRISMARINE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE_SLAB);
 	}
 
 	public static function DARK_PRISMARINE_STAIRS() : Stair{
 		if(!isset(self::$_mDARK_PRISMARINE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDARK_PRISMARINE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE_STAIRS);
 	}
 
 	public static function DAYLIGHT_SENSOR() : DaylightSensor{
 		if(!isset(self::$_mDAYLIGHT_SENSOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDAYLIGHT_SENSOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDAYLIGHT_SENSOR);
 	}
 
 	public static function DEAD_BUSH() : DeadBush{
 		if(!isset(self::$_mDEAD_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEAD_BUSH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEAD_BUSH);
 	}
 
 	public static function DEEPSLATE() : SimplePillar{
 		if(!isset(self::$_mDEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE);
 	}
 
 	public static function DEEPSLATE_BRICKS() : Opaque{
 		if(!isset(self::$_mDEEPSLATE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICKS);
 	}
 
 	public static function DEEPSLATE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mDEEPSLATE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_SLAB);
 	}
 
 	public static function DEEPSLATE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mDEEPSLATE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_STAIRS);
 	}
 
 	public static function DEEPSLATE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mDEEPSLATE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_WALL);
 	}
 
 	public static function DEEPSLATE_COAL_ORE() : CoalOre{
 		if(!isset(self::$_mDEEPSLATE_COAL_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_COAL_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_COAL_ORE);
 	}
 
 	public static function DEEPSLATE_COPPER_ORE() : CopperOre{
 		if(!isset(self::$_mDEEPSLATE_COPPER_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_COPPER_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_COPPER_ORE);
 	}
 
 	public static function DEEPSLATE_DIAMOND_ORE() : DiamondOre{
 		if(!isset(self::$_mDEEPSLATE_DIAMOND_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_DIAMOND_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_DIAMOND_ORE);
 	}
 
 	public static function DEEPSLATE_EMERALD_ORE() : EmeraldOre{
 		if(!isset(self::$_mDEEPSLATE_EMERALD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_EMERALD_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_EMERALD_ORE);
 	}
 
 	public static function DEEPSLATE_GOLD_ORE() : GoldOre{
 		if(!isset(self::$_mDEEPSLATE_GOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_GOLD_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_GOLD_ORE);
 	}
 
 	public static function DEEPSLATE_IRON_ORE() : IronOre{
 		if(!isset(self::$_mDEEPSLATE_IRON_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_IRON_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_IRON_ORE);
 	}
 
 	public static function DEEPSLATE_LAPIS_LAZULI_ORE() : LapisOre{
 		if(!isset(self::$_mDEEPSLATE_LAPIS_LAZULI_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_LAPIS_LAZULI_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_LAPIS_LAZULI_ORE);
 	}
 
 	public static function DEEPSLATE_REDSTONE_ORE() : RedstoneOre{
 		if(!isset(self::$_mDEEPSLATE_REDSTONE_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_REDSTONE_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_REDSTONE_ORE);
 	}
 
 	public static function DEEPSLATE_TILES() : Opaque{
 		if(!isset(self::$_mDEEPSLATE_TILES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_TILES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILES);
 	}
 
 	public static function DEEPSLATE_TILE_SLAB() : Slab{
 		if(!isset(self::$_mDEEPSLATE_TILE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_TILE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_SLAB);
 	}
 
 	public static function DEEPSLATE_TILE_STAIRS() : Stair{
 		if(!isset(self::$_mDEEPSLATE_TILE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_TILE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_STAIRS);
 	}
 
 	public static function DEEPSLATE_TILE_WALL() : Wall{
 		if(!isset(self::$_mDEEPSLATE_TILE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDEEPSLATE_TILE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_WALL);
 	}
 
 	public static function DETECTOR_RAIL() : DetectorRail{
 		if(!isset(self::$_mDETECTOR_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDETECTOR_RAIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDETECTOR_RAIL);
 	}
 
 	public static function DIAMOND() : Opaque{
 		if(!isset(self::$_mDIAMOND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIAMOND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIAMOND);
 	}
 
 	public static function DIAMOND_ORE() : DiamondOre{
 		if(!isset(self::$_mDIAMOND_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIAMOND_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIAMOND_ORE);
 	}
 
 	public static function DIORITE() : Opaque{
 		if(!isset(self::$_mDIORITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIORITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE);
 	}
 
 	public static function DIORITE_SLAB() : Slab{
 		if(!isset(self::$_mDIORITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIORITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_SLAB);
 	}
 
 	public static function DIORITE_STAIRS() : Stair{
 		if(!isset(self::$_mDIORITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIORITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_STAIRS);
 	}
 
 	public static function DIORITE_WALL() : Wall{
 		if(!isset(self::$_mDIORITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIORITE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_WALL);
 	}
 
 	public static function DIRT() : Dirt{
 		if(!isset(self::$_mDIRT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDIRT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDIRT);
 	}
 
 	public static function DOUBLE_PITCHER_CROP() : DoublePitcherCrop{
 		if(!isset(self::$_mDOUBLE_PITCHER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDOUBLE_PITCHER_CROP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDOUBLE_PITCHER_CROP);
 	}
 
 	public static function DOUBLE_TALLGRASS() : DoubleTallGrass{
 		if(!isset(self::$_mDOUBLE_TALLGRASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDOUBLE_TALLGRASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDOUBLE_TALLGRASS);
 	}
 
 	public static function DRAGON_EGG() : DragonEgg{
 		if(!isset(self::$_mDRAGON_EGG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDRAGON_EGG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDRAGON_EGG);
 	}
 
 	public static function DRIED_KELP() : DriedKelp{
 		if(!isset(self::$_mDRIED_KELP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDRIED_KELP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDRIED_KELP);
 	}
 
 	public static function DYED_CANDLE() : DyedCandle{
 		if(!isset(self::$_mDYED_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDYED_CANDLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDYED_CANDLE);
 	}
 
 	public static function DYED_SHULKER_BOX() : DyedShulkerBox{
 		if(!isset(self::$_mDYED_SHULKER_BOX)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mDYED_SHULKER_BOX);
+		return VanillaBlocksInputs::preprocessMember(self::$_mDYED_SHULKER_BOX);
 	}
 
 	public static function ELEMENT_ACTINIUM() : Element{
 		if(!isset(self::$_mELEMENT_ACTINIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ACTINIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ACTINIUM);
 	}
 
 	public static function ELEMENT_ALUMINUM() : Element{
 		if(!isset(self::$_mELEMENT_ALUMINUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ALUMINUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ALUMINUM);
 	}
 
 	public static function ELEMENT_AMERICIUM() : Element{
 		if(!isset(self::$_mELEMENT_AMERICIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_AMERICIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_AMERICIUM);
 	}
 
 	public static function ELEMENT_ANTIMONY() : Element{
 		if(!isset(self::$_mELEMENT_ANTIMONY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ANTIMONY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ANTIMONY);
 	}
 
 	public static function ELEMENT_ARGON() : Element{
 		if(!isset(self::$_mELEMENT_ARGON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ARGON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ARGON);
 	}
 
 	public static function ELEMENT_ARSENIC() : Element{
 		if(!isset(self::$_mELEMENT_ARSENIC)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ARSENIC);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ARSENIC);
 	}
 
 	public static function ELEMENT_ASTATINE() : Element{
 		if(!isset(self::$_mELEMENT_ASTATINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ASTATINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ASTATINE);
 	}
 
 	public static function ELEMENT_BARIUM() : Element{
 		if(!isset(self::$_mELEMENT_BARIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BARIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BARIUM);
 	}
 
 	public static function ELEMENT_BERKELIUM() : Element{
 		if(!isset(self::$_mELEMENT_BERKELIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BERKELIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BERKELIUM);
 	}
 
 	public static function ELEMENT_BERYLLIUM() : Element{
 		if(!isset(self::$_mELEMENT_BERYLLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BERYLLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BERYLLIUM);
 	}
 
 	public static function ELEMENT_BISMUTH() : Element{
 		if(!isset(self::$_mELEMENT_BISMUTH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BISMUTH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BISMUTH);
 	}
 
 	public static function ELEMENT_BOHRIUM() : Element{
 		if(!isset(self::$_mELEMENT_BOHRIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BOHRIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BOHRIUM);
 	}
 
 	public static function ELEMENT_BORON() : Element{
 		if(!isset(self::$_mELEMENT_BORON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BORON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BORON);
 	}
 
 	public static function ELEMENT_BROMINE() : Element{
 		if(!isset(self::$_mELEMENT_BROMINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_BROMINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BROMINE);
 	}
 
 	public static function ELEMENT_CADMIUM() : Element{
 		if(!isset(self::$_mELEMENT_CADMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CADMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CADMIUM);
 	}
 
 	public static function ELEMENT_CALCIUM() : Element{
 		if(!isset(self::$_mELEMENT_CALCIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CALCIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CALCIUM);
 	}
 
 	public static function ELEMENT_CALIFORNIUM() : Element{
 		if(!isset(self::$_mELEMENT_CALIFORNIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CALIFORNIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CALIFORNIUM);
 	}
 
 	public static function ELEMENT_CARBON() : Element{
 		if(!isset(self::$_mELEMENT_CARBON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CARBON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CARBON);
 	}
 
 	public static function ELEMENT_CERIUM() : Element{
 		if(!isset(self::$_mELEMENT_CERIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CERIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CERIUM);
 	}
 
 	public static function ELEMENT_CESIUM() : Element{
 		if(!isset(self::$_mELEMENT_CESIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CESIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CESIUM);
 	}
 
 	public static function ELEMENT_CHLORINE() : Element{
 		if(!isset(self::$_mELEMENT_CHLORINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CHLORINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CHLORINE);
 	}
 
 	public static function ELEMENT_CHROMIUM() : Element{
 		if(!isset(self::$_mELEMENT_CHROMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CHROMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CHROMIUM);
 	}
 
 	public static function ELEMENT_COBALT() : Element{
 		if(!isset(self::$_mELEMENT_COBALT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_COBALT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COBALT);
 	}
 
 	public static function ELEMENT_CONSTRUCTOR() : ChemistryTable{
 		if(!isset(self::$_mELEMENT_CONSTRUCTOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CONSTRUCTOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CONSTRUCTOR);
 	}
 
 	public static function ELEMENT_COPERNICIUM() : Element{
 		if(!isset(self::$_mELEMENT_COPERNICIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_COPERNICIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COPERNICIUM);
 	}
 
 	public static function ELEMENT_COPPER() : Element{
 		if(!isset(self::$_mELEMENT_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_COPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COPPER);
 	}
 
 	public static function ELEMENT_CURIUM() : Element{
 		if(!isset(self::$_mELEMENT_CURIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_CURIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CURIUM);
 	}
 
 	public static function ELEMENT_DARMSTADTIUM() : Element{
 		if(!isset(self::$_mELEMENT_DARMSTADTIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_DARMSTADTIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DARMSTADTIUM);
 	}
 
 	public static function ELEMENT_DUBNIUM() : Element{
 		if(!isset(self::$_mELEMENT_DUBNIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_DUBNIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DUBNIUM);
 	}
 
 	public static function ELEMENT_DYSPROSIUM() : Element{
 		if(!isset(self::$_mELEMENT_DYSPROSIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_DYSPROSIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DYSPROSIUM);
 	}
 
 	public static function ELEMENT_EINSTEINIUM() : Element{
 		if(!isset(self::$_mELEMENT_EINSTEINIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_EINSTEINIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_EINSTEINIUM);
 	}
 
 	public static function ELEMENT_ERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_ERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ERBIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ERBIUM);
 	}
 
 	public static function ELEMENT_EUROPIUM() : Element{
 		if(!isset(self::$_mELEMENT_EUROPIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_EUROPIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_EUROPIUM);
 	}
 
 	public static function ELEMENT_FERMIUM() : Element{
 		if(!isset(self::$_mELEMENT_FERMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_FERMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FERMIUM);
 	}
 
 	public static function ELEMENT_FLEROVIUM() : Element{
 		if(!isset(self::$_mELEMENT_FLEROVIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_FLEROVIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FLEROVIUM);
 	}
 
 	public static function ELEMENT_FLUORINE() : Element{
 		if(!isset(self::$_mELEMENT_FLUORINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_FLUORINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FLUORINE);
 	}
 
 	public static function ELEMENT_FRANCIUM() : Element{
 		if(!isset(self::$_mELEMENT_FRANCIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_FRANCIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FRANCIUM);
 	}
 
 	public static function ELEMENT_GADOLINIUM() : Element{
 		if(!isset(self::$_mELEMENT_GADOLINIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_GADOLINIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GADOLINIUM);
 	}
 
 	public static function ELEMENT_GALLIUM() : Element{
 		if(!isset(self::$_mELEMENT_GALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_GALLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GALLIUM);
 	}
 
 	public static function ELEMENT_GERMANIUM() : Element{
 		if(!isset(self::$_mELEMENT_GERMANIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_GERMANIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GERMANIUM);
 	}
 
 	public static function ELEMENT_GOLD() : Element{
 		if(!isset(self::$_mELEMENT_GOLD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_GOLD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GOLD);
 	}
 
 	public static function ELEMENT_HAFNIUM() : Element{
 		if(!isset(self::$_mELEMENT_HAFNIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_HAFNIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HAFNIUM);
 	}
 
 	public static function ELEMENT_HASSIUM() : Element{
 		if(!isset(self::$_mELEMENT_HASSIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_HASSIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HASSIUM);
 	}
 
 	public static function ELEMENT_HELIUM() : Element{
 		if(!isset(self::$_mELEMENT_HELIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_HELIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HELIUM);
 	}
 
 	public static function ELEMENT_HOLMIUM() : Element{
 		if(!isset(self::$_mELEMENT_HOLMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_HOLMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HOLMIUM);
 	}
 
 	public static function ELEMENT_HYDROGEN() : Element{
 		if(!isset(self::$_mELEMENT_HYDROGEN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_HYDROGEN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HYDROGEN);
 	}
 
 	public static function ELEMENT_INDIUM() : Element{
 		if(!isset(self::$_mELEMENT_INDIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_INDIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_INDIUM);
 	}
 
 	public static function ELEMENT_IODINE() : Element{
 		if(!isset(self::$_mELEMENT_IODINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_IODINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IODINE);
 	}
 
 	public static function ELEMENT_IRIDIUM() : Element{
 		if(!isset(self::$_mELEMENT_IRIDIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_IRIDIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IRIDIUM);
 	}
 
 	public static function ELEMENT_IRON() : Element{
 		if(!isset(self::$_mELEMENT_IRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_IRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IRON);
 	}
 
 	public static function ELEMENT_KRYPTON() : Element{
 		if(!isset(self::$_mELEMENT_KRYPTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_KRYPTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_KRYPTON);
 	}
 
 	public static function ELEMENT_LANTHANUM() : Element{
 		if(!isset(self::$_mELEMENT_LANTHANUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LANTHANUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LANTHANUM);
 	}
 
 	public static function ELEMENT_LAWRENCIUM() : Element{
 		if(!isset(self::$_mELEMENT_LAWRENCIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LAWRENCIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LAWRENCIUM);
 	}
 
 	public static function ELEMENT_LEAD() : Element{
 		if(!isset(self::$_mELEMENT_LEAD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LEAD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LEAD);
 	}
 
 	public static function ELEMENT_LITHIUM() : Element{
 		if(!isset(self::$_mELEMENT_LITHIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LITHIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LITHIUM);
 	}
 
 	public static function ELEMENT_LIVERMORIUM() : Element{
 		if(!isset(self::$_mELEMENT_LIVERMORIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LIVERMORIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LIVERMORIUM);
 	}
 
 	public static function ELEMENT_LUTETIUM() : Element{
 		if(!isset(self::$_mELEMENT_LUTETIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_LUTETIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LUTETIUM);
 	}
 
 	public static function ELEMENT_MAGNESIUM() : Element{
 		if(!isset(self::$_mELEMENT_MAGNESIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MAGNESIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MAGNESIUM);
 	}
 
 	public static function ELEMENT_MANGANESE() : Element{
 		if(!isset(self::$_mELEMENT_MANGANESE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MANGANESE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MANGANESE);
 	}
 
 	public static function ELEMENT_MEITNERIUM() : Element{
 		if(!isset(self::$_mELEMENT_MEITNERIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MEITNERIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MEITNERIUM);
 	}
 
 	public static function ELEMENT_MENDELEVIUM() : Element{
 		if(!isset(self::$_mELEMENT_MENDELEVIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MENDELEVIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MENDELEVIUM);
 	}
 
 	public static function ELEMENT_MERCURY() : Element{
 		if(!isset(self::$_mELEMENT_MERCURY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MERCURY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MERCURY);
 	}
 
 	public static function ELEMENT_MOLYBDENUM() : Element{
 		if(!isset(self::$_mELEMENT_MOLYBDENUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MOLYBDENUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MOLYBDENUM);
 	}
 
 	public static function ELEMENT_MOSCOVIUM() : Element{
 		if(!isset(self::$_mELEMENT_MOSCOVIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_MOSCOVIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MOSCOVIUM);
 	}
 
 	public static function ELEMENT_NEODYMIUM() : Element{
 		if(!isset(self::$_mELEMENT_NEODYMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NEODYMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEODYMIUM);
 	}
 
 	public static function ELEMENT_NEON() : Element{
 		if(!isset(self::$_mELEMENT_NEON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NEON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEON);
 	}
 
 	public static function ELEMENT_NEPTUNIUM() : Element{
 		if(!isset(self::$_mELEMENT_NEPTUNIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NEPTUNIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEPTUNIUM);
 	}
 
 	public static function ELEMENT_NICKEL() : Element{
 		if(!isset(self::$_mELEMENT_NICKEL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NICKEL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NICKEL);
 	}
 
 	public static function ELEMENT_NIHONIUM() : Element{
 		if(!isset(self::$_mELEMENT_NIHONIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NIHONIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NIHONIUM);
 	}
 
 	public static function ELEMENT_NIOBIUM() : Element{
 		if(!isset(self::$_mELEMENT_NIOBIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NIOBIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NIOBIUM);
 	}
 
 	public static function ELEMENT_NITROGEN() : Element{
 		if(!isset(self::$_mELEMENT_NITROGEN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NITROGEN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NITROGEN);
 	}
 
 	public static function ELEMENT_NOBELIUM() : Element{
 		if(!isset(self::$_mELEMENT_NOBELIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_NOBELIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NOBELIUM);
 	}
 
 	public static function ELEMENT_OGANESSON() : Element{
 		if(!isset(self::$_mELEMENT_OGANESSON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_OGANESSON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OGANESSON);
 	}
 
 	public static function ELEMENT_OSMIUM() : Element{
 		if(!isset(self::$_mELEMENT_OSMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_OSMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OSMIUM);
 	}
 
 	public static function ELEMENT_OXYGEN() : Element{
 		if(!isset(self::$_mELEMENT_OXYGEN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_OXYGEN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OXYGEN);
 	}
 
 	public static function ELEMENT_PALLADIUM() : Element{
 		if(!isset(self::$_mELEMENT_PALLADIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PALLADIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PALLADIUM);
 	}
 
 	public static function ELEMENT_PHOSPHORUS() : Element{
 		if(!isset(self::$_mELEMENT_PHOSPHORUS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PHOSPHORUS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PHOSPHORUS);
 	}
 
 	public static function ELEMENT_PLATINUM() : Element{
 		if(!isset(self::$_mELEMENT_PLATINUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PLATINUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PLATINUM);
 	}
 
 	public static function ELEMENT_PLUTONIUM() : Element{
 		if(!isset(self::$_mELEMENT_PLUTONIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PLUTONIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PLUTONIUM);
 	}
 
 	public static function ELEMENT_POLONIUM() : Element{
 		if(!isset(self::$_mELEMENT_POLONIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_POLONIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_POLONIUM);
 	}
 
 	public static function ELEMENT_POTASSIUM() : Element{
 		if(!isset(self::$_mELEMENT_POTASSIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_POTASSIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_POTASSIUM);
 	}
 
 	public static function ELEMENT_PRASEODYMIUM() : Element{
 		if(!isset(self::$_mELEMENT_PRASEODYMIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PRASEODYMIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PRASEODYMIUM);
 	}
 
 	public static function ELEMENT_PROMETHIUM() : Element{
 		if(!isset(self::$_mELEMENT_PROMETHIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PROMETHIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PROMETHIUM);
 	}
 
 	public static function ELEMENT_PROTACTINIUM() : Element{
 		if(!isset(self::$_mELEMENT_PROTACTINIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_PROTACTINIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PROTACTINIUM);
 	}
 
 	public static function ELEMENT_RADIUM() : Element{
 		if(!isset(self::$_mELEMENT_RADIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RADIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RADIUM);
 	}
 
 	public static function ELEMENT_RADON() : Element{
 		if(!isset(self::$_mELEMENT_RADON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RADON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RADON);
 	}
 
 	public static function ELEMENT_RHENIUM() : Element{
 		if(!isset(self::$_mELEMENT_RHENIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RHENIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RHENIUM);
 	}
 
 	public static function ELEMENT_RHODIUM() : Element{
 		if(!isset(self::$_mELEMENT_RHODIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RHODIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RHODIUM);
 	}
 
 	public static function ELEMENT_ROENTGENIUM() : Element{
 		if(!isset(self::$_mELEMENT_ROENTGENIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ROENTGENIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ROENTGENIUM);
 	}
 
 	public static function ELEMENT_RUBIDIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUBIDIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RUBIDIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUBIDIUM);
 	}
 
 	public static function ELEMENT_RUTHENIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUTHENIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RUTHENIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUTHENIUM);
 	}
 
 	public static function ELEMENT_RUTHERFORDIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUTHERFORDIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_RUTHERFORDIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUTHERFORDIUM);
 	}
 
 	public static function ELEMENT_SAMARIUM() : Element{
 		if(!isset(self::$_mELEMENT_SAMARIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SAMARIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SAMARIUM);
 	}
 
 	public static function ELEMENT_SCANDIUM() : Element{
 		if(!isset(self::$_mELEMENT_SCANDIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SCANDIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SCANDIUM);
 	}
 
 	public static function ELEMENT_SEABORGIUM() : Element{
 		if(!isset(self::$_mELEMENT_SEABORGIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SEABORGIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SEABORGIUM);
 	}
 
 	public static function ELEMENT_SELENIUM() : Element{
 		if(!isset(self::$_mELEMENT_SELENIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SELENIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SELENIUM);
 	}
 
 	public static function ELEMENT_SILICON() : Element{
 		if(!isset(self::$_mELEMENT_SILICON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SILICON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SILICON);
 	}
 
 	public static function ELEMENT_SILVER() : Element{
 		if(!isset(self::$_mELEMENT_SILVER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SILVER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SILVER);
 	}
 
 	public static function ELEMENT_SODIUM() : Element{
 		if(!isset(self::$_mELEMENT_SODIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SODIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SODIUM);
 	}
 
 	public static function ELEMENT_STRONTIUM() : Element{
 		if(!isset(self::$_mELEMENT_STRONTIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_STRONTIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_STRONTIUM);
 	}
 
 	public static function ELEMENT_SULFUR() : Element{
 		if(!isset(self::$_mELEMENT_SULFUR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_SULFUR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SULFUR);
 	}
 
 	public static function ELEMENT_TANTALUM() : Element{
 		if(!isset(self::$_mELEMENT_TANTALUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TANTALUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TANTALUM);
 	}
 
 	public static function ELEMENT_TECHNETIUM() : Element{
 		if(!isset(self::$_mELEMENT_TECHNETIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TECHNETIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TECHNETIUM);
 	}
 
 	public static function ELEMENT_TELLURIUM() : Element{
 		if(!isset(self::$_mELEMENT_TELLURIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TELLURIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TELLURIUM);
 	}
 
 	public static function ELEMENT_TENNESSINE() : Element{
 		if(!isset(self::$_mELEMENT_TENNESSINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TENNESSINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TENNESSINE);
 	}
 
 	public static function ELEMENT_TERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_TERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TERBIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TERBIUM);
 	}
 
 	public static function ELEMENT_THALLIUM() : Element{
 		if(!isset(self::$_mELEMENT_THALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_THALLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THALLIUM);
 	}
 
 	public static function ELEMENT_THORIUM() : Element{
 		if(!isset(self::$_mELEMENT_THORIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_THORIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THORIUM);
 	}
 
 	public static function ELEMENT_THULIUM() : Element{
 		if(!isset(self::$_mELEMENT_THULIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_THULIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THULIUM);
 	}
 
 	public static function ELEMENT_TIN() : Element{
 		if(!isset(self::$_mELEMENT_TIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TIN);
 	}
 
 	public static function ELEMENT_TITANIUM() : Element{
 		if(!isset(self::$_mELEMENT_TITANIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TITANIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TITANIUM);
 	}
 
 	public static function ELEMENT_TUNGSTEN() : Element{
 		if(!isset(self::$_mELEMENT_TUNGSTEN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_TUNGSTEN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TUNGSTEN);
 	}
 
 	public static function ELEMENT_URANIUM() : Element{
 		if(!isset(self::$_mELEMENT_URANIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_URANIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_URANIUM);
 	}
 
 	public static function ELEMENT_VANADIUM() : Element{
 		if(!isset(self::$_mELEMENT_VANADIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_VANADIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_VANADIUM);
 	}
 
 	public static function ELEMENT_XENON() : Element{
 		if(!isset(self::$_mELEMENT_XENON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_XENON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_XENON);
 	}
 
 	public static function ELEMENT_YTTERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_YTTERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_YTTERBIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_YTTERBIUM);
 	}
 
 	public static function ELEMENT_YTTRIUM() : Element{
 		if(!isset(self::$_mELEMENT_YTTRIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_YTTRIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_YTTRIUM);
 	}
 
 	public static function ELEMENT_ZERO() : Opaque{
 		if(!isset(self::$_mELEMENT_ZERO)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ZERO);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZERO);
 	}
 
 	public static function ELEMENT_ZINC() : Element{
 		if(!isset(self::$_mELEMENT_ZINC)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ZINC);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZINC);
 	}
 
 	public static function ELEMENT_ZIRCONIUM() : Element{
 		if(!isset(self::$_mELEMENT_ZIRCONIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mELEMENT_ZIRCONIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZIRCONIUM);
 	}
 
 	public static function EMERALD() : Opaque{
 		if(!isset(self::$_mEMERALD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEMERALD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEMERALD);
 	}
 
 	public static function EMERALD_ORE() : EmeraldOre{
 		if(!isset(self::$_mEMERALD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEMERALD_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEMERALD_ORE);
 	}
 
 	public static function ENCHANTING_TABLE() : EnchantingTable{
 		if(!isset(self::$_mENCHANTING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mENCHANTING_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mENCHANTING_TABLE);
 	}
 
 	public static function ENDER_CHEST() : EnderChest{
 		if(!isset(self::$_mENDER_CHEST)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mENDER_CHEST);
+		return VanillaBlocksInputs::preprocessMember(self::$_mENDER_CHEST);
 	}
 
 	public static function END_PORTAL_FRAME() : EndPortalFrame{
 		if(!isset(self::$_mEND_PORTAL_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_PORTAL_FRAME);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_PORTAL_FRAME);
 	}
 
 	public static function END_ROD() : EndRod{
 		if(!isset(self::$_mEND_ROD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_ROD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_ROD);
 	}
 
 	public static function END_STONE() : Opaque{
 		if(!isset(self::$_mEND_STONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_STONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE);
 	}
 
 	public static function END_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mEND_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_STONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICKS);
 	}
 
 	public static function END_STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mEND_STONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_STONE_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_SLAB);
 	}
 
 	public static function END_STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mEND_STONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_STONE_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_STAIRS);
 	}
 
 	public static function END_STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mEND_STONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mEND_STONE_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_WALL);
 	}
 
 	public static function FAKE_WOODEN_SLAB() : Slab{
 		if(!isset(self::$_mFAKE_WOODEN_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFAKE_WOODEN_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFAKE_WOODEN_SLAB);
 	}
 
 	public static function FARMLAND() : Farmland{
 		if(!isset(self::$_mFARMLAND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFARMLAND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFARMLAND);
 	}
 
 	public static function FERN() : TallGrass{
 		if(!isset(self::$_mFERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFERN);
 	}
 
 	public static function FIRE() : Fire{
 		if(!isset(self::$_mFIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFIRE);
 	}
 
 	public static function FLETCHING_TABLE() : FletchingTable{
 		if(!isset(self::$_mFLETCHING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFLETCHING_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFLETCHING_TABLE);
 	}
 
 	public static function FLOWERING_AZALEA_LEAVES() : Leaves{
 		if(!isset(self::$_mFLOWERING_AZALEA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFLOWERING_AZALEA_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWERING_AZALEA_LEAVES);
 	}
 
 	public static function FLOWER_POT() : FlowerPot{
 		if(!isset(self::$_mFLOWER_POT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFLOWER_POT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWER_POT);
 	}
 
 	public static function FROGLIGHT() : Froglight{
 		if(!isset(self::$_mFROGLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFROGLIGHT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFROGLIGHT);
 	}
 
 	public static function FROSTED_ICE() : FrostedIce{
 		if(!isset(self::$_mFROSTED_ICE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFROSTED_ICE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFROSTED_ICE);
 	}
 
 	public static function FURNACE() : Furnace{
 		if(!isset(self::$_mFURNACE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mFURNACE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mFURNACE);
 	}
 
 	public static function GILDED_BLACKSTONE() : GildedBlackstone{
 		if(!isset(self::$_mGILDED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGILDED_BLACKSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGILDED_BLACKSTONE);
 	}
 
 	public static function GLASS() : Glass{
 		if(!isset(self::$_mGLASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLASS);
 	}
 
 	public static function GLASS_PANE() : GlassPane{
 		if(!isset(self::$_mGLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLASS_PANE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLASS_PANE);
 	}
 
 	public static function GLAZED_TERRACOTTA() : GlazedTerracotta{
 		if(!isset(self::$_mGLAZED_TERRACOTTA)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLAZED_TERRACOTTA);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLAZED_TERRACOTTA);
 	}
 
 	public static function GLOWING_ITEM_FRAME() : ItemFrame{
 		if(!isset(self::$_mGLOWING_ITEM_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLOWING_ITEM_FRAME);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWING_ITEM_FRAME);
 	}
 
 	public static function GLOWING_OBSIDIAN() : GlowingObsidian{
 		if(!isset(self::$_mGLOWING_OBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLOWING_OBSIDIAN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWING_OBSIDIAN);
 	}
 
 	public static function GLOWSTONE() : Glowstone{
 		if(!isset(self::$_mGLOWSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLOWSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWSTONE);
 	}
 
 	public static function GLOW_LICHEN() : GlowLichen{
 		if(!isset(self::$_mGLOW_LICHEN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGLOW_LICHEN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGLOW_LICHEN);
 	}
 
 	public static function GOLD() : Opaque{
 		if(!isset(self::$_mGOLD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGOLD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGOLD);
 	}
 
 	public static function GOLD_ORE() : GoldOre{
 		if(!isset(self::$_mGOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGOLD_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGOLD_ORE);
 	}
 
 	public static function GRANITE() : Opaque{
 		if(!isset(self::$_mGRANITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRANITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE);
 	}
 
 	public static function GRANITE_SLAB() : Slab{
 		if(!isset(self::$_mGRANITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRANITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_SLAB);
 	}
 
 	public static function GRANITE_STAIRS() : Stair{
 		if(!isset(self::$_mGRANITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRANITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_STAIRS);
 	}
 
 	public static function GRANITE_WALL() : Wall{
 		if(!isset(self::$_mGRANITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRANITE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_WALL);
 	}
 
 	public static function GRASS() : Grass{
 		if(!isset(self::$_mGRASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRASS);
 	}
 
 	public static function GRASS_PATH() : GrassPath{
 		if(!isset(self::$_mGRASS_PATH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRASS_PATH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRASS_PATH);
 	}
 
 	public static function GRAVEL() : Gravel{
 		if(!isset(self::$_mGRAVEL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGRAVEL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGRAVEL);
 	}
 
 	public static function GREEN_TORCH() : Torch{
 		if(!isset(self::$_mGREEN_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mGREEN_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mGREEN_TORCH);
 	}
 
 	public static function HANGING_ROOTS() : HangingRoots{
 		if(!isset(self::$_mHANGING_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHANGING_ROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHANGING_ROOTS);
 	}
 
 	public static function HARDENED_CLAY() : HardenedClay{
 		if(!isset(self::$_mHARDENED_CLAY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHARDENED_CLAY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_CLAY);
 	}
 
 	public static function HARDENED_GLASS() : HardenedGlass{
 		if(!isset(self::$_mHARDENED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHARDENED_GLASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_GLASS);
 	}
 
 	public static function HARDENED_GLASS_PANE() : HardenedGlassPane{
 		if(!isset(self::$_mHARDENED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHARDENED_GLASS_PANE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_GLASS_PANE);
 	}
 
 	public static function HAY_BALE() : HayBale{
 		if(!isset(self::$_mHAY_BALE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHAY_BALE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHAY_BALE);
 	}
 
 	public static function HONEYCOMB() : Opaque{
 		if(!isset(self::$_mHONEYCOMB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHONEYCOMB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHONEYCOMB);
 	}
 
 	public static function HOPPER() : Hopper{
 		if(!isset(self::$_mHOPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mHOPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mHOPPER);
 	}
 
 	public static function ICE() : Ice{
 		if(!isset(self::$_mICE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mICE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mICE);
 	}
 
 	public static function INFESTED_CHISELED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_CHISELED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_CHISELED_STONE_BRICK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_CHISELED_STONE_BRICK);
 	}
 
 	public static function INFESTED_COBBLESTONE() : InfestedStone{
 		if(!isset(self::$_mINFESTED_COBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_COBBLESTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_COBBLESTONE);
 	}
 
 	public static function INFESTED_CRACKED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_CRACKED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_CRACKED_STONE_BRICK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_CRACKED_STONE_BRICK);
 	}
 
 	public static function INFESTED_DEEPSLATE() : InfestedPillar{
 		if(!isset(self::$_mINFESTED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_DEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_DEEPSLATE);
 	}
 
 	public static function INFESTED_MOSSY_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_MOSSY_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_MOSSY_STONE_BRICK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_MOSSY_STONE_BRICK);
 	}
 
 	public static function INFESTED_STONE() : InfestedStone{
 		if(!isset(self::$_mINFESTED_STONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_STONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_STONE);
 	}
 
 	public static function INFESTED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFESTED_STONE_BRICK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_STONE_BRICK);
 	}
 
 	public static function INFO_UPDATE() : Opaque{
 		if(!isset(self::$_mINFO_UPDATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFO_UPDATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFO_UPDATE);
 	}
 
 	public static function INFO_UPDATE2() : Opaque{
 		if(!isset(self::$_mINFO_UPDATE2)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINFO_UPDATE2);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINFO_UPDATE2);
 	}
 
 	public static function INVISIBLE_BEDROCK() : Transparent{
 		if(!isset(self::$_mINVISIBLE_BEDROCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mINVISIBLE_BEDROCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mINVISIBLE_BEDROCK);
 	}
 
 	public static function IRON() : Opaque{
 		if(!isset(self::$_mIRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mIRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mIRON);
 	}
 
 	public static function IRON_BARS() : Thin{
 		if(!isset(self::$_mIRON_BARS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mIRON_BARS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_BARS);
 	}
 
 	public static function IRON_DOOR() : Door{
 		if(!isset(self::$_mIRON_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mIRON_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_DOOR);
 	}
 
 	public static function IRON_ORE() : IronOre{
 		if(!isset(self::$_mIRON_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mIRON_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_ORE);
 	}
 
 	public static function IRON_TRAPDOOR() : Trapdoor{
 		if(!isset(self::$_mIRON_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mIRON_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_TRAPDOOR);
 	}
 
 	public static function ITEM_FRAME() : ItemFrame{
 		if(!isset(self::$_mITEM_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mITEM_FRAME);
+		return VanillaBlocksInputs::preprocessMember(self::$_mITEM_FRAME);
 	}
 
 	public static function JUKEBOX() : Jukebox{
 		if(!isset(self::$_mJUKEBOX)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUKEBOX);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUKEBOX);
 	}
 
 	public static function JUNGLE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mJUNGLE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_BUTTON);
 	}
 
 	public static function JUNGLE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function JUNGLE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function JUNGLE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mJUNGLE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_DOOR);
 	}
 
 	public static function JUNGLE_FENCE() : WoodenFence{
 		if(!isset(self::$_mJUNGLE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_FENCE);
 	}
 
 	public static function JUNGLE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mJUNGLE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_FENCE_GATE);
 	}
 
 	public static function JUNGLE_LEAVES() : Leaves{
 		if(!isset(self::$_mJUNGLE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_LEAVES);
 	}
 
 	public static function JUNGLE_LOG() : Wood{
 		if(!isset(self::$_mJUNGLE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_LOG);
 	}
 
 	public static function JUNGLE_PLANKS() : Planks{
 		if(!isset(self::$_mJUNGLE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_PLANKS);
 	}
 
 	public static function JUNGLE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mJUNGLE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_PRESSURE_PLATE);
 	}
 
 	public static function JUNGLE_SAPLING() : Sapling{
 		if(!isset(self::$_mJUNGLE_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SAPLING);
 	}
 
 	public static function JUNGLE_SIGN() : FloorSign{
 		if(!isset(self::$_mJUNGLE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SIGN);
 	}
 
 	public static function JUNGLE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mJUNGLE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SLAB);
 	}
 
 	public static function JUNGLE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mJUNGLE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_STAIRS);
 	}
 
 	public static function JUNGLE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mJUNGLE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_TRAPDOOR);
 	}
 
 	public static function JUNGLE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mJUNGLE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WALL_HANGING_SIGN);
 	}
 
 	public static function JUNGLE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mJUNGLE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WALL_SIGN);
 	}
 
 	public static function JUNGLE_WOOD() : Wood{
 		if(!isset(self::$_mJUNGLE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mJUNGLE_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WOOD);
 	}
 
 	public static function LAB_TABLE() : ChemistryTable{
 		if(!isset(self::$_mLAB_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLAB_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLAB_TABLE);
 	}
 
 	public static function LADDER() : Ladder{
 		if(!isset(self::$_mLADDER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLADDER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLADDER);
 	}
 
 	public static function LANTERN() : Lantern{
 		if(!isset(self::$_mLANTERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLANTERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLANTERN);
 	}
 
 	public static function LAPIS_LAZULI() : Opaque{
 		if(!isset(self::$_mLAPIS_LAZULI)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLAPIS_LAZULI);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLAPIS_LAZULI);
 	}
 
 	public static function LAPIS_LAZULI_ORE() : LapisOre{
 		if(!isset(self::$_mLAPIS_LAZULI_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLAPIS_LAZULI_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLAPIS_LAZULI_ORE);
 	}
 
 	public static function LARGE_FERN() : DoubleTallGrass{
 		if(!isset(self::$_mLARGE_FERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLARGE_FERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLARGE_FERN);
 	}
 
 	public static function LAVA() : Lava{
 		if(!isset(self::$_mLAVA)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLAVA);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLAVA);
 	}
 
 	public static function LAVA_CAULDRON() : LavaCauldron{
 		if(!isset(self::$_mLAVA_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLAVA_CAULDRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLAVA_CAULDRON);
 	}
 
 	public static function LECTERN() : Lectern{
 		if(!isset(self::$_mLECTERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLECTERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLECTERN);
 	}
 
 	public static function LEGACY_STONECUTTER() : Opaque{
 		if(!isset(self::$_mLEGACY_STONECUTTER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLEGACY_STONECUTTER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLEGACY_STONECUTTER);
 	}
 
 	public static function LEVER() : Lever{
 		if(!isset(self::$_mLEVER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLEVER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLEVER);
 	}
 
 	public static function LIGHT() : Light{
 		if(!isset(self::$_mLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLIGHT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLIGHT);
 	}
 
 	public static function LIGHTNING_ROD() : LightningRod{
 		if(!isset(self::$_mLIGHTNING_ROD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLIGHTNING_ROD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLIGHTNING_ROD);
 	}
 
 	public static function LILAC() : DoublePlant{
 		if(!isset(self::$_mLILAC)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLILAC);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLILAC);
 	}
 
 	public static function LILY_OF_THE_VALLEY() : Flower{
 		if(!isset(self::$_mLILY_OF_THE_VALLEY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLILY_OF_THE_VALLEY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLILY_OF_THE_VALLEY);
 	}
 
 	public static function LILY_PAD() : WaterLily{
 		if(!isset(self::$_mLILY_PAD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLILY_PAD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLILY_PAD);
 	}
 
 	public static function LIT_PUMPKIN() : LitPumpkin{
 		if(!isset(self::$_mLIT_PUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLIT_PUMPKIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLIT_PUMPKIN);
 	}
 
 	public static function LOOM() : Loom{
 		if(!isset(self::$_mLOOM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mLOOM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mLOOM);
 	}
 
 	public static function MAGMA() : Magma{
 		if(!isset(self::$_mMAGMA)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMAGMA);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMAGMA);
 	}
 
 	public static function MANGROVE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mMANGROVE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_BUTTON);
 	}
 
 	public static function MANGROVE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function MANGROVE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function MANGROVE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mMANGROVE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_DOOR);
 	}
 
 	public static function MANGROVE_FENCE() : WoodenFence{
 		if(!isset(self::$_mMANGROVE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_FENCE);
 	}
 
 	public static function MANGROVE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mMANGROVE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_FENCE_GATE);
 	}
 
 	public static function MANGROVE_LEAVES() : Leaves{
 		if(!isset(self::$_mMANGROVE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_LEAVES);
 	}
 
 	public static function MANGROVE_LOG() : Wood{
 		if(!isset(self::$_mMANGROVE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_LOG);
 	}
 
 	public static function MANGROVE_PLANKS() : Planks{
 		if(!isset(self::$_mMANGROVE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_PLANKS);
 	}
 
 	public static function MANGROVE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mMANGROVE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_PRESSURE_PLATE);
 	}
 
 	public static function MANGROVE_ROOTS() : MangroveRoots{
 		if(!isset(self::$_mMANGROVE_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_ROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_ROOTS);
 	}
 
 	public static function MANGROVE_SIGN() : FloorSign{
 		if(!isset(self::$_mMANGROVE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_SIGN);
 	}
 
 	public static function MANGROVE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mMANGROVE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_SLAB);
 	}
 
 	public static function MANGROVE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mMANGROVE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_STAIRS);
 	}
 
 	public static function MANGROVE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mMANGROVE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_TRAPDOOR);
 	}
 
 	public static function MANGROVE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mMANGROVE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WALL_HANGING_SIGN);
 	}
 
 	public static function MANGROVE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mMANGROVE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WALL_SIGN);
 	}
 
 	public static function MANGROVE_WOOD() : Wood{
 		if(!isset(self::$_mMANGROVE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMANGROVE_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WOOD);
 	}
 
 	public static function MATERIAL_REDUCER() : ChemistryTable{
 		if(!isset(self::$_mMATERIAL_REDUCER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMATERIAL_REDUCER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMATERIAL_REDUCER);
 	}
 
 	public static function MELON() : Melon{
 		if(!isset(self::$_mMELON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMELON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMELON);
 	}
 
 	public static function MELON_STEM() : MelonStem{
 		if(!isset(self::$_mMELON_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMELON_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMELON_STEM);
 	}
 
 	public static function MOB_HEAD() : MobHead{
 		if(!isset(self::$_mMOB_HEAD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOB_HEAD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOB_HEAD);
 	}
 
 	public static function MONSTER_SPAWNER() : MonsterSpawner{
 		if(!isset(self::$_mMONSTER_SPAWNER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMONSTER_SPAWNER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMONSTER_SPAWNER);
 	}
 
 	public static function MOSSY_COBBLESTONE() : Opaque{
 		if(!isset(self::$_mMOSSY_COBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_COBBLESTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE);
 	}
 
 	public static function MOSSY_COBBLESTONE_SLAB() : Slab{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_COBBLESTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_SLAB);
 	}
 
 	public static function MOSSY_COBBLESTONE_STAIRS() : Stair{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_COBBLESTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_STAIRS);
 	}
 
 	public static function MOSSY_COBBLESTONE_WALL() : Wall{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_COBBLESTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_WALL);
 	}
 
 	public static function MOSSY_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mMOSSY_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_STONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICKS);
 	}
 
 	public static function MOSSY_STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_STONE_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_SLAB);
 	}
 
 	public static function MOSSY_STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_STONE_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_STAIRS);
 	}
 
 	public static function MOSSY_STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMOSSY_STONE_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_WALL);
 	}
 
 	public static function MUD() : Opaque{
 		if(!isset(self::$_mMUD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUD);
 	}
 
 	public static function MUDDY_MANGROVE_ROOTS() : SimplePillar{
 		if(!isset(self::$_mMUDDY_MANGROVE_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUDDY_MANGROVE_ROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUDDY_MANGROVE_ROOTS);
 	}
 
 	public static function MUD_BRICKS() : Opaque{
 		if(!isset(self::$_mMUD_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUD_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICKS);
 	}
 
 	public static function MUD_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mMUD_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUD_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_SLAB);
 	}
 
 	public static function MUD_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mMUD_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUD_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_STAIRS);
 	}
 
 	public static function MUD_BRICK_WALL() : Wall{
 		if(!isset(self::$_mMUD_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUD_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_WALL);
 	}
 
 	public static function MUSHROOM_STEM() : MushroomStem{
 		if(!isset(self::$_mMUSHROOM_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMUSHROOM_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMUSHROOM_STEM);
 	}
 
 	public static function MYCELIUM() : Mycelium{
 		if(!isset(self::$_mMYCELIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mMYCELIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mMYCELIUM);
 	}
 
 	public static function NETHERITE() : Opaque{
 		if(!isset(self::$_mNETHERITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHERITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHERITE);
 	}
 
 	public static function NETHERRACK() : Netherrack{
 		if(!isset(self::$_mNETHERRACK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHERRACK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHERRACK);
 	}
 
 	public static function NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mNETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICKS);
 	}
 
 	public static function NETHER_BRICK_FENCE() : Fence{
 		if(!isset(self::$_mNETHER_BRICK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_BRICK_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_FENCE);
 	}
 
 	public static function NETHER_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mNETHER_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_SLAB);
 	}
 
 	public static function NETHER_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mNETHER_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_STAIRS);
 	}
 
 	public static function NETHER_BRICK_WALL() : Wall{
 		if(!isset(self::$_mNETHER_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_WALL);
 	}
 
 	public static function NETHER_GOLD_ORE() : NetherGoldOre{
 		if(!isset(self::$_mNETHER_GOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_GOLD_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_GOLD_ORE);
 	}
 
 	public static function NETHER_PORTAL() : NetherPortal{
 		if(!isset(self::$_mNETHER_PORTAL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_PORTAL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_PORTAL);
 	}
 
 	public static function NETHER_QUARTZ_ORE() : NetherQuartzOre{
 		if(!isset(self::$_mNETHER_QUARTZ_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_QUARTZ_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_QUARTZ_ORE);
 	}
 
 	public static function NETHER_REACTOR_CORE() : NetherReactor{
 		if(!isset(self::$_mNETHER_REACTOR_CORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_REACTOR_CORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_REACTOR_CORE);
 	}
 
 	public static function NETHER_SPROUTS() : NetherSprouts{
 		if(!isset(self::$_mNETHER_SPROUTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_SPROUTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_SPROUTS);
 	}
 
 	public static function NETHER_WART() : NetherWartPlant{
 		if(!isset(self::$_mNETHER_WART)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_WART);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_WART);
 	}
 
 	public static function NETHER_WART_BLOCK() : Opaque{
 		if(!isset(self::$_mNETHER_WART_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNETHER_WART_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_WART_BLOCK);
 	}
 
 	public static function NOTE_BLOCK() : Note{
 		if(!isset(self::$_mNOTE_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mNOTE_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mNOTE_BLOCK);
 	}
 
 	public static function OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mOAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_BUTTON);
 	}
 
 	public static function OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mOAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mOAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mOAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_DOOR);
 	}
 
 	public static function OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mOAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_FENCE);
 	}
 
 	public static function OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mOAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_FENCE_GATE);
 	}
 
 	public static function OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mOAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_LEAVES);
 	}
 
 	public static function OAK_LOG() : Wood{
 		if(!isset(self::$_mOAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_LOG);
 	}
 
 	public static function OAK_PLANKS() : Planks{
 		if(!isset(self::$_mOAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_PLANKS);
 	}
 
 	public static function OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mOAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_PRESSURE_PLATE);
 	}
 
 	public static function OAK_SAPLING() : Sapling{
 		if(!isset(self::$_mOAK_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SAPLING);
 	}
 
 	public static function OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mOAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SIGN);
 	}
 
 	public static function OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mOAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SLAB);
 	}
 
 	public static function OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mOAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_STAIRS);
 	}
 
 	public static function OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mOAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_TRAPDOOR);
 	}
 
 	public static function OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mOAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WALL_HANGING_SIGN);
 	}
 
 	public static function OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mOAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WALL_SIGN);
 	}
 
 	public static function OAK_WOOD() : Wood{
 		if(!isset(self::$_mOAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOAK_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WOOD);
 	}
 
 	public static function OBSIDIAN() : Opaque{
 		if(!isset(self::$_mOBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOBSIDIAN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOBSIDIAN);
 	}
 
 	public static function OMINOUS_BANNER() : OminousFloorBanner{
 		if(!isset(self::$_mOMINOUS_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOMINOUS_BANNER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOMINOUS_BANNER);
 	}
 
 	public static function OMINOUS_WALL_BANNER() : OminousWallBanner{
 		if(!isset(self::$_mOMINOUS_WALL_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOMINOUS_WALL_BANNER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOMINOUS_WALL_BANNER);
 	}
 
 	public static function ORANGE_TULIP() : Flower{
 		if(!isset(self::$_mORANGE_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mORANGE_TULIP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mORANGE_TULIP);
 	}
 
 	public static function OXEYE_DAISY() : Flower{
 		if(!isset(self::$_mOXEYE_DAISY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mOXEYE_DAISY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mOXEYE_DAISY);
 	}
 
 	public static function PACKED_ICE() : PackedIce{
 		if(!isset(self::$_mPACKED_ICE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPACKED_ICE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPACKED_ICE);
 	}
 
 	public static function PACKED_MUD() : Opaque{
 		if(!isset(self::$_mPACKED_MUD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPACKED_MUD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPACKED_MUD);
 	}
 
 	public static function PALE_OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mPALE_OAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_BUTTON);
 	}
 
 	public static function PALE_OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function PALE_OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function PALE_OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mPALE_OAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_DOOR);
 	}
 
 	public static function PALE_OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mPALE_OAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_FENCE);
 	}
 
 	public static function PALE_OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mPALE_OAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_FENCE_GATE);
 	}
 
 	public static function PALE_OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mPALE_OAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_LEAVES);
 	}
 
 	public static function PALE_OAK_LOG() : Wood{
 		if(!isset(self::$_mPALE_OAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_LOG);
 	}
 
 	public static function PALE_OAK_PLANKS() : Planks{
 		if(!isset(self::$_mPALE_OAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_PLANKS);
 	}
 
 	public static function PALE_OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mPALE_OAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_PRESSURE_PLATE);
 	}
 
 	public static function PALE_OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mPALE_OAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_SIGN);
 	}
 
 	public static function PALE_OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mPALE_OAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_SLAB);
 	}
 
 	public static function PALE_OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mPALE_OAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_STAIRS);
 	}
 
 	public static function PALE_OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mPALE_OAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_TRAPDOOR);
 	}
 
 	public static function PALE_OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mPALE_OAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WALL_HANGING_SIGN);
 	}
 
 	public static function PALE_OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mPALE_OAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WALL_SIGN);
 	}
 
 	public static function PALE_OAK_WOOD() : Wood{
 		if(!isset(self::$_mPALE_OAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPALE_OAK_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WOOD);
 	}
 
 	public static function PEONY() : DoublePlant{
 		if(!isset(self::$_mPEONY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPEONY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPEONY);
 	}
 
 	public static function PINK_PETALS() : PinkPetals{
 		if(!isset(self::$_mPINK_PETALS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPINK_PETALS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPINK_PETALS);
 	}
 
 	public static function PINK_TULIP() : Flower{
 		if(!isset(self::$_mPINK_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPINK_TULIP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPINK_TULIP);
 	}
 
 	public static function PITCHER_CROP() : PitcherCrop{
 		if(!isset(self::$_mPITCHER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPITCHER_CROP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPITCHER_CROP);
 	}
 
 	public static function PITCHER_PLANT() : DoublePlant{
 		if(!isset(self::$_mPITCHER_PLANT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPITCHER_PLANT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPITCHER_PLANT);
 	}
 
 	public static function PODZOL() : Podzol{
 		if(!isset(self::$_mPODZOL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPODZOL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPODZOL);
 	}
 
 	public static function POLISHED_ANDESITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_ANDESITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_ANDESITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE);
 	}
 
 	public static function POLISHED_ANDESITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_ANDESITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_ANDESITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE_SLAB);
 	}
 
 	public static function POLISHED_ANDESITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_ANDESITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_ANDESITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE_STAIRS);
 	}
 
 	public static function POLISHED_BASALT() : SimplePillar{
 		if(!isset(self::$_mPOLISHED_BASALT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BASALT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BASALT);
 	}
 
 	public static function POLISHED_BLACKSTONE() : Opaque{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE);
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICKS() : Opaque{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICKS);
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB);
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS);
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_WALL);
 	}
 
 	public static function POLISHED_BLACKSTONE_BUTTON() : StoneButton{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BUTTON);
 	}
 
 	public static function POLISHED_BLACKSTONE_PRESSURE_PLATE() : StonePressurePlate{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE);
 	}
 
 	public static function POLISHED_BLACKSTONE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_SLAB);
 	}
 
 	public static function POLISHED_BLACKSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_STAIRS);
 	}
 
 	public static function POLISHED_BLACKSTONE_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_BLACKSTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_WALL);
 	}
 
 	public static function POLISHED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE);
 	}
 
 	public static function POLISHED_DEEPSLATE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DEEPSLATE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_SLAB);
 	}
 
 	public static function POLISHED_DEEPSLATE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DEEPSLATE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_STAIRS);
 	}
 
 	public static function POLISHED_DEEPSLATE_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DEEPSLATE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_WALL);
 	}
 
 	public static function POLISHED_DIORITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_DIORITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DIORITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE);
 	}
 
 	public static function POLISHED_DIORITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_DIORITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DIORITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE_SLAB);
 	}
 
 	public static function POLISHED_DIORITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_DIORITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_DIORITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE_STAIRS);
 	}
 
 	public static function POLISHED_GRANITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_GRANITE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_GRANITE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE);
 	}
 
 	public static function POLISHED_GRANITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_GRANITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_GRANITE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE_SLAB);
 	}
 
 	public static function POLISHED_GRANITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_GRANITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_GRANITE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE_STAIRS);
 	}
 
 	public static function POLISHED_TUFF() : Opaque{
 		if(!isset(self::$_mPOLISHED_TUFF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_TUFF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF);
 	}
 
 	public static function POLISHED_TUFF_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_TUFF_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_TUFF_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_SLAB);
 	}
 
 	public static function POLISHED_TUFF_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_TUFF_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_TUFF_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_STAIRS);
 	}
 
 	public static function POLISHED_TUFF_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_TUFF_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOLISHED_TUFF_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_WALL);
 	}
 
 	public static function POPPY() : Flower{
 		if(!isset(self::$_mPOPPY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOPPY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOPPY);
 	}
 
 	public static function POTATOES() : Potato{
 		if(!isset(self::$_mPOTATOES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOTATOES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOTATOES);
 	}
 
 	public static function POTION_CAULDRON() : PotionCauldron{
 		if(!isset(self::$_mPOTION_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOTION_CAULDRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOTION_CAULDRON);
 	}
 
 	public static function POWERED_RAIL() : PoweredRail{
 		if(!isset(self::$_mPOWERED_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPOWERED_RAIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPOWERED_RAIL);
 	}
 
 	public static function PRISMARINE() : Opaque{
 		if(!isset(self::$_mPRISMARINE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE);
 	}
 
 	public static function PRISMARINE_BRICKS() : Opaque{
 		if(!isset(self::$_mPRISMARINE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS);
 	}
 
 	public static function PRISMARINE_BRICKS_SLAB() : Slab{
 		if(!isset(self::$_mPRISMARINE_BRICKS_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_BRICKS_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS_SLAB);
 	}
 
 	public static function PRISMARINE_BRICKS_STAIRS() : Stair{
 		if(!isset(self::$_mPRISMARINE_BRICKS_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_BRICKS_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS_STAIRS);
 	}
 
 	public static function PRISMARINE_SLAB() : Slab{
 		if(!isset(self::$_mPRISMARINE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_SLAB);
 	}
 
 	public static function PRISMARINE_STAIRS() : Stair{
 		if(!isset(self::$_mPRISMARINE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_STAIRS);
 	}
 
 	public static function PRISMARINE_WALL() : Wall{
 		if(!isset(self::$_mPRISMARINE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPRISMARINE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_WALL);
 	}
 
 	public static function PUMPKIN() : Pumpkin{
 		if(!isset(self::$_mPUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPUMPKIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPUMPKIN);
 	}
 
 	public static function PUMPKIN_STEM() : PumpkinStem{
 		if(!isset(self::$_mPUMPKIN_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPUMPKIN_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPUMPKIN_STEM);
 	}
 
 	public static function PURPLE_TORCH() : Torch{
 		if(!isset(self::$_mPURPLE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPURPLE_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPURPLE_TORCH);
 	}
 
 	public static function PURPUR() : Opaque{
 		if(!isset(self::$_mPURPUR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPURPUR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR);
 	}
 
 	public static function PURPUR_PILLAR() : SimplePillar{
 		if(!isset(self::$_mPURPUR_PILLAR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPURPUR_PILLAR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_PILLAR);
 	}
 
 	public static function PURPUR_SLAB() : Slab{
 		if(!isset(self::$_mPURPUR_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPURPUR_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_SLAB);
 	}
 
 	public static function PURPUR_STAIRS() : Stair{
 		if(!isset(self::$_mPURPUR_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mPURPUR_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_STAIRS);
 	}
 
 	public static function QUARTZ() : Opaque{
 		if(!isset(self::$_mQUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mQUARTZ);
+		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ);
 	}
 
 	public static function QUARTZ_BRICKS() : Opaque{
 		if(!isset(self::$_mQUARTZ_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mQUARTZ_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_BRICKS);
 	}
 
 	public static function QUARTZ_PILLAR() : SimplePillar{
 		if(!isset(self::$_mQUARTZ_PILLAR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mQUARTZ_PILLAR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_PILLAR);
 	}
 
 	public static function QUARTZ_SLAB() : Slab{
 		if(!isset(self::$_mQUARTZ_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mQUARTZ_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_SLAB);
 	}
 
 	public static function QUARTZ_STAIRS() : Stair{
 		if(!isset(self::$_mQUARTZ_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mQUARTZ_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_STAIRS);
 	}
 
 	public static function RAIL() : Rail{
 		if(!isset(self::$_mRAIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRAIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRAIL);
 	}
 
 	public static function RAW_COPPER() : Opaque{
 		if(!isset(self::$_mRAW_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRAW_COPPER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_COPPER);
 	}
 
 	public static function RAW_GOLD() : Opaque{
 		if(!isset(self::$_mRAW_GOLD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRAW_GOLD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_GOLD);
 	}
 
 	public static function RAW_IRON() : Opaque{
 		if(!isset(self::$_mRAW_IRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRAW_IRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_IRON);
 	}
 
 	public static function REDSTONE() : Redstone{
 		if(!isset(self::$_mREDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE);
 	}
 
 	public static function REDSTONE_COMPARATOR() : RedstoneComparator{
 		if(!isset(self::$_mREDSTONE_COMPARATOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_COMPARATOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_COMPARATOR);
 	}
 
 	public static function REDSTONE_LAMP() : RedstoneLamp{
 		if(!isset(self::$_mREDSTONE_LAMP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_LAMP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_LAMP);
 	}
 
 	public static function REDSTONE_ORE() : RedstoneOre{
 		if(!isset(self::$_mREDSTONE_ORE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_ORE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_ORE);
 	}
 
 	public static function REDSTONE_REPEATER() : RedstoneRepeater{
 		if(!isset(self::$_mREDSTONE_REPEATER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_REPEATER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_REPEATER);
 	}
 
 	public static function REDSTONE_TORCH() : RedstoneTorch{
 		if(!isset(self::$_mREDSTONE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_TORCH);
 	}
 
 	public static function REDSTONE_WIRE() : RedstoneWire{
 		if(!isset(self::$_mREDSTONE_WIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREDSTONE_WIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_WIRE);
 	}
 
 	public static function RED_MUSHROOM() : RedMushroom{
 		if(!isset(self::$_mRED_MUSHROOM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_MUSHROOM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_MUSHROOM);
 	}
 
 	public static function RED_MUSHROOM_BLOCK() : RedMushroomBlock{
 		if(!isset(self::$_mRED_MUSHROOM_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_MUSHROOM_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_MUSHROOM_BLOCK);
 	}
 
 	public static function RED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mRED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_NETHER_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICKS);
 	}
 
 	public static function RED_NETHER_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mRED_NETHER_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_NETHER_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_SLAB);
 	}
 
 	public static function RED_NETHER_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mRED_NETHER_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_NETHER_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_STAIRS);
 	}
 
 	public static function RED_NETHER_BRICK_WALL() : Wall{
 		if(!isset(self::$_mRED_NETHER_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_NETHER_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_WALL);
 	}
 
 	public static function RED_SAND() : Sand{
 		if(!isset(self::$_mRED_SAND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_SAND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SAND);
 	}
 
 	public static function RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mRED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE);
 	}
 
 	public static function RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mRED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_SANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_SLAB);
 	}
 
 	public static function RED_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mRED_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_SANDSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_STAIRS);
 	}
 
 	public static function RED_SANDSTONE_WALL() : Wall{
 		if(!isset(self::$_mRED_SANDSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_SANDSTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_WALL);
 	}
 
 	public static function RED_TORCH() : Torch{
 		if(!isset(self::$_mRED_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_TORCH);
 	}
 
 	public static function RED_TULIP() : Flower{
 		if(!isset(self::$_mRED_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRED_TULIP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRED_TULIP);
 	}
 
 	public static function REINFORCED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mREINFORCED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mREINFORCED_DEEPSLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mREINFORCED_DEEPSLATE);
 	}
 
 	public static function RESERVED6() : Reserved6{
 		if(!isset(self::$_mRESERVED6)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESERVED6);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESERVED6);
 	}
 
 	public static function RESIN() : Opaque{
 		if(!isset(self::$_mRESIN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN);
 	}
 
 	public static function RESIN_BRICKS() : Opaque{
 		if(!isset(self::$_mRESIN_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICKS);
 	}
 
 	public static function RESIN_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mRESIN_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_SLAB);
 	}
 
 	public static function RESIN_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mRESIN_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_STAIRS);
 	}
 
 	public static function RESIN_BRICK_WALL() : Wall{
 		if(!isset(self::$_mRESIN_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_WALL);
 	}
 
 	public static function RESIN_CLUMP() : ResinClump{
 		if(!isset(self::$_mRESIN_CLUMP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESIN_CLUMP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_CLUMP);
 	}
 
 	public static function RESPAWN_ANCHOR() : RespawnAnchor{
 		if(!isset(self::$_mRESPAWN_ANCHOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mRESPAWN_ANCHOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mRESPAWN_ANCHOR);
 	}
 
 	public static function ROSE_BUSH() : DoublePlant{
 		if(!isset(self::$_mROSE_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mROSE_BUSH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mROSE_BUSH);
 	}
 
 	public static function SAND() : Sand{
 		if(!isset(self::$_mSAND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSAND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSAND);
 	}
 
 	public static function SANDSTONE() : Opaque{
 		if(!isset(self::$_mSANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE);
 	}
 
 	public static function SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_SLAB);
 	}
 
 	public static function SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSANDSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_STAIRS);
 	}
 
 	public static function SANDSTONE_WALL() : Wall{
 		if(!isset(self::$_mSANDSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSANDSTONE_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_WALL);
 	}
 
 	public static function SCULK() : Sculk{
 		if(!isset(self::$_mSCULK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSCULK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSCULK);
 	}
 
 	public static function SEA_LANTERN() : SeaLantern{
 		if(!isset(self::$_mSEA_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSEA_LANTERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSEA_LANTERN);
 	}
 
 	public static function SEA_PICKLE() : SeaPickle{
 		if(!isset(self::$_mSEA_PICKLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSEA_PICKLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSEA_PICKLE);
 	}
 
 	public static function SHROOMLIGHT() : Opaque{
 		if(!isset(self::$_mSHROOMLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSHROOMLIGHT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSHROOMLIGHT);
 	}
 
 	public static function SHULKER_BOX() : ShulkerBox{
 		if(!isset(self::$_mSHULKER_BOX)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSHULKER_BOX);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSHULKER_BOX);
 	}
 
 	public static function SLIME() : Slime{
 		if(!isset(self::$_mSLIME)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSLIME);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSLIME);
 	}
 
 	public static function SMALL_DRIPLEAF() : SmallDripleaf{
 		if(!isset(self::$_mSMALL_DRIPLEAF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMALL_DRIPLEAF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMALL_DRIPLEAF);
 	}
 
 	public static function SMITHING_TABLE() : SmithingTable{
 		if(!isset(self::$_mSMITHING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMITHING_TABLE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMITHING_TABLE);
 	}
 
 	public static function SMOKER() : Furnace{
 		if(!isset(self::$_mSMOKER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOKER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOKER);
 	}
 
 	public static function SMOOTH_BASALT() : Opaque{
 		if(!isset(self::$_mSMOOTH_BASALT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_BASALT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_BASALT);
 	}
 
 	public static function SMOOTH_QUARTZ() : Opaque{
 		if(!isset(self::$_mSMOOTH_QUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_QUARTZ);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ);
 	}
 
 	public static function SMOOTH_QUARTZ_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_QUARTZ_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_QUARTZ_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ_SLAB);
 	}
 
 	public static function SMOOTH_QUARTZ_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_QUARTZ_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_QUARTZ_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ_STAIRS);
 	}
 
 	public static function SMOOTH_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_RED_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE);
 	}
 
 	public static function SMOOTH_RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_RED_SANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE_SLAB);
 	}
 
 	public static function SMOOTH_RED_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_RED_SANDSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE_STAIRS);
 	}
 
 	public static function SMOOTH_SANDSTONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_SANDSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE);
 	}
 
 	public static function SMOOTH_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_SANDSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE_SLAB);
 	}
 
 	public static function SMOOTH_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_SANDSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE_STAIRS);
 	}
 
 	public static function SMOOTH_STONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_STONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_STONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_STONE);
 	}
 
 	public static function SMOOTH_STONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_STONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSMOOTH_STONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_STONE_SLAB);
 	}
 
 	public static function SNOW() : Snow{
 		if(!isset(self::$_mSNOW)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSNOW);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSNOW);
 	}
 
 	public static function SNOW_LAYER() : SnowLayer{
 		if(!isset(self::$_mSNOW_LAYER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSNOW_LAYER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSNOW_LAYER);
 	}
 
 	public static function SOUL_CAMPFIRE() : SoulCampfire{
 		if(!isset(self::$_mSOUL_CAMPFIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_CAMPFIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_CAMPFIRE);
 	}
 
 	public static function SOUL_FIRE() : SoulFire{
 		if(!isset(self::$_mSOUL_FIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_FIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_FIRE);
 	}
 
 	public static function SOUL_LANTERN() : Lantern{
 		if(!isset(self::$_mSOUL_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_LANTERN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_LANTERN);
 	}
 
 	public static function SOUL_SAND() : SoulSand{
 		if(!isset(self::$_mSOUL_SAND)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_SAND);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_SAND);
 	}
 
 	public static function SOUL_SOIL() : Opaque{
 		if(!isset(self::$_mSOUL_SOIL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_SOIL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_SOIL);
 	}
 
 	public static function SOUL_TORCH() : Torch{
 		if(!isset(self::$_mSOUL_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSOUL_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_TORCH);
 	}
 
 	public static function SPONGE() : Sponge{
 		if(!isset(self::$_mSPONGE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPONGE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPONGE);
 	}
 
 	public static function SPORE_BLOSSOM() : SporeBlossom{
 		if(!isset(self::$_mSPORE_BLOSSOM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPORE_BLOSSOM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPORE_BLOSSOM);
 	}
 
 	public static function SPRUCE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mSPRUCE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_BUTTON);
 	}
 
 	public static function SPRUCE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function SPRUCE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function SPRUCE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mSPRUCE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_DOOR);
 	}
 
 	public static function SPRUCE_FENCE() : WoodenFence{
 		if(!isset(self::$_mSPRUCE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_FENCE);
 	}
 
 	public static function SPRUCE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mSPRUCE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_FENCE_GATE);
 	}
 
 	public static function SPRUCE_LEAVES() : Leaves{
 		if(!isset(self::$_mSPRUCE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_LEAVES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_LEAVES);
 	}
 
 	public static function SPRUCE_LOG() : Wood{
 		if(!isset(self::$_mSPRUCE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_LOG);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_LOG);
 	}
 
 	public static function SPRUCE_PLANKS() : Planks{
 		if(!isset(self::$_mSPRUCE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_PLANKS);
 	}
 
 	public static function SPRUCE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mSPRUCE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_PRESSURE_PLATE);
 	}
 
 	public static function SPRUCE_SAPLING() : Sapling{
 		if(!isset(self::$_mSPRUCE_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_SAPLING);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SAPLING);
 	}
 
 	public static function SPRUCE_SIGN() : FloorSign{
 		if(!isset(self::$_mSPRUCE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SIGN);
 	}
 
 	public static function SPRUCE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mSPRUCE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SLAB);
 	}
 
 	public static function SPRUCE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mSPRUCE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_STAIRS);
 	}
 
 	public static function SPRUCE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mSPRUCE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_TRAPDOOR);
 	}
 
 	public static function SPRUCE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mSPRUCE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WALL_HANGING_SIGN);
 	}
 
 	public static function SPRUCE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mSPRUCE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WALL_SIGN);
 	}
 
 	public static function SPRUCE_WOOD() : Wood{
 		if(!isset(self::$_mSPRUCE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSPRUCE_WOOD);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WOOD);
 	}
 
 	public static function STAINED_CLAY() : StainedHardenedClay{
 		if(!isset(self::$_mSTAINED_CLAY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTAINED_CLAY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_CLAY);
 	}
 
 	public static function STAINED_GLASS() : StainedGlass{
 		if(!isset(self::$_mSTAINED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTAINED_GLASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_GLASS);
 	}
 
 	public static function STAINED_GLASS_PANE() : StainedGlassPane{
 		if(!isset(self::$_mSTAINED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTAINED_GLASS_PANE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_GLASS_PANE);
 	}
 
 	public static function STAINED_HARDENED_GLASS() : StainedHardenedGlass{
 		if(!isset(self::$_mSTAINED_HARDENED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTAINED_HARDENED_GLASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_HARDENED_GLASS);
 	}
 
 	public static function STAINED_HARDENED_GLASS_PANE() : StainedHardenedGlassPane{
 		if(!isset(self::$_mSTAINED_HARDENED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTAINED_HARDENED_GLASS_PANE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_HARDENED_GLASS_PANE);
 	}
 
 	public static function STONE() : Opaque{
 		if(!isset(self::$_mSTONE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE);
 	}
 
 	public static function STONECUTTER() : Stonecutter{
 		if(!isset(self::$_mSTONECUTTER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONECUTTER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONECUTTER);
 	}
 
 	public static function STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICKS);
 	}
 
 	public static function STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mSTONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_SLAB);
 	}
 
 	public static function STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mSTONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_STAIRS);
 	}
 
 	public static function STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mSTONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_WALL);
 	}
 
 	public static function STONE_BUTTON() : StoneButton{
 		if(!isset(self::$_mSTONE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BUTTON);
 	}
 
 	public static function STONE_PRESSURE_PLATE() : StonePressurePlate{
 		if(!isset(self::$_mSTONE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_PRESSURE_PLATE);
 	}
 
 	public static function STONE_SLAB() : Slab{
 		if(!isset(self::$_mSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_SLAB);
 	}
 
 	public static function STONE_STAIRS() : Stair{
 		if(!isset(self::$_mSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTONE_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_STAIRS);
 	}
 
 	public static function STRUCTURE_VOID() : StructureVoid{
 		if(!isset(self::$_mSTRUCTURE_VOID)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSTRUCTURE_VOID);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSTRUCTURE_VOID);
 	}
 
 	public static function SUGARCANE() : Sugarcane{
 		if(!isset(self::$_mSUGARCANE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSUGARCANE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSUGARCANE);
 	}
 
 	public static function SUNFLOWER() : DoublePlant{
 		if(!isset(self::$_mSUNFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSUNFLOWER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSUNFLOWER);
 	}
 
 	public static function SWEET_BERRY_BUSH() : SweetBerryBush{
 		if(!isset(self::$_mSWEET_BERRY_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mSWEET_BERRY_BUSH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mSWEET_BERRY_BUSH);
 	}
 
 	public static function TALL_GRASS() : TallGrass{
 		if(!isset(self::$_mTALL_GRASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTALL_GRASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTALL_GRASS);
 	}
 
 	public static function TINTED_GLASS() : TintedGlass{
 		if(!isset(self::$_mTINTED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTINTED_GLASS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTINTED_GLASS);
 	}
 
 	public static function TNT() : TNT{
 		if(!isset(self::$_mTNT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTNT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTNT);
 	}
 
 	public static function TORCH() : Torch{
 		if(!isset(self::$_mTORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTORCH);
 	}
 
 	public static function TORCHFLOWER() : Flower{
 		if(!isset(self::$_mTORCHFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTORCHFLOWER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTORCHFLOWER);
 	}
 
 	public static function TORCHFLOWER_CROP() : TorchflowerCrop{
 		if(!isset(self::$_mTORCHFLOWER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTORCHFLOWER_CROP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTORCHFLOWER_CROP);
 	}
 
 	public static function TRAPPED_CHEST() : TrappedChest{
 		if(!isset(self::$_mTRAPPED_CHEST)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTRAPPED_CHEST);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTRAPPED_CHEST);
 	}
 
 	public static function TRIPWIRE() : Tripwire{
 		if(!isset(self::$_mTRIPWIRE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTRIPWIRE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTRIPWIRE);
 	}
 
 	public static function TRIPWIRE_HOOK() : TripwireHook{
 		if(!isset(self::$_mTRIPWIRE_HOOK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTRIPWIRE_HOOK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTRIPWIRE_HOOK);
 	}
 
 	public static function TUFF() : Opaque{
 		if(!isset(self::$_mTUFF)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF);
 	}
 
 	public static function TUFF_BRICKS() : Opaque{
 		if(!isset(self::$_mTUFF_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_BRICKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICKS);
 	}
 
 	public static function TUFF_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mTUFF_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_BRICK_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_SLAB);
 	}
 
 	public static function TUFF_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mTUFF_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_BRICK_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_STAIRS);
 	}
 
 	public static function TUFF_BRICK_WALL() : Wall{
 		if(!isset(self::$_mTUFF_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_BRICK_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_WALL);
 	}
 
 	public static function TUFF_SLAB() : Slab{
 		if(!isset(self::$_mTUFF_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_SLAB);
 	}
 
 	public static function TUFF_STAIRS() : Stair{
 		if(!isset(self::$_mTUFF_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_STAIRS);
 	}
 
 	public static function TUFF_WALL() : Wall{
 		if(!isset(self::$_mTUFF_WALL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTUFF_WALL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_WALL);
 	}
 
 	public static function TWISTING_VINES() : NetherVines{
 		if(!isset(self::$_mTWISTING_VINES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mTWISTING_VINES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mTWISTING_VINES);
 	}
 
 	public static function UNDERWATER_TORCH() : UnderwaterTorch{
 		if(!isset(self::$_mUNDERWATER_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mUNDERWATER_TORCH);
+		return VanillaBlocksInputs::preprocessMember(self::$_mUNDERWATER_TORCH);
 	}
 
 	public static function VINES() : Vine{
 		if(!isset(self::$_mVINES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mVINES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mVINES);
 	}
 
 	public static function WALL_BANNER() : WallBanner{
 		if(!isset(self::$_mWALL_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWALL_BANNER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWALL_BANNER);
 	}
 
 	public static function WALL_CORAL_FAN() : WallCoralFan{
 		if(!isset(self::$_mWALL_CORAL_FAN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWALL_CORAL_FAN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWALL_CORAL_FAN);
 	}
 
 	public static function WARPED_BUTTON() : WoodenButton{
 		if(!isset(self::$_mWARPED_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_BUTTON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_BUTTON);
 	}
 
 	public static function WARPED_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mWARPED_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_CEILING_CENTER_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_CEILING_CENTER_HANGING_SIGN);
 	}
 
 	public static function WARPED_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mWARPED_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_CEILING_EDGES_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_CEILING_EDGES_HANGING_SIGN);
 	}
 
 	public static function WARPED_DOOR() : WoodenDoor{
 		if(!isset(self::$_mWARPED_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_DOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_DOOR);
 	}
 
 	public static function WARPED_FENCE() : WoodenFence{
 		if(!isset(self::$_mWARPED_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_FENCE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FENCE);
 	}
 
 	public static function WARPED_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mWARPED_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_FENCE_GATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FENCE_GATE);
 	}
 
 	public static function WARPED_FUNGUS() : NetherFungus{
 		if(!isset(self::$_mWARPED_FUNGUS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_FUNGUS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FUNGUS);
 	}
 
 	public static function WARPED_HYPHAE() : Wood{
 		if(!isset(self::$_mWARPED_HYPHAE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_HYPHAE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_HYPHAE);
 	}
 
 	public static function WARPED_NYLIUM() : Nylium{
 		if(!isset(self::$_mWARPED_NYLIUM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_NYLIUM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_NYLIUM);
 	}
 
 	public static function WARPED_PLANKS() : Planks{
 		if(!isset(self::$_mWARPED_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_PLANKS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_PLANKS);
 	}
 
 	public static function WARPED_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mWARPED_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_PRESSURE_PLATE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_PRESSURE_PLATE);
 	}
 
 	public static function WARPED_ROOTS() : NetherRoots{
 		if(!isset(self::$_mWARPED_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_ROOTS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_ROOTS);
 	}
 
 	public static function WARPED_SIGN() : FloorSign{
 		if(!isset(self::$_mWARPED_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_SIGN);
 	}
 
 	public static function WARPED_SLAB() : WoodenSlab{
 		if(!isset(self::$_mWARPED_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_SLAB);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_SLAB);
 	}
 
 	public static function WARPED_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mWARPED_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_STAIRS);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_STAIRS);
 	}
 
 	public static function WARPED_STEM() : Wood{
 		if(!isset(self::$_mWARPED_STEM)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_STEM);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_STEM);
 	}
 
 	public static function WARPED_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mWARPED_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_TRAPDOOR);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_TRAPDOOR);
 	}
 
 	public static function WARPED_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mWARPED_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_WALL_HANGING_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WALL_HANGING_SIGN);
 	}
 
 	public static function WARPED_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mWARPED_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_WALL_SIGN);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WALL_SIGN);
 	}
 
 	public static function WARPED_WART_BLOCK() : Opaque{
 		if(!isset(self::$_mWARPED_WART_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWARPED_WART_BLOCK);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WART_BLOCK);
 	}
 
 	public static function WATER() : Water{
 		if(!isset(self::$_mWATER)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWATER);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWATER);
 	}
 
 	public static function WATER_CAULDRON() : WaterCauldron{
 		if(!isset(self::$_mWATER_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWATER_CAULDRON);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWATER_CAULDRON);
 	}
 
 	public static function WEEPING_VINES() : NetherVines{
 		if(!isset(self::$_mWEEPING_VINES)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWEEPING_VINES);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWEEPING_VINES);
 	}
 
 	public static function WEIGHTED_PRESSURE_PLATE_HEAVY() : WeightedPressurePlateHeavy{
 		if(!isset(self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY);
 	}
 
 	public static function WEIGHTED_PRESSURE_PLATE_LIGHT() : WeightedPressurePlateLight{
 		if(!isset(self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT);
 	}
 
 	public static function WHEAT() : Wheat{
 		if(!isset(self::$_mWHEAT)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWHEAT);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWHEAT);
 	}
 
 	public static function WHITE_TULIP() : Flower{
 		if(!isset(self::$_mWHITE_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWHITE_TULIP);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWHITE_TULIP);
 	}
 
 	public static function WITHER_ROSE() : WitherRose{
 		if(!isset(self::$_mWITHER_ROSE)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWITHER_ROSE);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWITHER_ROSE);
 	}
 
 	public static function WOOL() : Wool{
 		if(!isset(self::$_mWOOL)){ self::init(); }
-		return VanillaBlocksInputs::cloneMember(self::$_mWOOL);
+		return VanillaBlocksInputs::preprocessMember(self::$_mWOOL);
 	}
 }

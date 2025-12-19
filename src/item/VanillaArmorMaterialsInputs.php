@@ -35,33 +35,18 @@ use pocketmine\world\sound\ArmorEquipNetheriteSound;
 
 /**
  * @internal
+ * @phpstan-extends RegistrySource<ArmorMaterial>
  */
-#[RegistrySource(targetClassName: 'VanillaArmorMaterials', getAllFunc: 'getAll')]
-final class VanillaArmorMaterialsInputs{
-	/**
-	 * @var ArmorMaterial[]
-	 * @phpstan-var array<string, ArmorMaterial>
-	 */
-	private static array $registered = [];
-
-	private function __construct(){
-		// NOOP
+final class VanillaArmorMaterialsInputs extends RegistrySource{
+	public function getTargetClassName() : string{
+		return "VanillaArmorMaterials";
 	}
 
-	protected static function register(string $name, ArmorMaterial $armorMaterial) : void{
-		self::$registered[$name] = $armorMaterial;
+	protected function register(string $name, ArmorMaterial $armorMaterial) : void{
+		self::registerValue($name, $armorMaterial);
 	}
 
-	/**
-	 * @return ArmorMaterial[]
-	 * @phpstan-return array<string, ArmorMaterial>
-	 */
-	public static function getAll() : array{
-		self::setup();
-		return self::$registered;
-	}
-
-	protected static function setup() : void{
+	protected function setup() : void{
 		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound()));
 		self::register("chainmail", new ArmorMaterial(12, new ArmorEquipChainSound()));
 		self::register("copper", new ArmorMaterial(8, new ArmorEquipCopperSound()));

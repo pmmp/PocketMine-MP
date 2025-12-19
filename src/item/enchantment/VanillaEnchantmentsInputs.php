@@ -29,16 +29,14 @@ use pocketmine\utils\RegistrySource;
 
 /**
  * @internal
+ * @phpstan-extends RegistrySource<Enchantment>
  */
-#[RegistrySource(targetClassName: 'VanillaEnchantments', getAllFunc: 'getAll')]
-final class VanillaEnchantmentsInputs{
-	/**
-	 * @var Enchantment[]
-	 * @phpstan-var array<string, Enchantment>
-	 */
-	private static array $registered = [];
+final class VanillaEnchantmentsInputs extends RegistrySource{
+	public function getTargetClassName() : string{
+		return "VanillaEnchantments";
+	}
 
-	protected static function setup() : void{
+	protected function setup() : void{
 		self::register("PROTECTION", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_all(),
 			Rarity::COMMON,
@@ -278,16 +276,7 @@ final class VanillaEnchantmentsInputs{
 		));
 	}
 
-	protected static function register(string $name, Enchantment $member) : void{
-		self::$registered[$name] = $member;
-	}
-
-	/**
-	 * @return Enchantment[]
-	 * @phpstan-return array<string, Enchantment>
-	 */
-	public static function getAll() : array{
-		self::setup();
-		return self::$registered;
+	protected function register(string $name, Enchantment $member) : void{
+		self::registerValue($name, $member);
 	}
 }

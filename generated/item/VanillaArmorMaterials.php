@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\Utils;
+use pocketmine\utils\AssumptionFailedError;
 use function mb_strtoupper;
 
 /**
@@ -47,6 +47,8 @@ final class VanillaArmorMaterials{
 	 */
 	private static array $members;
 
+	private static bool $initialized = false;
+
 	private function __construct(){
 		//NOOP
 	}
@@ -66,19 +68,25 @@ final class VanillaArmorMaterials{
 	private static function init() : void{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
-		$values = VanillaArmorMaterialsInputs::getAll();
-		foreach(Utils::stringifyKeys($values) as $name => $value){
-			self::$members[mb_strtoupper($name)] = $value;
+		if(self::$initialized){
+			throw new \LogicException(self::class . " is already being initialized - circular non-delayed registry member dependency?");
 		}
-
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCHAINMAIL = $v, $values["chainmail"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCOPPER = $v, $values["copper"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mDIAMOND = $v, $values["diamond"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mGOLD = $v, $values["gold"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mIRON = $v, $values["iron"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mLEATHER = $v, $values["leather"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mNETHERITE = $v, $values["netherite"]);
-		self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mTURTLE = $v, $values["turtle"]);
+		self::$initialized = true;
+		$source = new VanillaArmorMaterialsInputs();
+		foreach($source->getAllValues() as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+			match($name){
+				"chainmail" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCHAINMAIL = $v, $value),
+				"copper" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCOPPER = $v, $value),
+				"diamond" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mDIAMOND = $v, $value),
+				"gold" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mGOLD = $v, $value),
+				"iron" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mIRON = $v, $value),
+				"leather" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mLEATHER = $v, $value),
+				"netherite" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mNETHERITE = $v, $value),
+				"turtle" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mTURTLE = $v, $value),
+				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
+			};
+		}
 	}
 
 	/**

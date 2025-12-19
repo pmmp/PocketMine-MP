@@ -29,16 +29,15 @@ use pocketmine\utils\RegistrySource;
 
 /**
  * @internal
+ * @phpstan-extends RegistrySource<Effect>
  */
-#[RegistrySource(targetClassName: 'VanillaEffects', getAllFunc: 'getAll')]
-final class VanillaEffectsInputs{
-	/**
-	 * @var Effect[]
-	 * @phpstan-var array<string, Effect>
-	 */
-	private static array $registered = [];
+final class VanillaEffectsInputs extends RegistrySource{
 
-	protected static function setup() : void{
+	public function getTargetClassName() : string{
+		return "VanillaEffects";
+	}
+
+	protected function setup() : void{
 		self::register("absorption", new AbsorptionEffect(KnownTranslationFactory::potion_absorption(), new Color(0x25, 0x52, 0xa5)));
 		//TODO: bad_omen
 		self::register("blindness", new Effect(KnownTranslationFactory::potion_blindness(), new Color(0x1f, 0x1f, 0x23), true));
@@ -71,16 +70,7 @@ final class VanillaEffectsInputs{
 		self::register("wither", new WitherEffect(KnownTranslationFactory::potion_wither(), new Color(0x35, 0x2a, 0x27), true));
 	}
 
-	private static function register(string $name, Effect $effect) : void{
-		self::$registered[$name] = $effect;
-	}
-
-	/**
-	 * @return Effect[]
-	 * @phpstan-return array<string, Effect>
-	 */
-	public static function getAll() : array{
-		self::setup();
-		return self::$registered;
+	private function register(string $name, Effect $effect) : void{
+		self::registerValue($name, $effect);
 	}
 }

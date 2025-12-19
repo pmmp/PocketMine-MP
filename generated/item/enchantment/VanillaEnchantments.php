@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-use pocketmine\utils\Utils;
+use pocketmine\utils\AssumptionFailedError;
 use function mb_strtoupper;
 
 /**
@@ -62,6 +62,8 @@ final class VanillaEnchantments{
 	 */
 	private static array $members;
 
+	private static bool $initialized = false;
+
 	private function __construct(){
 		//NOOP
 	}
@@ -81,34 +83,40 @@ final class VanillaEnchantments{
 	private static function init() : void{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
-		$values = VanillaEnchantmentsInputs::getAll();
-		foreach(Utils::stringifyKeys($values) as $name => $value){
-			self::$members[mb_strtoupper($name)] = $value;
+		if(self::$initialized){
+			throw new \LogicException(self::class . " is already being initialized - circular non-delayed registry member dependency?");
 		}
-
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mAQUA_AFFINITY = $v, $values["AQUA_AFFINITY"]);
-		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mBLAST_PROTECTION = $v, $values["BLAST_PROTECTION"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mEFFICIENCY = $v, $values["EFFICIENCY"]);
-		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFEATHER_FALLING = $v, $values["FEATHER_FALLING"]);
-		self::unsafeAssign(fn(FireAspectEnchantment $v) => self::$_mFIRE_ASPECT = $v, $values["FIRE_ASPECT"]);
-		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFIRE_PROTECTION = $v, $values["FIRE_PROTECTION"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mFLAME = $v, $values["FLAME"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mFORTUNE = $v, $values["FORTUNE"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mFROST_WALKER = $v, $values["FROST_WALKER"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mINFINITY = $v, $values["INFINITY"]);
-		self::unsafeAssign(fn(KnockbackEnchantment $v) => self::$_mKNOCKBACK = $v, $values["KNOCKBACK"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mMENDING = $v, $values["MENDING"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mPOWER = $v, $values["POWER"]);
-		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROJECTILE_PROTECTION = $v, $values["PROJECTILE_PROTECTION"]);
-		self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROTECTION = $v, $values["PROTECTION"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mPUNCH = $v, $values["PUNCH"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mRESPIRATION = $v, $values["RESPIRATION"]);
-		self::unsafeAssign(fn(SharpnessEnchantment $v) => self::$_mSHARPNESS = $v, $values["SHARPNESS"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mSILK_TOUCH = $v, $values["SILK_TOUCH"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mSWIFT_SNEAK = $v, $values["SWIFT_SNEAK"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mTHORNS = $v, $values["THORNS"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mUNBREAKING = $v, $values["UNBREAKING"]);
-		self::unsafeAssign(fn(Enchantment $v) => self::$_mVANISHING = $v, $values["VANISHING"]);
+		self::$initialized = true;
+		$source = new VanillaEnchantmentsInputs();
+		foreach($source->getAllValues() as $name => $value){
+			self::$members[mb_strtoupper($name)] = $value;
+			match($name){
+				"AQUA_AFFINITY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mAQUA_AFFINITY = $v, $value),
+				"BLAST_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mBLAST_PROTECTION = $v, $value),
+				"EFFICIENCY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mEFFICIENCY = $v, $value),
+				"FEATHER_FALLING" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFEATHER_FALLING = $v, $value),
+				"FIRE_ASPECT" => self::unsafeAssign(fn(FireAspectEnchantment $v) => self::$_mFIRE_ASPECT = $v, $value),
+				"FIRE_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFIRE_PROTECTION = $v, $value),
+				"FLAME" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFLAME = $v, $value),
+				"FORTUNE" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFORTUNE = $v, $value),
+				"FROST_WALKER" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFROST_WALKER = $v, $value),
+				"INFINITY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mINFINITY = $v, $value),
+				"KNOCKBACK" => self::unsafeAssign(fn(KnockbackEnchantment $v) => self::$_mKNOCKBACK = $v, $value),
+				"MENDING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mMENDING = $v, $value),
+				"POWER" => self::unsafeAssign(fn(Enchantment $v) => self::$_mPOWER = $v, $value),
+				"PROJECTILE_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROJECTILE_PROTECTION = $v, $value),
+				"PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROTECTION = $v, $value),
+				"PUNCH" => self::unsafeAssign(fn(Enchantment $v) => self::$_mPUNCH = $v, $value),
+				"RESPIRATION" => self::unsafeAssign(fn(Enchantment $v) => self::$_mRESPIRATION = $v, $value),
+				"SHARPNESS" => self::unsafeAssign(fn(SharpnessEnchantment $v) => self::$_mSHARPNESS = $v, $value),
+				"SILK_TOUCH" => self::unsafeAssign(fn(Enchantment $v) => self::$_mSILK_TOUCH = $v, $value),
+				"SWIFT_SNEAK" => self::unsafeAssign(fn(Enchantment $v) => self::$_mSWIFT_SNEAK = $v, $value),
+				"THORNS" => self::unsafeAssign(fn(Enchantment $v) => self::$_mTHORNS = $v, $value),
+				"UNBREAKING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mUNBREAKING = $v, $value),
+				"VANISHING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mVANISHING = $v, $value),
+				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
+			};
+		}
 	}
 
 	/**

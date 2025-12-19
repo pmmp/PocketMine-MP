@@ -28,9 +28,6 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\RegistrySource;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
-use function array_diff;
-use function array_map;
-use function array_unshift;
 use function basename;
 use function class_exists;
 use function count;
@@ -40,16 +37,16 @@ use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
 use function implode;
-use function is_array;
+use function interface_exists;
 use function is_dir;
 use function is_file;
-use function is_iterable;
 use function ksort;
 use function mb_strtoupper;
 use function mkdir;
 use function preg_match;
 use function str_ends_with;
 use function strcasecmp;
+use function trait_exists;
 use const SORT_STRING;
 use const STDERR;
 
@@ -79,13 +76,14 @@ if(count($argv) !== 3){
 }
 
 /**
- * @param object[] $members
- * @phpstan-param array<string, object> $members
+ * @param object[] $memberDeclarations
+ *
+ * @phpstan-param array<string, list<string>> $memberDeclarations
  */
-function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, string $interfaceShortClassName, array $members, string $preprocessorFunc) : string{
+function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, string $interfaceShortClassName, array $memberDeclarations, string $preprocessorFunc) : string{
 	$selfName = basename(__FILE__);
 	$importClasses = [
-		Utils::class => true,
+		AssumptionFailedError::class => true,
 		$namespaceName . "\\" . $sourceShortClassName => true
 	];
 	$importFunctions = ["mb_strtoupper" => true];
@@ -144,39 +142,45 @@ CLASS;
 	}
 
 	$commonParent = null;
-	foreach(Utils::stringifyKeys($members) as $name => $member){
-		$reflect = new \ReflectionClass($member);
-		$types = $reflect->getInterfaceNames();
-		$concreteClass = $reflect;
-		while($concreteClass !== false && $concreteClass->isAnonymous()){
-			$concreteClass = $concreteClass->getParentClass();
-		}
-		if($commonParent === null){
-			$commonParent = $concreteClass;
-		}elseif($commonParent !== false){
-			if($concreteClass === false){
-				$commonParent = false;
-			}else{
-				while($commonParent !== false && !$concreteClass->isSubclassOf($commonParent) && $concreteClass->getName() !== $commonParent->getName()){
-					$commonParent = $commonParent->getParentClass();
+	foreach(Utils::stringifyKeys($memberDeclarations) as $name => $memberTypes){
+		if(count($memberTypes) === 0){
+			$typehint = "object";
+			$commonParent = false;
+		}else{
+			$shortTypes = [];
+			foreach($memberTypes as $memberType){
+				$reflect = new \ReflectionClass($memberType);
+				$shortTypes[] = $reflect->getShortName();
+				$importClasses[$reflect->getName()] = true;
+			}
+			$typehint = implode("&", $shortTypes);
+
+			$concreteClass = null;
+			foreach($memberTypes as $memberType){
+				if(class_exists($memberType)){
+					if($concreteClass === null){
+						$concreteClass = new \ReflectionClass($memberType);
+					}else{
+						throw new AssumptionFailedError("Two base classes for registry member \$name\" in source $sourceShortClassName???");
+					}
+				}
+			}
+
+			if($commonParent === null){
+				$commonParent = $concreteClass;
+			}elseif($commonParent !== false){
+				if($concreteClass === null){
+					$commonParent = false;
+				}else{
+					while($commonParent !== false && !$concreteClass->isSubclassOf($commonParent) && $concreteClass->getName() !== $commonParent->getName()){
+						$commonParent = $commonParent->getParentClass();
+					}
 				}
 			}
 		}
-
-		if($concreteClass === false){
-			$typehint = "object";
-		}else{
-			$types = array_diff($types, $concreteClass->getInterfaceNames());
-			array_unshift($types, $concreteClass->getName());
-			foreach($types as $type){
-				$importClasses[$type] = true;
-			}
-			$typehint = implode("&", array_map(fn(string $class) => (new \ReflectionClass($class))->getShortName(), $types));
-		}
 		$accessor = mb_strtoupper($name);
-		$types[$accessor] = $typehint;
 		$propertyLines[$accessor] = "\tprivate static $typehint \$_m$accessor;\n";
-		$assignLines[$accessor] = "\t\tself::unsafeAssign(fn({$typehint} \$v) => self::\$_m$accessor = \$v, \$values[\"$name\"]);\n";
+		$assignLines[$accessor] = "\t\t\t\t\"$name\" => self::unsafeAssign(fn({$typehint} \$v) => self::\$_m$accessor = \$v, \$value),\n";
 		$memberLines[$accessor] = <<<TEMPLATE
 	public static function $accessor() : $typehint{
 		if(!isset(self::\$_m$accessor)){ self::init(); }
@@ -194,7 +198,7 @@ TEMPLATE;
 	ksort($importClasses, SORT_STRING);
 	$imports = 0;
 	foreach(Utils::stringifyKeys($importClasses) as $import => $_){
-		if(!class_exists($import)){
+		if(!class_exists($import) && !interface_exists($import) && !trait_exists($import)){
 			throw new AssumptionFailedError("Class $import does not exist");
 		}
 		$reflect = new \ReflectionClass($import);
@@ -226,6 +230,8 @@ TEMPLATE;
 	 */
 	private static array \$members;
 
+	private static bool \$initialized = false;
+
 	private function __construct(){
 		//NOOP
 	}
@@ -245,17 +251,23 @@ TEMPLATE;
 	private static function init() : void{
 		//This nasty mess of closures allows us to suppress PHPStan type assignment errors in one place instead of
 		//on every single assignment. This will only run one time on first init, so it's fine for performance.
-		\$values = {$sourceShortClassName}::getAll();
-		foreach(Utils::stringifyKeys(\$values) as \$name => \$value){
-			self::\$members[mb_strtoupper(\$name)] = \$value;
+		if(self::\$initialized){
+			throw new \LogicException(self::class . " is already being initialized - circular non-delayed registry member dependency?");
 		}
-
+		self::\$initialized = true;
+		\$source = new $sourceShortClassName();
+		foreach(\$source->getAllValues() as \$name => \$value){
+			self::\$members[mb_strtoupper(\$name)] = \$value;
+			match(\$name){
 
 INIT;
 	ksort($assignLines, SORT_STRING);
 	$output .= implode("", $assignLines);
 
 	$output .= <<<INIT2
+				default => throw new AssumptionFailedError("Unexpected member \"\$name\" (code probably needs regenerating)")
+			};
+		}
 	}
 
 	/**
@@ -292,13 +304,14 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		return;
 	}
 	$reflect = new \ReflectionClass($className);
-	$attributes = $reflect->getAttributes(RegistrySource::class);
-	if(count($attributes) === 0){
+	if(!$reflect->isSubclassOf(RegistrySource::class)){
 		return;
 	}
-	$info = $attributes[0]->newInstance();
 
-	$interfaceClassName = $info->targetClassName;
+	/** @var RegistrySource<object> $source */
+	$source = $reflect->newInstance();
+
+	$interfaceClassName = $source->getTargetClassName();
 	if(preg_match('/^[A-Za-z\d_]+$/', $interfaceClassName) !== 1){
 		throw new \RuntimeException("Generated class name $interfaceClassName must contain only letters, numbers and underscores");
 	}
@@ -318,38 +331,16 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		throw new \RuntimeException("Generated class name $interfaceClassName cannot be the same as the interface class name (file $file)");
 	}
 
-	$preprocessor = $info->preprocessFunc ?? "";
-	$allGetter = $info->getAllFunc;
-	try{
-		$func = $reflect->getMethod($allGetter);
-	}catch(\ReflectionException $e){
-		throw new \RuntimeException("Error fetching data source method $shortClassName::$allGetter: " . $e->getMessage());
-	}
-
-	if(!$func->isStatic() || $func->getNumberOfParameters() !== 0){
-		throw new \RuntimeException("Method $allGetter in class $className must be static and take no parameters");
-	}
+	$preprocessorReflect = (new \ReflectionFunction($source::preprocessMember(...)));
+	$preprocessor = $preprocessorReflect->getClosureScopeClass()?->getName() === RegistrySource::class ? "" : $preprocessorReflect->getName();
 
 	try{
 		$oldContents = Filesystem::fileGetContents($generatedFile);
 	}catch(\RuntimeException){
 		$oldContents = "";
 	}
-	$kvMap = $func->invoke(null);
-	if(is_array($kvMap)){
-		$table = $kvMap;
-	}elseif(is_iterable($kvMap)){
-		$table = [];
-		foreach($kvMap as $name => $value){
-			if(isset($table[$name])){
-				throw new \RuntimeException("Repeated member name $name in class $className");
-			}
-			$table[$name] = $value;
-		}
-	}else{
-		throw new \RuntimeException("Method $allGetter in class $className must return an iterable");
-	}
-	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, $table, $preprocessor);
+	$kvMap = $source->getAllDeclarations();
+	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, $kvMap, $preprocessor);
 	if($newContents !== $oldContents){
 		echo "Writing changed file $generatedFile\n";
 		file_put_contents($generatedFile, $newContents);

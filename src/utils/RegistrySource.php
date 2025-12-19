@@ -23,20 +23,142 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function array_diff;
+use function array_unshift;
+use function array_values;
+
 /**
- * Attribute used on registry source classes to tell the codegen script how to use the class to generate the registry
- * interface
+ * @phpstan-template TMember of object
  */
-#[\Attribute(\Attribute::TARGET_CLASS)]
-final class RegistrySource{
+abstract class RegistrySource{
+
 	/**
-	 * @param string  $targetClassName Name (without namespace) of the class to generate
-	 * @param string  $getAllFunc      Name of a static method that returns iterable<name, value>, used to initialize the registry accessors
-	 * @param ?string $preprocessFunc  Name of a static method that will preprocess the values before returning them from registry accessors
+	 * @var mixed[]
+	 * @phpstan-var array<string, TMember>
 	 */
-	public function __construct(
-		public readonly string $targetClassName,
-		public readonly string $getAllFunc,
-		public readonly ?string $preprocessFunc = null
-	){}
+	private array $simpleMembers = [];
+
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var array<string, \Closure(string $name) : TMember>
+	 */
+	private array $delayedMembers = [];
+
+	final public function __construct(){
+		//NOOP
+	}
+
+	abstract public function getTargetClassName() : string;
+
+	abstract protected function setup() : void;
+
+	/**
+	 * Override this if you need to, for example, clone a registry member before returning it to the caller
+	 *
+	 * @phpstan-template TParam of object
+	 *
+	 * @phpstan-param TParam $member
+	 * @phpstan-return TParam
+	 */
+	public static function preprocessMember(object $member) : object{
+		return $member;
+	}
+
+	/**
+	 * Adds a plain value to the registry source. You can use this if the value does not depend on any other generated
+	 * registry code.
+	 * The type of the generated registry function will be inferred from the value provided.
+	 *
+	 * @phpstan-param TMember $value
+	 * @phpstan-return TMember
+	 */
+	final protected function registerValue(string $name, mixed $value) : mixed{
+		if(isset($this->simpleMembers[$name]) || isset($this->delayedMembers[$name])){
+			throw new \InvalidArgumentException("Cannot redeclare registry member \"$name\"");
+		}
+		$this->simpleMembers[$name] = $value;
+
+		return $value;
+	}
+
+	/**
+	 * Adds a value using a callback, which will be invoked when the registry is first accessed at runtime.
+	 * The type of the generated registry function will be the same as that of the provided closure.
+	 *
+	 * Use this if the value's initialization depends on generated registry code (i.e. it accesses another registry
+	 * member, either in this registry or another).
+	 *
+	 * Note: A return type MUST be set on the provided closure, or an error will be thrown.
+	 *
+	 * @phpstan-param \Closure(string $name) : TMember $valueFactory
+	 */
+	final protected function registerDelayed(string $name, \Closure $valueFactory) : void{
+		if(isset($this->simpleMembers[$name]) || isset($this->delayedMembers[$name])){
+			throw new \InvalidArgumentException("Cannot redeclare registry member \"$name\"");
+		}
+		Utils::validateCallableSignature(fn(string $name) : object => die(), $valueFactory);
+		$this->delayedMembers[$name] = $valueFactory;
+	}
+
+	/**
+	 * @return \Generator|object[]
+	 * @phpstan-return \Generator<string, TMember, void, void>
+	 */
+	final public function getAllValues() : \Generator{
+		$this->setup();
+		yield from $this->simpleMembers;
+		foreach(Utils::stringifyKeys($this->delayedMembers) as $name => $callback){
+			yield $name => $callback($name);
+		}
+	}
+
+	/**
+	 * @return string[][]
+	 * @phpstan-return array<string, list<string>>
+	 */
+	final public function getAllDeclarations() : array{
+		static::setup();
+		$memberTypes = [];
+		foreach(Utils::stringifyKeys($this->simpleMembers) as $name => $value){
+			$reflect = new \ReflectionClass($value);
+			$concrete = $reflect;
+			if($reflect->isAnonymous()){
+				while($concrete !== false && $concrete->isAnonymous()){
+					$concrete = $concrete->getParentClass();
+				}
+
+				if($concrete === false){
+					$memberTypes[$name] = [];
+				}else{
+					$anonInterfaces = array_diff($reflect->getInterfaceNames(), $concrete->getInterfaceNames());
+					array_unshift($anonInterfaces, $concrete->getName());
+					$memberTypes[$name] = array_values($anonInterfaces);
+				}
+			}else{
+				$memberTypes[$name] = [$reflect->getName()];
+			}
+		}
+
+		foreach(Utils::stringifyKeys($this->delayedMembers) as $name => $callback){
+			$return = (new \ReflectionFunction($callback))->getReturnType();
+			if($return === null){
+				\GlobalLogger::get()->warning("Delayed registry member " . static::getTargetClassName() . "::" . $name . " doesn't have a return type, using \"object\"");
+				$memberTypes[$name] = [];
+			}elseif($return instanceof \ReflectionNamedType){
+				$memberTypes[$name] = [$return->getName()];
+			}elseif($return instanceof \ReflectionIntersectionType){
+				$memberTypes[$name] = [];
+				foreach($return->getTypes() as $type){
+					if(!$type instanceof \ReflectionNamedType){
+						throw new \InvalidArgumentException("Unsupported nested type in intersection type for \"$name\"");
+					}
+					$memberTypes[$name][] = $type->getName();
+				}
+			}else{
+				throw new \LogicException("Unsupported delayed member type for \"$name\"");
+			}
+		}
+
+		return $memberTypes;
+	}
 }
