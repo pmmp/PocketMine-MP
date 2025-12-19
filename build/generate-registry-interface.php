@@ -149,6 +149,9 @@ CLASS;
 		}else{
 			$shortTypes = [];
 			foreach($memberTypes as $memberType){
+				if(!class_exists($memberType) && !interface_exists($memberType)){
+					throw new \LogicException("Invalid type for member \"$name\", expected only classes/interfaces, but got: $memberType");
+				}
 				$reflect = new \ReflectionClass($memberType);
 				$shortTypes[] = $reflect->getShortName();
 				$importClasses[$reflect->getName()] = true;
