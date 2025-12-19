@@ -76,12 +76,51 @@ final class VanillaEffects{
 	 * Hack to allow ignoring PHPStan wrong type assignment error in one place instead of hundreds or thousands
 	 * Assumes that the input value already matches the expected type. If not, a TypeError will be thrown on assignment.
 	 *
-	 * @phpstan-template TValue of Effect
-	 * @phpstan-param \Closure(TValue): TValue $closure
+	 * @phpstan-param \Closure(never) : Effect $closure
 	 */
 	private static function unsafeAssign(\Closure $closure, Effect $memberValue) : void{
-		/** @phpstan-var TValue $memberValue */
+		/**
+		 * This type is not correct either (the param is actually a subtype of Effect) but it's called
+		 * unsafeAssign for a reason :)
+		 * @phpstan-var \Closure(Effect) : Effect $closure
+		 */
 		$closure($memberValue);
+	}
+
+	/**
+	 * @return \Closure[]
+	 * @phpstan-return array<string, \Closure(never) : Effect>
+	 */
+	private static function getInitAssigners() : array{
+		return [
+			"absorption" => fn(AbsorptionEffect $v) => self::$_mABSORPTION = $v,
+			"blindness" => fn(Effect $v) => self::$_mBLINDNESS = $v,
+			"conduit_power" => fn(Effect $v) => self::$_mCONDUIT_POWER = $v,
+			"darkness" => fn(Effect $v) => self::$_mDARKNESS = $v,
+			"fatal_poison" => fn(PoisonEffect $v) => self::$_mFATAL_POISON = $v,
+			"fire_resistance" => fn(Effect $v) => self::$_mFIRE_RESISTANCE = $v,
+			"haste" => fn(Effect $v) => self::$_mHASTE = $v,
+			"health_boost" => fn(HealthBoostEffect $v) => self::$_mHEALTH_BOOST = $v,
+			"hunger" => fn(HungerEffect $v) => self::$_mHUNGER = $v,
+			"instant_damage" => fn(InstantDamageEffect $v) => self::$_mINSTANT_DAMAGE = $v,
+			"instant_health" => fn(InstantHealthEffect $v) => self::$_mINSTANT_HEALTH = $v,
+			"invisibility" => fn(InvisibilityEffect $v) => self::$_mINVISIBILITY = $v,
+			"jump_boost" => fn(Effect $v) => self::$_mJUMP_BOOST = $v,
+			"levitation" => fn(LevitationEffect $v) => self::$_mLEVITATION = $v,
+			"mining_fatigue" => fn(Effect $v) => self::$_mMINING_FATIGUE = $v,
+			"nausea" => fn(Effect $v) => self::$_mNAUSEA = $v,
+			"night_vision" => fn(Effect $v) => self::$_mNIGHT_VISION = $v,
+			"poison" => fn(PoisonEffect $v) => self::$_mPOISON = $v,
+			"regeneration" => fn(RegenerationEffect $v) => self::$_mREGENERATION = $v,
+			"resistance" => fn(Effect $v) => self::$_mRESISTANCE = $v,
+			"saturation" => fn(SaturationEffect $v) => self::$_mSATURATION = $v,
+			"slowness" => fn(SlownessEffect $v) => self::$_mSLOWNESS = $v,
+			"speed" => fn(SpeedEffect $v) => self::$_mSPEED = $v,
+			"strength" => fn(Effect $v) => self::$_mSTRENGTH = $v,
+			"water_breathing" => fn(Effect $v) => self::$_mWATER_BREATHING = $v,
+			"weakness" => fn(Effect $v) => self::$_mWEAKNESS = $v,
+			"wither" => fn(WitherEffect $v) => self::$_mWITHER = $v,
+		];
 	}
 
 	private static function init() : void{
@@ -91,39 +130,22 @@ final class VanillaEffects{
 			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
 		self::$initialized = true;
+		$assigners = self::getInitAssigners();
+		$assigned = [];
 		$source = new VanillaEffectsInputs();
 		foreach($source->getAllValues() as $name => $value){
+			$assigner = $assigners[$name] ?? throw new \LogicException("Unexpected source registry member \"$name\" (code probably needs regenerating)");
+			if(isset($assigned[$name])){
+				//this should be prevented by RegistrySource, but it doesn't hurt to have some redundancy
+				throw new \LogicException("Repeated registry source member \"$name\"");
+			}
 			self::$members[mb_strtoupper($name)] = $value;
-			match($name){
-				"absorption" => self::unsafeAssign(fn(AbsorptionEffect $v) => self::$_mABSORPTION = $v, $value),
-				"blindness" => self::unsafeAssign(fn(Effect $v) => self::$_mBLINDNESS = $v, $value),
-				"conduit_power" => self::unsafeAssign(fn(Effect $v) => self::$_mCONDUIT_POWER = $v, $value),
-				"darkness" => self::unsafeAssign(fn(Effect $v) => self::$_mDARKNESS = $v, $value),
-				"fatal_poison" => self::unsafeAssign(fn(PoisonEffect $v) => self::$_mFATAL_POISON = $v, $value),
-				"fire_resistance" => self::unsafeAssign(fn(Effect $v) => self::$_mFIRE_RESISTANCE = $v, $value),
-				"haste" => self::unsafeAssign(fn(Effect $v) => self::$_mHASTE = $v, $value),
-				"health_boost" => self::unsafeAssign(fn(HealthBoostEffect $v) => self::$_mHEALTH_BOOST = $v, $value),
-				"hunger" => self::unsafeAssign(fn(HungerEffect $v) => self::$_mHUNGER = $v, $value),
-				"instant_damage" => self::unsafeAssign(fn(InstantDamageEffect $v) => self::$_mINSTANT_DAMAGE = $v, $value),
-				"instant_health" => self::unsafeAssign(fn(InstantHealthEffect $v) => self::$_mINSTANT_HEALTH = $v, $value),
-				"invisibility" => self::unsafeAssign(fn(InvisibilityEffect $v) => self::$_mINVISIBILITY = $v, $value),
-				"jump_boost" => self::unsafeAssign(fn(Effect $v) => self::$_mJUMP_BOOST = $v, $value),
-				"levitation" => self::unsafeAssign(fn(LevitationEffect $v) => self::$_mLEVITATION = $v, $value),
-				"mining_fatigue" => self::unsafeAssign(fn(Effect $v) => self::$_mMINING_FATIGUE = $v, $value),
-				"nausea" => self::unsafeAssign(fn(Effect $v) => self::$_mNAUSEA = $v, $value),
-				"night_vision" => self::unsafeAssign(fn(Effect $v) => self::$_mNIGHT_VISION = $v, $value),
-				"poison" => self::unsafeAssign(fn(PoisonEffect $v) => self::$_mPOISON = $v, $value),
-				"regeneration" => self::unsafeAssign(fn(RegenerationEffect $v) => self::$_mREGENERATION = $v, $value),
-				"resistance" => self::unsafeAssign(fn(Effect $v) => self::$_mRESISTANCE = $v, $value),
-				"saturation" => self::unsafeAssign(fn(SaturationEffect $v) => self::$_mSATURATION = $v, $value),
-				"slowness" => self::unsafeAssign(fn(SlownessEffect $v) => self::$_mSLOWNESS = $v, $value),
-				"speed" => self::unsafeAssign(fn(SpeedEffect $v) => self::$_mSPEED = $v, $value),
-				"strength" => self::unsafeAssign(fn(Effect $v) => self::$_mSTRENGTH = $v, $value),
-				"water_breathing" => self::unsafeAssign(fn(Effect $v) => self::$_mWATER_BREATHING = $v, $value),
-				"weakness" => self::unsafeAssign(fn(Effect $v) => self::$_mWEAKNESS = $v, $value),
-				"wither" => self::unsafeAssign(fn(WitherEffect $v) => self::$_mWITHER = $v, $value),
-				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
-			};
+			$assigned[$name] = true;
+			unset($assigners[$name]);
+			self::unsafeAssign($assigner, $value);
+		}
+		if(count($assigners) > 0){
+			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", \array_keys($assigners)));
 		}
 	}
 

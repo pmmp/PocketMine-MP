@@ -117,7 +117,7 @@ abstract class RegistrySource{
 	 * @phpstan-return array<string, list<string>>
 	 */
 	final public function getAllDeclarations() : array{
-		static::setup();
+		$this->setup();
 		$memberTypes = [];
 		foreach(Utils::stringifyKeys($this->simpleMembers) as $name => $value){
 			$reflect = new \ReflectionClass($value);
@@ -142,7 +142,7 @@ abstract class RegistrySource{
 		foreach(Utils::stringifyKeys($this->delayedMembers) as $name => $callback){
 			$return = (new \ReflectionFunction($callback))->getReturnType();
 			if($return === null){
-				\GlobalLogger::get()->warning("Delayed registry member " . static::getTargetClassName() . "::" . $name . " doesn't have a return type, using \"object\"");
+				\GlobalLogger::get()->warning("Delayed registry member " . $this->getTargetClassName() . "::" . $name . " doesn't have a return type, using \"object\"");
 				$memberTypes[$name] = [];
 			}elseif($return instanceof \ReflectionNamedType){
 				$memberTypes[$name] = [$return->getName()];

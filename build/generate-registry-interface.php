@@ -183,7 +183,7 @@ CLASS;
 		}
 		$accessor = mb_strtoupper($name);
 		$propertyLines[$accessor] = "\tprivate static $typehint \$_m$accessor;\n";
-		$assignLines[$accessor] = "\t\t\t\t\"$name\" => self::unsafeAssign(fn({$typehint} \$v) => self::\$_m$accessor = \$v, \$value),\n";
+		$assignLines[$accessor] = "\t\t\t\"$name\" => fn($typehint \$v) => self::\$_m$accessor = \$v,\n";
 		$memberLines[$accessor] = <<<TEMPLATE
 	public static function $accessor() : $typehint{
 		if(!isset(self::\$_m$accessor)){ self::init(); }
@@ -243,12 +243,31 @@ TEMPLATE;
 	 * Hack to allow ignoring PHPStan wrong type assignment error in one place instead of hundreds or thousands
 	 * Assumes that the input value already matches the expected type. If not, a TypeError will be thrown on assignment.
 	 *
-	 * @phpstan-template TValue of {$getAllTypehint}
-	 * @phpstan-param \Closure(TValue): TValue \$closure
+	 * @phpstan-param \Closure(never) : $getAllTypehint \$closure
 	 */
 	private static function unsafeAssign(\Closure \$closure, {$getAllTypehint} \$memberValue) : void{
-		/** @phpstan-var TValue \$memberValue */
+		/**
+		 * This type is not correct either (the param is actually a subtype of $getAllTypehint) but it's called
+		 * unsafeAssign for a reason :)
+		 * @phpstan-var \Closure($getAllTypehint) : $getAllTypehint \$closure
+		 */
 		\$closure(\$memberValue);
+	}
+
+	/**
+	 * @return \Closure[]
+	 * @phpstan-return array<string, \Closure(never) : $getAllTypehint>
+	 */
+	private static function getInitAssigners() : array{
+		return [
+
+INIT;
+
+	ksort($assignLines, SORT_STRING);
+	$output .= implode("", $assignLines);
+
+	$output .= <<<INIT2
+		];
 	}
 
 	private static function init() : void{
@@ -258,18 +277,22 @@ TEMPLATE;
 			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
 		self::\$initialized = true;
+		\$assigners = self::getInitAssigners();
+		\$assigned = [];
 		\$source = new $sourceShortClassName();
 		foreach(\$source->getAllValues() as \$name => \$value){
+			\$assigner = \$assigners[\$name] ?? throw new \LogicException("Unexpected source registry member \"\$name\" (code probably needs regenerating)");
+			if(isset(\$assigned[\$name])){
+				//this should be prevented by RegistrySource, but it doesn't hurt to have some redundancy
+				throw new \LogicException("Repeated registry source member \"\$name\"");
+			}
 			self::\$members[mb_strtoupper(\$name)] = \$value;
-			match(\$name){
-
-INIT;
-	ksort($assignLines, SORT_STRING);
-	$output .= implode("", $assignLines);
-
-	$output .= <<<INIT2
-				default => throw new AssumptionFailedError("Unexpected member \"\$name\" (code probably needs regenerating)")
-			};
+			\$assigned[\$name] = true;
+			unset(\$assigners[\$name]);
+			self::unsafeAssign(\$assigner, \$value);
+		}
+		if(count(\$assigners) > 0){
+			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", \array_keys(\$assigners)));
 		}
 	}
 

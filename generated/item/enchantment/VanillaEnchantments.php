@@ -72,12 +72,47 @@ final class VanillaEnchantments{
 	 * Hack to allow ignoring PHPStan wrong type assignment error in one place instead of hundreds or thousands
 	 * Assumes that the input value already matches the expected type. If not, a TypeError will be thrown on assignment.
 	 *
-	 * @phpstan-template TValue of Enchantment
-	 * @phpstan-param \Closure(TValue): TValue $closure
+	 * @phpstan-param \Closure(never) : Enchantment $closure
 	 */
 	private static function unsafeAssign(\Closure $closure, Enchantment $memberValue) : void{
-		/** @phpstan-var TValue $memberValue */
+		/**
+		 * This type is not correct either (the param is actually a subtype of Enchantment) but it's called
+		 * unsafeAssign for a reason :)
+		 * @phpstan-var \Closure(Enchantment) : Enchantment $closure
+		 */
 		$closure($memberValue);
+	}
+
+	/**
+	 * @return \Closure[]
+	 * @phpstan-return array<string, \Closure(never) : Enchantment>
+	 */
+	private static function getInitAssigners() : array{
+		return [
+			"AQUA_AFFINITY" => fn(Enchantment $v) => self::$_mAQUA_AFFINITY = $v,
+			"BLAST_PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mBLAST_PROTECTION = $v,
+			"EFFICIENCY" => fn(Enchantment $v) => self::$_mEFFICIENCY = $v,
+			"FEATHER_FALLING" => fn(ProtectionEnchantment $v) => self::$_mFEATHER_FALLING = $v,
+			"FIRE_ASPECT" => fn(FireAspectEnchantment $v) => self::$_mFIRE_ASPECT = $v,
+			"FIRE_PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mFIRE_PROTECTION = $v,
+			"FLAME" => fn(Enchantment $v) => self::$_mFLAME = $v,
+			"FORTUNE" => fn(Enchantment $v) => self::$_mFORTUNE = $v,
+			"FROST_WALKER" => fn(Enchantment $v) => self::$_mFROST_WALKER = $v,
+			"INFINITY" => fn(Enchantment $v) => self::$_mINFINITY = $v,
+			"KNOCKBACK" => fn(KnockbackEnchantment $v) => self::$_mKNOCKBACK = $v,
+			"MENDING" => fn(Enchantment $v) => self::$_mMENDING = $v,
+			"POWER" => fn(Enchantment $v) => self::$_mPOWER = $v,
+			"PROJECTILE_PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mPROJECTILE_PROTECTION = $v,
+			"PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mPROTECTION = $v,
+			"PUNCH" => fn(Enchantment $v) => self::$_mPUNCH = $v,
+			"RESPIRATION" => fn(Enchantment $v) => self::$_mRESPIRATION = $v,
+			"SHARPNESS" => fn(SharpnessEnchantment $v) => self::$_mSHARPNESS = $v,
+			"SILK_TOUCH" => fn(Enchantment $v) => self::$_mSILK_TOUCH = $v,
+			"SWIFT_SNEAK" => fn(Enchantment $v) => self::$_mSWIFT_SNEAK = $v,
+			"THORNS" => fn(Enchantment $v) => self::$_mTHORNS = $v,
+			"UNBREAKING" => fn(Enchantment $v) => self::$_mUNBREAKING = $v,
+			"VANISHING" => fn(Enchantment $v) => self::$_mVANISHING = $v,
+		];
 	}
 
 	private static function init() : void{
@@ -87,35 +122,22 @@ final class VanillaEnchantments{
 			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
 		self::$initialized = true;
+		$assigners = self::getInitAssigners();
+		$assigned = [];
 		$source = new VanillaEnchantmentsInputs();
 		foreach($source->getAllValues() as $name => $value){
+			$assigner = $assigners[$name] ?? throw new \LogicException("Unexpected source registry member \"$name\" (code probably needs regenerating)");
+			if(isset($assigned[$name])){
+				//this should be prevented by RegistrySource, but it doesn't hurt to have some redundancy
+				throw new \LogicException("Repeated registry source member \"$name\"");
+			}
 			self::$members[mb_strtoupper($name)] = $value;
-			match($name){
-				"AQUA_AFFINITY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mAQUA_AFFINITY = $v, $value),
-				"BLAST_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mBLAST_PROTECTION = $v, $value),
-				"EFFICIENCY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mEFFICIENCY = $v, $value),
-				"FEATHER_FALLING" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFEATHER_FALLING = $v, $value),
-				"FIRE_ASPECT" => self::unsafeAssign(fn(FireAspectEnchantment $v) => self::$_mFIRE_ASPECT = $v, $value),
-				"FIRE_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mFIRE_PROTECTION = $v, $value),
-				"FLAME" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFLAME = $v, $value),
-				"FORTUNE" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFORTUNE = $v, $value),
-				"FROST_WALKER" => self::unsafeAssign(fn(Enchantment $v) => self::$_mFROST_WALKER = $v, $value),
-				"INFINITY" => self::unsafeAssign(fn(Enchantment $v) => self::$_mINFINITY = $v, $value),
-				"KNOCKBACK" => self::unsafeAssign(fn(KnockbackEnchantment $v) => self::$_mKNOCKBACK = $v, $value),
-				"MENDING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mMENDING = $v, $value),
-				"POWER" => self::unsafeAssign(fn(Enchantment $v) => self::$_mPOWER = $v, $value),
-				"PROJECTILE_PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROJECTILE_PROTECTION = $v, $value),
-				"PROTECTION" => self::unsafeAssign(fn(ProtectionEnchantment $v) => self::$_mPROTECTION = $v, $value),
-				"PUNCH" => self::unsafeAssign(fn(Enchantment $v) => self::$_mPUNCH = $v, $value),
-				"RESPIRATION" => self::unsafeAssign(fn(Enchantment $v) => self::$_mRESPIRATION = $v, $value),
-				"SHARPNESS" => self::unsafeAssign(fn(SharpnessEnchantment $v) => self::$_mSHARPNESS = $v, $value),
-				"SILK_TOUCH" => self::unsafeAssign(fn(Enchantment $v) => self::$_mSILK_TOUCH = $v, $value),
-				"SWIFT_SNEAK" => self::unsafeAssign(fn(Enchantment $v) => self::$_mSWIFT_SNEAK = $v, $value),
-				"THORNS" => self::unsafeAssign(fn(Enchantment $v) => self::$_mTHORNS = $v, $value),
-				"UNBREAKING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mUNBREAKING = $v, $value),
-				"VANISHING" => self::unsafeAssign(fn(Enchantment $v) => self::$_mVANISHING = $v, $value),
-				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
-			};
+			$assigned[$name] = true;
+			unset($assigners[$name]);
+			self::unsafeAssign($assigner, $value);
+		}
+		if(count($assigners) > 0){
+			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", \array_keys($assigners)));
 		}
 	}
 

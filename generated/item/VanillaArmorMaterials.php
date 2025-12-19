@@ -57,12 +57,32 @@ final class VanillaArmorMaterials{
 	 * Hack to allow ignoring PHPStan wrong type assignment error in one place instead of hundreds or thousands
 	 * Assumes that the input value already matches the expected type. If not, a TypeError will be thrown on assignment.
 	 *
-	 * @phpstan-template TValue of ArmorMaterial
-	 * @phpstan-param \Closure(TValue): TValue $closure
+	 * @phpstan-param \Closure(never) : ArmorMaterial $closure
 	 */
 	private static function unsafeAssign(\Closure $closure, ArmorMaterial $memberValue) : void{
-		/** @phpstan-var TValue $memberValue */
+		/**
+		 * This type is not correct either (the param is actually a subtype of ArmorMaterial) but it's called
+		 * unsafeAssign for a reason :)
+		 * @phpstan-var \Closure(ArmorMaterial) : ArmorMaterial $closure
+		 */
 		$closure($memberValue);
+	}
+
+	/**
+	 * @return \Closure[]
+	 * @phpstan-return array<string, \Closure(never) : ArmorMaterial>
+	 */
+	private static function getInitAssigners() : array{
+		return [
+			"chainmail" => fn(ArmorMaterial $v) => self::$_mCHAINMAIL = $v,
+			"copper" => fn(ArmorMaterial $v) => self::$_mCOPPER = $v,
+			"diamond" => fn(ArmorMaterial $v) => self::$_mDIAMOND = $v,
+			"gold" => fn(ArmorMaterial $v) => self::$_mGOLD = $v,
+			"iron" => fn(ArmorMaterial $v) => self::$_mIRON = $v,
+			"leather" => fn(ArmorMaterial $v) => self::$_mLEATHER = $v,
+			"netherite" => fn(ArmorMaterial $v) => self::$_mNETHERITE = $v,
+			"turtle" => fn(ArmorMaterial $v) => self::$_mTURTLE = $v,
+		];
 	}
 
 	private static function init() : void{
@@ -72,20 +92,22 @@ final class VanillaArmorMaterials{
 			throw new \LogicException("Circular dependency detected - use RegistrySource->registerDelayed() if the circular dependency can't be avoided");
 		}
 		self::$initialized = true;
+		$assigners = self::getInitAssigners();
+		$assigned = [];
 		$source = new VanillaArmorMaterialsInputs();
 		foreach($source->getAllValues() as $name => $value){
+			$assigner = $assigners[$name] ?? throw new \LogicException("Unexpected source registry member \"$name\" (code probably needs regenerating)");
+			if(isset($assigned[$name])){
+				//this should be prevented by RegistrySource, but it doesn't hurt to have some redundancy
+				throw new \LogicException("Repeated registry source member \"$name\"");
+			}
 			self::$members[mb_strtoupper($name)] = $value;
-			match($name){
-				"chainmail" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCHAINMAIL = $v, $value),
-				"copper" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mCOPPER = $v, $value),
-				"diamond" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mDIAMOND = $v, $value),
-				"gold" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mGOLD = $v, $value),
-				"iron" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mIRON = $v, $value),
-				"leather" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mLEATHER = $v, $value),
-				"netherite" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mNETHERITE = $v, $value),
-				"turtle" => self::unsafeAssign(fn(ArmorMaterial $v) => self::$_mTURTLE = $v, $value),
-				default => throw new AssumptionFailedError("Unexpected member \"$name\" (code probably needs regenerating)")
-			};
+			$assigned[$name] = true;
+			unset($assigners[$name]);
+			self::unsafeAssign($assigner, $value);
+		}
+		if(count($assigners) > 0){
+			throw new \LogicException("Missing values for registry members (code probably needs regenerating): " . implode(", ", \array_keys($assigners)));
 		}
 	}
 
