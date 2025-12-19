@@ -79,6 +79,7 @@ abstract class RegistrySource{
 	 * Do not include any PHPDoc formatting (e.g. comment tags) in here.
 	 *
 	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
 	public function getTargetClassDocComment() : array{
 		return [];
