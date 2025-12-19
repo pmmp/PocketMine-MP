@@ -827,8 +827,15 @@ final class BlockTypeIds{
 	public const COPPER_LANTERN = 10797;
 	public const COPPER_TORCH = 10798;
 	public const CACTUS_FLOWER = 10799;
+	public const CRIMSON_FUNGUS = 10800;
+	public const CRIMSON_NYLIUM = 10801;
+	public const NETHER_SPROUTS = 10802;
+	public const WARPED_FUNGUS = 10803;
+	public const WARPED_NYLIUM = 10804;
+	public const INFESTED_DEEPSLATE = 10805;
+	public const STRUCTURE_VOID = 10806;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10800;
+	public const FIRST_UNUSED_BLOCK_ID = 10807;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

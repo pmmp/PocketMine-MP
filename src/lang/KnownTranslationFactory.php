@@ -227,6 +227,14 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function commands_effect_success_infinite(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_INFINITE, [
+			0 => $param0,
+			1 => $param1,
+			2 => $param2,
+		]);
+	}
+
 	public static function commands_effect_success_removed(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED, [
 			0 => $param0,
@@ -447,15 +455,6 @@ final class KnownTranslationFactory{
 
 	public static function commands_setworldspawn_usage() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE, []);
-	}
-
-	public static function commands_spawnpoint_success(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3) : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SPAWNPOINT_SUCCESS, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
-			3 => $param3,
-		]);
 	}
 
 	public static function commands_spawnpoint_usage() : Translatable{
@@ -1455,6 +1454,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::OP_WHO, []);
 	}
 
+	public static function pocketmine_block_bed_incomplete() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_BLOCK_BED_INCOMPLETE, []);
+	}
+
 	public static function pocketmine_command_alias_illegal(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ALIAS_ILLEGAL, [
 			0 => $param0,
@@ -1529,6 +1532,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PLAYERNOTFOUND, [
 			"playerName" => $playerName,
 		]);
+	}
+
+	public static function pocketmine_command_error_playerUserOnly() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PLAYERUSERONLY, []);
 	}
 
 	public static function pocketmine_command_gamemode_description() : Translatable{
@@ -1693,8 +1700,146 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_SPAWNPOINT_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_spawnpoint_success(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2, Translatable|string $param3) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_SPAWNPOINT_SUCCESS, [
+			0 => $param0,
+			1 => $param1,
+			2 => $param2,
+			3 => $param3,
+		]);
+	}
+
 	public static function pocketmine_command_status_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_status_header() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_HEADER, []);
+	}
+
+	public static function pocketmine_command_status_memory_mainThread(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_MEMORY_MAINTHREAD, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_memory_manager(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_MEMORY_MANAGER, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_memory_stat(Translatable|string $megabytes) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_MEMORY_STAT, [
+			"megabytes" => $megabytes,
+		]);
+	}
+
+	public static function pocketmine_command_status_memory_total(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_MEMORY_TOTAL, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_memory_virtual(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_MEMORY_VIRTUAL, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_network_download(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_NETWORK_DOWNLOAD, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_network_stat(Translatable|string $kbps) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_NETWORK_STAT, [
+			"kbps" => $kbps,
+		]);
+	}
+
+	public static function pocketmine_command_status_network_upload(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_NETWORK_UPLOAD, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_threads(Translatable|string $count) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_THREADS, [
+			"count" => $count,
+		]);
+	}
+
+	public static function pocketmine_command_status_tps_average(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_TPS_AVERAGE, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_tps_current(Translatable|string $info) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_TPS_CURRENT, [
+			"info" => $info,
+		]);
+	}
+
+	public static function pocketmine_command_status_tps_stat(Translatable|string $ticksPerSecond, Translatable|string $loadPercent) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_TPS_STAT, [
+			"ticksPerSecond" => $ticksPerSecond,
+			"loadPercent" => $loadPercent,
+		]);
+	}
+
+	public static function pocketmine_command_status_uptime(Translatable|string $uptime) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_UPTIME, [
+			"uptime" => $uptime,
+		]);
+	}
+
+	public static function pocketmine_command_status_uptime_days(Translatable|string $days, Translatable|string $hours, Translatable|string $minutes, Translatable|string $seconds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_UPTIME_DAYS, [
+			"days" => $days,
+			"hours" => $hours,
+			"minutes" => $minutes,
+			"seconds" => $seconds,
+		]);
+	}
+
+	public static function pocketmine_command_status_uptime_hours(Translatable|string $hours, Translatable|string $minutes, Translatable|string $seconds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_UPTIME_HOURS, [
+			"hours" => $hours,
+			"minutes" => $minutes,
+			"seconds" => $seconds,
+		]);
+	}
+
+	public static function pocketmine_command_status_uptime_minutes(Translatable|string $minutes, Translatable|string $seconds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_UPTIME_MINUTES, [
+			"minutes" => $minutes,
+			"seconds" => $seconds,
+		]);
+	}
+
+	public static function pocketmine_command_status_uptime_seconds(Translatable|string $seconds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_UPTIME_SECONDS, [
+			"seconds" => $seconds,
+		]);
+	}
+
+	public static function pocketmine_command_status_world(Translatable|string $worldName, Translatable|string $loadedChunks, Translatable|string $tickingChunks, Translatable|string $entities, Translatable|string $timeStat) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_WORLD, [
+			"worldName" => $worldName,
+			"loadedChunks" => $loadedChunks,
+			"tickingChunks" => $tickingChunks,
+			"entities" => $entities,
+			"timeStat" => $timeStat,
+		]);
+	}
+
+	public static function pocketmine_command_status_world_timeStat(Translatable|string $milliseconds) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_WORLD_TIMESTAT, [
+			"milliseconds" => $milliseconds,
+		]);
 	}
 
 	public static function pocketmine_command_stop_description() : Translatable{
@@ -1833,6 +1978,31 @@ final class KnownTranslationFactory{
 	public static function pocketmine_command_version_phpVersion(Translatable|string $phpVersion) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PHPVERSION, [
 			"phpVersion" => $phpVersion,
+		]);
+	}
+
+	public static function pocketmine_command_version_plugin_author(Translatable|string $author) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PLUGIN_AUTHOR, [
+			"author" => $author,
+		]);
+	}
+
+	public static function pocketmine_command_version_plugin_authors(Translatable|string $authors) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PLUGIN_AUTHORS, [
+			"authors" => $authors,
+		]);
+	}
+
+	public static function pocketmine_command_version_plugin_header(Translatable|string $pluginName, Translatable|string $version) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PLUGIN_HEADER, [
+			"pluginName" => $pluginName,
+			"version" => $version,
+		]);
+	}
+
+	public static function pocketmine_command_version_plugin_website(Translatable|string $website) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PLUGIN_WEBSITE, [
+			"website" => $website,
 		]);
 	}
 

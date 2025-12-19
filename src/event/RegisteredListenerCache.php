@@ -25,6 +25,7 @@ namespace pocketmine\event;
 
 /**
  * @internal
+ * @phpstan-template TEvent of Event
  */
 final class RegisteredListenerCache{
 
@@ -32,7 +33,7 @@ final class RegisteredListenerCache{
 	 * List of all handlers that will be called for a particular event, ordered by execution order.
 	 *
 	 * @var RegisteredListener[]
-	 * @phpstan-var list<RegisteredListener>
+	 * @phpstan-var list<RegisteredListener<TEvent>>
 	 */
 	public ?array $list = null;
 }

@@ -305,7 +305,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("crimson_door", fn() => Blocks::CRIMSON_DOOR());
 		$result->registerBlock("crimson_fence", fn() => Blocks::CRIMSON_FENCE());
 		$result->registerBlock("crimson_fence_gate", fn() => Blocks::CRIMSON_FENCE_GATE());
+		$result->registerBlock("crimson_fungus", fn() => Blocks::CRIMSON_FUNGUS());
 		$result->registerBlock("crimson_hyphae", fn() => Blocks::CRIMSON_HYPHAE()->setStripped(false));
+		$result->registerBlock("crimson_nylium", fn() => Blocks::CRIMSON_NYLIUM());
 		$result->registerBlock("crimson_planks", fn() => Blocks::CRIMSON_PLANKS());
 		$result->registerBlock("crimson_pressure_plate", fn() => Blocks::CRIMSON_PRESSURE_PLATE());
 		$result->registerBlock("crimson_roots", fn() => Blocks::CRIMSON_ROOTS());
@@ -717,6 +719,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("infested_chiseled_stone_brick", fn() => Blocks::INFESTED_CHISELED_STONE_BRICK());
 		$result->registerBlock("infested_cobblestone", fn() => Blocks::INFESTED_COBBLESTONE());
 		$result->registerBlock("infested_cracked_stone_brick", fn() => Blocks::INFESTED_CRACKED_STONE_BRICK());
+		$result->registerBlock("infested_deepslate", fn() => Blocks::INFESTED_DEEPSLATE());
 		$result->registerBlock("infested_mossy_stone_brick", fn() => Blocks::INFESTED_MOSSY_STONE_BRICK());
 		$result->registerBlock("infested_stone", fn() => Blocks::INFESTED_STONE());
 		$result->registerBlock("infested_stone_brick", fn() => Blocks::INFESTED_STONE_BRICK());
@@ -846,6 +849,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("nether_quartz_ore", fn() => Blocks::NETHER_QUARTZ_ORE());
 		$result->registerBlock("nether_reactor", fn() => Blocks::NETHER_REACTOR_CORE());
 		$result->registerBlock("nether_reactor_core", fn() => Blocks::NETHER_REACTOR_CORE());
+		$result->registerBlock("nether_sprouts", fn() => Blocks::NETHER_SPROUTS());
 		$result->registerBlock("nether_wart", fn() => Blocks::NETHER_WART());
 		$result->registerBlock("nether_wart_block", fn() => Blocks::NETHER_WART_BLOCK());
 		$result->registerBlock("nether_wart_plant", fn() => Blocks::NETHER_WART());
@@ -1118,6 +1122,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("stripped_spruce_wood", fn() => Blocks::SPRUCE_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(true));
 		$result->registerBlock("stripped_warped_stem", fn() => Blocks::WARPED_STEM()->setStripped(true));
+		$result->registerBlock("structure_void", fn() => Blocks::STRUCTURE_VOID());
 		$result->registerBlock("sugar_cane", fn() => Blocks::SUGARCANE());
 		$result->registerBlock("sugar_canes", fn() => Blocks::SUGARCANE());
 		$result->registerBlock("sugarcane", fn() => Blocks::SUGARCANE());
@@ -1165,7 +1170,9 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("warped_door", fn() => Blocks::WARPED_DOOR());
 		$result->registerBlock("warped_fence", fn() => Blocks::WARPED_FENCE());
 		$result->registerBlock("warped_fence_gate", fn() => Blocks::WARPED_FENCE_GATE());
+		$result->registerBlock("warped_fungus", fn() => Blocks::WARPED_FUNGUS());
 		$result->registerBlock("warped_hyphae", fn() => Blocks::WARPED_HYPHAE()->setStripped(false));
+		$result->registerBlock("warped_nylium", fn() => Blocks::WARPED_NYLIUM());
 		$result->registerBlock("warped_planks", fn() => Blocks::WARPED_PLANKS());
 		$result->registerBlock("warped_pressure_plate", fn() => Blocks::WARPED_PRESSURE_PLATE());
 		$result->registerBlock("warped_roots", fn() => Blocks::WARPED_ROOTS());
@@ -1340,7 +1347,17 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("cooked_rabbit", fn() => Items::COOKED_RABBIT());
 		$result->register("cooked_salmon", fn() => Items::COOKED_SALMON());
 		$result->register("cookie", fn() => Items::COOKIE());
+		$result->register("copper_axe", fn() => Items::COPPER_AXE());
+		$result->register("copper_boots", fn() => Items::COPPER_BOOTS());
+		$result->register("copper_chestplate", fn() => Items::COPPER_CHESTPLATE());
+		$result->register("copper_helmet", fn() => Items::COPPER_HELMET());
+		$result->register("copper_hoe", fn() => Items::COPPER_HOE());
 		$result->register("copper_ingot", fn() => Items::COPPER_INGOT());
+		$result->register("copper_leggings", fn() => Items::COPPER_LEGGINGS());
+		$result->register("copper_nugget", fn() => Items::COPPER_NUGGET());
+		$result->register("copper_pickaxe", fn() => Items::COPPER_PICKAXE());
+		$result->register("copper_shovel", fn() => Items::COPPER_SHOVEL());
+		$result->register("copper_sword", fn() => Items::COPPER_SWORD());
 		$result->register("crimson_hanging_sign", fn() => Items::CRIMSON_HANGING_SIGN());
 		$result->register("dark_oak_boat", fn() => Items::DARK_OAK_BOAT());
 		$result->register("dark_oak_hanging_sign", fn() => Items::DARK_OAK_HANGING_SIGN());

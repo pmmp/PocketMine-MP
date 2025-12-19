@@ -69,6 +69,7 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\world\generator\object\TreeType;
 use function is_int;
 use function mb_strtolower;
 use function mb_strtoupper;
@@ -251,7 +252,9 @@ use function strtolower;
  * @method static WoodenDoor CRIMSON_DOOR()
  * @method static WoodenFence CRIMSON_FENCE()
  * @method static FenceGate CRIMSON_FENCE_GATE()
+ * @method static NetherFungus CRIMSON_FUNGUS()
  * @method static Wood CRIMSON_HYPHAE()
+ * @method static Nylium CRIMSON_NYLIUM()
  * @method static Planks CRIMSON_PLANKS()
  * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
  * @method static NetherRoots CRIMSON_ROOTS()
@@ -495,6 +498,7 @@ use function strtolower;
  * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
  * @method static InfestedStone INFESTED_COBBLESTONE()
  * @method static InfestedStone INFESTED_CRACKED_STONE_BRICK()
+ * @method static InfestedPillar INFESTED_DEEPSLATE()
  * @method static InfestedStone INFESTED_MOSSY_STONE_BRICK()
  * @method static InfestedStone INFESTED_STONE()
  * @method static InfestedStone INFESTED_STONE_BRICK()
@@ -595,6 +599,7 @@ use function strtolower;
  * @method static NetherPortal NETHER_PORTAL()
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
+ * @method static NetherSprouts NETHER_SPROUTS()
  * @method static NetherWartPlant NETHER_WART()
  * @method static Opaque NETHER_WART_BLOCK()
  * @method static Note NOTE_BLOCK()
@@ -800,6 +805,7 @@ use function strtolower;
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
+ * @method static StructureVoid STRUCTURE_VOID()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static SweetBerryBush SWEET_BERRY_BUSH()
@@ -831,7 +837,9 @@ use function strtolower;
  * @method static WoodenDoor WARPED_DOOR()
  * @method static WoodenFence WARPED_FENCE()
  * @method static FenceGate WARPED_FENCE_GATE()
+ * @method static NetherFungus WARPED_FUNGUS()
  * @method static Wood WARPED_HYPHAE()
+ * @method static Nylium WARPED_NYLIUM()
  * @method static Planks WARPED_PLANKS()
  * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
  * @method static NetherRoots WARPED_ROOTS()
@@ -1642,6 +1650,7 @@ final class VanillaBlocks{
 
 	private static function registerBlocksR13() : void{
 		self::register("light", fn(BID $id) => new Light($id, "Light Block", new Info(BreakInfo::indestructible())));
+		self::register("structure_void", fn(BID $id) => new StructureVoid($id, "Structure Void", new Info(BreakInfo::instant())));
 		self::register("wither_rose", fn(BID $id) => new WitherRose($id, "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 	}
 
@@ -1716,6 +1725,16 @@ final class VanillaBlocks{
 		self::register("copper_chain", fn(BID $id) => new CopperChain($id, "Copper Chain", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 30.0))));
 
 		self::register("respawn_anchor", fn(BID $id) => new RespawnAnchor($id, "Respawn Anchor", new Info(BreakInfo::pickaxe(50.0, ToolTier::DIAMOND, 6000.0))));
+
+		$netherFungusInfo = new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS, Tags::HUGE_FUNGUS_REPLACEABLE]);
+		self::register("crimson_fungus", fn(BID $id) => new NetherFungus($id, "Crimson Fungus", $netherFungusInfo, BlockTypeIds::CRIMSON_NYLIUM, TreeType::CRIMSON));
+		self::register("warped_fungus", fn(BID $id) => new NetherFungus($id, "Warped Fungus", $netherFungusInfo, BlockTypeIds::WARPED_NYLIUM, TreeType::WARPED));
+
+		self::register("nether_sprouts", fn(BID $id) => new NetherSprouts($id, "Nether Sprouts", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
+
+		$nyliumBreakInfo = new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD), [Tags::NYLIUM]);
+		self::register("crimson_nylium", fn(BID $id) => new Nylium($id, "Crimson Nylium", $nyliumBreakInfo, [VanillaBlocks::CRIMSON_FUNGUS(), VanillaBlocks::CRIMSON_ROOTS()]));
+		self::register("warped_nylium", fn(BID $id) => new Nylium($id, "Warped Nylium", $nyliumBreakInfo, [VanillaBlocks::WARPED_FUNGUS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::NETHER_SPROUTS()]));
 	}
 
 	private static function registerBlocksR17() : void{
@@ -1734,7 +1753,7 @@ final class VanillaBlocks{
 		self::register("raw_iron", fn(BID $id) => new Opaque($id, "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
 
 		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD, 30.0));
-		self::register("deepslate", fn(BID $id) => new class($id, "Deepslate", $deepslateBreakInfo) extends SimplePillar{
+		$deepslate = self::register("deepslate", fn(BID $id) => new class($id, "Deepslate", $deepslateBreakInfo) extends SimplePillar{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLED_DEEPSLATE()->asItem()];
 			}
@@ -1805,6 +1824,8 @@ final class VanillaBlocks{
 		self::register("small_dripleaf", fn(BID $id) => new SmallDripleaf($id, "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", fn(BID $id) => new BigDripleafHead($id, "Big Dripleaf", new Info(new BreakInfo(0.1))));
 		self::register("big_dripleaf_stem", fn(BID $id) => new BigDripleafStem($id, "Big Dripleaf Stem", new Info(new BreakInfo(0.1))));
+
+		self::register("infested_deepslate", fn(BID $id) => new InfestedPillar($id, "Infested Deepslate", new Info(BreakInfo::pickaxe(1.5, blastResistance: 3.75)), $deepslate));
 	}
 
 	private static function registerBlocksR18() : void{

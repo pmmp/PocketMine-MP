@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\utils\RegistryTrait;
 use pocketmine\world\sound\ArmorEquipChainSound;
+use pocketmine\world\sound\ArmorEquipCopperSound;
 use pocketmine\world\sound\ArmorEquipDiamondSound;
 use pocketmine\world\sound\ArmorEquipGenericSound;
 use pocketmine\world\sound\ArmorEquipGoldSound;
@@ -39,6 +40,7 @@ use pocketmine\world\sound\ArmorEquipNetheriteSound;
  * @generate-registry-docblock
  *
  * @method static ArmorMaterial CHAINMAIL()
+ * @method static ArmorMaterial COPPER()
  * @method static ArmorMaterial DIAMOND()
  * @method static ArmorMaterial GOLD()
  * @method static ArmorMaterial IRON()
@@ -71,6 +73,7 @@ final class VanillaArmorMaterials{
 	protected static function setup() : void{
 		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound()));
 		self::register("chainmail", new ArmorMaterial(12, new ArmorEquipChainSound()));
+		self::register("copper", new ArmorMaterial(8, new ArmorEquipCopperSound()));
 		self::register("iron", new ArmorMaterial(9, new ArmorEquipIronSound()));
 		self::register("turtle", new ArmorMaterial(9, new ArmorEquipGenericSound()));
 		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound()));
