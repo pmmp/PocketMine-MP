@@ -354,16 +354,18 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		throw new \RuntimeException("Generated class name $interfaceClassName must contain only letters, numbers and underscores");
 	}
 	$relativeDir = Path::makeRelative(dirname($file), $sourceDir);
-	$conflictCheckFile = Path::join(dirname($file), $interfaceClassName . ".php");
-	if(file_exists($conflictCheckFile)){
-		throw new \RuntimeException("Generated class $interfaceClassName seems to conflict with an existing class: $conflictCheckFile\n");
-	}
 	$generatedRelativeDir = Path::join($outputDir, $relativeDir);
 	if(!@mkdir($generatedRelativeDir, recursive: true) && !is_dir($generatedRelativeDir)){
 		throw new \RuntimeException("Failed to create target dir $generatedRelativeDir for generated file for $file");
 	}
-
 	$generatedFile = Path::join($generatedRelativeDir, $interfaceClassName . ".php");
+	$conflictCheckFile = Path::join(dirname($file), $interfaceClassName . ".php");
+	//Conflict check is only relevant if the output dir is different from the input. If they're the same, the existing
+	//file is probably the previous version of the generated code.
+	if($generatedFile !== $conflictCheckFile && file_exists($conflictCheckFile)){
+		throw new \RuntimeException("Generated class $interfaceClassName seems to conflict with an existing non-generated class: $conflictCheckFile\n");
+	}
+
 	echo "Found registry in $file, will generate interface in $generatedFile\n";
 	if(strcasecmp($interfaceClassName, $shortClassName) === 0){
 		throw new \RuntimeException("Generated class name $interfaceClassName cannot be the same as the interface class name (file $file)");
