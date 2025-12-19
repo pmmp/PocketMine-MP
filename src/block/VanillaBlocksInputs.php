@@ -68,7 +68,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\utils\RegistrySource;
+use pocketmine\utils\CloningRegistrySource;
 use pocketmine\world\generator\object\TreeType;
 use function is_int;
 use function mb_strtolower;
@@ -80,9 +80,9 @@ use function strtolower;
  * All vanilla blocks are registered here for binding in the generated class.
  *
  * @internal
- * @phpstan-extends RegistrySource<Block>
+ * @phpstan-extends CloningRegistrySource<Block>
  */
-final class VanillaBlocksInputs extends RegistrySource{
+final class VanillaBlocksInputs extends CloningRegistrySource{
 
 	public function getTargetClassName() : string{
 		return "VanillaBlocks";
@@ -117,10 +117,6 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::registerValue($name, $block);
 
 		return $block;
-	}
-
-	public static function preprocessMember(object $member) : object{
-		return clone $member;
 	}
 
 	protected function setup() : void{

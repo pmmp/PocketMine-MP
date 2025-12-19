@@ -334,7 +334,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		return;
 	}
 	$reflect = new \ReflectionClass($className);
-	if(!$reflect->isSubclassOf(RegistrySource::class)){
+	if(!$reflect->isSubclassOf(RegistrySource::class) || !$reflect->isInstantiable()){
 		return;
 	}
 

@@ -35,7 +35,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
-use pocketmine\utils\RegistrySource;
+use pocketmine\utils\CloningRegistrySource;
 use pocketmine\world\World;
 use function is_int;
 use function mb_strtoupper;
@@ -43,15 +43,11 @@ use function strtolower;
 
 /**
  * @internal
- * @phpstan-extends RegistrySource<Item>
+ * @phpstan-extends CloningRegistrySource<Item>
  */
-final class VanillaItemsInputs extends RegistrySource{
+final class VanillaItemsInputs extends CloningRegistrySource{
 	public function getTargetClassName() : string{
 		return "VanillaItems";
-	}
-
-	public static function preprocessMember(object $member) : object{
-		return clone $member;
 	}
 
 	private static function makeIID(string $name) : IID{

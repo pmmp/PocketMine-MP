@@ -28,6 +28,24 @@ use function array_unshift;
 use function array_values;
 
 /**
+ * Extend this class to define source values for a generated registry class.
+ * A registry class has generated functions that simulate object constants.
+ *
+ * The values are defined in the {@link self::setup()} function.
+ * The generated class's name is defined in {@link self::getTargetClassName()}. The generated class will belong to the
+ * same namespace as your source class.
+ *
+ * The generated class will call your source class at runtime, so both the source and generated class must be included
+ * in the build.
+ *
+ * To create a registry, simply extend this class and implement the abstract methods. Then, run the
+ * generate-registry-interface.php script in the build folder to generate the accessor class.
+ *
+ * This supersedes the older {@link RegistryTrait}, which is slower and less robust than this newer approach, and also
+ * required patching source classes. This approach allows the generated code to be fully separate from the source code.
+ *
+ * @see build/generate-registry-interface.php
+ *
  * @phpstan-template TMember of object
  */
 abstract class RegistrySource{
@@ -50,8 +68,15 @@ abstract class RegistrySource{
 		//NOOP
 	}
 
+	/**
+	 * Returns the short name (without namespace) of the class to be generated.
+	 * The generated class will have the same namespace as your source class.
+	 */
 	abstract public function getTargetClassName() : string;
 
+	/**
+	 * Ensures that no other registry gets setup while this one is being set up, to prevent suspicious dependencies
+	 */
 	private function setupWrapper() : void{
 		if(self::$inSetupClass !== null){
 			throw new \LogicException("Registry source class " . self::$inSetupClass . " tried to reference a member of registry " . $this->getTargetClassName() . " without using registerDelayed()");
@@ -64,6 +89,12 @@ abstract class RegistrySource{
 		}
 	}
 
+	/**
+	 * Implement this to add members to the registry.
+	 *
+	 * @see self::registerValue() for simple values which do not depend on any other registry members
+	 * @see self::registerDelayed() for values which depend on other registry members, either in this registry or another
+	 */
 	abstract protected function setup() : void;
 
 	/**
@@ -115,6 +146,8 @@ abstract class RegistrySource{
 	}
 
 	/**
+	 * @internal Initializes and yields all registry values. By-value first, then delayed, in the order of registration.
+	 *
 	 * @return \Generator|object[]
 	 * @phpstan-return \Generator<string, TMember, void, void>
 	 */
@@ -127,6 +160,8 @@ abstract class RegistrySource{
 	}
 
 	/**
+	 * @internal Returns type info for all registry members for code generation, without initializing delayed members.
+	 *
 	 * @return string[][]
 	 * @phpstan-return array<string, list<string>>
 	 */
