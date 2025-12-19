@@ -36,6 +36,10 @@ final class VanillaEnchantmentsInputs extends RegistrySource{
 		return "VanillaEnchantments";
 	}
 
+	public function getTargetClassDocComment() : array{
+		return ["Allows getting any vanilla enchantment implemented by PocketMine-MP"];
+	}
+
 	protected function setup() : void{
 		self::register("PROTECTION", new ProtectionEnchantment(
 			KnownTranslationFactory::enchantment_protect_all(),

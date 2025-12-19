@@ -37,6 +37,10 @@ final class VanillaEffectsInputs extends RegistrySource{
 		return "VanillaEffects";
 	}
 
+	public function getTargetClassDocComment() : array{
+		return ["Allows getting any vanilla entity effect implemented by PocketMine-MP"];
+	}
+
 	protected function setup() : void{
 		self::register("absorption", new AbsorptionEffect(KnownTranslationFactory::potion_absorption(), new Color(0x25, 0x52, 0xa5)));
 		//TODO: bad_omen

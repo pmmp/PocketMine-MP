@@ -29,6 +29,8 @@ use function implode;
 use function mb_strtoupper;
 
 /**
+ * Allows getting any vanilla armor material implemented by PocketMine-MP
+ *
  * This class is generated automatically from source class {@link VanillaArmorMaterialsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
  * @see build/generate-registry-interface.php

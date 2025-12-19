@@ -42,6 +42,10 @@ final class VanillaArmorMaterialsInputs extends RegistrySource{
 		return "VanillaArmorMaterials";
 	}
 
+	public function getTargetClassDocComment() : array{
+		return ["Allows getting any vanilla armor material implemented by PocketMine-MP"];
+	}
+
 	protected function register(string $name, ArmorMaterial $armorMaterial) : void{
 		self::registerValue($name, $armorMaterial);
 	}

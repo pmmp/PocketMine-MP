@@ -29,6 +29,8 @@ use function implode;
 use function mb_strtoupper;
 
 /**
+ * Allows getting any vanilla enchantment implemented by PocketMine-MP
+ *
  * This class is generated automatically from source class {@link VanillaEnchantmentsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
  * @see build/generate-registry-interface.php

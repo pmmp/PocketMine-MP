@@ -50,6 +50,13 @@ final class VanillaItemsInputs extends CloningRegistrySource{
 		return "VanillaItems";
 	}
 
+	public function getTargetClassDocComment() : array{
+		return [
+			"Allows getting a new instance of any item implemented by PocketMine-MP",
+			"Every item here also has a constant of the same name in {@link ItemTypeIds} to enable items to be identified"
+		];
+	}
+
 	private static function makeIID(string $name) : IID{
 		//this sketchy hack allows us to avoid manually writing the constants inline
 		//since type IDs are generated from this class anyway, I'm OK with this hack

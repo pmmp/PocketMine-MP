@@ -77,10 +77,12 @@ if(count($argv) !== 3){
 
 /**
  * @param object[] $memberDeclarations
+ * @param string[] $docCommentLines
  *
  * @phpstan-param array<string, list<string>> $memberDeclarations
+ * @phpstan-param list<string> $docCommentLines
  */
-function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, string $interfaceShortClassName, array $memberDeclarations, string $preprocessorFunc) : string{
+function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, string $interfaceShortClassName, array $memberDeclarations, string $preprocessorFunc, array $docCommentLines) : string{
 	$selfName = basename(__FILE__);
 	$importClasses = [
 		$namespaceName . "\\" . $sourceShortClassName => true
@@ -121,7 +123,6 @@ namespace $namespaceName;
 HEADER;
 
 	$startClass = <<<CLASS
-/**
  * This class is generated automatically from source class {@link $sourceShortClassName}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
  * @see build/$selfName
@@ -129,6 +130,13 @@ HEADER;
 final class $interfaceShortClassName{
 
 CLASS;
+	$docCommentPrepend = "";
+	if(count($docCommentLines) > 0){
+		foreach($docCommentLines as $line){
+			$docCommentPrepend .= " * $line\n";
+		}
+		$docCommentPrepend .= " *\n";
+	}
 
 	$memberLines = [];
 	$propertyLines = [];
@@ -223,7 +231,7 @@ TEMPLATE;
 	if($imports > 0){
 		$output .= "\n";
 	}
-	$output .= "\n" . $startClass;
+	$output .= "\n/**\n" . $docCommentPrepend . $startClass;
 
 	ksort($propertyLines, SORT_STRING);
 	$output .= implode("", $propertyLines);
@@ -370,7 +378,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 		$oldContents = "";
 	}
 	$kvMap = $source->getAllDeclarations();
-	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, $kvMap, $preprocessor);
+	$newContents = generateRegistryInterface($namespace, $shortClassName, $interfaceClassName, $kvMap, $preprocessor, $source->getTargetClassDocComment());
 	if($newContents !== $oldContents){
 		echo "Writing changed file $generatedFile\n";
 		file_put_contents($generatedFile, $newContents);

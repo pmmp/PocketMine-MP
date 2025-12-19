@@ -30,6 +30,9 @@ use function implode;
 use function mb_strtoupper;
 
 /**
+ * Allows getting a new instance of any item implemented by PocketMine-MP
+ * Every item here also has a constant of the same name in {@link ItemTypeIds} to enable items to be identified
+ *
  * This class is generated automatically from source class {@link VanillaItemsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
  * @see build/generate-registry-interface.php

@@ -88,6 +88,13 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 		return "VanillaBlocks";
 	}
 
+	public function getTargetClassDocComment() : array{
+		return [
+			"Allows getting a new instance of any block implemented by PocketMine-MP",
+			"Every block here also has a constant of the same name in {@link BlockTypeIds} to enable blocks to be identified"
+		];
+	}
+
 	/**
 	 * @phpstan-param class-string<covariant Tile> $tileClass
 	 */
