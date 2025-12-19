@@ -630,7 +630,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 	 */
 	private static function getSignItemCallback(WoodType $woodType) : \Closure{
 		return match ($woodType) {
-			WoodType::OAK => VanillaItems::OAK_SIGN(),
+			WoodType::OAK => VanillaItems::OAK_SIGN(...),
 			WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
 			WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
 			WoodType::JUNGLE => VanillaItems::JUNGLE_SIGN(...),
