@@ -87,13 +87,17 @@ function verify_translations(array $baseLanguageDef, string $altLanguageName, ar
 	return $ok;
 }
 
+function language_file_path(string $path, string $code) : string{
+	return $path . "/" . "$code.ini";
+}
+
 /**
  * @return string[]|null
  * @phpstan-return array<string, string>|null
  */
-function parse_language_file(string $path, string $code) : ?array{
-	$lang = parse_ini_file($path . "/" . "$code.ini", false, INI_SCANNER_RAW);
-	if($lang === false){
+function parse_language_file(string $contents) : ?array{
+	$lang = parse_ini_string($contents, false, INI_SCANNER_RAW);
+	if($lang === false || count($lang) === 0){
 		return null;
 	}
 	return $lang;
@@ -151,7 +155,12 @@ if(count($argv) !== 2){
 	fwrite(STDERR, "Required arguments: path\n");
 	exit(1);
 }
-$eng = parse_language_file($argv[1], "eng");
+$rawEng = file_get_contents(language_file_path($argv[1], "eng"));
+if($rawEng === false){
+	fwrite(STDERR, "Failed to read eng.ini\n");
+	exit(1);
+}
+$eng = parse_language_file($rawEng);
 if($eng === null){
 	fwrite(STDERR, "Failed to parse eng.ini\n");
 	exit(1);
@@ -196,10 +205,19 @@ $exit = 0;
  */
 foreach(new \RegexIterator(new \FilesystemIterator($argv[1], \FilesystemIterator::CURRENT_AS_PATHNAME), "/([a-z]+)\.ini$/", \RegexIterator::GET_MATCH) as $match){
 	$code = $match[1];
-	if($code === "eng"){
+	$path = language_file_path($argv[1], $code);
+	$raw = file_get_contents($path);
+	if($raw === false){
+		fwrite(STDERR, "Unable to read contents of $path\n");
+		$exit = 1;
 		continue;
 	}
-	$otherLang = parse_language_file($argv[1], $code);
+	if(str_starts_with($raw, "\xef\xbb\xbf")){
+		fwrite(STDERR, "Unexpected byte-order mark at the start of $code.ini\n");
+		$exit = 1;
+		//we can still try to parse the file - this is more of a cosmetic check than a functional one
+	}
+	$otherLang = parse_language_file($raw);
 	if($otherLang === null){
 		fwrite(STDERR, "Error parsing $code.ini\n");
 		$exit = 1;

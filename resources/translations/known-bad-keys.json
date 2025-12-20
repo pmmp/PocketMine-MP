@@ -16,7 +16,6 @@
     "commands.op.usage",
     "commands.say.usage",
     "commands.setworldspawn.usage",
-    "commands.spawnpoint.success",
     "commands.spawnpoint.usage",
     "commands.time.query",
     "commands.title.usage",

@@ -101,45 +101,49 @@ class AuthKeyProvider{
 		if($resolver === null){
 			throw new AssumptionFailedError("Not expecting this to be called without a resolver present");
 		}
-		if($errors !== null){
-			$this->logger->error("The following errors occurred while fetching new keys:\n\t- " . implode("\n\t-", $errors));
-			//we might've still succeeded in fetching keys even if there were errors, so don't return
-		}
-
-		if($keys === null){
-			$this->logger->critical("Failed to fetch authentication keys from Mojang's API. Xbox players may not be able to authenticate!");
-			$resolver->reject();
-		}else{
-			$pemKeys = [];
-			foreach($keys as $keyModel){
-				if($keyModel->use !== "sig" || $keyModel->kty !== "RSA"){
-					$this->logger->error("Key ID $keyModel->kid doesn't have the expected properties: expected use=sig, kty=RSA, got use=$keyModel->use, kty=$keyModel->kty");
-					continue;
-				}
-				$derKey = JwtUtils::rsaPublicKeyModExpToDer($keyModel->n, $keyModel->e);
-
-				//make sure the key is valid
-				try{
-					JwtUtils::parseDerPublicKey($derKey);
-				}catch(JwtException $e){
-					$this->logger->error("Failed to parse RSA public key for key ID $keyModel->kid: " . $e->getMessage());
-					$this->logger->logException($e);
-					continue;
-				}
-
-				//retain PEM keys instead of OpenSSLAsymmetricKey since these are easier and cheaper to copy between threads
-				$pemKeys[$keyModel->kid] = $derKey;
+		try{
+			if($errors !== null){
+				$this->logger->error("The following errors occurred while fetching new keys:\n\t- " . implode("\n\t-", $errors));
+				//we might've still succeeded in fetching keys even if there were errors, so don't return
 			}
 
-			if(count($keys) === 0){
-				$this->logger->critical("No valid authentication keys returned by Mojang's API. Xbox players may not be able to authenticate!");
+			if($keys === null){
+				$this->logger->critical("Failed to fetch authentication keys from Mojang's API. Xbox players may not be able to authenticate!");
 				$resolver->reject();
 			}else{
-				$this->logger->info("Successfully fetched " . count($keys) . " new authentication keys from issuer $issuer, key IDs: " . implode(", ", array_keys($pemKeys)));
-				$this->keyring = new AuthKeyring($issuer, $pemKeys);
-				$this->lastFetch = time();
-				$resolver->resolve($this->keyring);
+				$pemKeys = [];
+				foreach($keys as $keyModel){
+					if($keyModel->use !== "sig" || $keyModel->kty !== "RSA"){
+						$this->logger->error("Key ID $keyModel->kid doesn't have the expected properties: expected use=sig, kty=RSA, got use=$keyModel->use, kty=$keyModel->kty");
+						continue;
+					}
+					$derKey = JwtUtils::rsaPublicKeyModExpToDer($keyModel->n, $keyModel->e);
+
+					//make sure the key is valid
+					try{
+						JwtUtils::parseDerPublicKey($derKey);
+					}catch(JwtException $e){
+						$this->logger->error("Failed to parse RSA public key for key ID $keyModel->kid: " . $e->getMessage());
+						$this->logger->logException($e);
+						continue;
+					}
+
+					//retain PEM keys instead of OpenSSLAsymmetricKey since these are easier and cheaper to copy between threads
+					$pemKeys[$keyModel->kid] = $derKey;
+				}
+
+				if(count($keys) === 0){
+					$this->logger->critical("No valid authentication keys returned by Mojang's API. Xbox players may not be able to authenticate!");
+					$resolver->reject();
+				}else{
+					$this->logger->info("Successfully fetched " . count($keys) . " new authentication keys from issuer $issuer, key IDs: " . implode(", ", array_keys($pemKeys)));
+					$this->keyring = new AuthKeyring($issuer, $pemKeys);
+					$this->lastFetch = time();
+					$resolver->resolve($this->keyring);
+				}
 			}
+		}finally{
+			$this->resolver = null;
 		}
 	}
 

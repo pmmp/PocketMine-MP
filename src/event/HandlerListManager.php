@@ -34,17 +34,21 @@ class HandlerListManager{
 		return self::$globalInstance ?? (self::$globalInstance = new self());
 	}
 
-	/** @var HandlerList[] classname => HandlerList */
+	/**
+	 * @var HandlerList[] classname => HandlerList
+	 * @phpstan-var array<class-string<Event>, HandlerList<*>>
+	 */
 	private array $allLists = [];
 	/**
 	 * @var RegisteredListenerCache[] event class name => cache
-	 * @phpstan-var array<class-string<Event>, RegisteredListenerCache>
+	 * @phpstan-var array<class-string<Event>, RegisteredListenerCache<*>>
 	 */
 	private array $handlerCaches = [];
 
 	/**
 	 * Unregisters all the listeners
 	 * If a Plugin or Listener is passed, all the listeners with that object will be removed
+	 * @phpstan-param RegisteredListener<*>|Plugin|Listener|null $object
 	 */
 	public function unregisterAll(RegisteredListener|Plugin|Listener|null $object = null) : void{
 		if($object instanceof Listener || $object instanceof Plugin || $object instanceof RegisteredListener){
@@ -67,9 +71,10 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @phpstan-param \ReflectionClass<Event> $class
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param \ReflectionClass<TEvent> $class
 	 *
-	 * @phpstan-return \ReflectionClass<Event>|null
+	 * @phpstan-return (\ReflectionClass<contravariant TEvent>&\ReflectionClass<Event>)|null
 	 */
 	private static function resolveNearestHandleableParent(\ReflectionClass $class) : ?\ReflectionClass{
 		for($parent = $class->getParentClass(); $parent !== false; $parent = $parent->getParentClass()){
@@ -86,14 +91,19 @@ class HandlerListManager{
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
-	 * @phpstan-param class-string<covariant Event> $event
+	 * @phpstan-template TEvent of Event
+	 *
+	 * @phpstan-param class-string<TEvent> $event
+	 * @phpstan-return HandlerList<TEvent>
 	 *
 	 * @throws \ReflectionException
 	 * @throws \InvalidArgumentException
 	 */
 	public function getListFor(string $event) : HandlerList{
 		if(isset($this->allLists[$event])){
-			return $this->allLists[$event];
+			/** @phpstan-var HandlerList<TEvent> $list */
+			$list = $this->allLists[$event];
+			return $list;
 		}
 
 		$class = new \ReflectionClass($event);
@@ -104,19 +114,29 @@ class HandlerListManager{
 		$parent = self::resolveNearestHandleableParent($class);
 		$cache = new RegisteredListenerCache();
 		$this->handlerCaches[$event] = $cache;
-		return $this->allLists[$event] = new HandlerList(
+
+		$parentList = $parent !== null ? $this->getListFor($parent->getName()) : null;
+
+		//TODO: this @var is needed because we can't stop parentList from screwing up the inference for HandlerList<TEvent>
+		/** @phpstan-var HandlerList<TEvent> $list */
+		$list = new HandlerList(
 			$event,
-			parentList: $parent !== null ? $this->getListFor($parent->getName()) : null,
+			parentList: $parentList,
 			handlerCache: $cache
 		);
+		$this->allLists[$event] = $list;
+		return $list;
 	}
 
 	/**
-	 * @phpstan-param class-string<covariant Event> $event
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
 	 *
 	 * @return RegisteredListener[]
+	 * @phpstan-return list<RegisteredListener<TEvent>>
 	 */
 	public function getHandlersFor(string $event) : array{
+		/** @phpstan-var ?RegisteredListenerCache<TEvent> $cache */
 		$cache = $this->handlerCaches[$event] ?? null;
 		//getListFor() will populate the cache for the next call
 		return $cache->list ?? $this->getListFor($event)->getListenerList();
@@ -124,6 +144,7 @@ class HandlerListManager{
 
 	/**
 	 * @return HandlerList[]
+	 * @phpstan-return array<class-string<Event>, HandlerList<*>>
 	 */
 	public function getAll() : array{
 		return $this->allLists;
