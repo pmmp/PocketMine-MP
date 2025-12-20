@@ -31,32 +31,25 @@ abstract class Test{
 	const RESULT_FAILED = 1;
 	const RESULT_ERROR = 2;
 
-	/** @var Main */
-	private $plugin;
-	/** @var int */
-	private $result = Test::RESULT_WAITING;
-	/** @var int */
-	private $startTime;
-	/** @var int */
-	private $timeout = 60; //seconds
+	private int $result = Test::RESULT_WAITING;
+	private int $startTime;
+	private int $timeout = 60; //seconds
 
-	public function __construct(Main $plugin){
-		$this->plugin = $plugin;
-	}
-
-	public function getPlugin() : Main{
-		return $this->plugin;
-	}
+	public function __construct(
+		private \Logger $logger,
+		private string $name,
+		private string $description
+	){}
 
 	final public function start() : void{
 		$this->startTime = time();
 		try{
 			$this->run();
 		}catch(TestFailedException $e){
-			$this->getPlugin()->getLogger()->error($e->getMessage());
+			$this->logger->error($e->getMessage());
 			$this->setResult(Test::RESULT_FAILED);
 		}catch(\Throwable $e){
-			$this->getPlugin()->getLogger()->logException($e);
+			$this->logger->logException($e);
 			$this->setResult(Test::RESULT_ERROR);
 		}
 	}
@@ -65,6 +58,9 @@ abstract class Test{
 
 	}
 
+	/**
+	 * @throws TestFailedException
+	 */
 	abstract public function run() : void;
 
 	public function isFinished() : bool{
@@ -87,7 +83,11 @@ abstract class Test{
 		$this->result = $result;
 	}
 
-	abstract public function getName() : string;
+	public function getName() : string{
+		return $this->name;
+	}
 
-	abstract public function getDescription() : string;
+	public function getDescription() : string{
+		return $this->description;
+	}
 }

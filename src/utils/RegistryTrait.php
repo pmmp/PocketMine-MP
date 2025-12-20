@@ -29,6 +29,8 @@ use function mb_strtoupper;
 use function preg_match;
 
 /**
+ * @deprecated Superseded by {@link RegistrySource}
+ *
  * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
  * These faux constants are exposed in static class methods, which are handled using __callStatic().
  *

@@ -62,7 +62,7 @@ class SpawnpointCommand extends VanillaCommand{
 			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
 			$target->setSpawn(new Position($x, $y, $z, $world));
 
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($x, 2), (string) round($y, 2), (string) round($z, 2)));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_spawnpoint_success($target->getName(), (string) round($x, 2), (string) round($y, 2), (string) round($z, 2)));
 
 			return true;
 		}elseif(count($args) <= 1 && $sender instanceof Player){
@@ -70,7 +70,7 @@ class SpawnpointCommand extends VanillaCommand{
 			$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
 			$target->setSpawn($pos);
 
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
 			return true;
 		}
 

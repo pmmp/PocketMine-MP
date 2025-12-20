@@ -24,6 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\build\update_registry_annotations;
 
 use pocketmine\utils\Utils;
+use function array_diff;
+use function array_map;
+use function array_unshift;
 use function basename;
 use function class_exists;
 use function count;
@@ -64,15 +67,23 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$memberLines = [];
 	foreach(Utils::stringifyKeys($members) as $name => $member){
 		$reflect = new \ReflectionClass($member);
-		while($reflect !== false && $reflect->isAnonymous()){
-			$reflect = $reflect->getParentClass();
+		$types = $reflect->getInterfaceNames();
+		$concreteClass = $reflect;
+		while($concreteClass !== false && $concreteClass->isAnonymous()){
+			$concreteClass = $concreteClass->getParentClass();
 		}
-		if($reflect === false){
+
+		if($concreteClass === false){
 			$typehint = "object";
-		}elseif($reflect->getNamespaceName() === $namespaceName){
-			$typehint = $reflect->getShortName();
 		}else{
-			$typehint = '\\' . $reflect->getName();
+			$types = array_diff($types, $concreteClass->getInterfaceNames());
+			array_unshift($types, $concreteClass->getName());
+			$typehint = implode("&", array_map(function(string $class) use ($namespaceName) : string{
+				$reflect = new \ReflectionClass($class);
+				return $reflect->getNamespaceName() === $namespaceName ?
+					$reflect->getShortName() :
+					'\\' . $reflect->getName();
+			}, $types));
 		}
 		$accessor = mb_strtoupper($name);
 		$memberLines[$accessor] = sprintf($lineTmpl, $accessor, $typehint);

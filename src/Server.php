@@ -1500,6 +1500,16 @@ class Server{
 		if($this->isRunning){
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
+
+			if(TimingsHandler::isEnabled()){
+				TimingsHandler::createReportFile(Path::join($this->getDataPath(), "timings"))->onCompletion(
+					function(string $timingsFile) : void{
+						$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile)));
+						TimingsHandler::setEnabled(false);
+					},
+					fn() => $this->logger->error("Failed to create timings report file")
+				);
+			}
 		}
 	}
 

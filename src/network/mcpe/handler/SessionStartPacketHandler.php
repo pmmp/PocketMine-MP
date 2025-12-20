@@ -60,9 +60,6 @@ final class SessionStartPacketHandler extends PacketHandler{
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL ||
-			//Target 1.21.124, but accept earlier 12x patches since the protocol is the same
-			//Only StartGamePacket block palette hash has different data, but we don't use that anyway
-			(ProtocolInfo::CURRENT_PROTOCOL === 860 && $protocolVersion === 859);
+		return $protocolVersion === ProtocolInfo::CURRENT_PROTOCOL;
 	}
 }
