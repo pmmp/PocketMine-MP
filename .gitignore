@@ -17,6 +17,7 @@ memory_dumps/*
 resource_packs/
 server.lock
 /phpstan.neon
+/docker/test_data/
 
 # Common IDEs
 .idea/*
