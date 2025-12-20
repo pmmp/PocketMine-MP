@@ -30,7 +30,7 @@ jobs:
       valid: ${{ steps.validate.outputs.DEV_BUILD == 'false' }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Check IS_DEVELOPMENT_BUILD flag
         id: validate
@@ -46,10 +46,10 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.35.5
+        uses: shivammathur/setup-php@2.36.0
         with:
           php-version: 8.2
 

@@ -107,21 +107,24 @@ class VersionCommand extends VanillaCommand{
 
 	private function describeToSender(Plugin $plugin, CommandSender $sender) : void{
 		$desc = $plugin->getDescription();
-		$sender->sendMessage(TextFormat::DARK_GREEN . $desc->getName() . TextFormat::RESET . " version " . TextFormat::DARK_GREEN . $desc->getVersion());
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_plugin_header(
+			TextFormat::DARK_GREEN . $desc->getName() . TextFormat::RESET,
+			TextFormat::DARK_GREEN . $desc->getVersion() . TextFormat::RESET
+		));
 
 		if($desc->getDescription() !== ""){
 			$sender->sendMessage($desc->getDescription());
 		}
 
 		if($desc->getWebsite() !== ""){
-			$sender->sendMessage("Website: " . $desc->getWebsite());
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_plugin_website($desc->getWebsite()));
 		}
 
 		if(count($authors = $desc->getAuthors()) > 0){
 			if(count($authors) === 1){
-				$sender->sendMessage("Author: " . implode(", ", $authors));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_plugin_author(implode(", ", $authors)));
 			}else{
-				$sender->sendMessage("Authors: " . implode(", ", $authors));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_plugin_authors(implode(", ", $authors)));
 			}
 		}
 	}
