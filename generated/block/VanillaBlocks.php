@@ -68,6 +68,7 @@ final class VanillaBlocks{
 	private static Stair $_mANDESITE_STAIRS;
 	private static Wall $_mANDESITE_WALL;
 	private static Anvil $_mANVIL;
+	private static Azalea $_mAZALEA;
 	private static Leaves $_mAZALEA_LEAVES;
 	private static Flower $_mAZURE_BLUET;
 	private static Bamboo $_mBAMBOO;
@@ -421,6 +422,7 @@ final class VanillaBlocks{
 	private static TallGrass $_mFERN;
 	private static Fire $_mFIRE;
 	private static FletchingTable $_mFLETCHING_TABLE;
+	private static Azalea $_mFLOWERING_AZALEA;
 	private static Leaves $_mFLOWERING_AZALEA_LEAVES;
 	private static FlowerPot $_mFLOWER_POT;
 	private static Froglight $_mFROGLIGHT;
@@ -881,6 +883,7 @@ final class VanillaBlocks{
 			"andesite_stairs" => fn(Stair $v) => self::$_mANDESITE_STAIRS = $v,
 			"andesite_wall" => fn(Wall $v) => self::$_mANDESITE_WALL = $v,
 			"anvil" => fn(Anvil $v) => self::$_mANVIL = $v,
+			"azalea" => fn(Azalea $v) => self::$_mAZALEA = $v,
 			"azalea_leaves" => fn(Leaves $v) => self::$_mAZALEA_LEAVES = $v,
 			"azure_bluet" => fn(Flower $v) => self::$_mAZURE_BLUET = $v,
 			"bamboo" => fn(Bamboo $v) => self::$_mBAMBOO = $v,
@@ -1234,6 +1237,7 @@ final class VanillaBlocks{
 			"fern" => fn(TallGrass $v) => self::$_mFERN = $v,
 			"fire" => fn(Fire $v) => self::$_mFIRE = $v,
 			"fletching_table" => fn(FletchingTable $v) => self::$_mFLETCHING_TABLE = $v,
+			"flowering_azalea" => fn(Azalea $v) => self::$_mFLOWERING_AZALEA = $v,
 			"flowering_azalea_leaves" => fn(Leaves $v) => self::$_mFLOWERING_AZALEA_LEAVES = $v,
 			"flower_pot" => fn(FlowerPot $v) => self::$_mFLOWER_POT = $v,
 			"froglight" => fn(Froglight $v) => self::$_mFROGLIGHT = $v,
@@ -1816,6 +1820,11 @@ final class VanillaBlocks{
 	public static function ANVIL() : Anvil{
 		if(!isset(self::$_mANVIL)){ self::init(); }
 		return VanillaBlocksInputs::preprocessMember(self::$_mANVIL);
+	}
+
+	public static function AZALEA() : Azalea{
+		if(!isset(self::$_mAZALEA)){ self::init(); }
+		return VanillaBlocksInputs::preprocessMember(self::$_mAZALEA);
 	}
 
 	public static function AZALEA_LEAVES() : Leaves{
@@ -3581,6 +3590,11 @@ final class VanillaBlocks{
 	public static function FLETCHING_TABLE() : FletchingTable{
 		if(!isset(self::$_mFLETCHING_TABLE)){ self::init(); }
 		return VanillaBlocksInputs::preprocessMember(self::$_mFLETCHING_TABLE);
+	}
+
+	public static function FLOWERING_AZALEA() : Azalea{
+		if(!isset(self::$_mFLOWERING_AZALEA)){ self::init(); }
+		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWERING_AZALEA);
 	}
 
 	public static function FLOWERING_AZALEA_LEAVES() : Leaves{
