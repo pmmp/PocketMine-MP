@@ -28,6 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use function count;
 
 class TransferServerCommand extends VanillaCommand{
@@ -45,7 +46,7 @@ class TransferServerCommand extends VanillaCommand{
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
 		}elseif(!($sender instanceof Player)){
-			$sender->sendMessage("This command must be executed as a player");
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_error_playerUserOnly()->prefix(TextFormat::RED));
 
 			return false;
 		}

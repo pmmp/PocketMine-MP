@@ -68,7 +68,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\utils\CloningRegistryTrait;
+use pocketmine\utils\CloningRegistrySource;
 use pocketmine\world\generator\object\TreeType;
 use function is_int;
 use function mb_strtolower;
@@ -76,805 +76,29 @@ use function mb_strtoupper;
 use function strtolower;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * Input class for generating {@link VanillaBlocks}
+ * All vanilla blocks are registered here for binding in the generated class.
  *
- * @method static WoodenButton ACACIA_BUTTON()
- * @method static CeilingCenterHangingSign ACACIA_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign ACACIA_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor ACACIA_DOOR()
- * @method static WoodenFence ACACIA_FENCE()
- * @method static FenceGate ACACIA_FENCE_GATE()
- * @method static Leaves ACACIA_LEAVES()
- * @method static Wood ACACIA_LOG()
- * @method static Planks ACACIA_PLANKS()
- * @method static WoodenPressurePlate ACACIA_PRESSURE_PLATE()
- * @method static Sapling ACACIA_SAPLING()
- * @method static FloorSign ACACIA_SIGN()
- * @method static WoodenSlab ACACIA_SLAB()
- * @method static WoodenStairs ACACIA_STAIRS()
- * @method static WoodenTrapdoor ACACIA_TRAPDOOR()
- * @method static WallHangingSign ACACIA_WALL_HANGING_SIGN()
- * @method static WallSign ACACIA_WALL_SIGN()
- * @method static Wood ACACIA_WOOD()
- * @method static ActivatorRail ACTIVATOR_RAIL()
- * @method static Air AIR()
- * @method static Flower ALLIUM()
- * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
- * @method static Opaque AMETHYST()
- * @method static AmethystCluster AMETHYST_CLUSTER()
- * @method static Opaque ANCIENT_DEBRIS()
- * @method static Opaque ANDESITE()
- * @method static Slab ANDESITE_SLAB()
- * @method static Stair ANDESITE_STAIRS()
- * @method static Wall ANDESITE_WALL()
- * @method static Anvil ANVIL()
- * @method static Leaves AZALEA_LEAVES()
- * @method static Flower AZURE_BLUET()
- * @method static Bamboo BAMBOO()
- * @method static BambooSapling BAMBOO_SAPLING()
- * @method static FloorBanner BANNER()
- * @method static Barrel BARREL()
- * @method static Transparent BARRIER()
- * @method static SimplePillar BASALT()
- * @method static Beacon BEACON()
- * @method static Bed BED()
- * @method static Bedrock BEDROCK()
- * @method static Beetroot BEETROOTS()
- * @method static Bell BELL()
- * @method static BigDripleafHead BIG_DRIPLEAF_HEAD()
- * @method static BigDripleafStem BIG_DRIPLEAF_STEM()
- * @method static WoodenButton BIRCH_BUTTON()
- * @method static CeilingCenterHangingSign BIRCH_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign BIRCH_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor BIRCH_DOOR()
- * @method static WoodenFence BIRCH_FENCE()
- * @method static FenceGate BIRCH_FENCE_GATE()
- * @method static Leaves BIRCH_LEAVES()
- * @method static Wood BIRCH_LOG()
- * @method static Planks BIRCH_PLANKS()
- * @method static WoodenPressurePlate BIRCH_PRESSURE_PLATE()
- * @method static Sapling BIRCH_SAPLING()
- * @method static FloorSign BIRCH_SIGN()
- * @method static WoodenSlab BIRCH_SLAB()
- * @method static WoodenStairs BIRCH_STAIRS()
- * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
- * @method static WallHangingSign BIRCH_WALL_HANGING_SIGN()
- * @method static WallSign BIRCH_WALL_SIGN()
- * @method static Wood BIRCH_WOOD()
- * @method static Opaque BLACKSTONE()
- * @method static Slab BLACKSTONE_SLAB()
- * @method static Stair BLACKSTONE_STAIRS()
- * @method static Wall BLACKSTONE_WALL()
- * @method static Furnace BLAST_FURNACE()
- * @method static BlueIce BLUE_ICE()
- * @method static Flower BLUE_ORCHID()
- * @method static Torch BLUE_TORCH()
- * @method static BoneBlock BONE_BLOCK()
- * @method static Bookshelf BOOKSHELF()
- * @method static BrewingStand BREWING_STAND()
- * @method static Opaque BRICKS()
- * @method static Slab BRICK_SLAB()
- * @method static Stair BRICK_STAIRS()
- * @method static Wall BRICK_WALL()
- * @method static BrownMushroom BROWN_MUSHROOM()
- * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
- * @method static BuddingAmethyst BUDDING_AMETHYST()
- * @method static Cactus CACTUS()
- * @method static CactusFlower CACTUS_FLOWER()
- * @method static Cake CAKE()
- * @method static CakeWithCandle CAKE_WITH_CANDLE()
- * @method static CakeWithDyedCandle CAKE_WITH_DYED_CANDLE()
- * @method static Opaque CALCITE()
- * @method static Campfire CAMPFIRE()
- * @method static Candle CANDLE()
- * @method static Carpet CARPET()
- * @method static Carrot CARROTS()
- * @method static CartographyTable CARTOGRAPHY_TABLE()
- * @method static CarvedPumpkin CARVED_PUMPKIN()
- * @method static Cauldron CAULDRON()
- * @method static CaveVines CAVE_VINES()
- * @method static Chain CHAIN()
- * @method static ChemicalHeat CHEMICAL_HEAT()
- * @method static WoodenButton CHERRY_BUTTON()
- * @method static CeilingCenterHangingSign CHERRY_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign CHERRY_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor CHERRY_DOOR()
- * @method static WoodenFence CHERRY_FENCE()
- * @method static FenceGate CHERRY_FENCE_GATE()
- * @method static Leaves CHERRY_LEAVES()
- * @method static Wood CHERRY_LOG()
- * @method static Planks CHERRY_PLANKS()
- * @method static WoodenPressurePlate CHERRY_PRESSURE_PLATE()
- * @method static FloorSign CHERRY_SIGN()
- * @method static WoodenSlab CHERRY_SLAB()
- * @method static WoodenStairs CHERRY_STAIRS()
- * @method static WoodenTrapdoor CHERRY_TRAPDOOR()
- * @method static WallHangingSign CHERRY_WALL_HANGING_SIGN()
- * @method static WallSign CHERRY_WALL_SIGN()
- * @method static Wood CHERRY_WOOD()
- * @method static Chest CHEST()
- * @method static ChiseledBookshelf CHISELED_BOOKSHELF()
- * @method static Copper CHISELED_COPPER()
- * @method static Opaque CHISELED_DEEPSLATE()
- * @method static Opaque CHISELED_NETHER_BRICKS()
- * @method static Opaque CHISELED_POLISHED_BLACKSTONE()
- * @method static SimplePillar CHISELED_QUARTZ()
- * @method static Opaque CHISELED_RED_SANDSTONE()
- * @method static Opaque CHISELED_RESIN_BRICKS()
- * @method static Opaque CHISELED_SANDSTONE()
- * @method static Opaque CHISELED_STONE_BRICKS()
- * @method static Opaque CHISELED_TUFF()
- * @method static Opaque CHISELED_TUFF_BRICKS()
- * @method static ChorusFlower CHORUS_FLOWER()
- * @method static ChorusPlant CHORUS_PLANT()
- * @method static Clay CLAY()
- * @method static Coal COAL()
- * @method static CoalOre COAL_ORE()
- * @method static Opaque COBBLED_DEEPSLATE()
- * @method static Slab COBBLED_DEEPSLATE_SLAB()
- * @method static Stair COBBLED_DEEPSLATE_STAIRS()
- * @method static Wall COBBLED_DEEPSLATE_WALL()
- * @method static Opaque COBBLESTONE()
- * @method static Slab COBBLESTONE_SLAB()
- * @method static Stair COBBLESTONE_STAIRS()
- * @method static Wall COBBLESTONE_WALL()
- * @method static Cobweb COBWEB()
- * @method static CocoaBlock COCOA_POD()
- * @method static ChemistryTable COMPOUND_CREATOR()
- * @method static Concrete CONCRETE()
- * @method static ConcretePowder CONCRETE_POWDER()
- * @method static Copper COPPER()
- * @method static CopperBars COPPER_BARS()
- * @method static CopperBulb COPPER_BULB()
- * @method static CopperChain COPPER_CHAIN()
- * @method static CopperDoor COPPER_DOOR()
- * @method static CopperGrate COPPER_GRATE()
- * @method static CopperLantern COPPER_LANTERN()
- * @method static CopperOre COPPER_ORE()
- * @method static Torch COPPER_TORCH()
- * @method static CopperTrapdoor COPPER_TRAPDOOR()
- * @method static Coral CORAL()
- * @method static CoralBlock CORAL_BLOCK()
- * @method static FloorCoralFan CORAL_FAN()
- * @method static Flower CORNFLOWER()
- * @method static Opaque CRACKED_DEEPSLATE_BRICKS()
- * @method static Opaque CRACKED_DEEPSLATE_TILES()
- * @method static Opaque CRACKED_NETHER_BRICKS()
- * @method static Opaque CRACKED_POLISHED_BLACKSTONE_BRICKS()
- * @method static Opaque CRACKED_STONE_BRICKS()
- * @method static CraftingTable CRAFTING_TABLE()
- * @method static WoodenButton CRIMSON_BUTTON()
- * @method static CeilingCenterHangingSign CRIMSON_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign CRIMSON_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor CRIMSON_DOOR()
- * @method static WoodenFence CRIMSON_FENCE()
- * @method static FenceGate CRIMSON_FENCE_GATE()
- * @method static NetherFungus CRIMSON_FUNGUS()
- * @method static Wood CRIMSON_HYPHAE()
- * @method static Nylium CRIMSON_NYLIUM()
- * @method static Planks CRIMSON_PLANKS()
- * @method static WoodenPressurePlate CRIMSON_PRESSURE_PLATE()
- * @method static NetherRoots CRIMSON_ROOTS()
- * @method static FloorSign CRIMSON_SIGN()
- * @method static WoodenSlab CRIMSON_SLAB()
- * @method static WoodenStairs CRIMSON_STAIRS()
- * @method static Wood CRIMSON_STEM()
- * @method static WoodenTrapdoor CRIMSON_TRAPDOOR()
- * @method static WallHangingSign CRIMSON_WALL_HANGING_SIGN()
- * @method static WallSign CRIMSON_WALL_SIGN()
- * @method static Opaque CRYING_OBSIDIAN()
- * @method static Copper CUT_COPPER()
- * @method static CopperSlab CUT_COPPER_SLAB()
- * @method static CopperStairs CUT_COPPER_STAIRS()
- * @method static Opaque CUT_RED_SANDSTONE()
- * @method static Slab CUT_RED_SANDSTONE_SLAB()
- * @method static Opaque CUT_SANDSTONE()
- * @method static Slab CUT_SANDSTONE_SLAB()
- * @method static Flower DANDELION()
- * @method static WoodenButton DARK_OAK_BUTTON()
- * @method static CeilingCenterHangingSign DARK_OAK_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign DARK_OAK_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor DARK_OAK_DOOR()
- * @method static WoodenFence DARK_OAK_FENCE()
- * @method static FenceGate DARK_OAK_FENCE_GATE()
- * @method static Leaves DARK_OAK_LEAVES()
- * @method static Wood DARK_OAK_LOG()
- * @method static Planks DARK_OAK_PLANKS()
- * @method static WoodenPressurePlate DARK_OAK_PRESSURE_PLATE()
- * @method static Sapling DARK_OAK_SAPLING()
- * @method static FloorSign DARK_OAK_SIGN()
- * @method static WoodenSlab DARK_OAK_SLAB()
- * @method static WoodenStairs DARK_OAK_STAIRS()
- * @method static WoodenTrapdoor DARK_OAK_TRAPDOOR()
- * @method static WallHangingSign DARK_OAK_WALL_HANGING_SIGN()
- * @method static WallSign DARK_OAK_WALL_SIGN()
- * @method static Wood DARK_OAK_WOOD()
- * @method static Opaque DARK_PRISMARINE()
- * @method static Slab DARK_PRISMARINE_SLAB()
- * @method static Stair DARK_PRISMARINE_STAIRS()
- * @method static DaylightSensor DAYLIGHT_SENSOR()
- * @method static DeadBush DEAD_BUSH()
- * @method static SimplePillar DEEPSLATE()
- * @method static Opaque DEEPSLATE_BRICKS()
- * @method static Slab DEEPSLATE_BRICK_SLAB()
- * @method static Stair DEEPSLATE_BRICK_STAIRS()
- * @method static Wall DEEPSLATE_BRICK_WALL()
- * @method static CoalOre DEEPSLATE_COAL_ORE()
- * @method static CopperOre DEEPSLATE_COPPER_ORE()
- * @method static DiamondOre DEEPSLATE_DIAMOND_ORE()
- * @method static EmeraldOre DEEPSLATE_EMERALD_ORE()
- * @method static GoldOre DEEPSLATE_GOLD_ORE()
- * @method static IronOre DEEPSLATE_IRON_ORE()
- * @method static LapisOre DEEPSLATE_LAPIS_LAZULI_ORE()
- * @method static RedstoneOre DEEPSLATE_REDSTONE_ORE()
- * @method static Opaque DEEPSLATE_TILES()
- * @method static Slab DEEPSLATE_TILE_SLAB()
- * @method static Stair DEEPSLATE_TILE_STAIRS()
- * @method static Wall DEEPSLATE_TILE_WALL()
- * @method static DetectorRail DETECTOR_RAIL()
- * @method static Opaque DIAMOND()
- * @method static DiamondOre DIAMOND_ORE()
- * @method static Opaque DIORITE()
- * @method static Slab DIORITE_SLAB()
- * @method static Stair DIORITE_STAIRS()
- * @method static Wall DIORITE_WALL()
- * @method static Dirt DIRT()
- * @method static DoublePitcherCrop DOUBLE_PITCHER_CROP()
- * @method static DoubleTallGrass DOUBLE_TALLGRASS()
- * @method static DragonEgg DRAGON_EGG()
- * @method static DriedKelp DRIED_KELP()
- * @method static DyedCandle DYED_CANDLE()
- * @method static DyedShulkerBox DYED_SHULKER_BOX()
- * @method static Element ELEMENT_ACTINIUM()
- * @method static Element ELEMENT_ALUMINUM()
- * @method static Element ELEMENT_AMERICIUM()
- * @method static Element ELEMENT_ANTIMONY()
- * @method static Element ELEMENT_ARGON()
- * @method static Element ELEMENT_ARSENIC()
- * @method static Element ELEMENT_ASTATINE()
- * @method static Element ELEMENT_BARIUM()
- * @method static Element ELEMENT_BERKELIUM()
- * @method static Element ELEMENT_BERYLLIUM()
- * @method static Element ELEMENT_BISMUTH()
- * @method static Element ELEMENT_BOHRIUM()
- * @method static Element ELEMENT_BORON()
- * @method static Element ELEMENT_BROMINE()
- * @method static Element ELEMENT_CADMIUM()
- * @method static Element ELEMENT_CALCIUM()
- * @method static Element ELEMENT_CALIFORNIUM()
- * @method static Element ELEMENT_CARBON()
- * @method static Element ELEMENT_CERIUM()
- * @method static Element ELEMENT_CESIUM()
- * @method static Element ELEMENT_CHLORINE()
- * @method static Element ELEMENT_CHROMIUM()
- * @method static Element ELEMENT_COBALT()
- * @method static ChemistryTable ELEMENT_CONSTRUCTOR()
- * @method static Element ELEMENT_COPERNICIUM()
- * @method static Element ELEMENT_COPPER()
- * @method static Element ELEMENT_CURIUM()
- * @method static Element ELEMENT_DARMSTADTIUM()
- * @method static Element ELEMENT_DUBNIUM()
- * @method static Element ELEMENT_DYSPROSIUM()
- * @method static Element ELEMENT_EINSTEINIUM()
- * @method static Element ELEMENT_ERBIUM()
- * @method static Element ELEMENT_EUROPIUM()
- * @method static Element ELEMENT_FERMIUM()
- * @method static Element ELEMENT_FLEROVIUM()
- * @method static Element ELEMENT_FLUORINE()
- * @method static Element ELEMENT_FRANCIUM()
- * @method static Element ELEMENT_GADOLINIUM()
- * @method static Element ELEMENT_GALLIUM()
- * @method static Element ELEMENT_GERMANIUM()
- * @method static Element ELEMENT_GOLD()
- * @method static Element ELEMENT_HAFNIUM()
- * @method static Element ELEMENT_HASSIUM()
- * @method static Element ELEMENT_HELIUM()
- * @method static Element ELEMENT_HOLMIUM()
- * @method static Element ELEMENT_HYDROGEN()
- * @method static Element ELEMENT_INDIUM()
- * @method static Element ELEMENT_IODINE()
- * @method static Element ELEMENT_IRIDIUM()
- * @method static Element ELEMENT_IRON()
- * @method static Element ELEMENT_KRYPTON()
- * @method static Element ELEMENT_LANTHANUM()
- * @method static Element ELEMENT_LAWRENCIUM()
- * @method static Element ELEMENT_LEAD()
- * @method static Element ELEMENT_LITHIUM()
- * @method static Element ELEMENT_LIVERMORIUM()
- * @method static Element ELEMENT_LUTETIUM()
- * @method static Element ELEMENT_MAGNESIUM()
- * @method static Element ELEMENT_MANGANESE()
- * @method static Element ELEMENT_MEITNERIUM()
- * @method static Element ELEMENT_MENDELEVIUM()
- * @method static Element ELEMENT_MERCURY()
- * @method static Element ELEMENT_MOLYBDENUM()
- * @method static Element ELEMENT_MOSCOVIUM()
- * @method static Element ELEMENT_NEODYMIUM()
- * @method static Element ELEMENT_NEON()
- * @method static Element ELEMENT_NEPTUNIUM()
- * @method static Element ELEMENT_NICKEL()
- * @method static Element ELEMENT_NIHONIUM()
- * @method static Element ELEMENT_NIOBIUM()
- * @method static Element ELEMENT_NITROGEN()
- * @method static Element ELEMENT_NOBELIUM()
- * @method static Element ELEMENT_OGANESSON()
- * @method static Element ELEMENT_OSMIUM()
- * @method static Element ELEMENT_OXYGEN()
- * @method static Element ELEMENT_PALLADIUM()
- * @method static Element ELEMENT_PHOSPHORUS()
- * @method static Element ELEMENT_PLATINUM()
- * @method static Element ELEMENT_PLUTONIUM()
- * @method static Element ELEMENT_POLONIUM()
- * @method static Element ELEMENT_POTASSIUM()
- * @method static Element ELEMENT_PRASEODYMIUM()
- * @method static Element ELEMENT_PROMETHIUM()
- * @method static Element ELEMENT_PROTACTINIUM()
- * @method static Element ELEMENT_RADIUM()
- * @method static Element ELEMENT_RADON()
- * @method static Element ELEMENT_RHENIUM()
- * @method static Element ELEMENT_RHODIUM()
- * @method static Element ELEMENT_ROENTGENIUM()
- * @method static Element ELEMENT_RUBIDIUM()
- * @method static Element ELEMENT_RUTHENIUM()
- * @method static Element ELEMENT_RUTHERFORDIUM()
- * @method static Element ELEMENT_SAMARIUM()
- * @method static Element ELEMENT_SCANDIUM()
- * @method static Element ELEMENT_SEABORGIUM()
- * @method static Element ELEMENT_SELENIUM()
- * @method static Element ELEMENT_SILICON()
- * @method static Element ELEMENT_SILVER()
- * @method static Element ELEMENT_SODIUM()
- * @method static Element ELEMENT_STRONTIUM()
- * @method static Element ELEMENT_SULFUR()
- * @method static Element ELEMENT_TANTALUM()
- * @method static Element ELEMENT_TECHNETIUM()
- * @method static Element ELEMENT_TELLURIUM()
- * @method static Element ELEMENT_TENNESSINE()
- * @method static Element ELEMENT_TERBIUM()
- * @method static Element ELEMENT_THALLIUM()
- * @method static Element ELEMENT_THORIUM()
- * @method static Element ELEMENT_THULIUM()
- * @method static Element ELEMENT_TIN()
- * @method static Element ELEMENT_TITANIUM()
- * @method static Element ELEMENT_TUNGSTEN()
- * @method static Element ELEMENT_URANIUM()
- * @method static Element ELEMENT_VANADIUM()
- * @method static Element ELEMENT_XENON()
- * @method static Element ELEMENT_YTTERBIUM()
- * @method static Element ELEMENT_YTTRIUM()
- * @method static Opaque ELEMENT_ZERO()
- * @method static Element ELEMENT_ZINC()
- * @method static Element ELEMENT_ZIRCONIUM()
- * @method static Opaque EMERALD()
- * @method static EmeraldOre EMERALD_ORE()
- * @method static EnchantingTable ENCHANTING_TABLE()
- * @method static EnderChest ENDER_CHEST()
- * @method static EndPortalFrame END_PORTAL_FRAME()
- * @method static EndRod END_ROD()
- * @method static Opaque END_STONE()
- * @method static Opaque END_STONE_BRICKS()
- * @method static Slab END_STONE_BRICK_SLAB()
- * @method static Stair END_STONE_BRICK_STAIRS()
- * @method static Wall END_STONE_BRICK_WALL()
- * @method static Slab FAKE_WOODEN_SLAB()
- * @method static Farmland FARMLAND()
- * @method static TallGrass FERN()
- * @method static Fire FIRE()
- * @method static FletchingTable FLETCHING_TABLE()
- * @method static Leaves FLOWERING_AZALEA_LEAVES()
- * @method static FlowerPot FLOWER_POT()
- * @method static Froglight FROGLIGHT()
- * @method static FrostedIce FROSTED_ICE()
- * @method static Furnace FURNACE()
- * @method static GildedBlackstone GILDED_BLACKSTONE()
- * @method static Glass GLASS()
- * @method static GlassPane GLASS_PANE()
- * @method static GlazedTerracotta GLAZED_TERRACOTTA()
- * @method static ItemFrame GLOWING_ITEM_FRAME()
- * @method static GlowingObsidian GLOWING_OBSIDIAN()
- * @method static Glowstone GLOWSTONE()
- * @method static GlowLichen GLOW_LICHEN()
- * @method static Opaque GOLD()
- * @method static GoldOre GOLD_ORE()
- * @method static Opaque GRANITE()
- * @method static Slab GRANITE_SLAB()
- * @method static Stair GRANITE_STAIRS()
- * @method static Wall GRANITE_WALL()
- * @method static Grass GRASS()
- * @method static GrassPath GRASS_PATH()
- * @method static Gravel GRAVEL()
- * @method static Torch GREEN_TORCH()
- * @method static HangingRoots HANGING_ROOTS()
- * @method static HardenedClay HARDENED_CLAY()
- * @method static HardenedGlass HARDENED_GLASS()
- * @method static HardenedGlassPane HARDENED_GLASS_PANE()
- * @method static HayBale HAY_BALE()
- * @method static Opaque HONEYCOMB()
- * @method static Hopper HOPPER()
- * @method static Ice ICE()
- * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
- * @method static InfestedStone INFESTED_COBBLESTONE()
- * @method static InfestedStone INFESTED_CRACKED_STONE_BRICK()
- * @method static InfestedPillar INFESTED_DEEPSLATE()
- * @method static InfestedStone INFESTED_MOSSY_STONE_BRICK()
- * @method static InfestedStone INFESTED_STONE()
- * @method static InfestedStone INFESTED_STONE_BRICK()
- * @method static Opaque INFO_UPDATE()
- * @method static Opaque INFO_UPDATE2()
- * @method static Transparent INVISIBLE_BEDROCK()
- * @method static Opaque IRON()
- * @method static Thin IRON_BARS()
- * @method static Door IRON_DOOR()
- * @method static IronOre IRON_ORE()
- * @method static Trapdoor IRON_TRAPDOOR()
- * @method static ItemFrame ITEM_FRAME()
- * @method static Jukebox JUKEBOX()
- * @method static WoodenButton JUNGLE_BUTTON()
- * @method static CeilingCenterHangingSign JUNGLE_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign JUNGLE_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor JUNGLE_DOOR()
- * @method static WoodenFence JUNGLE_FENCE()
- * @method static FenceGate JUNGLE_FENCE_GATE()
- * @method static Leaves JUNGLE_LEAVES()
- * @method static Wood JUNGLE_LOG()
- * @method static Planks JUNGLE_PLANKS()
- * @method static WoodenPressurePlate JUNGLE_PRESSURE_PLATE()
- * @method static Sapling JUNGLE_SAPLING()
- * @method static FloorSign JUNGLE_SIGN()
- * @method static WoodenSlab JUNGLE_SLAB()
- * @method static WoodenStairs JUNGLE_STAIRS()
- * @method static WoodenTrapdoor JUNGLE_TRAPDOOR()
- * @method static WallHangingSign JUNGLE_WALL_HANGING_SIGN()
- * @method static WallSign JUNGLE_WALL_SIGN()
- * @method static Wood JUNGLE_WOOD()
- * @method static ChemistryTable LAB_TABLE()
- * @method static Ladder LADDER()
- * @method static Lantern LANTERN()
- * @method static Opaque LAPIS_LAZULI()
- * @method static LapisOre LAPIS_LAZULI_ORE()
- * @method static DoubleTallGrass LARGE_FERN()
- * @method static Lava LAVA()
- * @method static LavaCauldron LAVA_CAULDRON()
- * @method static Lectern LECTERN()
- * @method static Opaque LEGACY_STONECUTTER()
- * @method static Lever LEVER()
- * @method static Light LIGHT()
- * @method static LightningRod LIGHTNING_ROD()
- * @method static DoublePlant LILAC()
- * @method static Flower LILY_OF_THE_VALLEY()
- * @method static WaterLily LILY_PAD()
- * @method static LitPumpkin LIT_PUMPKIN()
- * @method static Loom LOOM()
- * @method static Magma MAGMA()
- * @method static WoodenButton MANGROVE_BUTTON()
- * @method static CeilingCenterHangingSign MANGROVE_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign MANGROVE_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor MANGROVE_DOOR()
- * @method static WoodenFence MANGROVE_FENCE()
- * @method static FenceGate MANGROVE_FENCE_GATE()
- * @method static Leaves MANGROVE_LEAVES()
- * @method static Wood MANGROVE_LOG()
- * @method static Planks MANGROVE_PLANKS()
- * @method static WoodenPressurePlate MANGROVE_PRESSURE_PLATE()
- * @method static MangroveRoots MANGROVE_ROOTS()
- * @method static FloorSign MANGROVE_SIGN()
- * @method static WoodenSlab MANGROVE_SLAB()
- * @method static WoodenStairs MANGROVE_STAIRS()
- * @method static WoodenTrapdoor MANGROVE_TRAPDOOR()
- * @method static WallHangingSign MANGROVE_WALL_HANGING_SIGN()
- * @method static WallSign MANGROVE_WALL_SIGN()
- * @method static Wood MANGROVE_WOOD()
- * @method static ChemistryTable MATERIAL_REDUCER()
- * @method static Melon MELON()
- * @method static MelonStem MELON_STEM()
- * @method static MobHead MOB_HEAD()
- * @method static MonsterSpawner MONSTER_SPAWNER()
- * @method static Opaque MOSSY_COBBLESTONE()
- * @method static Slab MOSSY_COBBLESTONE_SLAB()
- * @method static Stair MOSSY_COBBLESTONE_STAIRS()
- * @method static Wall MOSSY_COBBLESTONE_WALL()
- * @method static Opaque MOSSY_STONE_BRICKS()
- * @method static Slab MOSSY_STONE_BRICK_SLAB()
- * @method static Stair MOSSY_STONE_BRICK_STAIRS()
- * @method static Wall MOSSY_STONE_BRICK_WALL()
- * @method static Opaque MUD()
- * @method static SimplePillar MUDDY_MANGROVE_ROOTS()
- * @method static Opaque MUD_BRICKS()
- * @method static Slab MUD_BRICK_SLAB()
- * @method static Stair MUD_BRICK_STAIRS()
- * @method static Wall MUD_BRICK_WALL()
- * @method static MushroomStem MUSHROOM_STEM()
- * @method static Mycelium MYCELIUM()
- * @method static Opaque NETHERITE()
- * @method static Netherrack NETHERRACK()
- * @method static Opaque NETHER_BRICKS()
- * @method static Fence NETHER_BRICK_FENCE()
- * @method static Slab NETHER_BRICK_SLAB()
- * @method static Stair NETHER_BRICK_STAIRS()
- * @method static Wall NETHER_BRICK_WALL()
- * @method static NetherGoldOre NETHER_GOLD_ORE()
- * @method static NetherPortal NETHER_PORTAL()
- * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
- * @method static NetherReactor NETHER_REACTOR_CORE()
- * @method static NetherSprouts NETHER_SPROUTS()
- * @method static NetherWartPlant NETHER_WART()
- * @method static Opaque NETHER_WART_BLOCK()
- * @method static Note NOTE_BLOCK()
- * @method static WoodenButton OAK_BUTTON()
- * @method static CeilingCenterHangingSign OAK_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign OAK_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor OAK_DOOR()
- * @method static WoodenFence OAK_FENCE()
- * @method static FenceGate OAK_FENCE_GATE()
- * @method static Leaves OAK_LEAVES()
- * @method static Wood OAK_LOG()
- * @method static Planks OAK_PLANKS()
- * @method static WoodenPressurePlate OAK_PRESSURE_PLATE()
- * @method static Sapling OAK_SAPLING()
- * @method static FloorSign OAK_SIGN()
- * @method static WoodenSlab OAK_SLAB()
- * @method static WoodenStairs OAK_STAIRS()
- * @method static WoodenTrapdoor OAK_TRAPDOOR()
- * @method static WallHangingSign OAK_WALL_HANGING_SIGN()
- * @method static WallSign OAK_WALL_SIGN()
- * @method static Wood OAK_WOOD()
- * @method static Opaque OBSIDIAN()
- * @method static OminousFloorBanner OMINOUS_BANNER()
- * @method static OminousWallBanner OMINOUS_WALL_BANNER()
- * @method static Flower ORANGE_TULIP()
- * @method static Flower OXEYE_DAISY()
- * @method static PackedIce PACKED_ICE()
- * @method static Opaque PACKED_MUD()
- * @method static WoodenButton PALE_OAK_BUTTON()
- * @method static CeilingCenterHangingSign PALE_OAK_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign PALE_OAK_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor PALE_OAK_DOOR()
- * @method static WoodenFence PALE_OAK_FENCE()
- * @method static FenceGate PALE_OAK_FENCE_GATE()
- * @method static Leaves PALE_OAK_LEAVES()
- * @method static Wood PALE_OAK_LOG()
- * @method static Planks PALE_OAK_PLANKS()
- * @method static WoodenPressurePlate PALE_OAK_PRESSURE_PLATE()
- * @method static FloorSign PALE_OAK_SIGN()
- * @method static WoodenSlab PALE_OAK_SLAB()
- * @method static WoodenStairs PALE_OAK_STAIRS()
- * @method static WoodenTrapdoor PALE_OAK_TRAPDOOR()
- * @method static WallHangingSign PALE_OAK_WALL_HANGING_SIGN()
- * @method static WallSign PALE_OAK_WALL_SIGN()
- * @method static Wood PALE_OAK_WOOD()
- * @method static DoublePlant PEONY()
- * @method static PinkPetals PINK_PETALS()
- * @method static Flower PINK_TULIP()
- * @method static PitcherCrop PITCHER_CROP()
- * @method static DoublePlant PITCHER_PLANT()
- * @method static Podzol PODZOL()
- * @method static Opaque POLISHED_ANDESITE()
- * @method static Slab POLISHED_ANDESITE_SLAB()
- * @method static Stair POLISHED_ANDESITE_STAIRS()
- * @method static SimplePillar POLISHED_BASALT()
- * @method static Opaque POLISHED_BLACKSTONE()
- * @method static Opaque POLISHED_BLACKSTONE_BRICKS()
- * @method static Slab POLISHED_BLACKSTONE_BRICK_SLAB()
- * @method static Stair POLISHED_BLACKSTONE_BRICK_STAIRS()
- * @method static Wall POLISHED_BLACKSTONE_BRICK_WALL()
- * @method static StoneButton POLISHED_BLACKSTONE_BUTTON()
- * @method static StonePressurePlate POLISHED_BLACKSTONE_PRESSURE_PLATE()
- * @method static Slab POLISHED_BLACKSTONE_SLAB()
- * @method static Stair POLISHED_BLACKSTONE_STAIRS()
- * @method static Wall POLISHED_BLACKSTONE_WALL()
- * @method static Opaque POLISHED_DEEPSLATE()
- * @method static Slab POLISHED_DEEPSLATE_SLAB()
- * @method static Stair POLISHED_DEEPSLATE_STAIRS()
- * @method static Wall POLISHED_DEEPSLATE_WALL()
- * @method static Opaque POLISHED_DIORITE()
- * @method static Slab POLISHED_DIORITE_SLAB()
- * @method static Stair POLISHED_DIORITE_STAIRS()
- * @method static Opaque POLISHED_GRANITE()
- * @method static Slab POLISHED_GRANITE_SLAB()
- * @method static Stair POLISHED_GRANITE_STAIRS()
- * @method static Opaque POLISHED_TUFF()
- * @method static Slab POLISHED_TUFF_SLAB()
- * @method static Stair POLISHED_TUFF_STAIRS()
- * @method static Wall POLISHED_TUFF_WALL()
- * @method static Flower POPPY()
- * @method static Potato POTATOES()
- * @method static PotionCauldron POTION_CAULDRON()
- * @method static PoweredRail POWERED_RAIL()
- * @method static Opaque PRISMARINE()
- * @method static Opaque PRISMARINE_BRICKS()
- * @method static Slab PRISMARINE_BRICKS_SLAB()
- * @method static Stair PRISMARINE_BRICKS_STAIRS()
- * @method static Slab PRISMARINE_SLAB()
- * @method static Stair PRISMARINE_STAIRS()
- * @method static Wall PRISMARINE_WALL()
- * @method static Pumpkin PUMPKIN()
- * @method static PumpkinStem PUMPKIN_STEM()
- * @method static Torch PURPLE_TORCH()
- * @method static Opaque PURPUR()
- * @method static SimplePillar PURPUR_PILLAR()
- * @method static Slab PURPUR_SLAB()
- * @method static Stair PURPUR_STAIRS()
- * @method static Opaque QUARTZ()
- * @method static Opaque QUARTZ_BRICKS()
- * @method static SimplePillar QUARTZ_PILLAR()
- * @method static Slab QUARTZ_SLAB()
- * @method static Stair QUARTZ_STAIRS()
- * @method static Rail RAIL()
- * @method static Opaque RAW_COPPER()
- * @method static Opaque RAW_GOLD()
- * @method static Opaque RAW_IRON()
- * @method static Redstone REDSTONE()
- * @method static RedstoneComparator REDSTONE_COMPARATOR()
- * @method static RedstoneLamp REDSTONE_LAMP()
- * @method static RedstoneOre REDSTONE_ORE()
- * @method static RedstoneRepeater REDSTONE_REPEATER()
- * @method static RedstoneTorch REDSTONE_TORCH()
- * @method static RedstoneWire REDSTONE_WIRE()
- * @method static RedMushroom RED_MUSHROOM()
- * @method static RedMushroomBlock RED_MUSHROOM_BLOCK()
- * @method static Opaque RED_NETHER_BRICKS()
- * @method static Slab RED_NETHER_BRICK_SLAB()
- * @method static Stair RED_NETHER_BRICK_STAIRS()
- * @method static Wall RED_NETHER_BRICK_WALL()
- * @method static Sand RED_SAND()
- * @method static Opaque RED_SANDSTONE()
- * @method static Slab RED_SANDSTONE_SLAB()
- * @method static Stair RED_SANDSTONE_STAIRS()
- * @method static Wall RED_SANDSTONE_WALL()
- * @method static Torch RED_TORCH()
- * @method static Flower RED_TULIP()
- * @method static Opaque REINFORCED_DEEPSLATE()
- * @method static Reserved6 RESERVED6()
- * @method static Opaque RESIN()
- * @method static Opaque RESIN_BRICKS()
- * @method static Slab RESIN_BRICK_SLAB()
- * @method static Stair RESIN_BRICK_STAIRS()
- * @method static Wall RESIN_BRICK_WALL()
- * @method static ResinClump RESIN_CLUMP()
- * @method static RespawnAnchor RESPAWN_ANCHOR()
- * @method static DoublePlant ROSE_BUSH()
- * @method static Sand SAND()
- * @method static Opaque SANDSTONE()
- * @method static Slab SANDSTONE_SLAB()
- * @method static Stair SANDSTONE_STAIRS()
- * @method static Wall SANDSTONE_WALL()
- * @method static Sculk SCULK()
- * @method static SeaLantern SEA_LANTERN()
- * @method static SeaPickle SEA_PICKLE()
- * @method static Opaque SHROOMLIGHT()
- * @method static ShulkerBox SHULKER_BOX()
- * @method static Slime SLIME()
- * @method static SmallDripleaf SMALL_DRIPLEAF()
- * @method static SmithingTable SMITHING_TABLE()
- * @method static Furnace SMOKER()
- * @method static Opaque SMOOTH_BASALT()
- * @method static Opaque SMOOTH_QUARTZ()
- * @method static Slab SMOOTH_QUARTZ_SLAB()
- * @method static Stair SMOOTH_QUARTZ_STAIRS()
- * @method static Opaque SMOOTH_RED_SANDSTONE()
- * @method static Slab SMOOTH_RED_SANDSTONE_SLAB()
- * @method static Stair SMOOTH_RED_SANDSTONE_STAIRS()
- * @method static Opaque SMOOTH_SANDSTONE()
- * @method static Slab SMOOTH_SANDSTONE_SLAB()
- * @method static Stair SMOOTH_SANDSTONE_STAIRS()
- * @method static Opaque SMOOTH_STONE()
- * @method static Slab SMOOTH_STONE_SLAB()
- * @method static Snow SNOW()
- * @method static SnowLayer SNOW_LAYER()
- * @method static SoulCampfire SOUL_CAMPFIRE()
- * @method static SoulFire SOUL_FIRE()
- * @method static Lantern SOUL_LANTERN()
- * @method static SoulSand SOUL_SAND()
- * @method static Opaque SOUL_SOIL()
- * @method static Torch SOUL_TORCH()
- * @method static Sponge SPONGE()
- * @method static SporeBlossom SPORE_BLOSSOM()
- * @method static WoodenButton SPRUCE_BUTTON()
- * @method static CeilingCenterHangingSign SPRUCE_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign SPRUCE_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor SPRUCE_DOOR()
- * @method static WoodenFence SPRUCE_FENCE()
- * @method static FenceGate SPRUCE_FENCE_GATE()
- * @method static Leaves SPRUCE_LEAVES()
- * @method static Wood SPRUCE_LOG()
- * @method static Planks SPRUCE_PLANKS()
- * @method static WoodenPressurePlate SPRUCE_PRESSURE_PLATE()
- * @method static Sapling SPRUCE_SAPLING()
- * @method static FloorSign SPRUCE_SIGN()
- * @method static WoodenSlab SPRUCE_SLAB()
- * @method static WoodenStairs SPRUCE_STAIRS()
- * @method static WoodenTrapdoor SPRUCE_TRAPDOOR()
- * @method static WallHangingSign SPRUCE_WALL_HANGING_SIGN()
- * @method static WallSign SPRUCE_WALL_SIGN()
- * @method static Wood SPRUCE_WOOD()
- * @method static StainedHardenedClay STAINED_CLAY()
- * @method static StainedGlass STAINED_GLASS()
- * @method static StainedGlassPane STAINED_GLASS_PANE()
- * @method static StainedHardenedGlass STAINED_HARDENED_GLASS()
- * @method static StainedHardenedGlassPane STAINED_HARDENED_GLASS_PANE()
- * @method static Opaque STONE()
- * @method static Stonecutter STONECUTTER()
- * @method static Opaque STONE_BRICKS()
- * @method static Slab STONE_BRICK_SLAB()
- * @method static Stair STONE_BRICK_STAIRS()
- * @method static Wall STONE_BRICK_WALL()
- * @method static StoneButton STONE_BUTTON()
- * @method static StonePressurePlate STONE_PRESSURE_PLATE()
- * @method static Slab STONE_SLAB()
- * @method static Stair STONE_STAIRS()
- * @method static StructureVoid STRUCTURE_VOID()
- * @method static Sugarcane SUGARCANE()
- * @method static DoublePlant SUNFLOWER()
- * @method static SweetBerryBush SWEET_BERRY_BUSH()
- * @method static TallGrass TALL_GRASS()
- * @method static TintedGlass TINTED_GLASS()
- * @method static TNT TNT()
- * @method static Torch TORCH()
- * @method static Flower TORCHFLOWER()
- * @method static TorchflowerCrop TORCHFLOWER_CROP()
- * @method static TrappedChest TRAPPED_CHEST()
- * @method static Tripwire TRIPWIRE()
- * @method static TripwireHook TRIPWIRE_HOOK()
- * @method static Opaque TUFF()
- * @method static Opaque TUFF_BRICKS()
- * @method static Slab TUFF_BRICK_SLAB()
- * @method static Stair TUFF_BRICK_STAIRS()
- * @method static Wall TUFF_BRICK_WALL()
- * @method static Slab TUFF_SLAB()
- * @method static Stair TUFF_STAIRS()
- * @method static Wall TUFF_WALL()
- * @method static NetherVines TWISTING_VINES()
- * @method static UnderwaterTorch UNDERWATER_TORCH()
- * @method static Vine VINES()
- * @method static WallBanner WALL_BANNER()
- * @method static WallCoralFan WALL_CORAL_FAN()
- * @method static WoodenButton WARPED_BUTTON()
- * @method static CeilingCenterHangingSign WARPED_CEILING_CENTER_HANGING_SIGN()
- * @method static CeilingEdgesHangingSign WARPED_CEILING_EDGES_HANGING_SIGN()
- * @method static WoodenDoor WARPED_DOOR()
- * @method static WoodenFence WARPED_FENCE()
- * @method static FenceGate WARPED_FENCE_GATE()
- * @method static NetherFungus WARPED_FUNGUS()
- * @method static Wood WARPED_HYPHAE()
- * @method static Nylium WARPED_NYLIUM()
- * @method static Planks WARPED_PLANKS()
- * @method static WoodenPressurePlate WARPED_PRESSURE_PLATE()
- * @method static NetherRoots WARPED_ROOTS()
- * @method static FloorSign WARPED_SIGN()
- * @method static WoodenSlab WARPED_SLAB()
- * @method static WoodenStairs WARPED_STAIRS()
- * @method static Wood WARPED_STEM()
- * @method static WoodenTrapdoor WARPED_TRAPDOOR()
- * @method static WallHangingSign WARPED_WALL_HANGING_SIGN()
- * @method static WallSign WARPED_WALL_SIGN()
- * @method static Opaque WARPED_WART_BLOCK()
- * @method static Water WATER()
- * @method static WaterCauldron WATER_CAULDRON()
- * @method static NetherVines WEEPING_VINES()
- * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
- * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
- * @method static Wheat WHEAT()
- * @method static Flower WHITE_TULIP()
- * @method static WitherRose WITHER_ROSE()
- * @method static Wool WOOL()
+ * @internal
+ * @phpstan-extends CloningRegistrySource<Block>
  */
-final class VanillaBlocks{
-	use CloningRegistryTrait;
+final class VanillaBlocksInputs extends CloningRegistrySource{
 
-	private function __construct(){
-		//NOOP
+	public function getTargetClassName() : string{
+		return "VanillaBlocks";
+	}
+
+	public function getTargetClassDocComment() : array{
+		return [
+			"Allows getting a new instance of any block implemented by PocketMine-MP",
+			"Every block here also has a constant of the same name in {@link BlockTypeIds} to enable blocks to be identified"
+		];
 	}
 
 	/**
-	 * @phpstan-template TBlock of Block
-	 * @phpstan-param \Closure(BID) : TBlock $createBlock
 	 * @phpstan-param class-string<covariant Tile> $tileClass
-	 * @phpstan-return TBlock
 	 */
-	protected static function register(string $name, \Closure $createBlock, ?string $tileClass = null) : Block{
+	private static function makeBID(string $name, ?string $tileClass = null) : BID{
 		//this sketchy hack allows us to avoid manually writing the constants inline
 		//since type IDs are generated from this class anyway, I'm OK with this hack
 		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
@@ -886,24 +110,23 @@ final class VanillaBlocks{
 			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
 			$typeId = BlockTypeIds::newId();
 		}
-		$block = $createBlock(new BID($typeId, $tileClass));
-		self::_registryRegister($name, $block);
+		return new BID($typeId, $tileClass);
+	}
+
+	/**
+	 * @phpstan-template TBlock of Block
+	 * @phpstan-param \Closure(BID) : TBlock $createBlock
+	 * @phpstan-param class-string<covariant Tile> $tileClass
+	 * @phpstan-return TBlock
+	 */
+	private function register(string $name, \Closure $createBlock, ?string $tileClass = null) : Block{
+		$block = $createBlock(self::makeBID($name, $tileClass));
+		self::registerValue($name, $block);
 
 		return $block;
 	}
 
-	/**
-	 * @return Block[]
-	 * @phpstan-return array<string, Block>
-	 */
-	public static function getAll() : array{
-		//phpstan doesn't support generic traits yet :(
-		/** @var Block[] $result */
-		$result = self::_registryGetAll();
-		return $result;
-	}
-
-	protected static function setup() : void{
+	protected function setup() : void{
 		self::register("air", fn(BID $id) => new Air($id, "Air", new Info(BreakInfo::indestructible(-1.0))));
 
 		$railBreakInfo = new Info(new BreakInfo(0.7));
@@ -1405,7 +628,45 @@ final class VanillaBlocks{
 		self::registerCauldronBlocks();
 	}
 
-	private static function registerWoodenBlocks() : void{
+	/**
+	 * @phpstan-return \Closure() : Item
+	 */
+	private static function getSignItemCallback(WoodType $woodType) : \Closure{
+		return match ($woodType) {
+			WoodType::OAK => VanillaItems::OAK_SIGN(...),
+			WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
+			WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
+			WoodType::JUNGLE => VanillaItems::JUNGLE_SIGN(...),
+			WoodType::ACACIA => VanillaItems::ACACIA_SIGN(...),
+			WoodType::DARK_OAK => VanillaItems::DARK_OAK_SIGN(...),
+			WoodType::MANGROVE => VanillaItems::MANGROVE_SIGN(...),
+			WoodType::CRIMSON => VanillaItems::CRIMSON_SIGN(...),
+			WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
+			WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
+			WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
+		};
+	}
+
+	/**
+	 * @phpstan-return \Closure() : Item
+	 */
+	private static function getHangingSignItemCallback(WoodType $woodType) : \Closure{
+		return match ($woodType) {
+			WoodType::OAK => VanillaItems::OAK_HANGING_SIGN(...),
+			WoodType::SPRUCE => VanillaItems::SPRUCE_HANGING_SIGN(...),
+			WoodType::BIRCH => VanillaItems::BIRCH_HANGING_SIGN(...),
+			WoodType::JUNGLE => VanillaItems::JUNGLE_HANGING_SIGN(...),
+			WoodType::ACACIA => VanillaItems::ACACIA_HANGING_SIGN(...),
+			WoodType::DARK_OAK => VanillaItems::DARK_OAK_HANGING_SIGN(...),
+			WoodType::MANGROVE => VanillaItems::MANGROVE_HANGING_SIGN(...),
+			WoodType::CRIMSON => VanillaItems::CRIMSON_HANGING_SIGN(...),
+			WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
+			WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
+			WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
+		};
+	}
+
+	private function registerWoodenBlocks() : void{
 		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
 		$signBreakInfo = new Info(BreakInfo::axe(1.0));
 		$hangingSignBreakInfo = new Info(BreakInfo::axe(1.0), [Tags::HANGING_SIGN]);
@@ -1433,42 +694,16 @@ final class VanillaBlocks{
 			self::register($idName("pressure_plate"), fn(BID $id) => new WoodenPressurePlate($id, $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), fn(BID $id) => new WoodenTrapdoor($id, $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
-			$signAsItem = match($woodType){
-				WoodType::OAK => VanillaItems::OAK_SIGN(...),
-				WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
-				WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
-				WoodType::JUNGLE => VanillaItems::JUNGLE_SIGN(...),
-				WoodType::ACACIA => VanillaItems::ACACIA_SIGN(...),
-				WoodType::DARK_OAK => VanillaItems::DARK_OAK_SIGN(...),
-				WoodType::MANGROVE => VanillaItems::MANGROVE_SIGN(...),
-				WoodType::CRIMSON => VanillaItems::CRIMSON_SIGN(...),
-				WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
-				WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
-				WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
-			};
-			self::register($idName("sign"), fn(BID $id) => new FloorSign($id, $name . " Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
-			self::register($idName("wall_sign"), fn(BID $id) => new WallSign($id, $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem), TileSign::class);
+			self::registerDelayed($idName("sign"), fn(string $idName) : FloorSign => new FloorSign(self::makeBID($idName, TileSign::class), $name . " Sign", $signBreakInfo, $woodType, self::getSignItemCallback($woodType)));
+			self::registerDelayed($idName("wall_sign"), fn(string $idName) : WallSign => new WallSign(self::makeBID($idName, TileSign::class), $name . " Wall Sign", $signBreakInfo, $woodType, self::getSignItemCallback($woodType)));
 
-			$hangingSignAsItem = match($woodType){
-				WoodType::OAK => VanillaItems::OAK_HANGING_SIGN(...),
-				WoodType::SPRUCE => VanillaItems::SPRUCE_HANGING_SIGN(...),
-				WoodType::BIRCH => VanillaItems::BIRCH_HANGING_SIGN(...),
-				WoodType::JUNGLE => VanillaItems::JUNGLE_HANGING_SIGN(...),
-				WoodType::ACACIA => VanillaItems::ACACIA_HANGING_SIGN(...),
-				WoodType::DARK_OAK => VanillaItems::DARK_OAK_HANGING_SIGN(...),
-				WoodType::MANGROVE => VanillaItems::MANGROVE_HANGING_SIGN(...),
-				WoodType::CRIMSON => VanillaItems::CRIMSON_HANGING_SIGN(...),
-				WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
-				WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
-				WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
-			};
-			self::register($idName("ceiling_center_hanging_sign"), fn(BID $id) => new CeilingCenterHangingSign($id, $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
-			self::register($idName("ceiling_edges_hanging_sign"), fn(BID $id) => new CeilingEdgesHangingSign($id, $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
-			self::register($idName("wall_hanging_sign"), fn(BID $id) => new WallHangingSign($id, $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem), TileHangingSign::class);
+			self::registerDelayed($idName("ceiling_center_hanging_sign"), fn(string $idName) : CeilingCenterHangingSign => new CeilingCenterHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
+			self::registerDelayed($idName("ceiling_edges_hanging_sign"), fn(string $idName) : CeilingEdgesHangingSign => new CeilingEdgesHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
+			self::registerDelayed($idName("wall_hanging_sign"), fn(string $idName) : WallHangingSign => new WallHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
 		}
 	}
 
-	private static function registerMushroomBlocks() : void{
+	private function registerMushroomBlocks() : void{
 		$mushroomBlockBreakInfo = new Info(BreakInfo::axe(0.2));
 
 		self::register("brown_mushroom_block", fn(BID $id) => new BrownMushroomBlock($id, "Brown Mushroom Block", $mushroomBlockBreakInfo));
@@ -1479,7 +714,7 @@ final class VanillaBlocks{
 		self::register("all_sided_mushroom_stem", fn(BID $id) => new MushroomStem($id, "All Sided Mushroom Stem", $mushroomBlockBreakInfo));
 	}
 
-	private static function registerElements() : void{
+	private function registerElements() : void{
 		$instaBreak = new Info(BreakInfo::instant());
 		self::register("element_zero", fn(BID $id) => new Opaque($id, "???", $instaBreak));
 
@@ -1606,7 +841,7 @@ final class VanillaBlocks{
 		$register("oganesson", "Oganesson", "og", 118, 7);
 	}
 
-	private static function registerOres() : void{
+	private function registerOres() : void{
 		$stoneOreBreakInfo = fn(ToolTier $toolTier) => new Info(BreakInfo::pickaxe(3.0, $toolTier));
 		self::register("coal_ore", fn(BID $id) => new CoalOre($id, "Coal Ore", $stoneOreBreakInfo(ToolTier::WOOD)));
 		self::register("copper_ore", fn(BID $id) => new CopperOre($id, "Copper Ore", $stoneOreBreakInfo(ToolTier::STONE)));
@@ -1632,7 +867,7 @@ final class VanillaBlocks{
 		self::register("nether_gold_ore", fn(BID $id) => new NetherGoldOre($id, "Nether Gold Ore", $netherrackOreBreakInfo));
 	}
 
-	private static function registerCraftingTables() : void{
+	private function registerCraftingTables() : void{
 		//TODO: this is the same for all wooden crafting blocks
 		$craftingBlockBreakInfo = new Info(BreakInfo::axe(2.5));
 		self::register("cartography_table", fn(BID $id) => new CartographyTable($id, "Cartography Table", $craftingBlockBreakInfo));
@@ -1642,23 +877,23 @@ final class VanillaBlocks{
 		self::register("smithing_table", fn(BID $id) => new SmithingTable($id, "Smithing Table", $craftingBlockBreakInfo));
 	}
 
-	private static function registerChorusBlocks() : void{
+	private function registerChorusBlocks() : void{
 		$chorusBlockBreakInfo = new Info(BreakInfo::axe(0.4));
 		self::register("chorus_plant", fn(BID $id) => new ChorusPlant($id, "Chorus Plant", $chorusBlockBreakInfo));
 		self::register("chorus_flower", fn(BID $id) => new ChorusFlower($id, "Chorus Flower", $chorusBlockBreakInfo));
 	}
 
-	private static function registerBlocksR13() : void{
+	private function registerBlocksR13() : void{
 		self::register("light", fn(BID $id) => new Light($id, "Light Block", new Info(BreakInfo::indestructible())));
 		self::register("structure_void", fn(BID $id) => new StructureVoid($id, "Structure Void", new Info(BreakInfo::instant())));
 		self::register("wither_rose", fn(BID $id) => new WitherRose($id, "Wither Rose", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 	}
 
-	private static function registerBlocksR14() : void{
+	private function registerBlocksR14() : void{
 		self::register("honeycomb", fn(BID $id) => new Opaque($id, "Honeycomb Block", new Info(new BreakInfo(0.6))));
 	}
 
-	private static function registerBlocksR16() : void{
+	private function registerBlocksR16() : void{
 		//for some reason, slabs have weird hardness like the legacy ones
 		$slabBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 
@@ -1733,11 +968,11 @@ final class VanillaBlocks{
 		self::register("nether_sprouts", fn(BID $id) => new NetherSprouts($id, "Nether Sprouts", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
 		$nyliumBreakInfo = new Info(BreakInfo::pickaxe(0.4, ToolTier::WOOD), [Tags::NYLIUM]);
-		self::register("crimson_nylium", fn(BID $id) => new Nylium($id, "Crimson Nylium", $nyliumBreakInfo, [VanillaBlocks::CRIMSON_FUNGUS(), VanillaBlocks::CRIMSON_ROOTS()]));
-		self::register("warped_nylium", fn(BID $id) => new Nylium($id, "Warped Nylium", $nyliumBreakInfo, [VanillaBlocks::WARPED_FUNGUS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::NETHER_SPROUTS()]));
+		self::registerDelayed("crimson_nylium", fn(string $name) : Nylium => new Nylium(self::makeBID($name), "Crimson Nylium", $nyliumBreakInfo, [VanillaBlocks::CRIMSON_FUNGUS(), VanillaBlocks::CRIMSON_ROOTS()]));
+		self::registerDelayed("warped_nylium", fn(string $name) : Nylium => new Nylium(self::makeBID($name), "Warped Nylium", $nyliumBreakInfo, [VanillaBlocks::WARPED_FUNGUS(), VanillaBlocks::WARPED_ROOTS(), VanillaBlocks::NETHER_SPROUTS()]));
 	}
 
-	private static function registerBlocksR17() : void{
+	private function registerBlocksR17() : void{
 		//in java this can be acquired using any tool - seems to be a parity issue in bedrock
 		$amethystInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD));
 		self::register("amethyst", fn(BID $id) => new class($id, "Amethyst", $amethystInfo) extends Opaque{
@@ -1828,11 +1063,11 @@ final class VanillaBlocks{
 		self::register("infested_deepslate", fn(BID $id) => new InfestedPillar($id, "Infested Deepslate", new Info(BreakInfo::pickaxe(1.5, blastResistance: 3.75)), $deepslate));
 	}
 
-	private static function registerBlocksR18() : void{
+	private function registerBlocksR18() : void{
 		self::register("spore_blossom", fn(BID $id) => new SporeBlossom($id, "Spore Blossom", new Info(BreakInfo::instant())));
 	}
 
-	private static function registerMudBlocks() : void{
+	private function registerMudBlocks() : void{
 		self::register("mud", fn(BID $id) => new Opaque($id, "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD])));
 		self::register("packed_mud", fn(BID $id) => new Opaque($id, "Packed Mud", new Info(BreakInfo::pickaxe(1.0, null, 15.0))));
 
@@ -1844,7 +1079,7 @@ final class VanillaBlocks{
 		self::register("mud_brick_wall", fn(BID $id) => new Wall($id, "Mud Brick Wall", $mudBricksBreakInfo));
 	}
 
-	private static function registerResinBlocks() : void{
+	private function registerResinBlocks() : void{
 		self::register("resin", fn(BID $id) => new Opaque($id, "Block of Resin", new Info(BreakInfo::instant())));
 		self::register("resin_clump", fn(BID $id) => new ResinClump($id, "Resin Clump", new Info(BreakInfo::instant())));
 
@@ -1856,7 +1091,7 @@ final class VanillaBlocks{
 		self::register("chiseled_resin_bricks", fn(BID $id) => new Opaque($id, "Chiseled Resin Bricks", $resinBricksInfo));
 	}
 
-	private static function registerTuffBlocks() : void{
+	private function registerTuffBlocks() : void{
 		$tuffBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
 
 		self::register("tuff", fn(BID $id) => new Opaque($id, "Tuff", $tuffBreakInfo));
@@ -1877,7 +1112,7 @@ final class VanillaBlocks{
 		self::register("polished_tuff_wall", fn(BID $id) => new Wall($id, "Polished Tuff Wall", $tuffBreakInfo));
 	}
 
-	private static function registerCauldronBlocks() : void{
+	private function registerCauldronBlocks() : void{
 		$cauldronBreakInfo = new Info(BreakInfo::pickaxe(2, ToolTier::WOOD));
 
 		self::register("cauldron", fn(BID $id) => new Cauldron($id, "Cauldron", $cauldronBreakInfo), TileCauldron::class);
