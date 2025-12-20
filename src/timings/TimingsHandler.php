@@ -24,16 +24,26 @@ declare(strict_types=1);
 namespace pocketmine\timings;
 
 use pmmp\thread\Thread as NativeThread;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\Utils;
+use Symfony\Component\Filesystem\Path;
 use function array_merge;
 use function array_push;
+use function date;
+use function fclose;
+use function fopen;
+use function fwrite;
 use function hrtime;
 use function implode;
+use function is_dir;
+use function mkdir;
 use function spl_object_id;
+use const PHP_EOL;
 
 /**
  * @phpstan-type CollectPromise Promise<list<string>>
@@ -331,5 +341,51 @@ class TimingsHandler{
 		$this->rootRecord = null;
 		$this->recordsByParent = [];
 		$this->timingDepth = 0;
+	}
+
+	/**
+	 * Creates a timings report file locally in the provided file path.
+	 * Collects timings data and returns a promise that resolves with the created file.
+	 *
+	 * @param string      $directory directory path to the timings folder.
+	 * @param string|null $fileName  Optional custom file name, If null, uses default timings file naming
+	 *
+	 * @phpstan-return Promise<string>
+	 */
+	public static function createReportFile(string $directory, ?string $fileName = null) : Promise{
+		$timingsPromise = self::requestPrintTimings();
+
+		/** @var PromiseResolver<string> $resolver */
+		$resolver = new PromiseResolver();
+
+		$timingsPromise->onCompletion(
+			function(array $lines) use ($fileName, $directory, $resolver) : void{
+				if($fileName === null){
+					$date = date('Y-m-d_H.i.s_T');
+					$fileName = "timings_{$date}";
+				}
+				if(!@mkdir($directory, 0777, true) && !is_dir($directory)){
+					$resolver->reject();
+					return;
+				}
+				$timingsFile = Path::join($directory, $fileName . ".txt");
+				try{
+					$handle = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen($timingsFile, "x+b"));
+				}catch(\ErrorException){
+					//TODO: it'd be better if we could report this to the promise callback
+					$resolver->reject();
+					return;
+				}
+				foreach($lines as $line){
+					fwrite($handle, $line . PHP_EOL);
+				}
+				fclose($handle);
+
+				$resolver->resolve($timingsFile);
+			},
+			fn() => throw new AssumptionFailedError("This promise is not expected to be rejected")
+		);
+
+		return $resolver->getPromise();
 	}
 }

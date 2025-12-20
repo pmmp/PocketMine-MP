@@ -647,6 +647,7 @@ class PluginManager{
 	 * @phpstan-template TEvent of Event
 	 * @phpstan-param class-string<TEvent> $event
 	 * @phpstan-param \Closure(TEvent) : void $handler
+	 * @phpstan-return RegisteredListener<TEvent>
 	 *
 	 * @throws \ReflectionException
 	 */

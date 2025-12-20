@@ -11,8 +11,13 @@ use pocketmine\plugin\PluginBase;
  * They don't support all the features of a normal plugin.
  * See the documentation at https://doc.pmmp.io/en/rtfd/developers/plugin-docs/plugin-formats/development.html#script
  *
+ * Required fields
  * @main pmmp\ExampleScriptPlugin\Main
  * @api 5.37.0
+ *
+ * Optional fields
+ * Version and name are optional in script plugins for convenience, and will be filled with 1.0.0 and
+ * ScriptPlugin_{file name without extension} respectively.
  * @version 1.0.0
  * @name ExampleScriptPlugin
  * @load STARTUP

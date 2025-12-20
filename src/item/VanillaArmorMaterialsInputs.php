@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\utils\RegistryTrait;
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\sound\ArmorEquipChainSound;
+use pocketmine\world\sound\ArmorEquipCopperSound;
 use pocketmine\world\sound\ArmorEquipDiamondSound;
 use pocketmine\world\sound\ArmorEquipGenericSound;
 use pocketmine\world\sound\ArmorEquipGoldSound;
@@ -33,44 +34,26 @@ use pocketmine\world\sound\ArmorEquipLeatherSound;
 use pocketmine\world\sound\ArmorEquipNetheriteSound;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static ArmorMaterial CHAINMAIL()
- * @method static ArmorMaterial DIAMOND()
- * @method static ArmorMaterial GOLD()
- * @method static ArmorMaterial IRON()
- * @method static ArmorMaterial LEATHER()
- * @method static ArmorMaterial NETHERITE()
- * @method static ArmorMaterial TURTLE()
+ * @internal
+ * @phpstan-extends RegistrySource<ArmorMaterial>
  */
-final class VanillaArmorMaterials{
-	use RegistryTrait;
-
-	private function __construct(){
-		// NOOP
+final class VanillaArmorMaterialsInputs extends RegistrySource{
+	public function getTargetClassName() : string{
+		return "VanillaArmorMaterials";
 	}
 
-	protected static function register(string $name, ArmorMaterial $armorMaterial) : void{
-		self::_registryRegister($name, $armorMaterial);
+	public function getTargetClassDocComment() : array{
+		return ["Allows getting any vanilla armor material implemented by PocketMine-MP"];
 	}
 
-	/**
-	 * @return ArmorMaterial[]
-	 * @phpstan-return array<string, ArmorMaterial>
-	 */
-	public static function getAll() : array{
-		// phpstan doesn't support generic traits yet :(
-		/** @var ArmorMaterial[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+	protected function register(string $name, ArmorMaterial $armorMaterial) : void{
+		self::registerValue($name, $armorMaterial);
 	}
 
-	protected static function setup() : void{
+	protected function setup() : void{
 		self::register("leather", new ArmorMaterial(15, new ArmorEquipLeatherSound()));
 		self::register("chainmail", new ArmorMaterial(12, new ArmorEquipChainSound()));
+		self::register("copper", new ArmorMaterial(8, new ArmorEquipCopperSound()));
 		self::register("iron", new ArmorMaterial(9, new ArmorEquipIronSound()));
 		self::register("turtle", new ArmorMaterial(9, new ArmorEquipGenericSound()));
 		self::register("gold", new ArmorMaterial(25, new ArmorEquipGoldSound()));
