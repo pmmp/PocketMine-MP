@@ -25,46 +25,23 @@ namespace pocketmine\entity\effect;
 
 use pocketmine\color\Color;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\utils\RegistryTrait;
+use pocketmine\utils\RegistrySource;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
- *
- * @method static AbsorptionEffect ABSORPTION()
- * @method static Effect BLINDNESS()
- * @method static Effect CONDUIT_POWER()
- * @method static Effect DARKNESS()
- * @method static PoisonEffect FATAL_POISON()
- * @method static Effect FIRE_RESISTANCE()
- * @method static Effect HASTE()
- * @method static HealthBoostEffect HEALTH_BOOST()
- * @method static HungerEffect HUNGER()
- * @method static InstantDamageEffect INSTANT_DAMAGE()
- * @method static InstantHealthEffect INSTANT_HEALTH()
- * @method static InvisibilityEffect INVISIBILITY()
- * @method static Effect JUMP_BOOST()
- * @method static LevitationEffect LEVITATION()
- * @method static Effect MINING_FATIGUE()
- * @method static Effect NAUSEA()
- * @method static Effect NIGHT_VISION()
- * @method static PoisonEffect POISON()
- * @method static RegenerationEffect REGENERATION()
- * @method static Effect RESISTANCE()
- * @method static SaturationEffect SATURATION()
- * @method static SlownessEffect SLOWNESS()
- * @method static SpeedEffect SPEED()
- * @method static Effect STRENGTH()
- * @method static Effect WATER_BREATHING()
- * @method static Effect WEAKNESS()
- * @method static WitherEffect WITHER()
+ * @internal
+ * @phpstan-extends RegistrySource<Effect>
  */
-final class VanillaEffects{
-	use RegistryTrait;
+final class VanillaEffectsInputs extends RegistrySource{
 
-	protected static function setup() : void{
+	public function getTargetClassName() : string{
+		return "VanillaEffects";
+	}
+
+	public function getTargetClassDocComment() : array{
+		return ["Allows getting any vanilla entity effect implemented by PocketMine-MP"];
+	}
+
+	protected function setup() : void{
 		self::register("absorption", new AbsorptionEffect(KnownTranslationFactory::potion_absorption(), new Color(0x25, 0x52, 0xa5)));
 		//TODO: bad_omen
 		self::register("blindness", new Effect(KnownTranslationFactory::potion_blindness(), new Color(0x1f, 0x1f, 0x23), true));
@@ -97,18 +74,7 @@ final class VanillaEffects{
 		self::register("wither", new WitherEffect(KnownTranslationFactory::potion_wither(), new Color(0x35, 0x2a, 0x27), true));
 	}
 
-	protected static function register(string $name, Effect $member) : void{
-		self::_registryRegister($name, $member);
-	}
-
-	/**
-	 * @return Effect[]
-	 * @phpstan-return array<string, Effect>
-	 */
-	public static function getAll() : array{
-		//phpstan doesn't support generic traits yet :(
-		/** @var Effect[] $result */
-		$result = self::_registryGetAll();
-		return $result;
+	private function register(string $name, Effect $effect) : void{
+		self::registerValue($name, $effect);
 	}
 }

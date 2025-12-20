@@ -24,16 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 /**
- * This trait offers the same functionality as RegistryTrait, but also clones any returned objects to prevent outside
- * modification.
- *
- * @deprecated Superseded by {@link RegistrySource}
- * @see CloningRegistrySource
+ * @phpstan-template TMember of object
+ * @phpstan-extends RegistrySource<TMember>
  */
-trait CloningRegistryTrait{
-	use RegistryTrait;
+abstract class CloningRegistrySource extends RegistrySource{
 
-	protected static function preprocessMember(object $member) : object{
+	public static function preprocessMember(object $member) : object{
 		return clone $member;
 	}
 }
