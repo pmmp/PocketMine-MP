@@ -78,6 +78,9 @@ use function strtolower;
 /**
  * Input class for generating {@link VanillaBlocks}
  * All vanilla blocks are registered here for binding in the generated class.
+ *
+ * @internal
+ * @phpstan-extends CloningRegistrySource<Block>
  */
 final class VanillaBlocksInputs extends CloningRegistrySource{
 
