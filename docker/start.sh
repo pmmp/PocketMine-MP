@@ -31,6 +31,6 @@ if [ ! -z "$POCKETMINE_PLUGINS" ]; then
 fi
 
 # Run the server
-cd /pocketmine
+cd /opt/pocketmine
 read -ra pm_args <<<"$POCKETMINE_ARGS"
 exec php PocketMine-MP.phar --no-wizard --enable-ansi --data=/data --plugins=/plugins "${pm_args[@]}"

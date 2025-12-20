@@ -359,8 +359,9 @@ final class ItemTypeIds{
 	public const COPPER_PICKAXE = 20320;
 	public const COPPER_SHOVEL = 20321;
 	public const COPPER_SWORD = 20322;
+	public const RECORD_LAVA_CHICKEN = 20323;
 
-	public const FIRST_UNUSED_ITEM_ID = 20323;
+	public const FIRST_UNUSED_ITEM_ID = 20324;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 

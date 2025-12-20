@@ -62,6 +62,7 @@ enum RecordType{
 	case DISK_CREATOR;
 	case DISK_CREATOR_MUSIC_BOX;
 	case DISK_FAR;
+	case DISK_LAVA_CHICKEN;
 	case DISK_MALL;
 	case DISK_MELLOHI;
 	case DISK_OTHERSIDE;
@@ -90,6 +91,7 @@ enum RecordType{
 			self::DISK_CREATOR => ["Lena Raine - Creator", LevelSoundEvent::RECORD_CREATOR, KnownTranslationFactory::item_record_creator_desc()],
 			self::DISK_CREATOR_MUSIC_BOX => ["Lena Raine - Creator (Music Box)", LevelSoundEvent::RECORD_CREATOR_MUSIC_BOX, KnownTranslationFactory::item_record_creator_music_box_desc()],
 			self::DISK_FAR => ["C418 - far", LevelSoundEvent::RECORD_FAR, KnownTranslationFactory::item_record_far_desc()],
+			self::DISK_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", LevelSoundEvent::RECORD_LAVA_CHICKEN, KnownTranslationFactory::item_record_lava_chicken_desc()],
 			self::DISK_MALL => ["C418 - mall", LevelSoundEvent::RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()],
 			self::DISK_MELLOHI => ["C418 - mellohi", LevelSoundEvent::RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()],
 			self::DISK_OTHERSIDE => ["Lena Raine - otherside", LevelSoundEvent::RECORD_OTHERSIDE, KnownTranslationFactory::item_record_otherside_desc()],
