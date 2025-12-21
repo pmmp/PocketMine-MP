@@ -406,6 +406,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::POLISHED_DIORITE(), Ids::POLISHED_DIORITE);
 		$reg->mapSimple(Blocks::POLISHED_GRANITE(), Ids::POLISHED_GRANITE);
 		$reg->mapSimple(Blocks::POLISHED_TUFF(), Ids::POLISHED_TUFF);
+		$reg->mapSimple(Blocks::POWDER_SNOW(), Ids::POWDER_SNOW);
 		$reg->mapSimple(Blocks::PRISMARINE(), Ids::PRISMARINE);
 		$reg->mapSimple(Blocks::PRISMARINE_BRICKS(), Ids::PRISMARINE_BRICKS);
 		$reg->mapSimple(Blocks::QUARTZ_BRICKS(), Ids::QUARTZ_BRICKS);

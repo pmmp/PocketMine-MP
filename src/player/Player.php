@@ -630,6 +630,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->inAirTicks = 0;
 	}
 
+	public function canFreeze() : bool{
+		return !$this->isSpectator() && parent::canFreeze();
+	}
+
 	public function getViewDistance() : int{
 		return $this->viewDistance;
 	}

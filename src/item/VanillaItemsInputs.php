@@ -36,6 +36,7 @@ use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
 use pocketmine\utils\CloningRegistrySource;
+use pocketmine\world\sound\BucketEmptyPowderSnowSound;
 use pocketmine\world\World;
 use function is_int;
 use function mb_strtoupper;
@@ -261,6 +262,7 @@ final class VanillaItemsInputs extends CloningRegistrySource{
 		self::register("popped_chorus_fruit", fn(IID $id) => new Item($id, "Popped Chorus Fruit"));
 		self::register("potato", fn(IID $id) => new Potato($id, "Potato"));
 		self::register("potion", fn(IID $id) => new Potion($id, "Potion"));
+		self::registerDelayed("powder_snow_bucket", fn(string $name) : SolidBucket => new SolidBucket(self::makeIID($name), "Powder Snow Bucket", Blocks::POWDER_SNOW(), new BucketEmptyPowderSnowSound()));
 		self::register("prismarine_crystals", fn(IID $id) => new Item($id, "Prismarine Crystals"));
 		self::register("prismarine_shard", fn(IID $id) => new Item($id, "Prismarine Shard"));
 		self::register("pufferfish", fn(IID $id) => new Pufferfish($id, "Pufferfish"));

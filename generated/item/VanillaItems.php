@@ -265,6 +265,7 @@ final class VanillaItems{
 	private static Item $_mPOPPED_CHORUS_FRUIT;
 	private static Potato $_mPOTATO;
 	private static Potion $_mPOTION;
+	private static SolidBucket $_mPOWDER_SNOW_BUCKET;
 	private static Item $_mPRISMARINE_CRYSTALS;
 	private static Item $_mPRISMARINE_SHARD;
 	private static Pufferfish $_mPUFFERFISH;
@@ -621,6 +622,7 @@ final class VanillaItems{
 			"popped_chorus_fruit" => fn(Item $v) => self::$_mPOPPED_CHORUS_FRUIT = $v,
 			"potato" => fn(Potato $v) => self::$_mPOTATO = $v,
 			"potion" => fn(Potion $v) => self::$_mPOTION = $v,
+			"powder_snow_bucket" => fn(SolidBucket $v) => self::$_mPOWDER_SNOW_BUCKET = $v,
 			"prismarine_crystals" => fn(Item $v) => self::$_mPRISMARINE_CRYSTALS = $v,
 			"prismarine_shard" => fn(Item $v) => self::$_mPRISMARINE_SHARD = $v,
 			"pufferfish" => fn(Pufferfish $v) => self::$_mPUFFERFISH = $v,
@@ -1887,6 +1889,11 @@ final class VanillaItems{
 	public static function POTION() : Potion{
 		if(!isset(self::$_mPOTION)){ self::init(); }
 		return clone self::$_mPOTION;
+	}
+
+	public static function POWDER_SNOW_BUCKET() : SolidBucket{
+		if(!isset(self::$_mPOWDER_SNOW_BUCKET)){ self::init(); }
+		return VanillaItemsInputs::preprocessMember(self::$_mPOWDER_SNOW_BUCKET);
 	}
 
 	public static function PRISMARINE_CRYSTALS() : Item{
