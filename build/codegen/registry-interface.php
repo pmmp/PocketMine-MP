@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\update_registry_interface;
 
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\CloningRegistrySource;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\RegistrySource;
 use pocketmine\utils\Utils;
@@ -122,7 +123,7 @@ HEADER;
 	$startClass = <<<CLASS
  * This class is generated automatically from source class {@link $sourceShortClassName}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
- * @see build/$selfName
+ * @see build/codegen/$selfName
  */
 final class $interfaceShortClassName{
 
@@ -152,6 +153,11 @@ CLASS;
 		$preprocessorPrefix = "";
 		$preprocessorSuffix = "";
 		$preprocessorMapper = "self::\$members";
+	}
+	if($registrySource instanceof CloningRegistrySource){
+		$preprocessorPrefix = "clone $preprocessorPrefix";
+		$preprocessorMapper = "Utils::cloneObjectArray($preprocessorMapper)";
+		$importClasses[Utils::class] = true;
 	}
 
 	$commonParent = null;
@@ -386,7 +392,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 	}
 }
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 if(is_dir($argv[1])){
 	if(file_exists($argv[2]) && !is_dir($argv[2])){

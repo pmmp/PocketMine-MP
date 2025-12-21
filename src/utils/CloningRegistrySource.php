@@ -29,7 +29,4 @@ namespace pocketmine\utils;
  */
 abstract class CloningRegistrySource extends RegistrySource{
 
-	public static function preprocessMember(object $member) : object{
-		return clone $member;
-	}
 }
