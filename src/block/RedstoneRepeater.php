@@ -29,6 +29,8 @@ use pocketmine\block\utils\PoweredByRedstone;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\block\utils\StaticSupportTrait;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -37,10 +39,16 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class RedstoneRepeater extends Flowable implements PoweredByRedstone, HorizontalFacing{
+class RedstoneRepeater extends WaterloggableFlowable implements PoweredByRedstone, HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
-	use StaticSupportTrait;
+	use StaticSupportTrait{
+		StaticSupportTrait::onNearbyBlockChange as onSupportBlockChange;
+	}
+	use WaterloggableTrait{
+		place as waterPlace;
+		WaterloggableTrait::onNearbyBlockChange as onWaterBlockChange;
+	}
 
 	public const MIN_DELAY = 1;
 	public const MAX_DELAY = 4;
@@ -73,7 +81,7 @@ class RedstoneRepeater extends Flowable implements PoweredByRedstone, Horizontal
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
 
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
@@ -82,6 +90,11 @@ class RedstoneRepeater extends Flowable implements PoweredByRedstone, Horizontal
 		}
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$this->onWaterBlockChange();
+		$this->onSupportBlockChange();
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{

@@ -498,13 +498,27 @@ class InGamePacketHandler extends PacketHandler{
 
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos);
-				if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
-					//always sync this in case plugins caused a different result than the client expected
-					//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
-					//more information up the stack. For now I think this is good enough.
-					//if only the client would tell us what blocks it thinks changed...
-					$this->syncBlocksNearby($vBlockPos, $data->getFace());
+				if($vBlockPos->distanceSquared($this->player->getLocation()) < 10000){
+					$block = $this->player->getWorld()->getBlock($vBlockPos);
+					$blockTranslator = $this->session->getTypeConverter()->getBlockTranslator();
+					$clientRuntimeId = $data->getBlockRuntimeId();
+					$interactDisplacedBlock = false;
+
+					if(($displaced = $block->getDisplacedBlock()) !== null && $blockTranslator->internalIdToNetworkId($displaced->getStateId()) === $clientRuntimeId){
+						$interactDisplacedBlock = true;
+					}elseif($blockTranslator->internalIdToNetworkId($block->getStateId()) !== $clientRuntimeId){
+						$this->syncBlocksNearby($vBlockPos, $data->getFace());
+						return true;
+					}
+
+					$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos, $interactDisplacedBlock);
+					if($data->getClientInteractPrediction() === PredictedResult::SUCCESS){
+						//always sync this in case plugins caused a different result than the client expected
+						//we *could* try to enhance detection of plugin-altered behaviour, but this would require propagating
+						//more information up the stack. For now I think this is good enough.
+						//if only the client would tell us what blocks it thinks changed...
+						$this->syncBlocksNearby($vBlockPos, $data->getFace());
+					}
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:

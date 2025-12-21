@@ -24,8 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeTags;
 use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\Water;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -55,18 +58,39 @@ class LiquidBucket extends Item{
 	}
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
-		if(!$blockReplace->canBeReplaced()){
+		//TODO: move this to generic placement logic
+
+		$blockClicked = $player->getWorld()->getBlock($blockClicked->getPosition()); //We might interact a displaced block
+		$targetBlock = null;
+		$resultBlock = null;
+
+		$waterloggable = match(true){
+			$blockClicked instanceof Waterloggable && $blockClicked->canBeWaterlogged() => $blockClicked,
+			$blockReplace instanceof Waterloggable && $blockReplace->canBeWaterlogged() => $blockReplace,
+			default => null
+		};
+		if($waterloggable !== null && ($this->liquid instanceof Water || $waterloggable->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE))){
+			if($this->liquid instanceof Water){
+				$targetBlock = $waterloggable;
+				$resultBlock = (clone $targetBlock)->setContainedWater((clone $this->liquid)->setStill(false));
+			}else{
+				$targetBlock = $blockReplace->canBeReplaced() ? $blockReplace : (($target = $blockReplace->getSide($face))->canBeReplaced() ? $target : null);
+				$resultBlock = clone $this->liquid;
+			}
+		}elseif($blockReplace->canBeReplaced()){
+			$targetBlock = $blockReplace;
+			$resultBlock = clone $this->liquid;
+		}
+
+		if($targetBlock === null || $resultBlock === null){
 			return ItemUseResult::NONE;
 		}
 
-		//TODO: move this to generic placement logic
-		$resultBlock = clone $this->liquid;
-
-		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
+		$ev = new PlayerBucketEmptyEvent($player, $targetBlock, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
-			$player->getWorld()->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+			$player->getWorld()->setBlock($targetBlock->getPosition(), $resultBlock);
+			$player->getWorld()->addSound($targetBlock->getPosition()->add(0.5, 0.5, 0.5), $this->liquid->getBucketEmptySound());
 
 			$this->pop();
 			$returnedItems[] = $ev->getItem();

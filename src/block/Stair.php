@@ -27,6 +27,8 @@ use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\block\utils\SupportType;
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\block\utils\WaterloggableTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -36,8 +38,12 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
-class Stair extends Transparent implements HorizontalFacing{
+class Stair extends Transparent implements HorizontalFacing, Waterloggable{
 	use HorizontalFacingTrait;
+	use WaterloggableTrait{
+		place as waterPlace;
+		readStateFromWorld as readWaterStateFromWorld;
+	}
 
 	protected bool $upsideDown = false;
 	protected StairShape $shape = StairShape::STRAIGHT;
@@ -49,6 +55,8 @@ class Stair extends Transparent implements HorizontalFacing{
 
 	public function readStateFromWorld() : Block{
 		parent::readStateFromWorld();
+
+		$this->readWaterStateFromWorld();
 
 		$this->collisionBoxes = null;
 
@@ -78,6 +86,10 @@ class Stair extends Transparent implements HorizontalFacing{
 	public function setShape(StairShape $shape) : self{
 		$this->shape = $shape;
 		return $this;
+	}
+
+	public function isSideOpenToFlow(int $face) : bool{
+		return $this->getSupportType($face) !== SupportType::FULL;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
@@ -133,6 +145,6 @@ class Stair extends Transparent implements HorizontalFacing{
 		}
 		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
 
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return $this->waterPlace($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }

@@ -23,16 +23,17 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-final class BlockTypeTags{
-	private const PREFIX = "pocketmine:";
+use pocketmine\block\utils\Waterloggable;
+use pocketmine\math\Vector3;
 
-	public const DIRT = self::PREFIX . "dirt";
-	public const MUD = self::PREFIX . "mud";
-	public const SAND = self::PREFIX . "sand";
-	public const POTTABLE_PLANTS = self::PREFIX . "pottable";
-	public const FIRE = self::PREFIX . "fire";
-	public const HANGING_SIGN = self::PREFIX . "hanging_sign";
-	public const NYLIUM = self::PREFIX . "nylium";
-	public const HUGE_FUNGUS_REPLACEABLE = self::PREFIX . "huge_fungus_replaceable";
-	public const NON_SOURCE_WATERLOGGABLE = self::PREFIX . "non_source_waterloggable";
+/**
+ * Flowable blocks that can be waterlogged.
+ */
+abstract class WaterloggableFlowable extends Flowable implements Waterloggable{
+
+	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
+		return
+			($this->canBeWaterlogged() && $blockReplace instanceof Water && ($blockReplace->isSource() || $this->hasTypeTag(BlockTypeTags::NON_SOURCE_WATERLOGGABLE))) ||
+			parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+	}
 }

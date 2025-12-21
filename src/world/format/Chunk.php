@@ -111,6 +111,27 @@ class Chunk{
 	}
 
 	/**
+	 * Returns the internal ID of the blockstate placed at the second layer at the given coordinates.
+	 *
+	 * @param int $x 0-15
+	 * @param int $y dependent on the height of the world
+	 * @param int $z 0-15
+	 *
+	 * @return int the second layer blockstate ID of the given block
+	 */
+	public function getDisplacedBlockStateId(int $x, int $y, int $z) : int{
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getDisplacedBlockStateId($x, $y & SubChunk::COORD_MASK, $z);
+	}
+
+	/**
+	 * Sets the blockstate to the second layer at the given coordinate by internal ID.
+	 */
+	public function setDisplacedBlockStateId(int $x, int $y, int $z, int $block) : void{
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setDisplacedBlockStateId($x, $y & SubChunk::COORD_MASK, $z, $block);
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
+	}
+
+	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
 	 * @param int $x 0-15

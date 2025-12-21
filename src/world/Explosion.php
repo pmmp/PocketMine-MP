@@ -48,6 +48,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function max;
 use function min;
 use function mt_rand;
 use function sqrt;
@@ -135,8 +136,9 @@ class Explosion{
 							}
 
 							$state = $subChunk->getBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
+							$displacedState = $subChunk->getDisplacedBlockStateId($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
+							$blastResistance = max($blockFactory->blastResistance[$state] ?? 0, $blockFactory->blastResistance[$displacedState] ?? 0);
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
