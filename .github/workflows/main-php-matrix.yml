@@ -154,3 +154,7 @@ jobs:
         run: |
           git diff
           git diff --quiet
+
+      - name: Check for generated code files colliding with src files
+        run:
+          php build/codegen/check-file-collisions.php

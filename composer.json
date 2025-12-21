@@ -91,13 +91,13 @@
          "@php -dphar.readonly=0 build/server-phar.php"
       ],
       "update-codegen": [
-         "@php build/generate-bedrockdata-path-consts.php",
-         "@php build/generate-biome-ids.php",
-         "@php build/generate-block-serializer-consts.php vendor/pocketmine/bedrock-data/canonical_block_states.nbt",
-         "@php build/generate-item-type-names.php vendor/pocketmine/bedrock-data/required_item_list.json",
-         "@php build/generate-known-translation-apis.php",
-         "@php build/generate-pocketmine-yml-property-consts.php",
-         "@php build/generate-registry-interface.php src generated"
+         "@php build/codegen/bedrockdata-path-consts.php",
+         "@php build/codegen/biome-ids.php",
+         "@php build/codegen/block-serializer-consts.php vendor/pocketmine/bedrock-data/canonical_block_states.nbt",
+         "@php build/codegen/item-type-names.php vendor/pocketmine/bedrock-data/required_item_list.json",
+         "@php build/codegen/known-translation-apis.php",
+         "@php build/codegen/pocketmine-yml-property-consts.php",
+         "@php build/codegen/registry-interface.php src generated"
       ]
    }
 }

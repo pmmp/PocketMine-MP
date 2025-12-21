@@ -834,8 +834,26 @@ final class BlockTypeIds{
 	public const WARPED_NYLIUM = 10804;
 	public const INFESTED_DEEPSLATE = 10805;
 	public const STRUCTURE_VOID = 10806;
+	public const BAMBOO_BLOCK = 10807;
+	public const BAMBOO_BUTTON = 10808;
+	public const BAMBOO_CEILING_CENTER_HANGING_SIGN = 10809;
+	public const BAMBOO_CEILING_EDGES_HANGING_SIGN = 10810;
+	public const BAMBOO_DOOR = 10811;
+	public const BAMBOO_FENCE = 10812;
+	public const BAMBOO_FENCE_GATE = 10813;
+	public const BAMBOO_PLANKS = 10814;
+	public const BAMBOO_PRESSURE_PLATE = 10815;
+	public const BAMBOO_SIGN = 10816;
+	public const BAMBOO_SLAB = 10817;
+	public const BAMBOO_STAIRS = 10818;
+	public const BAMBOO_TRAPDOOR = 10819;
+	public const BAMBOO_WALL_HANGING_SIGN = 10820;
+	public const BAMBOO_WALL_SIGN = 10821;
+	public const BAMBOO_MOSAIC = 10822;
+	public const BAMBOO_MOSAIC_SLAB = 10823;
+	public const BAMBOO_MOSAIC_STAIRS = 10824;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10807;
+	public const FIRST_UNUSED_BLOCK_ID = 10825;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

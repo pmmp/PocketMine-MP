@@ -39,12 +39,12 @@ use function array_values;
  * in the build.
  *
  * To create a registry, simply extend this class and implement the abstract methods. Then, run the
- * generate-registry-interface.php script in the build folder to generate the accessor class.
+ * registry-interface.php script in the build folder to generate the accessor class.
  *
  * This supersedes the older {@link RegistryTrait}, which is slower and less robust than this newer approach, and also
  * required patching source classes. This approach allows the generated code to be fully separate from the source code.
  *
- * @see build/generate-registry-interface.php
+ * @see build/codegen/registry-interface.php
  *
  * @phpstan-template TMember of object
  */
@@ -83,14 +83,6 @@ abstract class RegistrySource{
 	 */
 	public function getTargetClassDocComment() : array{
 		return [];
-	}
-
-	/**
-	 * Returns whether the generator should generate a trait, instead of a concrete class.
-	 * This might be useful if you want to compose a registry class with custom functions.
-	 */
-	public function isTargetTrait() : bool{
-		return false;
 	}
 
 	/**

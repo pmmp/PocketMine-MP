@@ -156,7 +156,21 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("azalea_leaves", fn() => Blocks::AZALEA_LEAVES());
 		$result->registerBlock("azure_bluet", fn() => Blocks::AZURE_BLUET());
 		$result->registerBlock("bamboo", fn() => Blocks::BAMBOO());
+		$result->registerBlock("bamboo_block", fn() => Blocks::BAMBOO_BLOCK());
+		$result->registerBlock("bamboo_button", fn() => Blocks::BAMBOO_BUTTON());
+		$result->registerBlock("bamboo_door", fn() => Blocks::BAMBOO_DOOR());
+		$result->registerBlock("bamboo_fence", fn() => Blocks::BAMBOO_FENCE());
+		$result->registerBlock("bamboo_fence_gate", fn() => Blocks::BAMBOO_FENCE_GATE());
+		$result->registerBlock("bamboo_mosaic", fn() => Blocks::BAMBOO_MOSAIC());
+		$result->registerBlock("bamboo_mosaic_slab", fn() => Blocks::BAMBOO_MOSAIC_SLAB());
+		$result->registerBlock("bamboo_mosaic_stairs", fn() => Blocks::BAMBOO_MOSAIC_STAIRS());
+		$result->registerBlock("bamboo_planks", fn() => Blocks::BAMBOO_PLANKS());
+		$result->registerBlock("bamboo_pressure_plate", fn() => Blocks::BAMBOO_PRESSURE_PLATE());
 		$result->registerBlock("bamboo_sapling", fn() => Blocks::BAMBOO_SAPLING());
+		$result->registerBlock("bamboo_sign", fn() => Blocks::BAMBOO_SIGN());
+		$result->registerBlock("bamboo_slab", fn() => Blocks::BAMBOO_SLAB());
+		$result->registerBlock("bamboo_stairs", fn() => Blocks::BAMBOO_STAIRS());
+		$result->registerBlock("bamboo_trapdoor", fn() => Blocks::BAMBOO_TRAPDOOR());
 		$result->registerBlock("banner", fn() => Blocks::BANNER());
 		$result->registerBlock("barrel", fn() => Blocks::BARREL());
 		$result->registerBlock("barrier", fn() => Blocks::BARRIER());
@@ -1102,6 +1116,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("stonecutter_block", fn() => Blocks::STONECUTTER());
 		$result->registerBlock("stripped_acacia_log", fn() => Blocks::ACACIA_LOG()->setStripped(true));
 		$result->registerBlock("stripped_acacia_wood", fn() => Blocks::ACACIA_WOOD()->setStripped(true));
+		$result->registerBlock("stripped_bamboo_block", fn() => Blocks::BAMBOO_BLOCK()->setStripped(true));
 		$result->registerBlock("stripped_birch_log", fn() => Blocks::BIRCH_LOG()->setStripped(true));
 		$result->registerBlock("stripped_birch_wood", fn() => Blocks::BIRCH_WOOD()->setStripped(true));
 		$result->registerBlock("stripped_cherry_log", fn() => Blocks::CHERRY_LOG()->setStripped(true));
@@ -1255,6 +1270,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("arrow", fn() => Items::ARROW());
 		$result->register("baked_potato", fn() => Items::BAKED_POTATO());
 		$result->register("baked_potatoes", fn() => Items::BAKED_POTATO());
+		$result->register("bamboo_hanging_sign", fn() => Items::BAMBOO_HANGING_SIGN());
 		$result->register("beef", fn() => Items::RAW_BEEF());
 		$result->register("beetroot", fn() => Items::BEETROOT());
 		$result->register("beetroot_seed", fn() => Items::BEETROOT_SEEDS());
