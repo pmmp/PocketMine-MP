@@ -2508,7 +2508,7 @@ final class VanillaBlocks{
 
 	public static function COMPOSTER() : Composter{
 		if(!isset(self::$_mCOMPOSTER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOMPOSTER);
+		return clone self::$_mCOMPOSTER;
 	}
 
 	public static function COMPOUND_CREATOR() : ChemistryTable{
