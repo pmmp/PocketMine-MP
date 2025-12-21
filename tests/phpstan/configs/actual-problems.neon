@@ -91,31 +91,13 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
-			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
 
 		-
-			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
 			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: ../../../src/block/Cactus.php
-
-		-
-			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:getBlockAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: ../../../src/block/Cactus.php
@@ -385,6 +367,24 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#2 \$y of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
+			message: '#^Parameter \#3 \$z of method pocketmine\\world\\World\:\:isInWorld\(\) expects int, float\|int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/block/Nylium.php
+
+		-
 			message: '#^Parameter \#1 \$x of method pocketmine\\world\\World\:\:getFullLightAt\(\) expects int, float\|int given\.$#'
 			identifier: argument.type
 			count: 1
@@ -573,6 +573,12 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$path of static method pocketmine\\utils\\Filesystem\:\:cleanPath\(\) expects string, mixed given\.$#'
 			identifier: argument.type
+			count: 1
+			path: ../../../src/crash/CrashDump.php
+
+		-
+			message: '#^Possibly invalid array key type float\|int\<0, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
 			count: 1
 			path: ../../../src/crash/CrashDump.php
 
@@ -869,12 +875,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: '#^Property pocketmine\\network\\mcpe\\auth\\ProcessLoginTask\:\:\$chain \(string\) does not accept string\|null\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
 
 		-
 			message: '#^Parameter \#1 \$result of method pocketmine\\network\\mcpe\\compression\\CompressBatchPromise\:\:resolve\(\) expects string, mixed given\.$#'

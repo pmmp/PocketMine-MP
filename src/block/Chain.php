@@ -30,7 +30,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-final class Chain extends Transparent implements PillarRotation{
+class Chain extends Transparent implements PillarRotation{
 	use PillarRotationTrait;
 
 	public function getSupportType(int $facing) : SupportType{

@@ -63,7 +63,11 @@ class TallGrass implements Populator{
 	}
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
-		for($y = 127; $y >= 0; --$y){
+		$highestBlock = $world->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)?->getHighestBlockAt($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
+		if($highestBlock === null){
+			return -1;
+		}
+		for($y = $highestBlock; $y >= 0; --$y){
 			$b = $world->getBlockAt($x, $y, $z);
 			if($b->getTypeId() !== BlockTypeIds::AIR && !($b instanceof Leaves) && $b->getTypeId() !== BlockTypeIds::SNOW_LAYER){
 				return $y + 1;

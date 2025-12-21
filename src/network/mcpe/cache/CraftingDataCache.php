@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
+use pmmp\encoding\BE;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\crafting\ShapedRecipe;
@@ -46,7 +47,6 @@ use pocketmine\network\mcpe\protocol\types\recipe\SmithingTransformRecipe as Pro
 use pocketmine\network\mcpe\protocol\types\recipe\SmithingTrimRecipe as ProtocolSmithingTrimRecipe;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Binary;
 use pocketmine\utils\SingletonTrait;
 use Ramsey\Uuid\Uuid;
 use function array_map;
@@ -104,7 +104,7 @@ final class CraftingDataCache{
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt($recipeNetId),
+					BE::packUnsignedInt($recipeNetId), //TODO: this should probably be changed to something human-readable
 					array_map($converter->coreRecipeIngredientToNet(...), $recipe->getIngredientList()),
 					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,
@@ -123,7 +123,7 @@ final class CraftingDataCache{
 				}
 				$recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt($recipeNetId),
+					BE::packUnsignedInt($recipeNetId), //TODO: this should probably be changed to something human-readable
 					$inputs,
 					array_map($converter->coreItemStackToNet(...), $recipe->getResults()),
 					$nullUUID,

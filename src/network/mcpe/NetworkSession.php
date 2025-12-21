@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
+use pmmp\encoding\DataDecodeException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\player\PlayerResourcePackOfferEvent;
@@ -36,6 +39,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -69,8 +73,8 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\protocol\serializer\AvailableCommandsPacketAssembler;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetDifficultyPacket;
@@ -85,7 +89,7 @@ use pocketmine\network\mcpe\protocol\types\AbilitiesData;
 use pocketmine\network\mcpe\protocol\types\AbilitiesLayer;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
-use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandHardEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandOverload;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
@@ -109,8 +113,6 @@ use pocketmine\promise\PromiseResolver;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\BinaryDataException;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\format\io\GlobalItemDataHandlers;
@@ -118,6 +120,8 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use function array_map;
+use function array_slice;
+use function array_values;
 use function base64_encode;
 use function bin2hex;
 use function count;
@@ -143,6 +147,8 @@ class NetworkSession{
 
 	private const INCOMING_GAME_PACKETS_PER_TICK = 2;
 	private const INCOMING_GAME_PACKETS_BUFFER_TICKS = 100;
+
+	private const INCOMING_PACKET_BATCH_HARD_LIMIT = 300;
 
 	private PacketRateLimiter $packetBatchLimiter;
 	private PacketRateLimiter $gamePacketLimiter;
@@ -193,6 +199,9 @@ class NetworkSession{
 	 * @phpstan-var ObjectSet<\Closure() : void>
 	 */
 	private ObjectSet $disposeHooks;
+
+	private string $noisyPacketBuffer = "";
+	private int $noisyPacketsDropped = 0;
 
 	public function __construct(
 		private Server $server,
@@ -350,6 +359,20 @@ class NetworkSession{
 		}
 	}
 
+	private function checkRepeatedPacketFilter(string $buffer) : bool{
+		if($buffer === $this->noisyPacketBuffer){
+			$this->noisyPacketsDropped++;
+			return true;
+		}
+		//stop filtering once we see a packet with a different buffer
+		//this won't be any good for interleaved spammy packets, but we haven't seen any of those so far, and this
+		//is the simplest and most conservative filter we can do
+		$this->noisyPacketBuffer = "";
+		$this->noisyPacketsDropped = 0;
+
+		return false;
+	}
+
 	/**
 	 * @throws PacketHandlingException
 	 */
@@ -400,9 +423,21 @@ class NetworkSession{
 				$decompressed = $payload;
 			}
 
+			$count = 0;
 			try{
-				$stream = new BinaryStream($decompressed);
+				$stream = new ByteBufferReader($decompressed);
 				foreach(PacketBatch::decodeRaw($stream) as $buffer){
+					if(++$count >= self::INCOMING_PACKET_BATCH_HARD_LIMIT){
+						//this should be well more than enough; under normal conditions the game packet rate limiter
+						//will kick in well before this. This is only here to make sure we can't get huge batches of
+						//noisy packets to bog down the server, since those aren't counted by the regular limiter.
+						throw new PacketHandlingException("Reached hard limit of " . self::INCOMING_PACKET_BATCH_HARD_LIMIT . " per batch packet");
+					}
+
+					if($this->checkRepeatedPacketFilter($buffer)){
+						continue;
+					}
+
 					$this->gamePacketLimiter->decrement();
 					$packet = $this->packetPool->getPacket($buffer);
 					if($packet === null){
@@ -414,6 +449,8 @@ class NetworkSession{
 					}catch(PacketHandlingException $e){
 						$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 						throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
+					}catch(FilterNoisyPacketException){
+						$this->noisyPacketBuffer = $buffer;
 					}
 					if(!$this->isConnected()){
 						//handling this packet may have caused a disconnection
@@ -421,7 +458,7 @@ class NetworkSession{
 						break;
 					}
 				}
-			}catch(PacketDecodeException|BinaryDataException $e){
+			}catch(PacketDecodeException|DataDecodeException $e){
 				$this->logger->logException($e);
 				throw PacketHandlingException::wrap($e, "Packet batch decode error");
 			}
@@ -432,6 +469,7 @@ class NetworkSession{
 
 	/**
 	 * @throws PacketHandlingException
+	 * @throws FilterNoisyPacketException
 	 */
 	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
@@ -453,14 +491,14 @@ class NetworkSession{
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);
 			$decodeTimings->startTiming();
 			try{
-				$stream = PacketSerializer::decoder($buffer, 0);
+				$stream = new ByteBufferReader($buffer);
 				try{
 					$packet->decode($stream);
 				}catch(PacketDecodeException $e){
 					throw PacketHandlingException::wrap($e);
 				}
-				if(!$stream->feof()){
-					$remains = substr($stream->getBuffer(), $stream->getOffset());
+				if($stream->getUnreadLength() > 0){
+					$remains = substr($stream->getData(), $stream->getOffset());
 					$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
 				}
 			}finally{
@@ -478,7 +516,7 @@ class NetworkSession{
 			$handlerTimings->startTiming();
 			try{
 				if($this->handler === null || !$packet->handle($this->handler)){
-					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
+					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getData()));
 				}
 			}finally{
 				$handlerTimings->stopTiming();
@@ -530,8 +568,10 @@ class NetworkSession{
 			if($ackReceiptResolver !== null){
 				$this->sendBufferAckPromises[] = $ackReceiptResolver;
 			}
+			$writer = new ByteBufferWriter();
 			foreach($packets as $evPacket){
-				$this->addToSendBuffer(self::encodePacketTimed(PacketSerializer::encoder(), $evPacket));
+				$writer->clear(); //memory reuse let's gooooo
+				$this->addToSendBuffer(self::encodePacketTimed($writer, $evPacket));
 			}
 			if($immediate){
 				$this->flushGamePacketQueue();
@@ -564,12 +604,12 @@ class NetworkSession{
 	/**
 	 * @internal
 	 */
-	public static function encodePacketTimed(PacketSerializer $serializer, ClientboundPacket $packet) : string{
+	public static function encodePacketTimed(ByteBufferWriter $serializer, ClientboundPacket $packet) : string{
 		$timings = Timings::getEncodeDataPacketTimings($packet);
 		$timings->startTiming();
 		try{
 			$packet->encode($serializer);
-			return $serializer->getBuffer();
+			return $serializer->getData();
 		}finally{
 			$timings->stopTiming();
 		}
@@ -591,13 +631,13 @@ class NetworkSession{
 					$syncMode = false;
 				}
 
-				$stream = new BinaryStream();
+				$stream = new ByteBufferWriter();
 				PacketBatch::encodeRaw($stream, $this->sendBuffer);
 
 				if($this->enableCompression){
-					$batch = $this->server->prepareBatch($stream->getBuffer(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+					$batch = $this->server->prepareBatch($stream->getData(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
 				}else{
-					$batch = $stream->getBuffer();
+					$batch = $stream->getData();
 				}
 				$this->sendBuffer = [];
 				$ackPromises = $this->sendBufferAckPromises;
@@ -1106,7 +1146,7 @@ class NetworkSession{
 					//work around a client bug which makes the original name not show when aliases are used
 					$aliases[] = $lname;
 				}
-				$aliasObj = new CommandEnum(ucfirst($command->getLabel()) . "Aliases", $aliases);
+				$aliasObj = new CommandHardEnum(ucfirst($command->getLabel()) . "Aliases", $aliases);
 			}
 
 			$description = $command->getDescription();
@@ -1114,7 +1154,7 @@ class NetworkSession{
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
 				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
 				0,
-				0,
+				CommandPermissions::NORMAL,
 				$aliasObj,
 				[
 					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
@@ -1125,7 +1165,7 @@ class NetworkSession{
 			$commandData[$command->getLabel()] = $data;
 		}
 
-		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
+		$this->sendDataPacket(AvailableCommandsPacketAssembler::assemble(array_values($commandData), [], []));
 	}
 
 	/**
@@ -1136,7 +1176,9 @@ class NetworkSession{
 		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 		$language = $this->player->getLanguage();
 		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
-		return [$language->translateString($message->getText(), $parameters, "pocketmine."), $parameters];
+		$untranslatedParameterCount = 0;
+		$translated = $language->translateString($message->getText(), $parameters, "pocketmine.", $untranslatedParameterCount);
+		return [$translated, array_slice($parameters, 0, $untranslatedParameterCount)];
 	}
 
 	public function onChatMessage(Translatable|string $message) : void{

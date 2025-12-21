@@ -23,6 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\plugin\PluginBase;
+
+/**
+ * @deprecated
+ *
+ * Interface implemented by things that want to execute commands via {@link PluginCommand}.
+ * This is implemented by {@link PluginBase} by default to allow automagically registering
+ * {@link PluginBase::onCommand()} to receive commands defined in `plugin.yml`.
+ */
 interface CommandExecutor{
 
 	/**

@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\data\bedrock\item\SavedItemStackData;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\world\Position;
 
 /**
@@ -43,21 +43,22 @@ trait ContainerTrait{
 	abstract public function getRealInventory() : Inventory;
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
+		try{
+			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			//preserve the old behaviour of not throwing on wrong types
+			$inventoryTag = null;
+		}
+		if($inventoryTag !== null){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
 			$newContents = [];
-			/** @var CompoundTag $itemNBT */
+			$errorLogContext = "Container (" . $this->getPosition() . ")";
 			foreach($inventoryTag as $itemNBT){
-				try{
-					$newContents[$itemNBT->getByte(SavedItemStackData::TAG_SLOT)] = Item::nbtDeserialize($itemNBT);
-				}catch(SavedDataLoadingException $e){
-					//TODO: not the best solution
-					\GlobalLogger::get()->logException($e);
-					continue;
-				}
+				$slotId = $itemNBT->getByte(SavedItemStackData::TAG_SLOT);
+				$newContents[$slotId] = Item::safeNbtDeserialize($itemNBT, "$errorLogContext slot $slotId");
 			}
 			$inventory->setContents($newContents);
 

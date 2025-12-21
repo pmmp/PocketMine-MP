@@ -38,6 +38,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\SubChunk;
@@ -218,8 +219,9 @@ class Explosion{
 
 			if($distance <= 1){
 				$motion = $entityPos->subtractVector($this->source)->normalize();
+				$exposure = $this->getExposure($this->source, $entity);
 
-				$impact = (1 - $distance) * ($exposure = 1);
+				$impact = (1 - $distance) * $exposure;
 
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
@@ -270,6 +272,51 @@ class Explosion{
 	}
 
 	/**
+	 * Returns the explosion exposure of an entity, used to calculate explosion impact.
+	 */
+	private function getExposure(Vector3 $origin, Entity $entity) : float{
+		$bb = $entity->getBoundingBox();
+
+		$diff = (new Vector3($bb->getXLength(), $bb->getYLength(), $bb->getZLength()))->multiply(2)->add(1, 1, 1);
+		$step = new Vector3(1.0 / $diff->x, 1.0 / $diff->y, 1.0 / $diff->z);
+
+		$xOffset = (1.0 - (floor($diff->x) / $diff->x)) / 2.0;
+		$zOffset = (1.0 - (floor($diff->z) / $diff->z)) / 2.0;
+
+		$checks = 0.0;
+		$hits = 0.0;
+
+		for($x = 0.0; $x <= 1.0; $x += $step->x){
+			for($y = 0.0; $y <= 1.0; $y += $step->y){
+				for($z = 0.0; $z <= 1.0; $z += $step->z){
+					$point = new Vector3(
+						self::lerp($x, $bb->minX, $bb->maxX) + $xOffset,
+						self::lerp($y, $bb->minY, $bb->maxY),
+						self::lerp($z, $bb->minZ, $bb->maxZ) + $zOffset
+					);
+
+					$intercepted = false;
+
+					foreach(VoxelRayTrace::betweenPoints($origin, $point) as $pos){
+						$block = $this->world->getBlock($pos);
+						if($block->calculateIntercept($origin, $point) !== null){
+							$intercepted = true;
+							break;
+						}
+					}
+
+					if(!$intercepted){
+						$hits++;
+					}
+					$checks++;
+				}
+			}
+		}
+
+		return $checks > 0.0 ? $hits / $checks : 0.0;
+	}
+
+	/**
 	 * Sets a chance between 0 and 1 of creating a fire.
 	 * For example, if the chance is 1/3, then that amount of affected blocks will be ignited.
 	 *
@@ -281,5 +328,9 @@ class Explosion{
 			throw new \InvalidArgumentException("Fire chance must be a number between 0 and 1.");
 		}
 		$this->fireChance = $fireChance;
+	}
+
+	private static function lerp(float $scale, float $a, float $b) : float{
+		return $a + $scale * ($b - $a);
 	}
 }

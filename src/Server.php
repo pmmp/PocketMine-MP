@@ -50,6 +50,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\auth\AuthKeyProvider;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -270,6 +271,7 @@ class Server{
 	private int $maxPlayers;
 
 	private bool $onlineMode = true;
+	private AuthKeyProvider $authKeyProvider;
 
 	private Network $network;
 	private bool $networkCompressionAsync = true;
@@ -870,7 +872,7 @@ class Server{
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error2()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error3()));
 					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error4(Yml::SETTINGS_ENABLE_DEV_BUILDS)));
-					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5("https://github.com/pmmp/PocketMine-MP/releases")));
+					$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_devBuild_error5(VersionInfo::GITHUB_URL . "/releases")));
 					$this->forceShutdownExit();
 
 					return;
@@ -982,6 +984,8 @@ class Server{
 				$this->logger->warning($this->language->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
+			$this->authKeyProvider = new AuthKeyProvider(new \PrefixedLogger($this->logger, "Minecraft Auth Key Provider"), $this->asyncPool);
+
 			if($this->configGroup->getConfigBool(ServerProperties::HARDCORE, false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
 				$this->configGroup->setConfigInt(ServerProperties::DIFFICULTY, World::DIFFICULTY_HARD);
 			}
@@ -1089,7 +1093,23 @@ class Server{
 			$this->configGroup->save();
 
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslatableName())));
-			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
+			$highlight = TextFormat::AQUA;
+			$reset = TextFormat::RESET;
+			$github = VersionInfo::GITHUB_URL;
+			$splash = "\n\n";
+			foreach([
+				KnownTranslationFactory::pocketmine_server_url_discord("{$highlight}https://discord.pmmp.io{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_docs("{$highlight}https://doc.pmmp.io{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_sourceCode("{$highlight}{$github}{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_freePlugins("{$highlight}https://poggit.pmmp.io/plugins{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_donations("{$highlight}https://patreon.com/pocketminemp{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_translations("{$highlight}https://translate.pocketmine.net{$reset}"),
+				KnownTranslationFactory::pocketmine_server_url_bugReporting("{$highlight}{$github}/issues{$reset}")
+			] as $link){
+				$splash .= "- " . $this->language->translate($link) . "\n";
+			}
+			$this->logger->info($splash);
+
 			$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
 			$forwarder = new BroadcastLoggerForwarder($this, $this->logger, $this->language);
@@ -1480,6 +1500,16 @@ class Server{
 		if($this->isRunning){
 			$this->isRunning = false;
 			$this->signalHandler->unregister();
+
+			if(TimingsHandler::isEnabled()){
+				TimingsHandler::createReportFile(Path::join($this->getDataPath(), "timings"))->onCompletion(
+					function(string $timingsFile) : void{
+						$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timingsFile)));
+						TimingsHandler::setEnabled(false);
+					},
+					fn() => $this->logger->error("Failed to create timings report file")
+				);
+			}
 		}
 	}
 
@@ -1798,6 +1828,13 @@ class Server{
 
 	public function isLanguageForced() : bool{
 		return $this->forceLanguage;
+	}
+
+	/**
+	 * @internal
+	 */
+	public function getAuthKeyProvider() : AuthKeyProvider{
+		return $this->authKeyProvider;
 	}
 
 	public function getNetwork() : Network{

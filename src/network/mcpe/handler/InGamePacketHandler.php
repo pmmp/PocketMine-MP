@@ -44,6 +44,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\FilterNoisyPacketException;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
@@ -217,16 +218,15 @@ class InGamePacketHandler extends PacketHandler{
 		if($this->lastPlayerAuthInputFlags === null || !$inputFlags->equals($this->lastPlayerAuthInputFlags)){
 			$this->lastPlayerAuthInputFlags = $inputFlags;
 
-			$sneaking = $inputFlags->get(PlayerAuthInputFlags::SNEAKING);
-			if($this->player->isSneaking() === $sneaking){
-				$sneaking = null;
-			}
+			$sneakPressed = $inputFlags->get(PlayerAuthInputFlags::SNEAKING);
+
+			$sneaking = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
 			$sprinting = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 			$swimming = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
 			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
-				($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
+				($sneaking !== null && !$this->player->toggleSneak($sneaking, $sneakPressed)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
 				($gliding !== null && !$this->player->toggleGlide($gliding)) |
@@ -490,7 +490,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
 				if($spamBug){
-					return true;
+					throw new FilterNoisyPacketException();
 				}
 				//TODO: end hack for client spam bug
 
@@ -748,7 +748,9 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
-		return true; //Not used
+		//this spams harder than a firehose on left click if "Improved Input Response" is enabled, and we don't even
+		//use it anyway :<
+		throw new FilterNoisyPacketException();
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{

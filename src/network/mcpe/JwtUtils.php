@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\Byte;
+use pmmp\encoding\ByteBufferReader;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
 use function base64_decode;
 use function base64_encode;
@@ -32,6 +34,7 @@ use function bin2hex;
 use function chr;
 use function count;
 use function explode;
+use function hex2bin;
 use function is_array;
 use function json_decode;
 use function json_encode;
@@ -54,6 +57,7 @@ use function strlen;
 use function strtr;
 use function substr;
 use const JSON_THROW_ON_ERROR;
+use const OPENSSL_ALGO_SHA256;
 use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
@@ -130,17 +134,17 @@ final class JwtUtils{
 		return self::ASN1_SEQUENCE_TAG . chr(strlen($sequence)) . $sequence;
 	}
 
-	private static function signaturePartFromAsn1(BinaryStream $stream) : string{
-		$prefix = $stream->get(1);
+	private static function signaturePartFromAsn1(ByteBufferReader $stream) : string{
+		$prefix = $stream->readByteArray(1);
 		if($prefix !== self::ASN1_INTEGER_TAG){
 			throw new \InvalidArgumentException("Expected an ASN.1 INTEGER tag, got " . bin2hex($prefix));
 		}
 		//we can assume the length is 1 byte here - if it were larger than 127, more complex logic would be needed
-		$length = $stream->getByte();
+		$length = Byte::readUnsigned($stream);
 		if($length > self::SIGNATURE_PART_LENGTH + 1){ //each part may have an extra leading 0 byte to prevent it being interpreted as a negative number
 			throw new \InvalidArgumentException("Expected at most 49 bytes for signature R or S, got $length");
 		}
-		$part = $stream->get($length);
+		$part = $stream->readByteArray($length);
 		return str_pad(ltrim($part, "\x00"), self::SIGNATURE_PART_LENGTH, "\x00", STR_PAD_LEFT);
 	}
 
@@ -156,11 +160,11 @@ final class JwtUtils{
 			throw new \InvalidArgumentException("Invalid DER signature, expected $length sequence bytes, got " . strlen($parts));
 		}
 
-		$stream = new BinaryStream($parts);
+		$stream = new ByteBufferReader($parts);
 		$rRaw = self::signaturePartFromAsn1($stream);
 		$sRaw = self::signaturePartFromAsn1($stream);
 
-		if(!$stream->feof()){
+		if($stream->getUnreadLength() > 0){
 			throw new \InvalidArgumentException("Invalid DER signature, unexpected trailing sequence data");
 		}
 
@@ -170,17 +174,17 @@ final class JwtUtils{
 	/**
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, \OpenSSLAsymmetricKey $signingKey) : bool{
+	public static function verify(string $jwt, string $signingKeyDer, bool $ec) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$rawSignature = self::b64UrlDecode($signature);
-		$derSignature = self::rawSignatureToDer($rawSignature);
+		$derSignature = $ec ? self::rawSignatureToDer($rawSignature) : $rawSignature;
 
 		$v = openssl_verify(
 			$header . '.' . $body,
 			$derSignature,
-			$signingKey,
-			self::SIGNATURE_ALGORITHM
+			self::derPublicKeyToPem($signingKeyDer),
+			$ec ? self::SIGNATURE_ALGORITHM : OPENSSL_ALGO_SHA256
 		);
 		switch($v){
 			case 0: return false;
@@ -238,22 +242,56 @@ final class JwtUtils{
 		throw new AssumptionFailedError("OpenSSL resource contains invalid public key");
 	}
 
+	/**
+	 * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
+	 * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3} for more information.
+	 */
+	private static function encodeDerLength(int $length) : string{
+		if ($length <= 0x7F) {
+			return chr($length);
+		}
+
+		$lengthBytes = ltrim(BE::packUnsignedInt($length), "\x00");
+
+		return chr(0x80 | strlen($lengthBytes)) . $lengthBytes;
+	}
+
+	private static function encodeDerBytes(int $tag, string $data) : string{
+		return chr($tag) . self::encodeDerLength(strlen($data)) . $data;
+	}
+
 	public static function parseDerPublicKey(string $derKey) : \OpenSSLAsymmetricKey{
-		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
+		$signingKeyOpenSSL = openssl_pkey_get_public(self::derPublicKeyToPem($derKey));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
 		}
-		$details = openssl_pkey_get_details($signingKeyOpenSSL);
-		if($details === false){
-			throw new JwtException("OpenSSL failed to get details from key: " . openssl_error_string());
-		}
-		if(!isset($details['ec']['curve_name'])){
-			throw new JwtException("Expected an EC key");
-		}
-		$curve = $details['ec']['curve_name'];
-		if($curve !== self::BEDROCK_SIGNING_KEY_CURVE_NAME){
-			throw new JwtException("Key must belong to curve " . self::BEDROCK_SIGNING_KEY_CURVE_NAME . ", got $curve");
-		}
 		return $signingKeyOpenSSL;
+	}
+
+	public static function derPublicKeyToPem(string $derKey) : string{
+		return sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey));
+	}
+
+	/**
+	 * Create a public key represented in DER format from RSA modulus and exponent information
+	 *
+	 * @param string $nBase64 The RSA modulus encoded in Base64
+	 * @param string $eBase64 The RSA exponent encoded in Base64
+	 */
+	public static function rsaPublicKeyModExpToDer(string $nBase64, string $eBase64) : string{
+		$mod = self::b64UrlDecode($nBase64);
+		$exp = self::b64UrlDecode($eBase64);
+
+		$modulus = self::encodeDerBytes(2, $mod);
+		$publicExponent = self::encodeDerBytes(2, $exp);
+
+		$rsaPublicKey = self::encodeDerBytes(48, $modulus . $publicExponent);
+
+		// sequence(oid(1.2.840.113549.1.1.1), null)) = rsaEncryption.
+		$rsaOID = hex2bin('300d06092a864886f70d0101010500'); // hex version of MA0GCSqGSIb3DQEBAQUA
+		$rsaPublicKey = chr(0) . $rsaPublicKey;
+		$rsaPublicKey = self::encodeDerBytes(3, $rsaPublicKey);
+
+		return self::encodeDerBytes(48, $rsaOID . $rsaPublicKey);
 	}
 }

@@ -492,7 +492,7 @@ abstract class Entity{
 				new FloatTag($this->location->pitch)
 			]));
 
-		if(!($this instanceof Player)){
+		if(!($this instanceof NeverSavedWithChunkEntity)){
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){

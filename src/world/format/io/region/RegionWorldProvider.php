@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -164,21 +163,11 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * @throws CorruptedChunkException
 	 */
 	protected static function getCompoundList(string $context, ListTag $list) : array{
-		if($list->count() === 0){ //empty lists might have wrong types, we don't care
-			return [];
-		}
-		if($list->getTagType() !== NBT::TAG_Compound){
+		$compoundList = $list->cast(CompoundTag::class);
+		if($compoundList === null){
 			throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
 		}
-		$result = [];
-		foreach($list as $tag){
-			if(!($tag instanceof CompoundTag)){
-				//this should never happen, but it's still possible due to lack of native type safety
-				throw new CorruptedChunkException("Expected TAG_List<TAG_Compound> for '$context'");
-			}
-			$result[] = $tag;
-		}
-		return $result;
+		return $compoundList->getValue();
 	}
 
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{

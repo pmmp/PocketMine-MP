@@ -32,10 +32,10 @@ use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\entity\object\AreaEffectCloud;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\item\Potion;
 use pocketmine\item\PotionType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
@@ -96,8 +96,8 @@ class SplashPotion extends Throwable{
 		$this->getWorld()->addParticle($this->location, $particle);
 		$this->broadcastSound(new PotionSplashSound());
 
-		if($hasEffects){
-			if(!$this->willLinger()){
+		if(!$this->willLinger()){
+			if($hasEffects){
 				foreach($this->getWorld()->getCollidingEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
 					if($entity instanceof Living){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
@@ -126,10 +126,18 @@ class SplashPotion extends Throwable{
 						}
 					}
 				}
-			}else{
-				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType() === PotionType::WATER){
+		}else{
+			$entity = new AreaEffectCloud(Location::fromObject($this->location->floor()->add(0.5, 0.5, 0.5), $this->getWorld()));
+			foreach($this->potionType->getEffects() as $effect){
+				$entity->getEffects()->add($effect);
+			}
+			if(($owner = $this->getOwningEntity()) !== null && !$owner->isClosed()){
+				$entity->setOwningEntity($owner);
+			}
+			$entity->spawnToAll();
+		}
+		if(!$hasEffects && $event instanceof ProjectileHitBlockEvent && $this->getPotionType() === PotionType::WATER){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->hasTypeTag(BlockTypeTags::FIRE)){

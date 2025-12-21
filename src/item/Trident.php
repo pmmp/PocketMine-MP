@@ -33,6 +33,7 @@ use pocketmine\world\sound\TridentThrowSound;
 use function min;
 
 class Trident extends Tool implements Releasable{
+	private const DAMAGE_ON_THROW = 1;
 
 	public function getMaxDurability() : int{
 		return 251;
@@ -48,7 +49,12 @@ class Trident extends Tool implements Releasable{
 
 		$item = $this->pop();
 		if($player->hasFiniteResources()){
-			$item->applyDamage(1);
+			$item->applyDamage(self::DAMAGE_ON_THROW);
+		}
+		if($item->isNull()){
+			//canStartUsingItem() will normally prevent this, but it's possible the item might've been modified between
+			//the start action and the release, so it's best to account for this anyway
+			return ItemUseResult::FAIL;
 		}
 		$entity = new TridentEntity(Location::fromObject(
 			$player->getEyePos(),
@@ -77,7 +83,7 @@ class Trident extends Tool implements Releasable{
 	}
 
 	public function canStartUsingItem(Player $player) : bool{
-		return $this->damage < $this->getMaxDurability();
+		return $this->damage < $this->getMaxDurability() - self::DAMAGE_ON_THROW;
 	}
 
 	public function onAttackEntity(Entity $victim, array &$returnedItems) : bool{

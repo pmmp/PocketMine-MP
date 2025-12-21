@@ -26,6 +26,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\block;
 
+use pmmp\encoding\BE;
+use pmmp\encoding\LE;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\SupportType;
@@ -49,7 +51,6 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\Binary;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
@@ -98,9 +99,10 @@ class Block{
 	 * of operations required to compute the state ID (micro optimization).
 	 */
 	private static function computeStateIdXorMask(int $typeId) : int{
+		//TODO: the mixed byte order here is probably a mistake, but it doesn't break anything for now
 		return
 			$typeId << self::INTERNAL_STATE_DATA_BITS |
-			(Binary::readLong(hash('xxh3', Binary::writeLLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
+			(BE::unpackSignedLong(hash('xxh3', LE::packSignedLong($typeId), binary: true)) & self::INTERNAL_STATE_DATA_MASK);
 	}
 
 	/**

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pmmp\encoding\ByteBufferReader;
+use pmmp\encoding\ByteBufferWriter;
 use pocketmine\block\tile\Container;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\crafting\ExactRecipeIngredient;
@@ -42,8 +44,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\nbt\UnexpectedTagTypeException;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
@@ -225,15 +227,14 @@ class TypeConverter{
 	 * We don't need to, and should not allow, sending nested inventories across the network.
 	 */
 	protected function stripContainedItemNonVisualNBT(CompoundTag $tag) : bool{
-		if(
-			($blockEntityInventoryTag = $tag->getTag(Container::TAG_ITEMS)) !== null &&
-			$blockEntityInventoryTag instanceof ListTag &&
-			$blockEntityInventoryTag->getTagType() === NBT::TAG_Compound &&
-			$blockEntityInventoryTag->count() > 0
-		){
+		try{
+			$blockEntityInventoryTag = $tag->getListTag(Container::TAG_ITEMS, CompoundTag::class);
+		}catch(UnexpectedTagTypeException){
+			return false;
+		}
+		if($blockEntityInventoryTag !== null && $blockEntityInventoryTag->count() > 0){
 			$stripped = new ListTag();
 
-			/** @var CompoundTag $itemTag */
 			foreach($blockEntityInventoryTag as $itemTag){
 				try{
 					$containedItem = Item::nbtDeserialize($itemTag);
@@ -312,7 +313,7 @@ class TypeConverter{
 		$extraData = $id === $this->shieldRuntimeId ?
 			new ItemStackExtraDataShield($nbt, canPlaceOn: [], canDestroy: [], blockingTick: 0) :
 			new ItemStackExtraData($nbt, canPlaceOn: [], canDestroy: []);
-		$extraDataSerializer = PacketSerializer::encoder();
+		$extraDataSerializer = new ByteBufferWriter();
 		$extraData->write($extraDataSerializer);
 
 		return new ItemStack(
@@ -320,7 +321,7 @@ class TypeConverter{
 			$meta,
 			$itemStack->getCount(),
 			$blockRuntimeId ?? ItemTranslator::NO_BLOCK_RUNTIME_ID,
-			$extraDataSerializer->getBuffer(),
+			$extraDataSerializer->getData(),
 		);
 	}
 
@@ -359,7 +360,7 @@ class TypeConverter{
 	}
 
 	public function deserializeItemStackExtraData(string $extraData, int $id) : ItemStackExtraData{
-		$extraDataDeserializer = PacketSerializer::decoder($extraData, 0);
+		$extraDataDeserializer = new ByteBufferReader($extraData);
 		return $id === $this->shieldRuntimeId ?
 			ItemStackExtraDataShield::read($extraDataDeserializer) :
 			ItemStackExtraData::read($extraDataDeserializer);

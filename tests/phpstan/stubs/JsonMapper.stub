@@ -5,6 +5,9 @@ class JsonMapper_Exception extends \Exception{}
 
 class JsonMapper{
 
+	/** @var ?\Closure(object, string, mixed) : void */
+	public $undefinedPropertyHandler = null;
+
 	/**
 	 * @template TModel of object
 	 *

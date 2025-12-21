@@ -23,24 +23,38 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use function array_sum;
 use function exp;
+use function sqrt;
 
 final class Gaussian{
 	/** @var float[][] */
 	public array $kernel = [];
+
+	public readonly float $weightSum;
+
+	/** @var float[] */
+	public array $kernel1D = [];
+
+	public readonly float $weightSum1D;
 
 	public function __construct(public int $smoothSize){
 		$bellSize = 1 / $this->smoothSize;
 		$bellHeight = 2 * $this->smoothSize;
 
 		for($sx = -$this->smoothSize; $sx <= $this->smoothSize; ++$sx){
-			$this->kernel[$sx + $this->smoothSize] = [];
+			$bx = $bellSize * $sx;
 
+			$this->kernel1D[$sx + $this->smoothSize] = sqrt($bellHeight) * exp(-($bx * $bx) / 2);
+
+			$this->kernel[$sx + $this->smoothSize] = [];
 			for($sz = -$this->smoothSize; $sz <= $this->smoothSize; ++$sz){
-				$bx = $bellSize * $sx;
 				$bz = $bellSize * $sz;
 				$this->kernel[$sx + $this->smoothSize][$sz + $this->smoothSize] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
 			}
 		}
+
+		$this->weightSum1D = array_sum($this->kernel1D);
+		$this->weightSum = $this->weightSum1D ** 2;
 	}
 }

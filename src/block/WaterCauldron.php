@@ -123,7 +123,7 @@ final class WaterCauldron extends FillableCauldron{
 			$world->addSound($this->position->add(0.5, 0.5, 0.5), new CauldronAddDyeSound());
 
 			$item->pop();
-		}elseif($item instanceof Potion || $item instanceof SplashPotion){ //TODO: lingering potion
+		}elseif($item instanceof Potion || $item instanceof SplashPotion){
 			if($item->getType() === PotionType::WATER){
 				$this->setCustomWaterColor(null)->addFillLevels(self::WATER_BOTTLE_FILL_AMOUNT, $item, VanillaItems::GLASS_BOTTLE(), $returnedItems);
 			}else{

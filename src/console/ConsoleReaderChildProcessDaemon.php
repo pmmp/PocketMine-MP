@@ -86,7 +86,7 @@ final class ConsoleReaderChildProcessDaemon{
 			],
 			[
 				1 => ['socket'],
-				2 => fopen("php://stderr", "w"),
+				2 => Utils::assumeNotFalse(fopen("php://stderr", "w")),
 			],
 			$pipes
 		), "Something has gone horribly wrong");

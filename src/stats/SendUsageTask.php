@@ -88,7 +88,7 @@ class SendUsageTask extends AsyncTask{
 					"phpVersion" => PHP_VERSION,
 					"machine" => php_uname("a"),
 					"release" => php_uname("r"),
-					"platform" => php_uname("i")
+					"platform" => php_uname("m")
 				];
 
 				$data["players"] = [

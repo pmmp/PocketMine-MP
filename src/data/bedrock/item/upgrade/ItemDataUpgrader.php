@@ -29,16 +29,14 @@ use pocketmine\data\bedrock\item\BlockItemIdMap;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\data\bedrock\item\SavedItemStackData;
 use pocketmine\data\SavedDataLoadingException;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\Binary;
-use function assert;
+use function array_map;
 
 final class ItemDataUpgrader{
 	private const TAG_LEGACY_ID = "id"; //TAG_Short (or TAG_String for Java itemstacks)
@@ -170,26 +168,6 @@ final class ItemDataUpgrader{
 	}
 
 	/**
-	 * @return string[]
-	 * @throws SavedDataLoadingException
-	 */
-	private static function deserializeListOfStrings(?ListTag $list, string $tagName) : array{
-		if($list === null){
-			return [];
-		}
-		if($list->getTagType() !== NBT::TAG_String){
-			throw new SavedDataLoadingException("Unexpected type of list for tag '$tagName', expected TAG_String");
-		}
-		$result = [];
-		foreach($list as $item){
-			assert($item instanceof StringTag);
-			$result[] = $item->getValue();
-		}
-
-		return $result;
-	}
-
-	/**
 	 * @throws SavedDataLoadingException
 	 */
 	public function upgradeItemStackNbt(CompoundTag $tag) : ?SavedItemStackData{
@@ -205,8 +183,8 @@ final class ItemDataUpgrader{
 			//optional
 			$slot = ($slotTag = $tag->getTag(SavedItemStackData::TAG_SLOT)) instanceof ByteTag ? Binary::unsignByte($slotTag->getValue()) : null;
 			$wasPickedUp = ($wasPickedUpTag = $tag->getTag(SavedItemStackData::TAG_WAS_PICKED_UP)) instanceof ByteTag ? $wasPickedUpTag->getValue() : null;
-			$canPlaceOnList = $tag->getListTag(SavedItemStackData::TAG_CAN_PLACE_ON);
-			$canDestroyList = $tag->getListTag(SavedItemStackData::TAG_CAN_DESTROY);
+			$canPlaceOnList = $tag->getListTag(SavedItemStackData::TAG_CAN_PLACE_ON, StringTag::class);
+			$canDestroyList = $tag->getListTag(SavedItemStackData::TAG_CAN_DESTROY, StringTag::class);
 		}catch(NbtException $e){
 			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
@@ -216,8 +194,8 @@ final class ItemDataUpgrader{
 			$count,
 			$slot,
 			$wasPickedUp !== 0,
-			self::deserializeListOfStrings($canPlaceOnList, SavedItemStackData::TAG_CAN_PLACE_ON),
-			self::deserializeListOfStrings($canDestroyList, SavedItemStackData::TAG_CAN_DESTROY)
+			$canPlaceOnList === null ? [] : array_map(fn(StringTag $t) => $t->getValue(), $canPlaceOnList->getValue()),
+			$canDestroyList === null ? [] : array_map(fn(StringTag $t) => $t->getValue(), $canDestroyList->getValue())
 		);
 	}
 
