@@ -39,9 +39,11 @@ use function is_dir;
 use function ksort;
 use function mb_strtoupper;
 use function preg_match;
+use function sleep;
 use function sprintf;
 use function str_ends_with;
 use function str_replace;
+use const PHP_EOL;
 use const SORT_STRING;
 use const STDERR;
 
@@ -59,7 +61,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$lines = ["/**"];
 	$lines[] = " * This doc-block is generated automatically, do not modify it manually.";
 	$lines[] = " * This must be regenerated whenever registry members are added, removed or changed.";
-	$lines[] = " * @see build/$selfName";
+	$lines[] = " * @see build/codegen/$selfName";
 	$lines[] = " * @generate-registry-docblock";
 	$lines[] = " *";
 
@@ -129,7 +131,11 @@ function processFile(string $file) : void{
 	}
 }
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+fwrite(STDERR, "DEPRECATED: Consider using the newer RegistrySource and build/codegen/registry-interface.php instead" . PHP_EOL);
+fwrite(STDERR, "The newer approach allows generating actual code, which is substantially faster and more robust than the __callStatic magic used by RegistryTrait" . PHP_EOL);
+sleep(5);
 
 if(is_dir($argv[1])){
 	/** @var string $file */

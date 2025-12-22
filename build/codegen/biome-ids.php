@@ -32,14 +32,16 @@ use function fclose;
 use function fopen;
 use function fwrite;
 use function is_array;
+use function is_dir;
 use function is_int;
 use function is_string;
 use function json_decode;
+use function mkdir;
 use function str_replace;
 use function strtoupper;
 use const SORT_NUMERIC;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 const HEADER = <<<'HEADER'
 <?php
@@ -70,9 +72,13 @@ HEADER;
 
 /** @return resource */
 function safe_fopen(string $file, string $flags){
+	$dir = dirname($file);
+	if(!@mkdir($dir, recursive: true) && !is_dir($dir)){
+		throw new \RuntimeException("Couldn't create directory: $dir");
+	}
 	$result = fopen($file, $flags);
 	if($result === false){
-		throw new \RuntimeException("Failed to open file");
+		throw new \RuntimeException("Failed to open file: $file");
 	}
 	return $result;
 }
@@ -128,6 +134,6 @@ foreach(Utils::promoteKeys($ids) as $name => $id){
 	}
 	$cleanedIds[$name] = $id;
 }
-generate($cleanedIds, dirname(__DIR__) . '/src/data/bedrock/BiomeIds.php');
+generate($cleanedIds, dirname(__DIR__, 2) . '/generated/data/bedrock/BiomeIds.php');
 
 echo "Done. Don't forget to run CS fixup after generating code.\n";

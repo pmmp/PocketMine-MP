@@ -662,6 +662,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		switch($chunkVersion){
+			case ChunkVersion::v1_21_120: //TODO: ???
 			case ChunkVersion::v1_21_40:
 				//TODO: BiomeStates became shorts instead of bytes
 			case ChunkVersion::v1_18_30:
