@@ -53,7 +53,8 @@ use function substr;
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource
  * packs to the client.
  */
-class ResourcePacksPacketHandler extends PacketHandler{
+class ResourcePacksPacketHandler extends PacketHandler
+{
 	private const PACK_CHUNK_SIZE = 256 * 1024; //256KB
 
 	/**
@@ -107,19 +108,21 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		private array $encryptionKeys,
 		private bool $mustAccept,
 		private \Closure $completionCallback
-	){
+	) {
 		$this->requestQueue = new \SplQueue();
-		foreach($resourcePackStack as $pack){
+		foreach ($resourcePackStack as $pack) {
 			$this->resourcePacksById[$pack->getPackId()] = $pack;
 		}
 	}
 
-	private function getPackById(string $id) : ?ResourcePack{
+	private function getPackById(string $id): ?ResourcePack
+	{
 		return $this->resourcePacksById[strtolower($id)] ?? null;
 	}
 
-	public function setUp() : void{
-		$resourcePackEntries = array_map(function(ResourcePack $pack) : ResourcePackInfoEntry{
+	public function setUp(): void
+	{
+		$resourcePackEntries = array_map(function (ResourcePack $pack): ResourcePackInfoEntry {
 			//TODO: more stuff
 
 			return new ResourcePackInfoEntry(
@@ -145,49 +148,51 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
 	}
 
-	private function disconnectWithError(string $error) : void{
+	private function disconnectWithError(string $error): void
+	{
 		$this->session->disconnectWithError(
 			reason: "Error downloading resource packs: " . $error,
 			disconnectScreenMessage: KnownTranslationFactory::disconnectionScreen_resourcePack()
 		);
 	}
 
-	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
-		switch($packet->status){
+	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet): bool
+	{
+		switch ($packet->status) {
 			case ResourcePackClientResponsePacket::STATUS_REFUSED:
 				//TODO: add lang strings for this
 				$this->session->disconnect("Refused resource packs", "You must accept resource packs to join this server.", true);
 				break;
 			case ResourcePackClientResponsePacket::STATUS_SEND_PACKS:
-				if($this->requestedMetadata){
+				if ($this->requestedMetadata) {
 					throw new PacketHandlingException("Cannot request resource pack metadata multiple times");
 				}
 				$this->requestedMetadata = true;
 
-				if($this->requestedStack){
+				if ($this->requestedStack) {
 					//client already told us that they have all the packs, they shouldn't be asking for more
 					throw new PacketHandlingException("Cannot request resource pack metadata after resource pack stack");
 				}
 
-				if(count($packet->packIds) > count($this->resourcePacksById)){
+				if (count($packet->packIds) > count($this->resourcePacksById)) {
 					throw new PacketHandlingException(sprintf("Requested metadata for more resource packs (%d) than available on the server (%d)", count($packet->packIds), count($this->resourcePacksById)));
 				}
 
 				$seen = [];
-				foreach($packet->packIds as $uuid){
+				foreach ($packet->packIds as $uuid) {
 					//dirty hack for mojang's dirty hack for versions
 					$splitPos = strpos($uuid, "_");
-					if($splitPos !== false){
+					if ($splitPos !== false) {
 						$uuid = substr($uuid, 0, $splitPos);
 					}
 					$pack = $this->getPackById($uuid);
 
-					if(!($pack instanceof ResourcePack)){
+					if (!($pack instanceof ResourcePack)) {
 						//Client requested a resource pack but we don't have it available on the server
 						$this->disconnectWithError("Unknown pack $uuid requested, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 						return false;
 					}
-					if(isset($seen[$pack->getPackId()])){
+					if (isset($seen[$pack->getPackId()])) {
 						throw new PacketHandlingException("Repeated metadata request for pack $uuid");
 					}
 
@@ -205,24 +210,24 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
-				if($this->requestedStack){
+				if ($this->requestedStack) {
 					throw new PacketHandlingException("Cannot request resource pack stack multiple times");
 				}
 				$this->requestedStack = true;
 
-				$stack = array_map(static function(ResourcePack $pack) : ResourcePackStackEntry{
+				$stack = array_map(static function (ResourcePack $pack): ResourcePackStackEntry {
 					return new ResourcePackStackEntry($pack->getPackId(), $pack->getPackVersion(), ""); //TODO: subpacks
 				}, $this->resourcePackStack);
 
 				//we support chemistry blocks by default, the client should already have these installed
-				foreach(self::CHEMISTRY_RESOURCE_PACKS as [$uuid, $version]){
+				foreach (self::CHEMISTRY_RESOURCE_PACKS as [$uuid, $version]) {
 					$stack[] = new ResourcePackStackEntry($uuid, $version, "");
 				}
 
 				//we don't force here, because it doesn't have user-facing effects
 				//but it does have an annoying side-effect when true: it makes
 				//the client remove its own non-server-supplied resource packs.
-				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, [], false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false), false));
+				$this->session->sendDataPacket(ResourcePackStackPacket::create($stack, false, ProtocolInfo::MINECRAFT_VERSION_NETWORK, new Experiments([], false), false));
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
@@ -236,29 +241,30 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet) : bool{
+	public function handleResourcePackChunkRequest(ResourcePackChunkRequestPacket $packet): bool
+	{
 		$pack = $this->getPackById($packet->packId);
-		if(!($pack instanceof ResourcePack)){
+		if (!($pack instanceof ResourcePack)) {
 			$this->disconnectWithError("Invalid request for chunk $packet->chunkIndex of unknown pack $packet->packId, available packs: " . implode(", ", array_keys($this->resourcePacksById)));
 			return false;
 		}
 
 		$packId = $pack->getPackId(); //use this because case may be different
 
-		if(isset($this->downloadedChunks[$packId][$packet->chunkIndex])){
+		if (isset($this->downloadedChunks[$packId][$packet->chunkIndex])) {
 			$this->disconnectWithError("Duplicate request for chunk $packet->chunkIndex of pack $packet->packId");
 			return false;
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
-		if($offset < 0 || $offset >= $pack->getPackSize()){
+		if ($offset < 0 || $offset >= $pack->getPackSize()) {
 			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
 			return false;
 		}
 
-		if(!isset($this->downloadedChunks[$packId])){
+		if (!isset($this->downloadedChunks[$packId])) {
 			$this->downloadedChunks[$packId] = [$packet->chunkIndex => true];
-		}else{
+		} else {
 			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
 		}
 
@@ -268,8 +274,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		return true;
 	}
 
-	private function processChunkRequestQueue() : void{
-		if($this->activeRequests >= self::MAX_CONCURRENT_CHUNK_REQUESTS || $this->requestQueue->isEmpty()){
+	private function processChunkRequestQueue(): void
+	{
+		if ($this->activeRequests >= self::MAX_CONCURRENT_CHUNK_REQUESTS || $this->requestQueue->isEmpty()) {
 			return;
 		}
 		/**
@@ -285,11 +292,11 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		$this->session
 			->sendDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
 			->onCompletion(
-				function() : void{
+				function (): void {
 					$this->activeRequests--;
 					$this->processChunkRequestQueue();
 				},
-				function() : void{
+				function (): void {
 					//this may have been rejected because of a disconnection - this will do nothing in that case
 					$this->disconnectWithError("Plugin interrupted sending of resource packs");
 				}

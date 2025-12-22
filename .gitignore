@@ -88,3 +88,5 @@ Documentation/*
 *.sqlite
 *.db
 /tests/
+
+/virions/

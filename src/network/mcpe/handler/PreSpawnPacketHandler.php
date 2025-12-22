@@ -98,7 +98,7 @@ class PreSpawnPacketHandler extends PacketHandler
 				"naturalregeneration" => new BoolGameRule(false, false), //Hack for client side regeneration
 				"locatorbar" => new BoolGameRule(false, false) //Disable client-side tracking of nearby players
 			];
-			$levelSettings->experiments = new Experiments(array_merge([], ["short_sneaking" => true]), true);
+			$levelSettings->experiments = new Experiments([], false);
 
 			$this->session->sendDataPacket(StartGamePacket::create(
 				$this->player->getId(),
@@ -120,7 +120,6 @@ class PreSpawnPacketHandler extends PacketHandler
 				true,
 				sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 				Uuid::fromString(Uuid::NIL),
-				false,
 				false,
 				false,
 				new NetworkPermissions(disableClientSounds: true),
