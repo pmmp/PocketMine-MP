@@ -1282,7 +1282,7 @@ final class VanillaItems{
 
 	public static function CROSSBOW() : Crossbow{
 		if(!isset(self::$_mCROSSBOW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCROSSBOW);
+		return clone self::$_mCROSSBOW;
 	}
 
 	public static function DARK_OAK_BOAT() : Boat{
