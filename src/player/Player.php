@@ -1738,6 +1738,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	public function consumeHeldItem() : bool{
 		$slot = $this->inventory->getItemInHand();
 		if($slot instanceof ConsumableItem){
+			if($this->getItemUseDuration() < $slot->getMinUseDuration()){
+				return false;
+			}
+
 			$oldItem = clone $slot;
 
 			$ev = new PlayerItemConsumeEvent($this, $slot);
@@ -1771,6 +1775,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		try{
 			$item = $this->inventory->getItemInHand();
 			if(!$this->isUsingItem() || $this->hasItemCooldown($item)){
+				return false;
+			}
+
+			if($item instanceof Releasable && $this->getItemUseDuration() < $item->getMinUseDuration()){
 				return false;
 			}
 

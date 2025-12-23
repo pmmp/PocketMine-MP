@@ -34,4 +34,8 @@ class Spyglass extends Item implements Releasable{
 	public function canStartUsingItem(Player $player) : bool{
 		return true;
 	}
+
+	public function getMinUseDuration() : int{
+		return 0;
+	}
 }

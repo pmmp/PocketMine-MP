@@ -64,4 +64,8 @@ class Medicine extends Item implements ConsumableItem{
 	public function canStartUsingItem(Player $player) : bool{
 		return $player->getEffects()->has($this->getType()->getCuredEffect());
 	}
+
+	public function getMinUseDuration() : int{
+		return 32;
+	}
 }
