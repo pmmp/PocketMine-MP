@@ -32,6 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\World;
 use function count;
 use function max;
 use function min;
@@ -71,10 +72,7 @@ final class AzaleaTree extends Tree{
 		$cz = $z;
 
 		$sideUpCount = min(self::SIDE_UP_STEPS, max(0, $trunkHeight - self::LEADUP_SMALL));
-		$leadUpCount = $trunkHeight - $sideUpCount;
-		if($leadUpCount > self::LEADUP_LARGE){
-			$leadUpCount = self::LEADUP_LARGE;
-		}
+		$leadUpCount = min($trunkHeight - $sideUpCount, self::LEADUP_LARGE);
 		$total = $leadUpCount + $sideUpCount + 1;
 		if($total < $trunkHeight){
 			$leadUpCount += ($trunkHeight - $total);
@@ -85,8 +83,8 @@ final class AzaleaTree extends Tree{
 			$isSideUp = $i < $leadUpCount + $sideUpCount - 1;
 
 			if(!$isLeadUp){
-				$cz += Facing::OFFSET[$direction][2];
 				$cx += Facing::OFFSET[$direction][0];
+				$cz += Facing::OFFSET[$direction][2];
 			}
 
 			if($this->canOverride($transaction->fetchBlockAt($cx, $cy, $cz))){
@@ -108,6 +106,7 @@ final class AzaleaTree extends Tree{
 		$foliageHeight = 2;
 		$attempts = 50;
 
+		$visited = [];
 		foreach($this->foliageAttachments as $attachment){
 			$centerX = $attachment->getFloorX();
 			$centerY = $attachment->getFloorY();
@@ -121,6 +120,12 @@ final class AzaleaTree extends Tree{
 				$xx = $centerX + $dx;
 				$yy = $centerY + $dy;
 				$zz = $centerZ + $dz;
+
+				$hash = World::blockHash($xx, $yy, $zz);
+				if(isset($visited[$hash])){
+					continue;
+				}
+				$visited[$hash] = true;
 
 				$existing = $transaction->fetchBlockAt($xx, $yy, $zz);
 				if($existing->isTransparent()){

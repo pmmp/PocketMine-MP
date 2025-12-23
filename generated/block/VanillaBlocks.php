@@ -1860,7 +1860,7 @@ final class VanillaBlocks{
 
 	public static function AZALEA() : Azalea{
 		if(!isset(self::$_mAZALEA)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAZALEA);
+		return clone self::$_mAZALEA;
 	}
 
 	public static function AZALEA_LEAVES() : Leaves{
@@ -3720,7 +3720,7 @@ final class VanillaBlocks{
 
 	public static function FLOWERING_AZALEA() : Azalea{
 		if(!isset(self::$_mFLOWERING_AZALEA)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWERING_AZALEA);
+		return clone self::$_mFLOWERING_AZALEA;
 	}
 
 	public static function FLOWERING_AZALEA_LEAVES() : Leaves{
