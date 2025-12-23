@@ -35,5 +35,5 @@ interface Releasable{
 	/**
 	 * Returns the minimum use time in ticks
 	 */
-	public function getMinUseDuration(): int;
+	public function getMinUseDuration() : int;
 }
