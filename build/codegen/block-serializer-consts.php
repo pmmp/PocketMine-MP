@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\block\BlockStateData;
 use pocketmine\data\bedrock\block\BlockStateNames;
 use pocketmine\data\bedrock\block\BlockStateStringValues;
 use pocketmine\data\bedrock\block\BlockTypeNames;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\IntTag;
@@ -44,9 +43,11 @@ use function fclose;
 use function file_get_contents;
 use function fopen;
 use function fwrite;
+use function is_dir;
 use function is_string;
 use function ksort;
 use function mb_strtoupper;
+use function mkdir;
 use function preg_replace;
 use function sort;
 use function strrpos;
@@ -55,7 +56,7 @@ use function substr;
 use const SORT_STRING;
 use const STDERR;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 class BlockPaletteReport{
 	/**
@@ -143,11 +144,24 @@ final class $shortName{
 HEADER;
 }
 
+/** @return resource */
+function safe_fopen(string $file, string $flags){
+	$dir = dirname($file);
+	if(!@mkdir($dir, recursive: true) && !is_dir($dir)){
+		throw new \RuntimeException("Couldn't create directory: $dir");
+	}
+	$result = fopen($file, $flags);
+	if($result === false){
+		throw new \RuntimeException("Failed to open file: $file");
+	}
+	return $result;
+}
+
 /**
  * @phpstan-param list<string> $seenIds
  */
 function generateBlockIds(array $seenIds) : void{
-	$output = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/block/BlockTypeNames.php', 'wb'));
+	$output = safe_fopen(dirname(__DIR__, 2) . '/generated/data/bedrock/block/BlockTypeNames.php', 'wb');
 
 	fwrite($output, generateClassHeader(BlockTypeNames::class));
 
@@ -160,7 +174,7 @@ function generateBlockIds(array $seenIds) : void{
 }
 
 function generateBlockStateNames(BlockPaletteReport $data) : void{
-	$output = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/block/BlockStateNames.php', 'wb'));
+	$output = safe_fopen(dirname(__DIR__, 2) . '/generated/data/bedrock/block/BlockStateNames.php', 'wb');
 
 	fwrite($output, generateClassHeader(BlockStateNames::class));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $state => $values){
@@ -173,7 +187,7 @@ function generateBlockStateNames(BlockPaletteReport $data) : void{
 }
 
 function generateBlockStringValues(BlockPaletteReport $data) : void{
-	$output = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/block/BlockStateStringValues.php', 'wb'));
+	$output = safe_fopen(dirname(__DIR__, 2) . '/generated/data/bedrock/block/BlockStateStringValues.php', 'wb');
 
 	fwrite($output, generateClassHeader(BlockStateStringValues::class));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $stateName => $values){

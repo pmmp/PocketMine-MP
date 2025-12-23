@@ -33,7 +33,7 @@ use function mb_strtoupper;
  *
  * This class is generated automatically from source class {@link VanillaEnchantmentsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
- * @see build/generate-registry-interface.php
+ * @see build/codegen/registry-interface.php
  */
 final class VanillaEnchantments{
 	private static Enchantment $_mAQUA_AFFINITY;
