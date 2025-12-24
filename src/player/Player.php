@@ -1548,8 +1548,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			if($item instanceof Releasable && $this->isUsingItem()){
 				$oldItem = clone $item;
 				if($item->continueUsing($this, $this->getItemUseDuration())){
-					$this->getNetworkSession()->onChargeItemComplete($item);
-					// Update the item if it was modified (e.g., crossbow loaded with arrow)
+					$this->getNetworkSession()->onChargeItemComplete();
 					$this->returnItemsFromAction($oldItem, $item, []);
 				}
 			}
