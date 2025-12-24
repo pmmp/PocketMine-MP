@@ -520,7 +520,7 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
 					if($this->player->getInventory()->getItemInHand() instanceof Chargeable){
-						$this->player->releaseHeldItem();
+						$this->player->setUsingItem(false);
 					}elseif(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);

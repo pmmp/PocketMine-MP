@@ -96,7 +96,6 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilder;
 use pocketmine\inventory\transaction\TransactionCancelledException;
 use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\item\Chargeable;
 use pocketmine\item\ConsumableItem;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -1547,8 +1546,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 			$item = $this->getInventory()->getItemInHand();
 			if($item instanceof Releasable && $this->isUsingItem()){
+				$oldItem = clone $item;
 				if($item->continueUsing($this, $this->getItemUseDuration())){
 					$this->getNetworkSession()->onChargeItemComplete($item);
+					// Update the item if it was modified (e.g., crossbow loaded with arrow)
+					$this->returnItemsFromAction($oldItem, $item, []);
 				}
 			}
 
@@ -1733,10 +1735,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->resetItemCooldown($oldItem);
 		$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 
-		$shouldStartUsing = $item instanceof Chargeable
-			? ($result !== ItemUseResult::SUCCESS && $item->canStartUsingItem($this))
-			: ($item instanceof Releasable && $item->canStartUsingItem($this));
-		$this->setUsingItem($shouldStartUsing);
+		$this->setUsingItem(
+			$item instanceof Releasable &&
+			($result === ItemUseResult::NONE && $item->canStartUsingItem($this))
+		);
 
 		return true;
 	}

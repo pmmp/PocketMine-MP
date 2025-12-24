@@ -62,6 +62,23 @@ class Crossbow extends Tool implements Chargeable{
 		}
 		if($useDuration >= $chargeDuration){
 			$player->getWorld()->addSound($player->getPosition(), new CrossbowLoadSound(CrossbowLoadSound::LOADING_END, $quickCharge > 0));
+
+			// Auto-load arrow when fully charged (matches vanilla Minecraft behavior)
+			if($this->chargedItem === null){
+				$arrow = VanillaItems::ARROW();
+				$inventory = match(true){
+					$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
+					$player->getInventory()->contains($arrow) => $player->getInventory(),
+					default => null
+				};
+				if($player->hasFiniteResources() && $inventory === null){
+					// No ammo available, charging cannot complete
+					return false;
+				}
+				$inventory?->removeItem($arrow);
+				$this->setCharged($arrow);
+			}
+
 			return true;
 		}
 		return false;
@@ -159,26 +176,6 @@ class Crossbow extends Tool implements Chargeable{
 			$this->applyDamage($this->hasEnchantment(VanillaEnchantments::MULTISHOT()) ? 3 : 1);
 		}
 		$this->chargedItem = null;
-		return ItemUseResult::SUCCESS;
-	}
-
-	public function onReleaseUsing(Player $player, array &$returnedItems) : ItemUseResult{
-		$useDuration = $player->getItemUseDuration();
-		if($useDuration < $this->getChargeDuration()){
-			$player->setUsingItem(false);
-			return ItemUseResult::FAIL;
-		}
-		$arrow = VanillaItems::ARROW();
-		$inventory = match(true){
-			$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
-			$player->getInventory()->contains($arrow) => $player->getInventory(),
-			default => null
-		};
-		if($player->hasFiniteResources() && $inventory === null){
-			return ItemUseResult::FAIL;
-		}
-		$inventory?->removeItem($arrow);
-		$this->setCharged($arrow);
 		return ItemUseResult::SUCCESS;
 	}
 
