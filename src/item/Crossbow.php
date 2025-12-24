@@ -63,7 +63,6 @@ class Crossbow extends Tool implements Chargeable{
 		if($useDuration >= $chargeDuration){
 			$player->getWorld()->addSound($player->getPosition(), new CrossbowLoadSound(CrossbowLoadSound::LOADING_END, $quickCharge > 0));
 
-			// Auto-load arrow when fully charged (matches vanilla Minecraft behavior)
 			if($this->chargedItem === null){
 				$arrow = VanillaItems::ARROW();
 				$inventory = match(true){
@@ -71,11 +70,12 @@ class Crossbow extends Tool implements Chargeable{
 					$player->getInventory()->contains($arrow) => $player->getInventory(),
 					default => null
 				};
-				if($player->hasFiniteResources() && $inventory === null){
-					// No ammo available, charging cannot complete
-					return false;
+				if($player->hasFiniteResources()){
+					if($inventory === null){
+						return false;
+					}
+					$inventory->removeItem($arrow);
 				}
-				$inventory?->removeItem($arrow);
 				$this->setCharged($arrow);
 			}
 
