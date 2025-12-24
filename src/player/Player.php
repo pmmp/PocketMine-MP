@@ -1549,8 +1549,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 				$oldItem = clone $item;
 				if($item->continueUsing($this, $this->getItemUseDuration())){
 					$this->getNetworkSession()->onChargeItemComplete();
-					$this->returnItemsFromAction($oldItem, $item, []);
 				}
+				$this->returnItemsFromAction($oldItem, $item, []);
 			}
 
 			if(!$this->isSpectator() && $this->isAlive()){
