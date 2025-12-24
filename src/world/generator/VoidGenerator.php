@@ -25,28 +25,36 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 
 class VoidGenerator extends Generator{
-    public function __construct(int $seed, string $preset) {
+	private Chunk $chunk;
+
+	public function __construct(int $seed, string $preset){
 		parent::__construct($seed, $preset);
+		$this->generateBaseChunk();
 	}
 
-    public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ): void {
-		$chunk = $world->getChunk($chunkX, $chunkZ);
-
-        if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16) {
-            for($x = 0; $x < 16; $x++) {
-                for($z = 0; $z < 16; $z++) {
-                    $worldX = ($chunkX * 16) + $x;
-                    $worldZ = ($chunkZ * 16) + $z;
-                    if($worldX >= 248 && $worldX <= 263 && $worldZ >= 248 && $worldZ <= 263) {
-                        $chunk->setBlockStateId($x, 69, $z, VanillaBlocks::STONE()->getStateId()); // 16x16 platform of stone surrounding 256 69 256
-                    }
-                }
-            }
-        }
+	protected function generateBaseChunk() : void{
+		$this->chunk = new Chunk([], false);
 	}
 
-	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ): void {
+	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
+		$chunk = clone $this->chunk;
+		if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16){
+			for($x = 0; $x < 16; $x++){
+				for($z = 0; $z < 16; $z++){
+					$worldX = ($chunkX * 16) + $x;
+					$worldZ = ($chunkZ * 16) + $z;
+					if($worldX >= 248 && $worldX <= 263 && $worldZ >= 248 && $worldZ <= 263){
+						$chunk->setBlockStateId($x, 69, $z, VanillaBlocks::STONE()->getStateId()); // 16x16 stone platform surrounding 256 69 256
+					}
+				}
+			}
+		}
+		$world->setChunk($chunkX, $chunkZ, $chunk);
+	}
+
+	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 	}
 }
