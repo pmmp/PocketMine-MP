@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_bedrockdata_path_consts;
 
+use pocketmine\utils\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use function dirname;
 use function fclose;
@@ -85,34 +86,14 @@ if(!@mkdir($dir, recursive: true) && !is_dir($dir)){
 	fwrite(STDERR, "Couldn't create directory: $dir" . PHP_EOL);
 	exit(1);
 }
+$header = Filesystem::fileGetContents(__DIR__ . "/templates/header.php");
 $output = fopen($path, 'wb');
 if($output === false){
 	fwrite(STDERR, "Couldn't open output file: $path" . PHP_EOL);
 	exit(1);
 }
+fwrite($output, $header);
 fwrite($output, <<<'HEADER'
-<?php
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 

@@ -34,6 +34,7 @@ use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\animation\MagicHitAnimation;
 use pocketmine\entity\Attribute;
@@ -1552,6 +1553,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 			if($this->blockBreakHandler !== null && !$this->blockBreakHandler->update()){
 				$this->blockBreakHandler = null;
+			}
+
+			if($this->isUsingItem() && $this->getItemUseDuration() % 4 === 0 && ($item = $this->inventory->getItemInHand()) instanceof ConsumableItem){
+				$this->broadcastAnimation(new ConsumingItemAnimation($this, $item));
 			}
 		}
 
