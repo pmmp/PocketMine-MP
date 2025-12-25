@@ -38,12 +38,12 @@ class VoidGenerator extends Generator{
 
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$chunk = new Chunk([], false);
-		
+
 		$biomeArray = new PalettedBlockArray(BiomeIds::PLAINS);
 		foreach($chunk->getSubChunks() as $y => $subChunk){
 			$chunk->setSubChunk($y, new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomeArray));
 		}
-		
+
 		if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16){
 			for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
 				for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
