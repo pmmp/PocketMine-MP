@@ -53,6 +53,8 @@ use pocketmine\network\mcpe\handler\HandshakePacketHandler;
 use pocketmine\network\mcpe\handler\InGamePacketHandler;
 use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
+use pocketmine\network\mcpe\handler\PacketHandlerAction;
+use pocketmine\network\mcpe\handler\PacketHandlerIntrospector;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
@@ -61,6 +63,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -159,6 +162,11 @@ class NetworkSession{
 	private ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
+	/**
+	 * @var PacketHandlerAction[]|null
+	 * @phpstan-var array<class-string<DataPacket>, PacketHandlerAction>|null
+	 */
+	private ?array $handlerActions = null;
 
 	private bool $connected = true;
 	private bool $disconnectGuard = false;
@@ -354,7 +362,10 @@ class NetworkSession{
 		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
 			$this->handler = $handler;
 			if($this->handler !== null){
+				$this->handlerActions = PacketHandlerIntrospector::getHandlerActions($this->handler);
 				$this->handler->setUp();
+			}else{
+				$this->handlerActions = null;
 			}
 		}
 	}
@@ -480,12 +491,30 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
+			$handlerAction = PacketHandlerAction::DISCARD_WITH_DEBUG;
+			//TODO: it would be better to use packet ID and avoid the object allocation, but it's unavoidable for now
+			//because I don't want to copy paste packet header decoding
+			if($this->handlerActions !== null && isset($this->handlerActions[$packet::class])){
+				$handlerAction = $this->handlerActions[$packet::class];
+			}
 			if(DataPacketDecodeEvent::hasHandlers()){
 				$ev = new DataPacketDecodeEvent($this, $packet->pid(), $buffer);
-				$ev->call();
-				if($ev->isCancelled()){
-					return;
+				$cancel = $handlerAction !== PacketHandlerAction::HANDLED;
+				if($cancel){
+					$ev->cancel();
 				}
+				$ev->call();
+				if($cancel && !$ev->isCancelled()){
+					//uncancelled by a plugin, let it through to DataPacketReceiveEvent
+					$handlerAction = PacketHandlerAction::HANDLED;
+				}
+			}
+
+			if($handlerAction !== PacketHandlerAction::HANDLED){
+				if($handlerAction === PacketHandlerAction::DISCARD_WITH_DEBUG){
+					$this->logger->debug("Current handler " . ($this->handler !== null ? $this->handler::class : "null") . " doesn't handle packet " . $packet->getName() . ", discarding");
+				}
+				return;
 			}
 
 			$decodeTimings = Timings::getDecodeDataPacketTimings($packet);

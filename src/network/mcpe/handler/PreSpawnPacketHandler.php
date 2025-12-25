@@ -163,6 +163,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		return true;
 	}
 
+	#[DiscardPacket]
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
 		//the client will send this every tick once we start sending chunks, but we don't handle it in this stage
 		//this is very spammy so we filter it out

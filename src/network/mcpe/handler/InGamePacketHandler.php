@@ -157,6 +157,7 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	#[DiscardPacket]
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
 		//Silence the debug spam that this causes.
@@ -300,6 +301,7 @@ class InGamePacketHandler extends PacketHandler{
 		return $packetHandled;
 	}
 
+	#[DiscardPacket]
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		return true; //not used
 	}
@@ -637,6 +639,7 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	#[DiscardPacket]
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
 		return true; //Not used
 	}
@@ -737,6 +740,7 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
+	#[DiscardPacket]
 	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
 		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
@@ -752,6 +756,7 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
+	#[DiscardPacket]
 	public function handlePlayerHotbar(PlayerHotbarPacket $packet) : bool{
 		return true; //this packet is useless
 	}
@@ -824,10 +829,12 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleSpawnExperienceOrb(SpawnExperienceOrbPacket $packet) : bool{
 		return false; //TODO
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleMapInfoRequest(MapInfoRequestPacket $packet) : bool{
 		return false; //TODO
 	}
@@ -838,10 +845,12 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleBossEvent(BossEventPacket $packet) : bool{
 		return false; //TODO
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleShowCredits(ShowCreditsPacket $packet) : bool{
 		return false; //TODO: handle resume
 	}
@@ -854,6 +863,7 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleCommandBlockUpdate(CommandBlockUpdatePacket $packet) : bool{
 		return false; //TODO
 	}
@@ -876,6 +886,7 @@ class InGamePacketHandler extends PacketHandler{
 		return $this->player->changeSkin($skin, $packet->newSkinName, $packet->oldSkinName);
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleSubClientLogin(SubClientLoginPacket $packet) : bool{
 		return false; //TODO
 	}
@@ -1010,10 +1021,12 @@ class InGamePacketHandler extends PacketHandler{
 		}
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
 		return false; //TODO: GUI stuff
 	}
 
+	#[DiscardPacket(suppressDebug: false)]
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
 	}
@@ -1038,10 +1051,12 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	#[DiscardPacket]
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
+	#[DiscardPacket]
 	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
 		/*
 		 * We don't handle this - all sounds are handled by the server now.
