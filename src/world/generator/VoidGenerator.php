@@ -23,26 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\PalettedBlockArray;
+use pocketmine\world\format\SubChunk;
 
 class VoidGenerator extends Generator{
-	private Chunk $chunk;
-
 	public function __construct(int $seed, string $preset){
 		parent::__construct($seed, $preset);
-		$this->generateBaseChunk();
-	}
-
-	protected function generateBaseChunk() : void{
-		$this->chunk = new Chunk([], false);
-		$this->chunk->setBiomeId(0, 69, 15, BiomeIds::PLAINS);
 	}
 
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
-		$chunk = clone $this->chunk;
+		$chunk = new Chunk([], false);
+		
+		$biomeArray = new PalettedBlockArray(BiomeIds::PLAINS);
+		foreach($chunk->getSubChunks() as $y => $subChunk){
+			$chunk->setSubChunk($y, new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomeArray));
+		}
+		
 		if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16){
 			for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
 				for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
