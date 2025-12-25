@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 
@@ -37,15 +38,16 @@ class VoidGenerator extends Generator{
 
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk([], false);
+        $this->chunk->setBiomeId(0, 69, 15, BiomeIds::PLAINS);
 	}
 
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$chunk = clone $this->chunk;
 		if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16){
-			for($x = 0; $x < 16; $x++){
-				for($z = 0; $z < 16; $z++){
-					$worldX = ($chunkX * 16) + $x;
-					$worldZ = ($chunkZ * 16) + $z;
+			for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
+				for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
+					$worldX = ($chunkX * Chunk::EDGE_LENGTH) + $x;
+					$worldZ = ($chunkZ * Chunk::EDGE_LENGTH) + $z;
 					if($worldX >= 248 && $worldX <= 263 && $worldZ >= 248 && $worldZ <= 263){
 						$chunk->setBlockStateId($x, 69, $z, VanillaBlocks::STONE()->getStateId()); // 16x16 stone platform surrounding 256 69 256
 					}
@@ -56,5 +58,6 @@ class VoidGenerator extends Generator{
 	}
 
 	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
+        //NOOP
 	}
 }
