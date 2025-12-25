@@ -38,7 +38,7 @@ class VoidGenerator extends Generator{
 
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk([], false);
-        $this->chunk->setBiomeId(0, 69, 15, BiomeIds::PLAINS);
+		$this->chunk->setBiomeId(0, 69, 15, BiomeIds::PLAINS);
 	}
 
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
@@ -58,6 +58,6 @@ class VoidGenerator extends Generator{
 	}
 
 	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
-        //NOOP
+		//NOOP
 	}
 }
