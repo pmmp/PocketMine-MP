@@ -71,7 +71,7 @@ class Azalea extends Flowable{
 		return [
 			AxisAlignedBB::one()
 				->squash(Axis::X, 6 / 16)
-				->squash(Axis::Z, 4 / 16)
+				->squash(Axis::Z, 6 / 16)
 				->trim(Facing::UP, 8 / 16),
 			AxisAlignedBB::one()->trim(Facing::DOWN, 8 / 16)
 		];
