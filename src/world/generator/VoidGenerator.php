@@ -44,14 +44,16 @@ class VoidGenerator extends Generator{
 			$chunk->setSubChunk($y, new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomeArray));
 		}
 
-		if($chunkX >= 15 && $chunkX <= 16 && $chunkZ >= 15 && $chunkZ <= 16){
-			for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
-				for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
-					$worldX = ($chunkX * Chunk::EDGE_LENGTH) + $x;
-					$worldZ = ($chunkZ * Chunk::EDGE_LENGTH) + $z;
-					if($worldX >= 248 && $worldX <= 263 && $worldZ >= 248 && $worldZ <= 263){
-						$chunk->setBlockStateId($x, 69, $z, VanillaBlocks::STONE()->getStateId()); // 16x16 stone platform surrounding 256 69 256
-					}
+		$stoneState = VanillaBlocks::STONE()->getStateId();
+		$cobbleState = VanillaBlocks::COBBLESTONE()->getStateId();
+
+		for($x = 0; $x < Chunk::EDGE_LENGTH; $x++){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; $z++){
+				$worldX = ($chunkX * Chunk::EDGE_LENGTH) + $x;
+				$worldZ = ($chunkZ * Chunk::EDGE_LENGTH) + $z;
+
+				if($worldX >= -16 && $worldX <= 16 && $worldZ >= -16 && $worldZ <= 16){
+					$chunk->setBlockStateId($x, -64, $z, ($worldX === 0 && $worldZ === 0) ? $cobbleState : $stoneState);
 				}
 			}
 		}
