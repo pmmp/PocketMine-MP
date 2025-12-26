@@ -346,6 +346,9 @@ class Chunk{
 	 */
 	public function fillBiomes(int $biomeId) : void{
 		foreach($this->subChunks as $subChunk){
+			if($subChunk === null){
+				continue;
+			}
 			$biomeArray = $subChunk->getBiomeArray();
 			for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
 				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
@@ -371,6 +374,9 @@ class Chunk{
 		}
 
 		foreach($this->subChunks as $subChunk){
+			if($subChunk === null){
+				continue;
+			}
 			$biomeArray = $subChunk->getBiomeArray();
 			for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
 				for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
