@@ -51,6 +51,7 @@ use function sprintf;
 /**
  * Handler used for the pre-spawn phase of the session.
  */
+#[SilentDiscard(PlayerAuthInputPacket::class, comment: "Spammed after StartGame even though player has no controls")]
 class PreSpawnPacketHandler extends PacketHandler{
 	public function __construct(
 		private Server $server,
@@ -160,13 +161,6 @@ class PreSpawnPacketHandler extends PacketHandler{
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
 		$this->player->setViewDistance($packet->radius);
 
-		return true;
-	}
-
-	#[DiscardPacket]
-	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
-		//the client will send this every tick once we start sending chunks, but we don't handle it in this stage
-		//this is very spammy so we filter it out
 		return true;
 	}
 }

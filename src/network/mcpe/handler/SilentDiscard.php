@@ -23,15 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-/**
- * This attribute can be placed above a PacketHandler to signify that the packet should be discarded without decoding.
- * Typically useful for packets that have a no-op handler to suppress debug messages, but also want to avoid
- * unnecessary decoding overhead.
- */
-#[\Attribute(\Attribute::TARGET_METHOD)]
-final class DiscardPacket{
+use pocketmine\network\mcpe\protocol\Packet;
 
+/**
+ * When a packet's default handler isn't overridden, packets will normally be dropped without decoding and a debug
+ * message will be logged. This attribute allows suppressing the debug message in this case, without overriding the
+ * handler (which would force the packet to be decoded, wasting CPU time).
+ */
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+final class SilentDiscard{
+
+	/**
+	 * @phpstan-param class-string<covariant Packet> $packetClass
+	 */
 	public function __construct(
-		public readonly bool $suppressDebug = true
+		public readonly string $packetClass,
+		public readonly string $comment = "",
 	){}
 }

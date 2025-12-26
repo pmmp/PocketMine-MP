@@ -24,11 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketHandlerInterface;
 use pocketmine\utils\AssumptionFailedError;
 use function assert;
-use function count;
+use function implode;
 use function is_a;
+use function sort;
+use const SORT_STRING;
 
 /**
  * Uses reflection to find out what packets a PacketHandler class type will actually process, so that decoding can be
@@ -39,13 +42,13 @@ final class PacketHandlerIntrospector{
 
 	/**
 	 * @var PacketHandlerAction[][]
-	 * @phpstan-var array<class-string<PacketHandler>, array<class-string<DataPacket>, PacketHandlerAction>>
+	 * @phpstan-var array<class-string<PacketHandler>, array<class-string<Packet>, PacketHandlerAction>>
 	 */
 	private static array $cache = [];
 
 	/**
 	 * @return true[]
-	 * @phpstan-return array<class-string<DataPacket>, PacketHandlerAction>
+	 * @phpstan-return array<class-string<Packet>, PacketHandlerAction>
 	 */
 	public static function getHandlerActions(PacketHandler $handler) : array{
 		if(isset(self::$cache[$handler::class])){
@@ -55,6 +58,7 @@ final class PacketHandlerIntrospector{
 		$whitelist = [];
 		$interface = new \ReflectionClass(PacketHandlerInterface::class);
 		$handlerReflect = new \ReflectionClass($handler);
+
 		foreach($interface->getMethods(\ReflectionMethod::IS_PUBLIC) as $handlerMethod){
 			try{
 				$implementation = $handlerReflect->getMethod($handlerMethod->getName());
@@ -71,20 +75,28 @@ final class PacketHandlerIntrospector{
 			assert(is_a($packetClass, DataPacket::class, true));
 
 			$implementor = $implementation->getDeclaringClass()->getName();
-			if($implementor !== PacketHandler::class){
-				$attributes = $implementation->getAttributes(DiscardPacket::class);
-				if(count($attributes) > 0){
-					$attributeInstance = $attributes[0]->newInstance();
-					$action = $attributeInstance->suppressDebug ? PacketHandlerAction::DISCARD_SILENT : PacketHandlerAction::DISCARD_WITH_DEBUG;
-				}else{
-					$action = PacketHandlerAction::HANDLED;
-				}
-			}else{
-				$action = PacketHandlerAction::DISCARD_WITH_DEBUG;
-			}
-
-			$whitelist[$packetClass] = $action;
+			$whitelist[$packetClass] = $implementor !== PacketHandler::class ? PacketHandlerAction::HANDLED : PacketHandlerAction::DISCARD_WITH_DEBUG;
 		}
+
+		foreach($handlerReflect->getAttributes(SilentDiscard::class) as $attribute){
+			$info = $attribute->newInstance();
+			$packetClass = $info->packetClass;
+			if(isset($whitelist[$packetClass]) && $whitelist[$packetClass] !== PacketHandlerAction::DISCARD_WITH_DEBUG){
+				$shortName = (new \ReflectionClass($packetClass))->getShortName();
+				\GlobalLogger::get()->warning("#[SilentDiscard($shortName)] has no effect on " . $handler::class . ", as the handler for $shortName is implemented");
+				continue;
+			}
+			$whitelist[$packetClass] = PacketHandlerAction::DISCARD_SILENT;
+		}
+
+		$allowedPackets = [];
+		foreach($whitelist as $packetClass => $action){
+			if($action === PacketHandlerAction::HANDLED){
+				$allowedPackets[] = (new \ReflectionClass($packetClass))->getShortName();
+			}
+		}
+		sort($allowedPackets, SORT_STRING);
+		\GlobalLogger::get()->debug("Packets handled by " . $handler::class . ": " . implode(', ', $allowedPackets));
 
 		return self::$cache[$handler::class] = $whitelist;
 	}

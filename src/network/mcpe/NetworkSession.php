@@ -63,7 +63,6 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -164,7 +163,7 @@ class NetworkSession{
 	private ?PacketHandler $handler = null;
 	/**
 	 * @var PacketHandlerAction[]|null
-	 * @phpstan-var array<class-string<DataPacket>, PacketHandlerAction>|null
+	 * @phpstan-var array<class-string<Packet>, PacketHandlerAction>|null
 	 */
 	private ?array $handlerActions = null;
 
@@ -478,6 +477,10 @@ class NetworkSession{
 		}
 	}
 
+	private function unhandledPacketDebug(Packet $packet, string $buffer, string $label) : void{
+		$this->logger->debug($label . ": " . $packet->getName() . ": " . base64_encode($buffer));
+	}
+
 	/**
 	 * @throws PacketHandlingException
 	 * @throws FilterNoisyPacketException
@@ -512,7 +515,7 @@ class NetworkSession{
 
 			if($handlerAction !== PacketHandlerAction::HANDLED){
 				if($handlerAction === PacketHandlerAction::DISCARD_WITH_DEBUG){
-					$this->logger->debug("Current handler " . ($this->handler !== null ? $this->handler::class : "null") . " doesn't handle packet " . $packet->getName() . ", discarding");
+					$this->unhandledPacketDebug($packet, $buffer, "No handler");
 				}
 				return;
 			}
@@ -545,7 +548,7 @@ class NetworkSession{
 			$handlerTimings->startTiming();
 			try{
 				if($this->handler === null || !$packet->handle($this->handler)){
-					$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getData()));
+					$this->unhandledPacketDebug($packet, $buffer, "Handler rejected");
 				}
 			}finally{
 				$handlerTimings->stopTiming();
