@@ -72,16 +72,18 @@ final class PacketHandlerIntrospector{
 
 			$implementor = $implementation->getDeclaringClass()->getName();
 			if($implementor !== PacketHandler::class){
-				$whitelist[$packetClass] = PacketHandlerAction::HANDLED;
-				continue;
-			}
-			$attributes = $implementation->getAttributes(DiscardPacket::class);
-			if(count($attributes) > 0){
-				$attributeInstance = $attributes[0]->newInstance();
-				$whitelist[$packetClass] = $attributeInstance->suppressDebug ? PacketHandlerAction::DISCARD_SILENT : PacketHandlerAction::DISCARD_WITH_DEBUG;
+				$attributes = $implementation->getAttributes(DiscardPacket::class);
+				if(count($attributes) > 0){
+					$attributeInstance = $attributes[0]->newInstance();
+					$action = $attributeInstance->suppressDebug ? PacketHandlerAction::DISCARD_SILENT : PacketHandlerAction::DISCARD_WITH_DEBUG;
+				}else{
+					$action = PacketHandlerAction::HANDLED;
+				}
 			}else{
-				$whitelist[$packetClass] = PacketHandlerAction::DISCARD_WITH_DEBUG;
+				$action = PacketHandlerAction::DISCARD_WITH_DEBUG;
 			}
+
+			$whitelist[$packetClass] = $action;
 		}
 
 		return self::$cache[$handler::class] = $whitelist;
