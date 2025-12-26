@@ -60,16 +60,16 @@ final class GeneratorManager{
 	}
 
 	/**
-	 * @param string   $class           Fully qualified name of class that extends \pocketmine\world\generator\Generator
-	 * @param string   $name            Alias for this generator type that can be written in configs
-	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
-	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
-	 * @param bool     $fast            Whether this generator is fast enough to run without async tasks
+	 * @param string        $class                 Fully qualified name of class that extends \pocketmine\world\generator\Generator
+	 * @param string        $name                  Alias for this generator type that can be written in configs
+	 * @param \Closure      $presetValidator       Callback to validate generator options for new worlds
+	 * @param bool          $overwrite             Whether to force overwriting any existing registered generator with the same name
+	 * @param bool          $fast                  Whether this generator is fast enough to run without async tasks
 	 * @param \Closure|null $spawnPositionProvider Callback to retrieve a custom spawn position
-	 * 
+	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
 	 * @phpstan-param (\Closure(int) : ?Vector3)|null $spawnPositionProvider
-	 * 
+	 *
 	 * @phpstan-param class-string<Generator> $class
 	 *
 	 * @throws \InvalidArgumentException
