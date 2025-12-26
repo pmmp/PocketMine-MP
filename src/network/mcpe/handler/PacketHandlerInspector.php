@@ -38,7 +38,7 @@ use const SORT_STRING;
  * skipped for packets that are never handled.
  * The reflected information is cached for subsequent use.
  */
-final class PacketHandlerIntrospector{
+final class PacketHandlerInspector{
 
 	/**
 	 * @var PacketHandlerAction[][]
@@ -47,7 +47,7 @@ final class PacketHandlerIntrospector{
 	private static array $cache = [];
 
 	/**
-	 * @return true[]
+	 * @return PacketHandlerAction[]
 	 * @phpstan-return array<class-string<Packet>, PacketHandlerAction>
 	 */
 	public static function getHandlerActions(PacketHandler $handler) : array{

@@ -120,13 +120,13 @@ use const JSON_THROW_ON_ERROR;
  * This handler handles packets related to general gameplay.
  */
 #[SilentDiscard(ActorEventPacket::class, comment: "Not needed")]
-#[SilentDiscard(SpawnExperienceOrbPacket::class, comment: "XP drops should be server-calculated")]
-#[SilentDiscard(NetworkStackLatencyPacket::class, comment: "Not used, noisy debug")]
 #[SilentDiscard(LevelSoundEventPacket::class, comment: "Sounds are always handled server side")]
 #[SilentDiscard(MobArmorEquipmentPacket::class, comment: "Not needed")]
 #[SilentDiscard(MovePlayerPacket::class, comment: "Not needed, noisy debug when landing on ground")]
+#[SilentDiscard(NetworkStackLatencyPacket::class, comment: "Not used, noisy debug")]
 #[SilentDiscard(PlayerHotbarPacket::class, comment: "Not needed")]
 #[SilentDiscard(SetActorMotionPacket::class, comment: "Not needed, erroneously sent by client when in a vehicle")]
+#[SilentDiscard(SpawnExperienceOrbPacket::class, comment: "XP drops should be server-calculated")]
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 

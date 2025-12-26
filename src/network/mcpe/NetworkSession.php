@@ -54,7 +54,7 @@ use pocketmine\network\mcpe\handler\InGamePacketHandler;
 use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandlerAction;
-use pocketmine\network\mcpe\handler\PacketHandlerIntrospector;
+use pocketmine\network\mcpe\handler\PacketHandlerInspector;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
@@ -361,7 +361,7 @@ class NetworkSession{
 		if($this->connected){ //TODO: this is fine since we can't handle anything from a disconnected session, but it might produce surprises in some cases
 			$this->handler = $handler;
 			if($this->handler !== null){
-				$this->handlerActions = PacketHandlerIntrospector::getHandlerActions($this->handler);
+				$this->handlerActions = PacketHandlerInspector::getHandlerActions($this->handler);
 				$this->handler->setUp();
 			}else{
 				$this->handlerActions = null;
