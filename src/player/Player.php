@@ -2099,14 +2099,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		return true;
 	}
 
-	public function toggleSneak(bool $sneak, bool $sneakPressed = true) : bool{
-		if($sneak === $this->sneaking && $sneakPressed === $this->sneakPressed){
+	public function toggleSneak(?bool $sneak, bool $sneakPressed = true) : bool{
+		$sneakChanged = ($sneak === !$this->sneaking);
+		if(!$sneakChanged && $sneakPressed === $this->sneakPressed){
 			return true;
 		}
 		$this->setSneakPressed($sneakPressed);
 
-		$ev = new PlayerToggleSneakEvent($this, $sneak, $sneakPressed);
-		if($sneak === $this->sneaking){
+		$ev = new PlayerToggleSneakEvent($this, $sneak ?? $this->sneaking, $sneakPressed);
+		if(!$sneakChanged){
 			$ev->cancel();
 		}
 		$ev->call();
@@ -2114,7 +2115,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSneaking($sneak);
+		if($sneakChanged){
+			$this->setSneaking($sneak);
+		}
 		return true;
 	}
 

@@ -226,7 +226,7 @@ class InGamePacketHandler extends PacketHandler{
 			$gliding = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
 			$flying = $this->resolveOnOffInputFlags($inputFlags, PlayerAuthInputFlags::START_FLYING, PlayerAuthInputFlags::STOP_FLYING);
 			$mismatch =
-				($sneaking !== null && !$this->player->toggleSneak($sneaking, $sneakPressed)) |
+				(!$this->player->toggleSneak($sneaking, $sneakPressed)) |
 				($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
 				($swimming !== null && !$this->player->toggleSwim($swimming)) |
 				($gliding !== null && !$this->player->toggleGlide($gliding)) |
