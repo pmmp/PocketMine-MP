@@ -515,7 +515,7 @@ class NetworkSession{
 
 			if($handlerAction !== PacketHandlerAction::HANDLED){
 				if($handlerAction === PacketHandlerAction::DISCARD_WITH_DEBUG){
-					$this->unhandledPacketDebug($packet, $buffer, "No handler");
+					$this->unhandledPacketDebug($packet, $buffer, "Discarded without decoding");
 				}
 				return;
 			}
