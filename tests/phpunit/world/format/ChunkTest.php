@@ -73,7 +73,7 @@ class ChunkTest extends TestCase{
 
 	public function testExtrapolateBiomes() : void{
 		$chunk = new Chunk([], false);
-		
+
 		// Create a 2D biome array (16x16 = 256 elements)
 		$biomes2d = [];
 		for($z = 0; $z < 16; ++$z){
@@ -82,7 +82,7 @@ class ChunkTest extends TestCase{
 				$biomes2d[$z * 16 + $x] = ($x % 4) + 1; // Use values 1-4 for testing
 			}
 		}
-		
+
 		$chunk->extrapolateBiomes($biomes2d);
 
 		// Verify that the 2D biomes have been extrapolated to all Y levels
@@ -98,10 +98,10 @@ class ChunkTest extends TestCase{
 
 	public function testExtrapolateBiomesInvalidSize() : void{
 		$chunk = new Chunk([], false);
-		
+
 		$this->expectException(\InvalidArgumentException::class);
 		$this->expectExceptionMessage("Biome array must contain exactly 256 elements");
-		
+
 		// Try with wrong size array
 		$chunk->extrapolateBiomes([1, 2, 3]);
 	}

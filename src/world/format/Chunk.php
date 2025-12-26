@@ -30,6 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
 use function array_map;
+use function count;
 
 class Chunk{
 	public const DIRTY_FLAG_BLOCKS = 1 << 0;
@@ -67,7 +68,7 @@ class Chunk{
 
 	/**
 	 * @param SubChunk[] $subChunks
-	 * @param int|null $biomeId If provided, fills all subchunks with this biome ID. If null, defaults to OCEAN for empty subchunks.
+	 * @param int|null   $biomeId   If provided, fills all subchunks with this biome ID. If null, defaults to OCEAN for empty subchunks.
 	 */
 	public function __construct(array $subChunks, bool $terrainPopulated, ?int $biomeId = null){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
@@ -365,7 +366,7 @@ class Chunk{
 	 * @phpstan-param array<int, int> $biomes2d
 	 */
 	public function extrapolateBiomes(array $biomes2d) : void{
-		if(\count($biomes2d) !== 256){
+		if(count($biomes2d) !== 256){
 			throw new \InvalidArgumentException("Biome array must contain exactly 256 elements (16x16)");
 		}
 
