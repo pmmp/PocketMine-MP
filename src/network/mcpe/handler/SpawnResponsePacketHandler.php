@@ -23,12 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\network\mcpe\protocol\EmoteListPacket;
+use pocketmine\network\mcpe\protocol\InteractPacket;
+use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\ServerboundLoadingScreenPacket;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 
+#[SilentDiscard(EmoteListPacket::class, comment: "Probably not needed?")]
+#[SilentDiscard(InteractPacket::class, comment: "Player interacting with itself somehow")]
+#[SilentDiscard(MobEquipmentPacket::class, comment: "Player equipping its held item on spawn, not needed")]
 #[SilentDiscard(PlayerAuthInputPacket::class, comment: "Spammed after StartGame even though player has no controls")]
 #[SilentDiscard(PlayerSkinPacket::class, comment: "Suppress debug from 1.19.60 client bug, maybe not needed in 1.21.130")]
+#[SilentDiscard(ServerboundLoadingScreenPacket::class, comment: "Not used, arrives with SetLocalPlayerAsInitialized")]
 final class SpawnResponsePacketHandler extends PacketHandler{
 	/**
 	 * @phpstan-param \Closure() : void $responseCallback
