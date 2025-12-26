@@ -79,7 +79,7 @@ BODY,
 			'scope' => 'namespaced',
 			'include' => ['@all'],
 		],
-		'new_with_braces' => [
+		'new_with_parentheses' => [
 			'named_class' => true,
 			'anonymous_class' => false,
 		],
