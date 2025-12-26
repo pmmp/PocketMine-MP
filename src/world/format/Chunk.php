@@ -67,13 +67,19 @@ class Chunk{
 
 	/**
 	 * @param SubChunk[] $subChunks
+	 * @param int|null $biomeId If provided, fills all subchunks with this biome ID. If null, defaults to OCEAN for empty subchunks.
 	 */
-	public function __construct(array $subChunks, bool $terrainPopulated){
+	public function __construct(array $subChunks, bool $terrainPopulated, ?int $biomeId = null){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
+		$defaultBiomeId = $biomeId ?? BiomeIds::OCEAN;
 		foreach($this->subChunks as $y => $null){
 			//TODO: we should probably require all subchunks to be provided here
-			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(Block::EMPTY_STATE_ID, [], new PalettedBlockArray(BiomeIds::OCEAN));
+			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(Block::EMPTY_STATE_ID, [], new PalettedBlockArray($defaultBiomeId));
+		}
+
+		if($biomeId !== null){
+			$this->fillBiomes($biomeId);
 		}
 
 		$val = (self::MAX_SUBCHUNK_INDEX + 1) * SubChunk::EDGE_LENGTH;
@@ -329,6 +335,52 @@ class Chunk{
 			return clone $subChunk;
 		}, $this->subChunks->toArray()));
 		$this->heightMap = clone $this->heightMap;
+	}
+
+	/**
+	 * Fills all biomes in this chunk with the specified biome ID.
+	 * This is useful for generators like Flat and Void that use a single biome.
+	 *
+	 * @param int $biomeId The biome ID to fill the chunk with
+	 */
+	public function fillBiomes(int $biomeId) : void{
+		foreach($this->subChunks as $subChunk){
+			$biomeArray = $subChunk->getBiomeArray();
+			for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
+				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
+					for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
+						$biomeArray->set($x, $y, $z, $biomeId);
+					}
+				}
+			}
+		}
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
+	}
+
+	/**
+	 * Extrapolates 2D biome data (16x16) to 3D by copying the biome ID at each X/Z coordinate
+	 * to all Y levels in the chunk. This is useful for legacy generators that only generate 2D biomes.
+	 *
+	 * @param int[] $biomes2d Array of 256 biome IDs indexed by (z * 16 + x)
+	 * @phpstan-param array<int, int> $biomes2d
+	 */
+	public function extrapolateBiomes(array $biomes2d) : void{
+		if(\count($biomes2d) !== 256){
+			throw new \InvalidArgumentException("Biome array must contain exactly 256 elements (16x16)");
+		}
+
+		foreach($this->subChunks as $subChunk){
+			$biomeArray = $subChunk->getBiomeArray();
+			for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
+				for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
+					$biomeId = $biomes2d[($z << SubChunk::COORD_BIT_SIZE) | $x];
+					for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
+						$biomeArray->set($x, $y, $z, $biomeId);
+					}
+				}
+			}
+		}
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
 	/**
