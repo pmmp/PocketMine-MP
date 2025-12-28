@@ -35,7 +35,7 @@ use pocketmine\item\enchantment\ItemEnchantmentTags as EnchantmentTags;
 use pocketmine\item\ItemIdentifier as IID;
 use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
-use pocketmine\utils\CloningRegistrySource;
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\World;
 use function is_int;
 use function mb_strtoupper;
@@ -43,9 +43,9 @@ use function strtolower;
 
 /**
  * @internal
- * @phpstan-extends CloningRegistrySource<Item>
+ * @phpstan-extends RegistrySource<Item>
  */
-final class VanillaItemsInputs extends CloningRegistrySource{
+final class VanillaItemsInputs extends RegistrySource{
 	public function getTargetClassName() : string{
 		return "VanillaItems";
 	}
@@ -56,6 +56,8 @@ final class VanillaItemsInputs extends CloningRegistrySource{
 			"Every item here also has a constant of the same name in {@link ItemTypeIds} to enable items to be identified"
 		];
 	}
+
+	public function cloneResults() : bool{ return true; }
 
 	private static function makeIID(string $name) : IID{
 		//this sketchy hack allows us to avoid manually writing the constants inline

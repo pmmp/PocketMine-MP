@@ -71,7 +71,7 @@ $options = [
 		return true;
 	}
 ];
-if(count($argv) !== 2 || !isset($options[$argv[1]])){
+if(!isset($argv) || count($argv) !== 2 || !isset($options[$argv[1]])){
 	fwrite(STDERR, "Please provide an option (one of: " . implode(", ", array_keys($options)) . PHP_EOL);
 	exit(1);
 }

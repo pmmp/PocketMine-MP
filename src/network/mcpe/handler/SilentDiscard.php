@@ -21,24 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\network\mcpe\handler;
 
-use pocketmine\player\Player;
+use pocketmine\network\mcpe\protocol\Packet;
 
 /**
- * Implemented by items which can be used by pressing and holding the "use item" button in-game.
- * The player's arm will appear to be raised and the "using item" flag will be set.
- * Examples of this type of behaviour include bows, food and spyglasses.
- *
- * @see Player::isUsingItem()
- * @see Player::getItemUseDuration()
+ * When a packet's default handler isn't overridden, packets will normally be dropped without decoding and a debug
+ * message will be logged. This attribute allows suppressing the debug message in this case, without overriding the
+ * handler (which would force the packet to be decoded, wasting CPU time).
  */
-interface Releasable{
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+final class SilentDiscard{
 
 	/**
-	 * Returns whether the player can currently trigger the press-and-hold behaviour of the item.
-	 * For example, bows return whether the player has an arrow that can be fired.
+	 * @phpstan-param class-string<covariant Packet> $packetClass
 	 */
-	public function canStartUsingItem(Player $player) : bool;
-
+	public function __construct(
+		public readonly string $packetClass,
+		public readonly string $comment = "",
+	){}
 }

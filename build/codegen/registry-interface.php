@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\build\update_registry_interface;
 
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\CloningRegistrySource;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\RegistrySource;
 use pocketmine\utils\Utils;
@@ -71,7 +70,7 @@ use const STDERR;
  * You can see VanillaBlocksInputs (source example) and VanillaBlocks (generated example) for a look at how this works.
  */
 
-if(count($argv) !== 3){
+if(!isset($argv) || count($argv) !== 3){
 	fwrite(STDERR, "Usage: " . __FILE__ . " <source file/folder> <destination file/folder>\n");
 	exit(1);
 }
@@ -79,7 +78,7 @@ if(count($argv) !== 3){
 /**
  * @phpstan-param RegistrySource<*> $registrySource
  */
-function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, RegistrySource $registrySource) : string{
+function generateRegistryInterface(string $namespaceName, string $sourceShortClassName, RegistrySource $registrySource, string $fileHeader) : string{
 	$selfName = basename(__FILE__);
 	$importClasses = [
 		$namespaceName . "\\" . $sourceShortClassName => true
@@ -91,29 +90,7 @@ function generateRegistryInterface(string $namespaceName, string $sourceShortCla
 		"implode" => true,
 	];
 
-	$output = <<<HEADER
-<?php
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-declare(strict_types=1);
+	$output = $fileHeader . <<<HEADER
 
 namespace $namespaceName;
 
@@ -154,7 +131,7 @@ CLASS;
 		$preprocessorSuffix = "";
 		$preprocessorMapper = "self::\$members";
 	}
-	if($registrySource instanceof CloningRegistrySource){
+	if($registrySource->cloneResults()){
 		$preprocessorPrefix = "clone $preprocessorPrefix";
 		$preprocessorMapper = "Utils::cloneObjectArray($preprocessorMapper)";
 		$importClasses[Utils::class] = true;
@@ -333,7 +310,7 @@ INIT2;
 	return $output;
 }
 
-function processFile(string $file, string $sourceDir, string $outputDir) : void{
+function processFile(string $file, string $sourceDir, string $outputDir, string $fileHeader) : void{
 	$contents = file_get_contents($file);
 	if($contents === false){
 		throw new \RuntimeException("Failed to get contents of $file");
@@ -383,7 +360,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 	}catch(\RuntimeException){
 		$oldContents = "";
 	}
-	$newContents = generateRegistryInterface($namespace, $shortClassName, $source);
+	$newContents = generateRegistryInterface($namespace, $shortClassName, $source, $fileHeader);
 	if($newContents !== $oldContents){
 		echo "Writing changed file $generatedFile\n";
 		file_put_contents($generatedFile, $newContents);
@@ -394,6 +371,7 @@ function processFile(string $file, string $sourceDir, string $outputDir) : void{
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
+$fileHeader = Filesystem::fileGetContents(__DIR__ . "/templates/header.php");
 if(is_dir($argv[1])){
 	if(file_exists($argv[2]) && !is_dir($argv[2])){
 		fwrite(STDERR, "Destination for generated files isn't a folder: " . $argv[2] . "\n");
@@ -405,12 +383,12 @@ if(is_dir($argv[1])){
 			continue;
 		}
 
-		processFile($file, $argv[1], $argv[2]);
+		processFile($file, $argv[1], $argv[2], $fileHeader);
 	}
 }else{
 	if(file_exists($argv[2]) && !is_file($argv[2])){
 		fwrite(STDERR, "Destination for generated file already exists and is not a file: " . $argv[2] . "\n");
 		exit(1);
 	}
-	processFile($argv[1], $argv[1], $argv[2]);
+	processFile($argv[1], $argv[1], $argv[2], $fileHeader);
 }

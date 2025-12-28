@@ -43,33 +43,6 @@ use const SORT_NUMERIC;
 
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
-const HEADER = <<<'HEADER'
-<?php
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-declare(strict_types=1);
-
-
-HEADER;
-
 /** @return resource */
 function safe_fopen(string $file, string $flags){
 	$dir = dirname($file);
@@ -92,9 +65,12 @@ function make_const_name(string $name) : string{
  * @phpstan-param array<string, int> $map
  */
 function generate(array $map, string $outputFile) : void{
+	$headerPath = __DIR__ . "/templates/header.php";
+	$header = Filesystem::fileGetContents($headerPath);
 	$file = safe_fopen($outputFile, 'wb');
-	fwrite($file, HEADER);
+	fwrite($file, $header);
 	fwrite($file, <<<'CLASSHEADER'
+
 namespace pocketmine\data\bedrock;
 
 final class BiomeIds{

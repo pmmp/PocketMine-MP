@@ -86,6 +86,12 @@ abstract class RegistrySource{
 	}
 
 	/**
+	 * Override this to return true if the registry members are mutable.
+	 * Supersedes CloningRegistryTrait
+	 */
+	public function cloneResults() : bool{ return false; }
+
+	/**
 	 * Ensures that no other registry gets setup while this one is being set up, to prevent suspicious dependencies
 	 */
 	private function setupWrapper() : void{

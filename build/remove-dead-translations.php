@@ -60,7 +60,7 @@ function parse_language_file(string $path, string $file) : ?array{
 	return $lang;
 }
 
-if(count($argv) !== 2){
+if(!isset($argv) || count($argv) !== 2){
 	fwrite(STDERR, "Usage: php remove-dead-translations.php <translations folder>\n");
 	exit(1);
 }

@@ -25,6 +25,7 @@ namespace pocketmine\build\generate_known_translation_apis;
 
 use pocketmine\lang\Translatable;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use Symfony\Component\Filesystem\Path;
 use function array_map;
@@ -74,29 +75,7 @@ function safe_fopen(string $file, string $flags){
 	return $result;
 }
 
-const SHARED_HEADER = <<<'HEADER'
-<?php
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-declare(strict_types=1);
+const NS_HEADER = <<<'HEADER'
 
 namespace pocketmine\lang;
 
@@ -107,10 +86,11 @@ HEADER;
  * @param string[] $languageDefinitions
  * @phpstan-param array<string, string> $languageDefinitions
  */
-function generate_known_translation_keys(array $languageDefinitions) : void{
+function generate_known_translation_keys(array $languageDefinitions, string $fileHeader) : void{
 	$file = safe_fopen(dirname(__DIR__, 2) . '/generated/lang/KnownTranslationKeys.php', 'wb');
 
-	fwrite($file, SHARED_HEADER);
+	fwrite($file, $fileHeader);
+	fwrite($file, NS_HEADER);
 	fwrite($file, <<<'HEADER'
 /**
  * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
@@ -137,10 +117,11 @@ HEADER);
  * @param string[] $languageDefinitions
  * @phpstan-param array<string, string> $languageDefinitions
  */
-function generate_known_translation_parameter_info(array $languageDefinitions) : void{
+function generate_known_translation_parameter_info(array $languageDefinitions, string $fileHeader) : void{
 	$file = safe_fopen(dirname(__DIR__, 2) . '/generated/lang/KnownTranslationParameterInfo.php', 'wb');
 
-	fwrite($file, SHARED_HEADER);
+	fwrite($file, $fileHeader);
+	fwrite($file, NS_HEADER);
 	fwrite($file, <<<'HEADER'
 use pocketmine\lang\KnownTranslationKeys as Keys;
 
@@ -178,11 +159,12 @@ HEADER);
  * @param string[] $languageDefinitions
  * @phpstan-param array<string, string> $languageDefinitions
  */
-function generate_known_translation_factory(array $languageDefinitions) : void{
+function generate_known_translation_factory(array $languageDefinitions, string $fileHeader) : void{
 	$file = safe_fopen(dirname(__DIR__, 2) . '/generated/lang/KnownTranslationFactory.php', 'wb');
 	ob_start();
 
-	fwrite($file, SHARED_HEADER);
+	fwrite($file, $fileHeader);
+	fwrite($file, NS_HEADER);
 	fwrite($file, <<<'HEADER'
 /**
  * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
@@ -235,12 +217,14 @@ HEADER);
 	echo "Done generating KnownTranslationFactory.\n";
 }
 
+$fileHeader = Filesystem::fileGetContents(__DIR__ . "/templates/header.php");
+
 $lang = parse_ini_file(Path::join(\pocketmine\LOCALE_DATA_PATH, "eng.ini"), false, INI_SCANNER_RAW);
 if($lang === false){
 	fwrite(STDERR, "Missing language files!\n");
 	exit(1);
 }
 
-generate_known_translation_keys($lang);
-generate_known_translation_parameter_info($lang);
-generate_known_translation_factory($lang);
+generate_known_translation_keys($lang, $fileHeader);
+generate_known_translation_parameter_info($lang, $fileHeader);
+generate_known_translation_factory($lang, $fileHeader);

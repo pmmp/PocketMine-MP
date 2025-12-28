@@ -82,7 +82,7 @@ abstract class VanillaCommand extends Command{
 	}
 
 	protected function getDouble(CommandSender $sender, string $value, float $min = self::MIN_COORD, float $max = self::MAX_COORD) : float{
-		$i = (double) $value;
+		$i = (float) $value;
 
 		if($i < $min){
 			$i = $min;

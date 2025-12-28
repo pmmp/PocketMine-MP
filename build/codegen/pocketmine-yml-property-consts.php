@@ -85,34 +85,10 @@ function safe_fopen(string $file, string $flags){
 	return $result;
 }
 
+$fileHeader = Filesystem::fileGetContents(__DIR__ . "/templates/header.php");
 $file = safe_fopen(dirname(__DIR__, 2) . '/generated/YmlServerProperties.php', 'wb');
-fwrite($file, "<?php\n");
-fwrite($file, <<<'HEADER'
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-
-HEADER
-);
-fwrite($file, "declare(strict_types=1);\n\n");
-fwrite($file, "namespace pocketmine;\n\n");
+fwrite($file, $fileHeader);
+fwrite($file, "\nnamespace pocketmine;\n\n");
 
 fwrite($file, <<<'DOC'
 /**

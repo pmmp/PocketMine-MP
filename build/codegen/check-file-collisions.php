@@ -36,6 +36,7 @@ use const STDERR;
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 $fix = false;
+$argv ??= [];
 if(count($argv) === 2 && $argv[1] === "--fix"){
 	echo "Will delete any colliding src/ files found" . PHP_EOL;
 	$fix = true;

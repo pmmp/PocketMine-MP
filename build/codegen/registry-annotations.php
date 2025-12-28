@@ -47,7 +47,7 @@ use const PHP_EOL;
 use const SORT_STRING;
 use const STDERR;
 
-if(count($argv) !== 2){
+if(!isset($argv) || count($argv) !== 2){
 	fwrite(STDERR, "Provide a path to process\n");
 	exit(1);
 }

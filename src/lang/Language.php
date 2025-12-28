@@ -31,9 +31,11 @@ use function count;
 use function explode;
 use function file_exists;
 use function is_dir;
+use function max;
 use function ord;
 use function parse_ini_file;
 use function scandir;
+use function str_contains;
 use function str_ends_with;
 use function str_replace;
 use function str_starts_with;
@@ -138,13 +140,30 @@ class Language{
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
 	}
 
+	private function getUsedParameterCount(string $rawString, int $given) : int{
+		$highestIndex = -1;
+		for($i = 0; $i < $given; $i++){
+			if(str_contains($rawString, "{%$i}")){
+				$highestIndex = $i;
+			}
+		}
+		return $highestIndex + 1;
+	}
+
 	/**
 	 * @param (float|int|string|Translatable)[] $params
 	 */
-	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
-		$baseText = ($onlyPrefix === null || str_starts_with($str, $onlyPrefix)) ? $this->internalGet($str) : null;
-		if($baseText === null){ //key not found, embedded inside format string, or doesn't match prefix
-			$baseText = $this->parseTranslation($str, $onlyPrefix);
+	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null, int &$untranslatedParameterCount = 0) : string{
+		$baseText = $this->internalGet($str);
+		$parameterCount = count($params);
+		if($baseText !== null){
+			if($onlyPrefix !== null && !str_starts_with($str, $onlyPrefix)){ //client side translation
+				$untranslatedParameterCount = $this->getUsedParameterCount($baseText, $parameterCount);
+				return $str;
+			}
+		}else{ //key not found or embedded inside format string
+			$baseText = $this->parseTranslation($str, $onlyPrefix, $parameterCount);
+			$untranslatedParameterCount = $parameterCount;
 		}
 
 		foreach(Utils::promoteKeys($params) as $i => $p){
@@ -185,6 +204,21 @@ class Language{
 		return $this->lang;
 	}
 
+	private function replaceTranslationKey(string $replaceString, ?string $onlyPrefix, int &$untranslatedParameterCount, int $givenParameterCount) : string{
+		if(($t = $this->internalGet(substr($replaceString, 1))) !== null){
+			if($onlyPrefix !== null && strpos($replaceString, $onlyPrefix) !== 1){ //client side translation
+				$newString = $replaceString;
+				$untranslatedParameterCount = max($untranslatedParameterCount, $this->getUsedParameterCount($t, $givenParameterCount));
+			}else{
+				$newString = $t;
+			}
+		}else{
+			$newString = $replaceString;
+			$untranslatedParameterCount = $givenParameterCount;
+		}
+		return $newString;
+	}
+
 	/**
 	 * Replaces translation keys embedded inside a string with their raw values.
 	 * Embedded translation keys must be prefixed by a "%" character.
@@ -198,7 +232,9 @@ class Language{
 	 * @param string|null $onlyPrefix If non-null, only translation keys with this prefix will be replaced. This is
 	 *                                used to allow a client to do its own translating of vanilla strings.
 	 */
-	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
+	protected function parseTranslation(string $text, ?string $onlyPrefix = null, int &$parameterCount = 0) : string{
+		$givenParameterCount = $parameterCount;
+		$untranslatedParameterCount = 0;
 		$newString = "";
 
 		$replaceString = null;
@@ -216,11 +252,7 @@ class Language{
 				){
 					$replaceString .= $c;
 				}else{
-					if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
-						$newString .= $t;
-					}else{
-						$newString .= $replaceString;
-					}
+					$newString .= $this->replaceTranslationKey($replaceString, $onlyPrefix, $untranslatedParameterCount, $givenParameterCount);
 					$replaceString = null;
 
 					if($c === "%"){
@@ -237,13 +269,10 @@ class Language{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
-				$newString .= $t;
-			}else{
-				$newString .= $replaceString;
-			}
+			$newString .= $this->replaceTranslationKey($replaceString, $onlyPrefix, $untranslatedParameterCount, $givenParameterCount);
 		}
 
+		$parameterCount = $untranslatedParameterCount;
 		return $newString;
 	}
 }

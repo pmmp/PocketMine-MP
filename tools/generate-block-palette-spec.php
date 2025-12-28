@@ -46,7 +46,7 @@ use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 3){
+if(!isset($argv) || count($argv) !== 3){
 	fwrite(STDERR, "Required arguments: input palette file path, output JSON file path\n");
 	exit(1);
 }
