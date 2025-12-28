@@ -114,37 +114,40 @@ final class RespawnAnchor extends Opaque{
 		$block = $this->position->getWorld()->getBlock($this->position);
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
+		$hasWater = false;
+		foreach($block->getHorizontalSides() as $side){
+			if($this->isSurroundedByWater($side)){
+				$hasWater = true;
+				break;
+			}
+		}
+
 		$explosion = new Explosion(Position::fromObject($this->position->add(0.5, 0.5, 0.5), $this->position->getWorld()), $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
 
-		if($ev->isBlockBreaking() && !$this->isSurroundedByWater($block)){
+		if(!$hasWater && !($block->getSide(Facing::UP) instanceof Water)){
 			$explosion->explodeA();
 		}
 		$explosion->explodeB();
 	}
 
 	private function isSurroundedByWater(Block $block) : bool{
-		$blockUp = $block->getSide(Facing::UP);
-		if($blockUp instanceof Liquid && $blockUp->isSource()){
+		$world = $block->getPosition()->getWorld();
+
+		$fluid = $world->getBlock($block->getPosition());
+		if(!($fluid instanceof Water)){
+			return false;
+		}
+
+		if($fluid->isSource()){
 			return true;
 		}
 
-		foreach($block->getHorizontalSides() as $sideBlock){
-			if($sideBlock instanceof Liquid){
-				if($sideBlock->isSource()){
-					return true;
-				}elseif($sideBlock->getDecay() >= 2){
-					$blockDown = $sideBlock->getSide(Facing::DOWN);
-					if($blockDown instanceof Liquid){
-						if(!$blockDown->isSource()){
-							return true;
-						}
-					}else{
-						return true;
-					}
-				}
-			}
+		if($fluid->getDecay() >= 1){
+			return false;
 		}
-		return false;
+
+		$below = $fluid->getSide(Facing::DOWN);
+		return !($below instanceof Water);
 	}
 }
