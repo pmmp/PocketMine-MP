@@ -41,4 +41,8 @@ class DoubleTallGrass extends DoublePlant{
 		}
 		return [];
 	}
+
+	public function getCompostabilityChance() : int{
+		return 50;
+	}
 }

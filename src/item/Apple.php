@@ -32,4 +32,8 @@ class Apple extends Food{
 	public function getSaturationRestore() : float{
 		return 2.4;
 	}
+	
+	public function getCompostabilityChance() : int{
+		return 65;
+	}
 }

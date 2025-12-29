@@ -130,6 +130,10 @@ abstract class BaseBigDripleaf extends Transparent implements HorizontalFacing{
 	public function getFlammability() : int{
 		return 100;
 	}
+	
+	public function getCompostabilityChance() : int{
+		return 65;
+	}
 
 	public function getSupportType(int $facing) : SupportType{
 		return SupportType::NONE;

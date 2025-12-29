@@ -28,6 +28,10 @@ use pocketmine\block\VanillaBlocks;
 
 class BeetrootSeeds extends Item{
 
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
+
 	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::BEETROOTS();
 	}

@@ -198,6 +198,7 @@ final class VanillaBlocks{
 	private static Wall $_mCOBBLESTONE_WALL;
 	private static Cobweb $_mCOBWEB;
 	private static CocoaBlock $_mCOCOA_POD;
+	private static Composter $_mCOMPOSTER;
 	private static ChemistryTable $_mCOMPOUND_CREATOR;
 	private static Concrete $_mCONCRETE;
 	private static ConcretePowder $_mCONCRETE_POWDER;
@@ -436,7 +437,7 @@ final class VanillaBlocks{
 	private static Wall $_mEND_STONE_BRICK_WALL;
 	private static Slab $_mFAKE_WOODEN_SLAB;
 	private static Farmland $_mFARMLAND;
-	private static TallGrass $_mFERN;
+	private static Fern $_mFERN;
 	private static Fire $_mFIRE;
 	private static FletchingTable $_mFLETCHING_TABLE;
 	private static Leaves $_mFLOWERING_AZALEA_LEAVES;
@@ -510,7 +511,7 @@ final class VanillaBlocks{
 	private static Lantern $_mLANTERN;
 	private static Opaque $_mLAPIS_LAZULI;
 	private static LapisOre $_mLAPIS_LAZULI_ORE;
-	private static DoubleTallGrass $_mLARGE_FERN;
+	private static LargeFern $_mLARGE_FERN;
 	private static Lava $_mLAVA;
 	private static LavaCauldron $_mLAVA_CAULDRON;
 	private static Lectern $_mLECTERN;
@@ -576,7 +577,7 @@ final class VanillaBlocks{
 	private static NetherReactor $_mNETHER_REACTOR_CORE;
 	private static NetherSprouts $_mNETHER_SPROUTS;
 	private static NetherWartPlant $_mNETHER_WART;
-	private static Opaque $_mNETHER_WART_BLOCK;
+	private static NetherWart $_mNETHER_WART_BLOCK;
 	private static Note $_mNOTE_BLOCK;
 	private static WoodenButton $_mOAK_BUTTON;
 	private static CeilingCenterHangingSign $_mOAK_CEILING_CENTER_HANGING_SIGN;
@@ -624,7 +625,7 @@ final class VanillaBlocks{
 	private static PinkPetals $_mPINK_PETALS;
 	private static Flower $_mPINK_TULIP;
 	private static PitcherCrop $_mPITCHER_CROP;
-	private static DoublePlant $_mPITCHER_PLANT;
+	private static PitcherPlant $_mPITCHER_PLANT;
 	private static Podzol $_mPODZOL;
 	private static Opaque $_mPOLISHED_ANDESITE;
 	private static Slab $_mPOLISHED_ANDESITE_SLAB;
@@ -719,7 +720,7 @@ final class VanillaBlocks{
 	private static Sculk $_mSCULK;
 	private static SeaLantern $_mSEA_LANTERN;
 	private static SeaPickle $_mSEA_PICKLE;
-	private static Opaque $_mSHROOMLIGHT;
+	private static ShroomLight $_mSHROOMLIGHT;
 	private static ShulkerBox $_mSHULKER_BOX;
 	private static Slime $_mSLIME;
 	private static SmallDripleaf $_mSMALL_DRIPLEAF;
@@ -788,7 +789,7 @@ final class VanillaBlocks{
 	private static TintedGlass $_mTINTED_GLASS;
 	private static TNT $_mTNT;
 	private static Torch $_mTORCH;
-	private static Flower $_mTORCHFLOWER;
+	private static TorchFlower $_mTORCHFLOWER;
 	private static TorchflowerCrop $_mTORCHFLOWER_CROP;
 	private static TrappedChest $_mTRAPPED_CHEST;
 	private static Tripwire $_mTRIPWIRE;
@@ -825,7 +826,7 @@ final class VanillaBlocks{
 	private static WoodenTrapdoor $_mWARPED_TRAPDOOR;
 	private static WallHangingSign $_mWARPED_WALL_HANGING_SIGN;
 	private static WallSign $_mWARPED_WALL_SIGN;
-	private static Opaque $_mWARPED_WART_BLOCK;
+	private static WarpedWart $_mWARPED_WART_BLOCK;
 	private static Water $_mWATER;
 	private static WaterCauldron $_mWATER_CAULDRON;
 	private static NetherVines $_mWEEPING_VINES;
@@ -1029,6 +1030,7 @@ final class VanillaBlocks{
 			"cobblestone_wall" => fn(Wall $v) => self::$_mCOBBLESTONE_WALL = $v,
 			"cobweb" => fn(Cobweb $v) => self::$_mCOBWEB = $v,
 			"cocoa_pod" => fn(CocoaBlock $v) => self::$_mCOCOA_POD = $v,
+			"composter" => fn(Composter $v) => self::$_mCOMPOSTER = $v,
 			"compound_creator" => fn(ChemistryTable $v) => self::$_mCOMPOUND_CREATOR = $v,
 			"concrete" => fn(Concrete $v) => self::$_mCONCRETE = $v,
 			"concrete_powder" => fn(ConcretePowder $v) => self::$_mCONCRETE_POWDER = $v,
@@ -1267,7 +1269,7 @@ final class VanillaBlocks{
 			"end_stone_brick_wall" => fn(Wall $v) => self::$_mEND_STONE_BRICK_WALL = $v,
 			"fake_wooden_slab" => fn(Slab $v) => self::$_mFAKE_WOODEN_SLAB = $v,
 			"farmland" => fn(Farmland $v) => self::$_mFARMLAND = $v,
-			"fern" => fn(TallGrass $v) => self::$_mFERN = $v,
+			"fern" => fn(Fern $v) => self::$_mFERN = $v,
 			"fire" => fn(Fire $v) => self::$_mFIRE = $v,
 			"fletching_table" => fn(FletchingTable $v) => self::$_mFLETCHING_TABLE = $v,
 			"flowering_azalea_leaves" => fn(Leaves $v) => self::$_mFLOWERING_AZALEA_LEAVES = $v,
@@ -1341,7 +1343,7 @@ final class VanillaBlocks{
 			"lantern" => fn(Lantern $v) => self::$_mLANTERN = $v,
 			"lapis_lazuli" => fn(Opaque $v) => self::$_mLAPIS_LAZULI = $v,
 			"lapis_lazuli_ore" => fn(LapisOre $v) => self::$_mLAPIS_LAZULI_ORE = $v,
-			"large_fern" => fn(DoubleTallGrass $v) => self::$_mLARGE_FERN = $v,
+			"large_fern" => fn(LargeFern $v) => self::$_mLARGE_FERN = $v,
 			"lava" => fn(Lava $v) => self::$_mLAVA = $v,
 			"lava_cauldron" => fn(LavaCauldron $v) => self::$_mLAVA_CAULDRON = $v,
 			"lectern" => fn(Lectern $v) => self::$_mLECTERN = $v,
@@ -1407,7 +1409,7 @@ final class VanillaBlocks{
 			"nether_reactor_core" => fn(NetherReactor $v) => self::$_mNETHER_REACTOR_CORE = $v,
 			"nether_sprouts" => fn(NetherSprouts $v) => self::$_mNETHER_SPROUTS = $v,
 			"nether_wart" => fn(NetherWartPlant $v) => self::$_mNETHER_WART = $v,
-			"nether_wart_block" => fn(Opaque $v) => self::$_mNETHER_WART_BLOCK = $v,
+			"nether_wart_block" => fn(NetherWart $v) => self::$_mNETHER_WART_BLOCK = $v,
 			"note_block" => fn(Note $v) => self::$_mNOTE_BLOCK = $v,
 			"oak_button" => fn(WoodenButton $v) => self::$_mOAK_BUTTON = $v,
 			"oak_ceiling_center_hanging_sign" => fn(CeilingCenterHangingSign $v) => self::$_mOAK_CEILING_CENTER_HANGING_SIGN = $v,
@@ -1455,7 +1457,7 @@ final class VanillaBlocks{
 			"pink_petals" => fn(PinkPetals $v) => self::$_mPINK_PETALS = $v,
 			"pink_tulip" => fn(Flower $v) => self::$_mPINK_TULIP = $v,
 			"pitcher_crop" => fn(PitcherCrop $v) => self::$_mPITCHER_CROP = $v,
-			"pitcher_plant" => fn(DoublePlant $v) => self::$_mPITCHER_PLANT = $v,
+			"pitcher_plant" => fn(PitcherPlant $v) => self::$_mPITCHER_PLANT = $v,
 			"podzol" => fn(Podzol $v) => self::$_mPODZOL = $v,
 			"polished_andesite" => fn(Opaque $v) => self::$_mPOLISHED_ANDESITE = $v,
 			"polished_andesite_slab" => fn(Slab $v) => self::$_mPOLISHED_ANDESITE_SLAB = $v,
@@ -1550,7 +1552,7 @@ final class VanillaBlocks{
 			"sculk" => fn(Sculk $v) => self::$_mSCULK = $v,
 			"sea_lantern" => fn(SeaLantern $v) => self::$_mSEA_LANTERN = $v,
 			"sea_pickle" => fn(SeaPickle $v) => self::$_mSEA_PICKLE = $v,
-			"shroomlight" => fn(Opaque $v) => self::$_mSHROOMLIGHT = $v,
+			"shroomlight" => fn(ShroomLight $v) => self::$_mSHROOMLIGHT = $v,
 			"shulker_box" => fn(ShulkerBox $v) => self::$_mSHULKER_BOX = $v,
 			"slime" => fn(Slime $v) => self::$_mSLIME = $v,
 			"small_dripleaf" => fn(SmallDripleaf $v) => self::$_mSMALL_DRIPLEAF = $v,
@@ -1619,7 +1621,7 @@ final class VanillaBlocks{
 			"tinted_glass" => fn(TintedGlass $v) => self::$_mTINTED_GLASS = $v,
 			"tnt" => fn(TNT $v) => self::$_mTNT = $v,
 			"torch" => fn(Torch $v) => self::$_mTORCH = $v,
-			"torchflower" => fn(Flower $v) => self::$_mTORCHFLOWER = $v,
+			"torchflower" => fn(TorchFlower $v) => self::$_mTORCHFLOWER = $v,
 			"torchflower_crop" => fn(TorchflowerCrop $v) => self::$_mTORCHFLOWER_CROP = $v,
 			"trapped_chest" => fn(TrappedChest $v) => self::$_mTRAPPED_CHEST = $v,
 			"tripwire" => fn(Tripwire $v) => self::$_mTRIPWIRE = $v,
@@ -1656,7 +1658,7 @@ final class VanillaBlocks{
 			"warped_trapdoor" => fn(WoodenTrapdoor $v) => self::$_mWARPED_TRAPDOOR = $v,
 			"warped_wall_hanging_sign" => fn(WallHangingSign $v) => self::$_mWARPED_WALL_HANGING_SIGN = $v,
 			"warped_wall_sign" => fn(WallSign $v) => self::$_mWARPED_WALL_SIGN = $v,
-			"warped_wart_block" => fn(Opaque $v) => self::$_mWARPED_WART_BLOCK = $v,
+			"warped_wart_block" => fn(WarpedWart $v) => self::$_mWARPED_WART_BLOCK = $v,
 			"water" => fn(Water $v) => self::$_mWATER = $v,
 			"water_cauldron" => fn(WaterCauldron $v) => self::$_mWATER_CAULDRON = $v,
 			"weeping_vines" => fn(NetherVines $v) => self::$_mWEEPING_VINES = $v,
@@ -2502,6 +2504,11 @@ final class VanillaBlocks{
 	public static function COCOA_POD() : CocoaBlock{
 		if(!isset(self::$_mCOCOA_POD)){ self::init(); }
 		return clone self::$_mCOCOA_POD;
+	}
+
+	public static function COMPOSTER() : Composter{
+		if(!isset(self::$_mCOMPOSTER)){ self::init(); }
+		return clone self::$_mCOMPOSTER;
 	}
 
 	public static function COMPOUND_CREATOR() : ChemistryTable{
@@ -3694,7 +3701,7 @@ final class VanillaBlocks{
 		return clone self::$_mFARMLAND;
 	}
 
-	public static function FERN() : TallGrass{
+	public static function FERN() : Fern{
 		if(!isset(self::$_mFERN)){ self::init(); }
 		return clone self::$_mFERN;
 	}
@@ -4064,7 +4071,7 @@ final class VanillaBlocks{
 		return clone self::$_mLAPIS_LAZULI_ORE;
 	}
 
-	public static function LARGE_FERN() : DoubleTallGrass{
+	public static function LARGE_FERN() : LargeFern{
 		if(!isset(self::$_mLARGE_FERN)){ self::init(); }
 		return clone self::$_mLARGE_FERN;
 	}
@@ -4394,7 +4401,7 @@ final class VanillaBlocks{
 		return clone self::$_mNETHER_WART;
 	}
 
-	public static function NETHER_WART_BLOCK() : Opaque{
+	public static function NETHER_WART_BLOCK() : NetherWart{
 		if(!isset(self::$_mNETHER_WART_BLOCK)){ self::init(); }
 		return clone self::$_mNETHER_WART_BLOCK;
 	}
@@ -4634,7 +4641,7 @@ final class VanillaBlocks{
 		return clone self::$_mPITCHER_CROP;
 	}
 
-	public static function PITCHER_PLANT() : DoublePlant{
+	public static function PITCHER_PLANT() : PitcherPlant{
 		if(!isset(self::$_mPITCHER_PLANT)){ self::init(); }
 		return clone self::$_mPITCHER_PLANT;
 	}
@@ -5109,7 +5116,7 @@ final class VanillaBlocks{
 		return clone self::$_mSEA_PICKLE;
 	}
 
-	public static function SHROOMLIGHT() : Opaque{
+	public static function SHROOMLIGHT() : ShroomLight{
 		if(!isset(self::$_mSHROOMLIGHT)){ self::init(); }
 		return clone self::$_mSHROOMLIGHT;
 	}
@@ -5454,7 +5461,7 @@ final class VanillaBlocks{
 		return clone self::$_mTORCH;
 	}
 
-	public static function TORCHFLOWER() : Flower{
+	public static function TORCHFLOWER() : TorchFlower{
 		if(!isset(self::$_mTORCHFLOWER)){ self::init(); }
 		return clone self::$_mTORCHFLOWER;
 	}
@@ -5639,7 +5646,7 @@ final class VanillaBlocks{
 		return clone self::$_mWARPED_WALL_SIGN;
 	}
 
-	public static function WARPED_WART_BLOCK() : Opaque{
+	public static function WARPED_WART_BLOCK() : WarpedWart{
 		if(!isset(self::$_mWARPED_WART_BLOCK)){ self::init(); }
 		return clone self::$_mWARPED_WART_BLOCK;
 	}

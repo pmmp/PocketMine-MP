@@ -44,4 +44,6 @@ class WaterLily extends Flowable{
 	private function canBeSupportedAt(Block $block) : bool{
 		return $block->getSide(Facing::DOWN) instanceof Water;
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

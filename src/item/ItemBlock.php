@@ -60,6 +60,14 @@ final class ItemBlock extends Item{
 		return $this->block->getMaxStackSize();
 	}
 
+	public function getCompostabilityChance() : int{
+		return $this->block->getCompostabilityChance();
+	}
+
+	public function isCompostable() : bool{
+		return $this->block->isCompostable();
+	}
+
 	public function isNull() : bool{
 		//TODO: we really shouldn't need to treat air as a special case here
 		//this is needed because the "null" empty slot item is represented by an air block, but there's no real reason

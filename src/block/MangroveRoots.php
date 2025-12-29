@@ -28,4 +28,6 @@ final class MangroveRoots extends Transparent{
 	public function getFlammability() : int{ return 5; }
 
 	public function getFlameEncouragement() : int{ return 5; }
+
+	public function getCompostabilityChance() : int{ return 30; }
 }

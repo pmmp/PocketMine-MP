@@ -32,4 +32,8 @@ class Bread extends Food{
 	public function getSaturationRestore() : float{
 		return 6;
 	}
+
+	public function getCompostabilityChance() : int{
+		return 85;
+	}
 }

@@ -97,4 +97,6 @@ abstract class Stem extends Crops{
 			$this->asItem()->setCount(FortuneDropHelper::binomial(VanillaItems::AIR(), 0, chance: ($this->age + 1) / 15))
 		];
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

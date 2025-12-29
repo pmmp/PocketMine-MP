@@ -32,4 +32,8 @@ class Cookie extends Food{
 	public function getSaturationRestore() : float{
 		return 0.4;
 	}
+	
+	public function getCompostabilityChance() : int{
+		return 85;
+	}
 }

@@ -351,7 +351,7 @@ final class VanillaItems{
 	private static ItemBlockWallOrFloor $_mWARPED_SIGN;
 	private static LiquidBucket $_mWATER_BUCKET;
 	private static Item $_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE;
-	private static Item $_mWHEAT;
+	private static Wheat $_mWHEAT;
 	private static WheatSeeds $_mWHEAT_SEEDS;
 	private static Item $_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE;
 	private static Axe $_mWOODEN_AXE;
@@ -709,7 +709,7 @@ final class VanillaItems{
 			"warped_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mWARPED_SIGN = $v,
 			"water_bucket" => fn(LiquidBucket $v) => self::$_mWATER_BUCKET = $v,
 			"wayfinder_armor_trim_smithing_template" => fn(Item $v) => self::$_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
-			"wheat" => fn(Item $v) => self::$_mWHEAT = $v,
+			"wheat" => fn(Wheat $v) => self::$_mWHEAT = $v,
 			"wheat_seeds" => fn(WheatSeeds $v) => self::$_mWHEAT_SEEDS = $v,
 			"wild_armor_trim_smithing_template" => fn(Item $v) => self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE = $v,
 			"wooden_axe" => fn(Axe $v) => self::$_mWOODEN_AXE = $v,
@@ -2323,7 +2323,7 @@ final class VanillaItems{
 		return clone self::$_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
-	public static function WHEAT() : Item{
+	public static function WHEAT() : Wheat{
 		if(!isset(self::$_mWHEAT)){ self::init(); }
 		return clone self::$_mWHEAT;
 	}

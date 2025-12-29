@@ -36,6 +36,10 @@ class SweetBerries extends Food{
 		return 1.2;
 	}
 
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
+
 	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::SWEET_BERRY_BUSH();
 	}

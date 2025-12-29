@@ -852,8 +852,9 @@ final class BlockTypeIds{
 	public const BAMBOO_MOSAIC = 10822;
 	public const BAMBOO_MOSAIC_SLAB = 10823;
 	public const BAMBOO_MOSAIC_STAIRS = 10824;
+	public const COMPOSTER = 10825;
 
-	public const FIRST_UNUSED_BLOCK_ID = 10825;
+	public const FIRST_UNUSED_BLOCK_ID = 10826;
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_BLOCK_ID;
 

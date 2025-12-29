@@ -64,6 +64,10 @@ abstract class BaseCake extends Transparent implements FoodSource{
 		return true;
 	}
 
+	public function getCompostabilityChance() : int{
+		return 100;
+	}
+
 	/**
 	 * @return EffectInstance[]
 	 */

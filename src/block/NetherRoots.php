@@ -38,4 +38,6 @@ final class NetherRoots extends Flowable{
 			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
 			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

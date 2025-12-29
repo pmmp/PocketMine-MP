@@ -51,6 +51,10 @@ class RedMushroomBlock extends Opaque{
 		];
 	}
 
+	public function getCompostabilityChance() : int{
+		return 85;
+	}
+
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}

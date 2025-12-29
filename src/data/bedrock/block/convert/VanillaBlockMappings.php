@@ -42,6 +42,7 @@ use pocketmine\block\CaveVines;
 use pocketmine\block\ChiseledBookshelf;
 use pocketmine\block\ChorusFlower;
 use pocketmine\block\CocoaBlock;
+use pocketmine\block\Composter;
 use pocketmine\block\Copper;
 use pocketmine\block\CopperLantern;
 use pocketmine\block\DaylightSensor;
@@ -1336,6 +1337,9 @@ final class VanillaBlockMappings{
 		$reg->mapModel(Model::create(Blocks::COCOA_POD(), Ids::COCOA)->properties([
 			new IntProperty(StateNames::AGE, 0, 2, fn(CocoaBlock $b) => $b->getAge(), fn(CocoaBlock $b, int $v) => $b->setAge($v)),
 			$commonProperties->horizontalFacingSWNEInverted
+		]));
+		$reg->mapModel(Model::create(Blocks::COMPOSTER(), Ids::COMPOSTER)->properties([
+			new IntProperty(StateNames::COMPOSTER_FILL_LEVEL, 0, 8, fn(Composter $b) => $b->getLayers(), fn(Composter $b, int $v) => $b->setLayers($v))
 		]));
 
 		//D

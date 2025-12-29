@@ -59,4 +59,6 @@ class NetherWartPlant extends Flowable implements Ageable{
 			$this->asItem()->setCount($this->age === self::MAX_AGE ? FortuneDropHelper::discrete($item, 2, 4) : 1)
 		];
 	}
+
+	public function getCompostabilityChance() : int{ return 65; }
 }

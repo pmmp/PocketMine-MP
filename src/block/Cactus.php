@@ -128,4 +128,8 @@ class Cactus extends Transparent implements Ageable{
 		}
 		$world->setBlock($this->position, $this, update: false);
 	}
+
+	public function getCompostabilityChance() : int{
+		return 50;
+	}
 }

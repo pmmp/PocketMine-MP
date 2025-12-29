@@ -36,6 +36,10 @@ class GlowBerries extends Food{
 		return 0.4;
 	}
 
+	public function getCompostabilityChance() : int{
+		return 30;
+	}
+
 	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::CAVE_VINES();
 	}

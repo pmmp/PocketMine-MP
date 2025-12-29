@@ -747,6 +747,20 @@ class Block{
 	}
 
 	/**
+	 * Returns the chance that this block will fill one layer of a composter.
+	 */
+	public function getCompostabilityChance() : int{
+		return 0;
+	}
+	
+	/**
+	 * Returns whether this block can be used in a composter.
+	 */
+	public function isCompostable() : bool{
+		return $this->getCompostabilityChance() > 0;
+	}
+
+	/**
 	 * Returns whether fire lit on this block will burn indefinitely.
 	 */
 	public function burnsForever() : bool{
