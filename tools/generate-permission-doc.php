@@ -46,6 +46,7 @@ use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+$argv ??= [];
 if(count($argv) > 2){
 	fwrite(STDERR, "Required arguments: md|rst\n");
 	exit(1);

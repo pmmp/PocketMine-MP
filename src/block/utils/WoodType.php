@@ -54,6 +54,7 @@ enum WoodType{
 	case WARPED;
 	case CHERRY;
 	case PALE_OAK;
+	case BAMBOO;
 
 	public function getDisplayName() : string{
 		return match($this){
@@ -68,6 +69,7 @@ enum WoodType{
 			self::WARPED => "Warped",
 			self::CHERRY => "Cherry",
 			self::PALE_OAK => "Pale Oak",
+			self::BAMBOO => "Bamboo",
 		};
 	}
 
@@ -76,7 +78,11 @@ enum WoodType{
 	}
 
 	public function getStandardLogSuffix() : ?string{
-		return $this === self::CRIMSON || $this === self::WARPED ? "Stem" : null;
+		return match($this){
+			self::CRIMSON, self::WARPED => "Stem",
+			self::BAMBOO => "Block",
+			default => null,
+		};
 	}
 
 	public function getAllSidedLogSuffix() : ?string{

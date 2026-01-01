@@ -40,17 +40,21 @@ class BlockBreakInfo{
 	public const INCOMPATIBLE_TOOL_MULTIPLIER = 5.0;
 
 	private float $blastResistance;
+	private bool $explosionHarvestable;
 
 	/**
-	 * @param float|null $blastResistance default 5x hardness
+	 * @param float|null $blastResistance      default 5x hardness
+	 * @param bool|null  $explosionHarvestable Whether explosions are considered a compatible "tool" to harvest. Defaults to true if a pickaxe is compatible
 	 */
 	public function __construct(
 		private float $hardness,
 		private int $toolType = BlockToolType::NONE,
 		private int $toolHarvestLevel = 0,
-		?float $blastResistance = null
+		?float $blastResistance = null,
+		?bool $explosionHarvestable = null,
 	){
 		$this->blastResistance = $blastResistance ?? $hardness * 5;
+		$this->explosionHarvestable = $explosionHarvestable ?? ($this->toolType & BlockToolType::PICKAXE) !== 0;
 	}
 
 	public static function tier(float $hardness, int $toolType, ToolTier $toolTier, ?float $blastResistance = null) : self{
@@ -161,4 +165,13 @@ class BlockBreakInfo{
 
 		return $base;
 	}
+
+	/**
+	 * Returns whether an explosion can harvest resources from the block, as if a compatible tool was used.
+	 * If this returns true, required harvest level and tool type will be ignored when calculating drops for explosions.
+	 * Otherwise, the block will behave as if it was broken with an empty hand.
+	 *
+	 * Note: If the required harvest level is 0, this has no effect.
+	 */
+	public function isExplosionHarvestable() : bool{ return $this->explosionHarvestable; }
 }

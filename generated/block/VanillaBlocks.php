@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\utils\Utils;
 use function array_keys;
-use function array_map;
 use function count;
 use function implode;
 use function mb_strtoupper;
@@ -35,7 +35,7 @@ use function mb_strtoupper;
  *
  * This class is generated automatically from source class {@link VanillaBlocksInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
- * @see build/generate-registry-interface.php
+ * @see build/codegen/registry-interface.php
  */
 final class VanillaBlocks{
 	private static WoodenButton $_mACACIA_BUTTON;
@@ -68,10 +68,29 @@ final class VanillaBlocks{
 	private static Stair $_mANDESITE_STAIRS;
 	private static Wall $_mANDESITE_WALL;
 	private static Anvil $_mANVIL;
+	private static Azalea $_mAZALEA;
 	private static Leaves $_mAZALEA_LEAVES;
 	private static Flower $_mAZURE_BLUET;
 	private static Bamboo $_mBAMBOO;
+	private static Wood $_mBAMBOO_BLOCK;
+	private static WoodenButton $_mBAMBOO_BUTTON;
+	private static CeilingCenterHangingSign $_mBAMBOO_CEILING_CENTER_HANGING_SIGN;
+	private static CeilingEdgesHangingSign $_mBAMBOO_CEILING_EDGES_HANGING_SIGN;
+	private static WoodenDoor $_mBAMBOO_DOOR;
+	private static WoodenFence $_mBAMBOO_FENCE;
+	private static FenceGate $_mBAMBOO_FENCE_GATE;
+	private static Planks $_mBAMBOO_MOSAIC;
+	private static WoodenSlab $_mBAMBOO_MOSAIC_SLAB;
+	private static WoodenStairs $_mBAMBOO_MOSAIC_STAIRS;
+	private static Planks $_mBAMBOO_PLANKS;
+	private static WoodenPressurePlate $_mBAMBOO_PRESSURE_PLATE;
 	private static BambooSapling $_mBAMBOO_SAPLING;
+	private static FloorSign $_mBAMBOO_SIGN;
+	private static WoodenSlab $_mBAMBOO_SLAB;
+	private static WoodenStairs $_mBAMBOO_STAIRS;
+	private static WoodenTrapdoor $_mBAMBOO_TRAPDOOR;
+	private static WallHangingSign $_mBAMBOO_WALL_HANGING_SIGN;
+	private static WallSign $_mBAMBOO_WALL_SIGN;
 	private static FloorBanner $_mBANNER;
 	private static Barrel $_mBARREL;
 	private static Transparent $_mBARRIER;
@@ -421,6 +440,7 @@ final class VanillaBlocks{
 	private static TallGrass $_mFERN;
 	private static Fire $_mFIRE;
 	private static FletchingTable $_mFLETCHING_TABLE;
+	private static Azalea $_mFLOWERING_AZALEA;
 	private static Leaves $_mFLOWERING_AZALEA_LEAVES;
 	private static FlowerPot $_mFLOWER_POT;
 	private static Froglight $_mFROGLIGHT;
@@ -886,10 +906,29 @@ final class VanillaBlocks{
 			"andesite_stairs" => fn(Stair $v) => self::$_mANDESITE_STAIRS = $v,
 			"andesite_wall" => fn(Wall $v) => self::$_mANDESITE_WALL = $v,
 			"anvil" => fn(Anvil $v) => self::$_mANVIL = $v,
+			"azalea" => fn(Azalea $v) => self::$_mAZALEA = $v,
 			"azalea_leaves" => fn(Leaves $v) => self::$_mAZALEA_LEAVES = $v,
 			"azure_bluet" => fn(Flower $v) => self::$_mAZURE_BLUET = $v,
 			"bamboo" => fn(Bamboo $v) => self::$_mBAMBOO = $v,
+			"bamboo_block" => fn(Wood $v) => self::$_mBAMBOO_BLOCK = $v,
+			"bamboo_button" => fn(WoodenButton $v) => self::$_mBAMBOO_BUTTON = $v,
+			"bamboo_ceiling_center_hanging_sign" => fn(CeilingCenterHangingSign $v) => self::$_mBAMBOO_CEILING_CENTER_HANGING_SIGN = $v,
+			"bamboo_ceiling_edges_hanging_sign" => fn(CeilingEdgesHangingSign $v) => self::$_mBAMBOO_CEILING_EDGES_HANGING_SIGN = $v,
+			"bamboo_door" => fn(WoodenDoor $v) => self::$_mBAMBOO_DOOR = $v,
+			"bamboo_fence" => fn(WoodenFence $v) => self::$_mBAMBOO_FENCE = $v,
+			"bamboo_fence_gate" => fn(FenceGate $v) => self::$_mBAMBOO_FENCE_GATE = $v,
+			"bamboo_mosaic" => fn(Planks $v) => self::$_mBAMBOO_MOSAIC = $v,
+			"bamboo_mosaic_slab" => fn(WoodenSlab $v) => self::$_mBAMBOO_MOSAIC_SLAB = $v,
+			"bamboo_mosaic_stairs" => fn(WoodenStairs $v) => self::$_mBAMBOO_MOSAIC_STAIRS = $v,
+			"bamboo_planks" => fn(Planks $v) => self::$_mBAMBOO_PLANKS = $v,
+			"bamboo_pressure_plate" => fn(WoodenPressurePlate $v) => self::$_mBAMBOO_PRESSURE_PLATE = $v,
 			"bamboo_sapling" => fn(BambooSapling $v) => self::$_mBAMBOO_SAPLING = $v,
+			"bamboo_sign" => fn(FloorSign $v) => self::$_mBAMBOO_SIGN = $v,
+			"bamboo_slab" => fn(WoodenSlab $v) => self::$_mBAMBOO_SLAB = $v,
+			"bamboo_stairs" => fn(WoodenStairs $v) => self::$_mBAMBOO_STAIRS = $v,
+			"bamboo_trapdoor" => fn(WoodenTrapdoor $v) => self::$_mBAMBOO_TRAPDOOR = $v,
+			"bamboo_wall_hanging_sign" => fn(WallHangingSign $v) => self::$_mBAMBOO_WALL_HANGING_SIGN = $v,
+			"bamboo_wall_sign" => fn(WallSign $v) => self::$_mBAMBOO_WALL_SIGN = $v,
 			"banner" => fn(FloorBanner $v) => self::$_mBANNER = $v,
 			"barrel" => fn(Barrel $v) => self::$_mBARREL = $v,
 			"barrier" => fn(Transparent $v) => self::$_mBARRIER = $v,
@@ -1239,6 +1278,7 @@ final class VanillaBlocks{
 			"fern" => fn(TallGrass $v) => self::$_mFERN = $v,
 			"fire" => fn(Fire $v) => self::$_mFIRE = $v,
 			"fletching_table" => fn(FletchingTable $v) => self::$_mFLETCHING_TABLE = $v,
+			"flowering_azalea" => fn(Azalea $v) => self::$_mFLOWERING_AZALEA = $v,
 			"flowering_azalea_leaves" => fn(Leaves $v) => self::$_mFLOWERING_AZALEA_LEAVES = $v,
 			"flower_pot" => fn(FlowerPot $v) => self::$_mFLOWER_POT = $v,
 			"froglight" => fn(Froglight $v) => self::$_mFROGLIGHT = $v,
@@ -1675,2502 +1715,2602 @@ final class VanillaBlocks{
 	 */
 	public static function getAll() : array{
 		if(!isset(self::$members)){ self::init(); }
-		return array_map(VanillaBlocksInputs::preprocessMember(...), self::$members);
+		return Utils::cloneObjectArray(self::$members);
 	}
 
 	public static function ACACIA_BUTTON() : WoodenButton{
 		if(!isset(self::$_mACACIA_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_BUTTON);
+		return clone self::$_mACACIA_BUTTON;
 	}
 
 	public static function ACACIA_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mACACIA_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mACACIA_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function ACACIA_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mACACIA_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mACACIA_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function ACACIA_DOOR() : WoodenDoor{
 		if(!isset(self::$_mACACIA_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_DOOR);
+		return clone self::$_mACACIA_DOOR;
 	}
 
 	public static function ACACIA_FENCE() : WoodenFence{
 		if(!isset(self::$_mACACIA_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_FENCE);
+		return clone self::$_mACACIA_FENCE;
 	}
 
 	public static function ACACIA_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mACACIA_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_FENCE_GATE);
+		return clone self::$_mACACIA_FENCE_GATE;
 	}
 
 	public static function ACACIA_LEAVES() : Leaves{
 		if(!isset(self::$_mACACIA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_LEAVES);
+		return clone self::$_mACACIA_LEAVES;
 	}
 
 	public static function ACACIA_LOG() : Wood{
 		if(!isset(self::$_mACACIA_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_LOG);
+		return clone self::$_mACACIA_LOG;
 	}
 
 	public static function ACACIA_PLANKS() : Planks{
 		if(!isset(self::$_mACACIA_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_PLANKS);
+		return clone self::$_mACACIA_PLANKS;
 	}
 
 	public static function ACACIA_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mACACIA_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_PRESSURE_PLATE);
+		return clone self::$_mACACIA_PRESSURE_PLATE;
 	}
 
 	public static function ACACIA_SAPLING() : Sapling{
 		if(!isset(self::$_mACACIA_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SAPLING);
+		return clone self::$_mACACIA_SAPLING;
 	}
 
 	public static function ACACIA_SIGN() : FloorSign{
 		if(!isset(self::$_mACACIA_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SIGN);
+		return clone self::$_mACACIA_SIGN;
 	}
 
 	public static function ACACIA_SLAB() : WoodenSlab{
 		if(!isset(self::$_mACACIA_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_SLAB);
+		return clone self::$_mACACIA_SLAB;
 	}
 
 	public static function ACACIA_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mACACIA_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_STAIRS);
+		return clone self::$_mACACIA_STAIRS;
 	}
 
 	public static function ACACIA_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mACACIA_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_TRAPDOOR);
+		return clone self::$_mACACIA_TRAPDOOR;
 	}
 
 	public static function ACACIA_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mACACIA_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WALL_HANGING_SIGN);
+		return clone self::$_mACACIA_WALL_HANGING_SIGN;
 	}
 
 	public static function ACACIA_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mACACIA_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WALL_SIGN);
+		return clone self::$_mACACIA_WALL_SIGN;
 	}
 
 	public static function ACACIA_WOOD() : Wood{
 		if(!isset(self::$_mACACIA_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACACIA_WOOD);
+		return clone self::$_mACACIA_WOOD;
 	}
 
 	public static function ACTIVATOR_RAIL() : ActivatorRail{
 		if(!isset(self::$_mACTIVATOR_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mACTIVATOR_RAIL);
+		return clone self::$_mACTIVATOR_RAIL;
 	}
 
 	public static function AIR() : Air{
 		if(!isset(self::$_mAIR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAIR);
+		return clone self::$_mAIR;
 	}
 
 	public static function ALLIUM() : Flower{
 		if(!isset(self::$_mALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mALLIUM);
+		return clone self::$_mALLIUM;
 	}
 
 	public static function ALL_SIDED_MUSHROOM_STEM() : MushroomStem{
 		if(!isset(self::$_mALL_SIDED_MUSHROOM_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mALL_SIDED_MUSHROOM_STEM);
+		return clone self::$_mALL_SIDED_MUSHROOM_STEM;
 	}
 
 	public static function AMETHYST() : Opaque{
 		if(!isset(self::$_mAMETHYST)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAMETHYST);
+		return clone self::$_mAMETHYST;
 	}
 
 	public static function AMETHYST_CLUSTER() : AmethystCluster{
 		if(!isset(self::$_mAMETHYST_CLUSTER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAMETHYST_CLUSTER);
+		return clone self::$_mAMETHYST_CLUSTER;
 	}
 
 	public static function ANCIENT_DEBRIS() : Opaque{
 		if(!isset(self::$_mANCIENT_DEBRIS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANCIENT_DEBRIS);
+		return clone self::$_mANCIENT_DEBRIS;
 	}
 
 	public static function ANDESITE() : Opaque{
 		if(!isset(self::$_mANDESITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE);
+		return clone self::$_mANDESITE;
 	}
 
 	public static function ANDESITE_SLAB() : Slab{
 		if(!isset(self::$_mANDESITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_SLAB);
+		return clone self::$_mANDESITE_SLAB;
 	}
 
 	public static function ANDESITE_STAIRS() : Stair{
 		if(!isset(self::$_mANDESITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_STAIRS);
+		return clone self::$_mANDESITE_STAIRS;
 	}
 
 	public static function ANDESITE_WALL() : Wall{
 		if(!isset(self::$_mANDESITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANDESITE_WALL);
+		return clone self::$_mANDESITE_WALL;
 	}
 
 	public static function ANVIL() : Anvil{
 		if(!isset(self::$_mANVIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mANVIL);
+		return clone self::$_mANVIL;
+	}
+
+	public static function AZALEA() : Azalea{
+		if(!isset(self::$_mAZALEA)){ self::init(); }
+		return clone self::$_mAZALEA;
 	}
 
 	public static function AZALEA_LEAVES() : Leaves{
 		if(!isset(self::$_mAZALEA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAZALEA_LEAVES);
+		return clone self::$_mAZALEA_LEAVES;
 	}
 
 	public static function AZURE_BLUET() : Flower{
 		if(!isset(self::$_mAZURE_BLUET)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mAZURE_BLUET);
+		return clone self::$_mAZURE_BLUET;
 	}
 
 	public static function BAMBOO() : Bamboo{
 		if(!isset(self::$_mBAMBOO)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBAMBOO);
+		return clone self::$_mBAMBOO;
+	}
+
+	public static function BAMBOO_BLOCK() : Wood{
+		if(!isset(self::$_mBAMBOO_BLOCK)){ self::init(); }
+		return clone self::$_mBAMBOO_BLOCK;
+	}
+
+	public static function BAMBOO_BUTTON() : WoodenButton{
+		if(!isset(self::$_mBAMBOO_BUTTON)){ self::init(); }
+		return clone self::$_mBAMBOO_BUTTON;
+	}
+
+	public static function BAMBOO_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
+		if(!isset(self::$_mBAMBOO_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_CEILING_CENTER_HANGING_SIGN;
+	}
+
+	public static function BAMBOO_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
+		if(!isset(self::$_mBAMBOO_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_CEILING_EDGES_HANGING_SIGN;
+	}
+
+	public static function BAMBOO_DOOR() : WoodenDoor{
+		if(!isset(self::$_mBAMBOO_DOOR)){ self::init(); }
+		return clone self::$_mBAMBOO_DOOR;
+	}
+
+	public static function BAMBOO_FENCE() : WoodenFence{
+		if(!isset(self::$_mBAMBOO_FENCE)){ self::init(); }
+		return clone self::$_mBAMBOO_FENCE;
+	}
+
+	public static function BAMBOO_FENCE_GATE() : FenceGate{
+		if(!isset(self::$_mBAMBOO_FENCE_GATE)){ self::init(); }
+		return clone self::$_mBAMBOO_FENCE_GATE;
+	}
+
+	public static function BAMBOO_MOSAIC() : Planks{
+		if(!isset(self::$_mBAMBOO_MOSAIC)){ self::init(); }
+		return clone self::$_mBAMBOO_MOSAIC;
+	}
+
+	public static function BAMBOO_MOSAIC_SLAB() : WoodenSlab{
+		if(!isset(self::$_mBAMBOO_MOSAIC_SLAB)){ self::init(); }
+		return clone self::$_mBAMBOO_MOSAIC_SLAB;
+	}
+
+	public static function BAMBOO_MOSAIC_STAIRS() : WoodenStairs{
+		if(!isset(self::$_mBAMBOO_MOSAIC_STAIRS)){ self::init(); }
+		return clone self::$_mBAMBOO_MOSAIC_STAIRS;
+	}
+
+	public static function BAMBOO_PLANKS() : Planks{
+		if(!isset(self::$_mBAMBOO_PLANKS)){ self::init(); }
+		return clone self::$_mBAMBOO_PLANKS;
+	}
+
+	public static function BAMBOO_PRESSURE_PLATE() : WoodenPressurePlate{
+		if(!isset(self::$_mBAMBOO_PRESSURE_PLATE)){ self::init(); }
+		return clone self::$_mBAMBOO_PRESSURE_PLATE;
 	}
 
 	public static function BAMBOO_SAPLING() : BambooSapling{
 		if(!isset(self::$_mBAMBOO_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBAMBOO_SAPLING);
+		return clone self::$_mBAMBOO_SAPLING;
+	}
+
+	public static function BAMBOO_SIGN() : FloorSign{
+		if(!isset(self::$_mBAMBOO_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_SIGN;
+	}
+
+	public static function BAMBOO_SLAB() : WoodenSlab{
+		if(!isset(self::$_mBAMBOO_SLAB)){ self::init(); }
+		return clone self::$_mBAMBOO_SLAB;
+	}
+
+	public static function BAMBOO_STAIRS() : WoodenStairs{
+		if(!isset(self::$_mBAMBOO_STAIRS)){ self::init(); }
+		return clone self::$_mBAMBOO_STAIRS;
+	}
+
+	public static function BAMBOO_TRAPDOOR() : WoodenTrapdoor{
+		if(!isset(self::$_mBAMBOO_TRAPDOOR)){ self::init(); }
+		return clone self::$_mBAMBOO_TRAPDOOR;
+	}
+
+	public static function BAMBOO_WALL_HANGING_SIGN() : WallHangingSign{
+		if(!isset(self::$_mBAMBOO_WALL_HANGING_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_WALL_HANGING_SIGN;
+	}
+
+	public static function BAMBOO_WALL_SIGN() : WallSign{
+		if(!isset(self::$_mBAMBOO_WALL_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_WALL_SIGN;
 	}
 
 	public static function BANNER() : FloorBanner{
 		if(!isset(self::$_mBANNER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBANNER);
+		return clone self::$_mBANNER;
 	}
 
 	public static function BARREL() : Barrel{
 		if(!isset(self::$_mBARREL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBARREL);
+		return clone self::$_mBARREL;
 	}
 
 	public static function BARRIER() : Transparent{
 		if(!isset(self::$_mBARRIER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBARRIER);
+		return clone self::$_mBARRIER;
 	}
 
 	public static function BASALT() : SimplePillar{
 		if(!isset(self::$_mBASALT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBASALT);
+		return clone self::$_mBASALT;
 	}
 
 	public static function BEACON() : Beacon{
 		if(!isset(self::$_mBEACON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBEACON);
+		return clone self::$_mBEACON;
 	}
 
 	public static function BED() : Bed{
 		if(!isset(self::$_mBED)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBED);
+		return clone self::$_mBED;
 	}
 
 	public static function BEDROCK() : Bedrock{
 		if(!isset(self::$_mBEDROCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBEDROCK);
+		return clone self::$_mBEDROCK;
 	}
 
 	public static function BEETROOTS() : Beetroot{
 		if(!isset(self::$_mBEETROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBEETROOTS);
+		return clone self::$_mBEETROOTS;
 	}
 
 	public static function BELL() : Bell{
 		if(!isset(self::$_mBELL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBELL);
+		return clone self::$_mBELL;
 	}
 
 	public static function BIG_DRIPLEAF_HEAD() : BigDripleafHead{
 		if(!isset(self::$_mBIG_DRIPLEAF_HEAD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIG_DRIPLEAF_HEAD);
+		return clone self::$_mBIG_DRIPLEAF_HEAD;
 	}
 
 	public static function BIG_DRIPLEAF_STEM() : BigDripleafStem{
 		if(!isset(self::$_mBIG_DRIPLEAF_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIG_DRIPLEAF_STEM);
+		return clone self::$_mBIG_DRIPLEAF_STEM;
 	}
 
 	public static function BIRCH_BUTTON() : WoodenButton{
 		if(!isset(self::$_mBIRCH_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_BUTTON);
+		return clone self::$_mBIRCH_BUTTON;
 	}
 
 	public static function BIRCH_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mBIRCH_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function BIRCH_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mBIRCH_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function BIRCH_DOOR() : WoodenDoor{
 		if(!isset(self::$_mBIRCH_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_DOOR);
+		return clone self::$_mBIRCH_DOOR;
 	}
 
 	public static function BIRCH_FENCE() : WoodenFence{
 		if(!isset(self::$_mBIRCH_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_FENCE);
+		return clone self::$_mBIRCH_FENCE;
 	}
 
 	public static function BIRCH_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mBIRCH_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_FENCE_GATE);
+		return clone self::$_mBIRCH_FENCE_GATE;
 	}
 
 	public static function BIRCH_LEAVES() : Leaves{
 		if(!isset(self::$_mBIRCH_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_LEAVES);
+		return clone self::$_mBIRCH_LEAVES;
 	}
 
 	public static function BIRCH_LOG() : Wood{
 		if(!isset(self::$_mBIRCH_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_LOG);
+		return clone self::$_mBIRCH_LOG;
 	}
 
 	public static function BIRCH_PLANKS() : Planks{
 		if(!isset(self::$_mBIRCH_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_PLANKS);
+		return clone self::$_mBIRCH_PLANKS;
 	}
 
 	public static function BIRCH_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mBIRCH_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_PRESSURE_PLATE);
+		return clone self::$_mBIRCH_PRESSURE_PLATE;
 	}
 
 	public static function BIRCH_SAPLING() : Sapling{
 		if(!isset(self::$_mBIRCH_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SAPLING);
+		return clone self::$_mBIRCH_SAPLING;
 	}
 
 	public static function BIRCH_SIGN() : FloorSign{
 		if(!isset(self::$_mBIRCH_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SIGN);
+		return clone self::$_mBIRCH_SIGN;
 	}
 
 	public static function BIRCH_SLAB() : WoodenSlab{
 		if(!isset(self::$_mBIRCH_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_SLAB);
+		return clone self::$_mBIRCH_SLAB;
 	}
 
 	public static function BIRCH_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mBIRCH_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_STAIRS);
+		return clone self::$_mBIRCH_STAIRS;
 	}
 
 	public static function BIRCH_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mBIRCH_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_TRAPDOOR);
+		return clone self::$_mBIRCH_TRAPDOOR;
 	}
 
 	public static function BIRCH_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mBIRCH_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WALL_HANGING_SIGN);
+		return clone self::$_mBIRCH_WALL_HANGING_SIGN;
 	}
 
 	public static function BIRCH_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mBIRCH_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WALL_SIGN);
+		return clone self::$_mBIRCH_WALL_SIGN;
 	}
 
 	public static function BIRCH_WOOD() : Wood{
 		if(!isset(self::$_mBIRCH_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBIRCH_WOOD);
+		return clone self::$_mBIRCH_WOOD;
 	}
 
 	public static function BLACKSTONE() : Opaque{
 		if(!isset(self::$_mBLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE);
+		return clone self::$_mBLACKSTONE;
 	}
 
 	public static function BLACKSTONE_SLAB() : Slab{
 		if(!isset(self::$_mBLACKSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_SLAB);
+		return clone self::$_mBLACKSTONE_SLAB;
 	}
 
 	public static function BLACKSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mBLACKSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_STAIRS);
+		return clone self::$_mBLACKSTONE_STAIRS;
 	}
 
 	public static function BLACKSTONE_WALL() : Wall{
 		if(!isset(self::$_mBLACKSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLACKSTONE_WALL);
+		return clone self::$_mBLACKSTONE_WALL;
 	}
 
 	public static function BLAST_FURNACE() : Furnace{
 		if(!isset(self::$_mBLAST_FURNACE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLAST_FURNACE);
+		return clone self::$_mBLAST_FURNACE;
 	}
 
 	public static function BLUE_ICE() : BlueIce{
 		if(!isset(self::$_mBLUE_ICE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_ICE);
+		return clone self::$_mBLUE_ICE;
 	}
 
 	public static function BLUE_ORCHID() : Flower{
 		if(!isset(self::$_mBLUE_ORCHID)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_ORCHID);
+		return clone self::$_mBLUE_ORCHID;
 	}
 
 	public static function BLUE_TORCH() : Torch{
 		if(!isset(self::$_mBLUE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBLUE_TORCH);
+		return clone self::$_mBLUE_TORCH;
 	}
 
 	public static function BONE_BLOCK() : BoneBlock{
 		if(!isset(self::$_mBONE_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBONE_BLOCK);
+		return clone self::$_mBONE_BLOCK;
 	}
 
 	public static function BOOKSHELF() : Bookshelf{
 		if(!isset(self::$_mBOOKSHELF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBOOKSHELF);
+		return clone self::$_mBOOKSHELF;
 	}
 
 	public static function BREWING_STAND() : BrewingStand{
 		if(!isset(self::$_mBREWING_STAND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBREWING_STAND);
+		return clone self::$_mBREWING_STAND;
 	}
 
 	public static function BRICKS() : Opaque{
 		if(!isset(self::$_mBRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBRICKS);
+		return clone self::$_mBRICKS;
 	}
 
 	public static function BRICK_SLAB() : Slab{
 		if(!isset(self::$_mBRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_SLAB);
+		return clone self::$_mBRICK_SLAB;
 	}
 
 	public static function BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mBRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_STAIRS);
+		return clone self::$_mBRICK_STAIRS;
 	}
 
 	public static function BRICK_WALL() : Wall{
 		if(!isset(self::$_mBRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBRICK_WALL);
+		return clone self::$_mBRICK_WALL;
 	}
 
 	public static function BROWN_MUSHROOM() : BrownMushroom{
 		if(!isset(self::$_mBROWN_MUSHROOM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBROWN_MUSHROOM);
+		return clone self::$_mBROWN_MUSHROOM;
 	}
 
 	public static function BROWN_MUSHROOM_BLOCK() : BrownMushroomBlock{
 		if(!isset(self::$_mBROWN_MUSHROOM_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBROWN_MUSHROOM_BLOCK);
+		return clone self::$_mBROWN_MUSHROOM_BLOCK;
 	}
 
 	public static function BUDDING_AMETHYST() : BuddingAmethyst{
 		if(!isset(self::$_mBUDDING_AMETHYST)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mBUDDING_AMETHYST);
+		return clone self::$_mBUDDING_AMETHYST;
 	}
 
 	public static function CACTUS() : Cactus{
 		if(!isset(self::$_mCACTUS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCACTUS);
+		return clone self::$_mCACTUS;
 	}
 
 	public static function CACTUS_FLOWER() : CactusFlower{
 		if(!isset(self::$_mCACTUS_FLOWER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCACTUS_FLOWER);
+		return clone self::$_mCACTUS_FLOWER;
 	}
 
 	public static function CAKE() : Cake{
 		if(!isset(self::$_mCAKE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE);
+		return clone self::$_mCAKE;
 	}
 
 	public static function CAKE_WITH_CANDLE() : CakeWithCandle{
 		if(!isset(self::$_mCAKE_WITH_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE_WITH_CANDLE);
+		return clone self::$_mCAKE_WITH_CANDLE;
 	}
 
 	public static function CAKE_WITH_DYED_CANDLE() : CakeWithDyedCandle{
 		if(!isset(self::$_mCAKE_WITH_DYED_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAKE_WITH_DYED_CANDLE);
+		return clone self::$_mCAKE_WITH_DYED_CANDLE;
 	}
 
 	public static function CALCITE() : Opaque{
 		if(!isset(self::$_mCALCITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCALCITE);
+		return clone self::$_mCALCITE;
 	}
 
 	public static function CAMPFIRE() : Campfire{
 		if(!isset(self::$_mCAMPFIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAMPFIRE);
+		return clone self::$_mCAMPFIRE;
 	}
 
 	public static function CANDLE() : Candle{
 		if(!isset(self::$_mCANDLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCANDLE);
+		return clone self::$_mCANDLE;
 	}
 
 	public static function CARPET() : Carpet{
 		if(!isset(self::$_mCARPET)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCARPET);
+		return clone self::$_mCARPET;
 	}
 
 	public static function CARROTS() : Carrot{
 		if(!isset(self::$_mCARROTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCARROTS);
+		return clone self::$_mCARROTS;
 	}
 
 	public static function CARTOGRAPHY_TABLE() : CartographyTable{
 		if(!isset(self::$_mCARTOGRAPHY_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCARTOGRAPHY_TABLE);
+		return clone self::$_mCARTOGRAPHY_TABLE;
 	}
 
 	public static function CARVED_PUMPKIN() : CarvedPumpkin{
 		if(!isset(self::$_mCARVED_PUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCARVED_PUMPKIN);
+		return clone self::$_mCARVED_PUMPKIN;
 	}
 
 	public static function CAULDRON() : Cauldron{
 		if(!isset(self::$_mCAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAULDRON);
+		return clone self::$_mCAULDRON;
 	}
 
 	public static function CAVE_VINES() : CaveVines{
 		if(!isset(self::$_mCAVE_VINES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCAVE_VINES);
+		return clone self::$_mCAVE_VINES;
 	}
 
 	public static function CHAIN() : Chain{
 		if(!isset(self::$_mCHAIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHAIN);
+		return clone self::$_mCHAIN;
 	}
 
 	public static function CHEMICAL_HEAT() : ChemicalHeat{
 		if(!isset(self::$_mCHEMICAL_HEAT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHEMICAL_HEAT);
+		return clone self::$_mCHEMICAL_HEAT;
 	}
 
 	public static function CHERRY_BUTTON() : WoodenButton{
 		if(!isset(self::$_mCHERRY_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_BUTTON);
+		return clone self::$_mCHERRY_BUTTON;
 	}
 
 	public static function CHERRY_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mCHERRY_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function CHERRY_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mCHERRY_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function CHERRY_DOOR() : WoodenDoor{
 		if(!isset(self::$_mCHERRY_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_DOOR);
+		return clone self::$_mCHERRY_DOOR;
 	}
 
 	public static function CHERRY_FENCE() : WoodenFence{
 		if(!isset(self::$_mCHERRY_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_FENCE);
+		return clone self::$_mCHERRY_FENCE;
 	}
 
 	public static function CHERRY_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mCHERRY_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_FENCE_GATE);
+		return clone self::$_mCHERRY_FENCE_GATE;
 	}
 
 	public static function CHERRY_LEAVES() : Leaves{
 		if(!isset(self::$_mCHERRY_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_LEAVES);
+		return clone self::$_mCHERRY_LEAVES;
 	}
 
 	public static function CHERRY_LOG() : Wood{
 		if(!isset(self::$_mCHERRY_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_LOG);
+		return clone self::$_mCHERRY_LOG;
 	}
 
 	public static function CHERRY_PLANKS() : Planks{
 		if(!isset(self::$_mCHERRY_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_PLANKS);
+		return clone self::$_mCHERRY_PLANKS;
 	}
 
 	public static function CHERRY_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mCHERRY_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_PRESSURE_PLATE);
+		return clone self::$_mCHERRY_PRESSURE_PLATE;
 	}
 
 	public static function CHERRY_SIGN() : FloorSign{
 		if(!isset(self::$_mCHERRY_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_SIGN);
+		return clone self::$_mCHERRY_SIGN;
 	}
 
 	public static function CHERRY_SLAB() : WoodenSlab{
 		if(!isset(self::$_mCHERRY_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_SLAB);
+		return clone self::$_mCHERRY_SLAB;
 	}
 
 	public static function CHERRY_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mCHERRY_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_STAIRS);
+		return clone self::$_mCHERRY_STAIRS;
 	}
 
 	public static function CHERRY_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mCHERRY_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_TRAPDOOR);
+		return clone self::$_mCHERRY_TRAPDOOR;
 	}
 
 	public static function CHERRY_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mCHERRY_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WALL_HANGING_SIGN);
+		return clone self::$_mCHERRY_WALL_HANGING_SIGN;
 	}
 
 	public static function CHERRY_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mCHERRY_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WALL_SIGN);
+		return clone self::$_mCHERRY_WALL_SIGN;
 	}
 
 	public static function CHERRY_WOOD() : Wood{
 		if(!isset(self::$_mCHERRY_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHERRY_WOOD);
+		return clone self::$_mCHERRY_WOOD;
 	}
 
 	public static function CHEST() : Chest{
 		if(!isset(self::$_mCHEST)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHEST);
+		return clone self::$_mCHEST;
 	}
 
 	public static function CHISELED_BOOKSHELF() : ChiseledBookshelf{
 		if(!isset(self::$_mCHISELED_BOOKSHELF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_BOOKSHELF);
+		return clone self::$_mCHISELED_BOOKSHELF;
 	}
 
 	public static function CHISELED_COPPER() : Copper{
 		if(!isset(self::$_mCHISELED_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_COPPER);
+		return clone self::$_mCHISELED_COPPER;
 	}
 
 	public static function CHISELED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mCHISELED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_DEEPSLATE);
+		return clone self::$_mCHISELED_DEEPSLATE;
 	}
 
 	public static function CHISELED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_NETHER_BRICKS);
+		return clone self::$_mCHISELED_NETHER_BRICKS;
 	}
 
 	public static function CHISELED_POLISHED_BLACKSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_POLISHED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_POLISHED_BLACKSTONE);
+		return clone self::$_mCHISELED_POLISHED_BLACKSTONE;
 	}
 
 	public static function CHISELED_QUARTZ() : SimplePillar{
 		if(!isset(self::$_mCHISELED_QUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_QUARTZ);
+		return clone self::$_mCHISELED_QUARTZ;
 	}
 
 	public static function CHISELED_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_RED_SANDSTONE);
+		return clone self::$_mCHISELED_RED_SANDSTONE;
 	}
 
 	public static function CHISELED_RESIN_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_RESIN_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_RESIN_BRICKS);
+		return clone self::$_mCHISELED_RESIN_BRICKS;
 	}
 
 	public static function CHISELED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCHISELED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_SANDSTONE);
+		return clone self::$_mCHISELED_SANDSTONE;
 	}
 
 	public static function CHISELED_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_STONE_BRICKS);
+		return clone self::$_mCHISELED_STONE_BRICKS;
 	}
 
 	public static function CHISELED_TUFF() : Opaque{
 		if(!isset(self::$_mCHISELED_TUFF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_TUFF);
+		return clone self::$_mCHISELED_TUFF;
 	}
 
 	public static function CHISELED_TUFF_BRICKS() : Opaque{
 		if(!isset(self::$_mCHISELED_TUFF_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHISELED_TUFF_BRICKS);
+		return clone self::$_mCHISELED_TUFF_BRICKS;
 	}
 
 	public static function CHORUS_FLOWER() : ChorusFlower{
 		if(!isset(self::$_mCHORUS_FLOWER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHORUS_FLOWER);
+		return clone self::$_mCHORUS_FLOWER;
 	}
 
 	public static function CHORUS_PLANT() : ChorusPlant{
 		if(!isset(self::$_mCHORUS_PLANT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCHORUS_PLANT);
+		return clone self::$_mCHORUS_PLANT;
 	}
 
 	public static function CLAY() : Clay{
 		if(!isset(self::$_mCLAY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCLAY);
+		return clone self::$_mCLAY;
 	}
 
 	public static function COAL() : Coal{
 		if(!isset(self::$_mCOAL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOAL);
+		return clone self::$_mCOAL;
 	}
 
 	public static function COAL_ORE() : CoalOre{
 		if(!isset(self::$_mCOAL_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOAL_ORE);
+		return clone self::$_mCOAL_ORE;
 	}
 
 	public static function COBBLED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE);
+		return clone self::$_mCOBBLED_DEEPSLATE;
 	}
 
 	public static function COBBLED_DEEPSLATE_SLAB() : Slab{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_SLAB);
+		return clone self::$_mCOBBLED_DEEPSLATE_SLAB;
 	}
 
 	public static function COBBLED_DEEPSLATE_STAIRS() : Stair{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_STAIRS);
+		return clone self::$_mCOBBLED_DEEPSLATE_STAIRS;
 	}
 
 	public static function COBBLED_DEEPSLATE_WALL() : Wall{
 		if(!isset(self::$_mCOBBLED_DEEPSLATE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLED_DEEPSLATE_WALL);
+		return clone self::$_mCOBBLED_DEEPSLATE_WALL;
 	}
 
 	public static function COBBLESTONE() : Opaque{
 		if(!isset(self::$_mCOBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE);
+		return clone self::$_mCOBBLESTONE;
 	}
 
 	public static function COBBLESTONE_SLAB() : Slab{
 		if(!isset(self::$_mCOBBLESTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_SLAB);
+		return clone self::$_mCOBBLESTONE_SLAB;
 	}
 
 	public static function COBBLESTONE_STAIRS() : Stair{
 		if(!isset(self::$_mCOBBLESTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_STAIRS);
+		return clone self::$_mCOBBLESTONE_STAIRS;
 	}
 
 	public static function COBBLESTONE_WALL() : Wall{
 		if(!isset(self::$_mCOBBLESTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBBLESTONE_WALL);
+		return clone self::$_mCOBBLESTONE_WALL;
 	}
 
 	public static function COBWEB() : Cobweb{
 		if(!isset(self::$_mCOBWEB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOBWEB);
+		return clone self::$_mCOBWEB;
 	}
 
 	public static function COCOA_POD() : CocoaBlock{
 		if(!isset(self::$_mCOCOA_POD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOCOA_POD);
+		return clone self::$_mCOCOA_POD;
 	}
 
 	public static function COMPOUND_CREATOR() : ChemistryTable{
 		if(!isset(self::$_mCOMPOUND_CREATOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOMPOUND_CREATOR);
+		return clone self::$_mCOMPOUND_CREATOR;
 	}
 
 	public static function CONCRETE() : Concrete{
 		if(!isset(self::$_mCONCRETE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCONCRETE);
+		return clone self::$_mCONCRETE;
 	}
 
 	public static function CONCRETE_POWDER() : ConcretePowder{
 		if(!isset(self::$_mCONCRETE_POWDER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCONCRETE_POWDER);
+		return clone self::$_mCONCRETE_POWDER;
 	}
 
 	public static function COPPER() : Copper{
 		if(!isset(self::$_mCOPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER);
+		return clone self::$_mCOPPER;
 	}
 
 	public static function COPPER_BARS() : CopperBars{
 		if(!isset(self::$_mCOPPER_BARS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_BARS);
+		return clone self::$_mCOPPER_BARS;
 	}
 
 	public static function COPPER_BULB() : CopperBulb{
 		if(!isset(self::$_mCOPPER_BULB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_BULB);
+		return clone self::$_mCOPPER_BULB;
 	}
 
 	public static function COPPER_CHAIN() : CopperChain{
 		if(!isset(self::$_mCOPPER_CHAIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_CHAIN);
+		return clone self::$_mCOPPER_CHAIN;
 	}
 
 	public static function COPPER_DOOR() : CopperDoor{
 		if(!isset(self::$_mCOPPER_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_DOOR);
+		return clone self::$_mCOPPER_DOOR;
 	}
 
 	public static function COPPER_GRATE() : CopperGrate{
 		if(!isset(self::$_mCOPPER_GRATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_GRATE);
+		return clone self::$_mCOPPER_GRATE;
 	}
 
 	public static function COPPER_LANTERN() : CopperLantern{
 		if(!isset(self::$_mCOPPER_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_LANTERN);
+		return clone self::$_mCOPPER_LANTERN;
 	}
 
 	public static function COPPER_ORE() : CopperOre{
 		if(!isset(self::$_mCOPPER_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_ORE);
+		return clone self::$_mCOPPER_ORE;
 	}
 
 	public static function COPPER_TORCH() : Torch{
 		if(!isset(self::$_mCOPPER_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_TORCH);
+		return clone self::$_mCOPPER_TORCH;
 	}
 
 	public static function COPPER_TRAPDOOR() : CopperTrapdoor{
 		if(!isset(self::$_mCOPPER_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCOPPER_TRAPDOOR);
+		return clone self::$_mCOPPER_TRAPDOOR;
 	}
 
 	public static function CORAL() : Coral{
 		if(!isset(self::$_mCORAL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL);
+		return clone self::$_mCORAL;
 	}
 
 	public static function CORAL_BLOCK() : CoralBlock{
 		if(!isset(self::$_mCORAL_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL_BLOCK);
+		return clone self::$_mCORAL_BLOCK;
 	}
 
 	public static function CORAL_FAN() : FloorCoralFan{
 		if(!isset(self::$_mCORAL_FAN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCORAL_FAN);
+		return clone self::$_mCORAL_FAN;
 	}
 
 	public static function CORNFLOWER() : Flower{
 		if(!isset(self::$_mCORNFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCORNFLOWER);
+		return clone self::$_mCORNFLOWER;
 	}
 
 	public static function CRACKED_DEEPSLATE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_DEEPSLATE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_DEEPSLATE_BRICKS);
+		return clone self::$_mCRACKED_DEEPSLATE_BRICKS;
 	}
 
 	public static function CRACKED_DEEPSLATE_TILES() : Opaque{
 		if(!isset(self::$_mCRACKED_DEEPSLATE_TILES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_DEEPSLATE_TILES);
+		return clone self::$_mCRACKED_DEEPSLATE_TILES;
 	}
 
 	public static function CRACKED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_NETHER_BRICKS);
+		return clone self::$_mCRACKED_NETHER_BRICKS;
 	}
 
 	public static function CRACKED_POLISHED_BLACKSTONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS);
+		return clone self::$_mCRACKED_POLISHED_BLACKSTONE_BRICKS;
 	}
 
 	public static function CRACKED_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mCRACKED_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRACKED_STONE_BRICKS);
+		return clone self::$_mCRACKED_STONE_BRICKS;
 	}
 
 	public static function CRAFTING_TABLE() : CraftingTable{
 		if(!isset(self::$_mCRAFTING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRAFTING_TABLE);
+		return clone self::$_mCRAFTING_TABLE;
 	}
 
 	public static function CRIMSON_BUTTON() : WoodenButton{
 		if(!isset(self::$_mCRIMSON_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_BUTTON);
+		return clone self::$_mCRIMSON_BUTTON;
 	}
 
 	public static function CRIMSON_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mCRIMSON_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function CRIMSON_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mCRIMSON_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function CRIMSON_DOOR() : WoodenDoor{
 		if(!isset(self::$_mCRIMSON_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_DOOR);
+		return clone self::$_mCRIMSON_DOOR;
 	}
 
 	public static function CRIMSON_FENCE() : WoodenFence{
 		if(!isset(self::$_mCRIMSON_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FENCE);
+		return clone self::$_mCRIMSON_FENCE;
 	}
 
 	public static function CRIMSON_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mCRIMSON_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FENCE_GATE);
+		return clone self::$_mCRIMSON_FENCE_GATE;
 	}
 
 	public static function CRIMSON_FUNGUS() : NetherFungus{
 		if(!isset(self::$_mCRIMSON_FUNGUS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_FUNGUS);
+		return clone self::$_mCRIMSON_FUNGUS;
 	}
 
 	public static function CRIMSON_HYPHAE() : Wood{
 		if(!isset(self::$_mCRIMSON_HYPHAE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_HYPHAE);
+		return clone self::$_mCRIMSON_HYPHAE;
 	}
 
 	public static function CRIMSON_NYLIUM() : Nylium{
 		if(!isset(self::$_mCRIMSON_NYLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_NYLIUM);
+		return clone self::$_mCRIMSON_NYLIUM;
 	}
 
 	public static function CRIMSON_PLANKS() : Planks{
 		if(!isset(self::$_mCRIMSON_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_PLANKS);
+		return clone self::$_mCRIMSON_PLANKS;
 	}
 
 	public static function CRIMSON_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mCRIMSON_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_PRESSURE_PLATE);
+		return clone self::$_mCRIMSON_PRESSURE_PLATE;
 	}
 
 	public static function CRIMSON_ROOTS() : NetherRoots{
 		if(!isset(self::$_mCRIMSON_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_ROOTS);
+		return clone self::$_mCRIMSON_ROOTS;
 	}
 
 	public static function CRIMSON_SIGN() : FloorSign{
 		if(!isset(self::$_mCRIMSON_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_SIGN);
+		return clone self::$_mCRIMSON_SIGN;
 	}
 
 	public static function CRIMSON_SLAB() : WoodenSlab{
 		if(!isset(self::$_mCRIMSON_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_SLAB);
+		return clone self::$_mCRIMSON_SLAB;
 	}
 
 	public static function CRIMSON_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mCRIMSON_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_STAIRS);
+		return clone self::$_mCRIMSON_STAIRS;
 	}
 
 	public static function CRIMSON_STEM() : Wood{
 		if(!isset(self::$_mCRIMSON_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_STEM);
+		return clone self::$_mCRIMSON_STEM;
 	}
 
 	public static function CRIMSON_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mCRIMSON_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_TRAPDOOR);
+		return clone self::$_mCRIMSON_TRAPDOOR;
 	}
 
 	public static function CRIMSON_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mCRIMSON_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_WALL_HANGING_SIGN);
+		return clone self::$_mCRIMSON_WALL_HANGING_SIGN;
 	}
 
 	public static function CRIMSON_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mCRIMSON_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRIMSON_WALL_SIGN);
+		return clone self::$_mCRIMSON_WALL_SIGN;
 	}
 
 	public static function CRYING_OBSIDIAN() : Opaque{
 		if(!isset(self::$_mCRYING_OBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCRYING_OBSIDIAN);
+		return clone self::$_mCRYING_OBSIDIAN;
 	}
 
 	public static function CUT_COPPER() : Copper{
 		if(!isset(self::$_mCUT_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER);
+		return clone self::$_mCUT_COPPER;
 	}
 
 	public static function CUT_COPPER_SLAB() : CopperSlab{
 		if(!isset(self::$_mCUT_COPPER_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER_SLAB);
+		return clone self::$_mCUT_COPPER_SLAB;
 	}
 
 	public static function CUT_COPPER_STAIRS() : CopperStairs{
 		if(!isset(self::$_mCUT_COPPER_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_COPPER_STAIRS);
+		return clone self::$_mCUT_COPPER_STAIRS;
 	}
 
 	public static function CUT_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCUT_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_RED_SANDSTONE);
+		return clone self::$_mCUT_RED_SANDSTONE;
 	}
 
 	public static function CUT_RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mCUT_RED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_RED_SANDSTONE_SLAB);
+		return clone self::$_mCUT_RED_SANDSTONE_SLAB;
 	}
 
 	public static function CUT_SANDSTONE() : Opaque{
 		if(!isset(self::$_mCUT_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_SANDSTONE);
+		return clone self::$_mCUT_SANDSTONE;
 	}
 
 	public static function CUT_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mCUT_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mCUT_SANDSTONE_SLAB);
+		return clone self::$_mCUT_SANDSTONE_SLAB;
 	}
 
 	public static function DANDELION() : Flower{
 		if(!isset(self::$_mDANDELION)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDANDELION);
+		return clone self::$_mDANDELION;
 	}
 
 	public static function DARK_OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mDARK_OAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_BUTTON);
+		return clone self::$_mDARK_OAK_BUTTON;
 	}
 
 	public static function DARK_OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mDARK_OAK_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function DARK_OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mDARK_OAK_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function DARK_OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mDARK_OAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_DOOR);
+		return clone self::$_mDARK_OAK_DOOR;
 	}
 
 	public static function DARK_OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mDARK_OAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_FENCE);
+		return clone self::$_mDARK_OAK_FENCE;
 	}
 
 	public static function DARK_OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mDARK_OAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_FENCE_GATE);
+		return clone self::$_mDARK_OAK_FENCE_GATE;
 	}
 
 	public static function DARK_OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mDARK_OAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_LEAVES);
+		return clone self::$_mDARK_OAK_LEAVES;
 	}
 
 	public static function DARK_OAK_LOG() : Wood{
 		if(!isset(self::$_mDARK_OAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_LOG);
+		return clone self::$_mDARK_OAK_LOG;
 	}
 
 	public static function DARK_OAK_PLANKS() : Planks{
 		if(!isset(self::$_mDARK_OAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_PLANKS);
+		return clone self::$_mDARK_OAK_PLANKS;
 	}
 
 	public static function DARK_OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mDARK_OAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_PRESSURE_PLATE);
+		return clone self::$_mDARK_OAK_PRESSURE_PLATE;
 	}
 
 	public static function DARK_OAK_SAPLING() : Sapling{
 		if(!isset(self::$_mDARK_OAK_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SAPLING);
+		return clone self::$_mDARK_OAK_SAPLING;
 	}
 
 	public static function DARK_OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mDARK_OAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SIGN);
+		return clone self::$_mDARK_OAK_SIGN;
 	}
 
 	public static function DARK_OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mDARK_OAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_SLAB);
+		return clone self::$_mDARK_OAK_SLAB;
 	}
 
 	public static function DARK_OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mDARK_OAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_STAIRS);
+		return clone self::$_mDARK_OAK_STAIRS;
 	}
 
 	public static function DARK_OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mDARK_OAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_TRAPDOOR);
+		return clone self::$_mDARK_OAK_TRAPDOOR;
 	}
 
 	public static function DARK_OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mDARK_OAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WALL_HANGING_SIGN);
+		return clone self::$_mDARK_OAK_WALL_HANGING_SIGN;
 	}
 
 	public static function DARK_OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mDARK_OAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WALL_SIGN);
+		return clone self::$_mDARK_OAK_WALL_SIGN;
 	}
 
 	public static function DARK_OAK_WOOD() : Wood{
 		if(!isset(self::$_mDARK_OAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_OAK_WOOD);
+		return clone self::$_mDARK_OAK_WOOD;
 	}
 
 	public static function DARK_PRISMARINE() : Opaque{
 		if(!isset(self::$_mDARK_PRISMARINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE);
+		return clone self::$_mDARK_PRISMARINE;
 	}
 
 	public static function DARK_PRISMARINE_SLAB() : Slab{
 		if(!isset(self::$_mDARK_PRISMARINE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE_SLAB);
+		return clone self::$_mDARK_PRISMARINE_SLAB;
 	}
 
 	public static function DARK_PRISMARINE_STAIRS() : Stair{
 		if(!isset(self::$_mDARK_PRISMARINE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDARK_PRISMARINE_STAIRS);
+		return clone self::$_mDARK_PRISMARINE_STAIRS;
 	}
 
 	public static function DAYLIGHT_SENSOR() : DaylightSensor{
 		if(!isset(self::$_mDAYLIGHT_SENSOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDAYLIGHT_SENSOR);
+		return clone self::$_mDAYLIGHT_SENSOR;
 	}
 
 	public static function DEAD_BUSH() : DeadBush{
 		if(!isset(self::$_mDEAD_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEAD_BUSH);
+		return clone self::$_mDEAD_BUSH;
 	}
 
 	public static function DEEPSLATE() : SimplePillar{
 		if(!isset(self::$_mDEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE);
+		return clone self::$_mDEEPSLATE;
 	}
 
 	public static function DEEPSLATE_BRICKS() : Opaque{
 		if(!isset(self::$_mDEEPSLATE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICKS);
+		return clone self::$_mDEEPSLATE_BRICKS;
 	}
 
 	public static function DEEPSLATE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mDEEPSLATE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_SLAB);
+		return clone self::$_mDEEPSLATE_BRICK_SLAB;
 	}
 
 	public static function DEEPSLATE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mDEEPSLATE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_STAIRS);
+		return clone self::$_mDEEPSLATE_BRICK_STAIRS;
 	}
 
 	public static function DEEPSLATE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mDEEPSLATE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_BRICK_WALL);
+		return clone self::$_mDEEPSLATE_BRICK_WALL;
 	}
 
 	public static function DEEPSLATE_COAL_ORE() : CoalOre{
 		if(!isset(self::$_mDEEPSLATE_COAL_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_COAL_ORE);
+		return clone self::$_mDEEPSLATE_COAL_ORE;
 	}
 
 	public static function DEEPSLATE_COPPER_ORE() : CopperOre{
 		if(!isset(self::$_mDEEPSLATE_COPPER_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_COPPER_ORE);
+		return clone self::$_mDEEPSLATE_COPPER_ORE;
 	}
 
 	public static function DEEPSLATE_DIAMOND_ORE() : DiamondOre{
 		if(!isset(self::$_mDEEPSLATE_DIAMOND_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_DIAMOND_ORE);
+		return clone self::$_mDEEPSLATE_DIAMOND_ORE;
 	}
 
 	public static function DEEPSLATE_EMERALD_ORE() : EmeraldOre{
 		if(!isset(self::$_mDEEPSLATE_EMERALD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_EMERALD_ORE);
+		return clone self::$_mDEEPSLATE_EMERALD_ORE;
 	}
 
 	public static function DEEPSLATE_GOLD_ORE() : GoldOre{
 		if(!isset(self::$_mDEEPSLATE_GOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_GOLD_ORE);
+		return clone self::$_mDEEPSLATE_GOLD_ORE;
 	}
 
 	public static function DEEPSLATE_IRON_ORE() : IronOre{
 		if(!isset(self::$_mDEEPSLATE_IRON_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_IRON_ORE);
+		return clone self::$_mDEEPSLATE_IRON_ORE;
 	}
 
 	public static function DEEPSLATE_LAPIS_LAZULI_ORE() : LapisOre{
 		if(!isset(self::$_mDEEPSLATE_LAPIS_LAZULI_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_LAPIS_LAZULI_ORE);
+		return clone self::$_mDEEPSLATE_LAPIS_LAZULI_ORE;
 	}
 
 	public static function DEEPSLATE_REDSTONE_ORE() : RedstoneOre{
 		if(!isset(self::$_mDEEPSLATE_REDSTONE_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_REDSTONE_ORE);
+		return clone self::$_mDEEPSLATE_REDSTONE_ORE;
 	}
 
 	public static function DEEPSLATE_TILES() : Opaque{
 		if(!isset(self::$_mDEEPSLATE_TILES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILES);
+		return clone self::$_mDEEPSLATE_TILES;
 	}
 
 	public static function DEEPSLATE_TILE_SLAB() : Slab{
 		if(!isset(self::$_mDEEPSLATE_TILE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_SLAB);
+		return clone self::$_mDEEPSLATE_TILE_SLAB;
 	}
 
 	public static function DEEPSLATE_TILE_STAIRS() : Stair{
 		if(!isset(self::$_mDEEPSLATE_TILE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_STAIRS);
+		return clone self::$_mDEEPSLATE_TILE_STAIRS;
 	}
 
 	public static function DEEPSLATE_TILE_WALL() : Wall{
 		if(!isset(self::$_mDEEPSLATE_TILE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDEEPSLATE_TILE_WALL);
+		return clone self::$_mDEEPSLATE_TILE_WALL;
 	}
 
 	public static function DETECTOR_RAIL() : DetectorRail{
 		if(!isset(self::$_mDETECTOR_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDETECTOR_RAIL);
+		return clone self::$_mDETECTOR_RAIL;
 	}
 
 	public static function DIAMOND() : Opaque{
 		if(!isset(self::$_mDIAMOND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIAMOND);
+		return clone self::$_mDIAMOND;
 	}
 
 	public static function DIAMOND_ORE() : DiamondOre{
 		if(!isset(self::$_mDIAMOND_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIAMOND_ORE);
+		return clone self::$_mDIAMOND_ORE;
 	}
 
 	public static function DIORITE() : Opaque{
 		if(!isset(self::$_mDIORITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE);
+		return clone self::$_mDIORITE;
 	}
 
 	public static function DIORITE_SLAB() : Slab{
 		if(!isset(self::$_mDIORITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_SLAB);
+		return clone self::$_mDIORITE_SLAB;
 	}
 
 	public static function DIORITE_STAIRS() : Stair{
 		if(!isset(self::$_mDIORITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_STAIRS);
+		return clone self::$_mDIORITE_STAIRS;
 	}
 
 	public static function DIORITE_WALL() : Wall{
 		if(!isset(self::$_mDIORITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIORITE_WALL);
+		return clone self::$_mDIORITE_WALL;
 	}
 
 	public static function DIRT() : Dirt{
 		if(!isset(self::$_mDIRT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDIRT);
+		return clone self::$_mDIRT;
 	}
 
 	public static function DOUBLE_PITCHER_CROP() : DoublePitcherCrop{
 		if(!isset(self::$_mDOUBLE_PITCHER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDOUBLE_PITCHER_CROP);
+		return clone self::$_mDOUBLE_PITCHER_CROP;
 	}
 
 	public static function DOUBLE_TALLGRASS() : DoubleTallGrass{
 		if(!isset(self::$_mDOUBLE_TALLGRASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDOUBLE_TALLGRASS);
+		return clone self::$_mDOUBLE_TALLGRASS;
 	}
 
 	public static function DRAGON_EGG() : DragonEgg{
 		if(!isset(self::$_mDRAGON_EGG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDRAGON_EGG);
+		return clone self::$_mDRAGON_EGG;
 	}
 
 	public static function DRIED_KELP() : DriedKelp{
 		if(!isset(self::$_mDRIED_KELP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDRIED_KELP);
+		return clone self::$_mDRIED_KELP;
 	}
 
 	public static function DYED_CANDLE() : DyedCandle{
 		if(!isset(self::$_mDYED_CANDLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDYED_CANDLE);
+		return clone self::$_mDYED_CANDLE;
 	}
 
 	public static function DYED_SHULKER_BOX() : DyedShulkerBox{
 		if(!isset(self::$_mDYED_SHULKER_BOX)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mDYED_SHULKER_BOX);
+		return clone self::$_mDYED_SHULKER_BOX;
 	}
 
 	public static function ELEMENT_ACTINIUM() : Element{
 		if(!isset(self::$_mELEMENT_ACTINIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ACTINIUM);
+		return clone self::$_mELEMENT_ACTINIUM;
 	}
 
 	public static function ELEMENT_ALUMINUM() : Element{
 		if(!isset(self::$_mELEMENT_ALUMINUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ALUMINUM);
+		return clone self::$_mELEMENT_ALUMINUM;
 	}
 
 	public static function ELEMENT_AMERICIUM() : Element{
 		if(!isset(self::$_mELEMENT_AMERICIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_AMERICIUM);
+		return clone self::$_mELEMENT_AMERICIUM;
 	}
 
 	public static function ELEMENT_ANTIMONY() : Element{
 		if(!isset(self::$_mELEMENT_ANTIMONY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ANTIMONY);
+		return clone self::$_mELEMENT_ANTIMONY;
 	}
 
 	public static function ELEMENT_ARGON() : Element{
 		if(!isset(self::$_mELEMENT_ARGON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ARGON);
+		return clone self::$_mELEMENT_ARGON;
 	}
 
 	public static function ELEMENT_ARSENIC() : Element{
 		if(!isset(self::$_mELEMENT_ARSENIC)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ARSENIC);
+		return clone self::$_mELEMENT_ARSENIC;
 	}
 
 	public static function ELEMENT_ASTATINE() : Element{
 		if(!isset(self::$_mELEMENT_ASTATINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ASTATINE);
+		return clone self::$_mELEMENT_ASTATINE;
 	}
 
 	public static function ELEMENT_BARIUM() : Element{
 		if(!isset(self::$_mELEMENT_BARIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BARIUM);
+		return clone self::$_mELEMENT_BARIUM;
 	}
 
 	public static function ELEMENT_BERKELIUM() : Element{
 		if(!isset(self::$_mELEMENT_BERKELIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BERKELIUM);
+		return clone self::$_mELEMENT_BERKELIUM;
 	}
 
 	public static function ELEMENT_BERYLLIUM() : Element{
 		if(!isset(self::$_mELEMENT_BERYLLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BERYLLIUM);
+		return clone self::$_mELEMENT_BERYLLIUM;
 	}
 
 	public static function ELEMENT_BISMUTH() : Element{
 		if(!isset(self::$_mELEMENT_BISMUTH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BISMUTH);
+		return clone self::$_mELEMENT_BISMUTH;
 	}
 
 	public static function ELEMENT_BOHRIUM() : Element{
 		if(!isset(self::$_mELEMENT_BOHRIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BOHRIUM);
+		return clone self::$_mELEMENT_BOHRIUM;
 	}
 
 	public static function ELEMENT_BORON() : Element{
 		if(!isset(self::$_mELEMENT_BORON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BORON);
+		return clone self::$_mELEMENT_BORON;
 	}
 
 	public static function ELEMENT_BROMINE() : Element{
 		if(!isset(self::$_mELEMENT_BROMINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_BROMINE);
+		return clone self::$_mELEMENT_BROMINE;
 	}
 
 	public static function ELEMENT_CADMIUM() : Element{
 		if(!isset(self::$_mELEMENT_CADMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CADMIUM);
+		return clone self::$_mELEMENT_CADMIUM;
 	}
 
 	public static function ELEMENT_CALCIUM() : Element{
 		if(!isset(self::$_mELEMENT_CALCIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CALCIUM);
+		return clone self::$_mELEMENT_CALCIUM;
 	}
 
 	public static function ELEMENT_CALIFORNIUM() : Element{
 		if(!isset(self::$_mELEMENT_CALIFORNIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CALIFORNIUM);
+		return clone self::$_mELEMENT_CALIFORNIUM;
 	}
 
 	public static function ELEMENT_CARBON() : Element{
 		if(!isset(self::$_mELEMENT_CARBON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CARBON);
+		return clone self::$_mELEMENT_CARBON;
 	}
 
 	public static function ELEMENT_CERIUM() : Element{
 		if(!isset(self::$_mELEMENT_CERIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CERIUM);
+		return clone self::$_mELEMENT_CERIUM;
 	}
 
 	public static function ELEMENT_CESIUM() : Element{
 		if(!isset(self::$_mELEMENT_CESIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CESIUM);
+		return clone self::$_mELEMENT_CESIUM;
 	}
 
 	public static function ELEMENT_CHLORINE() : Element{
 		if(!isset(self::$_mELEMENT_CHLORINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CHLORINE);
+		return clone self::$_mELEMENT_CHLORINE;
 	}
 
 	public static function ELEMENT_CHROMIUM() : Element{
 		if(!isset(self::$_mELEMENT_CHROMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CHROMIUM);
+		return clone self::$_mELEMENT_CHROMIUM;
 	}
 
 	public static function ELEMENT_COBALT() : Element{
 		if(!isset(self::$_mELEMENT_COBALT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COBALT);
+		return clone self::$_mELEMENT_COBALT;
 	}
 
 	public static function ELEMENT_CONSTRUCTOR() : ChemistryTable{
 		if(!isset(self::$_mELEMENT_CONSTRUCTOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CONSTRUCTOR);
+		return clone self::$_mELEMENT_CONSTRUCTOR;
 	}
 
 	public static function ELEMENT_COPERNICIUM() : Element{
 		if(!isset(self::$_mELEMENT_COPERNICIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COPERNICIUM);
+		return clone self::$_mELEMENT_COPERNICIUM;
 	}
 
 	public static function ELEMENT_COPPER() : Element{
 		if(!isset(self::$_mELEMENT_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_COPPER);
+		return clone self::$_mELEMENT_COPPER;
 	}
 
 	public static function ELEMENT_CURIUM() : Element{
 		if(!isset(self::$_mELEMENT_CURIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_CURIUM);
+		return clone self::$_mELEMENT_CURIUM;
 	}
 
 	public static function ELEMENT_DARMSTADTIUM() : Element{
 		if(!isset(self::$_mELEMENT_DARMSTADTIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DARMSTADTIUM);
+		return clone self::$_mELEMENT_DARMSTADTIUM;
 	}
 
 	public static function ELEMENT_DUBNIUM() : Element{
 		if(!isset(self::$_mELEMENT_DUBNIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DUBNIUM);
+		return clone self::$_mELEMENT_DUBNIUM;
 	}
 
 	public static function ELEMENT_DYSPROSIUM() : Element{
 		if(!isset(self::$_mELEMENT_DYSPROSIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_DYSPROSIUM);
+		return clone self::$_mELEMENT_DYSPROSIUM;
 	}
 
 	public static function ELEMENT_EINSTEINIUM() : Element{
 		if(!isset(self::$_mELEMENT_EINSTEINIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_EINSTEINIUM);
+		return clone self::$_mELEMENT_EINSTEINIUM;
 	}
 
 	public static function ELEMENT_ERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_ERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ERBIUM);
+		return clone self::$_mELEMENT_ERBIUM;
 	}
 
 	public static function ELEMENT_EUROPIUM() : Element{
 		if(!isset(self::$_mELEMENT_EUROPIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_EUROPIUM);
+		return clone self::$_mELEMENT_EUROPIUM;
 	}
 
 	public static function ELEMENT_FERMIUM() : Element{
 		if(!isset(self::$_mELEMENT_FERMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FERMIUM);
+		return clone self::$_mELEMENT_FERMIUM;
 	}
 
 	public static function ELEMENT_FLEROVIUM() : Element{
 		if(!isset(self::$_mELEMENT_FLEROVIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FLEROVIUM);
+		return clone self::$_mELEMENT_FLEROVIUM;
 	}
 
 	public static function ELEMENT_FLUORINE() : Element{
 		if(!isset(self::$_mELEMENT_FLUORINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FLUORINE);
+		return clone self::$_mELEMENT_FLUORINE;
 	}
 
 	public static function ELEMENT_FRANCIUM() : Element{
 		if(!isset(self::$_mELEMENT_FRANCIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_FRANCIUM);
+		return clone self::$_mELEMENT_FRANCIUM;
 	}
 
 	public static function ELEMENT_GADOLINIUM() : Element{
 		if(!isset(self::$_mELEMENT_GADOLINIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GADOLINIUM);
+		return clone self::$_mELEMENT_GADOLINIUM;
 	}
 
 	public static function ELEMENT_GALLIUM() : Element{
 		if(!isset(self::$_mELEMENT_GALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GALLIUM);
+		return clone self::$_mELEMENT_GALLIUM;
 	}
 
 	public static function ELEMENT_GERMANIUM() : Element{
 		if(!isset(self::$_mELEMENT_GERMANIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GERMANIUM);
+		return clone self::$_mELEMENT_GERMANIUM;
 	}
 
 	public static function ELEMENT_GOLD() : Element{
 		if(!isset(self::$_mELEMENT_GOLD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_GOLD);
+		return clone self::$_mELEMENT_GOLD;
 	}
 
 	public static function ELEMENT_HAFNIUM() : Element{
 		if(!isset(self::$_mELEMENT_HAFNIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HAFNIUM);
+		return clone self::$_mELEMENT_HAFNIUM;
 	}
 
 	public static function ELEMENT_HASSIUM() : Element{
 		if(!isset(self::$_mELEMENT_HASSIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HASSIUM);
+		return clone self::$_mELEMENT_HASSIUM;
 	}
 
 	public static function ELEMENT_HELIUM() : Element{
 		if(!isset(self::$_mELEMENT_HELIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HELIUM);
+		return clone self::$_mELEMENT_HELIUM;
 	}
 
 	public static function ELEMENT_HOLMIUM() : Element{
 		if(!isset(self::$_mELEMENT_HOLMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HOLMIUM);
+		return clone self::$_mELEMENT_HOLMIUM;
 	}
 
 	public static function ELEMENT_HYDROGEN() : Element{
 		if(!isset(self::$_mELEMENT_HYDROGEN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_HYDROGEN);
+		return clone self::$_mELEMENT_HYDROGEN;
 	}
 
 	public static function ELEMENT_INDIUM() : Element{
 		if(!isset(self::$_mELEMENT_INDIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_INDIUM);
+		return clone self::$_mELEMENT_INDIUM;
 	}
 
 	public static function ELEMENT_IODINE() : Element{
 		if(!isset(self::$_mELEMENT_IODINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IODINE);
+		return clone self::$_mELEMENT_IODINE;
 	}
 
 	public static function ELEMENT_IRIDIUM() : Element{
 		if(!isset(self::$_mELEMENT_IRIDIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IRIDIUM);
+		return clone self::$_mELEMENT_IRIDIUM;
 	}
 
 	public static function ELEMENT_IRON() : Element{
 		if(!isset(self::$_mELEMENT_IRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_IRON);
+		return clone self::$_mELEMENT_IRON;
 	}
 
 	public static function ELEMENT_KRYPTON() : Element{
 		if(!isset(self::$_mELEMENT_KRYPTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_KRYPTON);
+		return clone self::$_mELEMENT_KRYPTON;
 	}
 
 	public static function ELEMENT_LANTHANUM() : Element{
 		if(!isset(self::$_mELEMENT_LANTHANUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LANTHANUM);
+		return clone self::$_mELEMENT_LANTHANUM;
 	}
 
 	public static function ELEMENT_LAWRENCIUM() : Element{
 		if(!isset(self::$_mELEMENT_LAWRENCIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LAWRENCIUM);
+		return clone self::$_mELEMENT_LAWRENCIUM;
 	}
 
 	public static function ELEMENT_LEAD() : Element{
 		if(!isset(self::$_mELEMENT_LEAD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LEAD);
+		return clone self::$_mELEMENT_LEAD;
 	}
 
 	public static function ELEMENT_LITHIUM() : Element{
 		if(!isset(self::$_mELEMENT_LITHIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LITHIUM);
+		return clone self::$_mELEMENT_LITHIUM;
 	}
 
 	public static function ELEMENT_LIVERMORIUM() : Element{
 		if(!isset(self::$_mELEMENT_LIVERMORIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LIVERMORIUM);
+		return clone self::$_mELEMENT_LIVERMORIUM;
 	}
 
 	public static function ELEMENT_LUTETIUM() : Element{
 		if(!isset(self::$_mELEMENT_LUTETIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_LUTETIUM);
+		return clone self::$_mELEMENT_LUTETIUM;
 	}
 
 	public static function ELEMENT_MAGNESIUM() : Element{
 		if(!isset(self::$_mELEMENT_MAGNESIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MAGNESIUM);
+		return clone self::$_mELEMENT_MAGNESIUM;
 	}
 
 	public static function ELEMENT_MANGANESE() : Element{
 		if(!isset(self::$_mELEMENT_MANGANESE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MANGANESE);
+		return clone self::$_mELEMENT_MANGANESE;
 	}
 
 	public static function ELEMENT_MEITNERIUM() : Element{
 		if(!isset(self::$_mELEMENT_MEITNERIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MEITNERIUM);
+		return clone self::$_mELEMENT_MEITNERIUM;
 	}
 
 	public static function ELEMENT_MENDELEVIUM() : Element{
 		if(!isset(self::$_mELEMENT_MENDELEVIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MENDELEVIUM);
+		return clone self::$_mELEMENT_MENDELEVIUM;
 	}
 
 	public static function ELEMENT_MERCURY() : Element{
 		if(!isset(self::$_mELEMENT_MERCURY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MERCURY);
+		return clone self::$_mELEMENT_MERCURY;
 	}
 
 	public static function ELEMENT_MOLYBDENUM() : Element{
 		if(!isset(self::$_mELEMENT_MOLYBDENUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MOLYBDENUM);
+		return clone self::$_mELEMENT_MOLYBDENUM;
 	}
 
 	public static function ELEMENT_MOSCOVIUM() : Element{
 		if(!isset(self::$_mELEMENT_MOSCOVIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_MOSCOVIUM);
+		return clone self::$_mELEMENT_MOSCOVIUM;
 	}
 
 	public static function ELEMENT_NEODYMIUM() : Element{
 		if(!isset(self::$_mELEMENT_NEODYMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEODYMIUM);
+		return clone self::$_mELEMENT_NEODYMIUM;
 	}
 
 	public static function ELEMENT_NEON() : Element{
 		if(!isset(self::$_mELEMENT_NEON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEON);
+		return clone self::$_mELEMENT_NEON;
 	}
 
 	public static function ELEMENT_NEPTUNIUM() : Element{
 		if(!isset(self::$_mELEMENT_NEPTUNIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NEPTUNIUM);
+		return clone self::$_mELEMENT_NEPTUNIUM;
 	}
 
 	public static function ELEMENT_NICKEL() : Element{
 		if(!isset(self::$_mELEMENT_NICKEL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NICKEL);
+		return clone self::$_mELEMENT_NICKEL;
 	}
 
 	public static function ELEMENT_NIHONIUM() : Element{
 		if(!isset(self::$_mELEMENT_NIHONIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NIHONIUM);
+		return clone self::$_mELEMENT_NIHONIUM;
 	}
 
 	public static function ELEMENT_NIOBIUM() : Element{
 		if(!isset(self::$_mELEMENT_NIOBIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NIOBIUM);
+		return clone self::$_mELEMENT_NIOBIUM;
 	}
 
 	public static function ELEMENT_NITROGEN() : Element{
 		if(!isset(self::$_mELEMENT_NITROGEN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NITROGEN);
+		return clone self::$_mELEMENT_NITROGEN;
 	}
 
 	public static function ELEMENT_NOBELIUM() : Element{
 		if(!isset(self::$_mELEMENT_NOBELIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_NOBELIUM);
+		return clone self::$_mELEMENT_NOBELIUM;
 	}
 
 	public static function ELEMENT_OGANESSON() : Element{
 		if(!isset(self::$_mELEMENT_OGANESSON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OGANESSON);
+		return clone self::$_mELEMENT_OGANESSON;
 	}
 
 	public static function ELEMENT_OSMIUM() : Element{
 		if(!isset(self::$_mELEMENT_OSMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OSMIUM);
+		return clone self::$_mELEMENT_OSMIUM;
 	}
 
 	public static function ELEMENT_OXYGEN() : Element{
 		if(!isset(self::$_mELEMENT_OXYGEN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_OXYGEN);
+		return clone self::$_mELEMENT_OXYGEN;
 	}
 
 	public static function ELEMENT_PALLADIUM() : Element{
 		if(!isset(self::$_mELEMENT_PALLADIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PALLADIUM);
+		return clone self::$_mELEMENT_PALLADIUM;
 	}
 
 	public static function ELEMENT_PHOSPHORUS() : Element{
 		if(!isset(self::$_mELEMENT_PHOSPHORUS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PHOSPHORUS);
+		return clone self::$_mELEMENT_PHOSPHORUS;
 	}
 
 	public static function ELEMENT_PLATINUM() : Element{
 		if(!isset(self::$_mELEMENT_PLATINUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PLATINUM);
+		return clone self::$_mELEMENT_PLATINUM;
 	}
 
 	public static function ELEMENT_PLUTONIUM() : Element{
 		if(!isset(self::$_mELEMENT_PLUTONIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PLUTONIUM);
+		return clone self::$_mELEMENT_PLUTONIUM;
 	}
 
 	public static function ELEMENT_POLONIUM() : Element{
 		if(!isset(self::$_mELEMENT_POLONIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_POLONIUM);
+		return clone self::$_mELEMENT_POLONIUM;
 	}
 
 	public static function ELEMENT_POTASSIUM() : Element{
 		if(!isset(self::$_mELEMENT_POTASSIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_POTASSIUM);
+		return clone self::$_mELEMENT_POTASSIUM;
 	}
 
 	public static function ELEMENT_PRASEODYMIUM() : Element{
 		if(!isset(self::$_mELEMENT_PRASEODYMIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PRASEODYMIUM);
+		return clone self::$_mELEMENT_PRASEODYMIUM;
 	}
 
 	public static function ELEMENT_PROMETHIUM() : Element{
 		if(!isset(self::$_mELEMENT_PROMETHIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PROMETHIUM);
+		return clone self::$_mELEMENT_PROMETHIUM;
 	}
 
 	public static function ELEMENT_PROTACTINIUM() : Element{
 		if(!isset(self::$_mELEMENT_PROTACTINIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_PROTACTINIUM);
+		return clone self::$_mELEMENT_PROTACTINIUM;
 	}
 
 	public static function ELEMENT_RADIUM() : Element{
 		if(!isset(self::$_mELEMENT_RADIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RADIUM);
+		return clone self::$_mELEMENT_RADIUM;
 	}
 
 	public static function ELEMENT_RADON() : Element{
 		if(!isset(self::$_mELEMENT_RADON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RADON);
+		return clone self::$_mELEMENT_RADON;
 	}
 
 	public static function ELEMENT_RHENIUM() : Element{
 		if(!isset(self::$_mELEMENT_RHENIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RHENIUM);
+		return clone self::$_mELEMENT_RHENIUM;
 	}
 
 	public static function ELEMENT_RHODIUM() : Element{
 		if(!isset(self::$_mELEMENT_RHODIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RHODIUM);
+		return clone self::$_mELEMENT_RHODIUM;
 	}
 
 	public static function ELEMENT_ROENTGENIUM() : Element{
 		if(!isset(self::$_mELEMENT_ROENTGENIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ROENTGENIUM);
+		return clone self::$_mELEMENT_ROENTGENIUM;
 	}
 
 	public static function ELEMENT_RUBIDIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUBIDIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUBIDIUM);
+		return clone self::$_mELEMENT_RUBIDIUM;
 	}
 
 	public static function ELEMENT_RUTHENIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUTHENIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUTHENIUM);
+		return clone self::$_mELEMENT_RUTHENIUM;
 	}
 
 	public static function ELEMENT_RUTHERFORDIUM() : Element{
 		if(!isset(self::$_mELEMENT_RUTHERFORDIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_RUTHERFORDIUM);
+		return clone self::$_mELEMENT_RUTHERFORDIUM;
 	}
 
 	public static function ELEMENT_SAMARIUM() : Element{
 		if(!isset(self::$_mELEMENT_SAMARIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SAMARIUM);
+		return clone self::$_mELEMENT_SAMARIUM;
 	}
 
 	public static function ELEMENT_SCANDIUM() : Element{
 		if(!isset(self::$_mELEMENT_SCANDIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SCANDIUM);
+		return clone self::$_mELEMENT_SCANDIUM;
 	}
 
 	public static function ELEMENT_SEABORGIUM() : Element{
 		if(!isset(self::$_mELEMENT_SEABORGIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SEABORGIUM);
+		return clone self::$_mELEMENT_SEABORGIUM;
 	}
 
 	public static function ELEMENT_SELENIUM() : Element{
 		if(!isset(self::$_mELEMENT_SELENIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SELENIUM);
+		return clone self::$_mELEMENT_SELENIUM;
 	}
 
 	public static function ELEMENT_SILICON() : Element{
 		if(!isset(self::$_mELEMENT_SILICON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SILICON);
+		return clone self::$_mELEMENT_SILICON;
 	}
 
 	public static function ELEMENT_SILVER() : Element{
 		if(!isset(self::$_mELEMENT_SILVER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SILVER);
+		return clone self::$_mELEMENT_SILVER;
 	}
 
 	public static function ELEMENT_SODIUM() : Element{
 		if(!isset(self::$_mELEMENT_SODIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SODIUM);
+		return clone self::$_mELEMENT_SODIUM;
 	}
 
 	public static function ELEMENT_STRONTIUM() : Element{
 		if(!isset(self::$_mELEMENT_STRONTIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_STRONTIUM);
+		return clone self::$_mELEMENT_STRONTIUM;
 	}
 
 	public static function ELEMENT_SULFUR() : Element{
 		if(!isset(self::$_mELEMENT_SULFUR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_SULFUR);
+		return clone self::$_mELEMENT_SULFUR;
 	}
 
 	public static function ELEMENT_TANTALUM() : Element{
 		if(!isset(self::$_mELEMENT_TANTALUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TANTALUM);
+		return clone self::$_mELEMENT_TANTALUM;
 	}
 
 	public static function ELEMENT_TECHNETIUM() : Element{
 		if(!isset(self::$_mELEMENT_TECHNETIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TECHNETIUM);
+		return clone self::$_mELEMENT_TECHNETIUM;
 	}
 
 	public static function ELEMENT_TELLURIUM() : Element{
 		if(!isset(self::$_mELEMENT_TELLURIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TELLURIUM);
+		return clone self::$_mELEMENT_TELLURIUM;
 	}
 
 	public static function ELEMENT_TENNESSINE() : Element{
 		if(!isset(self::$_mELEMENT_TENNESSINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TENNESSINE);
+		return clone self::$_mELEMENT_TENNESSINE;
 	}
 
 	public static function ELEMENT_TERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_TERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TERBIUM);
+		return clone self::$_mELEMENT_TERBIUM;
 	}
 
 	public static function ELEMENT_THALLIUM() : Element{
 		if(!isset(self::$_mELEMENT_THALLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THALLIUM);
+		return clone self::$_mELEMENT_THALLIUM;
 	}
 
 	public static function ELEMENT_THORIUM() : Element{
 		if(!isset(self::$_mELEMENT_THORIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THORIUM);
+		return clone self::$_mELEMENT_THORIUM;
 	}
 
 	public static function ELEMENT_THULIUM() : Element{
 		if(!isset(self::$_mELEMENT_THULIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_THULIUM);
+		return clone self::$_mELEMENT_THULIUM;
 	}
 
 	public static function ELEMENT_TIN() : Element{
 		if(!isset(self::$_mELEMENT_TIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TIN);
+		return clone self::$_mELEMENT_TIN;
 	}
 
 	public static function ELEMENT_TITANIUM() : Element{
 		if(!isset(self::$_mELEMENT_TITANIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TITANIUM);
+		return clone self::$_mELEMENT_TITANIUM;
 	}
 
 	public static function ELEMENT_TUNGSTEN() : Element{
 		if(!isset(self::$_mELEMENT_TUNGSTEN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_TUNGSTEN);
+		return clone self::$_mELEMENT_TUNGSTEN;
 	}
 
 	public static function ELEMENT_URANIUM() : Element{
 		if(!isset(self::$_mELEMENT_URANIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_URANIUM);
+		return clone self::$_mELEMENT_URANIUM;
 	}
 
 	public static function ELEMENT_VANADIUM() : Element{
 		if(!isset(self::$_mELEMENT_VANADIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_VANADIUM);
+		return clone self::$_mELEMENT_VANADIUM;
 	}
 
 	public static function ELEMENT_XENON() : Element{
 		if(!isset(self::$_mELEMENT_XENON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_XENON);
+		return clone self::$_mELEMENT_XENON;
 	}
 
 	public static function ELEMENT_YTTERBIUM() : Element{
 		if(!isset(self::$_mELEMENT_YTTERBIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_YTTERBIUM);
+		return clone self::$_mELEMENT_YTTERBIUM;
 	}
 
 	public static function ELEMENT_YTTRIUM() : Element{
 		if(!isset(self::$_mELEMENT_YTTRIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_YTTRIUM);
+		return clone self::$_mELEMENT_YTTRIUM;
 	}
 
 	public static function ELEMENT_ZERO() : Opaque{
 		if(!isset(self::$_mELEMENT_ZERO)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZERO);
+		return clone self::$_mELEMENT_ZERO;
 	}
 
 	public static function ELEMENT_ZINC() : Element{
 		if(!isset(self::$_mELEMENT_ZINC)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZINC);
+		return clone self::$_mELEMENT_ZINC;
 	}
 
 	public static function ELEMENT_ZIRCONIUM() : Element{
 		if(!isset(self::$_mELEMENT_ZIRCONIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mELEMENT_ZIRCONIUM);
+		return clone self::$_mELEMENT_ZIRCONIUM;
 	}
 
 	public static function EMERALD() : Opaque{
 		if(!isset(self::$_mEMERALD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEMERALD);
+		return clone self::$_mEMERALD;
 	}
 
 	public static function EMERALD_ORE() : EmeraldOre{
 		if(!isset(self::$_mEMERALD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEMERALD_ORE);
+		return clone self::$_mEMERALD_ORE;
 	}
 
 	public static function ENCHANTING_TABLE() : EnchantingTable{
 		if(!isset(self::$_mENCHANTING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mENCHANTING_TABLE);
+		return clone self::$_mENCHANTING_TABLE;
 	}
 
 	public static function ENDER_CHEST() : EnderChest{
 		if(!isset(self::$_mENDER_CHEST)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mENDER_CHEST);
+		return clone self::$_mENDER_CHEST;
 	}
 
 	public static function END_PORTAL_FRAME() : EndPortalFrame{
 		if(!isset(self::$_mEND_PORTAL_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_PORTAL_FRAME);
+		return clone self::$_mEND_PORTAL_FRAME;
 	}
 
 	public static function END_ROD() : EndRod{
 		if(!isset(self::$_mEND_ROD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_ROD);
+		return clone self::$_mEND_ROD;
 	}
 
 	public static function END_STONE() : Opaque{
 		if(!isset(self::$_mEND_STONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE);
+		return clone self::$_mEND_STONE;
 	}
 
 	public static function END_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mEND_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICKS);
+		return clone self::$_mEND_STONE_BRICKS;
 	}
 
 	public static function END_STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mEND_STONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_SLAB);
+		return clone self::$_mEND_STONE_BRICK_SLAB;
 	}
 
 	public static function END_STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mEND_STONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_STAIRS);
+		return clone self::$_mEND_STONE_BRICK_STAIRS;
 	}
 
 	public static function END_STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mEND_STONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mEND_STONE_BRICK_WALL);
+		return clone self::$_mEND_STONE_BRICK_WALL;
 	}
 
 	public static function FAKE_WOODEN_SLAB() : Slab{
 		if(!isset(self::$_mFAKE_WOODEN_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFAKE_WOODEN_SLAB);
+		return clone self::$_mFAKE_WOODEN_SLAB;
 	}
 
 	public static function FARMLAND() : Farmland{
 		if(!isset(self::$_mFARMLAND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFARMLAND);
+		return clone self::$_mFARMLAND;
 	}
 
 	public static function FERN() : TallGrass{
 		if(!isset(self::$_mFERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFERN);
+		return clone self::$_mFERN;
 	}
 
 	public static function FIRE() : Fire{
 		if(!isset(self::$_mFIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFIRE);
+		return clone self::$_mFIRE;
 	}
 
 	public static function FLETCHING_TABLE() : FletchingTable{
 		if(!isset(self::$_mFLETCHING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFLETCHING_TABLE);
+		return clone self::$_mFLETCHING_TABLE;
+	}
+
+	public static function FLOWERING_AZALEA() : Azalea{
+		if(!isset(self::$_mFLOWERING_AZALEA)){ self::init(); }
+		return clone self::$_mFLOWERING_AZALEA;
 	}
 
 	public static function FLOWERING_AZALEA_LEAVES() : Leaves{
 		if(!isset(self::$_mFLOWERING_AZALEA_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWERING_AZALEA_LEAVES);
+		return clone self::$_mFLOWERING_AZALEA_LEAVES;
 	}
 
 	public static function FLOWER_POT() : FlowerPot{
 		if(!isset(self::$_mFLOWER_POT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFLOWER_POT);
+		return clone self::$_mFLOWER_POT;
 	}
 
 	public static function FROGLIGHT() : Froglight{
 		if(!isset(self::$_mFROGLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFROGLIGHT);
+		return clone self::$_mFROGLIGHT;
 	}
 
 	public static function FROSTED_ICE() : FrostedIce{
 		if(!isset(self::$_mFROSTED_ICE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFROSTED_ICE);
+		return clone self::$_mFROSTED_ICE;
 	}
 
 	public static function FURNACE() : Furnace{
 		if(!isset(self::$_mFURNACE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mFURNACE);
+		return clone self::$_mFURNACE;
 	}
 
 	public static function GILDED_BLACKSTONE() : GildedBlackstone{
 		if(!isset(self::$_mGILDED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGILDED_BLACKSTONE);
+		return clone self::$_mGILDED_BLACKSTONE;
 	}
 
 	public static function GLASS() : Glass{
 		if(!isset(self::$_mGLASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLASS);
+		return clone self::$_mGLASS;
 	}
 
 	public static function GLASS_PANE() : GlassPane{
 		if(!isset(self::$_mGLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLASS_PANE);
+		return clone self::$_mGLASS_PANE;
 	}
 
 	public static function GLAZED_TERRACOTTA() : GlazedTerracotta{
 		if(!isset(self::$_mGLAZED_TERRACOTTA)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLAZED_TERRACOTTA);
+		return clone self::$_mGLAZED_TERRACOTTA;
 	}
 
 	public static function GLOWING_ITEM_FRAME() : ItemFrame{
 		if(!isset(self::$_mGLOWING_ITEM_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWING_ITEM_FRAME);
+		return clone self::$_mGLOWING_ITEM_FRAME;
 	}
 
 	public static function GLOWING_OBSIDIAN() : GlowingObsidian{
 		if(!isset(self::$_mGLOWING_OBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWING_OBSIDIAN);
+		return clone self::$_mGLOWING_OBSIDIAN;
 	}
 
 	public static function GLOWSTONE() : Glowstone{
 		if(!isset(self::$_mGLOWSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLOWSTONE);
+		return clone self::$_mGLOWSTONE;
 	}
 
 	public static function GLOW_LICHEN() : GlowLichen{
 		if(!isset(self::$_mGLOW_LICHEN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGLOW_LICHEN);
+		return clone self::$_mGLOW_LICHEN;
 	}
 
 	public static function GOLD() : Opaque{
 		if(!isset(self::$_mGOLD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGOLD);
+		return clone self::$_mGOLD;
 	}
 
 	public static function GOLD_ORE() : GoldOre{
 		if(!isset(self::$_mGOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGOLD_ORE);
+		return clone self::$_mGOLD_ORE;
 	}
 
 	public static function GRANITE() : Opaque{
 		if(!isset(self::$_mGRANITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE);
+		return clone self::$_mGRANITE;
 	}
 
 	public static function GRANITE_SLAB() : Slab{
 		if(!isset(self::$_mGRANITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_SLAB);
+		return clone self::$_mGRANITE_SLAB;
 	}
 
 	public static function GRANITE_STAIRS() : Stair{
 		if(!isset(self::$_mGRANITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_STAIRS);
+		return clone self::$_mGRANITE_STAIRS;
 	}
 
 	public static function GRANITE_WALL() : Wall{
 		if(!isset(self::$_mGRANITE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRANITE_WALL);
+		return clone self::$_mGRANITE_WALL;
 	}
 
 	public static function GRASS() : Grass{
 		if(!isset(self::$_mGRASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRASS);
+		return clone self::$_mGRASS;
 	}
 
 	public static function GRASS_PATH() : GrassPath{
 		if(!isset(self::$_mGRASS_PATH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRASS_PATH);
+		return clone self::$_mGRASS_PATH;
 	}
 
 	public static function GRAVEL() : Gravel{
 		if(!isset(self::$_mGRAVEL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGRAVEL);
+		return clone self::$_mGRAVEL;
 	}
 
 	public static function GREEN_TORCH() : Torch{
 		if(!isset(self::$_mGREEN_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mGREEN_TORCH);
+		return clone self::$_mGREEN_TORCH;
 	}
 
 	public static function HANGING_ROOTS() : HangingRoots{
 		if(!isset(self::$_mHANGING_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHANGING_ROOTS);
+		return clone self::$_mHANGING_ROOTS;
 	}
 
 	public static function HARDENED_CLAY() : HardenedClay{
 		if(!isset(self::$_mHARDENED_CLAY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_CLAY);
+		return clone self::$_mHARDENED_CLAY;
 	}
 
 	public static function HARDENED_GLASS() : HardenedGlass{
 		if(!isset(self::$_mHARDENED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_GLASS);
+		return clone self::$_mHARDENED_GLASS;
 	}
 
 	public static function HARDENED_GLASS_PANE() : HardenedGlassPane{
 		if(!isset(self::$_mHARDENED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHARDENED_GLASS_PANE);
+		return clone self::$_mHARDENED_GLASS_PANE;
 	}
 
 	public static function HAY_BALE() : HayBale{
 		if(!isset(self::$_mHAY_BALE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHAY_BALE);
+		return clone self::$_mHAY_BALE;
 	}
 
 	public static function HONEYCOMB() : Opaque{
 		if(!isset(self::$_mHONEYCOMB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHONEYCOMB);
+		return clone self::$_mHONEYCOMB;
 	}
 
 	public static function HOPPER() : Hopper{
 		if(!isset(self::$_mHOPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mHOPPER);
+		return clone self::$_mHOPPER;
 	}
 
 	public static function ICE() : Ice{
 		if(!isset(self::$_mICE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mICE);
+		return clone self::$_mICE;
 	}
 
 	public static function INFESTED_CHISELED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_CHISELED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_CHISELED_STONE_BRICK);
+		return clone self::$_mINFESTED_CHISELED_STONE_BRICK;
 	}
 
 	public static function INFESTED_COBBLESTONE() : InfestedStone{
 		if(!isset(self::$_mINFESTED_COBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_COBBLESTONE);
+		return clone self::$_mINFESTED_COBBLESTONE;
 	}
 
 	public static function INFESTED_CRACKED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_CRACKED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_CRACKED_STONE_BRICK);
+		return clone self::$_mINFESTED_CRACKED_STONE_BRICK;
 	}
 
 	public static function INFESTED_DEEPSLATE() : InfestedPillar{
 		if(!isset(self::$_mINFESTED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_DEEPSLATE);
+		return clone self::$_mINFESTED_DEEPSLATE;
 	}
 
 	public static function INFESTED_MOSSY_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_MOSSY_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_MOSSY_STONE_BRICK);
+		return clone self::$_mINFESTED_MOSSY_STONE_BRICK;
 	}
 
 	public static function INFESTED_STONE() : InfestedStone{
 		if(!isset(self::$_mINFESTED_STONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_STONE);
+		return clone self::$_mINFESTED_STONE;
 	}
 
 	public static function INFESTED_STONE_BRICK() : InfestedStone{
 		if(!isset(self::$_mINFESTED_STONE_BRICK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFESTED_STONE_BRICK);
+		return clone self::$_mINFESTED_STONE_BRICK;
 	}
 
 	public static function INFO_UPDATE() : Opaque{
 		if(!isset(self::$_mINFO_UPDATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFO_UPDATE);
+		return clone self::$_mINFO_UPDATE;
 	}
 
 	public static function INFO_UPDATE2() : Opaque{
 		if(!isset(self::$_mINFO_UPDATE2)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINFO_UPDATE2);
+		return clone self::$_mINFO_UPDATE2;
 	}
 
 	public static function INVISIBLE_BEDROCK() : Transparent{
 		if(!isset(self::$_mINVISIBLE_BEDROCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mINVISIBLE_BEDROCK);
+		return clone self::$_mINVISIBLE_BEDROCK;
 	}
 
 	public static function IRON() : Opaque{
 		if(!isset(self::$_mIRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mIRON);
+		return clone self::$_mIRON;
 	}
 
 	public static function IRON_BARS() : Thin{
 		if(!isset(self::$_mIRON_BARS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_BARS);
+		return clone self::$_mIRON_BARS;
 	}
 
 	public static function IRON_DOOR() : Door{
 		if(!isset(self::$_mIRON_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_DOOR);
+		return clone self::$_mIRON_DOOR;
 	}
 
 	public static function IRON_ORE() : IronOre{
 		if(!isset(self::$_mIRON_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_ORE);
+		return clone self::$_mIRON_ORE;
 	}
 
 	public static function IRON_TRAPDOOR() : Trapdoor{
 		if(!isset(self::$_mIRON_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mIRON_TRAPDOOR);
+		return clone self::$_mIRON_TRAPDOOR;
 	}
 
 	public static function ITEM_FRAME() : ItemFrame{
 		if(!isset(self::$_mITEM_FRAME)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mITEM_FRAME);
+		return clone self::$_mITEM_FRAME;
 	}
 
 	public static function JUKEBOX() : Jukebox{
 		if(!isset(self::$_mJUKEBOX)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUKEBOX);
+		return clone self::$_mJUKEBOX;
 	}
 
 	public static function JUNGLE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mJUNGLE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_BUTTON);
+		return clone self::$_mJUNGLE_BUTTON;
 	}
 
 	public static function JUNGLE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mJUNGLE_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function JUNGLE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mJUNGLE_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function JUNGLE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mJUNGLE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_DOOR);
+		return clone self::$_mJUNGLE_DOOR;
 	}
 
 	public static function JUNGLE_FENCE() : WoodenFence{
 		if(!isset(self::$_mJUNGLE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_FENCE);
+		return clone self::$_mJUNGLE_FENCE;
 	}
 
 	public static function JUNGLE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mJUNGLE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_FENCE_GATE);
+		return clone self::$_mJUNGLE_FENCE_GATE;
 	}
 
 	public static function JUNGLE_LEAVES() : Leaves{
 		if(!isset(self::$_mJUNGLE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_LEAVES);
+		return clone self::$_mJUNGLE_LEAVES;
 	}
 
 	public static function JUNGLE_LOG() : Wood{
 		if(!isset(self::$_mJUNGLE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_LOG);
+		return clone self::$_mJUNGLE_LOG;
 	}
 
 	public static function JUNGLE_PLANKS() : Planks{
 		if(!isset(self::$_mJUNGLE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_PLANKS);
+		return clone self::$_mJUNGLE_PLANKS;
 	}
 
 	public static function JUNGLE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mJUNGLE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_PRESSURE_PLATE);
+		return clone self::$_mJUNGLE_PRESSURE_PLATE;
 	}
 
 	public static function JUNGLE_SAPLING() : Sapling{
 		if(!isset(self::$_mJUNGLE_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SAPLING);
+		return clone self::$_mJUNGLE_SAPLING;
 	}
 
 	public static function JUNGLE_SIGN() : FloorSign{
 		if(!isset(self::$_mJUNGLE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SIGN);
+		return clone self::$_mJUNGLE_SIGN;
 	}
 
 	public static function JUNGLE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mJUNGLE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_SLAB);
+		return clone self::$_mJUNGLE_SLAB;
 	}
 
 	public static function JUNGLE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mJUNGLE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_STAIRS);
+		return clone self::$_mJUNGLE_STAIRS;
 	}
 
 	public static function JUNGLE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mJUNGLE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_TRAPDOOR);
+		return clone self::$_mJUNGLE_TRAPDOOR;
 	}
 
 	public static function JUNGLE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mJUNGLE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WALL_HANGING_SIGN);
+		return clone self::$_mJUNGLE_WALL_HANGING_SIGN;
 	}
 
 	public static function JUNGLE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mJUNGLE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WALL_SIGN);
+		return clone self::$_mJUNGLE_WALL_SIGN;
 	}
 
 	public static function JUNGLE_WOOD() : Wood{
 		if(!isset(self::$_mJUNGLE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mJUNGLE_WOOD);
+		return clone self::$_mJUNGLE_WOOD;
 	}
 
 	public static function LAB_TABLE() : ChemistryTable{
 		if(!isset(self::$_mLAB_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLAB_TABLE);
+		return clone self::$_mLAB_TABLE;
 	}
 
 	public static function LADDER() : Ladder{
 		if(!isset(self::$_mLADDER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLADDER);
+		return clone self::$_mLADDER;
 	}
 
 	public static function LANTERN() : Lantern{
 		if(!isset(self::$_mLANTERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLANTERN);
+		return clone self::$_mLANTERN;
 	}
 
 	public static function LAPIS_LAZULI() : Opaque{
 		if(!isset(self::$_mLAPIS_LAZULI)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLAPIS_LAZULI);
+		return clone self::$_mLAPIS_LAZULI;
 	}
 
 	public static function LAPIS_LAZULI_ORE() : LapisOre{
 		if(!isset(self::$_mLAPIS_LAZULI_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLAPIS_LAZULI_ORE);
+		return clone self::$_mLAPIS_LAZULI_ORE;
 	}
 
 	public static function LARGE_FERN() : DoubleTallGrass{
 		if(!isset(self::$_mLARGE_FERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLARGE_FERN);
+		return clone self::$_mLARGE_FERN;
 	}
 
 	public static function LAVA() : Lava{
 		if(!isset(self::$_mLAVA)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLAVA);
+		return clone self::$_mLAVA;
 	}
 
 	public static function LAVA_CAULDRON() : LavaCauldron{
 		if(!isset(self::$_mLAVA_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLAVA_CAULDRON);
+		return clone self::$_mLAVA_CAULDRON;
 	}
 
 	public static function LECTERN() : Lectern{
 		if(!isset(self::$_mLECTERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLECTERN);
+		return clone self::$_mLECTERN;
 	}
 
 	public static function LEGACY_STONECUTTER() : Opaque{
 		if(!isset(self::$_mLEGACY_STONECUTTER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLEGACY_STONECUTTER);
+		return clone self::$_mLEGACY_STONECUTTER;
 	}
 
 	public static function LEVER() : Lever{
 		if(!isset(self::$_mLEVER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLEVER);
+		return clone self::$_mLEVER;
 	}
 
 	public static function LIGHT() : Light{
 		if(!isset(self::$_mLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLIGHT);
+		return clone self::$_mLIGHT;
 	}
 
 	public static function LIGHTNING_ROD() : LightningRod{
 		if(!isset(self::$_mLIGHTNING_ROD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLIGHTNING_ROD);
+		return clone self::$_mLIGHTNING_ROD;
 	}
 
 	public static function LILAC() : DoublePlant{
 		if(!isset(self::$_mLILAC)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLILAC);
+		return clone self::$_mLILAC;
 	}
 
 	public static function LILY_OF_THE_VALLEY() : Flower{
 		if(!isset(self::$_mLILY_OF_THE_VALLEY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLILY_OF_THE_VALLEY);
+		return clone self::$_mLILY_OF_THE_VALLEY;
 	}
 
 	public static function LILY_PAD() : WaterLily{
 		if(!isset(self::$_mLILY_PAD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLILY_PAD);
+		return clone self::$_mLILY_PAD;
 	}
 
 	public static function LIT_PUMPKIN() : LitPumpkin{
 		if(!isset(self::$_mLIT_PUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLIT_PUMPKIN);
+		return clone self::$_mLIT_PUMPKIN;
 	}
 
 	public static function LOOM() : Loom{
 		if(!isset(self::$_mLOOM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mLOOM);
+		return clone self::$_mLOOM;
 	}
 
 	public static function MAGMA() : Magma{
 		if(!isset(self::$_mMAGMA)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMAGMA);
+		return clone self::$_mMAGMA;
 	}
 
 	public static function MANGROVE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mMANGROVE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_BUTTON);
+		return clone self::$_mMANGROVE_BUTTON;
 	}
 
 	public static function MANGROVE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mMANGROVE_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function MANGROVE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mMANGROVE_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function MANGROVE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mMANGROVE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_DOOR);
+		return clone self::$_mMANGROVE_DOOR;
 	}
 
 	public static function MANGROVE_FENCE() : WoodenFence{
 		if(!isset(self::$_mMANGROVE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_FENCE);
+		return clone self::$_mMANGROVE_FENCE;
 	}
 
 	public static function MANGROVE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mMANGROVE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_FENCE_GATE);
+		return clone self::$_mMANGROVE_FENCE_GATE;
 	}
 
 	public static function MANGROVE_LEAVES() : Leaves{
 		if(!isset(self::$_mMANGROVE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_LEAVES);
+		return clone self::$_mMANGROVE_LEAVES;
 	}
 
 	public static function MANGROVE_LOG() : Wood{
 		if(!isset(self::$_mMANGROVE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_LOG);
+		return clone self::$_mMANGROVE_LOG;
 	}
 
 	public static function MANGROVE_PLANKS() : Planks{
 		if(!isset(self::$_mMANGROVE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_PLANKS);
+		return clone self::$_mMANGROVE_PLANKS;
 	}
 
 	public static function MANGROVE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mMANGROVE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_PRESSURE_PLATE);
+		return clone self::$_mMANGROVE_PRESSURE_PLATE;
 	}
 
 	public static function MANGROVE_ROOTS() : MangroveRoots{
 		if(!isset(self::$_mMANGROVE_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_ROOTS);
+		return clone self::$_mMANGROVE_ROOTS;
 	}
 
 	public static function MANGROVE_SIGN() : FloorSign{
 		if(!isset(self::$_mMANGROVE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_SIGN);
+		return clone self::$_mMANGROVE_SIGN;
 	}
 
 	public static function MANGROVE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mMANGROVE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_SLAB);
+		return clone self::$_mMANGROVE_SLAB;
 	}
 
 	public static function MANGROVE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mMANGROVE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_STAIRS);
+		return clone self::$_mMANGROVE_STAIRS;
 	}
 
 	public static function MANGROVE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mMANGROVE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_TRAPDOOR);
+		return clone self::$_mMANGROVE_TRAPDOOR;
 	}
 
 	public static function MANGROVE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mMANGROVE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WALL_HANGING_SIGN);
+		return clone self::$_mMANGROVE_WALL_HANGING_SIGN;
 	}
 
 	public static function MANGROVE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mMANGROVE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WALL_SIGN);
+		return clone self::$_mMANGROVE_WALL_SIGN;
 	}
 
 	public static function MANGROVE_WOOD() : Wood{
 		if(!isset(self::$_mMANGROVE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMANGROVE_WOOD);
+		return clone self::$_mMANGROVE_WOOD;
 	}
 
 	public static function MATERIAL_REDUCER() : ChemistryTable{
 		if(!isset(self::$_mMATERIAL_REDUCER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMATERIAL_REDUCER);
+		return clone self::$_mMATERIAL_REDUCER;
 	}
 
 	public static function MELON() : Melon{
 		if(!isset(self::$_mMELON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMELON);
+		return clone self::$_mMELON;
 	}
 
 	public static function MELON_STEM() : MelonStem{
 		if(!isset(self::$_mMELON_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMELON_STEM);
+		return clone self::$_mMELON_STEM;
 	}
 
 	public static function MOB_HEAD() : MobHead{
 		if(!isset(self::$_mMOB_HEAD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOB_HEAD);
+		return clone self::$_mMOB_HEAD;
 	}
 
 	public static function MONSTER_SPAWNER() : MonsterSpawner{
 		if(!isset(self::$_mMONSTER_SPAWNER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMONSTER_SPAWNER);
+		return clone self::$_mMONSTER_SPAWNER;
 	}
 
 	public static function MOSSY_COBBLESTONE() : Opaque{
 		if(!isset(self::$_mMOSSY_COBBLESTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE);
+		return clone self::$_mMOSSY_COBBLESTONE;
 	}
 
 	public static function MOSSY_COBBLESTONE_SLAB() : Slab{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_SLAB);
+		return clone self::$_mMOSSY_COBBLESTONE_SLAB;
 	}
 
 	public static function MOSSY_COBBLESTONE_STAIRS() : Stair{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_STAIRS);
+		return clone self::$_mMOSSY_COBBLESTONE_STAIRS;
 	}
 
 	public static function MOSSY_COBBLESTONE_WALL() : Wall{
 		if(!isset(self::$_mMOSSY_COBBLESTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_COBBLESTONE_WALL);
+		return clone self::$_mMOSSY_COBBLESTONE_WALL;
 	}
 
 	public static function MOSSY_STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mMOSSY_STONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICKS);
+		return clone self::$_mMOSSY_STONE_BRICKS;
 	}
 
 	public static function MOSSY_STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_SLAB);
+		return clone self::$_mMOSSY_STONE_BRICK_SLAB;
 	}
 
 	public static function MOSSY_STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_STAIRS);
+		return clone self::$_mMOSSY_STONE_BRICK_STAIRS;
 	}
 
 	public static function MOSSY_STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mMOSSY_STONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSSY_STONE_BRICK_WALL);
+		return clone self::$_mMOSSY_STONE_BRICK_WALL;
 	}
 
 	public static function MOSS_BLOCK() : Moss{
@@ -4185,242 +4325,242 @@ final class VanillaBlocks{
 
 	public static function MUD() : Opaque{
 		if(!isset(self::$_mMUD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUD);
+		return clone self::$_mMUD;
 	}
 
 	public static function MUDDY_MANGROVE_ROOTS() : SimplePillar{
 		if(!isset(self::$_mMUDDY_MANGROVE_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUDDY_MANGROVE_ROOTS);
+		return clone self::$_mMUDDY_MANGROVE_ROOTS;
 	}
 
 	public static function MUD_BRICKS() : Opaque{
 		if(!isset(self::$_mMUD_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICKS);
+		return clone self::$_mMUD_BRICKS;
 	}
 
 	public static function MUD_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mMUD_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_SLAB);
+		return clone self::$_mMUD_BRICK_SLAB;
 	}
 
 	public static function MUD_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mMUD_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_STAIRS);
+		return clone self::$_mMUD_BRICK_STAIRS;
 	}
 
 	public static function MUD_BRICK_WALL() : Wall{
 		if(!isset(self::$_mMUD_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUD_BRICK_WALL);
+		return clone self::$_mMUD_BRICK_WALL;
 	}
 
 	public static function MUSHROOM_STEM() : MushroomStem{
 		if(!isset(self::$_mMUSHROOM_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMUSHROOM_STEM);
+		return clone self::$_mMUSHROOM_STEM;
 	}
 
 	public static function MYCELIUM() : Mycelium{
 		if(!isset(self::$_mMYCELIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMYCELIUM);
+		return clone self::$_mMYCELIUM;
 	}
 
 	public static function NETHERITE() : Opaque{
 		if(!isset(self::$_mNETHERITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHERITE);
+		return clone self::$_mNETHERITE;
 	}
 
 	public static function NETHERRACK() : Netherrack{
 		if(!isset(self::$_mNETHERRACK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHERRACK);
+		return clone self::$_mNETHERRACK;
 	}
 
 	public static function NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mNETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICKS);
+		return clone self::$_mNETHER_BRICKS;
 	}
 
 	public static function NETHER_BRICK_FENCE() : Fence{
 		if(!isset(self::$_mNETHER_BRICK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_FENCE);
+		return clone self::$_mNETHER_BRICK_FENCE;
 	}
 
 	public static function NETHER_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mNETHER_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_SLAB);
+		return clone self::$_mNETHER_BRICK_SLAB;
 	}
 
 	public static function NETHER_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mNETHER_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_STAIRS);
+		return clone self::$_mNETHER_BRICK_STAIRS;
 	}
 
 	public static function NETHER_BRICK_WALL() : Wall{
 		if(!isset(self::$_mNETHER_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_BRICK_WALL);
+		return clone self::$_mNETHER_BRICK_WALL;
 	}
 
 	public static function NETHER_GOLD_ORE() : NetherGoldOre{
 		if(!isset(self::$_mNETHER_GOLD_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_GOLD_ORE);
+		return clone self::$_mNETHER_GOLD_ORE;
 	}
 
 	public static function NETHER_PORTAL() : NetherPortal{
 		if(!isset(self::$_mNETHER_PORTAL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_PORTAL);
+		return clone self::$_mNETHER_PORTAL;
 	}
 
 	public static function NETHER_QUARTZ_ORE() : NetherQuartzOre{
 		if(!isset(self::$_mNETHER_QUARTZ_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_QUARTZ_ORE);
+		return clone self::$_mNETHER_QUARTZ_ORE;
 	}
 
 	public static function NETHER_REACTOR_CORE() : NetherReactor{
 		if(!isset(self::$_mNETHER_REACTOR_CORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_REACTOR_CORE);
+		return clone self::$_mNETHER_REACTOR_CORE;
 	}
 
 	public static function NETHER_SPROUTS() : NetherSprouts{
 		if(!isset(self::$_mNETHER_SPROUTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_SPROUTS);
+		return clone self::$_mNETHER_SPROUTS;
 	}
 
 	public static function NETHER_WART() : NetherWartPlant{
 		if(!isset(self::$_mNETHER_WART)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_WART);
+		return clone self::$_mNETHER_WART;
 	}
 
 	public static function NETHER_WART_BLOCK() : Opaque{
 		if(!isset(self::$_mNETHER_WART_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNETHER_WART_BLOCK);
+		return clone self::$_mNETHER_WART_BLOCK;
 	}
 
 	public static function NOTE_BLOCK() : Note{
 		if(!isset(self::$_mNOTE_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mNOTE_BLOCK);
+		return clone self::$_mNOTE_BLOCK;
 	}
 
 	public static function OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mOAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_BUTTON);
+		return clone self::$_mOAK_BUTTON;
 	}
 
 	public static function OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mOAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mOAK_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mOAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mOAK_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mOAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_DOOR);
+		return clone self::$_mOAK_DOOR;
 	}
 
 	public static function OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mOAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_FENCE);
+		return clone self::$_mOAK_FENCE;
 	}
 
 	public static function OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mOAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_FENCE_GATE);
+		return clone self::$_mOAK_FENCE_GATE;
 	}
 
 	public static function OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mOAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_LEAVES);
+		return clone self::$_mOAK_LEAVES;
 	}
 
 	public static function OAK_LOG() : Wood{
 		if(!isset(self::$_mOAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_LOG);
+		return clone self::$_mOAK_LOG;
 	}
 
 	public static function OAK_PLANKS() : Planks{
 		if(!isset(self::$_mOAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_PLANKS);
+		return clone self::$_mOAK_PLANKS;
 	}
 
 	public static function OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mOAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_PRESSURE_PLATE);
+		return clone self::$_mOAK_PRESSURE_PLATE;
 	}
 
 	public static function OAK_SAPLING() : Sapling{
 		if(!isset(self::$_mOAK_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SAPLING);
+		return clone self::$_mOAK_SAPLING;
 	}
 
 	public static function OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mOAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SIGN);
+		return clone self::$_mOAK_SIGN;
 	}
 
 	public static function OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mOAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_SLAB);
+		return clone self::$_mOAK_SLAB;
 	}
 
 	public static function OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mOAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_STAIRS);
+		return clone self::$_mOAK_STAIRS;
 	}
 
 	public static function OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mOAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_TRAPDOOR);
+		return clone self::$_mOAK_TRAPDOOR;
 	}
 
 	public static function OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mOAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WALL_HANGING_SIGN);
+		return clone self::$_mOAK_WALL_HANGING_SIGN;
 	}
 
 	public static function OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mOAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WALL_SIGN);
+		return clone self::$_mOAK_WALL_SIGN;
 	}
 
 	public static function OAK_WOOD() : Wood{
 		if(!isset(self::$_mOAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOAK_WOOD);
+		return clone self::$_mOAK_WOOD;
 	}
 
 	public static function OBSIDIAN() : Opaque{
 		if(!isset(self::$_mOBSIDIAN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOBSIDIAN);
+		return clone self::$_mOBSIDIAN;
 	}
 
 	public static function OMINOUS_BANNER() : OminousFloorBanner{
 		if(!isset(self::$_mOMINOUS_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOMINOUS_BANNER);
+		return clone self::$_mOMINOUS_BANNER;
 	}
 
 	public static function OMINOUS_WALL_BANNER() : OminousWallBanner{
 		if(!isset(self::$_mOMINOUS_WALL_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOMINOUS_WALL_BANNER);
+		return clone self::$_mOMINOUS_WALL_BANNER;
 	}
 
 	public static function ORANGE_TULIP() : Flower{
 		if(!isset(self::$_mORANGE_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mORANGE_TULIP);
+		return clone self::$_mORANGE_TULIP;
 	}
 
 	public static function OXEYE_DAISY() : Flower{
 		if(!isset(self::$_mOXEYE_DAISY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mOXEYE_DAISY);
+		return clone self::$_mOXEYE_DAISY;
 	}
 
 	public static function PACKED_ICE() : PackedIce{
 		if(!isset(self::$_mPACKED_ICE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPACKED_ICE);
+		return clone self::$_mPACKED_ICE;
 	}
 
 	public static function PACKED_MUD() : Opaque{
 		if(!isset(self::$_mPACKED_MUD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPACKED_MUD);
+		return clone self::$_mPACKED_MUD;
 	}
 
 	public static function PALE_MOSS_BLOCK() : PaleMoss{
@@ -4440,1161 +4580,1161 @@ final class VanillaBlocks{
 
 	public static function PALE_OAK_BUTTON() : WoodenButton{
 		if(!isset(self::$_mPALE_OAK_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_BUTTON);
+		return clone self::$_mPALE_OAK_BUTTON;
 	}
 
 	public static function PALE_OAK_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function PALE_OAK_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function PALE_OAK_DOOR() : WoodenDoor{
 		if(!isset(self::$_mPALE_OAK_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_DOOR);
+		return clone self::$_mPALE_OAK_DOOR;
 	}
 
 	public static function PALE_OAK_FENCE() : WoodenFence{
 		if(!isset(self::$_mPALE_OAK_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_FENCE);
+		return clone self::$_mPALE_OAK_FENCE;
 	}
 
 	public static function PALE_OAK_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mPALE_OAK_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_FENCE_GATE);
+		return clone self::$_mPALE_OAK_FENCE_GATE;
 	}
 
 	public static function PALE_OAK_LEAVES() : Leaves{
 		if(!isset(self::$_mPALE_OAK_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_LEAVES);
+		return clone self::$_mPALE_OAK_LEAVES;
 	}
 
 	public static function PALE_OAK_LOG() : Wood{
 		if(!isset(self::$_mPALE_OAK_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_LOG);
+		return clone self::$_mPALE_OAK_LOG;
 	}
 
 	public static function PALE_OAK_PLANKS() : Planks{
 		if(!isset(self::$_mPALE_OAK_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_PLANKS);
+		return clone self::$_mPALE_OAK_PLANKS;
 	}
 
 	public static function PALE_OAK_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mPALE_OAK_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_PRESSURE_PLATE);
+		return clone self::$_mPALE_OAK_PRESSURE_PLATE;
 	}
 
 	public static function PALE_OAK_SIGN() : FloorSign{
 		if(!isset(self::$_mPALE_OAK_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_SIGN);
+		return clone self::$_mPALE_OAK_SIGN;
 	}
 
 	public static function PALE_OAK_SLAB() : WoodenSlab{
 		if(!isset(self::$_mPALE_OAK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_SLAB);
+		return clone self::$_mPALE_OAK_SLAB;
 	}
 
 	public static function PALE_OAK_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mPALE_OAK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_STAIRS);
+		return clone self::$_mPALE_OAK_STAIRS;
 	}
 
 	public static function PALE_OAK_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mPALE_OAK_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_TRAPDOOR);
+		return clone self::$_mPALE_OAK_TRAPDOOR;
 	}
 
 	public static function PALE_OAK_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mPALE_OAK_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WALL_HANGING_SIGN);
+		return clone self::$_mPALE_OAK_WALL_HANGING_SIGN;
 	}
 
 	public static function PALE_OAK_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mPALE_OAK_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WALL_SIGN);
+		return clone self::$_mPALE_OAK_WALL_SIGN;
 	}
 
 	public static function PALE_OAK_WOOD() : Wood{
 		if(!isset(self::$_mPALE_OAK_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_OAK_WOOD);
+		return clone self::$_mPALE_OAK_WOOD;
 	}
 
 	public static function PEONY() : DoublePlant{
 		if(!isset(self::$_mPEONY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPEONY);
+		return clone self::$_mPEONY;
 	}
 
 	public static function PINK_PETALS() : PinkPetals{
 		if(!isset(self::$_mPINK_PETALS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPINK_PETALS);
+		return clone self::$_mPINK_PETALS;
 	}
 
 	public static function PINK_TULIP() : Flower{
 		if(!isset(self::$_mPINK_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPINK_TULIP);
+		return clone self::$_mPINK_TULIP;
 	}
 
 	public static function PITCHER_CROP() : PitcherCrop{
 		if(!isset(self::$_mPITCHER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPITCHER_CROP);
+		return clone self::$_mPITCHER_CROP;
 	}
 
 	public static function PITCHER_PLANT() : DoublePlant{
 		if(!isset(self::$_mPITCHER_PLANT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPITCHER_PLANT);
+		return clone self::$_mPITCHER_PLANT;
 	}
 
 	public static function PODZOL() : Podzol{
 		if(!isset(self::$_mPODZOL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPODZOL);
+		return clone self::$_mPODZOL;
 	}
 
 	public static function POLISHED_ANDESITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_ANDESITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE);
+		return clone self::$_mPOLISHED_ANDESITE;
 	}
 
 	public static function POLISHED_ANDESITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_ANDESITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE_SLAB);
+		return clone self::$_mPOLISHED_ANDESITE_SLAB;
 	}
 
 	public static function POLISHED_ANDESITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_ANDESITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_ANDESITE_STAIRS);
+		return clone self::$_mPOLISHED_ANDESITE_STAIRS;
 	}
 
 	public static function POLISHED_BASALT() : SimplePillar{
 		if(!isset(self::$_mPOLISHED_BASALT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BASALT);
+		return clone self::$_mPOLISHED_BASALT;
 	}
 
 	public static function POLISHED_BLACKSTONE() : Opaque{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE);
+		return clone self::$_mPOLISHED_BLACKSTONE;
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICKS() : Opaque{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICKS);
+		return clone self::$_mPOLISHED_BLACKSTONE_BRICKS;
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB);
+		return clone self::$_mPOLISHED_BLACKSTONE_BRICK_SLAB;
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS);
+		return clone self::$_mPOLISHED_BLACKSTONE_BRICK_STAIRS;
 	}
 
 	public static function POLISHED_BLACKSTONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BRICK_WALL);
+		return clone self::$_mPOLISHED_BLACKSTONE_BRICK_WALL;
 	}
 
 	public static function POLISHED_BLACKSTONE_BUTTON() : StoneButton{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_BUTTON);
+		return clone self::$_mPOLISHED_BLACKSTONE_BUTTON;
 	}
 
 	public static function POLISHED_BLACKSTONE_PRESSURE_PLATE() : StonePressurePlate{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE);
+		return clone self::$_mPOLISHED_BLACKSTONE_PRESSURE_PLATE;
 	}
 
 	public static function POLISHED_BLACKSTONE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_SLAB);
+		return clone self::$_mPOLISHED_BLACKSTONE_SLAB;
 	}
 
 	public static function POLISHED_BLACKSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_STAIRS);
+		return clone self::$_mPOLISHED_BLACKSTONE_STAIRS;
 	}
 
 	public static function POLISHED_BLACKSTONE_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_BLACKSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_BLACKSTONE_WALL);
+		return clone self::$_mPOLISHED_BLACKSTONE_WALL;
 	}
 
 	public static function POLISHED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE);
+		return clone self::$_mPOLISHED_DEEPSLATE;
 	}
 
 	public static function POLISHED_DEEPSLATE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_SLAB);
+		return clone self::$_mPOLISHED_DEEPSLATE_SLAB;
 	}
 
 	public static function POLISHED_DEEPSLATE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_STAIRS);
+		return clone self::$_mPOLISHED_DEEPSLATE_STAIRS;
 	}
 
 	public static function POLISHED_DEEPSLATE_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_DEEPSLATE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DEEPSLATE_WALL);
+		return clone self::$_mPOLISHED_DEEPSLATE_WALL;
 	}
 
 	public static function POLISHED_DIORITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_DIORITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE);
+		return clone self::$_mPOLISHED_DIORITE;
 	}
 
 	public static function POLISHED_DIORITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_DIORITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE_SLAB);
+		return clone self::$_mPOLISHED_DIORITE_SLAB;
 	}
 
 	public static function POLISHED_DIORITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_DIORITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_DIORITE_STAIRS);
+		return clone self::$_mPOLISHED_DIORITE_STAIRS;
 	}
 
 	public static function POLISHED_GRANITE() : Opaque{
 		if(!isset(self::$_mPOLISHED_GRANITE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE);
+		return clone self::$_mPOLISHED_GRANITE;
 	}
 
 	public static function POLISHED_GRANITE_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_GRANITE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE_SLAB);
+		return clone self::$_mPOLISHED_GRANITE_SLAB;
 	}
 
 	public static function POLISHED_GRANITE_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_GRANITE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_GRANITE_STAIRS);
+		return clone self::$_mPOLISHED_GRANITE_STAIRS;
 	}
 
 	public static function POLISHED_TUFF() : Opaque{
 		if(!isset(self::$_mPOLISHED_TUFF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF);
+		return clone self::$_mPOLISHED_TUFF;
 	}
 
 	public static function POLISHED_TUFF_SLAB() : Slab{
 		if(!isset(self::$_mPOLISHED_TUFF_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_SLAB);
+		return clone self::$_mPOLISHED_TUFF_SLAB;
 	}
 
 	public static function POLISHED_TUFF_STAIRS() : Stair{
 		if(!isset(self::$_mPOLISHED_TUFF_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_STAIRS);
+		return clone self::$_mPOLISHED_TUFF_STAIRS;
 	}
 
 	public static function POLISHED_TUFF_WALL() : Wall{
 		if(!isset(self::$_mPOLISHED_TUFF_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOLISHED_TUFF_WALL);
+		return clone self::$_mPOLISHED_TUFF_WALL;
 	}
 
 	public static function POPPY() : Flower{
 		if(!isset(self::$_mPOPPY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOPPY);
+		return clone self::$_mPOPPY;
 	}
 
 	public static function POTATOES() : Potato{
 		if(!isset(self::$_mPOTATOES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOTATOES);
+		return clone self::$_mPOTATOES;
 	}
 
 	public static function POTION_CAULDRON() : PotionCauldron{
 		if(!isset(self::$_mPOTION_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOTION_CAULDRON);
+		return clone self::$_mPOTION_CAULDRON;
 	}
 
 	public static function POWERED_RAIL() : PoweredRail{
 		if(!isset(self::$_mPOWERED_RAIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPOWERED_RAIL);
+		return clone self::$_mPOWERED_RAIL;
 	}
 
 	public static function PRISMARINE() : Opaque{
 		if(!isset(self::$_mPRISMARINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE);
+		return clone self::$_mPRISMARINE;
 	}
 
 	public static function PRISMARINE_BRICKS() : Opaque{
 		if(!isset(self::$_mPRISMARINE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS);
+		return clone self::$_mPRISMARINE_BRICKS;
 	}
 
 	public static function PRISMARINE_BRICKS_SLAB() : Slab{
 		if(!isset(self::$_mPRISMARINE_BRICKS_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS_SLAB);
+		return clone self::$_mPRISMARINE_BRICKS_SLAB;
 	}
 
 	public static function PRISMARINE_BRICKS_STAIRS() : Stair{
 		if(!isset(self::$_mPRISMARINE_BRICKS_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_BRICKS_STAIRS);
+		return clone self::$_mPRISMARINE_BRICKS_STAIRS;
 	}
 
 	public static function PRISMARINE_SLAB() : Slab{
 		if(!isset(self::$_mPRISMARINE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_SLAB);
+		return clone self::$_mPRISMARINE_SLAB;
 	}
 
 	public static function PRISMARINE_STAIRS() : Stair{
 		if(!isset(self::$_mPRISMARINE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_STAIRS);
+		return clone self::$_mPRISMARINE_STAIRS;
 	}
 
 	public static function PRISMARINE_WALL() : Wall{
 		if(!isset(self::$_mPRISMARINE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPRISMARINE_WALL);
+		return clone self::$_mPRISMARINE_WALL;
 	}
 
 	public static function PUMPKIN() : Pumpkin{
 		if(!isset(self::$_mPUMPKIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPUMPKIN);
+		return clone self::$_mPUMPKIN;
 	}
 
 	public static function PUMPKIN_STEM() : PumpkinStem{
 		if(!isset(self::$_mPUMPKIN_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPUMPKIN_STEM);
+		return clone self::$_mPUMPKIN_STEM;
 	}
 
 	public static function PURPLE_TORCH() : Torch{
 		if(!isset(self::$_mPURPLE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPURPLE_TORCH);
+		return clone self::$_mPURPLE_TORCH;
 	}
 
 	public static function PURPUR() : Opaque{
 		if(!isset(self::$_mPURPUR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR);
+		return clone self::$_mPURPUR;
 	}
 
 	public static function PURPUR_PILLAR() : SimplePillar{
 		if(!isset(self::$_mPURPUR_PILLAR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_PILLAR);
+		return clone self::$_mPURPUR_PILLAR;
 	}
 
 	public static function PURPUR_SLAB() : Slab{
 		if(!isset(self::$_mPURPUR_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_SLAB);
+		return clone self::$_mPURPUR_SLAB;
 	}
 
 	public static function PURPUR_STAIRS() : Stair{
 		if(!isset(self::$_mPURPUR_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPURPUR_STAIRS);
+		return clone self::$_mPURPUR_STAIRS;
 	}
 
 	public static function QUARTZ() : Opaque{
 		if(!isset(self::$_mQUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ);
+		return clone self::$_mQUARTZ;
 	}
 
 	public static function QUARTZ_BRICKS() : Opaque{
 		if(!isset(self::$_mQUARTZ_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_BRICKS);
+		return clone self::$_mQUARTZ_BRICKS;
 	}
 
 	public static function QUARTZ_PILLAR() : SimplePillar{
 		if(!isset(self::$_mQUARTZ_PILLAR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_PILLAR);
+		return clone self::$_mQUARTZ_PILLAR;
 	}
 
 	public static function QUARTZ_SLAB() : Slab{
 		if(!isset(self::$_mQUARTZ_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_SLAB);
+		return clone self::$_mQUARTZ_SLAB;
 	}
 
 	public static function QUARTZ_STAIRS() : Stair{
 		if(!isset(self::$_mQUARTZ_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mQUARTZ_STAIRS);
+		return clone self::$_mQUARTZ_STAIRS;
 	}
 
 	public static function RAIL() : Rail{
 		if(!isset(self::$_mRAIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRAIL);
+		return clone self::$_mRAIL;
 	}
 
 	public static function RAW_COPPER() : Opaque{
 		if(!isset(self::$_mRAW_COPPER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_COPPER);
+		return clone self::$_mRAW_COPPER;
 	}
 
 	public static function RAW_GOLD() : Opaque{
 		if(!isset(self::$_mRAW_GOLD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_GOLD);
+		return clone self::$_mRAW_GOLD;
 	}
 
 	public static function RAW_IRON() : Opaque{
 		if(!isset(self::$_mRAW_IRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRAW_IRON);
+		return clone self::$_mRAW_IRON;
 	}
 
 	public static function REDSTONE() : Redstone{
 		if(!isset(self::$_mREDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE);
+		return clone self::$_mREDSTONE;
 	}
 
 	public static function REDSTONE_COMPARATOR() : RedstoneComparator{
 		if(!isset(self::$_mREDSTONE_COMPARATOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_COMPARATOR);
+		return clone self::$_mREDSTONE_COMPARATOR;
 	}
 
 	public static function REDSTONE_LAMP() : RedstoneLamp{
 		if(!isset(self::$_mREDSTONE_LAMP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_LAMP);
+		return clone self::$_mREDSTONE_LAMP;
 	}
 
 	public static function REDSTONE_ORE() : RedstoneOre{
 		if(!isset(self::$_mREDSTONE_ORE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_ORE);
+		return clone self::$_mREDSTONE_ORE;
 	}
 
 	public static function REDSTONE_REPEATER() : RedstoneRepeater{
 		if(!isset(self::$_mREDSTONE_REPEATER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_REPEATER);
+		return clone self::$_mREDSTONE_REPEATER;
 	}
 
 	public static function REDSTONE_TORCH() : RedstoneTorch{
 		if(!isset(self::$_mREDSTONE_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_TORCH);
+		return clone self::$_mREDSTONE_TORCH;
 	}
 
 	public static function REDSTONE_WIRE() : RedstoneWire{
 		if(!isset(self::$_mREDSTONE_WIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREDSTONE_WIRE);
+		return clone self::$_mREDSTONE_WIRE;
 	}
 
 	public static function RED_MUSHROOM() : RedMushroom{
 		if(!isset(self::$_mRED_MUSHROOM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_MUSHROOM);
+		return clone self::$_mRED_MUSHROOM;
 	}
 
 	public static function RED_MUSHROOM_BLOCK() : RedMushroomBlock{
 		if(!isset(self::$_mRED_MUSHROOM_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_MUSHROOM_BLOCK);
+		return clone self::$_mRED_MUSHROOM_BLOCK;
 	}
 
 	public static function RED_NETHER_BRICKS() : Opaque{
 		if(!isset(self::$_mRED_NETHER_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICKS);
+		return clone self::$_mRED_NETHER_BRICKS;
 	}
 
 	public static function RED_NETHER_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mRED_NETHER_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_SLAB);
+		return clone self::$_mRED_NETHER_BRICK_SLAB;
 	}
 
 	public static function RED_NETHER_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mRED_NETHER_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_STAIRS);
+		return clone self::$_mRED_NETHER_BRICK_STAIRS;
 	}
 
 	public static function RED_NETHER_BRICK_WALL() : Wall{
 		if(!isset(self::$_mRED_NETHER_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_NETHER_BRICK_WALL);
+		return clone self::$_mRED_NETHER_BRICK_WALL;
 	}
 
 	public static function RED_SAND() : Sand{
 		if(!isset(self::$_mRED_SAND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SAND);
+		return clone self::$_mRED_SAND;
 	}
 
 	public static function RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mRED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE);
+		return clone self::$_mRED_SANDSTONE;
 	}
 
 	public static function RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mRED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_SLAB);
+		return clone self::$_mRED_SANDSTONE_SLAB;
 	}
 
 	public static function RED_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mRED_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_STAIRS);
+		return clone self::$_mRED_SANDSTONE_STAIRS;
 	}
 
 	public static function RED_SANDSTONE_WALL() : Wall{
 		if(!isset(self::$_mRED_SANDSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_SANDSTONE_WALL);
+		return clone self::$_mRED_SANDSTONE_WALL;
 	}
 
 	public static function RED_TORCH() : Torch{
 		if(!isset(self::$_mRED_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_TORCH);
+		return clone self::$_mRED_TORCH;
 	}
 
 	public static function RED_TULIP() : Flower{
 		if(!isset(self::$_mRED_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRED_TULIP);
+		return clone self::$_mRED_TULIP;
 	}
 
 	public static function REINFORCED_DEEPSLATE() : Opaque{
 		if(!isset(self::$_mREINFORCED_DEEPSLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mREINFORCED_DEEPSLATE);
+		return clone self::$_mREINFORCED_DEEPSLATE;
 	}
 
 	public static function RESERVED6() : Reserved6{
 		if(!isset(self::$_mRESERVED6)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESERVED6);
+		return clone self::$_mRESERVED6;
 	}
 
 	public static function RESIN() : Opaque{
 		if(!isset(self::$_mRESIN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN);
+		return clone self::$_mRESIN;
 	}
 
 	public static function RESIN_BRICKS() : Opaque{
 		if(!isset(self::$_mRESIN_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICKS);
+		return clone self::$_mRESIN_BRICKS;
 	}
 
 	public static function RESIN_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mRESIN_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_SLAB);
+		return clone self::$_mRESIN_BRICK_SLAB;
 	}
 
 	public static function RESIN_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mRESIN_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_STAIRS);
+		return clone self::$_mRESIN_BRICK_STAIRS;
 	}
 
 	public static function RESIN_BRICK_WALL() : Wall{
 		if(!isset(self::$_mRESIN_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_BRICK_WALL);
+		return clone self::$_mRESIN_BRICK_WALL;
 	}
 
 	public static function RESIN_CLUMP() : ResinClump{
 		if(!isset(self::$_mRESIN_CLUMP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESIN_CLUMP);
+		return clone self::$_mRESIN_CLUMP;
 	}
 
 	public static function RESPAWN_ANCHOR() : RespawnAnchor{
 		if(!isset(self::$_mRESPAWN_ANCHOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mRESPAWN_ANCHOR);
+		return clone self::$_mRESPAWN_ANCHOR;
 	}
 
 	public static function ROSE_BUSH() : DoublePlant{
 		if(!isset(self::$_mROSE_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mROSE_BUSH);
+		return clone self::$_mROSE_BUSH;
 	}
 
 	public static function SAND() : Sand{
 		if(!isset(self::$_mSAND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSAND);
+		return clone self::$_mSAND;
 	}
 
 	public static function SANDSTONE() : Opaque{
 		if(!isset(self::$_mSANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE);
+		return clone self::$_mSANDSTONE;
 	}
 
 	public static function SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_SLAB);
+		return clone self::$_mSANDSTONE_SLAB;
 	}
 
 	public static function SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_STAIRS);
+		return clone self::$_mSANDSTONE_STAIRS;
 	}
 
 	public static function SANDSTONE_WALL() : Wall{
 		if(!isset(self::$_mSANDSTONE_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSANDSTONE_WALL);
+		return clone self::$_mSANDSTONE_WALL;
 	}
 
 	public static function SCULK() : Sculk{
 		if(!isset(self::$_mSCULK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSCULK);
+		return clone self::$_mSCULK;
 	}
 
 	public static function SEA_LANTERN() : SeaLantern{
 		if(!isset(self::$_mSEA_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSEA_LANTERN);
+		return clone self::$_mSEA_LANTERN;
 	}
 
 	public static function SEA_PICKLE() : SeaPickle{
 		if(!isset(self::$_mSEA_PICKLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSEA_PICKLE);
+		return clone self::$_mSEA_PICKLE;
 	}
 
 	public static function SHROOMLIGHT() : Opaque{
 		if(!isset(self::$_mSHROOMLIGHT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSHROOMLIGHT);
+		return clone self::$_mSHROOMLIGHT;
 	}
 
 	public static function SHULKER_BOX() : ShulkerBox{
 		if(!isset(self::$_mSHULKER_BOX)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSHULKER_BOX);
+		return clone self::$_mSHULKER_BOX;
 	}
 
 	public static function SLIME() : Slime{
 		if(!isset(self::$_mSLIME)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSLIME);
+		return clone self::$_mSLIME;
 	}
 
 	public static function SMALL_DRIPLEAF() : SmallDripleaf{
 		if(!isset(self::$_mSMALL_DRIPLEAF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMALL_DRIPLEAF);
+		return clone self::$_mSMALL_DRIPLEAF;
 	}
 
 	public static function SMITHING_TABLE() : SmithingTable{
 		if(!isset(self::$_mSMITHING_TABLE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMITHING_TABLE);
+		return clone self::$_mSMITHING_TABLE;
 	}
 
 	public static function SMOKER() : Furnace{
 		if(!isset(self::$_mSMOKER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOKER);
+		return clone self::$_mSMOKER;
 	}
 
 	public static function SMOOTH_BASALT() : Opaque{
 		if(!isset(self::$_mSMOOTH_BASALT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_BASALT);
+		return clone self::$_mSMOOTH_BASALT;
 	}
 
 	public static function SMOOTH_QUARTZ() : Opaque{
 		if(!isset(self::$_mSMOOTH_QUARTZ)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ);
+		return clone self::$_mSMOOTH_QUARTZ;
 	}
 
 	public static function SMOOTH_QUARTZ_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_QUARTZ_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ_SLAB);
+		return clone self::$_mSMOOTH_QUARTZ_SLAB;
 	}
 
 	public static function SMOOTH_QUARTZ_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_QUARTZ_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_QUARTZ_STAIRS);
+		return clone self::$_mSMOOTH_QUARTZ_STAIRS;
 	}
 
 	public static function SMOOTH_RED_SANDSTONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE);
+		return clone self::$_mSMOOTH_RED_SANDSTONE;
 	}
 
 	public static function SMOOTH_RED_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE_SLAB);
+		return clone self::$_mSMOOTH_RED_SANDSTONE_SLAB;
 	}
 
 	public static function SMOOTH_RED_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_RED_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_RED_SANDSTONE_STAIRS);
+		return clone self::$_mSMOOTH_RED_SANDSTONE_STAIRS;
 	}
 
 	public static function SMOOTH_SANDSTONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_SANDSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE);
+		return clone self::$_mSMOOTH_SANDSTONE;
 	}
 
 	public static function SMOOTH_SANDSTONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_SANDSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE_SLAB);
+		return clone self::$_mSMOOTH_SANDSTONE_SLAB;
 	}
 
 	public static function SMOOTH_SANDSTONE_STAIRS() : Stair{
 		if(!isset(self::$_mSMOOTH_SANDSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_SANDSTONE_STAIRS);
+		return clone self::$_mSMOOTH_SANDSTONE_STAIRS;
 	}
 
 	public static function SMOOTH_STONE() : Opaque{
 		if(!isset(self::$_mSMOOTH_STONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_STONE);
+		return clone self::$_mSMOOTH_STONE;
 	}
 
 	public static function SMOOTH_STONE_SLAB() : Slab{
 		if(!isset(self::$_mSMOOTH_STONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSMOOTH_STONE_SLAB);
+		return clone self::$_mSMOOTH_STONE_SLAB;
 	}
 
 	public static function SNOW() : Snow{
 		if(!isset(self::$_mSNOW)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSNOW);
+		return clone self::$_mSNOW;
 	}
 
 	public static function SNOW_LAYER() : SnowLayer{
 		if(!isset(self::$_mSNOW_LAYER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSNOW_LAYER);
+		return clone self::$_mSNOW_LAYER;
 	}
 
 	public static function SOUL_CAMPFIRE() : SoulCampfire{
 		if(!isset(self::$_mSOUL_CAMPFIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_CAMPFIRE);
+		return clone self::$_mSOUL_CAMPFIRE;
 	}
 
 	public static function SOUL_FIRE() : SoulFire{
 		if(!isset(self::$_mSOUL_FIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_FIRE);
+		return clone self::$_mSOUL_FIRE;
 	}
 
 	public static function SOUL_LANTERN() : Lantern{
 		if(!isset(self::$_mSOUL_LANTERN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_LANTERN);
+		return clone self::$_mSOUL_LANTERN;
 	}
 
 	public static function SOUL_SAND() : SoulSand{
 		if(!isset(self::$_mSOUL_SAND)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_SAND);
+		return clone self::$_mSOUL_SAND;
 	}
 
 	public static function SOUL_SOIL() : Opaque{
 		if(!isset(self::$_mSOUL_SOIL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_SOIL);
+		return clone self::$_mSOUL_SOIL;
 	}
 
 	public static function SOUL_TORCH() : Torch{
 		if(!isset(self::$_mSOUL_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSOUL_TORCH);
+		return clone self::$_mSOUL_TORCH;
 	}
 
 	public static function SPONGE() : Sponge{
 		if(!isset(self::$_mSPONGE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPONGE);
+		return clone self::$_mSPONGE;
 	}
 
 	public static function SPORE_BLOSSOM() : SporeBlossom{
 		if(!isset(self::$_mSPORE_BLOSSOM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPORE_BLOSSOM);
+		return clone self::$_mSPORE_BLOSSOM;
 	}
 
 	public static function SPRUCE_BUTTON() : WoodenButton{
 		if(!isset(self::$_mSPRUCE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_BUTTON);
+		return clone self::$_mSPRUCE_BUTTON;
 	}
 
 	public static function SPRUCE_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mSPRUCE_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function SPRUCE_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mSPRUCE_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function SPRUCE_DOOR() : WoodenDoor{
 		if(!isset(self::$_mSPRUCE_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_DOOR);
+		return clone self::$_mSPRUCE_DOOR;
 	}
 
 	public static function SPRUCE_FENCE() : WoodenFence{
 		if(!isset(self::$_mSPRUCE_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_FENCE);
+		return clone self::$_mSPRUCE_FENCE;
 	}
 
 	public static function SPRUCE_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mSPRUCE_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_FENCE_GATE);
+		return clone self::$_mSPRUCE_FENCE_GATE;
 	}
 
 	public static function SPRUCE_LEAVES() : Leaves{
 		if(!isset(self::$_mSPRUCE_LEAVES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_LEAVES);
+		return clone self::$_mSPRUCE_LEAVES;
 	}
 
 	public static function SPRUCE_LOG() : Wood{
 		if(!isset(self::$_mSPRUCE_LOG)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_LOG);
+		return clone self::$_mSPRUCE_LOG;
 	}
 
 	public static function SPRUCE_PLANKS() : Planks{
 		if(!isset(self::$_mSPRUCE_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_PLANKS);
+		return clone self::$_mSPRUCE_PLANKS;
 	}
 
 	public static function SPRUCE_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mSPRUCE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_PRESSURE_PLATE);
+		return clone self::$_mSPRUCE_PRESSURE_PLATE;
 	}
 
 	public static function SPRUCE_SAPLING() : Sapling{
 		if(!isset(self::$_mSPRUCE_SAPLING)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SAPLING);
+		return clone self::$_mSPRUCE_SAPLING;
 	}
 
 	public static function SPRUCE_SIGN() : FloorSign{
 		if(!isset(self::$_mSPRUCE_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SIGN);
+		return clone self::$_mSPRUCE_SIGN;
 	}
 
 	public static function SPRUCE_SLAB() : WoodenSlab{
 		if(!isset(self::$_mSPRUCE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_SLAB);
+		return clone self::$_mSPRUCE_SLAB;
 	}
 
 	public static function SPRUCE_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mSPRUCE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_STAIRS);
+		return clone self::$_mSPRUCE_STAIRS;
 	}
 
 	public static function SPRUCE_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mSPRUCE_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_TRAPDOOR);
+		return clone self::$_mSPRUCE_TRAPDOOR;
 	}
 
 	public static function SPRUCE_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mSPRUCE_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WALL_HANGING_SIGN);
+		return clone self::$_mSPRUCE_WALL_HANGING_SIGN;
 	}
 
 	public static function SPRUCE_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mSPRUCE_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WALL_SIGN);
+		return clone self::$_mSPRUCE_WALL_SIGN;
 	}
 
 	public static function SPRUCE_WOOD() : Wood{
 		if(!isset(self::$_mSPRUCE_WOOD)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSPRUCE_WOOD);
+		return clone self::$_mSPRUCE_WOOD;
 	}
 
 	public static function STAINED_CLAY() : StainedHardenedClay{
 		if(!isset(self::$_mSTAINED_CLAY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_CLAY);
+		return clone self::$_mSTAINED_CLAY;
 	}
 
 	public static function STAINED_GLASS() : StainedGlass{
 		if(!isset(self::$_mSTAINED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_GLASS);
+		return clone self::$_mSTAINED_GLASS;
 	}
 
 	public static function STAINED_GLASS_PANE() : StainedGlassPane{
 		if(!isset(self::$_mSTAINED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_GLASS_PANE);
+		return clone self::$_mSTAINED_GLASS_PANE;
 	}
 
 	public static function STAINED_HARDENED_GLASS() : StainedHardenedGlass{
 		if(!isset(self::$_mSTAINED_HARDENED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_HARDENED_GLASS);
+		return clone self::$_mSTAINED_HARDENED_GLASS;
 	}
 
 	public static function STAINED_HARDENED_GLASS_PANE() : StainedHardenedGlassPane{
 		if(!isset(self::$_mSTAINED_HARDENED_GLASS_PANE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTAINED_HARDENED_GLASS_PANE);
+		return clone self::$_mSTAINED_HARDENED_GLASS_PANE;
 	}
 
 	public static function STONE() : Opaque{
 		if(!isset(self::$_mSTONE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE);
+		return clone self::$_mSTONE;
 	}
 
 	public static function STONECUTTER() : Stonecutter{
 		if(!isset(self::$_mSTONECUTTER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONECUTTER);
+		return clone self::$_mSTONECUTTER;
 	}
 
 	public static function STONE_BRICKS() : Opaque{
 		if(!isset(self::$_mSTONE_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICKS);
+		return clone self::$_mSTONE_BRICKS;
 	}
 
 	public static function STONE_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mSTONE_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_SLAB);
+		return clone self::$_mSTONE_BRICK_SLAB;
 	}
 
 	public static function STONE_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mSTONE_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_STAIRS);
+		return clone self::$_mSTONE_BRICK_STAIRS;
 	}
 
 	public static function STONE_BRICK_WALL() : Wall{
 		if(!isset(self::$_mSTONE_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BRICK_WALL);
+		return clone self::$_mSTONE_BRICK_WALL;
 	}
 
 	public static function STONE_BUTTON() : StoneButton{
 		if(!isset(self::$_mSTONE_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_BUTTON);
+		return clone self::$_mSTONE_BUTTON;
 	}
 
 	public static function STONE_PRESSURE_PLATE() : StonePressurePlate{
 		if(!isset(self::$_mSTONE_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_PRESSURE_PLATE);
+		return clone self::$_mSTONE_PRESSURE_PLATE;
 	}
 
 	public static function STONE_SLAB() : Slab{
 		if(!isset(self::$_mSTONE_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_SLAB);
+		return clone self::$_mSTONE_SLAB;
 	}
 
 	public static function STONE_STAIRS() : Stair{
 		if(!isset(self::$_mSTONE_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTONE_STAIRS);
+		return clone self::$_mSTONE_STAIRS;
 	}
 
 	public static function STRUCTURE_VOID() : StructureVoid{
 		if(!isset(self::$_mSTRUCTURE_VOID)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSTRUCTURE_VOID);
+		return clone self::$_mSTRUCTURE_VOID;
 	}
 
 	public static function SUGARCANE() : Sugarcane{
 		if(!isset(self::$_mSUGARCANE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSUGARCANE);
+		return clone self::$_mSUGARCANE;
 	}
 
 	public static function SUNFLOWER() : DoublePlant{
 		if(!isset(self::$_mSUNFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSUNFLOWER);
+		return clone self::$_mSUNFLOWER;
 	}
 
 	public static function SWEET_BERRY_BUSH() : SweetBerryBush{
 		if(!isset(self::$_mSWEET_BERRY_BUSH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mSWEET_BERRY_BUSH);
+		return clone self::$_mSWEET_BERRY_BUSH;
 	}
 
 	public static function TALL_GRASS() : TallGrass{
 		if(!isset(self::$_mTALL_GRASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTALL_GRASS);
+		return clone self::$_mTALL_GRASS;
 	}
 
 	public static function TINTED_GLASS() : TintedGlass{
 		if(!isset(self::$_mTINTED_GLASS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTINTED_GLASS);
+		return clone self::$_mTINTED_GLASS;
 	}
 
 	public static function TNT() : TNT{
 		if(!isset(self::$_mTNT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTNT);
+		return clone self::$_mTNT;
 	}
 
 	public static function TORCH() : Torch{
 		if(!isset(self::$_mTORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTORCH);
+		return clone self::$_mTORCH;
 	}
 
 	public static function TORCHFLOWER() : Flower{
 		if(!isset(self::$_mTORCHFLOWER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTORCHFLOWER);
+		return clone self::$_mTORCHFLOWER;
 	}
 
 	public static function TORCHFLOWER_CROP() : TorchflowerCrop{
 		if(!isset(self::$_mTORCHFLOWER_CROP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTORCHFLOWER_CROP);
+		return clone self::$_mTORCHFLOWER_CROP;
 	}
 
 	public static function TRAPPED_CHEST() : TrappedChest{
 		if(!isset(self::$_mTRAPPED_CHEST)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTRAPPED_CHEST);
+		return clone self::$_mTRAPPED_CHEST;
 	}
 
 	public static function TRIPWIRE() : Tripwire{
 		if(!isset(self::$_mTRIPWIRE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTRIPWIRE);
+		return clone self::$_mTRIPWIRE;
 	}
 
 	public static function TRIPWIRE_HOOK() : TripwireHook{
 		if(!isset(self::$_mTRIPWIRE_HOOK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTRIPWIRE_HOOK);
+		return clone self::$_mTRIPWIRE_HOOK;
 	}
 
 	public static function TUFF() : Opaque{
 		if(!isset(self::$_mTUFF)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF);
+		return clone self::$_mTUFF;
 	}
 
 	public static function TUFF_BRICKS() : Opaque{
 		if(!isset(self::$_mTUFF_BRICKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICKS);
+		return clone self::$_mTUFF_BRICKS;
 	}
 
 	public static function TUFF_BRICK_SLAB() : Slab{
 		if(!isset(self::$_mTUFF_BRICK_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_SLAB);
+		return clone self::$_mTUFF_BRICK_SLAB;
 	}
 
 	public static function TUFF_BRICK_STAIRS() : Stair{
 		if(!isset(self::$_mTUFF_BRICK_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_STAIRS);
+		return clone self::$_mTUFF_BRICK_STAIRS;
 	}
 
 	public static function TUFF_BRICK_WALL() : Wall{
 		if(!isset(self::$_mTUFF_BRICK_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_BRICK_WALL);
+		return clone self::$_mTUFF_BRICK_WALL;
 	}
 
 	public static function TUFF_SLAB() : Slab{
 		if(!isset(self::$_mTUFF_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_SLAB);
+		return clone self::$_mTUFF_SLAB;
 	}
 
 	public static function TUFF_STAIRS() : Stair{
 		if(!isset(self::$_mTUFF_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_STAIRS);
+		return clone self::$_mTUFF_STAIRS;
 	}
 
 	public static function TUFF_WALL() : Wall{
 		if(!isset(self::$_mTUFF_WALL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTUFF_WALL);
+		return clone self::$_mTUFF_WALL;
 	}
 
 	public static function TWISTING_VINES() : NetherVines{
 		if(!isset(self::$_mTWISTING_VINES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mTWISTING_VINES);
+		return clone self::$_mTWISTING_VINES;
 	}
 
 	public static function UNDERWATER_TORCH() : UnderwaterTorch{
 		if(!isset(self::$_mUNDERWATER_TORCH)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mUNDERWATER_TORCH);
+		return clone self::$_mUNDERWATER_TORCH;
 	}
 
 	public static function VINES() : Vine{
 		if(!isset(self::$_mVINES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mVINES);
+		return clone self::$_mVINES;
 	}
 
 	public static function WALL_BANNER() : WallBanner{
 		if(!isset(self::$_mWALL_BANNER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWALL_BANNER);
+		return clone self::$_mWALL_BANNER;
 	}
 
 	public static function WALL_CORAL_FAN() : WallCoralFan{
 		if(!isset(self::$_mWALL_CORAL_FAN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWALL_CORAL_FAN);
+		return clone self::$_mWALL_CORAL_FAN;
 	}
 
 	public static function WARPED_BUTTON() : WoodenButton{
 		if(!isset(self::$_mWARPED_BUTTON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_BUTTON);
+		return clone self::$_mWARPED_BUTTON;
 	}
 
 	public static function WARPED_CEILING_CENTER_HANGING_SIGN() : CeilingCenterHangingSign{
 		if(!isset(self::$_mWARPED_CEILING_CENTER_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_CEILING_CENTER_HANGING_SIGN);
+		return clone self::$_mWARPED_CEILING_CENTER_HANGING_SIGN;
 	}
 
 	public static function WARPED_CEILING_EDGES_HANGING_SIGN() : CeilingEdgesHangingSign{
 		if(!isset(self::$_mWARPED_CEILING_EDGES_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_CEILING_EDGES_HANGING_SIGN);
+		return clone self::$_mWARPED_CEILING_EDGES_HANGING_SIGN;
 	}
 
 	public static function WARPED_DOOR() : WoodenDoor{
 		if(!isset(self::$_mWARPED_DOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_DOOR);
+		return clone self::$_mWARPED_DOOR;
 	}
 
 	public static function WARPED_FENCE() : WoodenFence{
 		if(!isset(self::$_mWARPED_FENCE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FENCE);
+		return clone self::$_mWARPED_FENCE;
 	}
 
 	public static function WARPED_FENCE_GATE() : FenceGate{
 		if(!isset(self::$_mWARPED_FENCE_GATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FENCE_GATE);
+		return clone self::$_mWARPED_FENCE_GATE;
 	}
 
 	public static function WARPED_FUNGUS() : NetherFungus{
 		if(!isset(self::$_mWARPED_FUNGUS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_FUNGUS);
+		return clone self::$_mWARPED_FUNGUS;
 	}
 
 	public static function WARPED_HYPHAE() : Wood{
 		if(!isset(self::$_mWARPED_HYPHAE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_HYPHAE);
+		return clone self::$_mWARPED_HYPHAE;
 	}
 
 	public static function WARPED_NYLIUM() : Nylium{
 		if(!isset(self::$_mWARPED_NYLIUM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_NYLIUM);
+		return clone self::$_mWARPED_NYLIUM;
 	}
 
 	public static function WARPED_PLANKS() : Planks{
 		if(!isset(self::$_mWARPED_PLANKS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_PLANKS);
+		return clone self::$_mWARPED_PLANKS;
 	}
 
 	public static function WARPED_PRESSURE_PLATE() : WoodenPressurePlate{
 		if(!isset(self::$_mWARPED_PRESSURE_PLATE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_PRESSURE_PLATE);
+		return clone self::$_mWARPED_PRESSURE_PLATE;
 	}
 
 	public static function WARPED_ROOTS() : NetherRoots{
 		if(!isset(self::$_mWARPED_ROOTS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_ROOTS);
+		return clone self::$_mWARPED_ROOTS;
 	}
 
 	public static function WARPED_SIGN() : FloorSign{
 		if(!isset(self::$_mWARPED_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_SIGN);
+		return clone self::$_mWARPED_SIGN;
 	}
 
 	public static function WARPED_SLAB() : WoodenSlab{
 		if(!isset(self::$_mWARPED_SLAB)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_SLAB);
+		return clone self::$_mWARPED_SLAB;
 	}
 
 	public static function WARPED_STAIRS() : WoodenStairs{
 		if(!isset(self::$_mWARPED_STAIRS)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_STAIRS);
+		return clone self::$_mWARPED_STAIRS;
 	}
 
 	public static function WARPED_STEM() : Wood{
 		if(!isset(self::$_mWARPED_STEM)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_STEM);
+		return clone self::$_mWARPED_STEM;
 	}
 
 	public static function WARPED_TRAPDOOR() : WoodenTrapdoor{
 		if(!isset(self::$_mWARPED_TRAPDOOR)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_TRAPDOOR);
+		return clone self::$_mWARPED_TRAPDOOR;
 	}
 
 	public static function WARPED_WALL_HANGING_SIGN() : WallHangingSign{
 		if(!isset(self::$_mWARPED_WALL_HANGING_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WALL_HANGING_SIGN);
+		return clone self::$_mWARPED_WALL_HANGING_SIGN;
 	}
 
 	public static function WARPED_WALL_SIGN() : WallSign{
 		if(!isset(self::$_mWARPED_WALL_SIGN)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WALL_SIGN);
+		return clone self::$_mWARPED_WALL_SIGN;
 	}
 
 	public static function WARPED_WART_BLOCK() : Opaque{
 		if(!isset(self::$_mWARPED_WART_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWARPED_WART_BLOCK);
+		return clone self::$_mWARPED_WART_BLOCK;
 	}
 
 	public static function WATER() : Water{
 		if(!isset(self::$_mWATER)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWATER);
+		return clone self::$_mWATER;
 	}
 
 	public static function WATER_CAULDRON() : WaterCauldron{
 		if(!isset(self::$_mWATER_CAULDRON)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWATER_CAULDRON);
+		return clone self::$_mWATER_CAULDRON;
 	}
 
 	public static function WEEPING_VINES() : NetherVines{
 		if(!isset(self::$_mWEEPING_VINES)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWEEPING_VINES);
+		return clone self::$_mWEEPING_VINES;
 	}
 
 	public static function WEIGHTED_PRESSURE_PLATE_HEAVY() : WeightedPressurePlateHeavy{
 		if(!isset(self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY);
+		return clone self::$_mWEIGHTED_PRESSURE_PLATE_HEAVY;
 	}
 
 	public static function WEIGHTED_PRESSURE_PLATE_LIGHT() : WeightedPressurePlateLight{
 		if(!isset(self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT);
+		return clone self::$_mWEIGHTED_PRESSURE_PLATE_LIGHT;
 	}
 
 	public static function WHEAT() : Wheat{
 		if(!isset(self::$_mWHEAT)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWHEAT);
+		return clone self::$_mWHEAT;
 	}
 
 	public static function WHITE_TULIP() : Flower{
 		if(!isset(self::$_mWHITE_TULIP)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWHITE_TULIP);
+		return clone self::$_mWHITE_TULIP;
 	}
 
 	public static function WITHER_ROSE() : WitherRose{
 		if(!isset(self::$_mWITHER_ROSE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWITHER_ROSE);
+		return clone self::$_mWITHER_ROSE;
 	}
 
 	public static function WOOL() : Wool{
 		if(!isset(self::$_mWOOL)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mWOOL);
+		return clone self::$_mWOOL;
 	}
 }

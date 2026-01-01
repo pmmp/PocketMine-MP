@@ -102,7 +102,7 @@ function encodeProperty(Tag $tag) : string{
  * @phpstan-param list<TreeRoot> $oldNewStateList
  *
  * @return BlockStateMapping[][]
- * @phpstan-return array<string, array<string, BlockStateMapping>>
+ * @phpstan-return array<string, non-empty-array<string, BlockStateMapping>>
  */
 function buildUpgradeTableFromData(array $oldNewStateList, bool $reverse) : array{
 	$result = [];
@@ -124,7 +124,7 @@ function buildUpgradeTableFromData(array $oldNewStateList, bool $reverse) : arra
 
 /**
  * @return BlockStateMapping[][]
- * @phpstan-return array<string, array<string, BlockStateMapping>>
+ * @phpstan-return array<string, non-empty-array<string, BlockStateMapping>>
  */
 function loadUpgradeTableFromFile(string $file, bool $reverse) : array{
 	$contents = Filesystem::fileGetContents($file);
@@ -135,10 +135,10 @@ function loadUpgradeTableFromFile(string $file, bool $reverse) : array{
 
 /**
  * @param BlockStateData[] $states
- * @phpstan-param array<string, BlockStateData> $states
+ * @phpstan-param non-empty-array<string, BlockStateData> $states
  *
  * @return Tag[][]
- * @phpstan-return array<string, array<string, Tag>>
+ * @phpstan-return array<string, non-empty-array<string, Tag>>
  */
 function buildStateGroupSchema(array $states) : ?array{
 	$first = $states[array_key_first($states)];
@@ -164,7 +164,7 @@ function buildStateGroupSchema(array $states) : ?array{
 
 /**
  * @param BlockStateMapping[] $upgradeTable
- * @phpstan-param array<string, BlockStateMapping> $upgradeTable
+ * @phpstan-param non-empty-array<string, BlockStateMapping> $upgradeTable
  */
 function processStateGroup(string $oldName, array $upgradeTable, BlockStateUpgradeSchema $result) : bool{
 	$newProperties = buildStateGroupSchema(array_map(fn(BlockStateMapping $m) => $m->new, $upgradeTable));
@@ -579,12 +579,16 @@ function processRemappedStates(array $upgradeTable) : array{
 	}
 
 	$flattenedProperties = buildFlattenPropertyRules($candidateFlattenedValues, $candidateFlattenedPropertyTypes);
-	$flattenProperty = array_key_first($flattenedProperties);
-	//Properties with fewer rules take up less space for the same result
-	foreach(Utils::stringifyKeys($flattenedProperties) as $propertyName => $rules){
-		if(count($rules) < count($flattenedProperties[$flattenProperty])){
-			$flattenProperty = $propertyName;
+	if(count($flattenedProperties) > 0){
+		$flattenProperty = array_key_first($flattenedProperties);
+		//Properties with fewer rules take up less space for the same result
+		foreach(Utils::stringifyKeys($flattenedProperties) as $propertyName => $rules){
+			if(count($rules) < count($flattenedProperties[$flattenProperty])){
+				$flattenProperty = $propertyName;
+			}
 		}
+	}else{
+		$flattenProperty = null;
 	}
 
 	$list = [];
@@ -669,7 +673,7 @@ function processRemappedStates(array $upgradeTable) : array{
 
 /**
  * @param BlockStateMapping[][] $upgradeTable
- * @phpstan-param array<string, array<string, BlockStateMapping>> $upgradeTable
+ * @phpstan-param array<string, non-empty-array<string, BlockStateMapping>> $upgradeTable
  */
 function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgradeSchema{
 	$foundVersion = -1;
@@ -957,4 +961,4 @@ function main(array $argv) : int{
 	return $callback($argv);
 }
 
-exit(main($argv));
+exit(main($argv ?? []));

@@ -130,7 +130,9 @@ abstract class BaseSign extends Transparent implements WoodMaterial{
 		$player = $this->editorEntityRuntimeId !== null ?
 			$this->position->getWorld()->getEntity($this->editorEntityRuntimeId) :
 			null;
-		if($player instanceof Player){
+		//TODO: HACK! We really shouldn't be keeping disconnected players (and generally flagged-for-despawn entities)
+		//in the world's entity table, but changing that is too risky for a hotfix. This workaround will do for now.
+		if($player instanceof Player && $player->isConnected()){
 			$player->openSignEditor($this->position);
 		}
 	}

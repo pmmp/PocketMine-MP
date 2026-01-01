@@ -108,6 +108,7 @@ function ping_server(\Socket $socket, string $serverIp, int $serverPort, int $ti
 	return false;
 }
 
+$argv ??= [];
 if(count($argv) > 3){
 	echo "Usage: " . PHP_BINARY . " " . __FILE__ . " [server IP] [server port]\n";
 	exit(1);
