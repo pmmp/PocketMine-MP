@@ -111,9 +111,9 @@ class Moss extends Opaque{
 				$world->setBlock($pos->up(), VanillaBlocks::DOUBLE_TALLGRASS()->setTop(true));
 			}
 		}elseif($rand <= 9583){
-			//TODO: Azalea 7.29%
+			$world->setBlock($pos, VanillaBlocks::AZALEA());
 		}else{
-			//TODO: Flowering Azalea 4.17%
+			$world->setBlock($pos, VanillaBlocks::FLOWERING_AZALEA());
 		}
 	}
 }

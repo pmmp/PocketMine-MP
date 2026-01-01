@@ -4315,12 +4315,12 @@ final class VanillaBlocks{
 
 	public static function MOSS_BLOCK() : Moss{
 		if(!isset(self::$_mMOSS_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSS_BLOCK);
+		return clone self::$_mMOSS_BLOCK;
 	}
 
 	public static function MOSS_CARPET() : MossCarpet{
 		if(!isset(self::$_mMOSS_CARPET)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mMOSS_CARPET);
+		return clone self::$_mMOSS_CARPET;
 	}
 
 	public static function MUD() : Opaque{
@@ -4565,17 +4565,17 @@ final class VanillaBlocks{
 
 	public static function PALE_MOSS_BLOCK() : PaleMoss{
 		if(!isset(self::$_mPALE_MOSS_BLOCK)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_MOSS_BLOCK);
+		return clone self::$_mPALE_MOSS_BLOCK;
 	}
 
 	public static function PALE_MOSS_CARPET() : PaleMossCarpet{
 		if(!isset(self::$_mPALE_MOSS_CARPET)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_MOSS_CARPET);
+		return clone self::$_mPALE_MOSS_CARPET;
 	}
 
 	public static function PALE_MOSS_VINE() : PaleMossVine{
 		if(!isset(self::$_mPALE_MOSS_VINE)){ self::init(); }
-		return VanillaBlocksInputs::preprocessMember(self::$_mPALE_MOSS_VINE);
+		return clone self::$_mPALE_MOSS_VINE;
 	}
 
 	public static function PALE_OAK_BUTTON() : WoodenButton{
