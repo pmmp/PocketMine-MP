@@ -37,7 +37,7 @@ class HayBale extends Opaque implements PillarRotation{
 	public function getFlammability() : int{
 		return 20;
 	}
-	
+
 	public function getCompostabilityChance() : int{
 		return 85;
 	}

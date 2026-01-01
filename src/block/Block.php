@@ -752,7 +752,7 @@ class Block{
 	public function getCompostabilityChance() : int{
 		return 0;
 	}
-	
+
 	/**
 	 * Returns whether this block can be used in a composter.
 	 */

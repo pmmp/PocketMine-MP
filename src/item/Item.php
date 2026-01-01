@@ -599,7 +599,7 @@ class Item implements \JsonSerializable{
 	public function getCompostabilityChance() : int{
 		return 0;
 	}
-	
+
 	/**
 	 * Returns whether this item can be used in a composter.
 	 */

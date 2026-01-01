@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\Opaque;
-
 class NetherWart extends Opaque{
 
 	public function getCompostabilityChance() : int{ return 85; }

@@ -32,7 +32,7 @@ class Beetroot extends Food{
 	public function getSaturationRestore() : float{
 		return 1.2;
 	}
-	
+
 	public function getCompostabilityChance() : int{
 		return 65;
 	}

@@ -38,6 +38,9 @@ use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
 use pocketmine\world\sound\ComposterFillSuccessSound;
 use pocketmine\world\sound\ComposterReadySound;
+use function max;
+use function min;
+use function mt_rand;
 
 class Composter extends Transparent{
 	public const MIN_COMPOST_LAYERS = 0;
@@ -48,10 +51,10 @@ class Composter extends Transparent{
 	protected function describeBlockOnlyState(RuntimeDataDescriber $w) : void{
 		$w->boundedIntAuto(0, self::MAX_COMPOST_LAYERS, $this->layers);
 	}
-	
+
 	protected function recalculateCollisionBoxes() : array{
 		$result = [
-			AxisAlignedBB::one()->trim(Facing::UP, (max(1, 15 - (2 * $this->layers)) - (int)($this->layers === 0)) / 16)
+			AxisAlignedBB::one()->trim(Facing::UP, (max(1, 15 - (2 * $this->layers)) - (int) ($this->layers === 0)) / 16)
 		];
 
 		foreach(Facing::HORIZONTAL as $f){
@@ -92,8 +95,8 @@ class Composter extends Transparent{
 
 		if(!$item->isNull() && $item->isCompostable()){
 			$event = new ComposterFillEvent(
-				$this, 
-				$item, 
+				$this,
+				$item,
 				$this->layers,
 				mt_rand(1, 100) <= $item->getCompostabilityChance() && $this->layers < self::MAX_COMPOST_LAYERS - 1 ? $this->layers + 1 : $this->layers
 			);
