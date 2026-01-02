@@ -114,7 +114,7 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 		return true;
 	}
 
-	private function activate(Player $player) : void{
+	private function activate(?Player $player) : void{
 		$this->open = !$this->open;
 		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();

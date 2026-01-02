@@ -60,10 +60,11 @@ class WindCharge extends Throwable{
 	}
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
-		if($this->getOwningEntity() === null) {
+		$owner = $this->getOwningEntity();
+		if($owner === null) {
 			$ev = new EntityDamageByEntityEvent($this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, self::DAMAGE);
 		} else {
-			$ev = new EntityDamageByChildEntityEvent($this->getOwningEntity(), $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, self::DAMAGE);
+			$ev = new EntityDamageByChildEntityEvent($owner, $this, $entityHit, EntityDamageEvent::CAUSE_PROJECTILE, self::DAMAGE);
 		}
 
 		$entityHit->attack($ev);
@@ -103,7 +104,7 @@ class WindCharge extends Throwable{
 				continue;
 			}
 
-			if (round($entityPos->getX(), 1) == round($source->getX(), 1) && round($entityPos->getZ(), 1) == round($source->getZ(), 1)) {
+			if (round($entityPos->getX(), 1) === round($source->getX(), 1) && round($entityPos->getZ(), 1) === round($source->getZ(), 1)) {
 				$entity->setMotion($entity->getMotion()->add(0, 0.75 * $exposure, 0));
 
 				return;
