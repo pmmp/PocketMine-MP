@@ -63,9 +63,9 @@ class WeatherCommand extends VanillaCommand{
 
 		if(count($args) < 1){
 			$rainLevel = $world->getRainLevel();
-			$thunderLevel = $world->getThunderLevel();
+			$lightningLevel = $world->getLightningLevel();
 
-			if($rainLevel > 0.0 && $thunderLevel > 0.0){
+			if($rainLevel > 0.0 && $lightningLevel > 0.0){
 				$current = "thunder";
 			}elseif($rainLevel > 0.0){
 				$current = "rain";
@@ -91,21 +91,21 @@ class WeatherCommand extends VanillaCommand{
 		};
 
 		$rainLevel = 0.0;
-		$thunderLevel = 0.0;
+		$lightningLevel = 0.0;
 		$duration = max(100, (int) ($args[1] ?? 6000));
 
 		switch($type){
 			case "rain":
 				$rainLevel = 1.0;
-				$thunderLevel = 0.0;
+				$lightningLevel = 0.0;
 				break;
 
 			case "thunder":
 				$rainLevel = 1.0;
-				$thunderLevel = 1.0;
+				$lightningLevel = 1.0;
 				break;
 		}
-		$world->setWeather($rainLevel, $thunderLevel, $duration);
+		$world->setWeather($rainLevel, $lightningLevel, $duration);
 
 		Command::broadcastCommandMessage($sender,
 			match($type){

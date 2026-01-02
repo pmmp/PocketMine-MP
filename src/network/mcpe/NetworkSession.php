@@ -1309,14 +1309,30 @@ class NetworkSession{
 	}
 
 	public function onEnterWorld() : void{
-		if($this->player !== null){
-			$world = $this->player->getWorld();
-			$this->syncWorldTime($world->getTime());
-			$this->syncWorldDifficulty($world->getDifficulty());
-			$this->syncWorldSpawnPoint($world->getSpawnLocation());
-			//TODO: weather needs to be synced here (when implemented)
-		}
+	if($this->player !== null){
+		$world = $this->player->getWorld();
+
+		$this->syncWorldTime($world->getTime());
+		$this->syncWorldDifficulty($world->getDifficulty());
+		$this->syncWorldSpawnPoint($world->getSpawnLocation());
+
+		// weather sync
+		$rain = (int) ($world->getRainLevel() * 65535);
+		$thunder = (int) ($world->getThunderLevel() * 65535);
+
+		$packets = [];
+
+		$packets[] = $world->getRainLevel() > 0
+			? LevelEventPacket::create(LevelEvent::START_RAIN, $rain, null)
+			: LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
+
+		$packets[] = $world->getThunderLevel() > 0
+			? LevelEventPacket::create(LevelEvent::START_THUNDER, $thunder, null)
+			: LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
+
+		$this->session->sendDataPacket(...$packets);
 	}
+}
 
 	public function syncWorldTime(int $worldTime) : void{
 		$this->sendDataPacket(SetTimePacket::create($worldTime));

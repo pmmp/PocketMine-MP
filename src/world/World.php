@@ -235,7 +235,7 @@ class World implements ChunkManager{
 	private int $weatherTick = 0;
 	private bool $weatherEnabled = true;
 	private float $rainLevel = 0.0;
-	private float $thunderLevel = 0.0;
+	private float $lightningLevel = 0.0;
 
 	/**
 	 * @var ChunkTicker[][] chunkHash => [spl_object_id => ChunkTicker]
@@ -602,15 +602,15 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function setWeather(float $rainLevel, float $thunderLevel, int $duration = 6000) : void{
-		$ev = new WeatherChangeEvent($this, $this->rainLevel, $this->thunderLevel, $rainLevel, $thunderLevel);
+	public function setWeather(float $rainLevel, float $lightningLevel, int $duration = 6000) : void{
+		$ev = new WeatherChangeEvent($this, $this->rainLevel, $this->lightningLevel, $rainLevel, $lightningLevel);
 		$ev->call();
 		if($ev->isCancelled()){
 			return;
 		}
 
 		$this->rainLevel = $ev->getNewRainLevel();
-		$this->thunderLevel = $ev->getNewThunderLevel();
+		$this->lightningLevel = $ev->getNewThunderLevel();
 		$this->weatherDuration = $duration;
 		$this->weatherTick = 0;
 
@@ -623,7 +623,7 @@ class World implements ChunkManager{
 		}
 
 		$this->rainLevel = max(0.0, min(1.0, $this->rainLevel + (mt_rand(-2, 2) / 100)));
-		$this->thunderLevel = max(0.0, min(1.0, $this->thunderLevel + (mt_rand(-1, 1) / 100)));
+		$this->lightningLevel = max(0.0, min(1.0, $this->lightningLevel + (mt_rand(-1, 1) / 100)));
 
 		$this->weatherTick++;
 
@@ -631,7 +631,7 @@ class World implements ChunkManager{
 			$this->autoChangeWeather();
 		}
 
-		if($this->thunderLevel > 0.8 && mt_rand(0, 200) === 0){
+		if($this->lightningLevel > 0.8 && mt_rand(0, 200) === 0){
 			$players = $this->getPlayers();
 			if(count($players) > 0){
 				$target = $players[array_rand($players)];
@@ -665,7 +665,7 @@ class World implements ChunkManager{
 		}
 
 		$rainInt = (int) ($this->rainLevel * 65535);
-		$thunderInt = (int) ($this->thunderLevel * 65535);
+		$thunderInt = (int) ($this->lightningLevel * 65535);
 
 		$packets = [];
 
@@ -675,7 +675,7 @@ class World implements ChunkManager{
 			$packets[] = LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
 		}
 
-		if($this->thunderLevel > 0.0){
+		if($this->lightningLevel > 0.0){
 			$packets[] = LevelEventPacket::create(LevelEvent::START_THUNDER, $thunderInt, null);
 		}else{
 			$packets[] = LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
@@ -695,14 +695,14 @@ class World implements ChunkManager{
 	}
 
 	public function getThunderLevel() : float{
-		return $this->thunderLevel;
+		return $this->lightningLevel;
 	}
 
-	public function setThunderLevel(float $level) : void {
+	public function setLightningLevel(float $level) : void {
 		if($level < 0.0 || $level > 1.0){
 			throw new \InvalidArgumentException("Thunder level must be between 0.0 and 1.0, $level given");
 		}
-		$this->thunderLevel = $level;
+		$this->lightningLevel = $level;
 	}
 
 	public function isWeatherEnabled() : bool{
@@ -1584,7 +1584,7 @@ class World implements ChunkManager{
 
 		$this->provider->getWorldData()->setTime($this->time);
 		$this->provider->getWorldData()->setRainLevel($this->rainLevel);
-		$this->provider->getWorldData()->setLightningLevel($this->thunderLevel);
+		$this->provider->getWorldData()->setLightningLevel($this->lightningLevel);
 		$this->saveChunks();
 		$this->provider->getWorldData()->save();
 
@@ -1890,7 +1890,7 @@ class World implements ChunkManager{
 	public function computeSkyLightReduction() : int{
 		$percentage = max(0, min(1, -(cos($this->getSunAngleRadians()) * 2 - 0.5)));
 
-		$weatherDarkness = max($this->rainLevel, $this->thunderLevel) * 0.8;
+		$weatherDarkness = max($this->rainLevel, $this->lightningLevel) * 0.8;
 
 		$percentage = min(1, $percentage + $weatherDarkness);
 
