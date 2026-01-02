@@ -92,7 +92,7 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
@@ -155,7 +155,7 @@ jobs:
         run: php tools/generate-permission-doc.php rst
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: release_artifacts
           path: |
