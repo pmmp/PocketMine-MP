@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\ModalFormRequestPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
@@ -97,6 +98,7 @@ use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\command\CommandPermissions;
 use pocketmine\network\mcpe\protocol\types\CompressionAlgorithm;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAbilitiesPacket;
@@ -1309,30 +1311,30 @@ class NetworkSession{
 	}
 
 	public function onEnterWorld() : void{
-	if($this->player !== null){
-		$world = $this->player->getWorld();
+		if($this->player !== null){
+			$world = $this->player->getWorld();
 
-		$this->syncWorldTime($world->getTime());
-		$this->syncWorldDifficulty($world->getDifficulty());
-		$this->syncWorldSpawnPoint($world->getSpawnLocation());
+			$this->syncWorldTime($world->getTime());
+			$this->syncWorldDifficulty($world->getDifficulty());
+			$this->syncWorldSpawnPoint($world->getSpawnLocation());
 
-		// weather sync
-		$rain = (int) ($world->getRainLevel() * 65535);
-		$thunder = (int) ($world->getThunderLevel() * 65535);
+			// weather sync
+			$rain = (int) ($world->getRainLevel() * 65535);
+			$thunder = (int) ($world->getThunderLevel() * 65535);
 
-		$packets = [];
+			$packets = [];
 
-		$packets[] = $world->getRainLevel() > 0
-			? LevelEventPacket::create(LevelEvent::START_RAIN, $rain, null)
-			: LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
+			$packets[] = $world->getRainLevel() > 0
+				? LevelEventPacket::create(LevelEvent::START_RAIN, $rain, null)
+				: LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
 
-		$packets[] = $world->getThunderLevel() > 0
-			? LevelEventPacket::create(LevelEvent::START_THUNDER, $thunder, null)
-			: LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
+			$packets[] = $world->getThunderLevel() > 0
+				? LevelEventPacket::create(LevelEvent::START_THUNDER, $thunder, null)
+				: LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
 
-		$this->session->sendDataPacket(...$packets);
+			$this->session->sendDataPacket(...$packets);
+		}
 	}
-}
 
 	public function syncWorldTime(int $worldTime) : void{
 		$this->sendDataPacket(SetTimePacket::create($worldTime));

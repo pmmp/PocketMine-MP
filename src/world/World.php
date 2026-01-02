@@ -694,7 +694,7 @@ class World implements ChunkManager{
 		$this->rainLevel = $level;
 	}
 
-	public function getThunderLevel() : float{
+	public function getLightningLevel() : float{
 		return $this->lightningLevel;
 	}
 
