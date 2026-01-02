@@ -33,9 +33,9 @@ class WeatherChangeEvent extends WorldEvent implements Cancellable{
 	public function __construct(
 		private World $world,
 		private float $oldRainLevel,
-		private float $oldThunderLevel,
+		private float $oldLightningLevel,
 		private float $newRainLevel,
-		private float $newThunderLevel
+		private float $newLightningLevel
 	){
 		parent::__construct($world);
 	}
@@ -43,11 +43,11 @@ class WeatherChangeEvent extends WorldEvent implements Cancellable{
 	public function getWorld() : World{ return $this->world; }
 
 	public function getOldRainLevel() : float{ return $this->oldRainLevel; }
-	public function getOldThunderLevel() : float{ return $this->oldThunderLevel; }
+	public function getOldLightningLevel() : float{ return $this->oldLightningLevel; }
 
 	public function getNewRainLevel() : float{ return $this->newRainLevel; }
-	public function getNewThunderLevel() : float{ return $this->newThunderLevel; }
+	public function getNewLightningLevel() : float{ return $this->newLightningLevel; }
 
 	public function setNewRainLevel(float $rainLevel) : void{ $this->newRainLevel = $rainLevel; }
-	public function setNewThunderLevel(float $thunderLevel) : void{ $this->newThunderLevel = $thunderLevel; }
+	public function setNewLightningLevel(float $thunderLevel) : void{ $this->newLightningLevel = $thunderLevel; }
 }

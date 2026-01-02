@@ -610,7 +610,7 @@ class World implements ChunkManager{
 		}
 
 		$this->rainLevel = $ev->getNewRainLevel();
-		$this->lightningLevel = $ev->getNewThunderLevel();
+		$this->lightningLevel = $ev->getNewLightningLevel();
 		$this->weatherDuration = $duration;
 		$this->weatherTick = 0;
 

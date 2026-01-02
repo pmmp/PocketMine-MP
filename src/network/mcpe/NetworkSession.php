@@ -1317,22 +1317,7 @@ class NetworkSession{
 			$this->syncWorldTime($world->getTime());
 			$this->syncWorldDifficulty($world->getDifficulty());
 			$this->syncWorldSpawnPoint($world->getSpawnLocation());
-
-			// weather sync
-			$rain = (int) ($world->getRainLevel() * 65535);
-			$thunder = (int) ($world->getThunderLevel() * 65535);
-
-			$packets = [];
-
-			$packets[] = $world->getRainLevel() > 0
-				? LevelEventPacket::create(LevelEvent::START_RAIN, $rain, null)
-				: LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
-
-			$packets[] = $world->getThunderLevel() > 0
-				? LevelEventPacket::create(LevelEvent::START_THUNDER, $thunder, null)
-				: LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
-
-			$this->session->sendDataPacket(...$packets);
+			$this->syncWorldWeather($world);
 		}
 	}
 
@@ -1342,6 +1327,25 @@ class NetworkSession{
 
 	public function syncWorldDifficulty(int $worldDifficulty) : void{
 		$this->sendDataPacket(SetDifficultyPacket::create($worldDifficulty));
+	}
+
+	public function syncWorldWeather(World $world) : void{
+		$rainLevel = (int) ($world->getRainLevel() * 65535);
+		$lightningLevel = (int) ($world->getLightningLevel() * 65535);
+
+		$packets = [];
+
+		$packets[] = $rainLevel > 0
+			? LevelEventPacket::create(LevelEvent::START_RAIN, $rainLevel, null)
+			: LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
+
+		$packets[] = $lightningLevel > 0
+			? LevelEventPacket::create(LevelEvent::START_THUNDER, $lightningLevel, null)
+			: LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
+
+		foreach($packets as $packet){
+			$this->sendDataPacket($packet);
+		}
 	}
 
 	public function getInvManager() : ?InventoryManager{
