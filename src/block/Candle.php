@@ -27,14 +27,18 @@ use pocketmine\block\utils\CandleTrait;
 use pocketmine\block\utils\Lightable;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\FlintSteelSound;
 
 class Candle extends Transparent implements Lightable{
 	use CandleTrait {
@@ -97,6 +101,16 @@ class Candle extends Transparent implements Lightable{
 
 	protected function getCandleIfCompatibleType(Block $block) : ?Candle{
 		return $block instanceof Candle && $block->hasSameTypeId($this) ? $block : null;
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($projectile instanceof WindCharge && $this->lit) {
+
+			$newCandle = $this->setLit(false);
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $newCandle);
+			$world->addSound($this->position, new FlintSteelSound());
+		}
 	}
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{

@@ -29,9 +29,12 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\WoodMaterial;
 use pocketmine\block\utils\WoodTypeTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -99,7 +102,19 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 		}
 	}
 
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		$owner = $projectile->getOwningEntity();
+		if($projectile instanceof WindCharge && $owner instanceof Player) {
+			$this->activate($owner);
+		}
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$this->activate($player);
+		return true;
+	}
+
+	private function activate(Player $player) : void{
 		$this->open = !$this->open;
 		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();
@@ -111,7 +126,6 @@ class FenceGate extends Transparent implements HorizontalFacing, WoodMaterial{
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
 		$world->addSound($this->position, new DoorSound());
-		return true;
 	}
 
 	public function getFuelTime() : int{

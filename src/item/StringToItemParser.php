@@ -1575,6 +1575,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("sentry_armor_trim_smithing_template", fn() => Items::SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("shaper_armor_trim_smithing_template", fn() => Items::SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE());
 		$result->register("seeds", fn() => Items::WHEAT_SEEDS());
+		$result->register("wind_charge", fn() => Items::WIND_CHARGE());
 		$result->register("shears", fn() => Items::SHEARS());
 		$result->register("shulker_shell", fn() => Items::SHULKER_SHELL());
 		$result->register("silence_armor_trim_smithing_template", fn() => Items::SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE());

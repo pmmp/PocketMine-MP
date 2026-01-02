@@ -26,8 +26,11 @@ namespace pocketmine\block;
 use pocketmine\block\utils\AnyFacing;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -62,7 +65,19 @@ abstract class Button extends Flowable implements AnyFacing{
 
 	abstract protected function getActivationTime() : int;
 
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($projectile instanceof WindCharge) {
+			$this->activate();
+		}
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$this->activate();
+
+		return true;
+	}
+
+	private function activate() : void{
 		if(!$this->pressed){
 			$this->pressed = true;
 			$world = $this->position->getWorld();
@@ -70,8 +85,6 @@ abstract class Button extends Flowable implements AnyFacing{
 			$world->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
 			$world->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 		}
-
-		return true;
 	}
 
 	public function onScheduledUpdate() : void{

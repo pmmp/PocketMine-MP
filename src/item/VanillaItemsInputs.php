@@ -331,6 +331,7 @@ final class VanillaItemsInputs extends RegistrySource{
 		self::registerDelayed("water_bucket", fn(string $name) : LiquidBucket => new LiquidBucket(self::makeIID($name), "Water Bucket", Blocks::WATER()));
 		self::register("wheat", fn(IID $id) => new Item($id, "Wheat"));
 		self::register("wheat_seeds", fn(IID $id) => new WheatSeeds($id, "Wheat Seeds"));
+		self::register("wind_charge", fn(IID $id) => new WindCharge($id, "Wind Charge"));
 		self::register("writable_book", fn(IID $id) => new WritableBook($id, "Book & Quill"));
 		self::register("written_book", fn(IID $id) => new WrittenBook($id, "Written Book"));
 

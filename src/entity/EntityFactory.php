@@ -48,6 +48,7 @@ use pocketmine\entity\projectile\IceBomb;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\entity\projectile\Trident;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -194,6 +195,10 @@ final class EntityFactory{
 			'Trident', //backwards compat for people who used #4547 before it was merged, since it was sitting around for 4 years...
 			'ThrownTrident' //as above
 		]);
+
+		$this->register(WindCharge::class, function(World $world, CompoundTag $nbt) : WindCharge {
+			return new WindCharge(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['Wind Charge', 'minecraft:wind_charge']);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
 			return new Squid(Helper::parseLocation($nbt, $world), $nbt);

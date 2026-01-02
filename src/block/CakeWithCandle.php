@@ -26,11 +26,15 @@ namespace pocketmine\block;
 use pocketmine\block\utils\CandleTrait;
 use pocketmine\block\utils\Lightable;
 use pocketmine\entity\Living;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\FlintSteelSound;
 
 class CakeWithCandle extends BaseCake implements Lightable{
 	use CandleTrait {
@@ -47,6 +51,15 @@ class CakeWithCandle extends BaseCake implements Lightable{
 
 	public function getCandle() : Candle{
 		return VanillaBlocks::CANDLE();
+	}
+
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($projectile instanceof WindCharge && $this->lit) {
+
+			$world = $this->position->getWorld();
+			$world->setBlock($this->position, $this->setLit(false));
+			$world->addSound($this->position, new FlintSteelSound());
+		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{

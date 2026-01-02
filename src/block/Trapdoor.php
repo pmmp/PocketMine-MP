@@ -27,9 +27,12 @@ use pocketmine\block\utils\HorizontalFacing;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\SupportType;
 use pocketmine\data\runtime\RuntimeDataDescriber;
+use pocketmine\entity\projectile\Projectile;
+use pocketmine\entity\projectile\WindCharge;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -83,11 +86,25 @@ class Trapdoor extends Transparent implements HorizontalFacing{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
+		if($projectile instanceof WindCharge) {
+			if($this->getTypeId() === BlockTypeIds::IRON_DOOR) {
+				return;
+			}
+
+			$this->activate();
+		}
+	}
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null, array &$returnedItems = []) : bool{
+		$this->activate();
+
+		return true;
+	}
+
+	private function activate() : void{
 		$this->open = !$this->open;
 		$world = $this->position->getWorld();
 		$world->setBlock($this->position, $this);
 		$world->addSound($this->position, new DoorSound());
-		return true;
 	}
 }
