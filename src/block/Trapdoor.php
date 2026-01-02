@@ -88,7 +88,7 @@ class Trapdoor extends Transparent implements HorizontalFacing{
 
 	public function onProjectileHit(Projectile $projectile, RayTraceResult $hitResult) : void{
 		if($projectile instanceof WindCharge) {
-			if($this->getTypeId() === BlockTypeIds::IRON_DOOR) {
+			if($this->getTypeId() === BlockTypeIds::IRON_TRAPDOOR) {
 				return;
 			}
 
