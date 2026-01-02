@@ -30,9 +30,11 @@ namespace pocketmine\item;
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
-final class ItemTypeIds{
+final class ItemTypeIds
+{
 
-	private function __construct(){
+	private function __construct()
+	{
 		//NOOP
 	}
 
@@ -488,7 +490,13 @@ final class ItemTypeIds{
 
 	public const FIRST_UNUSED_ITEM_ID = 99999;
 
-
+	public const WOODEN_SPEAR = 30000;
+	public const STONE_SPEAR = 30003;
+	public const IRON_SPEAR = 30004;
+	public const GOLDEN_SPEAR = 30005;
+	public const DIAMOND_SPEAR = 30006;
+	public const NETHERITE_SPEAR = 30007;
+	public const COPPER_SPEAR = 30008;
 
 
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
@@ -496,20 +504,23 @@ final class ItemTypeIds{
 	/**
 	 * Returns a new runtime item type ID, e.g. for use by a custom item.
 	 */
-	public static function newId() : int{
+	public static function newId(): int
+	{
 		return self::$nextDynamicId++;
 	}
 
-	public static function fromBlockTypeId(int $blockTypeId) : int{
-		if($blockTypeId < 0){
+	public static function fromBlockTypeId(int $blockTypeId): int
+	{
+		if ($blockTypeId < 0) {
 			throw new \InvalidArgumentException("Block type IDs cannot be negative");
 		}
 		//negative item type IDs are treated as block IDs
 		return -$blockTypeId;
 	}
 
-	public static function toBlockTypeId(int $itemTypeId) : ?int{
-		if($itemTypeId > 0){ //not a blockitem
+	public static function toBlockTypeId(int $itemTypeId): ?int
+	{
+		if ($itemTypeId > 0) { //not a blockitem
 			return null;
 		}
 		return -$itemTypeId;

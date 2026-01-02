@@ -1047,7 +1047,7 @@ final class KnownTranslationFactory
 	{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_QUICK_CHARGE, []);
 	}
-	
+
 	public static function enchantment_arrowFire(): Translatable
 	{
 		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWFIRE, []);
@@ -1775,6 +1775,11 @@ final class KnownTranslationFactory
 		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SWORD, []);
 	}
 
+	public static function itemGroup_name_spear(): Translatable
+	{
+		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_SPEAR, []);
+	}
+	
 	public static function itemGroup_name_trapdoor(): Translatable
 	{
 		return new Translatable(KnownTranslationKeys::ITEMGROUP_NAME_TRAPDOOR, []);
@@ -2341,7 +2346,8 @@ final class KnownTranslationFactory
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_WEATHER_USAGE, []);
 	}
 
-		public static function pocketmine_permission_command_weather() : Translatable{
+	public static function pocketmine_permission_command_weather(): Translatable
+	{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_WEATHER, []);
 	}
 

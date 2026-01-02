@@ -2274,10 +2274,23 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 
 		$heldItem = $this->inventory->getItemInHand();
+		if($this->hasItemCooldown($heldItem)){
+			return false;
+		}
+		try{
+			Server::getInstance()->getLogger()->debug("Player::attackEntity: player=" . $this->getName() . ", target=" . get_class($entity) . ", id=" . $entity->getId() . ", item=" . $heldItem->getName() . ", attackPoints=" . $heldItem->getAttackPoints());
+		}catch(\Throwable $e){
+			// ignore logging errors
+		}
 		$oldItem = clone $heldItem;
 
+		$reach = self::MAX_REACH_DISTANCE_ENTITY_INTERACTION;
+		if ($heldItem instanceof \pocketmine\item\Spear) {
+			$reach += 2; // spears allow extended reach (jab) — works even without holding
+		}
+
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if (!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)) {
+		if (!$this->canInteract($entity->getLocation(), $reach)) {
 			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		} elseif ($this->isSpectator() || ($entity instanceof Player && !$this->server->getConfigGroup()->getConfigBool(ServerProperties::PVP))) {
@@ -2296,6 +2309,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 		$ev->setModifier($meleeEnchantmentDamage, EntityDamageEvent::MODIFIER_WEAPON_ENCHANTMENTS);
 
+		// If charging a spear, apply additional strength modifier based on charge duration
+		if ($heldItem instanceof \pocketmine\item\Spear && $this->isUsingItem()) {
+			$diff = $this->getItemUseDuration();
+			if ($diff > 0) {
+				$chargeLevel = (int) min(3, floor($diff / 10));
+				if ($chargeLevel > 0) {
+					$extra = $heldItem->getAttackPoints() * $chargeLevel;
+					$ev->setModifier($ev->getModifier(EntityDamageEvent::MODIFIER_STRENGTH) + $extra, EntityDamageEvent::MODIFIER_STRENGTH);
+				}
+			}
+		}
+
 		// Mace special: add fall-based bonus damage (approx 1 extra per block fallen, capped at 30)
 		if ($heldItem instanceof Mace && $this->fallDistance > 0) {
 			$bonus = (int) min(30, floor($this->fallDistance));
@@ -2309,12 +2334,49 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 
 		$entity->attack($ev);
+		try{
+			Server::getInstance()->getLogger()->debug("Player::attackEntity: after attack call, cancelled=" . ($ev->isCancelled() ? 'true' : 'false') . ", finalDamage=" . $ev->getFinalDamage());
+		}catch(\Throwable $e){
+			// ignore
+		}
+
+		// If the attack was cancelled or resulted in no damage, attempt a spear fallback
+		if ((	$ev->isCancelled() || $ev->getFinalDamage() <= 0) && $heldItem instanceof \pocketmine\item\Spear) {
+			try{
+				Server::getInstance()->getLogger()->debug("Player::attackEntity: attempting spear fallback for entity " . $entity->getId());
+				$fallbackDamage = $heldItem->getAttackPoints();
+				if ($this->isUsingItem()) {
+					$diff = $this->getItemUseDuration();
+					if ($diff > 0) {
+						$chargeLevel = (int) min(3, floor($diff / 10));
+						$fallbackDamage += $heldItem->getAttackPoints() * $chargeLevel;
+					}
+				}
+				$fallbackEv = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, (int) $fallbackDamage);
+				$entity->attack($fallbackEv);
+				Server::getInstance()->getLogger()->debug("Player::attackEntity: spear fallback cancelled=" . ($fallbackEv->isCancelled() ? 'true' : 'false') . ", finalDamage=" . $fallbackEv->getFinalDamage());
+				if (!$fallbackEv->isCancelled() && $fallbackEv->getFinalDamage() > 0) {
+					// let the rest of the flow treat this as the main event
+					$ev = $fallbackEv;
+				} else {
+					$manualEvent = $heldItem->performManualJabFallback($this, $entity);
+					if($manualEvent !== null){
+						$ev = $manualEvent;
+					}
+				}
+			}catch(\Throwable $e){
+				// ignore fallback errors
+			}
+		}
 		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 
 		$soundPos = $entity->getPosition()->add(0, $entity->size->getHeight() / 2, 0);
 		if ($ev->isCancelled()) {
 			$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
 			return false;
+		}
+		if($heldItem instanceof \pocketmine\item\Spear){
+			$this->resetItemCooldown($heldItem, $heldItem->getAttackCooldownTicks());
 		}
 		$this->getWorld()->addSound($soundPos, new EntityAttackSound());
 

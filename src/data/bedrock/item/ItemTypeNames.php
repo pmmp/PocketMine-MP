@@ -26,7 +26,8 @@ namespace pocketmine\data\bedrock\item;
 /**
  * This class is generated automatically from the item type dictionary for the current version. Do not edit it manually.
  */
-final class ItemTypeNames{
+final class ItemTypeNames
+{
 	public const ACACIA_BOAT = "minecraft:acacia_boat";
 	public const ACACIA_CHEST_BOAT = "minecraft:acacia_chest_boat";
 	public const ACACIA_DOOR = "minecraft:acacia_door";
@@ -568,6 +569,14 @@ final class ItemTypeNames{
 	public const STONE_PICKAXE = "minecraft:stone_pickaxe";
 	public const STONE_SHOVEL = "minecraft:stone_shovel";
 	public const STONE_SWORD = "minecraft:stone_sword";
+
+	public const WOODEN_SPEAR = "minecraft:wooden_spear";
+	public const STONE_SPEAR = "minecraft:stone_spear";
+	public const COPPER_SPEAR = "minecraft:copper_spear";
+	public const IRON_SPEAR = "minecraft:iron_spear";
+	public const GOLDEN_SPEAR = "minecraft:golden_spear";
+	public const DIAMOND_SPEAR = "minecraft:diamond_spear";
+	public const NETHERITE_SPEAR = "minecraft:netherite_spear";
 	public const STONEBRICK = "minecraft:stonebrick";
 	public const STRAY_SPAWN_EGG = "minecraft:stray_spawn_egg";
 	public const STRIDER_SPAWN_EGG = "minecraft:strider_spawn_egg";

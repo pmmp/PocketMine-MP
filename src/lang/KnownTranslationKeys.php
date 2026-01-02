@@ -385,6 +385,7 @@ final class KnownTranslationKeys
 	public const ITEMGROUP_NAME_STONE = "itemGroup.name.stone";
 	public const ITEMGROUP_NAME_STONEBRICK = "itemGroup.name.stoneBrick";
 	public const ITEMGROUP_NAME_SWORD = "itemGroup.name.sword";
+	public const ITEMGROUP_NAME_SPEAR = "itemGroup.name.spear";
 	public const ITEMGROUP_NAME_TRAPDOOR = "itemGroup.name.trapdoor";
 	public const ITEMGROUP_NAME_WALLS = "itemGroup.name.walls";
 	public const ITEMGROUP_NAME_WOOD = "itemGroup.name.wood";

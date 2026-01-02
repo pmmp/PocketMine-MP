@@ -42,4 +42,5 @@ final class ItemCooldownTags{
 	public const ENDER_PEARL = "ender_pearl";
 	public const SHIELD = "shield";
 	public const GOAT_HORN = "goat_horn";
+	public const SPEAR = "spear";
 }

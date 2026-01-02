@@ -170,10 +170,10 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Block(Ids::WOODEN_DOOR, Blocks::OAK_DOOR());
 
 
-	// The generated registry in some builds may not expose a NETHER_SPROUTS() accessor.
-	// Use a registered fallback (twisting_vines) so bedrock item serialization registration
-	// doesn't trigger a "No such registry member" exception during startup.
-	$this->map1to1Block(Ids::NETHER_SPROUTS, Blocks::TWISTING_VINES());
+		// The generated registry in some builds may not expose a NETHER_SPROUTS() accessor.
+		// Use a registered fallback (twisting_vines) so bedrock item serialization registration
+		// doesn't trigger a "No such registry member" exception during startup.
+		$this->map1to1Block(Ids::NETHER_SPROUTS, Blocks::TWISTING_VINES());
 	}
 
 	/**
@@ -421,6 +421,15 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::NETHERITE_SCRAP, Items::NETHERITE_SCRAP());
 		$this->map1to1Item(Ids::NETHERITE_SHOVEL, Items::NETHERITE_SHOVEL());
 		$this->map1to1Item(Ids::NETHERITE_SWORD, Items::NETHERITE_SWORD());
+
+		$this->map1to1Item(Ids::WOODEN_SPEAR, Items::WOODEN_SPEAR());
+		$this->map1to1Item(Ids::STONE_SPEAR, Items::STONE_SPEAR());
+		$this->map1to1Item(Ids::COPPER_SPEAR, Items::COPPER_SPEAR());
+		$this->map1to1Item(Ids::IRON_SPEAR, Items::IRON_SPEAR());
+		$this->map1to1Item(Ids::GOLDEN_SPEAR, Items::GOLDEN_SPEAR());
+		$this->map1to1Item(Ids::DIAMOND_SPEAR, Items::DIAMOND_SPEAR());
+		$this->map1to1Item(Ids::NETHERITE_SPEAR, Items::NETHERITE_SPEAR());
+
 		$this->map1to1Item(Ids::NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items::NETHERITE_UPGRADE_SMITHING_TEMPLATE());
 		$this->map1to1Item(Ids::OAK_BOAT, Items::OAK_BOAT());
 		$this->map1to1Item(Ids::OAK_HANGING_SIGN, Items::OAK_HANGING_SIGN());
@@ -524,7 +533,7 @@ final class ItemSerializerDeserializerRegistrar
 		$this->map1to1Item(Ids::ZOMBIE_SPAWN_EGG, Items::ZOMBIE_SPAWN_EGG());
 		$this->map1to1Item(Ids::ZOMBIE_PIGMAN_SPAWN_EGG, Items::ZOMBIE_PIGMAN_SPAWN_EGG());
 		$this->map1to1Item(Ids::AXOLOTL_SPAWN_EGG, Items::AXOLOTL_SPAWN_EGG());
-		
+
 		$this->map1to1Item(Ids::CHICKEN_SPAWN_EGG, Items::CHICKEN_SPAWN_EGG());
 		$this->map1to1Item(Ids::COW_SPAWN_EGG, Items::COW_SPAWN_EGG());
 		$this->map1to1Item(Ids::PIG_SPAWN_EGG, Items::PIG_SPAWN_EGG());

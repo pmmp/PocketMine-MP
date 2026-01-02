@@ -1532,6 +1532,13 @@ final class StringToItemParser extends StringToTParser
 		$result->register("diamond_shovel", fn() => Items::DIAMOND_SHOVEL());
 		$result->register("diamond_sword", fn() => Items::DIAMOND_SWORD());
 
+		$result->register("wooden_spear", fn() => Items::WOODEN_SPEAR());
+		$result->register("stone_spear", fn() => Items::STONE_SPEAR());
+		$result->register("iron_spear", fn() => Items::IRON_SPEAR());
+		$result->register("golden_spear", fn() => Items::GOLDEN_SPEAR());
+		$result->register("diamond_spear", fn() => Items::DIAMOND_SPEAR());
+		$result->register("netherite_spear", fn() => Items::NETHERITE_SPEAR());
+		
 		// mace
 		$result->register("mace", fn() => Items::MACE());
 		// wind charge

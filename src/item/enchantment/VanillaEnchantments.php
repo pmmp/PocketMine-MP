@@ -201,6 +201,16 @@ final class VanillaEnchantments{
 			fn(int $level) : int => 20 * ($level - 1) + 10,
 			50
 		));
+		// Lunge enchantment for spears: grants extra lunge behavior on release
+		self::register("LUNGE", new Enchantment(
+			"enchantment.lunge",
+			Rarity::UNCOMMON,
+			0,
+			0,
+			3,
+			fn(int $level) : int => 10 * $level,
+			20
+		));
 		//TODO: smite, bane of arthropods, looting (these don't make sense now because their applicable mobs don't exist yet)
 
 		self::register("EFFICIENCY", new Enchantment(

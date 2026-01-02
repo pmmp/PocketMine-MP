@@ -62,9 +62,12 @@ final class AvailableEnchantmentRegistry
 		$this->register(Enchantments::RESPIRATION(), [Tags::HELMET], []);
 		$this->register(Enchantments::AQUA_AFFINITY(), [Tags::HELMET], []);
 		$this->register(Enchantments::FROST_WALKER(), [/* no primary items */], [Tags::BOOTS]);
-		$this->register(Enchantments::SHARPNESS(), [Tags::SWORD, Tags::AXE], []);
-		$this->register(Enchantments::KNOCKBACK(), [Tags::SWORD], []);
-		$this->register(Enchantments::FIRE_ASPECT(), [Tags::SWORD], []);
+		// Allow common melee enchantments to also apply to generic weapons (e.g. spears)
+		$this->register(Enchantments::SHARPNESS(), [Tags::SWORD, Tags::AXE, Tags::WEAPONS], []);
+		$this->register(Enchantments::KNOCKBACK(), [Tags::SWORD, Tags::WEAPONS], []);
+		$this->register(Enchantments::FIRE_ASPECT(), [Tags::SWORD, Tags::WEAPONS], []);
+		// Lunge: special spear enchantment that enhances lunge/charge behavior
+		$this->register(Enchantments::LUNGE(), [Tags::WEAPONS], []);
 		$this->register(Enchantments::EFFICIENCY(), [Tags::BLOCK_TOOLS], [Tags::SHEARS]);
 		$this->register(Enchantments::FORTUNE(), [Tags::BLOCK_TOOLS], []);
 		$this->register(Enchantments::SILK_TOUCH(), [Tags::BLOCK_TOOLS], [Tags::SHEARS]);
