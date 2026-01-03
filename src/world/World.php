@@ -222,8 +222,6 @@ class World implements ChunkManager{
 
 	private int $sendTimeTicker = 0;
 
-	private int $sendWeatherTicker = 0;
-
 	private int $worldId;
 
 	private int $providerGarbageCollectionTicker = 0;
@@ -1077,10 +1075,6 @@ class World implements ChunkManager{
 			$this->sendTimeTicker = 0;
 		}
 
-		if(++$this->sendWeatherTicker === 200){
-			$this->sendWeather();
-			$this->sendWeatherTicker = 0;
-		}
 		$this->tickWeather();
 
 		$this->unloadChunks();
