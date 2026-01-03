@@ -35,7 +35,6 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\WindExplosionParticle;
 use pocketmine\world\sound\WindChargeBurstSound;
-use function ceil;
 use function floor;
 use function round;
 
@@ -92,7 +91,7 @@ class WindCharge extends Throwable{
 
 			$entityPos = $entity->getPosition();
 			$distance = $entityPos->distance($source) / 2.5;
-			$motion = $entityPos->subtractVector($source)->normalize();
+			$direction = $entityPos->subtractVector($source)->normalize();
 
 			$exposure = 1;
 			if ($entity->isUnderwater()){
@@ -110,17 +109,22 @@ class WindCharge extends Throwable{
 				return;
 			}
 
-			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.4, 0)->addVector($motion->multiply($impact * $exposure)));
+			$entity->setMotion($entity->getMotion()->add(0, $impact * 0.4, 0)->addVector($direction->multiply($impact * $exposure)));
 		}
 	}
 
 	public function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{
 		$bound = $this->getBound($this->getPosition(), self::RADIUS - 1);
-		for($x = $bound->minX; $x <= $bound->maxX; $x++) {
-			for($y = $bound->minY; $y <= $bound->maxY; $y++) {
-				for($z = $bound->minZ; $z <= $bound->maxZ; $z++) {
-					$block = $this->getWorld()->getBlockAt((int) floor($x), (int) floor($y), (int) floor($z));
-
+		$minX = (int) floor($bound->minX);
+		$minY = (int) floor($bound->minY);
+		$minZ = (int) floor($bound->minZ);
+		$maxX = (int) floor($bound->maxX);
+		$maxY = (int) floor($bound->maxY);
+		$maxZ = (int) floor($bound->maxZ);
+		for($x = $minX; $x <= $maxX; $x++) {
+			for($y = $minY; $y <= $maxY; $y++) {
+				for($z = $minZ; $z <= $maxZ; $z++) {
+					$block = $this->getWorld()->getBlockAt($x, $y, $z);
 					$block->onProjectileHit($this, $hitResult);
 				}
 			}
@@ -130,13 +134,7 @@ class WindCharge extends Throwable{
 	}
 
 	private function getBound(Vector3 $source, float $radius) : AxisAlignedBB {
-		return new AxisAlignedBB(
-			(int) floor($source->x - $radius - 1),
-			(int) floor($source->y - $radius - 1),
-			(int) floor($source->z - $radius - 1),
-			(int) ceil($source->x + $radius + 1),
-			(int) ceil($source->y + $radius + 1),
-			(int) ceil($source->z + $radius + 1)
-		);
+		$expand = $radius + 1;
+		return AxisAlignedBB::one()->offset($source->x, $source->y, $source->z)->expand($expand, $expand, $expand);
 	}
 }
