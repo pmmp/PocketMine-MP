@@ -75,9 +75,7 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
-use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
@@ -223,6 +221,8 @@ class World implements ChunkManager{
 	private array $blockCollisionBoxCache = [];
 
 	private int $sendTimeTicker = 0;
+
+	private int $sendWeatherTicker = 0;
 
 	private int $worldId;
 
@@ -614,7 +614,7 @@ class World implements ChunkManager{
 		$this->weatherDuration = $duration;
 		$this->weatherTick = 0;
 
-		$this->broadcastWeatherPackets();
+		$this->sendWeather();
 	}
 
 	private function tickWeather() : void{
@@ -622,8 +622,8 @@ class World implements ChunkManager{
 			return;
 		}
 
-		$this->rainLevel = max(0.0, min(1.0, $this->rainLevel + (mt_rand(-2, 2) / 100)));
-		$this->lightningLevel = max(0.0, min(1.0, $this->lightningLevel + (mt_rand(-1, 1) / 100)));
+		$this->rainLevel = max(0.0, min(1.0, $this->rainLevel + (mt_rand(-5, 5) / 100)));
+		$this->lightningLevel = max(0.0, min(1.0, $this->lightningLevel + (mt_rand(-3, 3) / 100)));
 
 		$this->weatherTick++;
 
@@ -658,29 +658,14 @@ class World implements ChunkManager{
 		}
 	}
 
-	private function broadcastWeatherPackets() : void{
-		$players = $this->getPlayers();
-		if(count($players) === 0){
-			return;
+	private function sendWeather(Player ...$targets) : void{
+		if(count($targets) === 0){
+			$targets = $this->players;
 		}
 
-		$rainInt = (int) ($this->rainLevel * 65535);
-		$thunderInt = (int) ($this->lightningLevel * 65535);
-
-		$packets = [];
-
-		if($this->rainLevel > 0.0){
-			$packets[] = LevelEventPacket::create(LevelEvent::START_RAIN, $rainInt, null);
-		}else{
-			$packets[] = LevelEventPacket::create(LevelEvent::STOP_RAIN, 0, null);
+		foreach($targets as $player){
+			$player->getNetworkSession()->syncWorldWeather($this);
 		}
-
-		if($this->lightningLevel > 0.0){
-			$packets[] = LevelEventPacket::create(LevelEvent::START_THUNDER, $thunderInt, null);
-		}else{
-			$packets[] = LevelEventPacket::create(LevelEvent::STOP_THUNDER, 0, null);
-		}
-		NetworkBroadcastUtils::broadcastPackets($players, $packets);
 	}
 
 	public function getRainLevel() : float{
@@ -1086,12 +1071,17 @@ class World implements ChunkManager{
 
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
-		$this->tickWeather();
 
 		if(++$this->sendTimeTicker === 200){
 			$this->sendTime();
 			$this->sendTimeTicker = 0;
 		}
+
+		if(++$this->sendWeatherTicker === 200){
+			$this->sendWeather();
+			$this->sendWeatherTicker = 0;
+		}
+		$this->tickWeather();
 
 		$this->unloadChunks();
 		if(++$this->providerGarbageCollectionTicker >= 6000){
