@@ -30,6 +30,10 @@ use function strlen;
 
 class WritableBookPage{
 	public const PAGE_LENGTH_HARD_LIMIT_BYTES = Limits::INT16_MAX;
+	//TODO: The client-side per-page character limit is inconsistent for non-ASCII text,
+	//allowing input beyond 256 chars. Use a slightly higher bounded soft limit to
+	//prevent rejected edits while still mitigating book-bomb attacks
+	public const PAGE_LENGTH_SOFT_LIMIT_CHARS = 512;
 	public const PHOTO_NAME_LENGTH_HARD_LIMIT_BYTES = Limits::INT16_MAX;
 
 	private string $text;
