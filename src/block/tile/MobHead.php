@@ -58,7 +58,7 @@ class MobHead extends Spawnable{
 		if($nbt->getTag(self::TAG_ROTATION) instanceof FloatTag){
 			$yaw = $nbt->getFloat(self::TAG_ROTATION, 0.0);
 			$this->rotation = ((int) floor(($yaw * 16 / 360) + 0.5)) & 0xf;
-		} else {
+		}else{
 			$rotation = $nbt->getByte(self::TAG_ROT, 0);
 			if($rotation >= 0 && $rotation <= 15){
 				$this->rotation = $rotation;
