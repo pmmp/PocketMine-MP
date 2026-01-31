@@ -248,7 +248,7 @@ abstract class Living extends Entity{
 	 * Applies damage to absorption first, then health.
 	 * Prevents Health DeSync when player health is reduced with absorption hearts -Trix
 	 */
-	public function damageWithAbsorption(float $damage): void{
+	public function damageWithAbsorption(float $damage) : void{
 		if ($damage <= 0.0) return;
 
 		$absorption = $this->getAbsorption();
@@ -632,7 +632,7 @@ abstract class Living extends Entity{
 	/**
 	 * Reduces absorption hearts before real health when reducing final damage
 	 */
-	protected function applyDamage(float $damage): void{
+	protected function applyDamage(float $damage) : void{
 		$this->damageWithAbsorption($damage);
 	}
 
