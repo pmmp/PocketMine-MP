@@ -244,6 +244,30 @@ abstract class Living extends Entity{
 		$this->absorptionAttr->setValue($absorption);
 	}
 
+	/**
+	 * Applies damage to absorption first, then health.
+	 * Prevents Health DeSync when player health is reduced with absorption hearts -Trix
+	 */
+	public function damageWithAbsorption(float $damage): void{
+		if ($damage <= 0.0) return;
+
+		$absorption = $this->getAbsorption();
+
+		if($absorption > 0.0){
+			$damage -= $absorption;
+
+			if($damage <= 0.0){
+				$this->setAbsorption($absorption + $damage); // damage is negative here
+				return;
+			}
+
+			$this->setAbsorption(0.0);
+		}
+
+		$health = $this->getHealth() - $damage;
+		$this->setHealth($health > 0.0 ? $health : 0.0);
+	}
+
 	public function getSneakOffset() : float{
 		return 0.0;
 	}
@@ -470,8 +494,6 @@ abstract class Living extends Entity{
 		}
 		$source->setModifier(-$source->getFinalDamage() * min(ceil(min($totalEpf, 25) * (mt_rand(50, 100) / 100)), 20) * 0.04, EntityDamageEvent::MODIFIER_ARMOR_ENCHANTMENTS);
 
-		$source->setModifier(-min($this->getAbsorption(), $source->getFinalDamage()), EntityDamageEvent::MODIFIER_ABSORPTION);
-
 		if($cause === EntityDamageEvent::CAUSE_FALLING_BLOCK && $this->armorInventory->getHelmet() instanceof Armor){
 			$source->setModifier(-($source->getFinalDamage() / 4), EntityDamageEvent::MODIFIER_ARMOR_HELMET);
 		}
@@ -483,7 +505,6 @@ abstract class Living extends Entity{
 	 * This will not be called by damage sources causing death.
 	 */
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
-		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		if($source->canBeReducedByArmor()){
 			$this->damageArmor($source->getBaseDamage());
 		}
@@ -606,6 +627,13 @@ abstract class Living extends Entity{
 		if($this->isAlive()){
 			$this->applyPostDamageEffects($source);
 		}
+	}
+
+	/**
+	 * Reduces absorption hearts before real health when reducing final damage
+	 */
+	protected function applyDamage(float $damage): void{
+		$this->damageWithAbsorption($damage);
 	}
 
 	protected function doHitAnimation() : void{
