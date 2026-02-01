@@ -249,24 +249,22 @@ abstract class Living extends Entity{
 	 * Prevents Health DeSync when player health is reduced with absorption hearts -Trix
 	 */
 	public function damageWithAbsorption(float $damage) : void{
-    	if($damage <= 0.0){
-        	return;
-    	}
+		if($damage <= 0.0) return;
 
-    	$absorption = $this->getAbsorption();
+		$absorption = $this->getAbsorption();
 
-    	if($absorption > 0.0){
-        	if($damage < $absorption){
-            	$this->setAbsorption($absorption - $damage);
-            	return;
-        	}
-        	$damage -= $absorption;
-        	$this->setAbsorption(0.0);
-    	}
+		if($absorption > 0.0){
+			if($damage < $absorption){
+				$this->setAbsorption($absorption - $damage);
+				return;
+			}
+			$damage -= $absorption;
+			$this->setAbsorption(0.0);
+		}
 
-    	$newHealth = $this->getHealth() - $damage;
+		$newHealth = $this->getHealth() - $damage;
 
-    	$this->setHealth(max(0.0, $newHealth));
+		$this->setHealth(max(0.0, $newHealth));
 	}
 
 	public function getSneakOffset() : float{
