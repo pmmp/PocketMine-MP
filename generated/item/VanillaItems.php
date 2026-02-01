@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\utils\Utils;
 use function array_keys;
-use function array_map;
 use function count;
 use function implode;
 use function mb_strtoupper;
@@ -35,7 +35,7 @@ use function mb_strtoupper;
  *
  * This class is generated automatically from source class {@link VanillaItemsInputs}. Do not modify it manually.
  * It must be regenerated whenever the source class is changed.
- * @see build/generate-registry-interface.php
+ * @see build/codegen/registry-interface.php
  */
 final class VanillaItems{
 	private static Boat $_mACACIA_BOAT;
@@ -47,6 +47,8 @@ final class VanillaItems{
 	private static Arrow $_mARROW;
 	private static BakedPotato $_mBAKED_POTATO;
 	private static Bamboo $_mBAMBOO;
+	private static HangingSign $_mBAMBOO_HANGING_SIGN;
+	private static ItemBlockWallOrFloor $_mBAMBOO_SIGN;
 	private static Banner $_mBANNER;
 	private static Beetroot $_mBEETROOT;
 	private static BeetrootSeeds $_mBEETROOT_SEEDS;
@@ -403,6 +405,8 @@ final class VanillaItems{
 			"arrow" => fn(Arrow $v) => self::$_mARROW = $v,
 			"baked_potato" => fn(BakedPotato $v) => self::$_mBAKED_POTATO = $v,
 			"bamboo" => fn(Bamboo $v) => self::$_mBAMBOO = $v,
+			"bamboo_hanging_sign" => fn(HangingSign $v) => self::$_mBAMBOO_HANGING_SIGN = $v,
+			"bamboo_sign" => fn(ItemBlockWallOrFloor $v) => self::$_mBAMBOO_SIGN = $v,
 			"banner" => fn(Banner $v) => self::$_mBANNER = $v,
 			"beetroot" => fn(Beetroot $v) => self::$_mBEETROOT = $v,
 			"beetroot_seeds" => fn(BeetrootSeeds $v) => self::$_mBEETROOT_SEEDS = $v,
@@ -751,1616 +755,1626 @@ final class VanillaItems{
 	 */
 	public static function getAll() : array{
 		if(!isset(self::$members)){ self::init(); }
-		return array_map(VanillaItemsInputs::preprocessMember(...), self::$members);
+		return Utils::cloneObjectArray(self::$members);
 	}
 
 	public static function ACACIA_BOAT() : Boat{
 		if(!isset(self::$_mACACIA_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mACACIA_BOAT);
+		return clone self::$_mACACIA_BOAT;
 	}
 
 	public static function ACACIA_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mACACIA_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mACACIA_HANGING_SIGN);
+		return clone self::$_mACACIA_HANGING_SIGN;
 	}
 
 	public static function ACACIA_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mACACIA_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mACACIA_SIGN);
+		return clone self::$_mACACIA_SIGN;
 	}
 
 	public static function AIR() : Item{
 		if(!isset(self::$_mAIR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mAIR);
+		return clone self::$_mAIR;
 	}
 
 	public static function AMETHYST_SHARD() : Item{
 		if(!isset(self::$_mAMETHYST_SHARD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mAMETHYST_SHARD);
+		return clone self::$_mAMETHYST_SHARD;
 	}
 
 	public static function APPLE() : Apple{
 		if(!isset(self::$_mAPPLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mAPPLE);
+		return clone self::$_mAPPLE;
 	}
 
 	public static function ARROW() : Arrow{
 		if(!isset(self::$_mARROW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mARROW);
+		return clone self::$_mARROW;
 	}
 
 	public static function BAKED_POTATO() : BakedPotato{
 		if(!isset(self::$_mBAKED_POTATO)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBAKED_POTATO);
+		return clone self::$_mBAKED_POTATO;
 	}
 
 	public static function BAMBOO() : Bamboo{
 		if(!isset(self::$_mBAMBOO)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBAMBOO);
+		return clone self::$_mBAMBOO;
+	}
+
+	public static function BAMBOO_HANGING_SIGN() : HangingSign{
+		if(!isset(self::$_mBAMBOO_HANGING_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_HANGING_SIGN;
+	}
+
+	public static function BAMBOO_SIGN() : ItemBlockWallOrFloor{
+		if(!isset(self::$_mBAMBOO_SIGN)){ self::init(); }
+		return clone self::$_mBAMBOO_SIGN;
 	}
 
 	public static function BANNER() : Banner{
 		if(!isset(self::$_mBANNER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBANNER);
+		return clone self::$_mBANNER;
 	}
 
 	public static function BEETROOT() : Beetroot{
 		if(!isset(self::$_mBEETROOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBEETROOT);
+		return clone self::$_mBEETROOT;
 	}
 
 	public static function BEETROOT_SEEDS() : BeetrootSeeds{
 		if(!isset(self::$_mBEETROOT_SEEDS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBEETROOT_SEEDS);
+		return clone self::$_mBEETROOT_SEEDS;
 	}
 
 	public static function BEETROOT_SOUP() : BeetrootSoup{
 		if(!isset(self::$_mBEETROOT_SOUP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBEETROOT_SOUP);
+		return clone self::$_mBEETROOT_SOUP;
 	}
 
 	public static function BIRCH_BOAT() : Boat{
 		if(!isset(self::$_mBIRCH_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBIRCH_BOAT);
+		return clone self::$_mBIRCH_BOAT;
 	}
 
 	public static function BIRCH_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mBIRCH_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBIRCH_HANGING_SIGN);
+		return clone self::$_mBIRCH_HANGING_SIGN;
 	}
 
 	public static function BIRCH_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mBIRCH_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBIRCH_SIGN);
+		return clone self::$_mBIRCH_SIGN;
 	}
 
 	public static function BLAZE_POWDER() : Item{
 		if(!isset(self::$_mBLAZE_POWDER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBLAZE_POWDER);
+		return clone self::$_mBLAZE_POWDER;
 	}
 
 	public static function BLAZE_ROD() : BlazeRod{
 		if(!isset(self::$_mBLAZE_ROD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBLAZE_ROD);
+		return clone self::$_mBLAZE_ROD;
 	}
 
 	public static function BLEACH() : Item{
 		if(!isset(self::$_mBLEACH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBLEACH);
+		return clone self::$_mBLEACH;
 	}
 
 	public static function BONE() : Item{
 		if(!isset(self::$_mBONE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBONE);
+		return clone self::$_mBONE;
 	}
 
 	public static function BONE_MEAL() : Fertilizer{
 		if(!isset(self::$_mBONE_MEAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBONE_MEAL);
+		return clone self::$_mBONE_MEAL;
 	}
 
 	public static function BOOK() : Book{
 		if(!isset(self::$_mBOOK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBOOK);
+		return clone self::$_mBOOK;
 	}
 
 	public static function BOW() : Bow{
 		if(!isset(self::$_mBOW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBOW);
+		return clone self::$_mBOW;
 	}
 
 	public static function BOWL() : Bowl{
 		if(!isset(self::$_mBOWL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBOWL);
+		return clone self::$_mBOWL;
 	}
 
 	public static function BREAD() : Bread{
 		if(!isset(self::$_mBREAD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBREAD);
+		return clone self::$_mBREAD;
 	}
 
 	public static function BRICK() : Item{
 		if(!isset(self::$_mBRICK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBRICK);
+		return clone self::$_mBRICK;
 	}
 
 	public static function BUCKET() : Bucket{
 		if(!isset(self::$_mBUCKET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mBUCKET);
+		return clone self::$_mBUCKET;
 	}
 
 	public static function CARROT() : Carrot{
 		if(!isset(self::$_mCARROT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCARROT);
+		return clone self::$_mCARROT;
 	}
 
 	public static function CHAINMAIL_BOOTS() : Armor{
 		if(!isset(self::$_mCHAINMAIL_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHAINMAIL_BOOTS);
+		return clone self::$_mCHAINMAIL_BOOTS;
 	}
 
 	public static function CHAINMAIL_CHESTPLATE() : Armor{
 		if(!isset(self::$_mCHAINMAIL_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHAINMAIL_CHESTPLATE);
+		return clone self::$_mCHAINMAIL_CHESTPLATE;
 	}
 
 	public static function CHAINMAIL_HELMET() : Armor{
 		if(!isset(self::$_mCHAINMAIL_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHAINMAIL_HELMET);
+		return clone self::$_mCHAINMAIL_HELMET;
 	}
 
 	public static function CHAINMAIL_LEGGINGS() : Armor{
 		if(!isset(self::$_mCHAINMAIL_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHAINMAIL_LEGGINGS);
+		return clone self::$_mCHAINMAIL_LEGGINGS;
 	}
 
 	public static function CHARCOAL() : Coal{
 		if(!isset(self::$_mCHARCOAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHARCOAL);
+		return clone self::$_mCHARCOAL;
 	}
 
 	public static function CHEMICAL_ALUMINIUM_OXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_ALUMINIUM_OXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_ALUMINIUM_OXIDE);
+		return clone self::$_mCHEMICAL_ALUMINIUM_OXIDE;
 	}
 
 	public static function CHEMICAL_AMMONIA() : Item{
 		if(!isset(self::$_mCHEMICAL_AMMONIA)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_AMMONIA);
+		return clone self::$_mCHEMICAL_AMMONIA;
 	}
 
 	public static function CHEMICAL_BARIUM_SULPHATE() : Item{
 		if(!isset(self::$_mCHEMICAL_BARIUM_SULPHATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_BARIUM_SULPHATE);
+		return clone self::$_mCHEMICAL_BARIUM_SULPHATE;
 	}
 
 	public static function CHEMICAL_BENZENE() : Item{
 		if(!isset(self::$_mCHEMICAL_BENZENE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_BENZENE);
+		return clone self::$_mCHEMICAL_BENZENE;
 	}
 
 	public static function CHEMICAL_BORON_TRIOXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_BORON_TRIOXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_BORON_TRIOXIDE);
+		return clone self::$_mCHEMICAL_BORON_TRIOXIDE;
 	}
 
 	public static function CHEMICAL_CALCIUM_BROMIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_CALCIUM_BROMIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_CALCIUM_BROMIDE);
+		return clone self::$_mCHEMICAL_CALCIUM_BROMIDE;
 	}
 
 	public static function CHEMICAL_CALCIUM_CHLORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_CALCIUM_CHLORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_CALCIUM_CHLORIDE);
+		return clone self::$_mCHEMICAL_CALCIUM_CHLORIDE;
 	}
 
 	public static function CHEMICAL_CERIUM_CHLORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_CERIUM_CHLORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_CERIUM_CHLORIDE);
+		return clone self::$_mCHEMICAL_CERIUM_CHLORIDE;
 	}
 
 	public static function CHEMICAL_CHARCOAL() : Item{
 		if(!isset(self::$_mCHEMICAL_CHARCOAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_CHARCOAL);
+		return clone self::$_mCHEMICAL_CHARCOAL;
 	}
 
 	public static function CHEMICAL_CRUDE_OIL() : Item{
 		if(!isset(self::$_mCHEMICAL_CRUDE_OIL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_CRUDE_OIL);
+		return clone self::$_mCHEMICAL_CRUDE_OIL;
 	}
 
 	public static function CHEMICAL_GLUE() : Item{
 		if(!isset(self::$_mCHEMICAL_GLUE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_GLUE);
+		return clone self::$_mCHEMICAL_GLUE;
 	}
 
 	public static function CHEMICAL_HYDROGEN_PEROXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_HYDROGEN_PEROXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_HYDROGEN_PEROXIDE);
+		return clone self::$_mCHEMICAL_HYDROGEN_PEROXIDE;
 	}
 
 	public static function CHEMICAL_HYPOCHLORITE() : Item{
 		if(!isset(self::$_mCHEMICAL_HYPOCHLORITE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_HYPOCHLORITE);
+		return clone self::$_mCHEMICAL_HYPOCHLORITE;
 	}
 
 	public static function CHEMICAL_INK() : Item{
 		if(!isset(self::$_mCHEMICAL_INK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_INK);
+		return clone self::$_mCHEMICAL_INK;
 	}
 
 	public static function CHEMICAL_IRON_SULPHIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_IRON_SULPHIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_IRON_SULPHIDE);
+		return clone self::$_mCHEMICAL_IRON_SULPHIDE;
 	}
 
 	public static function CHEMICAL_LATEX() : Item{
 		if(!isset(self::$_mCHEMICAL_LATEX)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_LATEX);
+		return clone self::$_mCHEMICAL_LATEX;
 	}
 
 	public static function CHEMICAL_LITHIUM_HYDRIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_LITHIUM_HYDRIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_LITHIUM_HYDRIDE);
+		return clone self::$_mCHEMICAL_LITHIUM_HYDRIDE;
 	}
 
 	public static function CHEMICAL_LUMINOL() : Item{
 		if(!isset(self::$_mCHEMICAL_LUMINOL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_LUMINOL);
+		return clone self::$_mCHEMICAL_LUMINOL;
 	}
 
 	public static function CHEMICAL_MAGNESIUM_NITRATE() : Item{
 		if(!isset(self::$_mCHEMICAL_MAGNESIUM_NITRATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_MAGNESIUM_NITRATE);
+		return clone self::$_mCHEMICAL_MAGNESIUM_NITRATE;
 	}
 
 	public static function CHEMICAL_MAGNESIUM_OXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_MAGNESIUM_OXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_MAGNESIUM_OXIDE);
+		return clone self::$_mCHEMICAL_MAGNESIUM_OXIDE;
 	}
 
 	public static function CHEMICAL_MAGNESIUM_SALTS() : Item{
 		if(!isset(self::$_mCHEMICAL_MAGNESIUM_SALTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_MAGNESIUM_SALTS);
+		return clone self::$_mCHEMICAL_MAGNESIUM_SALTS;
 	}
 
 	public static function CHEMICAL_MERCURIC_CHLORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_MERCURIC_CHLORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_MERCURIC_CHLORIDE);
+		return clone self::$_mCHEMICAL_MERCURIC_CHLORIDE;
 	}
 
 	public static function CHEMICAL_POLYETHYLENE() : Item{
 		if(!isset(self::$_mCHEMICAL_POLYETHYLENE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_POLYETHYLENE);
+		return clone self::$_mCHEMICAL_POLYETHYLENE;
 	}
 
 	public static function CHEMICAL_POTASSIUM_CHLORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_POTASSIUM_CHLORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_POTASSIUM_CHLORIDE);
+		return clone self::$_mCHEMICAL_POTASSIUM_CHLORIDE;
 	}
 
 	public static function CHEMICAL_POTASSIUM_IODIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_POTASSIUM_IODIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_POTASSIUM_IODIDE);
+		return clone self::$_mCHEMICAL_POTASSIUM_IODIDE;
 	}
 
 	public static function CHEMICAL_RUBBISH() : Item{
 		if(!isset(self::$_mCHEMICAL_RUBBISH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_RUBBISH);
+		return clone self::$_mCHEMICAL_RUBBISH;
 	}
 
 	public static function CHEMICAL_SALT() : Item{
 		if(!isset(self::$_mCHEMICAL_SALT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SALT);
+		return clone self::$_mCHEMICAL_SALT;
 	}
 
 	public static function CHEMICAL_SOAP() : Item{
 		if(!isset(self::$_mCHEMICAL_SOAP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SOAP);
+		return clone self::$_mCHEMICAL_SOAP;
 	}
 
 	public static function CHEMICAL_SODIUM_ACETATE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_ACETATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_ACETATE);
+		return clone self::$_mCHEMICAL_SODIUM_ACETATE;
 	}
 
 	public static function CHEMICAL_SODIUM_FLUORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_FLUORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_FLUORIDE);
+		return clone self::$_mCHEMICAL_SODIUM_FLUORIDE;
 	}
 
 	public static function CHEMICAL_SODIUM_HYDRIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_HYDRIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_HYDRIDE);
+		return clone self::$_mCHEMICAL_SODIUM_HYDRIDE;
 	}
 
 	public static function CHEMICAL_SODIUM_HYDROXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_HYDROXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_HYDROXIDE);
+		return clone self::$_mCHEMICAL_SODIUM_HYDROXIDE;
 	}
 
 	public static function CHEMICAL_SODIUM_HYPOCHLORITE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_HYPOCHLORITE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_HYPOCHLORITE);
+		return clone self::$_mCHEMICAL_SODIUM_HYPOCHLORITE;
 	}
 
 	public static function CHEMICAL_SODIUM_OXIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_SODIUM_OXIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SODIUM_OXIDE);
+		return clone self::$_mCHEMICAL_SODIUM_OXIDE;
 	}
 
 	public static function CHEMICAL_SUGAR() : Item{
 		if(!isset(self::$_mCHEMICAL_SUGAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SUGAR);
+		return clone self::$_mCHEMICAL_SUGAR;
 	}
 
 	public static function CHEMICAL_SULPHATE() : Item{
 		if(!isset(self::$_mCHEMICAL_SULPHATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_SULPHATE);
+		return clone self::$_mCHEMICAL_SULPHATE;
 	}
 
 	public static function CHEMICAL_TUNGSTEN_CHLORIDE() : Item{
 		if(!isset(self::$_mCHEMICAL_TUNGSTEN_CHLORIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_TUNGSTEN_CHLORIDE);
+		return clone self::$_mCHEMICAL_TUNGSTEN_CHLORIDE;
 	}
 
 	public static function CHEMICAL_WATER() : Item{
 		if(!isset(self::$_mCHEMICAL_WATER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHEMICAL_WATER);
+		return clone self::$_mCHEMICAL_WATER;
 	}
 
 	public static function CHERRY_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mCHERRY_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHERRY_HANGING_SIGN);
+		return clone self::$_mCHERRY_HANGING_SIGN;
 	}
 
 	public static function CHERRY_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mCHERRY_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHERRY_SIGN);
+		return clone self::$_mCHERRY_SIGN;
 	}
 
 	public static function CHORUS_FRUIT() : ChorusFruit{
 		if(!isset(self::$_mCHORUS_FRUIT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCHORUS_FRUIT);
+		return clone self::$_mCHORUS_FRUIT;
 	}
 
 	public static function CLAY() : Item{
 		if(!isset(self::$_mCLAY)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCLAY);
+		return clone self::$_mCLAY;
 	}
 
 	public static function CLOCK() : Clock{
 		if(!isset(self::$_mCLOCK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCLOCK);
+		return clone self::$_mCLOCK;
 	}
 
 	public static function CLOWNFISH() : Clownfish{
 		if(!isset(self::$_mCLOWNFISH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCLOWNFISH);
+		return clone self::$_mCLOWNFISH;
 	}
 
 	public static function COAL() : Coal{
 		if(!isset(self::$_mCOAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOAL);
+		return clone self::$_mCOAL;
 	}
 
 	public static function COAST_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mCOAST_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOAST_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mCOAST_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function COCOA_BEANS() : CocoaBeans{
 		if(!isset(self::$_mCOCOA_BEANS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOCOA_BEANS);
+		return clone self::$_mCOCOA_BEANS;
 	}
 
 	public static function COMPASS() : Compass{
 		if(!isset(self::$_mCOMPASS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOMPASS);
+		return clone self::$_mCOMPASS;
 	}
 
 	public static function COOKED_CHICKEN() : CookedChicken{
 		if(!isset(self::$_mCOOKED_CHICKEN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_CHICKEN);
+		return clone self::$_mCOOKED_CHICKEN;
 	}
 
 	public static function COOKED_FISH() : CookedFish{
 		if(!isset(self::$_mCOOKED_FISH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_FISH);
+		return clone self::$_mCOOKED_FISH;
 	}
 
 	public static function COOKED_MUTTON() : CookedMutton{
 		if(!isset(self::$_mCOOKED_MUTTON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_MUTTON);
+		return clone self::$_mCOOKED_MUTTON;
 	}
 
 	public static function COOKED_PORKCHOP() : CookedPorkchop{
 		if(!isset(self::$_mCOOKED_PORKCHOP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_PORKCHOP);
+		return clone self::$_mCOOKED_PORKCHOP;
 	}
 
 	public static function COOKED_RABBIT() : CookedRabbit{
 		if(!isset(self::$_mCOOKED_RABBIT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_RABBIT);
+		return clone self::$_mCOOKED_RABBIT;
 	}
 
 	public static function COOKED_SALMON() : CookedSalmon{
 		if(!isset(self::$_mCOOKED_SALMON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKED_SALMON);
+		return clone self::$_mCOOKED_SALMON;
 	}
 
 	public static function COOKIE() : Cookie{
 		if(!isset(self::$_mCOOKIE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOOKIE);
+		return clone self::$_mCOOKIE;
 	}
 
 	public static function COPPER_AXE() : Axe{
 		if(!isset(self::$_mCOPPER_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_AXE);
+		return clone self::$_mCOPPER_AXE;
 	}
 
 	public static function COPPER_BOOTS() : Armor{
 		if(!isset(self::$_mCOPPER_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_BOOTS);
+		return clone self::$_mCOPPER_BOOTS;
 	}
 
 	public static function COPPER_CHESTPLATE() : Armor{
 		if(!isset(self::$_mCOPPER_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_CHESTPLATE);
+		return clone self::$_mCOPPER_CHESTPLATE;
 	}
 
 	public static function COPPER_HELMET() : Armor{
 		if(!isset(self::$_mCOPPER_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_HELMET);
+		return clone self::$_mCOPPER_HELMET;
 	}
 
 	public static function COPPER_HOE() : Hoe{
 		if(!isset(self::$_mCOPPER_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_HOE);
+		return clone self::$_mCOPPER_HOE;
 	}
 
 	public static function COPPER_INGOT() : Item{
 		if(!isset(self::$_mCOPPER_INGOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_INGOT);
+		return clone self::$_mCOPPER_INGOT;
 	}
 
 	public static function COPPER_LEGGINGS() : Armor{
 		if(!isset(self::$_mCOPPER_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_LEGGINGS);
+		return clone self::$_mCOPPER_LEGGINGS;
 	}
 
 	public static function COPPER_NUGGET() : Item{
 		if(!isset(self::$_mCOPPER_NUGGET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_NUGGET);
+		return clone self::$_mCOPPER_NUGGET;
 	}
 
 	public static function COPPER_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mCOPPER_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_PICKAXE);
+		return clone self::$_mCOPPER_PICKAXE;
 	}
 
 	public static function COPPER_SHOVEL() : Shovel{
 		if(!isset(self::$_mCOPPER_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_SHOVEL);
+		return clone self::$_mCOPPER_SHOVEL;
 	}
 
 	public static function COPPER_SWORD() : Sword{
 		if(!isset(self::$_mCOPPER_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCOPPER_SWORD);
+		return clone self::$_mCOPPER_SWORD;
 	}
 
 	public static function CORAL_FAN() : CoralFan{
 		if(!isset(self::$_mCORAL_FAN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCORAL_FAN);
+		return clone self::$_mCORAL_FAN;
 	}
 
 	public static function CRIMSON_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mCRIMSON_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCRIMSON_HANGING_SIGN);
+		return clone self::$_mCRIMSON_HANGING_SIGN;
 	}
 
 	public static function CRIMSON_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mCRIMSON_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mCRIMSON_SIGN);
+		return clone self::$_mCRIMSON_SIGN;
 	}
 
 	public static function DARK_OAK_BOAT() : Boat{
 		if(!isset(self::$_mDARK_OAK_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDARK_OAK_BOAT);
+		return clone self::$_mDARK_OAK_BOAT;
 	}
 
 	public static function DARK_OAK_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mDARK_OAK_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDARK_OAK_HANGING_SIGN);
+		return clone self::$_mDARK_OAK_HANGING_SIGN;
 	}
 
 	public static function DARK_OAK_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mDARK_OAK_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDARK_OAK_SIGN);
+		return clone self::$_mDARK_OAK_SIGN;
 	}
 
 	public static function DIAMOND() : Item{
 		if(!isset(self::$_mDIAMOND)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND);
+		return clone self::$_mDIAMOND;
 	}
 
 	public static function DIAMOND_AXE() : Axe{
 		if(!isset(self::$_mDIAMOND_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_AXE);
+		return clone self::$_mDIAMOND_AXE;
 	}
 
 	public static function DIAMOND_BOOTS() : Armor{
 		if(!isset(self::$_mDIAMOND_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_BOOTS);
+		return clone self::$_mDIAMOND_BOOTS;
 	}
 
 	public static function DIAMOND_CHESTPLATE() : Armor{
 		if(!isset(self::$_mDIAMOND_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_CHESTPLATE);
+		return clone self::$_mDIAMOND_CHESTPLATE;
 	}
 
 	public static function DIAMOND_HELMET() : Armor{
 		if(!isset(self::$_mDIAMOND_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_HELMET);
+		return clone self::$_mDIAMOND_HELMET;
 	}
 
 	public static function DIAMOND_HOE() : Hoe{
 		if(!isset(self::$_mDIAMOND_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_HOE);
+		return clone self::$_mDIAMOND_HOE;
 	}
 
 	public static function DIAMOND_LEGGINGS() : Armor{
 		if(!isset(self::$_mDIAMOND_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_LEGGINGS);
+		return clone self::$_mDIAMOND_LEGGINGS;
 	}
 
 	public static function DIAMOND_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mDIAMOND_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_PICKAXE);
+		return clone self::$_mDIAMOND_PICKAXE;
 	}
 
 	public static function DIAMOND_SHOVEL() : Shovel{
 		if(!isset(self::$_mDIAMOND_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_SHOVEL);
+		return clone self::$_mDIAMOND_SHOVEL;
 	}
 
 	public static function DIAMOND_SWORD() : Sword{
 		if(!isset(self::$_mDIAMOND_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDIAMOND_SWORD);
+		return clone self::$_mDIAMOND_SWORD;
 	}
 
 	public static function DISC_FRAGMENT_5() : Item{
 		if(!isset(self::$_mDISC_FRAGMENT_5)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDISC_FRAGMENT_5);
+		return clone self::$_mDISC_FRAGMENT_5;
 	}
 
 	public static function DRAGON_BREATH() : Item{
 		if(!isset(self::$_mDRAGON_BREATH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDRAGON_BREATH);
+		return clone self::$_mDRAGON_BREATH;
 	}
 
 	public static function DRIED_KELP() : DriedKelp{
 		if(!isset(self::$_mDRIED_KELP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDRIED_KELP);
+		return clone self::$_mDRIED_KELP;
 	}
 
 	public static function DUNE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mDUNE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mDUNE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function DYE() : Dye{
 		if(!isset(self::$_mDYE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mDYE);
+		return clone self::$_mDYE;
 	}
 
 	public static function ECHO_SHARD() : Item{
 		if(!isset(self::$_mECHO_SHARD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mECHO_SHARD);
+		return clone self::$_mECHO_SHARD;
 	}
 
 	public static function EGG() : Egg{
 		if(!isset(self::$_mEGG)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mEGG);
+		return clone self::$_mEGG;
 	}
 
 	public static function EMERALD() : Item{
 		if(!isset(self::$_mEMERALD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mEMERALD);
+		return clone self::$_mEMERALD;
 	}
 
 	public static function ENCHANTED_BOOK() : EnchantedBook{
 		if(!isset(self::$_mENCHANTED_BOOK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mENCHANTED_BOOK);
+		return clone self::$_mENCHANTED_BOOK;
 	}
 
 	public static function ENCHANTED_GOLDEN_APPLE() : GoldenAppleEnchanted{
 		if(!isset(self::$_mENCHANTED_GOLDEN_APPLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mENCHANTED_GOLDEN_APPLE);
+		return clone self::$_mENCHANTED_GOLDEN_APPLE;
 	}
 
 	public static function ENDER_PEARL() : EnderPearl{
 		if(!isset(self::$_mENDER_PEARL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mENDER_PEARL);
+		return clone self::$_mENDER_PEARL;
 	}
 
 	public static function END_CRYSTAL() : EndCrystal{
 		if(!isset(self::$_mEND_CRYSTAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mEND_CRYSTAL);
+		return clone self::$_mEND_CRYSTAL;
 	}
 
 	public static function EXPERIENCE_BOTTLE() : ExperienceBottle{
 		if(!isset(self::$_mEXPERIENCE_BOTTLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mEXPERIENCE_BOTTLE);
+		return clone self::$_mEXPERIENCE_BOTTLE;
 	}
 
 	public static function EYE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mEYE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mEYE_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mEYE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function FEATHER() : Item{
 		if(!isset(self::$_mFEATHER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFEATHER);
+		return clone self::$_mFEATHER;
 	}
 
 	public static function FERMENTED_SPIDER_EYE() : Item{
 		if(!isset(self::$_mFERMENTED_SPIDER_EYE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFERMENTED_SPIDER_EYE);
+		return clone self::$_mFERMENTED_SPIDER_EYE;
 	}
 
 	public static function FIREWORK_ROCKET() : FireworkRocket{
 		if(!isset(self::$_mFIREWORK_ROCKET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFIREWORK_ROCKET);
+		return clone self::$_mFIREWORK_ROCKET;
 	}
 
 	public static function FIREWORK_STAR() : FireworkStar{
 		if(!isset(self::$_mFIREWORK_STAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFIREWORK_STAR);
+		return clone self::$_mFIREWORK_STAR;
 	}
 
 	public static function FIRE_CHARGE() : FireCharge{
 		if(!isset(self::$_mFIRE_CHARGE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFIRE_CHARGE);
+		return clone self::$_mFIRE_CHARGE;
 	}
 
 	public static function FISHING_ROD() : FishingRod{
 		if(!isset(self::$_mFISHING_ROD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFISHING_ROD);
+		return clone self::$_mFISHING_ROD;
 	}
 
 	public static function FLINT() : Item{
 		if(!isset(self::$_mFLINT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFLINT);
+		return clone self::$_mFLINT;
 	}
 
 	public static function FLINT_AND_STEEL() : FlintSteel{
 		if(!isset(self::$_mFLINT_AND_STEEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mFLINT_AND_STEEL);
+		return clone self::$_mFLINT_AND_STEEL;
 	}
 
 	public static function GHAST_TEAR() : Item{
 		if(!isset(self::$_mGHAST_TEAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGHAST_TEAR);
+		return clone self::$_mGHAST_TEAR;
 	}
 
 	public static function GLASS_BOTTLE() : GlassBottle{
 		if(!isset(self::$_mGLASS_BOTTLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGLASS_BOTTLE);
+		return clone self::$_mGLASS_BOTTLE;
 	}
 
 	public static function GLISTERING_MELON() : Item{
 		if(!isset(self::$_mGLISTERING_MELON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGLISTERING_MELON);
+		return clone self::$_mGLISTERING_MELON;
 	}
 
 	public static function GLOWSTONE_DUST() : Item{
 		if(!isset(self::$_mGLOWSTONE_DUST)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGLOWSTONE_DUST);
+		return clone self::$_mGLOWSTONE_DUST;
 	}
 
 	public static function GLOW_BERRIES() : GlowBerries{
 		if(!isset(self::$_mGLOW_BERRIES)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGLOW_BERRIES);
+		return clone self::$_mGLOW_BERRIES;
 	}
 
 	public static function GLOW_INK_SAC() : Item{
 		if(!isset(self::$_mGLOW_INK_SAC)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGLOW_INK_SAC);
+		return clone self::$_mGLOW_INK_SAC;
 	}
 
 	public static function GOAT_HORN() : GoatHorn{
 		if(!isset(self::$_mGOAT_HORN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOAT_HORN);
+		return clone self::$_mGOAT_HORN;
 	}
 
 	public static function GOLDEN_APPLE() : GoldenApple{
 		if(!isset(self::$_mGOLDEN_APPLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_APPLE);
+		return clone self::$_mGOLDEN_APPLE;
 	}
 
 	public static function GOLDEN_AXE() : Axe{
 		if(!isset(self::$_mGOLDEN_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_AXE);
+		return clone self::$_mGOLDEN_AXE;
 	}
 
 	public static function GOLDEN_BOOTS() : Armor{
 		if(!isset(self::$_mGOLDEN_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_BOOTS);
+		return clone self::$_mGOLDEN_BOOTS;
 	}
 
 	public static function GOLDEN_CARROT() : GoldenCarrot{
 		if(!isset(self::$_mGOLDEN_CARROT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_CARROT);
+		return clone self::$_mGOLDEN_CARROT;
 	}
 
 	public static function GOLDEN_CHESTPLATE() : Armor{
 		if(!isset(self::$_mGOLDEN_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_CHESTPLATE);
+		return clone self::$_mGOLDEN_CHESTPLATE;
 	}
 
 	public static function GOLDEN_HELMET() : Armor{
 		if(!isset(self::$_mGOLDEN_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_HELMET);
+		return clone self::$_mGOLDEN_HELMET;
 	}
 
 	public static function GOLDEN_HOE() : Hoe{
 		if(!isset(self::$_mGOLDEN_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_HOE);
+		return clone self::$_mGOLDEN_HOE;
 	}
 
 	public static function GOLDEN_LEGGINGS() : Armor{
 		if(!isset(self::$_mGOLDEN_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_LEGGINGS);
+		return clone self::$_mGOLDEN_LEGGINGS;
 	}
 
 	public static function GOLDEN_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mGOLDEN_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_PICKAXE);
+		return clone self::$_mGOLDEN_PICKAXE;
 	}
 
 	public static function GOLDEN_SHOVEL() : Shovel{
 		if(!isset(self::$_mGOLDEN_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_SHOVEL);
+		return clone self::$_mGOLDEN_SHOVEL;
 	}
 
 	public static function GOLDEN_SWORD() : Sword{
 		if(!isset(self::$_mGOLDEN_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLDEN_SWORD);
+		return clone self::$_mGOLDEN_SWORD;
 	}
 
 	public static function GOLD_INGOT() : Item{
 		if(!isset(self::$_mGOLD_INGOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLD_INGOT);
+		return clone self::$_mGOLD_INGOT;
 	}
 
 	public static function GOLD_NUGGET() : Item{
 		if(!isset(self::$_mGOLD_NUGGET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGOLD_NUGGET);
+		return clone self::$_mGOLD_NUGGET;
 	}
 
 	public static function GUNPOWDER() : Item{
 		if(!isset(self::$_mGUNPOWDER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mGUNPOWDER);
+		return clone self::$_mGUNPOWDER;
 	}
 
 	public static function HEART_OF_THE_SEA() : Item{
 		if(!isset(self::$_mHEART_OF_THE_SEA)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mHEART_OF_THE_SEA);
+		return clone self::$_mHEART_OF_THE_SEA;
 	}
 
 	public static function HONEYCOMB() : Item{
 		if(!isset(self::$_mHONEYCOMB)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mHONEYCOMB);
+		return clone self::$_mHONEYCOMB;
 	}
 
 	public static function HONEY_BOTTLE() : HoneyBottle{
 		if(!isset(self::$_mHONEY_BOTTLE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mHONEY_BOTTLE);
+		return clone self::$_mHONEY_BOTTLE;
 	}
 
 	public static function HOST_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mHOST_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mHOST_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mHOST_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function ICE_BOMB() : IceBomb{
 		if(!isset(self::$_mICE_BOMB)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mICE_BOMB);
+		return clone self::$_mICE_BOMB;
 	}
 
 	public static function INK_SAC() : Item{
 		if(!isset(self::$_mINK_SAC)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mINK_SAC);
+		return clone self::$_mINK_SAC;
 	}
 
 	public static function IRON_AXE() : Axe{
 		if(!isset(self::$_mIRON_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_AXE);
+		return clone self::$_mIRON_AXE;
 	}
 
 	public static function IRON_BOOTS() : Armor{
 		if(!isset(self::$_mIRON_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_BOOTS);
+		return clone self::$_mIRON_BOOTS;
 	}
 
 	public static function IRON_CHESTPLATE() : Armor{
 		if(!isset(self::$_mIRON_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_CHESTPLATE);
+		return clone self::$_mIRON_CHESTPLATE;
 	}
 
 	public static function IRON_HELMET() : Armor{
 		if(!isset(self::$_mIRON_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_HELMET);
+		return clone self::$_mIRON_HELMET;
 	}
 
 	public static function IRON_HOE() : Hoe{
 		if(!isset(self::$_mIRON_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_HOE);
+		return clone self::$_mIRON_HOE;
 	}
 
 	public static function IRON_INGOT() : Item{
 		if(!isset(self::$_mIRON_INGOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_INGOT);
+		return clone self::$_mIRON_INGOT;
 	}
 
 	public static function IRON_LEGGINGS() : Armor{
 		if(!isset(self::$_mIRON_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_LEGGINGS);
+		return clone self::$_mIRON_LEGGINGS;
 	}
 
 	public static function IRON_NUGGET() : Item{
 		if(!isset(self::$_mIRON_NUGGET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_NUGGET);
+		return clone self::$_mIRON_NUGGET;
 	}
 
 	public static function IRON_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mIRON_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_PICKAXE);
+		return clone self::$_mIRON_PICKAXE;
 	}
 
 	public static function IRON_SHOVEL() : Shovel{
 		if(!isset(self::$_mIRON_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_SHOVEL);
+		return clone self::$_mIRON_SHOVEL;
 	}
 
 	public static function IRON_SWORD() : Sword{
 		if(!isset(self::$_mIRON_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mIRON_SWORD);
+		return clone self::$_mIRON_SWORD;
 	}
 
 	public static function JUNGLE_BOAT() : Boat{
 		if(!isset(self::$_mJUNGLE_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mJUNGLE_BOAT);
+		return clone self::$_mJUNGLE_BOAT;
 	}
 
 	public static function JUNGLE_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mJUNGLE_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mJUNGLE_HANGING_SIGN);
+		return clone self::$_mJUNGLE_HANGING_SIGN;
 	}
 
 	public static function JUNGLE_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mJUNGLE_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mJUNGLE_SIGN);
+		return clone self::$_mJUNGLE_SIGN;
 	}
 
 	public static function LAPIS_LAZULI() : Item{
 		if(!isset(self::$_mLAPIS_LAZULI)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLAPIS_LAZULI);
+		return clone self::$_mLAPIS_LAZULI;
 	}
 
 	public static function LAVA_BUCKET() : LiquidBucket{
 		if(!isset(self::$_mLAVA_BUCKET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLAVA_BUCKET);
+		return clone self::$_mLAVA_BUCKET;
 	}
 
 	public static function LEATHER() : Item{
 		if(!isset(self::$_mLEATHER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLEATHER);
+		return clone self::$_mLEATHER;
 	}
 
 	public static function LEATHER_BOOTS() : Armor{
 		if(!isset(self::$_mLEATHER_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLEATHER_BOOTS);
+		return clone self::$_mLEATHER_BOOTS;
 	}
 
 	public static function LEATHER_CAP() : Armor{
 		if(!isset(self::$_mLEATHER_CAP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLEATHER_CAP);
+		return clone self::$_mLEATHER_CAP;
 	}
 
 	public static function LEATHER_PANTS() : Armor{
 		if(!isset(self::$_mLEATHER_PANTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLEATHER_PANTS);
+		return clone self::$_mLEATHER_PANTS;
 	}
 
 	public static function LEATHER_TUNIC() : Armor{
 		if(!isset(self::$_mLEATHER_TUNIC)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLEATHER_TUNIC);
+		return clone self::$_mLEATHER_TUNIC;
 	}
 
 	public static function LINGERING_POTION() : SplashPotion{
 		if(!isset(self::$_mLINGERING_POTION)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mLINGERING_POTION);
+		return clone self::$_mLINGERING_POTION;
 	}
 
 	public static function MAGMA_CREAM() : Item{
 		if(!isset(self::$_mMAGMA_CREAM)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMAGMA_CREAM);
+		return clone self::$_mMAGMA_CREAM;
 	}
 
 	public static function MANGROVE_BOAT() : Boat{
 		if(!isset(self::$_mMANGROVE_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMANGROVE_BOAT);
+		return clone self::$_mMANGROVE_BOAT;
 	}
 
 	public static function MANGROVE_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mMANGROVE_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMANGROVE_HANGING_SIGN);
+		return clone self::$_mMANGROVE_HANGING_SIGN;
 	}
 
 	public static function MANGROVE_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mMANGROVE_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMANGROVE_SIGN);
+		return clone self::$_mMANGROVE_SIGN;
 	}
 
 	public static function MEDICINE() : Medicine{
 		if(!isset(self::$_mMEDICINE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMEDICINE);
+		return clone self::$_mMEDICINE;
 	}
 
 	public static function MELON() : Melon{
 		if(!isset(self::$_mMELON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMELON);
+		return clone self::$_mMELON;
 	}
 
 	public static function MELON_SEEDS() : MelonSeeds{
 		if(!isset(self::$_mMELON_SEEDS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMELON_SEEDS);
+		return clone self::$_mMELON_SEEDS;
 	}
 
 	public static function MILK_BUCKET() : MilkBucket{
 		if(!isset(self::$_mMILK_BUCKET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMILK_BUCKET);
+		return clone self::$_mMILK_BUCKET;
 	}
 
 	public static function MINECART() : Minecart{
 		if(!isset(self::$_mMINECART)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMINECART);
+		return clone self::$_mMINECART;
 	}
 
 	public static function MUSHROOM_STEW() : MushroomStew{
 		if(!isset(self::$_mMUSHROOM_STEW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mMUSHROOM_STEW);
+		return clone self::$_mMUSHROOM_STEW;
 	}
 
 	public static function NAME_TAG() : NameTag{
 		if(!isset(self::$_mNAME_TAG)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNAME_TAG);
+		return clone self::$_mNAME_TAG;
 	}
 
 	public static function NAUTILUS_SHELL() : Item{
 		if(!isset(self::$_mNAUTILUS_SHELL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNAUTILUS_SHELL);
+		return clone self::$_mNAUTILUS_SHELL;
 	}
 
 	public static function NETHERITE_AXE() : Axe{
 		if(!isset(self::$_mNETHERITE_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_AXE);
+		return clone self::$_mNETHERITE_AXE;
 	}
 
 	public static function NETHERITE_BOOTS() : Armor{
 		if(!isset(self::$_mNETHERITE_BOOTS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_BOOTS);
+		return clone self::$_mNETHERITE_BOOTS;
 	}
 
 	public static function NETHERITE_CHESTPLATE() : Armor{
 		if(!isset(self::$_mNETHERITE_CHESTPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_CHESTPLATE);
+		return clone self::$_mNETHERITE_CHESTPLATE;
 	}
 
 	public static function NETHERITE_HELMET() : Armor{
 		if(!isset(self::$_mNETHERITE_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_HELMET);
+		return clone self::$_mNETHERITE_HELMET;
 	}
 
 	public static function NETHERITE_HOE() : Hoe{
 		if(!isset(self::$_mNETHERITE_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_HOE);
+		return clone self::$_mNETHERITE_HOE;
 	}
 
 	public static function NETHERITE_INGOT() : Item{
 		if(!isset(self::$_mNETHERITE_INGOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_INGOT);
+		return clone self::$_mNETHERITE_INGOT;
 	}
 
 	public static function NETHERITE_LEGGINGS() : Armor{
 		if(!isset(self::$_mNETHERITE_LEGGINGS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_LEGGINGS);
+		return clone self::$_mNETHERITE_LEGGINGS;
 	}
 
 	public static function NETHERITE_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mNETHERITE_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_PICKAXE);
+		return clone self::$_mNETHERITE_PICKAXE;
 	}
 
 	public static function NETHERITE_SCRAP() : Item{
 		if(!isset(self::$_mNETHERITE_SCRAP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_SCRAP);
+		return clone self::$_mNETHERITE_SCRAP;
 	}
 
 	public static function NETHERITE_SHOVEL() : Shovel{
 		if(!isset(self::$_mNETHERITE_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_SHOVEL);
+		return clone self::$_mNETHERITE_SHOVEL;
 	}
 
 	public static function NETHERITE_SWORD() : Sword{
 		if(!isset(self::$_mNETHERITE_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_SWORD);
+		return clone self::$_mNETHERITE_SWORD;
 	}
 
 	public static function NETHERITE_UPGRADE_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mNETHERITE_UPGRADE_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHERITE_UPGRADE_SMITHING_TEMPLATE);
+		return clone self::$_mNETHERITE_UPGRADE_SMITHING_TEMPLATE;
 	}
 
 	public static function NETHER_BRICK() : Item{
 		if(!isset(self::$_mNETHER_BRICK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHER_BRICK);
+		return clone self::$_mNETHER_BRICK;
 	}
 
 	public static function NETHER_QUARTZ() : Item{
 		if(!isset(self::$_mNETHER_QUARTZ)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHER_QUARTZ);
+		return clone self::$_mNETHER_QUARTZ;
 	}
 
 	public static function NETHER_STAR() : Item{
 		if(!isset(self::$_mNETHER_STAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mNETHER_STAR);
+		return clone self::$_mNETHER_STAR;
 	}
 
 	public static function OAK_BOAT() : Boat{
 		if(!isset(self::$_mOAK_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mOAK_BOAT);
+		return clone self::$_mOAK_BOAT;
 	}
 
 	public static function OAK_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mOAK_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mOAK_HANGING_SIGN);
+		return clone self::$_mOAK_HANGING_SIGN;
 	}
 
 	public static function OAK_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mOAK_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mOAK_SIGN);
+		return clone self::$_mOAK_SIGN;
 	}
 
 	public static function OMINOUS_BANNER() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mOMINOUS_BANNER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mOMINOUS_BANNER);
+		return clone self::$_mOMINOUS_BANNER;
 	}
 
 	public static function PAINTING() : PaintingItem{
 		if(!isset(self::$_mPAINTING)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPAINTING);
+		return clone self::$_mPAINTING;
 	}
 
 	public static function PALE_OAK_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mPALE_OAK_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPALE_OAK_HANGING_SIGN);
+		return clone self::$_mPALE_OAK_HANGING_SIGN;
 	}
 
 	public static function PALE_OAK_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mPALE_OAK_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPALE_OAK_SIGN);
+		return clone self::$_mPALE_OAK_SIGN;
 	}
 
 	public static function PAPER() : Item{
 		if(!isset(self::$_mPAPER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPAPER);
+		return clone self::$_mPAPER;
 	}
 
 	public static function PHANTOM_MEMBRANE() : Item{
 		if(!isset(self::$_mPHANTOM_MEMBRANE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPHANTOM_MEMBRANE);
+		return clone self::$_mPHANTOM_MEMBRANE;
 	}
 
 	public static function PITCHER_POD() : PitcherPod{
 		if(!isset(self::$_mPITCHER_POD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPITCHER_POD);
+		return clone self::$_mPITCHER_POD;
 	}
 
 	public static function POISONOUS_POTATO() : PoisonousPotato{
 		if(!isset(self::$_mPOISONOUS_POTATO)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPOISONOUS_POTATO);
+		return clone self::$_mPOISONOUS_POTATO;
 	}
 
 	public static function POPPED_CHORUS_FRUIT() : Item{
 		if(!isset(self::$_mPOPPED_CHORUS_FRUIT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPOPPED_CHORUS_FRUIT);
+		return clone self::$_mPOPPED_CHORUS_FRUIT;
 	}
 
 	public static function POTATO() : Potato{
 		if(!isset(self::$_mPOTATO)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPOTATO);
+		return clone self::$_mPOTATO;
 	}
 
 	public static function POTION() : Potion{
 		if(!isset(self::$_mPOTION)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPOTION);
+		return clone self::$_mPOTION;
 	}
 
 	public static function PRISMARINE_CRYSTALS() : Item{
 		if(!isset(self::$_mPRISMARINE_CRYSTALS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPRISMARINE_CRYSTALS);
+		return clone self::$_mPRISMARINE_CRYSTALS;
 	}
 
 	public static function PRISMARINE_SHARD() : Item{
 		if(!isset(self::$_mPRISMARINE_SHARD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPRISMARINE_SHARD);
+		return clone self::$_mPRISMARINE_SHARD;
 	}
 
 	public static function PUFFERFISH() : Pufferfish{
 		if(!isset(self::$_mPUFFERFISH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPUFFERFISH);
+		return clone self::$_mPUFFERFISH;
 	}
 
 	public static function PUMPKIN_PIE() : PumpkinPie{
 		if(!isset(self::$_mPUMPKIN_PIE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPUMPKIN_PIE);
+		return clone self::$_mPUMPKIN_PIE;
 	}
 
 	public static function PUMPKIN_SEEDS() : PumpkinSeeds{
 		if(!isset(self::$_mPUMPKIN_SEEDS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mPUMPKIN_SEEDS);
+		return clone self::$_mPUMPKIN_SEEDS;
 	}
 
 	public static function RABBIT_FOOT() : Item{
 		if(!isset(self::$_mRABBIT_FOOT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRABBIT_FOOT);
+		return clone self::$_mRABBIT_FOOT;
 	}
 
 	public static function RABBIT_HIDE() : Item{
 		if(!isset(self::$_mRABBIT_HIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRABBIT_HIDE);
+		return clone self::$_mRABBIT_HIDE;
 	}
 
 	public static function RABBIT_STEW() : RabbitStew{
 		if(!isset(self::$_mRABBIT_STEW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRABBIT_STEW);
+		return clone self::$_mRABBIT_STEW;
 	}
 
 	public static function RAISER_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mRAISER_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAISER_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mRAISER_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function RAW_BEEF() : RawBeef{
 		if(!isset(self::$_mRAW_BEEF)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_BEEF);
+		return clone self::$_mRAW_BEEF;
 	}
 
 	public static function RAW_CHICKEN() : RawChicken{
 		if(!isset(self::$_mRAW_CHICKEN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_CHICKEN);
+		return clone self::$_mRAW_CHICKEN;
 	}
 
 	public static function RAW_COPPER() : Item{
 		if(!isset(self::$_mRAW_COPPER)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_COPPER);
+		return clone self::$_mRAW_COPPER;
 	}
 
 	public static function RAW_FISH() : RawFish{
 		if(!isset(self::$_mRAW_FISH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_FISH);
+		return clone self::$_mRAW_FISH;
 	}
 
 	public static function RAW_GOLD() : Item{
 		if(!isset(self::$_mRAW_GOLD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_GOLD);
+		return clone self::$_mRAW_GOLD;
 	}
 
 	public static function RAW_IRON() : Item{
 		if(!isset(self::$_mRAW_IRON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_IRON);
+		return clone self::$_mRAW_IRON;
 	}
 
 	public static function RAW_MUTTON() : RawMutton{
 		if(!isset(self::$_mRAW_MUTTON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_MUTTON);
+		return clone self::$_mRAW_MUTTON;
 	}
 
 	public static function RAW_PORKCHOP() : RawPorkchop{
 		if(!isset(self::$_mRAW_PORKCHOP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_PORKCHOP);
+		return clone self::$_mRAW_PORKCHOP;
 	}
 
 	public static function RAW_RABBIT() : RawRabbit{
 		if(!isset(self::$_mRAW_RABBIT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_RABBIT);
+		return clone self::$_mRAW_RABBIT;
 	}
 
 	public static function RAW_SALMON() : RawSalmon{
 		if(!isset(self::$_mRAW_SALMON)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRAW_SALMON);
+		return clone self::$_mRAW_SALMON;
 	}
 
 	public static function RECORD_11() : Record{
 		if(!isset(self::$_mRECORD_11)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_11);
+		return clone self::$_mRECORD_11;
 	}
 
 	public static function RECORD_13() : Record{
 		if(!isset(self::$_mRECORD_13)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_13);
+		return clone self::$_mRECORD_13;
 	}
 
 	public static function RECORD_5() : Record{
 		if(!isset(self::$_mRECORD_5)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_5);
+		return clone self::$_mRECORD_5;
 	}
 
 	public static function RECORD_BLOCKS() : Record{
 		if(!isset(self::$_mRECORD_BLOCKS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_BLOCKS);
+		return clone self::$_mRECORD_BLOCKS;
 	}
 
 	public static function RECORD_CAT() : Record{
 		if(!isset(self::$_mRECORD_CAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_CAT);
+		return clone self::$_mRECORD_CAT;
 	}
 
 	public static function RECORD_CHIRP() : Record{
 		if(!isset(self::$_mRECORD_CHIRP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_CHIRP);
+		return clone self::$_mRECORD_CHIRP;
 	}
 
 	public static function RECORD_CREATOR() : Record{
 		if(!isset(self::$_mRECORD_CREATOR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_CREATOR);
+		return clone self::$_mRECORD_CREATOR;
 	}
 
 	public static function RECORD_CREATOR_MUSIC_BOX() : Record{
 		if(!isset(self::$_mRECORD_CREATOR_MUSIC_BOX)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_CREATOR_MUSIC_BOX);
+		return clone self::$_mRECORD_CREATOR_MUSIC_BOX;
 	}
 
 	public static function RECORD_FAR() : Record{
 		if(!isset(self::$_mRECORD_FAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_FAR);
+		return clone self::$_mRECORD_FAR;
 	}
 
 	public static function RECORD_LAVA_CHICKEN() : Record{
 		if(!isset(self::$_mRECORD_LAVA_CHICKEN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_LAVA_CHICKEN);
+		return clone self::$_mRECORD_LAVA_CHICKEN;
 	}
 
 	public static function RECORD_MALL() : Record{
 		if(!isset(self::$_mRECORD_MALL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_MALL);
+		return clone self::$_mRECORD_MALL;
 	}
 
 	public static function RECORD_MELLOHI() : Record{
 		if(!isset(self::$_mRECORD_MELLOHI)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_MELLOHI);
+		return clone self::$_mRECORD_MELLOHI;
 	}
 
 	public static function RECORD_OTHERSIDE() : Record{
 		if(!isset(self::$_mRECORD_OTHERSIDE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_OTHERSIDE);
+		return clone self::$_mRECORD_OTHERSIDE;
 	}
 
 	public static function RECORD_PIGSTEP() : Record{
 		if(!isset(self::$_mRECORD_PIGSTEP)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_PIGSTEP);
+		return clone self::$_mRECORD_PIGSTEP;
 	}
 
 	public static function RECORD_PRECIPICE() : Record{
 		if(!isset(self::$_mRECORD_PRECIPICE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_PRECIPICE);
+		return clone self::$_mRECORD_PRECIPICE;
 	}
 
 	public static function RECORD_RELIC() : Record{
 		if(!isset(self::$_mRECORD_RELIC)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_RELIC);
+		return clone self::$_mRECORD_RELIC;
 	}
 
 	public static function RECORD_STAL() : Record{
 		if(!isset(self::$_mRECORD_STAL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_STAL);
+		return clone self::$_mRECORD_STAL;
 	}
 
 	public static function RECORD_STRAD() : Record{
 		if(!isset(self::$_mRECORD_STRAD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_STRAD);
+		return clone self::$_mRECORD_STRAD;
 	}
 
 	public static function RECORD_WAIT() : Record{
 		if(!isset(self::$_mRECORD_WAIT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_WAIT);
+		return clone self::$_mRECORD_WAIT;
 	}
 
 	public static function RECORD_WARD() : Record{
 		if(!isset(self::$_mRECORD_WARD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECORD_WARD);
+		return clone self::$_mRECORD_WARD;
 	}
 
 	public static function RECOVERY_COMPASS() : Item{
 		if(!isset(self::$_mRECOVERY_COMPASS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRECOVERY_COMPASS);
+		return clone self::$_mRECOVERY_COMPASS;
 	}
 
 	public static function REDSTONE_DUST() : Redstone{
 		if(!isset(self::$_mREDSTONE_DUST)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mREDSTONE_DUST);
+		return clone self::$_mREDSTONE_DUST;
 	}
 
 	public static function RESIN_BRICK() : Item{
 		if(!isset(self::$_mRESIN_BRICK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRESIN_BRICK);
+		return clone self::$_mRESIN_BRICK;
 	}
 
 	public static function RIB_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mRIB_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mRIB_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mRIB_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function ROTTEN_FLESH() : RottenFlesh{
 		if(!isset(self::$_mROTTEN_FLESH)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mROTTEN_FLESH);
+		return clone self::$_mROTTEN_FLESH;
 	}
 
 	public static function SCUTE() : Item{
 		if(!isset(self::$_mSCUTE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSCUTE);
+		return clone self::$_mSCUTE;
 	}
 
 	public static function SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mSENTRY_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mSENTRY_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mSHAPER_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSHAPER_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mSHAPER_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function SHEARS() : Shears{
 		if(!isset(self::$_mSHEARS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSHEARS);
+		return clone self::$_mSHEARS;
 	}
 
 	public static function SHULKER_SHELL() : Item{
 		if(!isset(self::$_mSHULKER_SHELL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSHULKER_SHELL);
+		return clone self::$_mSHULKER_SHELL;
 	}
 
 	public static function SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mSILENCE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSILENCE_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mSILENCE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function SLIMEBALL() : Item{
 		if(!isset(self::$_mSLIMEBALL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSLIMEBALL);
+		return clone self::$_mSLIMEBALL;
 	}
 
 	public static function SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mSNOUT_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSNOUT_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mSNOUT_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function SNOWBALL() : Snowball{
 		if(!isset(self::$_mSNOWBALL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSNOWBALL);
+		return clone self::$_mSNOWBALL;
 	}
 
 	public static function SPIDER_EYE() : SpiderEye{
 		if(!isset(self::$_mSPIDER_EYE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPIDER_EYE);
+		return clone self::$_mSPIDER_EYE;
 	}
 
 	public static function SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mSPIRE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mSPIRE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function SPLASH_POTION() : SplashPotion{
 		if(!isset(self::$_mSPLASH_POTION)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPLASH_POTION);
+		return clone self::$_mSPLASH_POTION;
 	}
 
 	public static function SPRUCE_BOAT() : Boat{
 		if(!isset(self::$_mSPRUCE_BOAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPRUCE_BOAT);
+		return clone self::$_mSPRUCE_BOAT;
 	}
 
 	public static function SPRUCE_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mSPRUCE_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPRUCE_HANGING_SIGN);
+		return clone self::$_mSPRUCE_HANGING_SIGN;
 	}
 
 	public static function SPRUCE_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mSPRUCE_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPRUCE_SIGN);
+		return clone self::$_mSPRUCE_SIGN;
 	}
 
 	public static function SPYGLASS() : Spyglass{
 		if(!isset(self::$_mSPYGLASS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSPYGLASS);
+		return clone self::$_mSPYGLASS;
 	}
 
 	public static function SQUID_SPAWN_EGG() : SpawnEgg{
 		if(!isset(self::$_mSQUID_SPAWN_EGG)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSQUID_SPAWN_EGG);
+		return clone self::$_mSQUID_SPAWN_EGG;
 	}
 
 	public static function STEAK() : Steak{
 		if(!isset(self::$_mSTEAK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTEAK);
+		return clone self::$_mSTEAK;
 	}
 
 	public static function STICK() : Stick{
 		if(!isset(self::$_mSTICK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTICK);
+		return clone self::$_mSTICK;
 	}
 
 	public static function STONE_AXE() : Axe{
 		if(!isset(self::$_mSTONE_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTONE_AXE);
+		return clone self::$_mSTONE_AXE;
 	}
 
 	public static function STONE_HOE() : Hoe{
 		if(!isset(self::$_mSTONE_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTONE_HOE);
+		return clone self::$_mSTONE_HOE;
 	}
 
 	public static function STONE_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mSTONE_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTONE_PICKAXE);
+		return clone self::$_mSTONE_PICKAXE;
 	}
 
 	public static function STONE_SHOVEL() : Shovel{
 		if(!isset(self::$_mSTONE_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTONE_SHOVEL);
+		return clone self::$_mSTONE_SHOVEL;
 	}
 
 	public static function STONE_SWORD() : Sword{
 		if(!isset(self::$_mSTONE_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTONE_SWORD);
+		return clone self::$_mSTONE_SWORD;
 	}
 
 	public static function STRING() : StringItem{
 		if(!isset(self::$_mSTRING)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSTRING);
+		return clone self::$_mSTRING;
 	}
 
 	public static function SUGAR() : Item{
 		if(!isset(self::$_mSUGAR)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSUGAR);
+		return clone self::$_mSUGAR;
 	}
 
 	public static function SUSPICIOUS_STEW() : SuspiciousStew{
 		if(!isset(self::$_mSUSPICIOUS_STEW)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSUSPICIOUS_STEW);
+		return clone self::$_mSUSPICIOUS_STEW;
 	}
 
 	public static function SWEET_BERRIES() : SweetBerries{
 		if(!isset(self::$_mSWEET_BERRIES)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mSWEET_BERRIES);
+		return clone self::$_mSWEET_BERRIES;
 	}
 
 	public static function TIDE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mTIDE_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function TORCHFLOWER_SEEDS() : TorchflowerSeeds{
 		if(!isset(self::$_mTORCHFLOWER_SEEDS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mTORCHFLOWER_SEEDS);
+		return clone self::$_mTORCHFLOWER_SEEDS;
 	}
 
 	public static function TOTEM() : Totem{
 		if(!isset(self::$_mTOTEM)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mTOTEM);
+		return clone self::$_mTOTEM;
 	}
 
 	public static function TRIDENT() : Trident{
 		if(!isset(self::$_mTRIDENT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mTRIDENT);
+		return clone self::$_mTRIDENT;
 	}
 
 	public static function TURTLE_HELMET() : TurtleHelmet{
 		if(!isset(self::$_mTURTLE_HELMET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mTURTLE_HELMET);
+		return clone self::$_mTURTLE_HELMET;
 	}
 
 	public static function VEX_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mVEX_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mVEX_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mVEX_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function VILLAGER_SPAWN_EGG() : SpawnEgg{
 		if(!isset(self::$_mVILLAGER_SPAWN_EGG)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mVILLAGER_SPAWN_EGG);
+		return clone self::$_mVILLAGER_SPAWN_EGG;
 	}
 
 	public static function WARD_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mWARD_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function WARPED_HANGING_SIGN() : HangingSign{
 		if(!isset(self::$_mWARPED_HANGING_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWARPED_HANGING_SIGN);
+		return clone self::$_mWARPED_HANGING_SIGN;
 	}
 
 	public static function WARPED_SIGN() : ItemBlockWallOrFloor{
 		if(!isset(self::$_mWARPED_SIGN)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWARPED_SIGN);
+		return clone self::$_mWARPED_SIGN;
 	}
 
 	public static function WATER_BUCKET() : LiquidBucket{
 		if(!isset(self::$_mWATER_BUCKET)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWATER_BUCKET);
+		return clone self::$_mWATER_BUCKET;
 	}
 
 	public static function WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mWAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function WHEAT() : Item{
 		if(!isset(self::$_mWHEAT)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWHEAT);
+		return clone self::$_mWHEAT;
 	}
 
 	public static function WHEAT_SEEDS() : WheatSeeds{
 		if(!isset(self::$_mWHEAT_SEEDS)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWHEAT_SEEDS);
+		return clone self::$_mWHEAT_SEEDS;
 	}
 
 	public static function WILD_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{
 		if(!isset(self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE);
+		return clone self::$_mWILD_ARMOR_TRIM_SMITHING_TEMPLATE;
 	}
 
 	public static function WOODEN_AXE() : Axe{
 		if(!isset(self::$_mWOODEN_AXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWOODEN_AXE);
+		return clone self::$_mWOODEN_AXE;
 	}
 
 	public static function WOODEN_HOE() : Hoe{
 		if(!isset(self::$_mWOODEN_HOE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWOODEN_HOE);
+		return clone self::$_mWOODEN_HOE;
 	}
 
 	public static function WOODEN_PICKAXE() : Pickaxe{
 		if(!isset(self::$_mWOODEN_PICKAXE)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWOODEN_PICKAXE);
+		return clone self::$_mWOODEN_PICKAXE;
 	}
 
 	public static function WOODEN_SHOVEL() : Shovel{
 		if(!isset(self::$_mWOODEN_SHOVEL)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWOODEN_SHOVEL);
+		return clone self::$_mWOODEN_SHOVEL;
 	}
 
 	public static function WOODEN_SWORD() : Sword{
 		if(!isset(self::$_mWOODEN_SWORD)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWOODEN_SWORD);
+		return clone self::$_mWOODEN_SWORD;
 	}
 
 	public static function WRITABLE_BOOK() : WritableBook{
 		if(!isset(self::$_mWRITABLE_BOOK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWRITABLE_BOOK);
+		return clone self::$_mWRITABLE_BOOK;
 	}
 
 	public static function WRITTEN_BOOK() : WrittenBook{
 		if(!isset(self::$_mWRITTEN_BOOK)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mWRITTEN_BOOK);
+		return clone self::$_mWRITTEN_BOOK;
 	}
 
 	public static function ZOMBIE_SPAWN_EGG() : SpawnEgg{
 		if(!isset(self::$_mZOMBIE_SPAWN_EGG)){ self::init(); }
-		return VanillaItemsInputs::preprocessMember(self::$_mZOMBIE_SPAWN_EGG);
+		return clone self::$_mZOMBIE_SPAWN_EGG;
 	}
 }

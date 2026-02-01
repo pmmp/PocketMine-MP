@@ -26,10 +26,19 @@ namespace pocketmine\item;
 use pocketmine\player\Player;
 
 /**
- * Interface implemented by objects that can be used.
+ * Implemented by items which can be used by pressing and holding the "use item" button in-game.
+ * The player's arm will appear to be raised and the "using item" flag will be set.
+ * Examples of this type of behaviour include bows, food and spyglasses.
+ *
+ * @see Player::isUsingItem()
+ * @see Player::getItemUseDuration()
  */
 interface Releasable{
 
+	/**
+	 * Returns whether the player can currently trigger the press-and-hold behaviour of the item.
+	 * For example, bows return whether the player has an arrow that can be fired.
+	 */
 	public function canStartUsingItem(Player $player) : bool;
 
 }

@@ -1,6 +1,9 @@
 <!-- Summarize your PR here. Keep it short and simple. -->
 <!-- Explain existing problems or why this pull request is necessary -->
 
+<!-- DO NOT submit AI generated code or use AI to generate PR descriptions. -->
+<!-- These are a waste of our team's time and your PR will be closed immediately. -->
+
 ### Related issues & PRs
 <!--
 * Fixes #1

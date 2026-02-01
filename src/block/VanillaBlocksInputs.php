@@ -68,7 +68,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
-use pocketmine\utils\CloningRegistrySource;
+use pocketmine\utils\RegistrySource;
 use pocketmine\world\generator\object\TreeType;
 use function is_int;
 use function mb_strtolower;
@@ -80,9 +80,9 @@ use function strtolower;
  * All vanilla blocks are registered here for binding in the generated class.
  *
  * @internal
- * @phpstan-extends CloningRegistrySource<Block>
+ * @phpstan-extends RegistrySource<Block>
  */
-final class VanillaBlocksInputs extends CloningRegistrySource{
+final class VanillaBlocksInputs extends RegistrySource{
 
 	public function getTargetClassName() : string{
 		return "VanillaBlocks";
@@ -94,6 +94,8 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 			"Every block here also has a constant of the same name in {@link BlockTypeIds} to enable blocks to be identified"
 		];
 	}
+
+	public function cloneResults() : bool{ return true; }
 
 	/**
 	 * @phpstan-param class-string<covariant Tile> $tileClass
@@ -132,6 +134,8 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 		$railBreakInfo = new Info(new BreakInfo(0.7));
 		self::register("activator_rail", fn(BID $id) => new ActivatorRail($id, "Activator Rail", $railBreakInfo));
 		self::register("anvil", fn(BID $id) => new Anvil($id, "Anvil", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD, 6000.0))));
+		self::register("azalea", fn(BID $id) => new Azalea($id, "Azalea", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
+		self::register("flowering_azalea", fn(BID $id) => new Azalea($id, "Flowering Azalea", new Info(BreakInfo::instant(), [Tags::POTTABLE_PLANTS])));
 		self::register("bamboo", fn(BID $id) => new Bamboo($id, "Bamboo", new Info(new class(1.0, ToolType::AXE) extends BreakInfo{
 			public function getBreakTime(Item $item) : float{
 				if($item->getBlockToolType() === ToolType::SWORD){
@@ -644,6 +648,7 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 			WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
 			WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
 			WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
+			WoodType::BAMBOO => VanillaItems::BAMBOO_SIGN(...),
 		};
 	}
 
@@ -663,6 +668,7 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 			WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
 			WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
 			WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
+			WoodType::BAMBOO => VanillaItems::BAMBOO_HANGING_SIGN(...),
 		};
 	}
 
@@ -680,7 +686,12 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 			$idName = fn(string $suffix) => strtolower($woodType->name) . "_" . $suffix;
 
 			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
-			self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			if($woodType !== WoodType::BAMBOO){
+				//TODO: kinda sus hack - there's no all-sided log for bamboo
+				//maybe log type and wood type need to be separated
+				//we won't be able to do an overloaded accessor for wood until this is addressed
+				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+			}
 
 			self::register($idName("planks"), fn(BID $id) => new Planks($id, $name . " Planks", $planksBreakInfo, $woodType));
 			self::register($idName("fence"), fn(BID $id) => new WoodenFence($id, $name . " Fence", $planksBreakInfo, $woodType));
@@ -701,6 +712,11 @@ final class VanillaBlocksInputs extends CloningRegistrySource{
 			self::registerDelayed($idName("ceiling_edges_hanging_sign"), fn(string $idName) : CeilingEdgesHangingSign => new CeilingEdgesHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
 			self::registerDelayed($idName("wall_hanging_sign"), fn(string $idName) : WallHangingSign => new WallHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
 		}
+
+		$mosaicBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0), [Tags::BAMBOO_MOSAIC]);
+		self::register("bamboo_mosaic", fn(BID $id) => new Planks($id, "Bamboo Mosaic", $mosaicBreakInfo, WoodType::BAMBOO));
+		self::register("bamboo_mosaic_slab", fn(BID $id) => new WoodenSlab($id, "Bamboo Mosaic", $mosaicBreakInfo, WoodType::BAMBOO));
+		self::register("bamboo_mosaic_stairs", fn(BID $id) => new WoodenStairs($id, "Bamboo Mosaic Stairs", $mosaicBreakInfo, WoodType::BAMBOO));
 	}
 
 	private function registerMushroomBlocks() : void{

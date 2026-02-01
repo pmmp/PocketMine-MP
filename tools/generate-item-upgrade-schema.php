@@ -51,7 +51,7 @@ use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 4){
+if(!isset($argv) || count($argv) !== 4){
 	\GlobalLogger::get()->error("Required arguments: path to mapping table, path to current schemas, path to output file");
 	exit(1);
 }

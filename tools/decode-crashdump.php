@@ -42,6 +42,7 @@ use const JSON_UNESCAPED_SLASHES;
 use const PHP_EOL;
 use const STDERR;
 
+$argv ??= [];
 if(count($argv) === 2){
 	$input = $argv[1];
 	$output = "decoded.json";

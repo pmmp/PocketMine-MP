@@ -20,16 +20,3 @@
  */
 
 declare(strict_types=1);
-
-namespace pocketmine\utils;
-
-/**
- * @phpstan-template TMember of object
- * @phpstan-extends RegistrySource<TMember>
- */
-abstract class CloningRegistrySource extends RegistrySource{
-
-	public static function preprocessMember(object $member) : object{
-		return clone $member;
-	}
-}

@@ -43,7 +43,7 @@ final class WorldDataVersions{
 		(60 << 8) | //patch
 		(33); //revision
 
-	public const CHUNK = ChunkVersion::v1_21_40;
+	public const CHUNK = ChunkVersion::v1_21_120;
 	public const SUBCHUNK = SubChunkVersion::PALETTED_MULTI;
 
 	public const STORAGE = 10;
@@ -54,13 +54,13 @@ final class WorldDataVersions{
 	 * This may be lower than the current protocol version if PocketMine-MP does not yet support features of the newer
 	 * version. This allows the protocol to be updated independently of world format support.
 	 */
-	public const NETWORK = 827;
+	public const NETWORK = 898;
 
 	public const LAST_OPENED_IN = [
 		1, //major
 		21, //minor
-		100, //patch
-		23, //revision
+		131, //patch
+		1, //revision
 		0 //is beta
 	];
 }

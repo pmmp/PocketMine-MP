@@ -37,7 +37,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
@@ -69,7 +69,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
@@ -103,7 +103,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
@@ -135,7 +135,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
@@ -147,6 +147,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-dev --prefer-dist --no-interaction
 
+      - name: Delete old generated code
+        run: rm -rf generated
+
       - name: Update generated code
         run: composer update-codegen
 
@@ -154,3 +157,7 @@ jobs:
         run: |
           git diff
           git diff --quiet
+
+      - name: Check for generated code files colliding with src files
+        run:
+          php build/codegen/check-file-collisions.php

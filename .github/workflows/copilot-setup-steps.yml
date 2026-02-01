@@ -28,7 +28,7 @@ jobs:
           pm-version-major: 5
 
       - name: Restore Composer package cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cache/composer/files
