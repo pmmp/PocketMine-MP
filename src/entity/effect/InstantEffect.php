@@ -32,7 +32,7 @@ abstract class InstantEffect extends Effect{
 		parent::__construct($name, $color, $bad, 1, $hasBubbles);
 	}
 
-	public function canTick(EffectInstance $instance) : bool{
-		return true; //If forced to last longer than 1 tick, these apply every tick.
+	public function getApplyInterval(EffectInstance $instance) : int{
+		return 1; //If forced to last longer than 1 tick, these apply every tick.
 	}
 }

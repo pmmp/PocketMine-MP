@@ -28,6 +28,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\Translatable;
+use function max;
 
 class PoisonEffect extends Effect{
 	private bool $fatal;
@@ -37,11 +38,8 @@ class PoisonEffect extends Effect{
 		$this->fatal = $fatal;
 	}
 
-	public function canTick(EffectInstance $instance) : bool{
-		if(($interval = (25 >> $instance->getAmplifier())) > 0){
-			return ($instance->getDuration() % $interval) === 0;
-		}
-		return true;
+	public function getApplyInterval(EffectInstance $instance) : int{
+		return max(1, 25 >> $instance->getAmplifier());
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{

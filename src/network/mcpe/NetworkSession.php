@@ -120,6 +120,7 @@ use pocketmine\world\Position;
 use pocketmine\world\World;
 use pocketmine\YmlServerProperties;
 use function array_map;
+use function array_slice;
 use function array_values;
 use function base64_encode;
 use function bin2hex;
@@ -1153,7 +1154,7 @@ class NetworkSession{
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
 				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
 				0,
-				0,
+				CommandPermissions::NORMAL,
 				$aliasObj,
 				[
 					new CommandOverload(chaining: false, parameters: [CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)])
@@ -1175,7 +1176,9 @@ class NetworkSession{
 		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
 		$language = $this->player->getLanguage();
 		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $language->translate($p) : $p, $message->getParameters());
-		return [$language->translateString($message->getText(), $parameters, "pocketmine."), $parameters];
+		$untranslatedParameterCount = 0;
+		$translated = $language->translateString($message->getText(), $parameters, "pocketmine.", $untranslatedParameterCount);
+		return [$translated, array_slice($parameters, 0, $untranslatedParameterCount)];
 	}
 
 	public function onChatMessage(Translatable|string $message) : void{

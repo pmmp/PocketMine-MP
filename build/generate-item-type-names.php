@@ -99,7 +99,7 @@ HEADER
 	fclose($file);
 }
 
-if(count($argv) !== 2){
+if(!isset($argv) || count($argv) !== 2){
 	fwrite(STDERR, "This script regenerates ItemTypeNames from a given item dictionary file\n");
 	fwrite(STDERR, "Required argument: path to item type dictionary file\n");
 	exit(1);

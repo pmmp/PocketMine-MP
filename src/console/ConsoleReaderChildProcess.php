@@ -34,8 +34,8 @@ use function is_numeric;
 use const PHP_EOL;
 use const STDOUT;
 
-if(count($argv) !== 2 || !is_numeric($argv[1])){
-	echo "Usage: " . $argv[0] . " <command token seed>" . PHP_EOL;
+if(!isset($argv) || count($argv) !== 2 || !is_numeric($argv[1])){
+	echo "Usage: " . __FILE__ . " <command token seed>" . PHP_EOL;
 	exit(1);
 }
 

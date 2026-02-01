@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-final class InfestedStone extends Opaque{
+class InfestedStone extends Opaque{
 
 	private int $imitated;
 

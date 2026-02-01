@@ -92,7 +92,7 @@ class SetupWizard{
 			return false;
 		}
 
-		//this has to happen here to prevent user avoiding agreeing to license
+		//This has to happen here to prevent user avoiding agreeing to license
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 		$config->set(ServerProperties::LANGUAGE, $lang);
 		$config->save();

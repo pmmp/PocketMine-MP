@@ -186,5 +186,5 @@ function main(array $argv) : int{
 }
 
 if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-	exit(main($argv));
+	exit(main($argv ?? []));
 }

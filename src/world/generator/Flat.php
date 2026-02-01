@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
@@ -67,6 +69,11 @@ class Flat extends Generator{
 
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk([], false);
+
+		$biomeArray = new PalettedBlockArray($this->options->getBiomeId());
+		foreach($this->chunk->getSubChunks() as $y => $subChunk){
+			$this->chunk->setSubChunk($y, new SubChunk(Block::EMPTY_STATE_ID, [], clone $biomeArray));
+		}
 
 		$structure = $this->options->getStructure();
 		$count = count($structure);

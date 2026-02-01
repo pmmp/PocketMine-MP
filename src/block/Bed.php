@@ -124,7 +124,7 @@ class Bed extends Transparent implements Colored, HorizontalFacing{
 			$other = $this->getOtherHalf();
 			$playerPos = $player->getPosition();
 			if($other === null){
-				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
+				$player->sendMessage(KnownTranslationFactory::pocketmine_block_bed_incomplete()->prefix(TextFormat::GRAY));
 
 				return true;
 			}elseif($playerPos->distanceSquared($this->position) > 4 && $playerPos->distanceSquared($other->position) > 4){

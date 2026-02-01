@@ -1,0 +1,47 @@
+name: Docker image CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v6
+      with:
+        submodules: true #needed for build/php submodule
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Create data directories
+      run: |
+        mkdir ./docker/test_data
+        sudo chown -R 1000:1000 ./docker/testsuite ./docker/test_data
+
+    - name: Build image for tag
+      uses: docker/build-push-action@v6.18.0
+      with:
+        context: ${{ github.workspace }}
+        push: false
+        load: true
+        file: ${{ github.workspace }}/docker/Dockerfile
+        tags: local-pocketmine-mp
+        build-args: |
+          GIT_HASH=${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Test if it runs the normal server properly
+      run: echo stop | docker run --rm -i -e POCKETMINE_ARGS="--settings.enable-dev-builds=1" local-pocketmine-mp
+
+    - name: Test if it loads plugins
+      run: |
+        echo stop | docker run --rm -i -v ./docker/test_data:/data -v ./docker/testsuite/create-data:/plugins -e POCKETMINE_ARGS="--settings.enable-dev-builds=1" local-pocketmine-mp
+        test -f ./docker/test_data/plugin_data/data-test/create-data
+        test "$(cat ./docker/test_data/plugin_data/data-test/create-data)" = "successful"
+
+    - name: Test if it persists plugin data
+      run: echo stop | docker run --rm -i -v ./docker/test_data:/data -v ./docker/testsuite/verify-data:/plugins -e POCKETMINE_ARGS="--settings.enable-dev-builds=1" local-pocketmine-mp

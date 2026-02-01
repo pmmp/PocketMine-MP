@@ -195,7 +195,7 @@ function generateBlockStringValues(BlockPaletteReport $data) : void{
 	fclose($output);
 }
 
-if(count($argv) !== 2){
+if(!isset($argv) || count($argv) !== 2){
 	fwrite(STDERR, "This script regenerates BlockTypeNames, BlockStateNames and BlockStateStringValues from a given palette file\n");
 	fwrite(STDERR, "Required arguments: path to block palette file\n");
 	exit(1);
