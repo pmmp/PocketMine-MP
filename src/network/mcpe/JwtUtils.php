@@ -183,7 +183,7 @@ final class JwtUtils{
 		$v = openssl_verify(
 			$header . '.' . $body,
 			$derSignature,
-			self::derPublicKeyToPem($signingKeyDer),
+			self::parseDerPublicKey($signingKeyDer),
 			$ec ? self::SIGNATURE_ALGORITHM : OPENSSL_ALGO_SHA256
 		);
 		switch($v){

@@ -131,6 +131,11 @@ class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_SIZE = 10 * 1024; //10 KiB should be more than enough
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
+	//TODO: The client-side per-page character limit is inconsistent for non-ASCII text,
+	//allowing input beyond 256 chars. Use a slightly higher bounded soft limit to
+	//prevent rejected edits while still mitigating book-bomb attacks
+	private const PAGE_LENGTH_SOFT_LIMIT_CHARS = 512;
+
 	protected float $lastRightClickTime = 0.0;
 	protected ?UseItemTransactionData $lastRightClickData = null;
 
@@ -872,7 +877,7 @@ class InGamePacketHandler extends PacketHandler{
 		$cancel = false;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$text = self::checkBookText($packet->text, "page text", self::PAGE_LENGTH_SOFT_LIMIT_CHARS, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
 				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
@@ -882,7 +887,7 @@ class InGamePacketHandler extends PacketHandler{
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
 				}
-				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$text = self::checkBookText($packet->text, "page text", self::PAGE_LENGTH_SOFT_LIMIT_CHARS, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
 				$newBook->insertPage($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;

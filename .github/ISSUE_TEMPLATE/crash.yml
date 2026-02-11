@@ -5,12 +5,16 @@ body:
   - type: markdown
     attributes:
       value: |
-        > [!TIP]
-        > Submit crashdump `.log` files to the [Crash Archive](https://crash.pmmp.io/submit).
-        > If you can't submit the crashdump to the Crash Archive, paste it on a site like [GitHub Gist](https://gist.github.com) or [Pastebin](https://pastebin.com).
-
         > [!CAUTION]
-        > DON'T paste the crashdump data directly into an issue.
+        > If the crash can be triggered over the network (e.g. by a player / hack client), DO NOT report it here.
+        > 
+        > Read our [Security Policy](https://github.com/pmmp/PocketMine-MP/blob/stable/SECURITY.md) first.
+
+        > [!TIP]
+        > Don't paste raw crashdump data into the issue.
+        >
+        > Instead, submit the crashdump `.log` file to the [Crash Archive](https://crash.pmmp.io/submit).
+        > If you can't submit the crashdump to the Crash Archive, paste it on a site like [GitHub Gist](https://gist.github.com) or [Pastebin](https://pastebin.com).
 
   - type: input
     id: crashdump-url
