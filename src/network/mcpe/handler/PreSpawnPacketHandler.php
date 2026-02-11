@@ -40,6 +40,7 @@ use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\LevelSettings;
 use pocketmine\network\mcpe\protocol\types\NetworkPermissions;
 use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
+use pocketmine\network\mcpe\protocol\types\ServerTelemetryData;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
@@ -109,6 +110,8 @@ class PreSpawnPacketHandler extends PacketHandler{
 				false,
 				false,
 				new NetworkPermissions(disableClientSounds: true),
+				null,
+				new ServerTelemetryData("", "", "", ""),
 				[],
 				0,
 			));
