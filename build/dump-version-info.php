@@ -38,6 +38,7 @@ $options = [
 	"base_version" => VersionInfo::BASE_VERSION,
 	"major_version" => fn() => explode(".", VersionInfo::BASE_VERSION, limit: 2)[0],
 	"mcpe_version" => ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+	"mcpe_display_version" => ProtocolInfo::MINECRAFT_VERSION,
 	"is_dev" => VersionInfo::IS_DEVELOPMENT_BUILD,
 	"changelog_file_name" => function() : string{
 		$version = VersionInfo::VERSION();

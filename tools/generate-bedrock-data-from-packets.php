@@ -388,10 +388,13 @@ class ParserPacketHandler extends PacketHandler{
 					if(isset($keys[$hash])){
 						$shape[$x][$y] = $keys[$hash];
 					}else{
-						$key = chr($char);
+						$key = chr($char & 0xff);
 						$keys[$hash] = $shape[$x][$y] = $key;
 						$outputsByKey[$key] = $jsonIngredient;
 						$char++;
+						if($char >= 128){
+							throw new \RuntimeException("Too many ingredients");
+						}
 					}
 				}
 			}
@@ -523,7 +526,11 @@ class ParserPacketHandler extends PacketHandler{
 				$_key = json_encode($entry);
 				$duplicates = $_seen[$_key] ??= 0;
 				$_seen[$_key]++;
-				$suffix = chr(ord("a") + $duplicates);
+				$suffixOrd = ord("a") + $duplicates;
+				if($suffixOrd >= 128){
+					throw new \RuntimeException("Too many duplicates ($duplicates)");
+				}
+				$suffix = chr($suffixOrd);
 				$_sortedRecipes[$_key . $suffix] = $entry;
 			}
 			ksort($_sortedRecipes, SORT_STRING);

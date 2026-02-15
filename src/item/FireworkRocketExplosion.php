@@ -92,7 +92,7 @@ class FireworkRocketExplosion{
 
 		$dyeColorIdMap = DyeColorIdMap::getInstance();
 		foreach($colors as $color){
-			$colorsBytes .= chr($dyeColorIdMap->toInvertedId($color));
+			$colorsBytes .= chr($dyeColorIdMap->toInvertedId($color) & 0xff);
 		}
 
 		return $colorsBytes;

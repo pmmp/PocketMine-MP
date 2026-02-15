@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_item_serializer_ids;
 
 use pocketmine\data\bedrock\item\BlockItemIdMap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\network\mcpe\convert\ItemTypeDictionaryFromDataHelper;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function asort;
 use function count;
@@ -36,14 +36,29 @@ use function fclose;
 use function file_get_contents;
 use function fopen;
 use function fwrite;
+use function is_dir;
+use function mkdir;
 use function strtoupper;
 use const SORT_STRING;
 use const STDERR;
 
-require dirname(__DIR__) . '/vendor/autoload.php';
+require dirname(__DIR__, 2) . '/vendor/autoload.php';
 
 function constifyMcId(string $id) : string{
 	return strtoupper(explode(":", $id, 2)[1]);
+}
+
+/** @return resource */
+function safe_fopen(string $file, string $flags){
+	$dir = dirname($file);
+	if(!@mkdir($dir, recursive: true) && !is_dir($dir)){
+		throw new \RuntimeException("Couldn't create directory: $dir");
+	}
+	$result = fopen($file, $flags);
+	if($result === false){
+		throw new \RuntimeException("Failed to open file: $file");
+	}
+	return $result;
 }
 
 function generateItemIds(ItemTypeDictionary $dictionary, BlockItemIdMap $blockItemIdMap) : void{
@@ -56,31 +71,11 @@ function generateItemIds(ItemTypeDictionary $dictionary, BlockItemIdMap $blockIt
 	}
 	asort($ids, SORT_STRING);
 
-	$file = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => fopen(dirname(__DIR__) . '/src/data/bedrock/item/ItemTypeNames.php', 'wb'));
+	$file = safe_fopen(dirname(__DIR__, 2) . '/generated/data/bedrock/item/ItemTypeNames.php', 'wb');
 
+	$fileHeader = Filesystem::fileGetContents(__DIR__ . "/templates/header.php");
+	fwrite($file, $fileHeader);
 	fwrite($file, <<<'HEADER'
-<?php
-
-/*
- *
- *  ____            _        _   __  __ _                  __  __ ____
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
- * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * @author PocketMine Team
- * @link http://www.pocketmine.net/
- *
- *
- */
-
-declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\item;
 

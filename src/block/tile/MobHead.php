@@ -28,6 +28,8 @@ use pocketmine\data\bedrock\MobHeadTypeIdMap;
 use pocketmine\data\SavedDataLoadingException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\FloatTag;
+use function floor;
 
 /**
  * @deprecated
@@ -36,7 +38,8 @@ use pocketmine\nbt\tag\CompoundTag;
 class MobHead extends Spawnable{
 
 	private const TAG_SKULL_TYPE = "SkullType"; //TAG_Byte
-	private const TAG_ROT = "Rot"; //TAG_Byte
+	private const TAG_ROTATION = "Rotation"; //TAG_Float (1.10+, represents yaw in degrees)
+	private const TAG_ROT = "Rot"; //TAG_Byte (legacy, pre-1.10, 0-15)
 	private const TAG_MOUTH_MOVING = "MouthMoving"; //TAG_Byte
 	private const TAG_MOUTH_TICK_COUNT = "MouthTickCount"; //TAG_Int
 
@@ -51,15 +54,21 @@ class MobHead extends Spawnable{
 			}
 			$this->mobHeadType = $mobHeadType;
 		}
-		$rotation = $nbt->getByte(self::TAG_ROT, 0);
-		if($rotation >= 0 && $rotation <= 15){
-			$this->rotation = $rotation;
+
+		if($nbt->getTag(self::TAG_ROTATION) instanceof FloatTag){
+			$yaw = $nbt->getFloat(self::TAG_ROTATION, 0.0);
+			$this->rotation = ((int) floor(($yaw * 16 / 360) + 0.5)) & 0xf;
+		}else{
+			$rotation = $nbt->getByte(self::TAG_ROT, 0);
+			if($rotation >= 0 && $rotation <= 15){
+				$this->rotation = $rotation;
+			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
-		$nbt->setByte(self::TAG_ROT, $this->rotation);
+		$nbt->setFloat(self::TAG_ROTATION, $this->rotation * 360.0 / 16.0);
 	}
 
 	public function setMobHeadType(MobHeadType $type) : void{
@@ -80,6 +89,6 @@ class MobHead extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_SKULL_TYPE, MobHeadTypeIdMap::getInstance()->toId($this->mobHeadType));
-		$nbt->setByte(self::TAG_ROT, $this->rotation);
+		$nbt->setFloat(self::TAG_ROTATION, $this->rotation * 360.0 / 16.0);
 	}
 }
