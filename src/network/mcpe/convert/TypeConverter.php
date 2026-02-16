@@ -124,8 +124,8 @@ class TypeConverter{
 	public function coreGameModeToProtocol(GameMode $gamemode) : int{
 		return match($gamemode){
 			GameMode::SURVIVAL => ProtocolGameMode::SURVIVAL,
-			GameMode::SPECTATOR => ProtocolGameMode::SPECTATOR,
-			GameMode::CREATIVE => ProtocolGameMode::CREATIVE,
+			GameMode::NATIVE_SPECTATOR => ProtocolGameMode::SPECTATOR,
+			GameMode::CREATIVE, GameMode::SPECTATOR => ProtocolGameMode::CREATIVE,
 			GameMode::ADVENTURE => ProtocolGameMode::ADVENTURE,
 		};
 	}
@@ -135,7 +135,7 @@ class TypeConverter{
 			ProtocolGameMode::SURVIVAL => GameMode::SURVIVAL,
 			ProtocolGameMode::CREATIVE => GameMode::CREATIVE,
 			ProtocolGameMode::ADVENTURE => GameMode::ADVENTURE,
-			ProtocolGameMode::SPECTATOR => GameMode::SPECTATOR,
+			ProtocolGameMode::SURVIVAL_VIEWER, ProtocolGameMode::CREATIVE_VIEWER, ProtocolGameMode::SPECTATOR => GameMode::SPECTATOR,
 			default => null,
 		};
 	}

@@ -36,6 +36,7 @@ use function spl_object_id;
  * @method static GameMode ADVENTURE()
  * @method static GameMode CREATIVE()
  * @method static GameMode SPECTATOR()
+ * @method static GameMode NATIVE_SPECTATOR()
  * @method static GameMode SURVIVAL()
  *
  * @phpstan-type TMetadata array{0: string, 1: Translatable, 2: list<string>}
@@ -47,6 +48,7 @@ enum GameMode{
 	case CREATIVE;
 	case ADVENTURE;
 	case SPECTATOR;
+	case NATIVE_SPECTATOR;
 
 	public static function fromString(string $str) : ?self{
 		/**
@@ -78,7 +80,8 @@ enum GameMode{
 			self::SURVIVAL => ["Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]],
 			self::CREATIVE => ["Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]],
 			self::ADVENTURE => ["Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]],
-			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]]
+			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]],
+			self::NATIVE_SPECTATOR => throw new \Exception('To be implemented')
 		};
 	}
 
