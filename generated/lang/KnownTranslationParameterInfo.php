@@ -218,6 +218,7 @@ final class KnownTranslationParameterInfo{
 		Keys::GAMEMODE_ADVENTURE => [],
 		Keys::GAMEMODE_CHANGED => ["0"],
 		Keys::GAMEMODE_CREATIVE => [],
+		Keys::GAMEMODE_NATIVE_SPECTATOR => [],
 		Keys::GAMEMODE_SPECTATOR => [],
 		Keys::GAMEMODE_SURVIVAL => [],
 		Keys::GAMEMODE_INFO => [],

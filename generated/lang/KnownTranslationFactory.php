@@ -982,6 +982,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_CREATIVE, []);
 	}
 
+	public static function gameMode_native_spectator() : Translatable{
+		return new Translatable(KnownTranslationKeys::GAMEMODE_NATIVE_SPECTATOR, []);
+	}
+
 	public static function gameMode_spectator() : Translatable{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_SPECTATOR, []);
 	}

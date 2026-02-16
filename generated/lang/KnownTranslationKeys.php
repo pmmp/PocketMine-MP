@@ -215,6 +215,7 @@ final class KnownTranslationKeys{
 	public const GAMEMODE_ADVENTURE = "gameMode.adventure";
 	public const GAMEMODE_CHANGED = "gameMode.changed";
 	public const GAMEMODE_CREATIVE = "gameMode.creative";
+	public const GAMEMODE_NATIVE_SPECTATOR = "gameMode.nativeSpectator";
 	public const GAMEMODE_SPECTATOR = "gameMode.spectator";
 	public const GAMEMODE_SURVIVAL = "gameMode.survival";
 	public const GAMEMODE_INFO = "gamemode_info";

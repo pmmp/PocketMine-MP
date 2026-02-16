@@ -80,7 +80,8 @@ enum GameMode{
 			self::SURVIVAL => ["Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]],
 			self::CREATIVE => ["Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]],
 			self::ADVENTURE => ["Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]],
-			self::SPECTATOR, self::NATIVE_SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]]
+			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]],
+			self::NATIVE_SPECTATOR => ["Native Spectator", KnownTranslationFactory::gameMode_native_spectator(), ["native_spectator"]]
 		};
 	}
 

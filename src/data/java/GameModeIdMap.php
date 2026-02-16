@@ -49,7 +49,7 @@ final class GameModeIdMap{
 				GameMode::SURVIVAL => 0,
 				GameMode::CREATIVE => 1,
 				GameMode::ADVENTURE => 2,
-				GameMode::SPECTATOR => 3,
+				GameMode::SPECTATOR, GameMode::NATIVE_SPECTATOR => 3,
 			}, $case);
 		}
 	}

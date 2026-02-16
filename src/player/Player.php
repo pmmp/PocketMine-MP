@@ -1266,7 +1266,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isCreative(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::CREATIVE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
+		return $this->gamemode === GameMode::CREATIVE || (!$literal && ($this->gamemode === GameMode::SPECTATOR || $this->gamemode === GameMode::NATIVE_SPECTATOR));
 	}
 
 	/**
@@ -1276,11 +1276,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @param bool $literal whether a literal check should be performed
 	 */
 	public function isAdventure(bool $literal = false) : bool{
-		return $this->gamemode === GameMode::ADVENTURE || (!$literal && $this->gamemode === GameMode::SPECTATOR);
+		return $this->gamemode === GameMode::ADVENTURE || (!$literal && ($this->gamemode === GameMode::SPECTATOR || $this->gamemode === GameMode::NATIVE_SPECTATOR));
 	}
 
 	public function isSpectator() : bool{
-		return $this->gamemode === GameMode::SPECTATOR;
+		return $this->gamemode === GameMode::SPECTATOR || $this->gamemode === GameMode::NATIVE_SPECTATOR;
 	}
 
 	public function setSneakPressed(bool $sneakPressed) : void{
