@@ -38,7 +38,6 @@ use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\nbt\LittleEndianNbtSerializer;
-use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
@@ -125,8 +124,8 @@ class TypeConverter{
 	public function coreGameModeToProtocol(GameMode $gamemode) : int{
 		return match($gamemode){
 			GameMode::SURVIVAL => ProtocolGameMode::SURVIVAL,
-			//TODO: native spectator support
-			GameMode::CREATIVE, GameMode::SPECTATOR => ProtocolGameMode::CREATIVE,
+			GameMode::SPECTATOR => ProtocolGameMode::SPECTATOR,
+			GameMode::CREATIVE => ProtocolGameMode::CREATIVE,
 			GameMode::ADVENTURE => ProtocolGameMode::ADVENTURE,
 		};
 	}
@@ -136,8 +135,7 @@ class TypeConverter{
 			ProtocolGameMode::SURVIVAL => GameMode::SURVIVAL,
 			ProtocolGameMode::CREATIVE => GameMode::CREATIVE,
 			ProtocolGameMode::ADVENTURE => GameMode::ADVENTURE,
-			ProtocolGameMode::SURVIVAL_VIEWER, ProtocolGameMode::CREATIVE_VIEWER => GameMode::SPECTATOR,
-			//TODO: native spectator support
+			ProtocolGameMode::SPECTATOR => GameMode::SPECTATOR,
 			default => null,
 		};
 	}
