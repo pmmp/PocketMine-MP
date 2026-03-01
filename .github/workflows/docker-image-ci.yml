@@ -22,7 +22,7 @@ jobs:
         sudo chown -R 1000:1000 ./docker/testsuite ./docker/test_data
 
     - name: Build image for tag
-      uses: docker/build-push-action@v6.18.0
+      uses: docker/build-push-action@v6.19.2
       with:
         context: ${{ github.workspace }}
         push: false
