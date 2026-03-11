@@ -2462,7 +2462,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->spawnPosition = null;
 		$this->deathPosition = null;
 		$this->blockBreakHandler = null;
-		unset($this->forms);
+		$this->forms = [];
 		parent::destroyCycles();
 	}
 
