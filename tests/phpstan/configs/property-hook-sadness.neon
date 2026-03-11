@@ -55,12 +55,6 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: '#^Cannot unset property pocketmine\\player\\Player\:\:\$forms because it might have hooks in a subclass\.$#'
-			identifier: unset.possiblyHookedProperty
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: '#^Cannot unset property pocketmine\\world\\format\\io\\leveldb\\LevelDB\:\:\$db because it might have hooks in a subclass\.$#'
 			identifier: unset.possiblyHookedProperty
 			count: 1
