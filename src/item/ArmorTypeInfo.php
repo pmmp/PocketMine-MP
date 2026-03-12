@@ -32,7 +32,8 @@ class ArmorTypeInfo{
 		private int $armorSlot,
 		private int $toughness = 0,
 		private bool $fireProof = false,
-		?ArmorMaterial $material = null
+		?ArmorMaterial $material = null,
+		private float $knockbackResistance = 0.0
 	){
 		$this->material = $material ?? VanillaArmorMaterials::LEATHER();
 	}
@@ -60,4 +61,9 @@ class ArmorTypeInfo{
 	public function getMaterial() : ArmorMaterial{
 		return $this->material;
 	}
+
+	public function getKnockbackResistance() : float {
+		return $this->knockbackResistance;
+	}
+
 }

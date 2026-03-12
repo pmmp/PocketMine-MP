@@ -570,6 +570,10 @@ class Item implements \JsonSerializable{
 		return 0;
 	}
 
+	public function getKnockbackResistance() : float{
+		return 0.0;
+	}
+
 	/**
 	 * Returns what type of block-breaking tool this is. Blocks requiring the same tool type as the item will break
 	 * faster (except for blocks requiring no tool, which break at the same speed regardless of the tool used)
