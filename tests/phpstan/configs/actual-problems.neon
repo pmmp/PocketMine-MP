@@ -7,15 +7,9 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: '#^Do\-while loop condition is always false\.$#'
-			identifier: doWhile.alwaysFalse
-			count: 1
-			path: ../../../src/PocketMine.php
-
-		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
-			count: 1
+			count: 2
 			path: ../../../src/Server.php
 
 		-
@@ -571,6 +565,18 @@ parameters:
 			path: ../../../src/command/defaults/TimeCommand.php
 
 		-
+			message: '#^Parameter \#1 \$array of function sort expects an array of values castable to string, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/command/defaults/WhitelistCommand.php
+
+		-
+			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/command/defaults/WhitelistCommand.php
+
+		-
 			message: '#^Parameter \#1 \$path of static method pocketmine\\utils\\Filesystem\:\:cleanPath\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -713,6 +719,12 @@ parameters:
 			identifier: paramOut.type
 			count: 1
 			path: ../../../src/inventory/transaction/InventoryTransaction.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 3
+			path: ../../../src/item/Item.php
 
 		-
 			message: '#^Parameter \#1 \$buffer of method pocketmine\\nbt\\BaseNbtSerializer\:\:read\(\) expects string, mixed given\.$#'
@@ -925,13 +937,79 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: '#^Cannot cast mixed to string\.$#'
-			identifier: cast.string
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 5
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(mixed\)\: mixed\)\|null, ''strval'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#1 \$data of static method pocketmine\\permission\\PermissionParser\:\:loadPermissions\(\) expects array\<string, array\<string, mixed\>\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#1 \$description of class pocketmine\\plugin\\PluginDescriptionCommandEntry constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#1 \$name of static method pocketmine\\plugin\\PluginEnableOrder\:\:fromString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#2 \$usageMessage of class pocketmine\\plugin\\PluginDescriptionCommandEntry constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#3 \$aliases of class pocketmine\\plugin\\PluginDescriptionCommandEntry constructor expects list\<string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Parameter \#5 \$permissionDeniedMessage of class pocketmine\\plugin\\PluginDescriptionCommandEntry constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$authors \(array\<string\>\) does not accept array\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 2
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
 			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$authors \(array\<string\>\) does not accept list\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$depend \(list\<string\>\) does not accept list\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$loadBefore \(list\<string\>\) does not accept list\<mixed\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
@@ -944,6 +1022,12 @@ parameters:
 
 		-
 			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$name \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: '#^Property pocketmine\\plugin\\PluginDescription\:\:\$softDepend \(list\<string\>\) does not accept list\<mixed\>\.$#'
 			identifier: assign.propertyType
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php

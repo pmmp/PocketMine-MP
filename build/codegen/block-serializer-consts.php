@@ -35,6 +35,7 @@ use pocketmine\network\mcpe\convert\BlockStateDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use function array_filter;
 use function array_values;
 use function asort;
 use function count;
@@ -172,11 +173,9 @@ function generateBlockStringValues(BlockPaletteReport $data, string $fileHeader)
 	fwrite($output, generateClassHeader(BlockStateStringValues::class, $fileHeader));
 	foreach(Utils::stringifyKeys($data->seenStateValues) as $stateName => $values){
 		$anyWritten = false;
-		sort($values, SORT_STRING);
-		foreach($values as $value){
-			if(!is_string($value)){
-				continue;
-			}
+		$stringValues = array_filter($values, is_string(...));
+		sort($stringValues, SORT_STRING);
+		foreach($stringValues as $value){
 			$anyWritten = true;
 			$constName = mb_strtoupper(preg_replace("/^minecraft:/", "mc_", $stateName) . "_" . $value, 'US-ASCII');
 			fwrite($output, "\tpublic const $constName = \"$value\";\n");
