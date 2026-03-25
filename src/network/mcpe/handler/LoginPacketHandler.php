@@ -46,6 +46,7 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function chr;
@@ -56,7 +57,7 @@ use function is_object;
 use function json_decode;
 use function md5;
 use function ord;
-use function var_export;
+use function substr;
 use const JSON_THROW_ON_ERROR;
 
 /**
@@ -344,7 +345,7 @@ class LoginPacketHandler extends PacketHandler{
 	 */
 	private function warnUndefinedJsonPropertyHandler(string $context) : \Closure{
 		return fn(object $object, string $name, mixed $value) => $this->session->getLogger()->warning(
-			"$context: Unexpected JSON property for " . (new \ReflectionClass($object))->getShortName() . ": " . $name . " = " . var_export($value, return: true)
+			"$context: Unexpected JSON property for " . (new \ReflectionClass($object))->getShortName() . ": " . Utils::printable(substr($name, 0, 80))
 		);
 	}
 }

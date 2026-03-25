@@ -19,18 +19,6 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: '#^Method pocketmine\\block\\DoubleTallGrass\:\:traitGetDropsForIncompatibleTool\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../src/block/DoubleTallGrass.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between \*NEVER\* and 5 will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../../src/command/defaults/TeleportCommand.php
-
-		-
 			message: '#^Method pocketmine\\crafting\\ShapedRecipe\:\:getIngredientMap\(\) should return list\<list\<pocketmine\\crafting\\RecipeIngredient\|null\>\> but returns array\<int\<0, max\>, non\-empty\-array\<int\<0, max\>, pocketmine\\crafting\\RecipeIngredient\|null\>\>\.$#'
 			identifier: return.type
 			count: 1

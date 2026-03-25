@@ -44,6 +44,7 @@ class ItemTypeIdsTest extends TestCase{
 	}
 
 	public function testNoDuplicates() : void{
+		/** @phpstan-var array<string, int> $idTable */
 		$idTable = (new \ReflectionClass(ItemTypeIds::class))->getConstants();
 
 		self::assertSameSize($idTable, array_unique($idTable), "Every ItemTypeID must be unique");
