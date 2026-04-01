@@ -59,7 +59,7 @@ jobs:
     steps:
       - name: Generate access token
         id: generate-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.RESTRICTED_ACTIONS_DISPATCH_ID }}
           private-key: ${{ secrets.RESTRICTED_ACTIONS_DISPATCH_KEY }}
@@ -87,7 +87,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.36.0
+        uses: shivammathur/setup-php@2.37.0
         with:
           php-version: ${{ env.PHP_VERSION }}
 
@@ -166,7 +166,7 @@ jobs:
             ${{ github.workspace }}/core-permissions.rst
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.20.0
+        uses: ncipollo/release-action@v1.21.0
         id: create-draft
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json,${{ github.workspace }}/core-permissions.rst
