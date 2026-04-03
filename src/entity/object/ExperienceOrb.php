@@ -163,7 +163,9 @@ class ExperienceOrb extends Entity{
 		}
 
 		$entity = $this->getWorld()->getEntity($this->targetPlayerRuntimeId);
-		if($entity instanceof Human){
+		//TODO: HACK! We really shouldn't be keeping disconnected players (and generally flagged-for-despawn entities)
+		//in the world's entity table, but changing that is too risky for a hotfix. This workaround will do for now.
+		if($entity instanceof Human && !$entity->isFlaggedForDespawn()){
 			return $entity;
 		}
 

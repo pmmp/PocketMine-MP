@@ -44,6 +44,7 @@ class BlockTypeIdsTest extends TestCase{
 	}
 
 	public function testNoDuplicates() : void{
+		/** @phpstan-var array<string, int> $idTable */
 		$idTable = (new \ReflectionClass(BlockTypeIds::class))->getConstants();
 
 		self::assertSameSize($idTable, array_unique($idTable), "Every BlockTypeID must be unique");

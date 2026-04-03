@@ -80,6 +80,26 @@ The basic procedure to create a pull request is:
 3. Make the changes you want to make on this branch.
 4. You can then make a [pull request](https://github.com/pmmp/PocketMine-MP/pull/new) to the project.
 
+## Tests and quality checks
+
+PocketMine-MP uses several tools to enforce code quality standards.
+You can use these tools to check your code locally before you commit, which helps catch mistakes more quickly, and saves both your energy and maintainers' for reviewing logic, instead of formatting, syntax and other boring stuff.
+
+| Tool | Purpose | Installing | Running |
+|:--------|:---------|:----------|:------------|
+| [PHPStan](https://phpstan.org) | Finds mistakes in code, e.g. wrong types, undefined functions | `composer install` | `vendor/bin/phpstan` |
+| [PHPUnit](https://phpunit.de/index.html) | Runs tests on code to verify behaviour | `composer install` | `vendor/bin/phpunit tests/phpunit` |
+| [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) | Fixes (some) code style issues | [Download phar](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases) | `php php-cs-fixer.phar fix` |
+
+> [!WARNING]
+> These tools are automatically run by GitHub Actions on every commit pushed to GitHub.
+> However, you should not rely on this to find errors in your code, as it will slow you down, and also generate notification spam for everyone watching the repository.
+
+> [!TIP]
+> We strongly recommend PhpStorm with the PHPStan plugin. This will give you feedback from PHPStan inline as you code, which can save even more time.
+>
+> However, do note that the PhpStorm PHPStan plugin has some issues and may also generate false-positive errors, so don't rely exclusively on the IDE.
+
 ## Pull request reviews
 Pull requests will be reviewed by maintainers when they are available.
 Note that there might be a long wait time before a reviewer looks at your PR.
@@ -121,6 +141,7 @@ The following are required as a minimum for pull requests. PRs that don't meet t
   - Large changes should be discussed beforehand using the [RFC / Change Proposal](#rfcs--change-proposals) process.
   - Large changes are much harder to review, and are more likely to be declined if maintainers don't have a good idea what you're trying to do in advance.
 - **Create a new branch on your fork for each pull request.** This allows you to use the same fork to make multiple pull requests at the same time.
+- **Run quality tools like PHPStan locally before you commit.** See the section above about [tests and quality tools](#tests-and-quality-checks).
 
 **Thanks for contributing to PocketMine-MP!**
 

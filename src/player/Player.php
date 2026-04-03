@@ -34,6 +34,7 @@ use pocketmine\crafting\CraftingGrid;
 use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
+use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\animation\MagicHitAnimation;
 use pocketmine\entity\Attribute;
@@ -1553,6 +1554,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			if($this->blockBreakHandler !== null && !$this->blockBreakHandler->update()){
 				$this->blockBreakHandler = null;
 			}
+
+			if($this->isUsingItem() && $this->getItemUseDuration() % 4 === 0 && ($item = $this->inventory->getItemInHand()) instanceof ConsumableItem){
+				$this->broadcastAnimation(new ConsumingItemAnimation($this, $item));
+			}
 		}
 
 		$this->timings->stopTiming();
@@ -1740,7 +1745,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if($slot instanceof ConsumableItem){
 			$oldItem = clone $slot;
 
-			$ev = new PlayerItemConsumeEvent($this, $slot);
+			$residue = $slot->getResidue();
+			$ev = new PlayerItemConsumeEvent($this, $slot, $residue->isNull() ? [] : [$residue]);
 			if($this->hasItemCooldown($slot)){
 				$ev->cancel();
 			}
@@ -1754,7 +1760,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 			$this->resetItemCooldown($oldItem);
 
 			$slot->pop();
-			$this->returnItemsFromAction($oldItem, $slot, [$slot->getResidue()]);
+			$this->returnItemsFromAction($oldItem, $slot, $ev->getResidue());
 
 			return true;
 		}
@@ -1814,7 +1820,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 
 	public function pickEntity(int $entityId) : bool{
 		$entity = $this->getWorld()->getEntity($entityId);
-		if($entity === null){
+		//TODO: HACK! We really shouldn't be keeping disconnected players (and generally flagged-for-despawn entities)
+		//in the world's entity table, but changing that is too risky for a hotfix. This workaround will do for now.
+		if($entity === null || $entity->isFlaggedForDespawn()){
 			return true;
 		}
 
@@ -2289,6 +2297,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		}
 
 		return true;
+	}
+
+	/**
+	 * @internal
+	 * Returns whether the server is waiting for a response for a form with the given ID.
+	 */
+	public function hasPendingForm(int $formId) : bool{
+		return isset($this->forms[$formId]);
 	}
 
 	/**

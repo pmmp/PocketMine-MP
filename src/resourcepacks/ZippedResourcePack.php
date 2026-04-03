@@ -26,6 +26,7 @@ namespace pocketmine\resourcepacks;
 use Ahc\Json\Comment as CommentedJsonDecoder;
 use pocketmine\resourcepacks\json\Manifest;
 use pocketmine\utils\Utils;
+use Ramsey\Uuid\Uuid;
 use function assert;
 use function fclose;
 use function feof;
@@ -115,6 +116,9 @@ class ZippedResourcePack implements ResourcePack{
 			$manifest = $mapper->map($manifest, new Manifest());
 		}catch(\JsonMapper_Exception $e){
 			throw new ResourcePackException("Invalid manifest.json contents: " . $e->getMessage(), 0, $e);
+		}
+		if(!Uuid::isValid($manifest->header->uuid)){
+			throw new ResourcePackException("Resource pack has an invalid UUID");
 		}
 
 		$this->manifest = $manifest;

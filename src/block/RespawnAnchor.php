@@ -68,6 +68,7 @@ final class RespawnAnchor extends Opaque{
 		if($item->getTypeId() === ItemTypeIds::fromBlockTypeId(BlockTypeIds::GLOWSTONE) && $this->charges < self::MAX_CHARGES){
 			$this->position->getWorld()->setBlock($this->position, $this->setCharges($this->charges + 1));
 			$this->position->getWorld()->addSound($this->position, new RespawnAnchorChargeSound());
+			$item->pop();
 			return true;
 		}
 

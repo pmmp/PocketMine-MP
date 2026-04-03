@@ -26,7 +26,7 @@ use pocketmine\VersionInfo;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 7){
+if(!isset($argv) || count($argv) !== 7){
 	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)> <build number> <github actions run ID> <PHP binary download URL>\n");
 	exit(1);
 }

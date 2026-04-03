@@ -104,7 +104,7 @@ class QueryHandler implements RawPacketHandler{
 
 					return true;
 				case self::STATISTICS: //Stat
-					$token = BE::readUnsignedInt($stream);
+					$token = BE::readSignedInt($stream);
 					if($token !== ($t1 = self::getTokenString($this->token, $address)) && $token !== ($t2 = self::getTokenString($this->lastToken, $address))){
 						$this->logger->debug("Bad token $token from $address $port, expected $t1 or $t2");
 

@@ -248,7 +248,10 @@ class Explosion{
 				$block->ignite(mt_rand(10, 30));
 			}else{
 				if(mt_rand(0, 100) < $yield){
-					foreach($block->getDrops($air) as $drop){
+					$drops = $block->getBreakInfo()->isExplosionHarvestable() ?
+						$block->getDropsForCompatibleTool($air) :
+						$block->getDrops($air);
+					foreach($drops as $drop){
 						$this->world->dropItem($pos->add(0.5, 0.5, 0.5), $drop);
 					}
 				}

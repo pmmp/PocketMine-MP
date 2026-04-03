@@ -584,6 +584,7 @@ final class BlockTypeNames{
 	public const GLOWSTONE = "minecraft:glowstone";
 	public const GOLD_BLOCK = "minecraft:gold_block";
 	public const GOLD_ORE = "minecraft:gold_ore";
+	public const GOLDEN_DANDELION = "minecraft:golden_dandelion";
 	public const GOLDEN_RAIL = "minecraft:golden_rail";
 	public const GRANITE = "minecraft:granite";
 	public const GRANITE_DOUBLE_SLAB = "minecraft:granite_double_slab";

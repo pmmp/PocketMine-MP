@@ -2,12 +2,21 @@
 
 ## Reporting a Vulnerability
 
-**DO NOT report vulnerabilities on the GitHub issue tracker.**
-GitHub is public and anyone can see the issues you post on the issue tracker, including people who would exploit vulnerabilities for their own gain.
+### Report via GitHub
 
-**WARNING: You may put live servers at risk by reporting a vulnerability on the GitHub issue tracker.**
+Send a _**private security report**_ by going to https://github.com/pmmp/PocketMine-MP/security and clicking the "Report a vulnerability" button.
 
-**Contact us** by sending an email to [**security@pmmp.io**](mailto:security@pmmp.io). Include the following information:
+> [!WARNING]
+> **DO NOT report vulnerabilities on the Issues tab. Report them in the Security tab ONLY.**
+> 
+> The issue tracker is public to view, which means that malicious actors may learn about exploits from a public issue.
+>
+> **You may put live PocketMine-MP servers at risk by reporting a vulnerability on the GitHub issue tracker.**
+
+### Report via email
+
+If you can't or don't want to use the GitHub system, you can also **contact us** by sending an email to [**security@pmmp.io**](mailto:security@pmmp.io).
+Include the following information:
 
 - Version of PocketMine-MP
 - Detailed description of the vulnerability (e.g. how to exploit it, what the effects are)

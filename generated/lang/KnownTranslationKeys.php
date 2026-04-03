@@ -232,6 +232,7 @@ final class KnownTranslationKeys{
 	public const ITEM_RECORD_CREATOR_DESC = "item.record_creator.desc";
 	public const ITEM_RECORD_CREATOR_MUSIC_BOX_DESC = "item.record_creator_music_box.desc";
 	public const ITEM_RECORD_FAR_DESC = "item.record_far.desc";
+	public const ITEM_RECORD_LAVA_CHICKEN_DESC = "item.record_lava_chicken.desc";
 	public const ITEM_RECORD_MALL_DESC = "item.record_mall.desc";
 	public const ITEM_RECORD_MELLOHI_DESC = "item.record_mellohi.desc";
 	public const ITEM_RECORD_OTHERSIDE_DESC = "item.record_otherside.desc";

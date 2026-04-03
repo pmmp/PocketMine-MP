@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
-/** @deprecated */
+/**
+ * @deprecated
+ */
 final class ItemFlags{
 
 	private function __construct(){

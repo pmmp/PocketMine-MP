@@ -29,11 +29,13 @@ use function mb_strtoupper;
 use function preg_match;
 
 /**
+ * @deprecated Superseded by {@link RegistrySource}
+ *
  * This trait allows a class to simulate object class constants, since PHP doesn't currently support this.
  * These faux constants are exposed in static class methods, which are handled using __callStatic().
  *
  * Classes using this trait need to include \@method tags in their class docblock for every faux constant.
- * Alternatively, just put \@generate-registry-docblock in the docblock and run build/generate-registry-annotations.php
+ * Alternatively, just put \@generate-registry-docblock in the docblock and run build/codegen/registry-annotations.php
  */
 trait RegistryTrait{
 	/**
