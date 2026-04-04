@@ -83,6 +83,28 @@ network:
   #DO NOT DISABLE THIS unless you understand the risks involved.
   enable-encryption: true
 
+resource-pack-transfer:
+  #Enable the adaptive resource pack transfer scheduler.
+  #Disable this to fall back to the legacy one-chunk-at-a-time ACK chain.
+  enabled: true
+  #Initial ACK-gated send window per session.
+  initial-window: 1
+  #Maximum ACK-gated send window per session.
+  max-window: 4
+  #Maximum number of resource pack chunks allowed to enter the low-priority send path in one tick.
+  max-chunks-per-tick: 2
+  #Maximum number of resource pack bytes allowed to enter the low-priority send path in one tick.
+  #Values below 262144 bytes are clamped to a single resource pack chunk.
+  max-bytes-per-tick: 1048576
+  #How long a transfer may go without observable progress before stall recovery is triggered.
+  stall-timeout-ms: 10000
+  #Grow the send window when the moving-average ACK time is at or below this threshold.
+  ack-fast-threshold-ms: 150
+  #Shrink the send window when the moving-average ACK time is at or above this threshold.
+  ack-slow-threshold-ms: 800
+  #Emit per-transfer debug logs and lightweight metrics.
+  debug-log: false
+
 debug:
   #If > 1, it will show debug messages in the console
   level: 1

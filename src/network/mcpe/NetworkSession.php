@@ -59,6 +59,8 @@ use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SessionStartPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
+use pocketmine\network\mcpe\handler\resourcepacks\DefaultResourcePackChunkProvider;
+use pocketmine\network\mcpe\handler\resourcepacks\ResourcePackTransferConfig;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundCloseFormPacket;
@@ -186,9 +188,24 @@ class NetworkSession{
 	 * @phpstan-var list<PromiseResolver<true>>
 	 */
 	private array $sendBufferAckPromises = [];
+	/**
+	 * Resource pack chunks are buffered separately so they don't block higher-priority
+	 * login and gameplay packets in the same tick.
+	 *
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	private array $lowPrioritySendBuffer = [];
+	/**
+	 * @var PromiseResolver[]
+	 * @phpstan-var list<PromiseResolver<true>>
+	 */
+	private array $lowPrioritySendBufferAckPromises = [];
 
 	/** @phpstan-var \SplQueue<array{CompressBatchPromise|string, list<PromiseResolver<true>>, bool}> */
 	private \SplQueue $compressedQueue;
+	/** @phpstan-var \SplQueue<array{CompressBatchPromise|string, list<PromiseResolver<true>>, bool}> */
+	private \SplQueue $lowPriorityCompressedQueue;
 	private bool $forceAsyncCompression = true;
 	private bool $enableCompression = false; //disabled until handshake completed
 
@@ -225,6 +242,7 @@ class NetworkSession{
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
+		$this->lowPriorityCompressedQueue = new \SplQueue();
 
 		$this->disposeHooks = new ObjectSet();
 
@@ -577,7 +595,7 @@ class NetworkSession{
 	/**
 	 * @phpstan-param PromiseResolver<true>|null $ackReceiptResolver
 	 */
-	private function sendDataPacketInternal(ClientboundPacket $packet, bool $immediate, ?PromiseResolver $ackReceiptResolver) : bool{
+	private function sendDataPacketInternal(ClientboundPacket $packet, bool $immediate, ?PromiseResolver $ackReceiptResolver, bool $lowPriority = false) : bool{
 		if(!$this->connected){
 			return false;
 		}
@@ -601,15 +619,23 @@ class NetworkSession{
 			}
 
 			if($ackReceiptResolver !== null){
-				$this->sendBufferAckPromises[] = $ackReceiptResolver;
+				if($lowPriority){
+					$this->lowPrioritySendBufferAckPromises[] = $ackReceiptResolver;
+				}else{
+					$this->sendBufferAckPromises[] = $ackReceiptResolver;
+				}
 			}
 			$writer = new ByteBufferWriter();
 			foreach($packets as $evPacket){
 				$writer->clear(); //memory reuse let's gooooo
-				$this->addToSendBuffer(self::encodePacketTimed($writer, $evPacket));
+				$this->addToSendBuffer(self::encodePacketTimed($writer, $evPacket), $lowPriority);
 			}
 			if($immediate){
-				$this->flushGamePacketQueue();
+				if($lowPriority){
+					$this->flushLowPriorityPacketQueue();
+				}else{
+					$this->flushGamePacketQueue();
+				}
 			}
 
 			return true;
@@ -637,6 +663,20 @@ class NetworkSession{
 	}
 
 	/**
+	 * @phpstan-return Promise<true>
+	 */
+	public function sendLowPriorityDataPacketWithReceipt(ClientboundPacket $packet, bool $immediate = false) : Promise{
+		/** @phpstan-var PromiseResolver<true> $resolver */
+		$resolver = new PromiseResolver();
+
+		if(!$this->sendDataPacketInternal($packet, $immediate, $resolver, true)){
+			$resolver->reject();
+		}
+
+		return $resolver->getPromise();
+	}
+
+	/**
 	 * @internal
 	 */
 	public static function encodePacketTimed(ByteBufferWriter $serializer, ClientboundPacket $packet) : string{
@@ -653,37 +693,28 @@ class NetworkSession{
 	/**
 	 * @internal
 	 */
-	public function addToSendBuffer(string $buffer) : void{
-		$this->sendBuffer[] = $buffer;
+	public function addToSendBuffer(string $buffer, bool $lowPriority = false) : void{
+		if($lowPriority){
+			$this->lowPrioritySendBuffer[] = $buffer;
+		}else{
+			$this->sendBuffer[] = $buffer;
+		}
+	}
+
+	public function getLowPrioritySendBufferSize() : int{
+		return count($this->lowPrioritySendBuffer);
+	}
+
+	public function getLowPriorityCompressedQueueSize() : int{
+		return $this->lowPriorityCompressedQueue->count();
 	}
 
 	private function flushGamePacketQueue() : void{
-		if(count($this->sendBuffer) > 0){
-			Timings::$playerNetworkSend->startTiming();
-			try{
-				$syncMode = null; //automatic
-				if($this->forceAsyncCompression){
-					$syncMode = false;
-				}
+		$this->flushBufferedPacketQueue();
+	}
 
-				$stream = new ByteBufferWriter();
-				PacketBatch::encodeRaw($stream, $this->sendBuffer);
-
-				if($this->enableCompression){
-					$batch = $this->server->prepareBatch($stream->getData(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
-				}else{
-					$batch = $stream->getData();
-				}
-				$this->sendBuffer = [];
-				$ackPromises = $this->sendBufferAckPromises;
-				$this->sendBufferAckPromises = [];
-				//these packets were already potentially buffered for up to 50ms - make sure the transport layer doesn't
-				//delay them any longer
-				$this->queueCompressedNoGamePacketFlush($batch, networkFlush: true, ackPromises: $ackPromises);
-			}finally{
-				Timings::$playerNetworkSend->stopTiming();
-			}
-		}
+	private function flushLowPriorityPacketQueue() : void{
+		$this->flushBufferedPacketQueue(true);
 	}
 
 	public function getBroadcaster() : PacketBroadcaster{ return $this->broadcaster; }
@@ -713,16 +744,17 @@ class NetworkSession{
 	 *
 	 * @phpstan-param list<PromiseResolver<true>> $ackPromises
 	 */
-	private function queueCompressedNoGamePacketFlush(CompressBatchPromise|string $batch, bool $networkFlush = false, array $ackPromises = []) : void{
+	private function queueCompressedNoGamePacketFlush(CompressBatchPromise|string $batch, bool $networkFlush = false, array $ackPromises = [], bool $lowPriority = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
-			$this->compressedQueue->enqueue([$batch, $ackPromises, $networkFlush]);
+			$queue = $lowPriority ? $this->lowPriorityCompressedQueue : $this->compressedQueue;
+			$queue->enqueue([$batch, $ackPromises, $networkFlush]);
 			if(is_string($batch)){
-				$this->flushCompressedQueue();
+				$this->flushCompressedQueue($lowPriority);
 			}else{
-				$batch->onResolve(function() : void{
+				$batch->onResolve(function() use ($lowPriority) : void{
 					if($this->connected){
-						$this->flushCompressedQueue();
+						$this->flushCompressedQueue($lowPriority);
 					}
 				});
 			}
@@ -731,18 +763,23 @@ class NetworkSession{
 		}
 	}
 
-	private function flushCompressedQueue() : void{
+	private function flushCompressedQueue(bool $lowPriority = false) : void{
 		Timings::$playerNetworkSend->startTiming();
 		try{
-			while(!$this->compressedQueue->isEmpty()){
+			if($lowPriority && !$this->compressedQueue->isEmpty()){
+				return;
+			}
+
+			$queue = $lowPriority ? $this->lowPriorityCompressedQueue : $this->compressedQueue;
+			while(!$queue->isEmpty()){
 				/** @var CompressBatchPromise|string $current */
-				[$current, $ackPromises, $networkFlush] = $this->compressedQueue->bottom();
+				[$current, $ackPromises, $networkFlush] = $queue->bottom();
 				if(is_string($current)){
-					$this->compressedQueue->dequeue();
+					$queue->dequeue();
 					$this->sendEncoded($current, $networkFlush, $ackPromises);
 
 				}elseif($current->hasResult()){
-					$this->compressedQueue->dequeue();
+					$queue->dequeue();
 					$this->sendEncoded($current->getResult(), $networkFlush, $ackPromises);
 
 				}else{
@@ -750,6 +787,52 @@ class NetworkSession{
 					break;
 				}
 			}
+			if(!$lowPriority && !$this->compressedQueue->isEmpty()){
+				return;
+			}
+			if(!$lowPriority){
+				$this->flushCompressedQueue(true);
+			}
+		}finally{
+			Timings::$playerNetworkSend->stopTiming();
+		}
+	}
+
+	private function flushBufferedPacketQueue(bool $lowPriority = false) : void{
+		$buffer = $lowPriority ? $this->lowPrioritySendBuffer : $this->sendBuffer;
+		if(count($buffer) === 0){
+			return;
+		}
+
+		Timings::$playerNetworkSend->startTiming();
+		try{
+			$syncMode = null; //automatic
+			if($this->forceAsyncCompression){
+				$syncMode = false;
+			}
+
+			$stream = new ByteBufferWriter();
+			PacketBatch::encodeRaw($stream, $buffer);
+
+			if($this->enableCompression){
+				$batch = $this->server->prepareBatch($stream->getData(), $this->compressor, $syncMode, Timings::$playerNetworkSendCompressSessionBuffer);
+			}else{
+				$batch = $stream->getData();
+			}
+
+			if($lowPriority){
+				$this->lowPrioritySendBuffer = [];
+				$ackPromises = $this->lowPrioritySendBufferAckPromises;
+				$this->lowPrioritySendBufferAckPromises = [];
+			}else{
+				$this->sendBuffer = [];
+				$ackPromises = $this->sendBufferAckPromises;
+				$this->sendBufferAckPromises = [];
+			}
+
+			//these packets were already potentially buffered for up to 50ms - make sure the transport layer doesn't
+			//delay them any longer
+			$this->queueCompressedNoGamePacketFlush($batch, networkFlush: true, ackPromises: $ackPromises, lowPriority: $lowPriority);
 		}finally{
 			Timings::$playerNetworkSend->stopTiming();
 		}
@@ -776,6 +859,18 @@ class NetworkSession{
 	}
 
 	/**
+	 * @phpstan-param \SplQueue<array{CompressBatchPromise|string, list<PromiseResolver<true>>, bool}> $queue
+	 */
+	private function rejectCompressedQueuePromises(\SplQueue $queue) : void{
+		while(!$queue->isEmpty()){
+			[, $ackPromises, ] = $queue->dequeue();
+			foreach($ackPromises as $resolver){
+				$resolver->reject();
+			}
+		}
+	}
+
+	/**
 	 * @phpstan-param \Closure() : void $func
 	 */
 	private function tryDisconnect(\Closure $func, Translatable|string $reason) : void{
@@ -784,6 +879,7 @@ class NetworkSession{
 			$func();
 			$this->disconnectGuard = false;
 			$this->flushGamePacketQueue();
+			$this->flushLowPriorityPacketQueue();
 			$this->sender->close("");
 			foreach($this->disposeHooks as $callback){
 				$callback();
@@ -804,6 +900,13 @@ class NetworkSession{
 			foreach($sendBufferAckPromises as $resolver){
 				$resolver->reject();
 			}
+			$lowPrioritySendBufferAckPromises = $this->lowPrioritySendBufferAckPromises;
+			$this->lowPrioritySendBufferAckPromises = [];
+			foreach($lowPrioritySendBufferAckPromises as $resolver){
+				$resolver->reject();
+			}
+			$this->rejectCompressedQueuePromises($this->compressedQueue);
+			$this->rejectCompressedQueuePromises($this->lowPriorityCompressedQueue);
 
 			$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_network_session_close($reason)));
 		}
@@ -1012,9 +1115,17 @@ class NetworkSession{
 		}
 		$event = new PlayerResourcePackOfferEvent($this->info, $resourcePacks, $keys, $packManager->resourcePacksRequired());
 		$event->call();
-		$this->setHandler(new ResourcePacksPacketHandler($this, $event->getResourcePacks(), $event->getEncryptionKeys(), $event->mustAccept(), function() : void{
-			$this->createPlayer();
-		}));
+		$this->setHandler(new ResourcePacksPacketHandler(
+			$this,
+			$event->getResourcePacks(),
+			$event->getEncryptionKeys(),
+			$event->mustAccept(),
+			function() : void{
+				$this->createPlayer();
+			},
+			ResourcePackTransferConfig::fromConfig($this->server->getConfigGroup()),
+			new DefaultResourcePackChunkProvider()
+		));
 	}
 
 	private function beginSpawnSequence() : void{
@@ -1420,6 +1531,8 @@ class NetworkSession{
 			Timings::$playerNetworkSendInventorySync->stopTiming();
 		}
 
+		$this->handler?->onTick();
 		$this->flushGamePacketQueue();
+		$this->flushLowPriorityPacketQueue();
 	}
 }

@@ -25,6 +25,10 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\handler\resourcepacks\DefaultResourcePackChunkProvider;
+use pocketmine\network\mcpe\handler\resourcepacks\ResourcePackChunkProvider;
+use pocketmine\network\mcpe\handler\resourcepacks\ResourcePackTransferConfig;
+use pocketmine\network\mcpe\handler\resourcepacks\ResourcePackTransferState;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -44,7 +48,10 @@ use function array_map;
 use function ceil;
 use function count;
 use function implode;
+use function microtime;
+use function min;
 use function sprintf;
+use function strlen;
 use function strpos;
 use function strtolower;
 use function substr;
@@ -61,6 +68,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	 * and cause the download speed to drop (due to ACKs taking too long to arrive).
 	 */
 	private const MAX_CONCURRENT_CHUNK_REQUESTS = 1;
+	private const MAX_SEND_FAILURES = 3;
 
 	/**
 	 * All data/resource_packs/chemistry* packs need to be listed here to get chemistry blocks to render
@@ -92,6 +100,9 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	private \SplQueue $requestQueue;
 
 	private int $activeRequests = 0;
+	private ResourcePackTransferConfig $transferConfig;
+	private ResourcePackChunkProvider $chunkProvider;
+	private ResourcePackTransferState $transferState;
 
 	/**
 	 * @param ResourcePack[] $resourcePackStack
@@ -106,12 +117,24 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		private array $resourcePackStack,
 		private array $encryptionKeys,
 		private bool $mustAccept,
-		private \Closure $completionCallback
+		private \Closure $completionCallback,
+		?ResourcePackTransferConfig $transferConfig = null,
+		?ResourcePackChunkProvider $chunkProvider = null
 	){
 		$this->requestQueue = new \SplQueue();
+		$this->transferConfig = $transferConfig ?? ResourcePackTransferConfig::legacy();
+		$this->chunkProvider = $chunkProvider ?? new DefaultResourcePackChunkProvider();
+
+		$packMetadata = [];
 		foreach($resourcePackStack as $pack){
-			$this->resourcePacksById[$pack->getPackId()] = $pack;
+			$packId = $pack->getPackId();
+			$this->resourcePacksById[$packId] = $pack;
+			$packMetadata[$packId] = [
+				"totalChunks" => (int) ceil($pack->getPackSize() / self::PACK_CHUNK_SIZE),
+				"sizeBytes" => $pack->getPackSize(),
+			];
 		}
+		$this->transferState = new ResourcePackTransferState($this->transferConfig, $packMetadata, microtime(true));
 	}
 
 	private function getPackById(string $id) : ?ResourcePack{
@@ -143,6 +166,16 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			forceDisableVibrantVisuals: true,
 		));
 		$this->session->getLogger()->debug("Waiting for client to accept resource packs");
+	}
+
+	public function onTick() : void{
+		if(!$this->transferConfig->enabled || ($this->requestQueue->isEmpty() && $this->transferState->getInflightCount() === 0)){
+			return;
+		}
+
+		$this->transferState->resetTickBudget();
+		$this->detectTransferStall();
+		$this->processAdaptiveChunkRequestQueue();
 	}
 
 	private function disconnectWithError(string $error) : void{
@@ -200,9 +233,22 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						false,
 						ResourcePackType::RESOURCES //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
 					));
+					if($this->transferConfig->enabled){
+						$this->transferState->markRequestedPack($pack->getPackId(), microtime(true));
+					}
 					$seen[$pack->getPackId()] = true;
 				}
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");
+				if($this->transferConfig->enabled && count($seen) > 0){
+					$this->debugTransfer(sprintf(
+						"start session=%s packs=%d totalBytes=%d totalChunks=%d window=%d",
+						$this->session->getDisplayName(),
+						$this->transferState->getRequestedPackCount(),
+						$this->transferState->getRequestedTotalBytes(),
+						$this->transferState->getRequestedTotalChunks(),
+						$this->transferState->getWindowSize()
+					));
+				}
 				break;
 			case ResourcePackClientResponsePacket::STATUS_HAVE_ALL_PACKS:
 				if($this->requestedStack){
@@ -226,6 +272,24 @@ class ResourcePacksPacketHandler extends PacketHandler{
 				$this->session->getLogger()->debug("Applying resource pack stack");
 				break;
 			case ResourcePackClientResponsePacket::STATUS_COMPLETED:
+				if($this->transferConfig->enabled && $this->transferState->getStartedAt() !== null){
+					$now = microtime(true);
+					$this->debugTransfer(sprintf(
+						"done session=%s total=%.2fs acked=%d/%d avgAck=%.1fms maxAck=%.1fms stalls=%d failures=%d maxWindow=%d maxInflight=%d maxQueue=%d maxDispatch=%.1fms",
+						$this->session->getDisplayName(),
+						$this->transferState->getDurationMs($now) / 1000,
+						$this->transferState->getAckedRequestedChunks(),
+						$this->transferState->getRequestedTotalChunks(),
+						$this->transferState->getAverageAckMsOverall(),
+						$this->transferState->getMaxAckMs(),
+						$this->transferState->getStallCount(),
+						$this->transferState->getFailureCount(),
+						$this->transferState->getMaxObservedWindow(),
+						$this->transferState->getMaxObservedInflight(),
+						$this->transferState->getMaxObservedQueueLength(),
+						$this->transferState->getMaxDispatchDelayMs()
+					));
+				}
 				$this->session->getLogger()->debug("Resource packs sequence completed");
 				($this->completionCallback)();
 				break;
@@ -262,13 +326,23 @@ class ResourcePacksPacketHandler extends PacketHandler{
 			$this->downloadedChunks[$packId][$packet->chunkIndex] = true;
 		}
 
+		if($this->transferConfig->enabled){
+			$this->transferState->markChunkEnqueued($packId, $packet->chunkIndex, microtime(true), $this->requestQueue->count() + 1);
+		}
 		$this->requestQueue->enqueue([$pack, $packet->chunkIndex]);
-		$this->processChunkRequestQueue();
+		if($this->transferConfig->enabled){
+			return true;
+		}
+
+		$this->processLegacyChunkRequestQueue();
 
 		return true;
 	}
 
-	private function processChunkRequestQueue() : void{
+	/**
+	 * Legacy code path preserved for servers that disable the adaptive scheduler.
+	 */
+	private function processLegacyChunkRequestQueue() : void{
 		if($this->activeRequests >= self::MAX_CONCURRENT_CHUNK_REQUESTS || $this->requestQueue->isEmpty()){
 			return;
 		}
@@ -280,19 +354,126 @@ class ResourcePacksPacketHandler extends PacketHandler{
 
 		$packId = $pack->getPackId();
 		$offset = $chunkIndex * self::PACK_CHUNK_SIZE;
-		$chunkData = $pack->getPackChunk($offset, self::PACK_CHUNK_SIZE);
+		$chunkData = $this->chunkProvider->getChunk($pack, $offset, self::PACK_CHUNK_SIZE);
 		$this->activeRequests++;
 		$this->session
 			->sendDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
 			->onCompletion(
 				function() : void{
 					$this->activeRequests--;
-					$this->processChunkRequestQueue();
+					$this->processLegacyChunkRequestQueue();
 				},
 				function() : void{
 					//this may have been rejected because of a disconnection - this will do nothing in that case
 					$this->disconnectWithError("Plugin interrupted sending of resource packs");
 				}
 			);
+	}
+
+	/**
+	 * Adaptive scheduler used by the new resource-pack-transfer config block.
+	 */
+	private function processAdaptiveChunkRequestQueue() : void{
+		while(!$this->requestQueue->isEmpty() && $this->transferState->canSendMoreNow()){
+			/** @var ResourcePack $pack */
+			/** @var int $chunkIndex */
+			[$pack, $chunkIndex] = $this->requestQueue->bottom();
+
+			$offset = $chunkIndex * self::PACK_CHUNK_SIZE;
+			$estimatedChunkBytes = min(self::PACK_CHUNK_SIZE, $pack->getPackSize() - $offset);
+			if(!$this->transferState->consumeTickBudgetIfPossible($estimatedChunkBytes)){
+				return;
+			}
+
+			$this->requestQueue->dequeue();
+
+			$packId = $pack->getPackId();
+			$chunkData = $this->chunkProvider->getChunk($pack, $offset, self::PACK_CHUNK_SIZE);
+			$sendAt = microtime(true);
+			$this->transferState->markChunkSent($packId, $chunkIndex, strlen($chunkData), $sendAt);
+			$this->debugTransfer(sprintf(
+				"send session=%s pack=%s chunk=%d window=%d inflight=%d q=%d ackAvg=%.1fms lpBuf=%d lpBatches=%d",
+				$this->session->getDisplayName(),
+				$packId,
+				$chunkIndex,
+				$this->transferState->getWindowSize(),
+				$this->transferState->getInflightCount(),
+				$this->requestQueue->count(),
+				$this->transferState->getAverageAckMs(),
+				$this->session->getLowPrioritySendBufferSize(),
+				$this->session->getLowPriorityCompressedQueueSize()
+			));
+
+			$this->session
+				->sendLowPriorityDataPacketWithReceipt(ResourcePackChunkDataPacket::create($packId, $chunkIndex, $offset, $chunkData))
+				->onCompletion(
+					function() use ($packId, $chunkIndex) : void{
+						$ackAt = microtime(true);
+						$rttMs = $this->transferState->markChunkAcked($packId, $chunkIndex, $ackAt);
+						if($rttMs !== null){
+							$this->debugTransfer(sprintf(
+								"ack session=%s pack=%s chunk=%d rtt=%.1fms window=%d inflight=%d ackAvg=%.1fms",
+								$this->session->getDisplayName(),
+								$packId,
+								$chunkIndex,
+								$rttMs,
+								$this->transferState->getWindowSize(),
+								$this->transferState->getInflightCount(),
+								$this->transferState->getAverageAckMs()
+							));
+						}
+					},
+					function() use ($pack, $packId, $chunkIndex) : void{
+						if(!$this->session->isConnected()){
+							return;
+						}
+
+						$failedAt = microtime(true);
+						$this->transferState->markChunkFailed($packId, $chunkIndex, $failedAt, "send rejected before ACK");
+						if($this->transferState->getFailureCount() >= self::MAX_SEND_FAILURES){
+							$this->disconnectWithError(sprintf(
+								"Resource pack transfer failed repeatedly for pack %s chunk %d (%s)",
+								$packId,
+								$chunkIndex,
+								$this->transferState->getLastFailureReason() ?? "unknown error"
+							));
+							return;
+						}
+
+						$this->requestQueue->unshift([$pack, $chunkIndex]);
+						$this->transferState->markChunkEnqueued($packId, $chunkIndex, $failedAt, $this->requestQueue->count());
+						$this->debugTransfer(sprintf(
+							"fail session=%s pack=%s chunk=%d failures=%d window=%d q=%d",
+							$this->session->getDisplayName(),
+							$packId,
+							$chunkIndex,
+							$this->transferState->getFailureCount(),
+							$this->transferState->getWindowSize(),
+							$this->requestQueue->count()
+						));
+					}
+				);
+		}
+	}
+
+	private function detectTransferStall() : void{
+		$stall = $this->transferState->detectStall(microtime(true), $this->requestQueue->count());
+		if($stall !== null){
+			$this->debugTransfer(sprintf(
+				"stall session=%s no-progress=%.1fms window=%d->%d inflight=%d q=%d",
+				$this->session->getDisplayName(),
+				$stall["noProgressMs"],
+				$stall["previousWindow"],
+				$stall["currentWindow"],
+				$this->transferState->getInflightCount(),
+				$this->requestQueue->count()
+			));
+		}
+	}
+
+	private function debugTransfer(string $message) : void{
+		if($this->transferConfig->debugLog){
+			$this->session->getLogger()->debug("[ResourcePackTransfer] " . $message);
+		}
 	}
 }
