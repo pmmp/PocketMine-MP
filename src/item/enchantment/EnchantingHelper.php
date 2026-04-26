@@ -225,7 +225,7 @@ final class EnchantingHelper{
 	private static function getRandomOptionName(Random $random) : string{
 		$name = "";
 		for($i = $random->nextRange(5, 15); $i > 0; $i--){
-			$name .= chr($random->nextRange(ord("a"), ord("z")));
+			$name .= chr($random->nextRange(ord("a"), ord("z")) & 0xff);
 		}
 
 		return $name;

@@ -37,7 +37,9 @@ use function count;
 use function dirname;
 use function file_put_contents;
 use function fwrite;
+use function gettype;
 use function is_array;
+use function is_string;
 use function json_decode;
 use function json_encode;
 use function ksort;
@@ -73,23 +75,48 @@ foreach($files as $file){
 	}
 	\GlobalLogger::get()->info("Processing schema file $file");
 	$data = json_decode(Filesystem::fileGetContents(Path::join($upgradeSchemasDir, $file)), associative: true, flags: JSON_THROW_ON_ERROR);
-	if(!is_array($data)){
+	if(!is_array($data) || (isset($data["renamedIds"]) && !is_array($data["renamedIds"])) || (isset($data["remappedMetas"]) && !is_array($data["remappedMetas"]))) {
 		\GlobalLogger::get()->error("Invalid schema file $file");
 		exit(1);
 	}
-	foreach(($data["renamedIds"] ?? []) as $oldId => $newId){
-		if(isset($merged["simple"][$oldId])){
-			\GlobalLogger::get()->warning("Duplicate rename for $oldId in file $file (was " . $merged["simple"][$oldId] . ", now $newId)");
+	if(isset($data["renamedIds"])){
+		if(!is_array($data["renamedIds"])){
+			\GlobalLogger::get()->error("Invalid schema file $file, expected array for renamedIds");
+			exit(1);
 		}
-		$merged["simple"][$oldId] = $newId;
+		foreach(Utils::promoteKeys($data["renamedIds"]) as $oldId => $newId){
+			if(!is_string($oldId) || !is_string($newId)){
+				\GlobalLogger::get()->error("Invalid schema file $file, expected string IDs for simple remaps, but got " . gettype($newId) . " for key $oldId");
+				exit(1);
+			}
+			if(isset($merged["simple"][$oldId])){
+				\GlobalLogger::get()->warning("Duplicate rename for $oldId in file $file (was " . $merged["simple"][$oldId] . ", now $newId)");
+			}
+			$merged["simple"][$oldId] = $newId;
+		}
 	}
 
-	foreach(($data["remappedMetas"] ?? []) as $oldId => $mappings){
-		foreach($mappings as $meta => $newId){
-			if(isset($merged["complex"][$oldId][$meta])){
-				\GlobalLogger::get()->warning("Duplicate meta remap for $oldId meta $meta in file $file (was " . $merged["complex"][$oldId][$meta] . ", now $newId)");
+	if(isset($data["remappedMetas"])){
+		if(!is_array($data["remappedMetas"])){
+			\GlobalLogger::get()->error("Invalid schema file $file, expected array for remappedMetas");
+			exit(1);
+		}
+
+		foreach(Utils::promoteKeys($data["remappedMetas"]) as $oldId => $mappings){
+			if(!is_array($mappings)){
+				\GlobalLogger::get()->error("Invalid schema file $file, expected array for remappedMetas elements, got " . gettype($mappings) . " for key $oldId");#
+				exit(1);
 			}
-			$merged["complex"][$oldId][$meta] = $newId;
+			foreach(Utils::promoteKeys($mappings) as $meta => $newId){
+				if(!is_string($newId)){
+					\GlobalLogger::get()->error("Invalid schema $file, expected string for remappedMetas sub elements, got " . gettype($newId) . " for key $oldId for meta $meta");
+					exit(1);
+				}
+				if(isset($merged["complex"][$oldId][$meta])){
+					\GlobalLogger::get()->warning("Duplicate meta remap for $oldId meta $meta in file $file (was " . $merged["complex"][$oldId][$meta] . ", now $newId)");
+				}
+				$merged["complex"][$oldId][$meta] = $newId;
+			}
 		}
 	}
 }

@@ -28,6 +28,7 @@ use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use function assert;
 use function base64_decode;
 use function base64_encode;
 use function bin2hex;
@@ -119,6 +120,7 @@ final class JwtUtils{
 		}
 
 		//we can assume the length is 1 byte here - if it were larger than 127, more complex logic would be needed
+		assert(strlen($part) <= 127);
 		return self::ASN1_INTEGER_TAG . chr(strlen($part)) . $part;
 	}
 
@@ -131,6 +133,7 @@ final class JwtUtils{
 		$sequence = self::signaturePartToAsn1($rString) . self::signaturePartToAsn1($sString);
 
 		//we can assume the length is 1 byte here - if it were larger than 127, more complex logic would be needed
+		assert(strlen($sequence) <= 127);
 		return self::ASN1_SEQUENCE_TAG . chr(strlen($sequence)) . $sequence;
 	}
 
@@ -245,6 +248,8 @@ final class JwtUtils{
 	/**
 	 * DER supports lengths up to (2**8)**127, however, we'll only support lengths up to (2**8)**4.  See
 	 * {@link http://itu.int/ITU-T/studygroups/com17/languages/X.690-0207.pdf#p=13 X.690 paragraph 8.1.3} for more information.
+	 *
+	 * @phpstan-param 0|positive-int $length
 	 */
 	private static function encodeDerLength(int $length) : string{
 		if ($length <= 0x7F) {
@@ -253,9 +258,13 @@ final class JwtUtils{
 
 		$lengthBytes = ltrim(BE::packUnsignedInt($length), "\x00");
 
+		assert(strlen($lengthBytes) <= 4);
 		return chr(0x80 | strlen($lengthBytes)) . $lengthBytes;
 	}
 
+	/**
+	 * @phpstan-param int<0, 255> $tag
+	 */
 	private static function encodeDerBytes(int $tag, string $data) : string{
 		return chr($tag) . self::encodeDerLength(strlen($data)) . $data;
 	}
