@@ -56,7 +56,6 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\MolangItemDescriptor;
@@ -265,7 +264,7 @@ class ParserPacketHandler extends PacketHandler{
 	public function handleItemRegistry(ItemRegistryPacket $packet) : bool{
 		$this->itemTypeDictionary = new ItemTypeDictionary($packet->getEntries());
 
-		echo "updating legacy item ID mapping table\n";
+		echo "updating required_item_list.json\n";
 		$emptyNBT = new CompoundTag();
 		$table = [];
 		foreach($packet->getEntries() as $entry){
@@ -282,12 +281,6 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		ksort($table, SORT_STRING);
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
-
-		echo "updating item registry\n";
-		$items = array_map(function(ItemTypeEntry $entry) : mixed{
-			return self::objectToOrderedArray($entry);
-		}, $packet->getEntries());
-		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
 		return true;
 	}
 
