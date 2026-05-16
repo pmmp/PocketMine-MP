@@ -566,6 +566,8 @@ final class ItemTypeNames{
 	public const STRING = "minecraft:string";
 	public const SUGAR = "minecraft:sugar";
 	public const SUGAR_CANE = "minecraft:sugar_cane";
+	public const SULFUR_CUBE_BUCKET = "minecraft:sulfur_cube_bucket";
+	public const SULFUR_CUBE_SPAWN_EGG = "minecraft:sulfur_cube_spawn_egg";
 	public const SUSPICIOUS_STEW = "minecraft:suspicious_stew";
 	public const SWEET_BERRIES = "minecraft:sweet_berries";
 	public const TADPOLE_BUCKET = "minecraft:tadpole_bucket";

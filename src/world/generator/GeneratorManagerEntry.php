@@ -23,16 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\math\Vector3;
+
 final class GeneratorManagerEntry{
 
 	/**
 	 * @phpstan-param class-string<Generator> $generatorClass
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
+	 * @phpstan-param (\Closure(int) : ?Vector3)|null $spawnPositionProvider
 	 */
 	public function __construct(
 		private string $generatorClass,
 		private \Closure $presetValidator,
-		private readonly bool $fast
+		private readonly bool $fast,
+		private ?\Closure $spawnPositionProvider = null
 	){}
 
 	/** @phpstan-return class-string<Generator> */
@@ -47,5 +51,11 @@ final class GeneratorManagerEntry{
 		if(($exception = ($this->presetValidator)($generatorOptions)) !== null){
 			throw $exception;
 		}
+	}
+
+	public function getSpawnPosition(int $seed) : ?Vector3{
+		return $this->spawnPositionProvider !== null
+			? ($this->spawnPositionProvider)($seed)
+			: null;
 	}
 }

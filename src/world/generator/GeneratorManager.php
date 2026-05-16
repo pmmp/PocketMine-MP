@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\math\Vector3;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\hell\Nether;
@@ -55,22 +56,25 @@ final class GeneratorManager{
 		$this->addAlias("normal", "default");
 		$this->addGenerator(Nether::class, "nether", fn() => null);
 		$this->addAlias("nether", "hell");
+		$this->addGenerator(VoidGenerator::class, "void", fn() => null, fast: true, spawnPositionProvider: fn(int $seed) => new Vector3(0, -63, 0));
 	}
 
 	/**
-	 * @param string   $class           Fully qualified name of class that extends \pocketmine\world\generator\Generator
-	 * @param string   $name            Alias for this generator type that can be written in configs
-	 * @param \Closure $presetValidator Callback to validate generator options for new worlds
-	 * @param bool     $overwrite       Whether to force overwriting any existing registered generator with the same name
-	 * @param bool     $fast            Whether this generator is fast enough to run without async tasks
+	 * @param string        $class                 Fully qualified name of class that extends \pocketmine\world\generator\Generator
+	 * @param string        $name                  Alias for this generator type that can be written in configs
+	 * @param \Closure      $presetValidator       Callback to validate generator options for new worlds
+	 * @param bool          $overwrite             Whether to force overwriting any existing registered generator with the same name
+	 * @param bool          $fast                  Whether this generator is fast enough to run without async tasks
+	 * @param \Closure|null $spawnPositionProvider Callback to retrieve a custom spawn position
 	 *
 	 * @phpstan-param \Closure(string) : ?InvalidGeneratorOptionsException $presetValidator
+	 * @phpstan-param (\Closure(int) : ?Vector3)|null $spawnPositionProvider
 	 *
 	 * @phpstan-param class-string<Generator> $class
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false, bool $fast = false) : void{
+	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false, bool $fast = false, ?\Closure $spawnPositionProvider = null) : void{
 		Utils::testValidInstance($class, Generator::class);
 
 		$name = strtolower($name);
@@ -78,7 +82,7 @@ final class GeneratorManager{
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
-		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator, $fast);
+		$this->list[$name] = new GeneratorManagerEntry($class, $presetValidator, $fast, $spawnPositionProvider);
 	}
 
 	/**

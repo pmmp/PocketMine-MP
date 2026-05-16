@@ -27,8 +27,8 @@ use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\auth\ProcessLegacyLoginTask;
 use pocketmine\network\mcpe\auth\ProcessOpenIdLoginTask;
+use pocketmine\network\mcpe\auth\ProcessSelfSignedLoginTask;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\NetworkSession;
@@ -37,8 +37,7 @@ use pocketmine\network\mcpe\protocol\types\login\AuthenticationInfo;
 use pocketmine\network\mcpe\protocol\types\login\AuthenticationType;
 use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\clientdata\ClientDataToSkinDataHelper;
-use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthChain;
-use pocketmine\network\mcpe\protocol\types\login\legacy\LegacyAuthIdentityData;
+use pocketmine\network\mcpe\protocol\types\login\openid\SelfSignedJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtBody;
 use pocketmine\network\mcpe\protocol\types\login\openid\XboxAuthJwtHeader;
 use pocketmine\network\PacketHandlingException;
@@ -49,10 +48,9 @@ use pocketmine\Server;
 use pocketmine\utils\Utils;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use function base64_decode;
 use function chr;
-use function count;
 use function gettype;
-use function is_array;
 use function is_object;
 use function json_decode;
 use function md5;
@@ -108,50 +106,30 @@ class LoginPacketHandler extends PacketHandler{
 
 		}elseif($authInfo->AuthenticationType === AuthenticationType::SELF_SIGNED->value){
 			try{
-				$chainData = json_decode($authInfo->Certificate, flags: JSON_THROW_ON_ERROR);
-			}catch(\JsonException $e){
-				throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate chain");
-			}
-			if(!is_object($chainData)){
-				throw new PacketHandlingException("Unexpected type for self-signed certificate chain: " . gettype($chainData) . ", expected object");
-			}
-			try{
-				$chain = $this->defaultJsonMapper("Self-signed auth chain JSON")->map($chainData, new LegacyAuthChain());
-			}catch(\JsonMapper_Exception $e){
-				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate chain");
-			}
-			if(count($chain->chain) > 1 || !isset($chain->chain[0])){
-				throw new PacketHandlingException("Expected exactly one certificate in self-signed certificate chain, got " . count($chain->chain));
-			}
-
-			try{
-				[, $claimsArray, ] = JwtUtils::parse($chain->chain[0]);
+				[, $claimsArray, ] = JwtUtils::parse($authInfo->Token);
 			}catch(JwtException $e){
-				throw PacketHandlingException::wrap($e, "Error parsing self-signed certificate");
+				throw PacketHandlingException::wrap($e, "Error parsing self-signed authentication token");
 			}
-			if(!isset($claimsArray["extraData"]) || !is_array($claimsArray["extraData"])){
-				throw new PacketHandlingException("Expected \"extraData\" to be present in self-signed certificate");
-			}
+			$claims = $this->mapSelfSignedTokenBody($claimsArray);
 
-			try{
-				$claims = $this->defaultJsonMapper("Self-signed auth JWT 'extraData'")->map($claimsArray["extraData"], new LegacyAuthIdentityData());
-			}catch(\JsonMapper_Exception $e){
-				throw PacketHandlingException::wrap($e, "Error mapping self-signed certificate extraData");
+			if(!Uuid::isValid($claims->leguuid)){
+				throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->leguuid);
 			}
-
-			if(!Uuid::isValid($claims->identity)){
-				throw new PacketHandlingException("Invalid UUID string in self-signed certificate: " . $claims->identity);
-			}
-			$legacyUuid = Uuid::fromString($claims->identity);
-			$username = $claims->displayName;
+			$legacyUuid = Uuid::fromString($claims->leguuid);
+			$username = $claims->xname;
 			$xuid = "";
+
+			$selfSignedKey = base64_decode($claims->cpk, strict: true);
+			if($selfSignedKey === false){
+				throw new PacketHandlingException("Invalid self-signed key");
+			}
 
 			$authRequired = $this->processLoginCommon($packet, $username, $legacyUuid, $xuid);
 			if($authRequired === null){
 				//plugin cancelled
 				return true;
 			}
-			$this->processSelfSignedLogin($chain->chain, $packet->clientDataJwt, $authRequired);
+			$this->processSelfSignedLogin($authInfo->Token, $selfSignedKey, $packet->clientDataJwt, $authRequired);
 		}else{
 			throw new PacketHandlingException("Unsupported authentication type: $authInfo->AuthenticationType");
 		}
@@ -284,6 +262,20 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
+	 * @param array<string, mixed> $bodyArray
+	 * @throws PacketHandlingException
+	 */
+	protected function mapSelfSignedTokenBody(array $bodyArray) : SelfSignedJwtBody{
+		$mapper = $this->defaultJsonMapper("OpenID JWT body");
+		try{
+			$header = $mapper->map($bodyArray, new SelfSignedJwtBody());
+		}catch(\JsonMapper_Exception $e){
+			throw PacketHandlingException::wrap($e);
+		}
+		return $header;
+	}
+
+	/**
 	 * @throws PacketHandlingException
 	 */
 	protected function parseClientData(string $clientDataJwt) : ClientData{
@@ -322,13 +314,10 @@ class LoginPacketHandler extends PacketHandler{
 		);
 	}
 
-	/**
-	 * @param string[] $legacyCertificate
-	 */
-	protected function processSelfSignedLogin(array $legacyCertificate, string $clientDataJwt, bool $authRequired) : void{
+	protected function processSelfSignedLogin(string $token, string $clientPublicKey, string $clientData, bool $authRequired) : void{
 		$this->session->setHandler(null); //drop packets received during login verification
 
-		$this->server->getAsyncPool()->submitTask(new ProcessLegacyLoginTask($legacyCertificate, $clientDataJwt, rootAuthKeyDer: null, authRequired: $authRequired, onCompletion: $this->authCallback));
+		$this->server->getAsyncPool()->submitTask(new ProcessSelfSignedLoginTask($token, $clientPublicKey, $clientData, $authRequired, onCompletion: $this->authCallback));
 	}
 
 	private function defaultJsonMapper(string $logContext) : \JsonMapper{

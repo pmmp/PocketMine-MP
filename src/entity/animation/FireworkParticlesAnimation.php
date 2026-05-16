@@ -35,7 +35,7 @@ final class FireworkParticlesAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEvent::FIREWORK_PARTICLES, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::FIREWORK_PARTICLES, 0, null)
 		];
 	}
 }
