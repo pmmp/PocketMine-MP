@@ -108,6 +108,7 @@ final class BlockStateNames{
 	public const PERSISTENT_BIT = "persistent_bit";
 	public const PILLAR_AXIS = "pillar_axis";
 	public const PORTAL_AXIS = "portal_axis";
+	public const POTENT_SULFUR_STATE = "potent_sulfur_state";
 	public const POWERED_BIT = "powered_bit";
 	public const POWERED_SHELF_TYPE = "powered_shelf_type";
 	public const PROPAGULE_STAGE = "propagule_stage";
