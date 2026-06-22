@@ -262,6 +262,9 @@ class InventoryManager{
 			if($action->sourceType !== NetworkInventoryAction::SOURCE_CONTAINER){
 				continue;
 			}
+			if($action->windowId === null){
+				throw new PacketHandlingException("Window ID should always be set for SOURCE_CONTAINER");
+			}
 
 			//legacy transactions should not modify or predict anything other than these inventories, since these are
 			//the only ones accessible when not in-game (ItemStackRequest is used for everything else)
