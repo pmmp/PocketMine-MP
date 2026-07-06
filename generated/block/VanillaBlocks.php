@@ -557,6 +557,8 @@ final class VanillaBlocks{
 	private static Slab $_mMOSSY_STONE_BRICK_SLAB;
 	private static Stair $_mMOSSY_STONE_BRICK_STAIRS;
 	private static Wall $_mMOSSY_STONE_BRICK_WALL;
+	private static Moss $_mMOSS_BLOCK;
+	private static MossCarpet $_mMOSS_CARPET;
 	private static Opaque $_mMUD;
 	private static SimplePillar $_mMUDDY_MANGROVE_ROOTS;
 	private static Opaque $_mMUD_BRICKS;
@@ -605,6 +607,9 @@ final class VanillaBlocks{
 	private static Flower $_mOXEYE_DAISY;
 	private static PackedIce $_mPACKED_ICE;
 	private static Opaque $_mPACKED_MUD;
+	private static PaleMoss $_mPALE_MOSS_BLOCK;
+	private static PaleMossCarpet $_mPALE_MOSS_CARPET;
+	private static PaleMossVine $_mPALE_MOSS_VINE;
 	private static WoodenButton $_mPALE_OAK_BUTTON;
 	private static CeilingCenterHangingSign $_mPALE_OAK_CEILING_CENTER_HANGING_SIGN;
 	private static CeilingEdgesHangingSign $_mPALE_OAK_CEILING_EDGES_HANGING_SIGN;
@@ -1390,6 +1395,8 @@ final class VanillaBlocks{
 			"mossy_stone_brick_slab" => fn(Slab $v) => self::$_mMOSSY_STONE_BRICK_SLAB = $v,
 			"mossy_stone_brick_stairs" => fn(Stair $v) => self::$_mMOSSY_STONE_BRICK_STAIRS = $v,
 			"mossy_stone_brick_wall" => fn(Wall $v) => self::$_mMOSSY_STONE_BRICK_WALL = $v,
+			"moss_block" => fn(Moss $v) => self::$_mMOSS_BLOCK = $v,
+			"moss_carpet" => fn(MossCarpet $v) => self::$_mMOSS_CARPET = $v,
 			"mud" => fn(Opaque $v) => self::$_mMUD = $v,
 			"muddy_mangrove_roots" => fn(SimplePillar $v) => self::$_mMUDDY_MANGROVE_ROOTS = $v,
 			"mud_bricks" => fn(Opaque $v) => self::$_mMUD_BRICKS = $v,
@@ -1438,6 +1445,9 @@ final class VanillaBlocks{
 			"oxeye_daisy" => fn(Flower $v) => self::$_mOXEYE_DAISY = $v,
 			"packed_ice" => fn(PackedIce $v) => self::$_mPACKED_ICE = $v,
 			"packed_mud" => fn(Opaque $v) => self::$_mPACKED_MUD = $v,
+			"pale_moss_block" => fn(PaleMoss $v) => self::$_mPALE_MOSS_BLOCK = $v,
+			"pale_moss_carpet" => fn(PaleMossCarpet $v) => self::$_mPALE_MOSS_CARPET = $v,
+			"pale_moss_vine" => fn(PaleMossVine $v) => self::$_mPALE_MOSS_VINE = $v,
 			"pale_oak_button" => fn(WoodenButton $v) => self::$_mPALE_OAK_BUTTON = $v,
 			"pale_oak_ceiling_center_hanging_sign" => fn(CeilingCenterHangingSign $v) => self::$_mPALE_OAK_CEILING_CENTER_HANGING_SIGN = $v,
 			"pale_oak_ceiling_edges_hanging_sign" => fn(CeilingEdgesHangingSign $v) => self::$_mPALE_OAK_CEILING_EDGES_HANGING_SIGN = $v,
@@ -4303,6 +4313,16 @@ final class VanillaBlocks{
 		return clone self::$_mMOSSY_STONE_BRICK_WALL;
 	}
 
+	public static function MOSS_BLOCK() : Moss{
+		if(!isset(self::$_mMOSS_BLOCK)){ self::init(); }
+		return clone self::$_mMOSS_BLOCK;
+	}
+
+	public static function MOSS_CARPET() : MossCarpet{
+		if(!isset(self::$_mMOSS_CARPET)){ self::init(); }
+		return clone self::$_mMOSS_CARPET;
+	}
+
 	public static function MUD() : Opaque{
 		if(!isset(self::$_mMUD)){ self::init(); }
 		return clone self::$_mMUD;
@@ -4541,6 +4561,21 @@ final class VanillaBlocks{
 	public static function PACKED_MUD() : Opaque{
 		if(!isset(self::$_mPACKED_MUD)){ self::init(); }
 		return clone self::$_mPACKED_MUD;
+	}
+
+	public static function PALE_MOSS_BLOCK() : PaleMoss{
+		if(!isset(self::$_mPALE_MOSS_BLOCK)){ self::init(); }
+		return clone self::$_mPALE_MOSS_BLOCK;
+	}
+
+	public static function PALE_MOSS_CARPET() : PaleMossCarpet{
+		if(!isset(self::$_mPALE_MOSS_CARPET)){ self::init(); }
+		return clone self::$_mPALE_MOSS_CARPET;
+	}
+
+	public static function PALE_MOSS_VINE() : PaleMossVine{
+		if(!isset(self::$_mPALE_MOSS_VINE)){ self::init(); }
+		return clone self::$_mPALE_MOSS_VINE;
 	}
 
 	public static function PALE_OAK_BUTTON() : WoodenButton{

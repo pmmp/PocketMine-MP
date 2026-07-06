@@ -53,7 +53,6 @@ class NetherFungus extends Flowable{
 	}
 
 	private function canBeSupportedAt(Block $block) : bool{
-		//TODO: moss
 		$supportBlock = $block->getSide(Facing::DOWN);
 		return
 			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||

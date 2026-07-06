@@ -35,4 +35,5 @@ final class BlockTypeTags{
 	public const NYLIUM = self::PREFIX . "nylium";
 	public const HUGE_FUNGUS_REPLACEABLE = self::PREFIX . "huge_fungus_replaceable";
 	public const BAMBOO_MOSAIC = self::PREFIX . "bamboo_mosaic";
+	public const MOSS_REPLACEABLE = self::PREFIX . "moss_replaceable";
 }

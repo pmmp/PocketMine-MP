@@ -29,6 +29,7 @@ use pocketmine\block\Anvil;
 use pocketmine\block\Bamboo;
 use pocketmine\block\BambooSapling;
 use pocketmine\block\Barrel;
+use pocketmine\block\BaseCarpetWithVine;
 use pocketmine\block\Bed;
 use pocketmine\block\Bedrock;
 use pocketmine\block\Bell;
@@ -91,6 +92,7 @@ use pocketmine\block\Tripwire;
 use pocketmine\block\TripwireHook;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\CarpetVineGrowth;
 use pocketmine\block\utils\ChiseledBookshelfSlot;
 use pocketmine\block\utils\CopperOxidation;
 use pocketmine\block\utils\DirtType;
@@ -385,6 +387,8 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::MONSTER_SPAWNER(), Ids::MOB_SPAWNER);
 		$reg->mapSimple(Blocks::MOSSY_COBBLESTONE(), Ids::MOSSY_COBBLESTONE);
 		$reg->mapSimple(Blocks::MOSSY_STONE_BRICKS(), Ids::MOSSY_STONE_BRICKS);
+		$reg->mapSimple(Blocks::MOSS_BLOCK(), Ids::MOSS_BLOCK);
+		$reg->mapSimple(Blocks::MOSS_CARPET(), Ids::MOSS_CARPET);
 		$reg->mapSimple(Blocks::MUD(), Ids::MUD);
 		$reg->mapSimple(Blocks::MUD_BRICKS(), Ids::MUD_BRICKS);
 		$reg->mapSimple(Blocks::MYCELIUM(), Ids::MYCELIUM);
@@ -400,6 +404,7 @@ final class VanillaBlockMappings{
 		$reg->mapSimple(Blocks::OBSIDIAN(), Ids::OBSIDIAN);
 		$reg->mapSimple(Blocks::PACKED_ICE(), Ids::PACKED_ICE);
 		$reg->mapSimple(Blocks::PACKED_MUD(), Ids::PACKED_MUD);
+		$reg->mapSimple(Blocks::PALE_MOSS_BLOCK(), Ids::PALE_MOSS_BLOCK);
 		$reg->mapSimple(Blocks::PODZOL(), Ids::PODZOL);
 		$reg->mapSimple(Blocks::POLISHED_ANDESITE(), Ids::POLISHED_ANDESITE);
 		$reg->mapSimple(Blocks::POLISHED_BLACKSTONE(), Ids::POLISHED_BLACKSTONE);
@@ -1611,6 +1616,36 @@ final class VanillaBlockMappings{
 			BlockLegacyMetadata::MUSHROOM_BLOCK_STEM => self::deserializeAsymmetric($mushroomStemModel, $in),
 			default => throw new BlockStateDeserializeException("This state does not exist"),
 		});
+
+		$paleMossCarpetSides = array_map(fn(int $facing) => new ValueFromStringProperty(
+			match($facing){
+				Facing::NORTH => StateNames::PALE_MOSS_CARPET_SIDE_NORTH,
+				Facing::EAST => StateNames::PALE_MOSS_CARPET_SIDE_EAST,
+				Facing::SOUTH => StateNames::PALE_MOSS_CARPET_SIDE_SOUTH,
+				Facing::WEST => StateNames::PALE_MOSS_CARPET_SIDE_WEST,
+			},
+			EnumFromRawStateMap::string(CarpetVineGrowth::class, fn(CarpetVineGrowth $case) => match($case){
+				CarpetVineGrowth::NONE => StringValues::PALE_MOSS_CARPET_SIDE_EAST_NONE,
+				CarpetVineGrowth::HALF => StringValues::PALE_MOSS_CARPET_SIDE_EAST_SHORT,
+				CarpetVineGrowth::FULL => StringValues::PALE_MOSS_CARPET_SIDE_EAST_TALL
+			}),
+			fn(BaseCarpetWithVine $b) => $b->getVineGrowth($facing),
+			fn(BaseCarpetWithVine $b, CarpetVineGrowth $v) => $b->setVineGrowth($facing, $v)
+		), [Facing::NORTH, Facing::EAST, Facing::SOUTH, Facing::WEST]);
+		$paleMossCarpetModel = Model::create(Blocks::PALE_MOSS_CARPET(), Ids::PALE_MOSS_CARPET)->properties([
+			...$paleMossCarpetSides,
+			new DummyProperty(StateNames::UPPER_BLOCK_BIT, false)
+		]);
+		$paleMossVineModel = Model::create(Blocks::PALE_MOSS_VINE(), Ids::PALE_MOSS_CARPET)->properties([
+			...$paleMossCarpetSides,
+			new DummyProperty(StateNames::UPPER_BLOCK_BIT, true)
+		]);
+		self::mapAsymmetricSerializer($reg, $paleMossCarpetModel);
+		self::mapAsymmetricSerializer($reg, $paleMossVineModel);
+		$reg->deserializer->map(Ids::PALE_MOSS_CARPET, fn(Reader $in) => $in->readBool(StateNames::UPPER_BLOCK_BIT) ?
+			self::deserializeAsymmetric($paleMossVineModel, $in) :
+			self::deserializeAsymmetric($paleMossCarpetModel, $in)
+		);
 
 		//pitcher crop, split into single and double variants as double has different properties and behaviour
 		//this will probably be the most annoying to unify

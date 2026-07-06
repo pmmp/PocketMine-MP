@@ -21,20 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\Facing;
-
-class NetherSprouts extends Flowable{
-	use StaticSupportTrait;
-
-	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
-	}
+enum CarpetVineGrowth{
+	case NONE;
+	case HALF;
+	case FULL;
 }

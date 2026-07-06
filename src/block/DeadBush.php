@@ -62,8 +62,9 @@ class DeadBush extends Flowable{
 				BlockTypeIds::DIRT,
 				BlockTypeIds::GRASS,
 				BlockTypeIds::HARDENED_CLAY,
-				BlockTypeIds::STAINED_CLAY => true,
-				//TODO: moss block
+				BlockTypeIds::STAINED_CLAY,
+				BlockTypeIds::MOSS_BLOCK,
+				BlockTypeIds::PALE_MOSS_BLOCK => true,
 				default => false,
 			};
 	}

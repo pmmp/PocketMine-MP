@@ -23,18 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\StaticSupportTrait;
-use pocketmine\math\Facing;
+use pocketmine\item\Item;
 
-class NetherSprouts extends Flowable{
-	use StaticSupportTrait;
+class PaleMossVine extends BaseCarpetWithVine{
 
-	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+	protected function isCarpetPart() : bool{ return false; }
+
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
+
+	public function getDrops(Item $item) : array{
+		return [];
+	}
+
+	public function asItem() : Item{
+		return VanillaBlocks::PALE_MOSS_CARPET()->asItem();
 	}
 }

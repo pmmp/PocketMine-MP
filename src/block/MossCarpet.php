@@ -24,17 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\StaticSupportTrait;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
-class NetherSprouts extends Flowable{
+class MossCarpet extends Flowable{
 	use StaticSupportTrait;
 
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 15 / 16)];
+	}
+
 	private function canBeSupportedAt(Block $block) : bool{
-		$supportBlock = $block->getSide(Facing::DOWN);
-		return
-			$supportBlock->hasTypeTag(BlockTypeTags::DIRT) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::MUD) ||
-			$supportBlock->hasTypeTag(BlockTypeTags::NYLIUM) ||
-			$supportBlock->getTypeId() === BlockTypeIds::SOUL_SOIL;
+		return $block->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::AIR;
 	}
 }

@@ -198,7 +198,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("detector_rail", fn(BID $id) => new DetectorRail($id, "Detector Rail", $railBreakInfo));
 
 		self::register("diamond", fn(BID $id) => new Opaque($id, "Diamond Block", new Info(BreakInfo::pickaxe(5.0, ToolTier::IRON, 30.0))));
-		self::register("dirt", fn(BID $id) => new Dirt($id, "Dirt", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
+		self::register("dirt", fn(BID $id) => new Dirt($id, "Dirt", new Info(BreakInfo::shovel(0.5), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 		self::register("sunflower", fn(BID $id) => new DoublePlant($id, "Sunflower", new Info(BreakInfo::instant())));
 		self::register("lilac", fn(BID $id) => new DoublePlant($id, "Lilac", new Info(BreakInfo::instant())));
 		self::register("rose_bush", fn(BID $id) => new DoublePlant($id, "Rose Bush", new Info(BreakInfo::instant())));
@@ -254,7 +254,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("glow_lichen", fn(BID $id) => new GlowLichen($id, "Glow Lichen", new Info(BreakInfo::axe(0.2))));
 		self::register("gold", fn(BID $id) => new Opaque($id, "Gold Block", new Info(BreakInfo::pickaxe(3.0, ToolTier::IRON, 30.0))));
 
-		self::register("grass", fn(BID $id) => new Grass($id, "Grass", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
+		self::register("grass", fn(BID $id) => new Grass($id, "Grass", new Info(BreakInfo::shovel(0.6), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 		self::register("grass_path", fn(BID $id) => new GrassPath($id, "Grass Path", new Info(BreakInfo::shovel(0.65))));
 		self::register("gravel", fn(BID $id) => new Gravel($id, "Gravel", new Info(BreakInfo::shovel(0.6))));
 
@@ -300,7 +300,15 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("melon", fn(BID $id) => new Melon($id, "Melon Block", new Info(BreakInfo::axe(1.0))));
 		self::register("melon_stem", fn(BID $id) => new MelonStem($id, "Melon Stem", new Info(BreakInfo::instant())));
 		self::register("monster_spawner", fn(BID $id) => new MonsterSpawner($id, "Monster Spawner", new Info(BreakInfo::pickaxe(5.0, ToolTier::WOOD))), TileMonsterSpawner::class);
-		self::register("mycelium", fn(BID $id) => new Mycelium($id, "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT])));
+
+		$mossBreakInfo = new Info(new BreakInfo(0.1, ToolType::HOE), [Tags::DIRT, Tags::MOSS_REPLACEABLE]);
+		self::register("moss_block", fn(BID $id) => new Moss($id, "Moss Block", $mossBreakInfo));
+		self::register("pale_moss_block", fn(BID $id) => new PaleMoss($id, "Pale Moss Block", $mossBreakInfo));
+		self::register("moss_carpet", fn(BID $id) => new MossCarpet($id, "Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("pale_moss_carpet", fn(BID $id) => new PaleMossCarpet($id, "Pale Moss Carpet", new Info(new BreakInfo(0.1, ToolType::HOE))));
+		self::register("pale_moss_vine", fn(BID $id) => new PaleMossVine($id, "Pale Moss Carpet Vine", new Info(new BreakInfo(0.1, ToolType::HOE))));
+
+		self::register("mycelium", fn(BID $id) => new Mycelium($id, "Mycelium", new Info(BreakInfo::shovel(0.6), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 
 		$netherBrickBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
 		self::register("nether_bricks", fn(BID $id) => new Opaque($id, "Nether Bricks", $netherBrickBreakInfo));
@@ -319,7 +327,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("note_block", fn(BID $id) => new Note($id, "Note Block", new Info(BreakInfo::axe(0.8))), TileNote::class);
 		self::register("obsidian", fn(BID $id) => new Opaque($id, "Obsidian", new Info(BreakInfo::pickaxe(35.0 /* 50 in PC */,  ToolTier::DIAMOND, 6000.0))));
 		self::register("packed_ice", fn(BID $id) => new PackedIce($id, "Packed Ice", new Info(BreakInfo::pickaxe(0.5))));
-		self::register("podzol", fn(BID $id) => new Podzol($id, "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT])));
+		self::register("podzol", fn(BID $id) => new Podzol($id, "Podzol", new Info(BreakInfo::shovel(0.5), [Tags::DIRT, Tags::MOSS_REPLACEABLE])));
 		self::register("potatoes", fn(BID $id) => new Potato($id, "Potato Block", new Info(BreakInfo::instant())));
 		self::register("powered_rail", fn(BID $id) => new PoweredRail($id, "Powered Rail", $railBreakInfo));
 
@@ -379,7 +387,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		$shulkerBoxBreakInfo = new Info(BreakInfo::pickaxe(2));
 		self::register("shulker_box", fn(BID $id) => new ShulkerBox($id, "Shulker Box", $shulkerBoxBreakInfo), TileShulkerBox::class);
 
-		$stoneBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
+		$stoneBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0), [Tags::MOSS_REPLACEABLE]);
 		$stone = self::register(
 			"stone",
 			fn(BID $id) => new class($id, "Stone", $stoneBreakInfo) extends Opaque{
@@ -606,7 +614,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		));
 
 		self::register("mangrove_roots", fn(BID $id) => new MangroveRoots($id, "Mangrove Roots", new Info(BreakInfo::axe(0.7))));
-		self::register("muddy_mangrove_roots", fn(BID $id) => new SimplePillar($id, "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD])));
+		self::register("muddy_mangrove_roots", fn(BID $id) => new SimplePillar($id, "Muddy Mangrove Roots", new Info(BreakInfo::shovel(0.7), [Tags::MUD, Tags::MOSS_REPLACEABLE])));
 		self::register("froglight", fn(BID $id) => new Froglight($id, "Froglight", new Info(new BreakInfo(0.3))));
 		self::register("sculk", fn(BID $id) => new Sculk($id, "Sculk", new Info(new BreakInfo(0.2, ToolType::HOE))));
 		self::register("reinforced_deepslate", fn(BID $id) => new class($id, "Reinforced Deepslate", new Info(new BreakInfo(55.0, ToolType::NONE, 0, 6000.0))) extends Opaque{
@@ -1003,7 +1011,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::register("raw_gold", fn(BID $id) => new Opaque($id, "Raw Gold Block", new Info(BreakInfo::pickaxe(5, ToolTier::IRON, 30.0))));
 		self::register("raw_iron", fn(BID $id) => new Opaque($id, "Raw Iron Block", new Info(BreakInfo::pickaxe(5, ToolTier::STONE, 30.0))));
 
-		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD, 30.0));
+		$deepslateBreakInfo = new Info(BreakInfo::pickaxe(3, ToolTier::WOOD, 30.0), [Tags::MOSS_REPLACEABLE]);
 		$deepslate = self::register("deepslate", fn(BID $id) => new class($id, "Deepslate", $deepslateBreakInfo) extends SimplePillar{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLED_DEEPSLATE()->asItem()];
@@ -1070,7 +1078,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 
 		self::register("hanging_roots", fn(BID $id) => new HangingRoots($id, "Hanging Roots", new Info(BreakInfo::instant(ToolType::SHEARS, 1))));
 
-		self::register("cave_vines", fn(BID $id) => new CaveVines($id, "Cave Vines", new Info(BreakInfo::instant())));
+		self::register("cave_vines", fn(BID $id) => new CaveVines($id, "Cave Vines", new Info(BreakInfo::instant(), [Tags::MOSS_REPLACEABLE])));
 
 		self::register("small_dripleaf", fn(BID $id) => new SmallDripleaf($id, "Small Dripleaf", new Info(BreakInfo::instant(ToolType::SHEARS, toolHarvestLevel: 1))));
 		self::register("big_dripleaf_head", fn(BID $id) => new BigDripleafHead($id, "Big Dripleaf", new Info(new BreakInfo(0.1))));
@@ -1084,7 +1092,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 	}
 
 	private function registerMudBlocks() : void{
-		self::register("mud", fn(BID $id) => new Opaque($id, "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD])));
+		self::register("mud", fn(BID $id) => new Opaque($id, "Mud", new Info(BreakInfo::shovel(0.5), [Tags::MUD, Tags::MOSS_REPLACEABLE])));
 		self::register("packed_mud", fn(BID $id) => new Opaque($id, "Packed Mud", new Info(BreakInfo::pickaxe(1.0, null, 15.0))));
 
 		$mudBricksBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 15.0));
@@ -1110,7 +1118,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 	private function registerTuffBlocks() : void{
 		$tuffBreakInfo = new Info(BreakInfo::pickaxe(1.5, ToolTier::WOOD, 30.0));
 
-		self::register("tuff", fn(BID $id) => new Opaque($id, "Tuff", $tuffBreakInfo));
+		self::register("tuff", fn(BID $id) => new Opaque($id, "Tuff", new Info($tuffBreakInfo->getBreakInfo(), [Tags::MOSS_REPLACEABLE])));
 		self::register("tuff_slab", fn(BID $id) => new Slab($id, "Tuff", $tuffBreakInfo));
 		self::register("tuff_stairs", fn(BID $id) => new Stair($id, "Tuff Stairs", $tuffBreakInfo));
 		self::register("tuff_wall", fn(BID $id) => new Wall($id, "Tuff Wall", $tuffBreakInfo));

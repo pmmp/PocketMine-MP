@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\runtime;
 
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\CarpetVineGrowth;
 use pocketmine\block\utils\WallConnectionType;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -164,6 +165,24 @@ final class RuntimeDataWriter implements RuntimeDataDescriber{
 				null => 0,
 				WallConnectionType::SHORT => 1,
 				WallConnectionType::TALL => 2,
+			} * (3 ** $offset);
+			$offset++;
+		}
+		$this->writeBoundedIntAuto(0, (3 ** 4) - 1, $packed);
+	}
+
+	/**
+	 * @param CarpetVineGrowth[] $sides
+	 * @phpstan-param array<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST, CarpetVineGrowth> $sides
+	 */
+	public function carpetVineSides(array &$sides) : void{
+		$packed = 0;
+		$offset = 0;
+		foreach(Facing::HORIZONTAL as $facing){
+			$packed += match($sides[$facing] ?? CarpetVineGrowth::NONE){
+				CarpetVineGrowth::NONE => 0,
+				CarpetVineGrowth::HALF => 1,
+				CarpetVineGrowth::FULL => 2,
 			} * (3 ** $offset);
 			$offset++;
 		}
