@@ -26,6 +26,10 @@ namespace pocketmine\utils;
 use function array_diff;
 use function array_unshift;
 use function array_values;
+use function class_exists;
+use function count;
+use function implode;
+use function interface_exists;
 
 /**
  * Extend this class to define source values for a generated registry class.
@@ -61,6 +65,12 @@ abstract class RegistrySource{
 	 * @phpstan-var array<string, \Closure(string $name) : TMember>
 	 */
 	private array $delayedMembers = [];
+
+	/**
+	 * @var OverloadedRegistryMember[]
+	 * @phpstan-var array<string, OverloadedRegistryMember>
+	 */
+	private array $overloadedMembers = [];
 
 	private static ?string $inSetupClass = null;
 
@@ -126,6 +136,12 @@ abstract class RegistrySource{
 		return $member;
 	}
 
+	private function checkNameAvailability(string $name) : void{
+		if(isset($this->simpleMembers[$name]) || isset($this->delayedMembers[$name]) || isset($this->overloadedMembers[$name])){
+			throw new \InvalidArgumentException("Cannot redeclare registry member \"$name\"");
+		}
+	}
+
 	/**
 	 * Adds a plain value to the registry source. You can use this if the value does not depend on any other generated
 	 * registry code.
@@ -135,9 +151,7 @@ abstract class RegistrySource{
 	 * @phpstan-return TMember
 	 */
 	final protected function registerValue(string $name, mixed $value) : mixed{
-		if(isset($this->simpleMembers[$name]) || isset($this->delayedMembers[$name])){
-			throw new \InvalidArgumentException("Cannot redeclare registry member \"$name\"");
-		}
+		$this->checkNameAvailability($name);
 		$this->simpleMembers[$name] = $value;
 
 		return $value;
@@ -155,11 +169,35 @@ abstract class RegistrySource{
 	 * @phpstan-param \Closure(string $name) : TMember $valueFactory
 	 */
 	final protected function registerDelayed(string $name, \Closure $valueFactory) : void{
-		if(isset($this->simpleMembers[$name]) || isset($this->delayedMembers[$name])){
-			throw new \InvalidArgumentException("Cannot redeclare registry member \"$name\"");
-		}
+		$this->checkNameAvailability($name);
 		Utils::validateCallableSignature(fn(string $name) : object => die(), $valueFactory);
 		$this->delayedMembers[$name] = $valueFactory;
+	}
+
+	/**
+	 * @phpstan-template TEnum of \UnitEnum
+	 * @phpstan-param class-string<TEnum>             $enumClass
+	 * @phpstan-param \Closure(TEnum) : string        $mapper
+	 */
+	final protected function registerOverloaded(string $name, string $enumClass, \Closure $mapper) : void{
+		$this->checkNameAvailability($name);
+		$enumToMemberMap = [];
+
+		$returnTypeTree = [];
+		foreach($enumClass::cases() as $case){
+			$memberName = $mapper($case);
+			if(!isset($this->simpleMembers[$memberName]) && !isset($this->delayedMembers[$memberName])){
+				throw new \LogicException("\"$memberName\" needs to be registered to define overloaded member with enum $enumClass");
+			}
+			$enumToMemberMap[$case->name] = $memberName;
+
+			$memberType = $this->inferReturnTypes($memberName);
+			if(count($memberType) > 0){
+				$returnTypeTree[implode("&", $memberType)] = $memberType;
+			}
+		}
+
+		$this->overloadedMembers[$name] = new OverloadedRegistryMember($enumClass, array_values($returnTypeTree), $enumToMemberMap);
 	}
 
 	/**
@@ -177,6 +215,61 @@ abstract class RegistrySource{
 	}
 
 	/**
+	 * @phpstan-return list<class-string>
+	 */
+	private function inferReturnTypes(string $name) : array{
+		if(isset($this->simpleMembers[$name])){
+			$reflect = new \ReflectionClass($this->simpleMembers[$name]);
+			$concrete = $reflect;
+			if($reflect->isAnonymous()){
+				while($concrete !== false && $concrete->isAnonymous()){
+					$concrete = $concrete->getParentClass();
+				}
+
+				if($concrete === false){
+					return [];
+				}else{
+					$anonInterfaces = array_diff($reflect->getInterfaceNames(), $concrete->getInterfaceNames());
+					array_unshift($anonInterfaces, $concrete->getName());
+					return array_values($anonInterfaces);
+				}
+			}else{
+				return [$reflect->getName()];
+			}
+		}
+		if(isset($this->delayedMembers[$name])){
+			$callback = $this->delayedMembers[$name];
+			$return = (new \ReflectionFunction($callback))->getReturnType();
+			if($return === null){
+				return [];
+			}elseif($return instanceof \ReflectionNamedType){
+				if(!class_exists($return->getName()) && !interface_exists($return->getName())){
+					//TODO: this feels like the wrong place to be throwing this. why aren't we verifying this sooner?
+					throw new \LogicException("Invalid non-class return type for \"$name\": " . $return->getName());
+				}
+				return [$return->getName()];
+			}elseif($return instanceof \ReflectionIntersectionType){
+				$memberTypes = [];
+				foreach($return->getTypes() as $type){
+					if(!$type instanceof \ReflectionNamedType){
+						throw new \InvalidArgumentException("Unsupported nested type in intersection type for \"$name\"");
+					}
+					if(!class_exists($type->getName()) && !interface_exists($type->getName())){
+						//TODO: this feels like the wrong place to be throwing this. why aren't we verifying this sooner?
+						throw new \LogicException("Invalid non-class return type for \"$name\": " . $type->getName());
+					}
+					$memberTypes[] = $type->getName();
+				}
+				return $memberTypes;
+			}else{
+				throw new \LogicException("Unsupported delayed member type for \"$name\"");
+			}
+		}
+
+		throw new \InvalidArgumentException("No such simple or delayed registry member \"$name\"");
+	}
+
+	/**
 	 * @internal Returns type info for all registry members for code generation, without initializing delayed members.
 	 *
 	 * @return string[][]
@@ -186,45 +279,24 @@ abstract class RegistrySource{
 		$this->setupWrapper();
 		$memberTypes = [];
 		foreach(Utils::stringifyKeys($this->simpleMembers) as $name => $value){
-			$reflect = new \ReflectionClass($value);
-			$concrete = $reflect;
-			if($reflect->isAnonymous()){
-				while($concrete !== false && $concrete->isAnonymous()){
-					$concrete = $concrete->getParentClass();
-				}
-
-				if($concrete === false){
-					$memberTypes[$name] = [];
-				}else{
-					$anonInterfaces = array_diff($reflect->getInterfaceNames(), $concrete->getInterfaceNames());
-					array_unshift($anonInterfaces, $concrete->getName());
-					$memberTypes[$name] = array_values($anonInterfaces);
-				}
-			}else{
-				$memberTypes[$name] = [$reflect->getName()];
-			}
+			$memberTypes[$name] = $this->inferReturnTypes($name);
 		}
 
 		foreach(Utils::stringifyKeys($this->delayedMembers) as $name => $callback){
-			$return = (new \ReflectionFunction($callback))->getReturnType();
-			if($return === null){
+			$memberTypes[$name] = $this->inferReturnTypes($name);
+			if(count($memberTypes[$name]) === 0){
 				\GlobalLogger::get()->warning("Delayed registry member " . $this->getTargetClassName() . "::" . $name . " doesn't have a return type, using \"object\"");
-				$memberTypes[$name] = [];
-			}elseif($return instanceof \ReflectionNamedType){
-				$memberTypes[$name] = [$return->getName()];
-			}elseif($return instanceof \ReflectionIntersectionType){
-				$memberTypes[$name] = [];
-				foreach($return->getTypes() as $type){
-					if(!$type instanceof \ReflectionNamedType){
-						throw new \InvalidArgumentException("Unsupported nested type in intersection type for \"$name\"");
-					}
-					$memberTypes[$name][] = $type->getName();
-				}
-			}else{
-				throw new \LogicException("Unsupported delayed member type for \"$name\"");
 			}
 		}
 
 		return $memberTypes;
+	}
+
+	/**
+	 * @return OverloadedRegistryMember[]
+	 * @phpstan-return array<string, OverloadedRegistryMember>
+	 */
+	final public function getOverloadedDeclarations() : array{
+		return $this->overloadedMembers;
 	}
 }

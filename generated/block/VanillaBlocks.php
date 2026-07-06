@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\LeavesType;
+use pocketmine\block\utils\SaplingType;
+use pocketmine\block\utils\WoodType;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function count;
@@ -4093,6 +4096,22 @@ final class VanillaBlocks{
 		return clone self::$_mLAVA_CAULDRON;
 	}
 
+	public static function LEAVES(LeavesType $case) : Leaves{
+		return match($case) {
+			LeavesType::OAK => self::OAK_LEAVES(),
+			LeavesType::SPRUCE => self::SPRUCE_LEAVES(),
+			LeavesType::BIRCH => self::BIRCH_LEAVES(),
+			LeavesType::JUNGLE => self::JUNGLE_LEAVES(),
+			LeavesType::ACACIA => self::ACACIA_LEAVES(),
+			LeavesType::DARK_OAK => self::DARK_OAK_LEAVES(),
+			LeavesType::MANGROVE => self::MANGROVE_LEAVES(),
+			LeavesType::AZALEA => self::AZALEA_LEAVES(),
+			LeavesType::FLOWERING_AZALEA => self::FLOWERING_AZALEA_LEAVES(),
+			LeavesType::CHERRY => self::CHERRY_LEAVES(),
+			LeavesType::PALE_OAK => self::PALE_OAK_LEAVES(),
+		};
+	}
+
 	public static function LECTERN() : Lectern{
 		if(!isset(self::$_mLECTERN)){ self::init(); }
 		return clone self::$_mLECTERN;
@@ -4136,6 +4155,23 @@ final class VanillaBlocks{
 	public static function LIT_PUMPKIN() : LitPumpkin{
 		if(!isset(self::$_mLIT_PUMPKIN)){ self::init(); }
 		return clone self::$_mLIT_PUMPKIN;
+	}
+
+	public static function LOG(WoodType $case) : Wood{
+		return match($case) {
+			WoodType::OAK => self::OAK_LOG(),
+			WoodType::SPRUCE => self::SPRUCE_LOG(),
+			WoodType::BIRCH => self::BIRCH_LOG(),
+			WoodType::JUNGLE => self::JUNGLE_LOG(),
+			WoodType::ACACIA => self::ACACIA_LOG(),
+			WoodType::DARK_OAK => self::DARK_OAK_LOG(),
+			WoodType::MANGROVE => self::MANGROVE_LOG(),
+			WoodType::CRIMSON => self::CRIMSON_STEM(),
+			WoodType::WARPED => self::WARPED_STEM(),
+			WoodType::CHERRY => self::CHERRY_LOG(),
+			WoodType::PALE_OAK => self::PALE_OAK_LOG(),
+			WoodType::BAMBOO => self::BAMBOO_BLOCK(),
+		};
 	}
 
 	public static function LOOM() : Loom{
@@ -5108,6 +5144,17 @@ final class VanillaBlocks{
 		return clone self::$_mSANDSTONE_WALL;
 	}
 
+	public static function SAPLING(SaplingType $case) : Sapling{
+		return match($case) {
+			SaplingType::OAK => self::OAK_SAPLING(),
+			SaplingType::SPRUCE => self::SPRUCE_SAPLING(),
+			SaplingType::BIRCH => self::BIRCH_SAPLING(),
+			SaplingType::JUNGLE => self::JUNGLE_SAPLING(),
+			SaplingType::ACACIA => self::ACACIA_SAPLING(),
+			SaplingType::DARK_OAK => self::DARK_OAK_SAPLING(),
+		};
+	}
+
 	public static function SCULK() : Sculk{
 		if(!isset(self::$_mSCULK)){ self::init(); }
 		return clone self::$_mSCULK;
@@ -5696,6 +5743,244 @@ final class VanillaBlocks{
 	public static function WITHER_ROSE() : WitherRose{
 		if(!isset(self::$_mWITHER_ROSE)){ self::init(); }
 		return clone self::$_mWITHER_ROSE;
+	}
+
+	public static function WOODEN_BUTTON(WoodType $case) : WoodenButton{
+		return match($case) {
+			WoodType::OAK => self::OAK_BUTTON(),
+			WoodType::SPRUCE => self::SPRUCE_BUTTON(),
+			WoodType::BIRCH => self::BIRCH_BUTTON(),
+			WoodType::JUNGLE => self::JUNGLE_BUTTON(),
+			WoodType::ACACIA => self::ACACIA_BUTTON(),
+			WoodType::DARK_OAK => self::DARK_OAK_BUTTON(),
+			WoodType::MANGROVE => self::MANGROVE_BUTTON(),
+			WoodType::CRIMSON => self::CRIMSON_BUTTON(),
+			WoodType::WARPED => self::WARPED_BUTTON(),
+			WoodType::CHERRY => self::CHERRY_BUTTON(),
+			WoodType::PALE_OAK => self::PALE_OAK_BUTTON(),
+			WoodType::BAMBOO => self::BAMBOO_BUTTON(),
+		};
+	}
+
+	public static function WOODEN_CEILING_CENTER_HANGING_SIGN(WoodType $case) : CeilingCenterHangingSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::BIRCH => self::BIRCH_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::ACACIA => self::ACACIA_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::WARPED => self::WARPED_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::CHERRY => self::CHERRY_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_CEILING_CENTER_HANGING_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_CEILING_CENTER_HANGING_SIGN(),
+		};
+	}
+
+	public static function WOODEN_CEILING_EDGES_HANGING_SIGN(WoodType $case) : CeilingEdgesHangingSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::BIRCH => self::BIRCH_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::ACACIA => self::ACACIA_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::WARPED => self::WARPED_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::CHERRY => self::CHERRY_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_CEILING_EDGES_HANGING_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_CEILING_EDGES_HANGING_SIGN(),
+		};
+	}
+
+	public static function WOODEN_DOOR(WoodType $case) : WoodenDoor{
+		return match($case) {
+			WoodType::OAK => self::OAK_DOOR(),
+			WoodType::SPRUCE => self::SPRUCE_DOOR(),
+			WoodType::BIRCH => self::BIRCH_DOOR(),
+			WoodType::JUNGLE => self::JUNGLE_DOOR(),
+			WoodType::ACACIA => self::ACACIA_DOOR(),
+			WoodType::DARK_OAK => self::DARK_OAK_DOOR(),
+			WoodType::MANGROVE => self::MANGROVE_DOOR(),
+			WoodType::CRIMSON => self::CRIMSON_DOOR(),
+			WoodType::WARPED => self::WARPED_DOOR(),
+			WoodType::CHERRY => self::CHERRY_DOOR(),
+			WoodType::PALE_OAK => self::PALE_OAK_DOOR(),
+			WoodType::BAMBOO => self::BAMBOO_DOOR(),
+		};
+	}
+
+	public static function WOODEN_FENCE(WoodType $case) : WoodenFence{
+		return match($case) {
+			WoodType::OAK => self::OAK_FENCE(),
+			WoodType::SPRUCE => self::SPRUCE_FENCE(),
+			WoodType::BIRCH => self::BIRCH_FENCE(),
+			WoodType::JUNGLE => self::JUNGLE_FENCE(),
+			WoodType::ACACIA => self::ACACIA_FENCE(),
+			WoodType::DARK_OAK => self::DARK_OAK_FENCE(),
+			WoodType::MANGROVE => self::MANGROVE_FENCE(),
+			WoodType::CRIMSON => self::CRIMSON_FENCE(),
+			WoodType::WARPED => self::WARPED_FENCE(),
+			WoodType::CHERRY => self::CHERRY_FENCE(),
+			WoodType::PALE_OAK => self::PALE_OAK_FENCE(),
+			WoodType::BAMBOO => self::BAMBOO_FENCE(),
+		};
+	}
+
+	public static function WOODEN_FENCE_GATE(WoodType $case) : FenceGate{
+		return match($case) {
+			WoodType::OAK => self::OAK_FENCE_GATE(),
+			WoodType::SPRUCE => self::SPRUCE_FENCE_GATE(),
+			WoodType::BIRCH => self::BIRCH_FENCE_GATE(),
+			WoodType::JUNGLE => self::JUNGLE_FENCE_GATE(),
+			WoodType::ACACIA => self::ACACIA_FENCE_GATE(),
+			WoodType::DARK_OAK => self::DARK_OAK_FENCE_GATE(),
+			WoodType::MANGROVE => self::MANGROVE_FENCE_GATE(),
+			WoodType::CRIMSON => self::CRIMSON_FENCE_GATE(),
+			WoodType::WARPED => self::WARPED_FENCE_GATE(),
+			WoodType::CHERRY => self::CHERRY_FENCE_GATE(),
+			WoodType::PALE_OAK => self::PALE_OAK_FENCE_GATE(),
+			WoodType::BAMBOO => self::BAMBOO_FENCE_GATE(),
+		};
+	}
+
+	public static function WOODEN_PLANKS(WoodType $case) : Planks{
+		return match($case) {
+			WoodType::OAK => self::OAK_PLANKS(),
+			WoodType::SPRUCE => self::SPRUCE_PLANKS(),
+			WoodType::BIRCH => self::BIRCH_PLANKS(),
+			WoodType::JUNGLE => self::JUNGLE_PLANKS(),
+			WoodType::ACACIA => self::ACACIA_PLANKS(),
+			WoodType::DARK_OAK => self::DARK_OAK_PLANKS(),
+			WoodType::MANGROVE => self::MANGROVE_PLANKS(),
+			WoodType::CRIMSON => self::CRIMSON_PLANKS(),
+			WoodType::WARPED => self::WARPED_PLANKS(),
+			WoodType::CHERRY => self::CHERRY_PLANKS(),
+			WoodType::PALE_OAK => self::PALE_OAK_PLANKS(),
+			WoodType::BAMBOO => self::BAMBOO_PLANKS(),
+		};
+	}
+
+	public static function WOODEN_PRESSURE_PLATE(WoodType $case) : WoodenPressurePlate{
+		return match($case) {
+			WoodType::OAK => self::OAK_PRESSURE_PLATE(),
+			WoodType::SPRUCE => self::SPRUCE_PRESSURE_PLATE(),
+			WoodType::BIRCH => self::BIRCH_PRESSURE_PLATE(),
+			WoodType::JUNGLE => self::JUNGLE_PRESSURE_PLATE(),
+			WoodType::ACACIA => self::ACACIA_PRESSURE_PLATE(),
+			WoodType::DARK_OAK => self::DARK_OAK_PRESSURE_PLATE(),
+			WoodType::MANGROVE => self::MANGROVE_PRESSURE_PLATE(),
+			WoodType::CRIMSON => self::CRIMSON_PRESSURE_PLATE(),
+			WoodType::WARPED => self::WARPED_PRESSURE_PLATE(),
+			WoodType::CHERRY => self::CHERRY_PRESSURE_PLATE(),
+			WoodType::PALE_OAK => self::PALE_OAK_PRESSURE_PLATE(),
+			WoodType::BAMBOO => self::BAMBOO_PRESSURE_PLATE(),
+		};
+	}
+
+	public static function WOODEN_SIGN(WoodType $case) : FloorSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_SIGN(),
+			WoodType::BIRCH => self::BIRCH_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_SIGN(),
+			WoodType::ACACIA => self::ACACIA_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_SIGN(),
+			WoodType::WARPED => self::WARPED_SIGN(),
+			WoodType::CHERRY => self::CHERRY_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_SIGN(),
+		};
+	}
+
+	public static function WOODEN_SLAB(WoodType $case) : WoodenSlab{
+		return match($case) {
+			WoodType::OAK => self::OAK_SLAB(),
+			WoodType::SPRUCE => self::SPRUCE_SLAB(),
+			WoodType::BIRCH => self::BIRCH_SLAB(),
+			WoodType::JUNGLE => self::JUNGLE_SLAB(),
+			WoodType::ACACIA => self::ACACIA_SLAB(),
+			WoodType::DARK_OAK => self::DARK_OAK_SLAB(),
+			WoodType::MANGROVE => self::MANGROVE_SLAB(),
+			WoodType::CRIMSON => self::CRIMSON_SLAB(),
+			WoodType::WARPED => self::WARPED_SLAB(),
+			WoodType::CHERRY => self::CHERRY_SLAB(),
+			WoodType::PALE_OAK => self::PALE_OAK_SLAB(),
+			WoodType::BAMBOO => self::BAMBOO_SLAB(),
+		};
+	}
+
+	public static function WOODEN_STAIRS(WoodType $case) : WoodenStairs{
+		return match($case) {
+			WoodType::OAK => self::OAK_STAIRS(),
+			WoodType::SPRUCE => self::SPRUCE_STAIRS(),
+			WoodType::BIRCH => self::BIRCH_STAIRS(),
+			WoodType::JUNGLE => self::JUNGLE_STAIRS(),
+			WoodType::ACACIA => self::ACACIA_STAIRS(),
+			WoodType::DARK_OAK => self::DARK_OAK_STAIRS(),
+			WoodType::MANGROVE => self::MANGROVE_STAIRS(),
+			WoodType::CRIMSON => self::CRIMSON_STAIRS(),
+			WoodType::WARPED => self::WARPED_STAIRS(),
+			WoodType::CHERRY => self::CHERRY_STAIRS(),
+			WoodType::PALE_OAK => self::PALE_OAK_STAIRS(),
+			WoodType::BAMBOO => self::BAMBOO_STAIRS(),
+		};
+	}
+
+	public static function WOODEN_TRAPDOOR(WoodType $case) : WoodenTrapdoor{
+		return match($case) {
+			WoodType::OAK => self::OAK_TRAPDOOR(),
+			WoodType::SPRUCE => self::SPRUCE_TRAPDOOR(),
+			WoodType::BIRCH => self::BIRCH_TRAPDOOR(),
+			WoodType::JUNGLE => self::JUNGLE_TRAPDOOR(),
+			WoodType::ACACIA => self::ACACIA_TRAPDOOR(),
+			WoodType::DARK_OAK => self::DARK_OAK_TRAPDOOR(),
+			WoodType::MANGROVE => self::MANGROVE_TRAPDOOR(),
+			WoodType::CRIMSON => self::CRIMSON_TRAPDOOR(),
+			WoodType::WARPED => self::WARPED_TRAPDOOR(),
+			WoodType::CHERRY => self::CHERRY_TRAPDOOR(),
+			WoodType::PALE_OAK => self::PALE_OAK_TRAPDOOR(),
+			WoodType::BAMBOO => self::BAMBOO_TRAPDOOR(),
+		};
+	}
+
+	public static function WOODEN_WALL_HANGING_SIGN(WoodType $case) : WallHangingSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_WALL_HANGING_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_WALL_HANGING_SIGN(),
+			WoodType::BIRCH => self::BIRCH_WALL_HANGING_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_WALL_HANGING_SIGN(),
+			WoodType::ACACIA => self::ACACIA_WALL_HANGING_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_WALL_HANGING_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_WALL_HANGING_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_WALL_HANGING_SIGN(),
+			WoodType::WARPED => self::WARPED_WALL_HANGING_SIGN(),
+			WoodType::CHERRY => self::CHERRY_WALL_HANGING_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_WALL_HANGING_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_WALL_HANGING_SIGN(),
+		};
+	}
+
+	public static function WOODEN_WALL_SIGN(WoodType $case) : WallSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_WALL_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_WALL_SIGN(),
+			WoodType::BIRCH => self::BIRCH_WALL_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_WALL_SIGN(),
+			WoodType::ACACIA => self::ACACIA_WALL_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_WALL_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_WALL_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_WALL_SIGN(),
+			WoodType::WARPED => self::WARPED_WALL_SIGN(),
+			WoodType::CHERRY => self::CHERRY_WALL_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_WALL_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_WALL_SIGN(),
+		};
 	}
 
 	public static function WOOL() : Wool{

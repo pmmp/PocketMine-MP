@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\utils\WoodType;
 use pocketmine\utils\Utils;
 use function array_keys;
 use function count;
@@ -1558,6 +1559,23 @@ final class VanillaItems{
 		return clone self::$_mGUNPOWDER;
 	}
 
+	public static function HANGING_SIGN(WoodType $case) : HangingSign{
+		return match($case) {
+			WoodType::OAK => self::OAK_HANGING_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_HANGING_SIGN(),
+			WoodType::BIRCH => self::BIRCH_HANGING_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_HANGING_SIGN(),
+			WoodType::ACACIA => self::ACACIA_HANGING_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_HANGING_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_HANGING_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_HANGING_SIGN(),
+			WoodType::WARPED => self::WARPED_HANGING_SIGN(),
+			WoodType::CHERRY => self::CHERRY_HANGING_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_HANGING_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_HANGING_SIGN(),
+		};
+	}
+
 	public static function HEART_OF_THE_SEA() : Item{
 		if(!isset(self::$_mHEART_OF_THE_SEA)){ self::init(); }
 		return clone self::$_mHEART_OF_THE_SEA;
@@ -2146,6 +2164,23 @@ final class VanillaItems{
 	public static function SHULKER_SHELL() : Item{
 		if(!isset(self::$_mSHULKER_SHELL)){ self::init(); }
 		return clone self::$_mSHULKER_SHELL;
+	}
+
+	public static function SIGN(WoodType $case) : ItemBlockWallOrFloor{
+		return match($case) {
+			WoodType::OAK => self::OAK_SIGN(),
+			WoodType::SPRUCE => self::SPRUCE_SIGN(),
+			WoodType::BIRCH => self::BIRCH_SIGN(),
+			WoodType::JUNGLE => self::JUNGLE_SIGN(),
+			WoodType::ACACIA => self::ACACIA_SIGN(),
+			WoodType::DARK_OAK => self::DARK_OAK_SIGN(),
+			WoodType::MANGROVE => self::MANGROVE_SIGN(),
+			WoodType::CRIMSON => self::CRIMSON_SIGN(),
+			WoodType::WARPED => self::WARPED_SIGN(),
+			WoodType::CHERRY => self::CHERRY_SIGN(),
+			WoodType::PALE_OAK => self::PALE_OAK_SIGN(),
+			WoodType::BAMBOO => self::BAMBOO_SIGN(),
+		};
 	}
 
 	public static function SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE() : Item{

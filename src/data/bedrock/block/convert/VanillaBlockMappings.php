@@ -102,6 +102,7 @@ use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\MobHeadType;
 use pocketmine\block\utils\MushroomBlockType;
 use pocketmine\block\utils\PoweredByRedstone;
+use pocketmine\block\utils\WoodType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\block\Vine;
 use pocketmine\data\bedrock\block\BlockLegacyMetadata;
@@ -991,94 +992,24 @@ final class VanillaBlockMappings{
 		}
 	}
 
+	private static function getWoodInfix(WoodType $type) : string{
+		return match ($type) {
+			WoodType::ACACIA => "acacia",
+			WoodType::BAMBOO => "bamboo",
+			WoodType::BIRCH => "birch",
+			WoodType::CHERRY => "cherry",
+			WoodType::CRIMSON => "crimson",
+			WoodType::DARK_OAK => "dark_oak",
+			WoodType::JUNGLE => "jungle",
+			WoodType::MANGROVE => "mangrove",
+			WoodType::OAK => "oak",
+			WoodType::PALE_OAK => "pale_oak",
+			WoodType::SPRUCE => "spruce",
+			WoodType::WARPED => "warped"
+		};
+	}
+
 	private static function registerWoodMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties) : void{
-		//buttons
-		foreach([
-			[Blocks::ACACIA_BUTTON(), Ids::ACACIA_BUTTON],
-			[Blocks::BAMBOO_BUTTON(), Ids::BAMBOO_BUTTON],
-			[Blocks::BIRCH_BUTTON(), Ids::BIRCH_BUTTON],
-			[Blocks::CHERRY_BUTTON(), Ids::CHERRY_BUTTON],
-			[Blocks::CRIMSON_BUTTON(), Ids::CRIMSON_BUTTON],
-			[Blocks::DARK_OAK_BUTTON(), Ids::DARK_OAK_BUTTON],
-			[Blocks::JUNGLE_BUTTON(), Ids::JUNGLE_BUTTON],
-			[Blocks::MANGROVE_BUTTON(), Ids::MANGROVE_BUTTON],
-			[Blocks::OAK_BUTTON(), Ids::WOODEN_BUTTON],
-			[Blocks::PALE_OAK_BUTTON(), Ids::PALE_OAK_BUTTON],
-			[Blocks::SPRUCE_BUTTON(), Ids::SPRUCE_BUTTON],
-			[Blocks::WARPED_BUTTON(), Ids::WARPED_BUTTON]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->buttonProperties));
-		}
-
-		//doors
-		foreach([
-			[Blocks::ACACIA_DOOR(), Ids::ACACIA_DOOR],
-			[Blocks::BAMBOO_DOOR(), Ids::BAMBOO_DOOR],
-			[Blocks::BIRCH_DOOR(), Ids::BIRCH_DOOR],
-			[Blocks::CHERRY_DOOR(), Ids::CHERRY_DOOR],
-			[Blocks::CRIMSON_DOOR(), Ids::CRIMSON_DOOR],
-			[Blocks::DARK_OAK_DOOR(), Ids::DARK_OAK_DOOR],
-			[Blocks::JUNGLE_DOOR(), Ids::JUNGLE_DOOR],
-			[Blocks::MANGROVE_DOOR(), Ids::MANGROVE_DOOR],
-			[Blocks::OAK_DOOR(), Ids::WOODEN_DOOR],
-			[Blocks::PALE_OAK_DOOR(), Ids::PALE_OAK_DOOR],
-			[Blocks::SPRUCE_DOOR(), Ids::SPRUCE_DOOR],
-			[Blocks::WARPED_DOOR(), Ids::WARPED_DOOR]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->doorProperties));
-		}
-
-		//fences
-		foreach([
-			[Blocks::ACACIA_FENCE(), Ids::ACACIA_FENCE],
-			[Blocks::BAMBOO_FENCE(), Ids::BAMBOO_FENCE],
-			[Blocks::BIRCH_FENCE(), Ids::BIRCH_FENCE],
-			[Blocks::CHERRY_FENCE(), Ids::CHERRY_FENCE],
-			[Blocks::DARK_OAK_FENCE(), Ids::DARK_OAK_FENCE],
-			[Blocks::JUNGLE_FENCE(), Ids::JUNGLE_FENCE],
-			[Blocks::MANGROVE_FENCE(), Ids::MANGROVE_FENCE],
-			[Blocks::OAK_FENCE(), Ids::OAK_FENCE],
-			[Blocks::PALE_OAK_FENCE(), Ids::PALE_OAK_FENCE],
-			[Blocks::SPRUCE_FENCE(), Ids::SPRUCE_FENCE],
-			[Blocks::CRIMSON_FENCE(), Ids::CRIMSON_FENCE],
-			[Blocks::WARPED_FENCE(), Ids::WARPED_FENCE]
-		] as [$block, $id]){
-			$reg->mapSimple($block, $id);
-		}
-
-		foreach([
-			[Blocks::ACACIA_FENCE_GATE(), Ids::ACACIA_FENCE_GATE],
-			[Blocks::BAMBOO_FENCE_GATE(), Ids::BAMBOO_FENCE_GATE],
-			[Blocks::BIRCH_FENCE_GATE(), Ids::BIRCH_FENCE_GATE],
-			[Blocks::CHERRY_FENCE_GATE(), Ids::CHERRY_FENCE_GATE],
-			[Blocks::DARK_OAK_FENCE_GATE(), Ids::DARK_OAK_FENCE_GATE],
-			[Blocks::JUNGLE_FENCE_GATE(), Ids::JUNGLE_FENCE_GATE],
-			[Blocks::MANGROVE_FENCE_GATE(), Ids::MANGROVE_FENCE_GATE],
-			[Blocks::OAK_FENCE_GATE(), Ids::FENCE_GATE],
-			[Blocks::PALE_OAK_FENCE_GATE(), Ids::PALE_OAK_FENCE_GATE],
-			[Blocks::SPRUCE_FENCE_GATE(), Ids::SPRUCE_FENCE_GATE],
-			[Blocks::CRIMSON_FENCE_GATE(), Ids::CRIMSON_FENCE_GATE],
-			[Blocks::WARPED_FENCE_GATE(), Ids::WARPED_FENCE_GATE]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->fenceGateProperties));
-		}
-
-		foreach([
-			[Blocks::ACACIA_SIGN(), Ids::ACACIA_STANDING_SIGN],
-			[Blocks::BAMBOO_SIGN(), Ids::BAMBOO_STANDING_SIGN],
-			[Blocks::BIRCH_SIGN(), Ids::BIRCH_STANDING_SIGN],
-			[Blocks::CHERRY_SIGN(), Ids::CHERRY_STANDING_SIGN],
-			[Blocks::DARK_OAK_SIGN(), Ids::DARKOAK_STANDING_SIGN],
-			[Blocks::JUNGLE_SIGN(), Ids::JUNGLE_STANDING_SIGN],
-			[Blocks::MANGROVE_SIGN(), Ids::MANGROVE_STANDING_SIGN],
-			[Blocks::OAK_SIGN(), Ids::STANDING_SIGN],
-			[Blocks::PALE_OAK_SIGN(), Ids::PALE_OAK_STANDING_SIGN],
-			[Blocks::SPRUCE_SIGN(), Ids::SPRUCE_STANDING_SIGN],
-			[Blocks::CRIMSON_SIGN(), Ids::CRIMSON_STANDING_SIGN],
-			[Blocks::WARPED_SIGN(), Ids::WARPED_STANDING_SIGN]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties([$commonProperties->floorSignLikeRotation]));
-		}
 
 		//logs
 		foreach([
@@ -1116,116 +1047,39 @@ final class VanillaBlockMappings{
 			);
 		}
 
-		//planks
-		foreach([
-			[Blocks::ACACIA_PLANKS(), Ids::ACACIA_PLANKS],
-			[Blocks::BAMBOO_PLANKS(), Ids::BAMBOO_PLANKS],
-			[Blocks::BAMBOO_MOSAIC(), Ids::BAMBOO_MOSAIC], //special bamboo variant block
-			[Blocks::BIRCH_PLANKS(), Ids::BIRCH_PLANKS],
-			[Blocks::CHERRY_PLANKS(), Ids::CHERRY_PLANKS],
-			[Blocks::DARK_OAK_PLANKS(), Ids::DARK_OAK_PLANKS],
-			[Blocks::JUNGLE_PLANKS(), Ids::JUNGLE_PLANKS],
-			[Blocks::MANGROVE_PLANKS(), Ids::MANGROVE_PLANKS],
-			[Blocks::OAK_PLANKS(), Ids::OAK_PLANKS],
-			[Blocks::PALE_OAK_PLANKS(), Ids::PALE_OAK_PLANKS],
-			[Blocks::SPRUCE_PLANKS(), Ids::SPRUCE_PLANKS],
-			[Blocks::CRIMSON_PLANKS(), Ids::CRIMSON_PLANKS],
-			[Blocks::WARPED_PLANKS(), Ids::WARPED_PLANKS]
-		] as [$block, $id]){
-			$reg->mapSimple($block, $id);
-		}
+		$woodenOakPrefix = fn(WoodType $type, string $suffix) => "minecraft:" . ($type === WoodType::OAK ? "wooden" : self::getWoodInfix($type)) . "_$suffix";
+		$emptyOakPrefix = fn(WoodType $type, string $suffix) => "minecraft:" . ($type === WoodType::OAK ? $suffix : self::getWoodInfix($type) . "_$suffix");
+		$signPrefix = fn(WoodType $type, string $suffix) =>
+			"minecraft:" .
+			match ($type) {
+				WoodType::DARK_OAK => "darkoak_",
+				WoodType::OAK => "",
+				default => self::getWoodInfix($type) . "_"
+			} .
+			$suffix;
 
-		//pressure plates
-		foreach([
-			[Blocks::ACACIA_PRESSURE_PLATE(), Ids::ACACIA_PRESSURE_PLATE],
-			[Blocks::BAMBOO_PRESSURE_PLATE(), Ids::BAMBOO_PRESSURE_PLATE],
-			[Blocks::BIRCH_PRESSURE_PLATE(), Ids::BIRCH_PRESSURE_PLATE],
-			[Blocks::CHERRY_PRESSURE_PLATE(), Ids::CHERRY_PRESSURE_PLATE],
-			[Blocks::DARK_OAK_PRESSURE_PLATE(), Ids::DARK_OAK_PRESSURE_PLATE],
-			[Blocks::JUNGLE_PRESSURE_PLATE(), Ids::JUNGLE_PRESSURE_PLATE],
-			[Blocks::MANGROVE_PRESSURE_PLATE(), Ids::MANGROVE_PRESSURE_PLATE],
-			[Blocks::OAK_PRESSURE_PLATE(), Ids::WOODEN_PRESSURE_PLATE],
-			[Blocks::PALE_OAK_PRESSURE_PLATE(), Ids::PALE_OAK_PRESSURE_PLATE],
-			[Blocks::SPRUCE_PRESSURE_PLATE(), Ids::SPRUCE_PRESSURE_PLATE],
-			[Blocks::CRIMSON_PRESSURE_PLATE(), Ids::CRIMSON_PRESSURE_PLATE],
-			[Blocks::WARPED_PRESSURE_PLATE(), Ids::WARPED_PRESSURE_PLATE]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->simplePressurePlateProperties));
-		}
+		foreach(WoodType::cases() as $case){
+			$infix = self::getWoodInfix($case);
+			$reg->mapSimple(Blocks::WOODEN_PLANKS($case), "minecraft:{$infix}_planks");
+			$reg->mapSlab(Blocks::WOODEN_SLAB($case), $infix);
+			$reg->mapStairs(Blocks::WOODEN_STAIRS($case), "minecraft:{$infix}_stairs");
+			$reg->mapSimple(Blocks::WOODEN_FENCE($case), "minecraft:{$infix}_fence");
 
-		//slabs
-		foreach([
-			[Blocks::ACACIA_SLAB(), "acacia"],
-			[Blocks::BAMBOO_SLAB(), "bamboo"],
-			[Blocks::BAMBOO_MOSAIC_SLAB(), "bamboo_mosaic"], //special bamboo variant block
-			[Blocks::BIRCH_SLAB(), "birch"],
-			[Blocks::CHERRY_SLAB(), "cherry"],
-			[Blocks::DARK_OAK_SLAB(), "dark_oak"],
-			[Blocks::JUNGLE_SLAB(), "jungle"],
-			[Blocks::MANGROVE_SLAB(), "mangrove"],
-			[Blocks::OAK_SLAB(), "oak"],
-			[Blocks::PALE_OAK_SLAB(), "pale_oak"],
-			[Blocks::SPRUCE_SLAB(), "spruce"],
-			[Blocks::CRIMSON_SLAB(), "crimson"],
-			[Blocks::WARPED_SLAB(), "warped"]
-		] as [$block, $type]){
-			$reg->mapSlab($block, $type);
-		}
+			//prefixless legacy IDs
+			$reg->mapModel(Model::create(Blocks::WOODEN_TRAPDOOR($case), $emptyOakPrefix($case, "trapdoor"))->properties($commonProperties->trapdoorProperties));
+			$reg->mapModel(Model::create(Blocks::WOODEN_FENCE_GATE($case), $emptyOakPrefix($case, "fence_gate"))->properties($commonProperties->fenceGateProperties));
 
-		//stairs
-		foreach([
-			[Blocks::ACACIA_STAIRS(), Ids::ACACIA_STAIRS],
-			[Blocks::BAMBOO_STAIRS(), Ids::BAMBOO_STAIRS],
-			[Blocks::BAMBOO_MOSAIC_STAIRS(), Ids::BAMBOO_MOSAIC_STAIRS], //special bamboo variant block
-			[Blocks::BIRCH_STAIRS(), Ids::BIRCH_STAIRS],
-			[Blocks::CHERRY_STAIRS(), Ids::CHERRY_STAIRS],
-			[Blocks::DARK_OAK_STAIRS(), Ids::DARK_OAK_STAIRS],
-			[Blocks::JUNGLE_STAIRS(), Ids::JUNGLE_STAIRS],
-			[Blocks::MANGROVE_STAIRS(), Ids::MANGROVE_STAIRS],
-			[Blocks::OAK_STAIRS(), Ids::OAK_STAIRS],
-			[Blocks::PALE_OAK_STAIRS(), Ids::PALE_OAK_STAIRS],
-			[Blocks::SPRUCE_STAIRS(), Ids::SPRUCE_STAIRS],
-			[Blocks::CRIMSON_STAIRS(), Ids::CRIMSON_STAIRS],
-			[Blocks::WARPED_STAIRS(), Ids::WARPED_STAIRS]
-		] as [$block, $id]){
-			$reg->mapStairs($block, $id);
-		}
+			//wooden_ prefixed legacy IDs
+			$reg->mapModel(Model::create(Blocks::WOODEN_DOOR($case), $woodenOakPrefix($case, "door"))->properties($commonProperties->doorProperties));
+			$reg->mapModel(Model::create(Blocks::WOODEN_BUTTON($case), $woodenOakPrefix($case, "button"))->properties($commonProperties->buttonProperties));
+			$reg->mapModel(Model::create(Blocks::WOODEN_PRESSURE_PLATE($case), $woodenOakPrefix($case, "pressure_plate"))->properties($commonProperties->simplePressurePlateProperties));
 
-		//trapdoors
-		foreach([
-			[Blocks::ACACIA_TRAPDOOR(), Ids::ACACIA_TRAPDOOR],
-			[Blocks::BAMBOO_TRAPDOOR(), Ids::BAMBOO_TRAPDOOR],
-			[Blocks::BIRCH_TRAPDOOR(), Ids::BIRCH_TRAPDOOR],
-			[Blocks::CHERRY_TRAPDOOR(), Ids::CHERRY_TRAPDOOR],
-			[Blocks::DARK_OAK_TRAPDOOR(), Ids::DARK_OAK_TRAPDOOR],
-			[Blocks::JUNGLE_TRAPDOOR(), Ids::JUNGLE_TRAPDOOR],
-			[Blocks::MANGROVE_TRAPDOOR(), Ids::MANGROVE_TRAPDOOR],
-			[Blocks::OAK_TRAPDOOR(), Ids::TRAPDOOR],
-			[Blocks::PALE_OAK_TRAPDOOR(), Ids::PALE_OAK_TRAPDOOR],
-			[Blocks::SPRUCE_TRAPDOOR(), Ids::SPRUCE_TRAPDOOR],
-			[Blocks::CRIMSON_TRAPDOOR(), Ids::CRIMSON_TRAPDOOR],
-			[Blocks::WARPED_TRAPDOOR(), Ids::WARPED_TRAPDOOR]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties($commonProperties->trapdoorProperties));
+			$reg->mapModel(Model::create(Blocks::WOODEN_SIGN($case), $signPrefix($case, "standing_sign"))->properties([$commonProperties->floorSignLikeRotation]));
+			$reg->mapModel(Model::create(Blocks::WOODEN_WALL_SIGN($case), $signPrefix($case, "wall_sign"))->properties([$commonProperties->horizontalFacingClassic]));
 		}
-
-		//wall signs
-		foreach([
-			[Blocks::ACACIA_WALL_SIGN(), Ids::ACACIA_WALL_SIGN],
-			[Blocks::BAMBOO_WALL_SIGN(), Ids::BAMBOO_WALL_SIGN],
-			[Blocks::BIRCH_WALL_SIGN(), Ids::BIRCH_WALL_SIGN],
-			[Blocks::CHERRY_WALL_SIGN(), Ids::CHERRY_WALL_SIGN],
-			[Blocks::DARK_OAK_WALL_SIGN(), Ids::DARKOAK_WALL_SIGN],
-			[Blocks::JUNGLE_WALL_SIGN(), Ids::JUNGLE_WALL_SIGN],
-			[Blocks::MANGROVE_WALL_SIGN(), Ids::MANGROVE_WALL_SIGN],
-			[Blocks::OAK_WALL_SIGN(), Ids::WALL_SIGN],
-			[Blocks::PALE_OAK_WALL_SIGN(), Ids::PALE_OAK_WALL_SIGN],
-			[Blocks::SPRUCE_WALL_SIGN(), Ids::SPRUCE_WALL_SIGN],
-			[Blocks::CRIMSON_WALL_SIGN(), Ids::CRIMSON_WALL_SIGN],
-			[Blocks::WARPED_WALL_SIGN(), Ids::WARPED_WALL_SIGN]
-		] as [$block, $id]){
-			$reg->mapModel(Model::create($block, $id)->properties([$commonProperties->horizontalFacingClassic]));
-		}
+		$reg->mapSimple(Blocks::BAMBOO_MOSAIC(), Ids::BAMBOO_MOSAIC);
+		$reg->mapSlab(Blocks::BAMBOO_MOSAIC_SLAB(), "bamboo_mosaic");
+		$reg->mapStairs(Blocks::BAMBOO_MOSAIC_STAIRS(), Ids::BAMBOO_MOSAIC_STAIRS);
 	}
 
 	private static function registerTorchMappings(BlockSerializerDeserializerRegistrar $reg, CommonProperties $commonProperties) : void{
@@ -1645,37 +1499,25 @@ final class VanillaBlockMappings{
 		self::mapAsymmetricSerializer($reg, Model::create(Blocks::OMINOUS_BANNER(), Ids::STANDING_BANNER)->properties([$commonProperties->floorSignLikeRotation]));
 		self::mapAsymmetricSerializer($reg, Model::create(Blocks::OMINOUS_WALL_BANNER(), Ids::WALL_BANNER)->properties([$commonProperties->horizontalFacingClassic]));
 
-		foreach([
-			Ids::ACACIA_HANGING_SIGN => [Blocks::ACACIA_CEILING_CENTER_HANGING_SIGN(), Blocks::ACACIA_CEILING_EDGES_HANGING_SIGN(), Blocks::ACACIA_WALL_HANGING_SIGN()],
-			Ids::BAMBOO_HANGING_SIGN => [Blocks::BAMBOO_CEILING_CENTER_HANGING_SIGN(), Blocks::BAMBOO_CEILING_EDGES_HANGING_SIGN(), Blocks::BAMBOO_WALL_HANGING_SIGN()],
-			Ids::BIRCH_HANGING_SIGN => [Blocks::BIRCH_CEILING_CENTER_HANGING_SIGN(), Blocks::BIRCH_CEILING_EDGES_HANGING_SIGN(), Blocks::BIRCH_WALL_HANGING_SIGN()],
-			Ids::CHERRY_HANGING_SIGN => [Blocks::CHERRY_CEILING_CENTER_HANGING_SIGN(), Blocks::CHERRY_CEILING_EDGES_HANGING_SIGN(), Blocks::CHERRY_WALL_HANGING_SIGN()],
-			Ids::CRIMSON_HANGING_SIGN => [Blocks::CRIMSON_CEILING_CENTER_HANGING_SIGN(), Blocks::CRIMSON_CEILING_EDGES_HANGING_SIGN(), Blocks::CRIMSON_WALL_HANGING_SIGN()],
-			Ids::DARK_OAK_HANGING_SIGN => [Blocks::DARK_OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::DARK_OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::DARK_OAK_WALL_HANGING_SIGN()],
-			Ids::JUNGLE_HANGING_SIGN => [Blocks::JUNGLE_CEILING_CENTER_HANGING_SIGN(), Blocks::JUNGLE_CEILING_EDGES_HANGING_SIGN(), Blocks::JUNGLE_WALL_HANGING_SIGN()],
-			Ids::MANGROVE_HANGING_SIGN => [Blocks::MANGROVE_CEILING_CENTER_HANGING_SIGN(), Blocks::MANGROVE_CEILING_EDGES_HANGING_SIGN(), Blocks::MANGROVE_WALL_HANGING_SIGN()],
-			Ids::OAK_HANGING_SIGN => [Blocks::OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::OAK_WALL_HANGING_SIGN()],
-			Ids::PALE_OAK_HANGING_SIGN => [Blocks::PALE_OAK_CEILING_CENTER_HANGING_SIGN(), Blocks::PALE_OAK_CEILING_EDGES_HANGING_SIGN(), Blocks::PALE_OAK_WALL_HANGING_SIGN()],
-			Ids::SPRUCE_HANGING_SIGN => [Blocks::SPRUCE_CEILING_CENTER_HANGING_SIGN(), Blocks::SPRUCE_CEILING_EDGES_HANGING_SIGN(), Blocks::SPRUCE_WALL_HANGING_SIGN()],
-			Ids::WARPED_HANGING_SIGN => [Blocks::WARPED_CEILING_CENTER_HANGING_SIGN(), Blocks::WARPED_CEILING_EDGES_HANGING_SIGN(), Blocks::WARPED_WALL_HANGING_SIGN()],
-		] as $id => [$center, $edges, $wall]){
+		foreach(WoodType::cases() as $woodType){
+			$id = "minecraft:" . self::getWoodInfix($woodType) . "_hanging_sign";
 			//attached_bit          - true for ceiling center signs, false for ceiling edges signs and wall signs
 			//hanging               - true for all ceiling signs, false for wall signs
 			//facing_direction      - used for ceiling edges signs and wall signs
 			//ground_sign_direction - used by ceiling center signs only
-			$centerModel = Model::create($center, $id)->properties([
+			$centerModel = Model::create(Blocks::WOODEN_CEILING_CENTER_HANGING_SIGN($woodType), $id)->properties([
 				$commonProperties->floorSignLikeRotation,
 				new DummyProperty(StateNames::ATTACHED_BIT, true),
 				new DummyProperty(StateNames::HANGING, true),
 				new DummyProperty(StateNames::FACING_DIRECTION, 2)
 			]);
-			$edgesModel = Model::create($edges, $id)->properties([
+			$edgesModel = Model::create(Blocks::WOODEN_CEILING_EDGES_HANGING_SIGN($woodType), $id)->properties([
 				new DummyProperty(StateNames::GROUND_SIGN_DIRECTION, 0),
 				new DummyProperty(StateNames::ATTACHED_BIT, false),
 				new DummyProperty(StateNames::HANGING, true),
 				$commonProperties->horizontalFacingClassic,
 			]);
-			$wallModel = Model::create($wall, $id)->properties([
+			$wallModel = Model::create(Blocks::WOODEN_WALL_HANGING_SIGN($woodType), $id)->properties([
 				new DummyProperty(StateNames::GROUND_SIGN_DIRECTION, 0),
 				new DummyProperty(StateNames::ATTACHED_BIT, false),
 				new DummyProperty(StateNames::HANGING, false),

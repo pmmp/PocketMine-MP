@@ -69,7 +69,9 @@ use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\RegistrySource;
+use pocketmine\utils\Utils;
 use pocketmine\world\generator\object\TreeType;
+use function count;
 use function is_int;
 use function mb_strtolower;
 use function mb_strtoupper;
@@ -514,10 +516,12 @@ final class VanillaBlocksInputs extends RegistrySource{
 			$name = $saplingType->getDisplayName();
 			self::register(strtolower($saplingType->name) . "_sapling", fn(BID $id) => new Sapling($id, $name . " Sapling", $saplingTypeInfo, $saplingType));
 		}
+		self::registerOverloaded("sapling", SaplingType::class, fn(SaplingType $t) => mb_strtolower($t->name) . "_sapling");
 		foreach(LeavesType::cases() as $leavesType){
 			$name = $leavesType->getDisplayName();
 			self::register(strtolower($leavesType->name) . "_leaves", fn(BID $id) => new Leaves($id, $name . " Leaves", $leavesBreakInfo, $leavesType));
 		}
+		self::registerOverloaded("leaves", LeavesType::class, fn(LeavesType $t) => mb_strtolower($t->name) . "_leaves");
 
 		$sandstoneBreakInfo = new Info(BreakInfo::pickaxe(0.8, ToolTier::WOOD));
 		$smoothSandstoneBreakInfo = new Info(BreakInfo::pickaxe(2.0, ToolTier::WOOD, 30.0));
@@ -632,46 +636,6 @@ final class VanillaBlocksInputs extends RegistrySource{
 		self::registerCauldronBlocks();
 	}
 
-	/**
-	 * @phpstan-return \Closure() : Item
-	 */
-	private static function getSignItemCallback(WoodType $woodType) : \Closure{
-		return match ($woodType) {
-			WoodType::OAK => VanillaItems::OAK_SIGN(...),
-			WoodType::SPRUCE => VanillaItems::SPRUCE_SIGN(...),
-			WoodType::BIRCH => VanillaItems::BIRCH_SIGN(...),
-			WoodType::JUNGLE => VanillaItems::JUNGLE_SIGN(...),
-			WoodType::ACACIA => VanillaItems::ACACIA_SIGN(...),
-			WoodType::DARK_OAK => VanillaItems::DARK_OAK_SIGN(...),
-			WoodType::MANGROVE => VanillaItems::MANGROVE_SIGN(...),
-			WoodType::CRIMSON => VanillaItems::CRIMSON_SIGN(...),
-			WoodType::WARPED => VanillaItems::WARPED_SIGN(...),
-			WoodType::CHERRY => VanillaItems::CHERRY_SIGN(...),
-			WoodType::PALE_OAK => VanillaItems::PALE_OAK_SIGN(...),
-			WoodType::BAMBOO => VanillaItems::BAMBOO_SIGN(...),
-		};
-	}
-
-	/**
-	 * @phpstan-return \Closure() : Item
-	 */
-	private static function getHangingSignItemCallback(WoodType $woodType) : \Closure{
-		return match ($woodType) {
-			WoodType::OAK => VanillaItems::OAK_HANGING_SIGN(...),
-			WoodType::SPRUCE => VanillaItems::SPRUCE_HANGING_SIGN(...),
-			WoodType::BIRCH => VanillaItems::BIRCH_HANGING_SIGN(...),
-			WoodType::JUNGLE => VanillaItems::JUNGLE_HANGING_SIGN(...),
-			WoodType::ACACIA => VanillaItems::ACACIA_HANGING_SIGN(...),
-			WoodType::DARK_OAK => VanillaItems::DARK_OAK_HANGING_SIGN(...),
-			WoodType::MANGROVE => VanillaItems::MANGROVE_HANGING_SIGN(...),
-			WoodType::CRIMSON => VanillaItems::CRIMSON_HANGING_SIGN(...),
-			WoodType::WARPED => VanillaItems::WARPED_HANGING_SIGN(...),
-			WoodType::CHERRY => VanillaItems::CHERRY_HANGING_SIGN(...),
-			WoodType::PALE_OAK => VanillaItems::PALE_OAK_HANGING_SIGN(...),
-			WoodType::BAMBOO => VanillaItems::BAMBOO_HANGING_SIGN(...),
-		};
-	}
-
 	private function registerWoodenBlocks() : void{
 		$planksBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0));
 		$signBreakInfo = new Info(BreakInfo::axe(1.0));
@@ -681,16 +645,21 @@ final class VanillaBlocksInputs extends RegistrySource{
 		$woodenButtonBreakInfo = new Info(BreakInfo::axe(0.5));
 		$woodenPressurePlateBreakInfo = new Info(BreakInfo::axe(0.5));
 
+		$overloads = [];
 		foreach(WoodType::cases() as $woodType){
 			$name = $woodType->getDisplayName();
-			$idName = fn(string $suffix) => strtolower($woodType->name) . "_" . $suffix;
+			$idName = function(string $name, ?string $suffix = null) use ($woodType, &$overloads) : string{
+				$idName = mb_strtolower($woodType->name) . "_" . ($suffix !== null ? mb_strtolower($suffix, 'US-ASCII') : $name);
+				$overloads[$name][$woodType->name] = $idName;
+				return $idName;
+			};
 
-			self::register($idName(mb_strtolower($woodType->getStandardLogSuffix() ?? "log", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
+			self::register($idName("log", $woodType->getStandardLogSuffix()), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getStandardLogSuffix() ?? "Log"), $logBreakInfo, $woodType));
 			if($woodType !== WoodType::BAMBOO){
 				//TODO: kinda sus hack - there's no all-sided log for bamboo
 				//maybe log type and wood type need to be separated
 				//we won't be able to do an overloaded accessor for wood until this is addressed
-				self::register($idName(mb_strtolower($woodType->getAllSidedLogSuffix() ?? "wood", 'US-ASCII')), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
+				self::register($idName("wood", $woodType->getAllSidedLogSuffix()), fn(BID $id) => new Wood($id, $name . " " . ($woodType->getAllSidedLogSuffix() ?? "Wood"), $logBreakInfo, $woodType));
 			}
 
 			self::register($idName("planks"), fn(BID $id) => new Planks($id, $name . " Planks", $planksBreakInfo, $woodType));
@@ -705,12 +674,25 @@ final class VanillaBlocksInputs extends RegistrySource{
 			self::register($idName("pressure_plate"), fn(BID $id) => new WoodenPressurePlate($id, $name . " Pressure Plate", $woodenPressurePlateBreakInfo, $woodType, 20));
 			self::register($idName("trapdoor"), fn(BID $id) => new WoodenTrapdoor($id, $name . " Trapdoor", $woodenDoorBreakInfo, $woodType));
 
-			self::registerDelayed($idName("sign"), fn(string $idName) : FloorSign => new FloorSign(self::makeBID($idName, TileSign::class), $name . " Sign", $signBreakInfo, $woodType, self::getSignItemCallback($woodType)));
-			self::registerDelayed($idName("wall_sign"), fn(string $idName) : WallSign => new WallSign(self::makeBID($idName, TileSign::class), $name . " Wall Sign", $signBreakInfo, $woodType, self::getSignItemCallback($woodType)));
+			$signAsItem = fn() => VanillaItems::SIGN($woodType);
+			self::registerDelayed($idName("sign"), fn(string $idName) : FloorSign => new FloorSign(self::makeBID($idName, TileSign::class), $name . " Sign", $signBreakInfo, $woodType, $signAsItem));
+			self::registerDelayed($idName("wall_sign"), fn(string $idName) : WallSign => new WallSign(self::makeBID($idName, TileSign::class), $name . " Wall Sign", $signBreakInfo, $woodType, $signAsItem));
 
-			self::registerDelayed($idName("ceiling_center_hanging_sign"), fn(string $idName) : CeilingCenterHangingSign => new CeilingCenterHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
-			self::registerDelayed($idName("ceiling_edges_hanging_sign"), fn(string $idName) : CeilingEdgesHangingSign => new CeilingEdgesHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
-			self::registerDelayed($idName("wall_hanging_sign"), fn(string $idName) : WallHangingSign => new WallHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, self::getHangingSignItemCallback($woodType)));
+			$hangingSignAsItem = fn() => VanillaItems::HANGING_SIGN($woodType);
+			self::registerDelayed($idName("ceiling_center_hanging_sign"), fn(string $idName) : CeilingCenterHangingSign => new CeilingCenterHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Center Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem));
+			self::registerDelayed($idName("ceiling_edges_hanging_sign"), fn(string $idName) : CeilingEdgesHangingSign => new CeilingEdgesHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Edges Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem));
+			self::registerDelayed($idName("wall_hanging_sign"), fn(string $idName) : WallHangingSign => new WallHangingSign(self::makeBID($idName, TileHangingSign::class), $name . " Wall Hanging Sign", $hangingSignBreakInfo, $woodType, $hangingSignAsItem));
+		}
+
+		foreach(Utils::stringifyKeys($overloads) as $overloadName => $cases){
+			if(count($cases) !== count(WoodType::cases())){
+				continue;
+			}
+			$typeOverloads = $overloads[$overloadName];
+			if($overloadName !== "log" && $overloadName !== "wood"){
+				$overloadName = "wooden_" . $overloadName;
+			}
+			self::registerOverloaded($overloadName, WoodType::class, fn(WoodType $t) => $typeOverloads[$t->name]);
 		}
 
 		$mosaicBreakInfo = new Info(BreakInfo::axe(2.0, null, 15.0), [Tags::BAMBOO_MOSAIC]);
