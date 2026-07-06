@@ -147,6 +147,7 @@ use pocketmine\YmlServerProperties;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function array_filter;
+use function array_key_first;
 use function array_shift;
 use function assert;
 use function count;
@@ -189,6 +190,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+	private const MAX_PENDING_FORMS = 30;
 
 	public const DEFAULT_FLIGHT_SPEED_MULTIPLIER = 0.05;
 
@@ -2285,6 +2287,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * @throws \InvalidArgumentException
 	 */
 	public function sendForm(Form $form) : void{
+		if(count($this->forms) >= self::MAX_PENDING_FORMS){
+			$this->logger->debug("Exceeded pending forms limit, removing oldest form");
+			unset($this->forms[array_key_first($this->forms)]);
+		}
 		$id = $this->formIdCounter++;
 		if($this->getNetworkSession()->onFormSent($id, $form)){
 			$this->forms[$id] = $form;
@@ -2321,6 +2327,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	 * Closes the current viewing form and forms in queue.
 	 */
 	public function closeAllForms() : void{
+		$this->forms = [];
 		$this->getNetworkSession()->onCloseAllForms();
 	}
 
@@ -2465,6 +2472,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->spawnPosition = null;
 		$this->deathPosition = null;
 		$this->blockBreakHandler = null;
+		$this->forms = [];
 		parent::destroyCycles();
 	}
 
