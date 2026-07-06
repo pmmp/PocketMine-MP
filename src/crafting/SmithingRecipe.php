@@ -21,21 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\crafting;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+use pocketmine\item\Item;
 
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
+interface SmithingRecipe{
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
+	public function getInput() : RecipeIngredient;
 
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(3);
-	}
+	public function getAddition() : RecipeIngredient;
+
+	public function getTemplate() : RecipeIngredient;
+
+	/**
+	 * @param Item[] $inputs
+	 */
+	public function getResultFor(array $inputs) : ?Item;
 }

@@ -21,21 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\item;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
+class ArmorTrimMaterial{
+	use NotCloneable;
+	use NotSerializable;
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
+	private Item $item;
 
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(3);
+	/**
+	 * @param string $color Minecraft color code.
+	 */
+	public function __construct(
+		Item $item,
+		private readonly string $color
+	){
+		$this->item = clone $item;
+	}
+
+	public function getItem() : Item{
+		return clone $this->item;
+	}
+
+	/**
+	 * Returns the Minecraft color code.
+	 */
+	public function getColor() : string{
+		return $this->color;
 	}
 }

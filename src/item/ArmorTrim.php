@@ -21,21 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\item;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+class ArmorTrim{
 
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
+	public function __construct(
+		private readonly ArmorTrimMaterial $material,
+		private readonly ArmorTrimPattern $pattern
+	){}
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
+	public function getMaterial() : ArmorTrimMaterial{
+		return $this->material;
+	}
 
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(3);
+	public function getPattern() : ArmorTrimPattern{
+		return $this->pattern;
 	}
 }

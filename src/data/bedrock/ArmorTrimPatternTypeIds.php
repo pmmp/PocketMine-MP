@@ -21,21 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
-
-final class SmithingTableInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INPUT = 0;
-	public const SLOT_ADDITION = 1;
-	public const SLOT_TEMPLATE = 2;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(3);
-	}
+final class ArmorTrimPatternTypeIds{
+	public const COAST = "coast";
+	public const DUNE = "dune";
+	public const EYE = "eye";
+	public const HOST = "host";
+	public const RAISER = "raiser";
+	public const RIB = "rib";
+	public const SENTRY = "sentry";
+	public const SHAPER = "shaper";
+	public const SILENCE = "silence";
+	public const SNOUT = "snout";
+	public const SPIRE = "spire";
+	public const TIDE = "tide";
+	public const VEX = "vex";
+	public const WARD = "ward";
+	public const WAYFINDER = "wayfinder";
+	public const WILD = "wild";
 }
