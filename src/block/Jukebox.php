@@ -84,9 +84,9 @@ class Jukebox extends Opaque{
 		$this->position->getWorld()->addSound($this->position, new RecordStopSound());
 	}
 
-	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
-		$this->stopSound();
-		return parent::onBreak($item, $player, $returnedItems);
+	public function onDestroy() : void{
+		$this->ejectRecord();
+		parent::onDestroy();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
