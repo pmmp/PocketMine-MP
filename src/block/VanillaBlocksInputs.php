@@ -70,9 +70,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\utils\RegistrySource;
 use pocketmine\world\generator\object\TreeType;
-use function is_int;
 use function mb_strtolower;
-use function mb_strtoupper;
 use function strtolower;
 
 /**
@@ -101,18 +99,7 @@ final class VanillaBlocksInputs extends RegistrySource{
 	 * @phpstan-param class-string<covariant Tile> $tileClass
 	 */
 	private static function makeBID(string $name, ?string $tileClass = null) : BID{
-		//this sketchy hack allows us to avoid manually writing the constants inline
-		//since type IDs are generated from this class anyway, I'm OK with this hack
-		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
-		$reflect = new \ReflectionClass(BlockTypeIds::class);
-		$typeId = $reflect->getConstant(mb_strtoupper($name));
-		if(!is_int($typeId)){
-			//this allows registering new stuff without adding new type ID constants
-			//this reduces the number of mandatory steps to test new features in local development
-			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
-			$typeId = BlockTypeIds::newId();
-		}
-		return new BID($typeId, $tileClass);
+		return new BID(BlockTypeIds::claimId(self::class . "::" . $name), $tileClass);
 	}
 
 	/**

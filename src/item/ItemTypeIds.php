@@ -23,6 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pmmp\thread\ThreadSafe;
+use pmmp\thread\ThreadSafeArray;
+use pocketmine\utils\ThreadSafeSingletonTrait;
+use pocketmine\utils\Utils;
+use function is_int;
+use function mb_strtolower;
+use function trigger_error;
+use const E_USER_DEPRECATED;
+
 /**
  * Every item in {@link VanillaItems} has a corresponding constant in this class. These constants can be used to
  * identify and compare item types efficiently using {@link Item::getTypeId()}.
@@ -30,11 +39,8 @@ namespace pocketmine\item;
  * WARNING: These are NOT a replacement for Minecraft legacy IDs. Do **NOT** hardcode their values, or store them in
  * configs or databases. They will change without warning.
  */
-final class ItemTypeIds{
-
-	private function __construct(){
-		//NOOP
-	}
+final class ItemTypeIds extends ThreadSafe{
+	use ThreadSafeSingletonTrait;
 
 	public const ACACIA_BOAT = 20000;
 	public const ACACIA_SIGN = 20001;
@@ -365,13 +371,71 @@ final class ItemTypeIds{
 
 	public const FIRST_UNUSED_ITEM_ID = 20326;
 
+	/**
+	 * @deprecated This preserves the old, flawed thread-local type ID assignment behaviour when a unique ID isn't
+	 * provided to newId(). To be removed in PM6.
+	 */
 	private static int $nextDynamicId = self::FIRST_UNUSED_ITEM_ID;
 
 	/**
-	 * Returns a new runtime item type ID, e.g. for use by a custom item.
+	 * @deprecated This function is not thread-safe. If items are registered in a different order on different threads,
+	 * their type IDs will conflict when moving data between threads.
 	 */
 	public static function newId() : int{
+		trigger_error("newId() is not thread-safe, use claimId() instead", E_USER_DEPRECATED);
 		return self::$nextDynamicId++;
+	}
+
+	private int $nextFreeId = 100_000;
+
+	/** @phpstan-var ThreadSafeArray<string, int> */
+	private ThreadSafeArray $dynamicIdLookup;
+	/** @phpstan-var ThreadSafeArray<int, string> */
+	private ThreadSafeArray $claimedIds;
+
+	private function __construct(){
+		$this->dynamicIdLookup = new ThreadSafeArray();
+		$this->claimedIds = new ThreadSafeArray();
+
+		foreach(Utils::stringifyKeys((new \ReflectionClass($this))->getConstants()) as $name => $value){
+			if($name === "FIRST_UNUSED_ITEM_ID" || !is_int($value)){
+				continue;
+			}
+			$uniqueId = VanillaItemsInputs::class . "::" . mb_strtolower($name, 'UTF-8');
+			$this->claimedIds[$value] = $uniqueId;
+			$this->dynamicIdLookup[$uniqueId] = $value;
+		}
+	}
+
+	private function fetchOrAssignId(string $uniqueId) : int{
+		return $this->synchronized(function() use ($uniqueId) : int{
+			$existing = $this->dynamicIdLookup[$uniqueId];
+			if($existing !== null){
+				return $existing;
+			}
+			$numericId = $this->nextFreeId++;
+			$this->claimedIds[$numericId] = $uniqueId;
+			return $this->dynamicIdLookup[$uniqueId] = $numericId;
+		});
+	}
+
+	/**
+	 * Returns a new runtime item type ID, e.g. for use by a custom item.
+	 *
+	 * @param string $uniqueId Any string unique to the item type to ensure it gets the same ID on all threads
+	 */
+	public static function claimId(string $uniqueId) : int{
+		return self::getInstance()->fetchOrAssignId($uniqueId);
+	}
+
+	/**
+	 * Returns the unique string ID used to claim the given type ID.
+	 */
+	public static function getClaimant(int $typeId) : ?string{
+		if($typeId >= self::FIRST_UNUSED_ITEM_ID && $typeId < self::$nextDynamicId){
+			return "deprecated:anonymous_thread_local";
+		}
+		return self::getInstance()->claimedIds[$typeId];
 	}
 
 	public static function fromBlockTypeId(int $blockTypeId) : int{

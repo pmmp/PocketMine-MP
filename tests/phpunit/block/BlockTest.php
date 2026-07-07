@@ -64,7 +64,7 @@ class BlockTest extends TestCase{
 	 * Test registering a new block which does not yet exist
 	 */
 	public function testRegisterNewBlock() : void{
-		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::newId()), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$b = new StrangeNewBlock(new BlockIdentifier(BlockTypeIds::claimId("pocketmine:strange_new_block")), "Strange New Block", new BlockTypeInfo(BlockBreakInfo::instant()));
 		$this->blockFactory->register($b);
 		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
@@ -75,6 +75,23 @@ class BlockTest extends TestCase{
 	public function testRegisterIdTooSmall() : void{
 		self::expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", new BlockTypeInfo(BlockBreakInfo::instant())));
+	}
+
+	/**
+	 * Verifies that block type IDs must be claimed before being given to a BlockIdentifier
+	 */
+	public function testRegisterUnclaimedId() : void{
+		self::expectException(\InvalidArgumentException::class);
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(200_000), "Out Of Bounds Block", new BlockTypeInfo(BlockBreakInfo::instant())));
+	}
+
+	/**
+	 * Test that deprecated BlockTypeIds::newId() works as expected
+	 */
+	public function testDeprecatedNewId() : void{
+		$b = new StrangeNewBlock(new BlockIdentifier(@BlockTypeIds::newId()), "Strange New Block 2", new BlockTypeInfo(BlockBreakInfo::instant()));
+		$this->blockFactory->register($b);
+		self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->fromStateId($b->getStateId()));
 	}
 
 	/**

@@ -37,8 +37,6 @@ use pocketmine\item\VanillaArmorMaterials as ArmorMaterials;
 use pocketmine\math\Vector3;
 use pocketmine\utils\RegistrySource;
 use pocketmine\world\World;
-use function is_int;
-use function mb_strtoupper;
 use function strtolower;
 
 /**
@@ -60,19 +58,7 @@ final class VanillaItemsInputs extends RegistrySource{
 	public function cloneResults() : bool{ return true; }
 
 	private static function makeIID(string $name) : IID{
-		//this sketchy hack allows us to avoid manually writing the constants inline
-		//since type IDs are generated from this class anyway, I'm OK with this hack
-		//nonetheless, we should try to get rid of it in a future major version (e.g by using string type IDs)
-		$reflect = new \ReflectionClass(ItemTypeIds::class);
-		$typeId = $reflect->getConstant(mb_strtoupper($name));
-		if(!is_int($typeId)){
-			//this allows registering new stuff without adding new type ID constants
-			//this reduces the number of mandatory steps to test new features in local development
-			\GlobalLogger::get()->error(self::class . ": No constant type ID found for $name, generating a new one");
-			$typeId = ItemTypeIds::newId();
-		}
-
-		return new IID($typeId);
+		return new IID(ItemTypeIds::claimId(self::class . "::" . $name));
 	}
 
 	/**

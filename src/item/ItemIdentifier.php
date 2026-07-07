@@ -24,11 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 
 class ItemIdentifier{
 	public function __construct(
 		private int $typeId
-	){}
+	){
+		$blockTypeId = ItemTypeIds::toBlockTypeId($this->typeId);
+		if($blockTypeId !== null){
+			if(BlockTypeIds::getClaimant($blockTypeId) === null){
+				throw new \InvalidArgumentException("Block type IDs must be claimed using BlockTypeIds::claimId()");
+			}
+		}elseif(ItemTypeIds::getClaimant($typeId) === null){
+			throw new \InvalidArgumentException("Type IDs must be claimed using ItemTypeIds::claimId()");
+		}
+	}
 
 	public static function fromBlock(Block $block) : self{
 		//TODO: maybe an ItemBlockIdentifier is in order?

@@ -28,14 +28,17 @@ use pocketmine\utils\Utils;
 
 class BlockIdentifier{
 	/**
+	 * TODO: in the future it would be simpler to just accept the unique identifier directly here, instead of requiring
+	 * the caller to call BlockTypeIds::claimId()
+	 *
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
 	public function __construct(
 		private int $blockTypeId,
 		private ?string $tileClass = null
 	){
-		if($blockTypeId < 0){
-			throw new \InvalidArgumentException("Block type ID may not be negative");
+		if(BlockTypeIds::getClaimant($blockTypeId) === null){
+			throw new \InvalidArgumentException("Type IDs must be claimed using BlockTypeIds::claimId()");
 		}
 		if($tileClass !== null){
 			Utils::testValidInstance($tileClass, Tile::class);
