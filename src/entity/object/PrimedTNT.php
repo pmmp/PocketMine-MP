@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
@@ -120,8 +121,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new EntityPreExplodeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
-			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this, $ev->getFireChance());
+			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getRadius(), $this, $ev->getFireChance(), $this->worksUnderwater ? [BlockTypeIds::WATER] : []);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
 			}
