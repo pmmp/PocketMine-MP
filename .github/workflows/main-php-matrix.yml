@@ -27,7 +27,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@3.2.0
@@ -37,7 +37,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/composer/files
@@ -59,7 +59,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@3.2.0
@@ -69,7 +69,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/composer/files
@@ -91,7 +91,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: true
 
@@ -103,7 +103,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/composer/files
@@ -125,7 +125,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@3.2.0
@@ -135,7 +135,7 @@ jobs:
           pm-version-major: ${{ inputs.pm-version-major }}
 
       - name: Restore Composer package cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cache/composer/files
