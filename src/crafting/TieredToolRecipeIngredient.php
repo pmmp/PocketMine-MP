@@ -21,29 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\crafting;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\Item;
-use pocketmine\world\Position;
+use pocketmine\item\TieredTool;
+use pocketmine\item\ToolTier;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+class TieredToolRecipeIngredient implements RecipeIngredient{
+	public function __construct(
+		private ToolTier $tier
+	){
 	}
 
-	public function getInput() : Item {
-		return $this->getItem(self::SLOT_INPUT);
+	public function getTier() : ToolTier{ return $this->tier; }
+
+	public function accepts(Item $item) : bool{
+		if($item->getCount() < 1){
+			return false;
+		}
+
+		return $item instanceof TieredTool && $item->getTier() === $this->tier;
 	}
 
-	public function getMaterial() : Item {
-		return $this->getItem(self::SLOT_MATERIAL);
+	public function __toString() : string{
+		return "TieredToolRecipeIngredient(" . $this->tier->name . ")";
 	}
 }

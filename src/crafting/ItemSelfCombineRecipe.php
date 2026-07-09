@@ -21,29 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\crafting;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
 use pocketmine\item\Item;
-use pocketmine\world\Position;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+/**
+ * Represent a recipe that repair an item with a material in an anvil.
+ */
+class ItemSelfCombineRecipe extends ItemCombineRecipe{
+	/**
+	 * @param RecipeIngredient $target The item that will be concerned by the combinaison.
+	 *                                 The input and material have to be accepted by this ingredient to be able to combine them.
+	 */
+	public function __construct(
+		private RecipeIngredient $target
+	){
 	}
 
-	public function getInput() : Item {
-		return $this->getItem(self::SLOT_INPUT);
-	}
-
-	public function getMaterial() : Item {
-		return $this->getItem(self::SLOT_MATERIAL);
+	protected function validate(Item $input, Item $material) : bool{
+		return $this->target->accepts($input) && $this->target->accepts($material);
 	}
 }

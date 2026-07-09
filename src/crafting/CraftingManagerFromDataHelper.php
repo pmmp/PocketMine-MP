@@ -185,6 +185,7 @@ final class CraftingManagerFromDataHelper{
 
 	/**
 	 * @param mixed[] $data
+	 *
 	 * @return object[]
 	 *
 	 * @phpstan-template TRecipeData of object
@@ -324,6 +325,8 @@ final class CraftingManagerFromDataHelper{
 				$outputId
 			));
 		}
+
+		$result = AnvilCraftingManagerDataFiller::fillData($result);
 
 		//TODO: smithing
 
