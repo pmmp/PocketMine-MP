@@ -48,10 +48,12 @@ final class VanillaEnchantments{
 	private static Enchantment $_mINFINITY;
 	private static KnockbackEnchantment $_mKNOCKBACK;
 	private static Enchantment $_mMENDING;
+	private static Enchantment $_mMULTISHOT;
 	private static Enchantment $_mPOWER;
 	private static ProtectionEnchantment $_mPROJECTILE_PROTECTION;
 	private static ProtectionEnchantment $_mPROTECTION;
 	private static Enchantment $_mPUNCH;
+	private static Enchantment $_mQUICK_CHARGE;
 	private static Enchantment $_mRESPIRATION;
 	private static SharpnessEnchantment $_mSHARPNESS;
 	private static Enchantment $_mSILK_TOUCH;
@@ -105,10 +107,12 @@ final class VanillaEnchantments{
 			"INFINITY" => fn(Enchantment $v) => self::$_mINFINITY = $v,
 			"KNOCKBACK" => fn(KnockbackEnchantment $v) => self::$_mKNOCKBACK = $v,
 			"MENDING" => fn(Enchantment $v) => self::$_mMENDING = $v,
+			"MULTISHOT" => fn(Enchantment $v) => self::$_mMULTISHOT = $v,
 			"POWER" => fn(Enchantment $v) => self::$_mPOWER = $v,
 			"PROJECTILE_PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mPROJECTILE_PROTECTION = $v,
 			"PROTECTION" => fn(ProtectionEnchantment $v) => self::$_mPROTECTION = $v,
 			"PUNCH" => fn(Enchantment $v) => self::$_mPUNCH = $v,
+			"QUICK_CHARGE" => fn(Enchantment $v) => self::$_mQUICK_CHARGE = $v,
 			"RESPIRATION" => fn(Enchantment $v) => self::$_mRESPIRATION = $v,
 			"SHARPNESS" => fn(SharpnessEnchantment $v) => self::$_mSHARPNESS = $v,
 			"SILK_TOUCH" => fn(Enchantment $v) => self::$_mSILK_TOUCH = $v,
@@ -214,6 +218,11 @@ final class VanillaEnchantments{
 		return self::$_mMENDING;
 	}
 
+	public static function MULTISHOT() : Enchantment{
+		if(!isset(self::$_mMULTISHOT)){ self::init(); }
+		return self::$_mMULTISHOT;
+	}
+
 	public static function POWER() : Enchantment{
 		if(!isset(self::$_mPOWER)){ self::init(); }
 		return self::$_mPOWER;
@@ -232,6 +241,11 @@ final class VanillaEnchantments{
 	public static function PUNCH() : Enchantment{
 		if(!isset(self::$_mPUNCH)){ self::init(); }
 		return self::$_mPUNCH;
+	}
+
+	public static function QUICK_CHARGE() : Enchantment{
+		if(!isset(self::$_mQUICK_CHARGE)){ self::init(); }
+		return self::$_mQUICK_CHARGE;
 	}
 
 	public static function RESPIRATION() : Enchantment{

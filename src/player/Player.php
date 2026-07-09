@@ -1555,6 +1555,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 				$this->fireTicks = 1;
 			}
 
+			$item = $this->getInventory()->getItemInHand();
+			if($item instanceof Releasable && $this->isUsingItem()){
+				$oldItem = clone $item;
+				if($item->continueUsing($this, $this->getItemUseDuration())){
+					$this->getNetworkSession()->onChargeItemComplete();
+				}
+				$this->returnItemsFromAction($oldItem, $item, []);
+			}
+
 			if(!$this->isSpectator() && $this->isAlive()){
 				Timings::$playerCheckNearEntities->startTiming();
 				$this->checkNearEntities();
@@ -1740,7 +1749,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$this->resetItemCooldown($oldItem);
 		$this->returnItemsFromAction($oldItem, $item, $returnedItems);
 
-		$this->setUsingItem($item instanceof Releasable && $item->canStartUsingItem($this));
+		$this->setUsingItem(
+			$item instanceof Releasable &&
+			($result === ItemUseResult::NONE && $item->canStartUsingItem($this))
+		);
 
 		return true;
 	}
