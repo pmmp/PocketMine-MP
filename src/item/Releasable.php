@@ -41,4 +41,8 @@ interface Releasable{
 	 */
 	public function canStartUsingItem(Player $player) : bool;
 
+	/**
+	 * Returns the minimum use time in ticks
+	 */
+	public function getMinUseDuration() : int;
 }

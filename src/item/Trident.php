@@ -43,9 +43,6 @@ class Trident extends Tool implements Releasable{
 		$location = $player->getLocation();
 
 		$diff = $player->getItemUseDuration();
-		if($diff < 14){
-			return ItemUseResult::FAIL;
-		}
 
 		$item = $this->pop();
 		if($player->hasFiniteResources()){
@@ -95,5 +92,9 @@ class Trident extends Tool implements Releasable{
 			return $this->applyDamage(2);
 		}
 		return false;
+	}
+
+	public function getMinUseDuration() : int{
+		return 14;
 	}
 }

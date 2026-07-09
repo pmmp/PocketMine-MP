@@ -68,4 +68,8 @@ class GoatHorn extends Item implements Releasable{
 
 		return ItemUseResult::SUCCESS;
 	}
+
+	public function getMinUseDuration() : int{
+		return 0;
+	}
 }

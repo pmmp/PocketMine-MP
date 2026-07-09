@@ -32,4 +32,8 @@ class DriedKelp extends Food{
 	public function getSaturationRestore() : float{
 		return 0.6;
 	}
+
+	public function getMinUseDuration() : int{
+		return 16;
+	}
 }
