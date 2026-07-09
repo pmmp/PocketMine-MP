@@ -145,5 +145,35 @@ abstract class DefaultPermissions{
 		] as $permission){
 			self::registerNoArgsDesc($permission, [$everyoneRoot]);
 		}
+
+		self::registerNoArgsDesc(Names::GAME_CHAT, [$everyoneRoot]);;
+		self::registerNoArgsDesc(Names::GAME_EMOTE, [$everyoneRoot]);;
+
+		$survivalRoot = self::registerNoArgsDesc(Names::GROUP_GAMEMODE_SURVIVAL, []);;
+		$creativeRoot = self::registerNoArgsDesc(Names::GROUP_GAMEMODE_CREATIVE, []);;
+		$adventureRoot = self::registerNoArgsDesc(Names::GROUP_GAMEMODE_ADVENTURE, []);;
+		$spectatorRoot = self::registerNoArgsDesc(Names::GROUP_GAMEMODE_SPECTATOR, []);;
+
+		self::registerNoArgsDesc(Names::GAME_ATTACK_ENTITY, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_ATTACK_PLAYER, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_BLOCK_MINE, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_BLOCK_PLACE, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_INVENTORY_DROP, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_INVENTORY_PICKUP, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_USE_BLOCK, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_USE_ENTITY, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+		self::registerNoArgsDesc(Names::GAME_USE_ITEM, [$survivalRoot, $creativeRoot, $adventureRoot]);;
+
+		//TODO: maybe we should add deny inherits for the adventure group for these, instead of just granting them to the survival and creative groups
+		//we'll end up needing to add these to new game modes if they are added
+		self::registerNoArgsDesc(Names::GAME_ITEM_BYPASS_CANDESTROY, [$survivalRoot, $creativeRoot]);;
+		self::registerNoArgsDesc(Names::GAME_ITEM_BYPASS_CANPLACEON, [$survivalRoot, $creativeRoot]);;
+
+		self::registerNoArgsDesc(Names::GAME_BLOCK_INSTABREAK, [$creativeRoot]);;
+		self::registerNoArgsDesc(Names::GAME_INVENTORY_CREATIVE, [$creativeRoot]);;
+		self::registerNoArgsDesc(Names::GAME_MOVE_FLIGHT, [$creativeRoot]);;
+
+		self::registerNoArgsDesc(Names::GAME_MOVE_NOCLIP_BLOCK, [$spectatorRoot]);;
+		self::registerNoArgsDesc(Names::GAME_MOVE_NOCLIP_ENTITY, [$spectatorRoot]);;
 	}
 }

@@ -39,6 +39,7 @@ use pocketmine\network\mcpe\NetworkBroadcastUtils;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\timings\Timings;
 use function max;
@@ -328,7 +329,7 @@ class ItemEntity extends Entity{
 		};
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() && $playerInventory === null){
+		if(($player->hasFiniteResources() && $playerInventory === null) || !$player->hasPermission(DefaultPermissionNames::GAME_INVENTORY_PICKUP)){
 			$ev->cancel();
 		}
 

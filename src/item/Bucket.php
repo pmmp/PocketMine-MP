@@ -29,6 +29,7 @@ use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
 use pocketmine\math\Vector3;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 class Bucket extends Item{
@@ -53,6 +54,10 @@ class Bucket extends Item{
 			}
 
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
+			//this looks weird, but vanilla also checks place permissions for this action
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE)){
+				$ev->cancel();
+			}
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$player->getWorld()->setBlock($blockClicked->getPosition(), VanillaBlocks::AIR());

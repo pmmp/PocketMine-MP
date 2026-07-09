@@ -75,6 +75,7 @@ use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
@@ -2160,13 +2161,13 @@ class World implements ChunkManager{
 		}
 
 		if($player !== null){
-			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
+			$ev = new BlockBreakEvent($player, $target, $item, $player->hasPermission(DefaultPermissionNames::GAME_BLOCK_INSTABREAK), $drops, $xpDrop);
 
-			if($target instanceof Air || ($player->isSurvival() && !$target->getBreakInfo()->isBreakable()) || $player->isSpectator()){
+			if($target instanceof Air || (!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_INSTABREAK) && !$target->getBreakInfo()->isBreakable()) || !$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_MINE)){
 				$ev->cancel();
 			}
 
-			if($player->isAdventure(true) && !$ev->isCancelled()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_ITEM_BYPASS_CANDESTROY) && !$ev->isCancelled()){
 				$canBreak = false;
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanDestroy() as $v){
@@ -2273,7 +2274,7 @@ class World implements ChunkManager{
 				$ev->setUseItem(false);
 				$ev->setUseBlock($item->isNull()); //opening doors is still possible when sneaking if using an empty hand
 			}
-			if($player->isSpectator()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_USE_BLOCK)){
 				$ev->cancel(); //set it to cancelled so plugins can bypass this
 			}
 
@@ -2322,11 +2323,11 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $tx, $blockClicked, $item);
-			if($player->isSpectator()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE)){
 				$ev->cancel();
 			}
 
-			if($player->isAdventure(true) && !$ev->isCancelled()){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_ITEM_BYPASS_CANPLACEON) && !$ev->isCancelled()){
 				$canPlace = false;
 				$itemParser = LegacyStringToItemParser::getInstance();
 				foreach($item->getCanPlaceOn() as $v){

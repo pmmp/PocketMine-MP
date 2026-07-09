@@ -2545,8 +2545,96 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_COMMAND_XP_SELF, []);
 	}
 
+	public static function pocketmine_permission_game_attack_entity() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_ATTACK_ENTITY, []);
+	}
+
+	public static function pocketmine_permission_game_attack_player() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_ATTACK_PLAYER, []);
+	}
+
+	public static function pocketmine_permission_game_block_instabreak() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_BLOCK_INSTABREAK, []);
+	}
+
+	public static function pocketmine_permission_game_block_mine() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_BLOCK_MINE, []);
+	}
+
+	public static function pocketmine_permission_game_block_place() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_BLOCK_PLACE, []);
+	}
+
+	public static function pocketmine_permission_game_chat() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_CHAT, []);
+	}
+
+	public static function pocketmine_permission_game_emote() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_EMOTE, []);
+	}
+
+	public static function pocketmine_permission_game_inventory_creative() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_INVENTORY_CREATIVE, []);
+	}
+
+	public static function pocketmine_permission_game_inventory_drop() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_INVENTORY_DROP, []);
+	}
+
+	public static function pocketmine_permission_game_inventory_pickup() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_INVENTORY_PICKUP, []);
+	}
+
+	public static function pocketmine_permission_game_item_bypass_candestroy() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_ITEM_BYPASS_CANDESTROY, []);
+	}
+
+	public static function pocketmine_permission_game_item_bypass_canplaceon() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_ITEM_BYPASS_CANPLACEON, []);
+	}
+
+	public static function pocketmine_permission_game_move_flight() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_MOVE_FLIGHT, []);
+	}
+
+	public static function pocketmine_permission_game_move_noclip_block() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_MOVE_NOCLIP_BLOCK, []);
+	}
+
+	public static function pocketmine_permission_game_move_noclip_entity() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_MOVE_NOCLIP_ENTITY, []);
+	}
+
+	public static function pocketmine_permission_game_use_block() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_USE_BLOCK, []);
+	}
+
+	public static function pocketmine_permission_game_use_entity() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_USE_ENTITY, []);
+	}
+
+	public static function pocketmine_permission_game_use_item() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GAME_USE_ITEM, []);
+	}
+
 	public static function pocketmine_permission_group_console() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_CONSOLE, []);
+	}
+
+	public static function pocketmine_permission_group_gamemode_adventure() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_GAMEMODE_ADVENTURE, []);
+	}
+
+	public static function pocketmine_permission_group_gamemode_creative() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_GAMEMODE_CREATIVE, []);
+	}
+
+	public static function pocketmine_permission_group_gamemode_spectator() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_GAMEMODE_SPECTATOR, []);
+	}
+
+	public static function pocketmine_permission_group_gamemode_survival() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PERMISSION_GROUP_GAMEMODE_SURVIVAL, []);
 	}
 
 	public static function pocketmine_permission_group_operator() : Translatable{

@@ -28,6 +28,7 @@ use pocketmine\block\Lava;
 use pocketmine\block\Liquid;
 use pocketmine\event\player\PlayerBucketEmptyEvent;
 use pocketmine\math\Vector3;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
@@ -63,6 +64,9 @@ class LiquidBucket extends Item{
 		$resultBlock = clone $this->liquid;
 
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
+		if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE)){
+			$ev->cancel();
+		}
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());

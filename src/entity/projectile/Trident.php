@@ -90,7 +90,7 @@ class Trident extends Projectile{
 
 	protected function onFirstUpdate(int $currentTick) : void{
 		$owner = $this->getOwningEntity();
-		$this->spawnedInCreative = $owner instanceof Player && $owner->isCreative();
+		$this->spawnedInCreative = $owner instanceof Player && !$owner->hasFiniteResources();
 
 		parent::onFirstUpdate($currentTick);
 	}

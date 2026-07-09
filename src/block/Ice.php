@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockEventHelper;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 class Ice extends Transparent{
@@ -39,7 +40,8 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, ?Player $player = null, array &$returnedItems = []) : bool{
-		if(($player === null || $player->isSurvival()) && !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
+		//TODO: we should probably pass instaBreak in here, since events can override it
+		if(($player === null || !$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_INSTABREAK)) && !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::WATER());
 			return true;
 		}

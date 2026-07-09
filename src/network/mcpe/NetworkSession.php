@@ -1121,16 +1121,16 @@ class NetworkSession{
 			AbilitiesLayer::ABILITY_OPERATOR => $isOp,
 			AbilitiesLayer::ABILITY_TELEPORT => $for->hasPermission(DefaultPermissionNames::COMMAND_TELEPORT_SELF),
 			AbilitiesLayer::ABILITY_INVULNERABLE => $for->isCreative(),
-			AbilitiesLayer::ABILITY_MUTED => false,
+			AbilitiesLayer::ABILITY_MUTED => !$for->hasPermission(DefaultPermissionNames::GAME_CHAT),
 			AbilitiesLayer::ABILITY_WORLD_BUILDER => false,
 			AbilitiesLayer::ABILITY_INFINITE_RESOURCES => !$for->hasFiniteResources(),
 			AbilitiesLayer::ABILITY_LIGHTNING => false,
-			AbilitiesLayer::ABILITY_BUILD => !$for->isSpectator(),
-			AbilitiesLayer::ABILITY_MINE => !$for->isSpectator(),
-			AbilitiesLayer::ABILITY_DOORS_AND_SWITCHES => !$for->isSpectator(),
-			AbilitiesLayer::ABILITY_OPEN_CONTAINERS => !$for->isSpectator(),
-			AbilitiesLayer::ABILITY_ATTACK_PLAYERS => !$for->isSpectator(),
-			AbilitiesLayer::ABILITY_ATTACK_MOBS => !$for->isSpectator(),
+			AbilitiesLayer::ABILITY_BUILD => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE),
+			AbilitiesLayer::ABILITY_MINE => $for->hasPermission(DefaultPermissionNames::GAME_BLOCK_MINE),
+			AbilitiesLayer::ABILITY_DOORS_AND_SWITCHES => $for->hasPermission(DefaultPermissionNames::GAME_USE_BLOCK),
+			AbilitiesLayer::ABILITY_OPEN_CONTAINERS => $for->hasPermission(DefaultPermissionNames::GAME_USE_BLOCK) || $for->hasPermission(DefaultPermissionNames::GAME_USE_ENTITY), //not perfect, but this is a pain to implement right now
+			AbilitiesLayer::ABILITY_ATTACK_PLAYERS => $for->hasPermission(DefaultPermissionNames::GAME_ATTACK_PLAYER),
+			AbilitiesLayer::ABILITY_ATTACK_MOBS => $for->hasPermission(DefaultPermissionNames::GAME_ATTACK_ENTITY),
 			AbilitiesLayer::ABILITY_PRIVILEGED_BUILDER => false,
 		];
 

@@ -29,6 +29,7 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\sound\BowShootSound;
 use function intdiv;
@@ -85,7 +86,7 @@ class Bow extends Tool implements Releasable{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 || $diff < 5 || $player->isSpectator()){
+		if($baseForce < 0.1 || $diff < 5 || !$player->hasPermission(DefaultPermissionNames::GAME_USE_ITEM)){
 			$ev->cancel();
 		}
 

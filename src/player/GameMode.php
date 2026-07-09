@@ -25,6 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\LegacyEnumShimTrait;
 use function mb_strtolower;
 use function spl_object_id;
@@ -38,7 +39,7 @@ use function spl_object_id;
  * @method static GameMode SPECTATOR()
  * @method static GameMode SURVIVAL()
  *
- * @phpstan-type TMetadata array{0: string, 1: Translatable, 2: list<string>}
+ * @phpstan-type TMetadata array{0: string, 1: Translatable, 2: string, 3: list<string>}
  */
 enum GameMode{
 	use LegacyEnumShimTrait;
@@ -75,10 +76,10 @@ enum GameMode{
 		static $cache = [];
 
 		return $cache[spl_object_id($this)] ??= match($this){
-			self::SURVIVAL => ["Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]],
-			self::CREATIVE => ["Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]],
-			self::ADVENTURE => ["Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]],
-			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"]]
+			self::SURVIVAL => ["Survival", KnownTranslationFactory::gameMode_survival(), DefaultPermissionNames::GROUP_GAMEMODE_SURVIVAL, ["survival", "s", "0"]],
+			self::CREATIVE => ["Creative", KnownTranslationFactory::gameMode_creative(), DefaultPermissionNames::GROUP_GAMEMODE_CREATIVE, ["creative", "c", "1"]],
+			self::ADVENTURE => ["Adventure", KnownTranslationFactory::gameMode_adventure(), DefaultPermissionNames::GROUP_GAMEMODE_ADVENTURE, ["adventure", "a", "2"]],
+			self::SPECTATOR => ["Spectator", KnownTranslationFactory::gameMode_spectator(), DefaultPermissionNames::GROUP_GAMEMODE_SPECTATOR, ["spectator", "v", "view", "3"]]
 		};
 	}
 
@@ -90,11 +91,15 @@ enum GameMode{
 		return $this->getMetadata()[1];
 	}
 
+	public function getPermissionGroupName() : string{
+		return $this->getMetadata()[2];
+	}
+
 	/**
 	 * @return string[]
 	 */
 	public function getAliases() : array{
-		return $this->getMetadata()[2];
+		return $this->getMetadata()[3];
 	}
 
 	//TODO: ability sets per gamemode

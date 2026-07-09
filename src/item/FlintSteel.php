@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\math\Vector3;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\sound\FlintSteelSound;
 
@@ -34,6 +35,9 @@ class FlintSteel extends Tool{
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, array &$returnedItems) : ItemUseResult{
 		if($blockReplace->getTypeId() === BlockTypeIds::AIR){
+			if(!$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_PLACE)){
+				return ItemUseResult::FAIL;
+			}
 			$world = $player->getWorld();
 			$world->setBlock($blockReplace->getPosition(), VanillaBlocks::FIRE());
 			$world->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), new FlintSteelSound());

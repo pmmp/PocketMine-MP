@@ -29,7 +29,7 @@ use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockTeleportEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
-use pocketmine\player\GameMode;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DragonEggTeleportParticle;
 use pocketmine\world\World;
@@ -50,7 +50,7 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($player !== null && $player->getGamemode() !== GameMode::CREATIVE){
+		if($player !== null && !$player->hasPermission(DefaultPermissionNames::GAME_BLOCK_INSTABREAK)){
 			$this->teleport();
 			return true;
 		}

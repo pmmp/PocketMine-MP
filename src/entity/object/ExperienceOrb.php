@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function max;
 use function sqrt;
@@ -194,7 +195,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human && !($newTarget instanceof Player && $newTarget->isSpectator()) && $newTarget->getXpManager()->canAttractXpOrbs()){
+				if($newTarget instanceof Human && !($newTarget instanceof Player && !$newTarget->hasPermission(DefaultPermissionNames::GAME_INVENTORY_PICKUP)) && $newTarget->getXpManager()->canAttractXpOrbs()){
 					$currentTarget = $newTarget;
 				}
 			}
