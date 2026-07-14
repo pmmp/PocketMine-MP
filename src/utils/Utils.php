@@ -685,4 +685,43 @@ final class Utils{
 	public static function getRandomFloat() : float{
 		return mt_rand() / mt_getrandmax();
 	}
+
+	/*
+	 * Compares two arrays to determine whether they contain equivalent elements,
+	 * regardless of their order.
+	 *
+	 * Two elements are considered equal if the provided `$check` callback returns `true`.
+	 * Each element in `$tab1` must match exactly one unique element in `$tab2`, and vice versa.
+	 * Duplicates are taken into account: two identical elements must each have a match in the other array.
+	 *
+	 * @template T
+	 *
+	 * @phpstan-param T[] $tab1 The first array to compare.
+	 * @phpstan-param T[] $tab2 The second array to compare.
+	 * @phpstan-param \Closure(T, T): bool $check A custom equality function to compare two elements.
+	 */
+	public static function areUnorderedArraysEqual(array $tab1, array $tab2, \Closure $check) : bool {
+		if(count($tab1) !== count($tab2)){
+			return false;
+		}
+
+		//  Check that the two lists of results are identical, regardless of the order.
+		$used = [];
+		foreach($tab1 as $element1){
+			$found = false;
+			foreach($tab2 as $i => $element2){
+				if(!isset($used[$i]) && $check($element1, $element2)){
+					$used[$i] = $element2;
+					$found = true;
+					break;
+				}
+			}
+
+			if(!$found){
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

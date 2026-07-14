@@ -28,4 +28,9 @@ use pocketmine\item\Item;
 interface RecipeIngredient extends \Stringable{
 
 	public function accepts(Item $item) : bool;
+
+	/**
+	 * Check if the given ingredient is equivalent to this one.
+	 */
+	public function isEquivalent(RecipeIngredient $other) : bool;
 }

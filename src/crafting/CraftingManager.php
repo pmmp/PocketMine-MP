@@ -31,6 +31,7 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
 use function array_shift;
+use function array_search;
 use function count;
 use function implode;
 use function ksort;
@@ -84,16 +85,27 @@ class CraftingManager{
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private ObjectSet $recipeUnregisteredCallbacks;
+
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
+		$this->recipeUnregisteredCallbacks = new ObjectSet();
+
 		foreach(FurnaceType::cases() as $furnaceType){
 			$this->furnaceRecipeManagers[spl_object_id($furnaceType)] = new FurnaceRecipeManager();
 		}
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
+		$recipeUnregisteredCallbacks = $this->recipeUnregisteredCallbacks;
 		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
 			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
 				foreach($recipeRegisteredCallbacks as $callback){
+					$callback();
+				}
+			});
+			$furnaceRecipeManager->getRecipeUnregisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeUnregisteredCallbacks) : void{
+				foreach($recipeUnregisteredCallbacks as $callback){
 					$callback();
 				}
 			});
@@ -102,6 +114,9 @@ class CraftingManager{
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
 	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
+
+	/** @phpstan-return ObjectSet<\Closure() : void> */
+	public function getRecipeUnregisteredCallbacks() : ObjectSet{ return $this->recipeUnregisteredCallbacks; }
 
 	private static function hashOutput(Item $output) : string{
 		$write = new ByteBufferWriter();
@@ -188,12 +203,69 @@ class CraftingManager{
 		}
 	}
 
+	public function unregisterShapedRecipe(ShapedRecipe $recipe) : void{
+		$changed = false;
+		$hash = self::hashOutputs($recipe->getResults());
+
+		foreach($this->shapedRecipes[$hash] ?? [] as $i => $r){
+			if($r === $recipe){
+				array_splice($this->shapedRecipes[$hash], $i, 1);
+				if(count($this->shapedRecipes[$hash]) === 0){
+					unset($this->shapedRecipes[$hash]);
+					$changed = true;
+				}
+				break;
+			}
+		}
+
+		$index = array_search($recipe, $this->craftingRecipeIndex, true);
+		if($index !== false){
+			unset($this->craftingRecipeIndex[$index]);
+			$changed = true;
+		}
+
+		if($changed){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
+				$callback();
+			}
+		}
+	}
+
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 		$this->craftingRecipeIndex[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
+		}
+	}
+
+	public function unregisterShapelessRecipe(ShapelessRecipe $recipe) : void{
+		$changed = false;
+		$hash = self::hashOutputs($recipe->getResults());
+
+		foreach($this->shapelessRecipes[$hash] ?? [] as $i => $r){
+			if($r->isEquivalent($recipe)){
+				array_splice($this->shapelessRecipes[$hash], $i, 1);
+				if(count($this->shapelessRecipes[$hash]) === 0){
+					unset($this->shapelessRecipes[$hash]);
+					$changed = true;
+				}
+				// We don't break as it can have many similar recipes ?
+			}
+		}
+
+		foreach($this->craftingRecipeIndex as $index => $testRecipe){
+			if($testRecipe instanceof ShapelessRecipe && $recipe->isEquivalent($testRecipe)){
+				unset($this->craftingRecipeIndex[$index]);
+				$changed = true;
+			}
+		}
+
+		if($changed){
+			foreach($this->recipeUnregisteredCallbacks as $callback){
+				$callback();
+			}
 		}
 	}
 
@@ -205,11 +277,33 @@ class CraftingManager{
 		}
 	}
 
+	public function unregisterPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
+		$recipeIndex = array_search($recipe, $this->potionTypeRecipes, true);
+		if($recipeIndex !== false){
+			array_splice($this->potionTypeRecipes, $recipeIndex, 1);
+
+			foreach($this->recipeUnregisteredCallbacks as $callback){
+				$callback();
+			}
+		}
+	}
+
 	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$this->potionContainerChangeRecipes[] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
+		}
+	}
+
+	public function unregisterPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
+		$recipeIndex = array_search($recipe, $this->potionContainerChangeRecipes, true);
+		if($recipeIndex !== false){
+			array_splice($this->potionContainerChangeRecipes, $recipeIndex, 1);
+
+			foreach($this->recipeUnregisteredCallbacks as $callback){
+				$callback();
+			}
 		}
 	}
 

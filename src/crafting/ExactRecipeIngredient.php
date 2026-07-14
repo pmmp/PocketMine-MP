@@ -53,4 +53,8 @@ final class ExactRecipeIngredient implements RecipeIngredient{
 	public function __toString() : string{
 		return "ExactRecipeIngredient(" . $this->item . ")";
 	}
+
+	public function isEquivalent(RecipeIngredient $other) : bool{
+		return $other instanceof ExactRecipeIngredient && $this->item->equals($other->item, true, $this->item->hasNamedTag());
+	}
 }
