@@ -33,7 +33,7 @@ final class RespawnAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEvent::RESPAWN, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::RESPAWN, 0, null)
 		];
 	}
 }

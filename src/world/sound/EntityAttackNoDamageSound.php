@@ -40,7 +40,8 @@ class EntityAttackNoDamageSound implements Sound{
 			"minecraft:player",
 			false,
 			false,
-			-1
+			-1,
+			null
 		)];
 	}
 }

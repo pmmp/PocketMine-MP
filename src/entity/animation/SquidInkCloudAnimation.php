@@ -33,7 +33,7 @@ final class SquidInkCloudAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->squid->getId(), ActorEvent::SQUID_INK_CLOUD, 0)
+			ActorEventPacket::create($this->squid->getId(), ActorEvent::SQUID_INK_CLOUD, 0, null)
 		];
 	}
 }

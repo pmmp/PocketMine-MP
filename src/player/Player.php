@@ -2665,7 +2665,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, $this->hasBlockCollision());
 
 		$properties->setPlayerFlag(PlayerMetadataFlags::SLEEP, $this->sleeping !== null);
-		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping !== null ? BlockPosition::fromVector3($this->sleeping) : new BlockPosition(0, 0, 0));
+		if($this->sleeping !== null){
+			//this should only be sent when the player enters the bed, as of 1.26.??
+			//previously we were setting this to 0,0,0 if the player wasn't sleeping, but that now causes the player to
+			//teleport to that position temporarily when leaving the bed. Bugrock moment...
+			$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, BlockPosition::fromVector3($this->sleeping));
+		}
 
 		if($this->deathPosition !== null && $this->deathPosition->world === $this->location->world){
 			$properties->setBlockPos(EntityMetadataProperties::PLAYER_DEATH_POSITION, BlockPosition::fromVector3($this->deathPosition));
@@ -2892,6 +2897,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 	use ChunkListenerNoOpTrait {
 		onChunkChanged as private;
 		onChunkUnloaded as private;
+		onBlockChanged as private;
 	}
 
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
@@ -2906,6 +2912,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer, Nev
 		if($this->isUsingChunk($chunkX, $chunkZ)){
 			$this->logger->debug("Detected forced unload of chunk " . $chunkX . " " . $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ);
+		}
+	}
+
+	public function onBlockChanged(Vector3 $block) : void{
+		if($this->sleeping !== null && $block->equals($this->sleeping) && !($this->getWorld()->getBlock($block) instanceof Bed)){
+			$this->logger->debug("Bed was changed or deleted, aborting sleep");
+			$this->stopSleep();
 		}
 	}
 }

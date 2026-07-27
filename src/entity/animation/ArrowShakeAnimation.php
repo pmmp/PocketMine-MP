@@ -36,7 +36,7 @@ class ArrowShakeAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->arrow->getId(), ActorEvent::ARROW_SHAKE, $this->durationInTicks)
+			ActorEventPacket::create($this->arrow->getId(), ActorEvent::ARROW_SHAKE, $this->durationInTicks, null)
 		];
 	}
 }

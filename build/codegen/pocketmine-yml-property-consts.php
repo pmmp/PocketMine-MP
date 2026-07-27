@@ -72,7 +72,9 @@ function collectProperties(string $prefix, array $properties, array &$constants)
 collectProperties("", $defaultConfig, $constants);
 ksort($constants, SORT_STRING);
 
-/** @return resource */
+/**
+ * @return resource
+ */
 function safe_fopen(string $file, string $flags){
 	$dir = dirname($file);
 	if(!@mkdir($dir, recursive: true) && !is_dir($dir)){

@@ -34,7 +34,7 @@ final class TotemUseAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->human->getId(), ActorEvent::CONSUME_TOTEM, 0)
+			ActorEventPacket::create($this->human->getId(), ActorEvent::CONSUME_TOTEM, 0, null)
 		];
 	}
 }

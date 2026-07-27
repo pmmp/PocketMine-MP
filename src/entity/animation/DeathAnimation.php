@@ -33,7 +33,7 @@ final class DeathAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEvent::DEATH_ANIMATION, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::DEATH_ANIMATION, 0, null)
 		];
 	}
 }

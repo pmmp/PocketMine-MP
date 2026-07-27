@@ -92,4 +92,8 @@ class FrostedIce extends Ice implements Ageable{
 		$world->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		return false;
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return false;
+	}
 }

@@ -134,6 +134,12 @@ final class BlockStateStringValues{
 	public const PORTAL_AXIS_X = "x";
 	public const PORTAL_AXIS_Z = "z";
 
+	public const POTENT_SULFUR_STATE_CONTINUOUS = "continuous";
+	public const POTENT_SULFUR_STATE_DORMANT = "dormant";
+	public const POTENT_SULFUR_STATE_DRY = "dry";
+	public const POTENT_SULFUR_STATE_ERUPTING = "erupting";
+	public const POTENT_SULFUR_STATE_WET = "wet";
+
 	public const SEA_GRASS_TYPE_DEFAULT = "default";
 	public const SEA_GRASS_TYPE_DOUBLE_BOT = "double_bot";
 	public const SEA_GRASS_TYPE_DOUBLE_TOP = "double_top";

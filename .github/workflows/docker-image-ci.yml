@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         submodules: true #needed for build/php submodule
 
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v4
 
     - name: Create data directories
       run: |
@@ -22,7 +22,7 @@ jobs:
         sudo chown -R 1000:1000 ./docker/testsuite ./docker/test_data
 
     - name: Build image for tag
-      uses: docker/build-push-action@v6.18.0
+      uses: docker/build-push-action@v7.1.0
       with:
         context: ${{ github.workspace }}
         push: false

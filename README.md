@@ -1,3 +1,25 @@
+# End of support announcement
+
+Hello all,
+
+As some of you may know, @driesboy recently decided to leave Minecraft behind as he pursues other interests. While I wish him the best, unfortunately, this now means that no one is left on the team willing to do updates for new Minecraft versions.
+
+We've assembled some [documentation](https://doc.pmmp.io/en/rtfd/developers/internals-docs/updating-minecraft-protocol.html) on the update process to help anyone who wants to make a fork to continue updating PM themselves. However, no further updates will be provided by the PMMP team.
+
+I want to say a huge thank you for the outstanding support of the Lifeboat Network for supporting the development of the project financially these last few years.
+While they could've hired us to go closed-source and kept everything for themselves, they instead agreed to let us share the work we were doing with the public community with no strings attached, and didn't even ask for any recognition in return. Their generosity has allowed many servers to flourish over the last few years.
+
+A huge thank you is also owed to the members of the PMMP team, past and present, including developers, community moderators, and code reviewers. It has taken a huge amount of unpaid voluntary work by many people to keep this project going for so long, work that has often been taken for granted by the community.
+
+I would also like to thank those who have supported me on Patreon, however small the amount. You guys have been truly generous, by paying to support a project that you didn't have to, for almost nothing in return except a fancy Discord role.
+
+Finally, thank you to you, the community, for using PocketMine-MP and making cool things with it, reporting bugs, making pull requests, and trying to make the world a better place.
+
+Peace out,
+Dylan / dktapps / the black cat
+
+---
+
 <p align="center">
 	<a href="https://pmmp.io">
 		<!--[if IE]>

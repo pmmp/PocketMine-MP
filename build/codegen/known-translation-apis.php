@@ -62,7 +62,9 @@ function functionify(string $permissionName) : string{
 	return str_replace([".", "-"], "_", $permissionName);
 }
 
-/** @return resource */
+/**
+ * @return resource
+ */
 function safe_fopen(string $file, string $flags){
 	$dir = dirname($file);
 	if(!@mkdir($dir, recursive: true) && !is_dir($dir)){

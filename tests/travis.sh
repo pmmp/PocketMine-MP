@@ -47,7 +47,7 @@ echo -e "stop\n" | php PocketMine-MP.phar \
   --anonymous-statistics.enabled=0 \
   --settings.async-workers="$PM_WORKERS" \
   --settings.enable-dev-builds=1 \
-  --auto-reporting.enabled=0
+  --auto-report.enabled=0
 
 output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then

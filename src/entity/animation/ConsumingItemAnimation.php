@@ -40,7 +40,7 @@ final class ConsumingItemAnimation implements Animation{
 		[$netId, $netData] = TypeConverter::getInstance()->getItemTranslator()->toNetworkId($this->item);
 		return [
 			//TODO: need to check the data values
-			ActorEventPacket::create($this->entity->getId(), ActorEvent::EATING_ITEM, ($netId << 16) | $netData)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::EATING_ITEM, ($netId << 16) | $netData, null)
 		];
 	}
 }

@@ -47,7 +47,8 @@ enum TreeType{
 	case DARK_OAK;
 	case CRIMSON;
 	case WARPED;
-	//TODO: cherry blossom, mangrove, azalea
+	case AZALEA;
+	//TODO: cherry blossom, mangrove
 	//TODO: perhaps huge mushrooms should be here too???
 
 	public function getDisplayName() : string{
@@ -60,6 +61,7 @@ enum TreeType{
 			self::DARK_OAK => "Dark Oak",
 			self::CRIMSON => "Crimson",
 			self::WARPED => "Warped",
+			self::AZALEA => "Azalea",
 		};
 	}
 }

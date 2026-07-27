@@ -35,6 +35,6 @@ final class ItemEntityStackSizeChangeAnimation implements Animation{
 	){}
 
 	public function encode() : array{
-		return [ActorEventPacket::create($this->itemEntity->getId(), ActorEvent::ITEM_ENTITY_MERGE, $this->newStackSize)];
+		return [ActorEventPacket::create($this->itemEntity->getId(), ActorEvent::ITEM_ENTITY_MERGE, $this->newStackSize, null)];
 	}
 }

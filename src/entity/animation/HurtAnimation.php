@@ -33,7 +33,7 @@ final class HurtAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEvent::HURT_ANIMATION, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::HURT_ANIMATION, 0, null)
 		];
 	}
 }

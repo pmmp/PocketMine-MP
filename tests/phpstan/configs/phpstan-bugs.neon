@@ -19,18 +19,6 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: '#^Method pocketmine\\block\\DoubleTallGrass\:\:traitGetDropsForIncompatibleTool\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: ../../../src/block/DoubleTallGrass.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between \*NEVER\* and 5 will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: ../../../src/command/defaults/TeleportCommand.php
-
-		-
 			message: '#^Method pocketmine\\crafting\\ShapedRecipe\:\:getIngredientMap\(\) should return list\<list\<pocketmine\\crafting\\RecipeIngredient\|null\>\> but returns array\<int\<0, max\>, non\-empty\-array\<int\<0, max\>, pocketmine\\crafting\\RecipeIngredient\|null\>\>\.$#'
 			identifier: return.type
 			count: 1
@@ -71,18 +59,6 @@ parameters:
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: ../../../src/network/mcpe/convert/LegacySkinAdapter.php
-
-		-
-			message: '#^Property pocketmine\\network\\mcpe\\raklib\\PthreadsChannelWriter\:\:\$buffer is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
-
-		-
-			message: '#^Property pocketmine\\network\\mcpe\\raklib\\SnoozeAwarePthreadsChannelWriter\:\:\$buffer is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: ../../../src/network/mcpe/raklib/SnoozeAwarePthreadsChannelWriter.php
 
 		-
 			message: '#^Dead catch \- RuntimeException is never thrown in the try block\.$#'

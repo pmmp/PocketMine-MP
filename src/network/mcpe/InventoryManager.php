@@ -262,6 +262,9 @@ class InventoryManager{
 			if($action->sourceType !== NetworkInventoryAction::SOURCE_CONTAINER){
 				continue;
 			}
+			if($action->windowId === null){
+				throw new PacketHandlingException("Window ID should always be set for SOURCE_CONTAINER");
+			}
 
 			//legacy transactions should not modify or predict anything other than these inventories, since these are
 			//the only ones accessible when not in-game (ItemStackRequest is used for everything else)
@@ -521,8 +524,8 @@ class InventoryManager{
 			$this->session->sendDataPacket(InventorySlotPacket::create(
 				$windowId,
 				$netSlot,
-				new FullContainerName($this->lastInventoryNetworkId),
-				new ItemStackWrapper(0, ItemStack::null()),
+				null,
+				null,
 				new ItemStackWrapper(0, ItemStack::null())
 			));
 		}
@@ -530,8 +533,8 @@ class InventoryManager{
 		$this->session->sendDataPacket(InventorySlotPacket::create(
 			$windowId,
 			$netSlot,
-			new FullContainerName($this->lastInventoryNetworkId),
-			new ItemStackWrapper(0, ItemStack::null()),
+			null,
+			null,
 			$itemStackWrapper
 		));
 	}
@@ -551,11 +554,11 @@ class InventoryManager{
 		$this->session->sendDataPacket(InventoryContentPacket::create(
 			$windowId,
 			array_fill_keys(array_keys($itemStackWrappers), new ItemStackWrapper(0, ItemStack::null())),
-			new FullContainerName($this->lastInventoryNetworkId),
+			new FullContainerName(0, null),
 			new ItemStackWrapper(0, ItemStack::null())
 		));
 		//now send the real contents
-		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers, new FullContainerName($this->lastInventoryNetworkId), new ItemStackWrapper(0, ItemStack::null())));
+		$this->session->sendDataPacket(InventoryContentPacket::create($windowId, $itemStackWrappers, new FullContainerName(0, null), new ItemStackWrapper(0, ItemStack::null())));
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot, ItemStack $itemStack) : void{

@@ -25,7 +25,6 @@ namespace pocketmine\block\utils;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\utils\LegacyEnumShimTrait;
 use function spl_object_id;
 
@@ -49,7 +48,7 @@ use function spl_object_id;
  * @method static RecordType DISK_WAIT()
  * @method static RecordType DISK_WARD()
  *
- * @phpstan-type TMetadata array{0: string, 1: LevelSoundEvent::*, 2: Translatable}
+ * @phpstan-type TMetadata array{0: string, 1: Translatable}
  */
 enum RecordType{
 	use LegacyEnumShimTrait;
@@ -83,26 +82,26 @@ enum RecordType{
 		static $cache = [];
 
 		return $cache[spl_object_id($this)] ??= match($this){
-			self::DISK_13 => ["C418 - 13", LevelSoundEvent::RECORD_13, KnownTranslationFactory::item_record_13_desc()],
-			self::DISK_5 => ["Samuel Åberg - 5", LevelSoundEvent::RECORD_5, KnownTranslationFactory::item_record_5_desc()],
-			self::DISK_CAT => ["C418 - cat", LevelSoundEvent::RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()],
-			self::DISK_BLOCKS => ["C418 - blocks", LevelSoundEvent::RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()],
-			self::DISK_CHIRP => ["C418 - chirp", LevelSoundEvent::RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()],
-			self::DISK_CREATOR => ["Lena Raine - Creator", LevelSoundEvent::RECORD_CREATOR, KnownTranslationFactory::item_record_creator_desc()],
-			self::DISK_CREATOR_MUSIC_BOX => ["Lena Raine - Creator (Music Box)", LevelSoundEvent::RECORD_CREATOR_MUSIC_BOX, KnownTranslationFactory::item_record_creator_music_box_desc()],
-			self::DISK_FAR => ["C418 - far", LevelSoundEvent::RECORD_FAR, KnownTranslationFactory::item_record_far_desc()],
-			self::DISK_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", LevelSoundEvent::RECORD_LAVA_CHICKEN, KnownTranslationFactory::item_record_lava_chicken_desc()],
-			self::DISK_MALL => ["C418 - mall", LevelSoundEvent::RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()],
-			self::DISK_MELLOHI => ["C418 - mellohi", LevelSoundEvent::RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()],
-			self::DISK_OTHERSIDE => ["Lena Raine - otherside", LevelSoundEvent::RECORD_OTHERSIDE, KnownTranslationFactory::item_record_otherside_desc()],
-			self::DISK_PIGSTEP => ["Lena Raine - Pigstep", LevelSoundEvent::RECORD_PIGSTEP, KnownTranslationFactory::item_record_pigstep_desc()],
-			self::DISK_PRECIPICE => ["Aaron Cherof - Precipice", LevelSoundEvent::RECORD_PRECIPICE, KnownTranslationFactory::item_record_precipice_desc()],
-			self::DISK_RELIC => ["Aaron Cherof - Relic", LevelSoundEvent::RECORD_RELIC, KnownTranslationFactory::item_record_relic_desc()],
-			self::DISK_STAL => ["C418 - stal", LevelSoundEvent::RECORD_STAL, KnownTranslationFactory::item_record_stal_desc()],
-			self::DISK_STRAD => ["C418 - strad", LevelSoundEvent::RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()],
-			self::DISK_WARD => ["C418 - ward", LevelSoundEvent::RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()],
-			self::DISK_11 => ["C418 - 11", LevelSoundEvent::RECORD_11, KnownTranslationFactory::item_record_11_desc()],
-			self::DISK_WAIT => ["C418 - wait", LevelSoundEvent::RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc()]
+			self::DISK_13 => ["C418 - 13", KnownTranslationFactory::item_record_13_desc()],
+			self::DISK_5 => ["Samuel Åberg - 5", KnownTranslationFactory::item_record_5_desc()],
+			self::DISK_CAT => ["C418 - cat", KnownTranslationFactory::item_record_cat_desc()],
+			self::DISK_BLOCKS => ["C418 - blocks", KnownTranslationFactory::item_record_blocks_desc()],
+			self::DISK_CHIRP => ["C418 - chirp", KnownTranslationFactory::item_record_chirp_desc()],
+			self::DISK_CREATOR => ["Lena Raine - Creator", KnownTranslationFactory::item_record_creator_desc()],
+			self::DISK_CREATOR_MUSIC_BOX => ["Lena Raine - Creator (Music Box)", KnownTranslationFactory::item_record_creator_music_box_desc()],
+			self::DISK_FAR => ["C418 - far", KnownTranslationFactory::item_record_far_desc()],
+			self::DISK_LAVA_CHICKEN => ["Hyper Potions - Lava Chicken", KnownTranslationFactory::item_record_lava_chicken_desc()],
+			self::DISK_MALL => ["C418 - mall", KnownTranslationFactory::item_record_mall_desc()],
+			self::DISK_MELLOHI => ["C418 - mellohi", KnownTranslationFactory::item_record_mellohi_desc()],
+			self::DISK_OTHERSIDE => ["Lena Raine - otherside", KnownTranslationFactory::item_record_otherside_desc()],
+			self::DISK_PIGSTEP => ["Lena Raine - Pigstep", KnownTranslationFactory::item_record_pigstep_desc()],
+			self::DISK_PRECIPICE => ["Aaron Cherof - Precipice", KnownTranslationFactory::item_record_precipice_desc()],
+			self::DISK_RELIC => ["Aaron Cherof - Relic", KnownTranslationFactory::item_record_relic_desc()],
+			self::DISK_STAL => ["C418 - stal", KnownTranslationFactory::item_record_stal_desc()],
+			self::DISK_STRAD => ["C418 - strad", KnownTranslationFactory::item_record_strad_desc()],
+			self::DISK_WARD => ["C418 - ward", KnownTranslationFactory::item_record_ward_desc()],
+			self::DISK_11 => ["C418 - 11", KnownTranslationFactory::item_record_11_desc()],
+			self::DISK_WAIT => ["C418 - wait", KnownTranslationFactory::item_record_wait_desc()]
 		};
 	}
 
@@ -110,11 +109,14 @@ enum RecordType{
 		return $this->getMetadata()[0];
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getSoundId() : int{
-		return $this->getMetadata()[1];
+		return 0;
 	}
 
 	public function getTranslatableName() : Translatable{
-		return $this->getMetadata()[2];
+		return $this->getMetadata()[1];
 	}
 }

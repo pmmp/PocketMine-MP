@@ -30,6 +30,6 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 class RecordStopSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::STOP_RECORD, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::RECORD_NULL, $pos, false)];
 	}
 }

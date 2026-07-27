@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\tools\generate_bedrock_data_from_packets;
 
 use pmmp\encoding\ByteBufferReader;
-use pocketmine\crafting\json\FurnaceRecipeData;
 use pocketmine\crafting\json\ItemStackData;
 use pocketmine\crafting\json\PotionContainerChangeRecipeData;
 use pocketmine\crafting\json\PotionTypeRecipeData;
@@ -57,9 +56,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeGroupEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraData;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackExtraDataShield;
-use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\recipe\ComplexAliasItemDescriptor;
-use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\IntIdMetaItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\MolangItemDescriptor;
 use pocketmine\network\mcpe\protocol\types\recipe\MultiRecipe;
@@ -267,7 +264,7 @@ class ParserPacketHandler extends PacketHandler{
 	public function handleItemRegistry(ItemRegistryPacket $packet) : bool{
 		$this->itemTypeDictionary = new ItemTypeDictionary($packet->getEntries());
 
-		echo "updating legacy item ID mapping table\n";
+		echo "updating required_item_list.json\n";
 		$emptyNBT = new CompoundTag();
 		$table = [];
 		foreach($packet->getEntries() as $entry){
@@ -284,12 +281,6 @@ class ParserPacketHandler extends PacketHandler{
 		}
 		ksort($table, SORT_STRING);
 		file_put_contents($this->bedrockDataPath . '/required_item_list.json', json_encode($table, JSON_PRETTY_PRINT) . "\n");
-
-		echo "updating item registry\n";
-		$items = array_map(function(ItemTypeEntry $entry) : mixed{
-			return self::objectToOrderedArray($entry);
-		}, $packet->getEntries());
-		file_put_contents($this->bedrockDataPath . '/item_registry.json', json_encode($items, JSON_PRETTY_PRINT) . "\n");
 		return true;
 	}
 
@@ -388,10 +379,13 @@ class ParserPacketHandler extends PacketHandler{
 					if(isset($keys[$hash])){
 						$shape[$x][$y] = $keys[$hash];
 					}else{
-						$key = chr($char);
+						$key = chr($char & 0xff);
 						$keys[$hash] = $shape[$x][$y] = $key;
 						$outputsByKey[$key] = $jsonIngredient;
 						$char++;
+						if($char >= 128){
+							throw new \RuntimeException("Too many ingredients");
+						}
 					}
 				}
 			}
@@ -415,14 +409,6 @@ class ParserPacketHandler extends PacketHandler{
 			$recipe->getBlockName(),
 			$recipe->getPriority(),
 			$unlockingIngredients !== null ? array_map(fn(RecipeIngredient $input) => $this->recipeIngredientToJson($input), $unlockingIngredients) : []
-		);
-	}
-
-	private function furnaceRecipeToJson(FurnaceRecipe $recipe) : FurnaceRecipeData{
-		return new FurnaceRecipeData(
-			$this->recipeIngredientToJson(new RecipeIngredient(new IntIdMetaItemDescriptor($recipe->getInputId(), $recipe->getInputMeta() ?? 32767), 1)),
-			$this->itemStackToJson($recipe->getResult()),
-			$recipe->getBlockName()
 		);
 	}
 
@@ -457,8 +443,6 @@ class ParserPacketHandler extends PacketHandler{
 			static $typeMap = [
 				CraftingDataPacket::ENTRY_SHAPELESS => "shapeless_crafting",
 				CraftingDataPacket::ENTRY_SHAPED => "shaped_crafting",
-				CraftingDataPacket::ENTRY_FURNACE => "smelting",
-				CraftingDataPacket::ENTRY_FURNACE_DATA => "smelting",
 				CraftingDataPacket::ENTRY_MULTI => "special_hardcoded",
 				CraftingDataPacket::ENTRY_USER_DATA_SHAPELESS => "shapeless_shulker_box",
 				CraftingDataPacket::ENTRY_SHAPELESS_CHEMISTRY => "shapeless_chemistry",
@@ -483,8 +467,6 @@ class ParserPacketHandler extends PacketHandler{
 				$recipes[$mappedType][] = $this->shapelessRecipeToJson($entry);
 			}elseif($entry instanceof MultiRecipe){
 				$recipes[$mappedType][] = $entry->getRecipeId()->toString();
-			}elseif($entry instanceof FurnaceRecipe){
-				$recipes[$mappedType][] = $this->furnaceRecipeToJson($entry);
 			}elseif($entry instanceof SmithingTransformRecipe){
 				$recipes[$mappedType][] = $this->smithingRecipeToJson($entry);
 			}elseif($entry instanceof SmithingTrimRecipe){
@@ -523,7 +505,11 @@ class ParserPacketHandler extends PacketHandler{
 				$_key = json_encode($entry);
 				$duplicates = $_seen[$_key] ??= 0;
 				$_seen[$_key]++;
-				$suffix = chr(ord("a") + $duplicates);
+				$suffixOrd = ord("a") + $duplicates;
+				if($suffixOrd >= 128){
+					throw new \RuntimeException("Too many duplicates ($duplicates)");
+				}
+				$suffix = chr($suffixOrd);
 				$_sortedRecipes[$_key . $suffix] = $entry;
 			}
 			ksort($_sortedRecipes, SORT_STRING);
