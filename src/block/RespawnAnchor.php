@@ -29,6 +29,7 @@ use pocketmine\event\player\PlayerRespawnAnchorUseEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemTypeIds;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -111,14 +112,43 @@ final class RespawnAnchor extends Opaque{
 			return;
 		}
 
+		$block = $this->position->getWorld()->getBlock($this->position);
 		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+
+		$hasWater = false;
+		foreach($block->getHorizontalSides() as $side){
+			if($this->isSurroundedByWater($side)){
+				$hasWater = true;
+				break;
+			}
+		}
 
 		$explosion = new Explosion(Position::fromObject($this->position->add(0.5, 0.5, 0.5), $this->position->getWorld()), $ev->getRadius(), $this);
 		$explosion->setFireChance($ev->getFireChance());
 
-		if($ev->isBlockBreaking()){
+		if(!$hasWater && !($block->getSide(Facing::UP) instanceof Water)){
 			$explosion->explodeA();
 		}
 		$explosion->explodeB();
+	}
+
+	private function isSurroundedByWater(Block $block) : bool{
+		$world = $block->getPosition()->getWorld();
+
+		$fluid = $world->getBlock($block->getPosition());
+		if(!($fluid instanceof Water)){
+			return false;
+		}
+
+		if($fluid->isSource()){
+			return true;
+		}
+
+		if($fluid->getDecay() >= 1){
+			return false;
+		}
+
+		$below = $fluid->getSide(Facing::DOWN);
+		return !($below instanceof Water);
 	}
 }
